@@ -44,9 +44,9 @@ namespace ui {
 // std::unique_ptr<TreeNodeWithValue<int>> root =
 //     std::make_unique<TreeNodeWithValue<int>>();
 // root->Add(
-//     std::make_unique<TreeNodeWithValue<int>>(ASCIIToUTF16("child 1"), 0));
+//     std::make_unique<TreeNodeWithValue<int>>(u"child 1", 0));
 // root->Add(
-//     std::make_unique<TreeNodeWithValue<int>>(ASCIIToUTF16("child 2"), 1));
+//     std::make_unique<TreeNodeWithValue<int>>(u"child 2", 1));
 // TreeNodeModel<TreeNodeWithValue<int>> model(std::move(root));
 //
 // Two variants of TreeNode are provided here:

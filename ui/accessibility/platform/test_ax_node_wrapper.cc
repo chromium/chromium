@@ -669,7 +669,7 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
 
 std::u16string TestAXNodeWrapper::GetLocalizedRoleDescriptionForUnlabeledImage()
     const {
-  return base::ASCIIToUTF16("Unlabeled image");
+  return u"Unlabeled image";
 }
 
 std::u16string TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
@@ -677,19 +677,19 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
   switch (data.role) {
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kHeader:
-      return base::ASCIIToUTF16("banner");
+      return u"banner";
 
     case ax::mojom::Role::kComplementary:
-      return base::ASCIIToUTF16("complementary");
+      return u"complementary";
 
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kFooter:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kSection:
       if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("region");
+        return u"region";
       FALLTHROUGH;
 
     default:
@@ -702,92 +702,92 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
 
   switch (data.role) {
     case ax::mojom::Role::kArticle:
-      return base::ASCIIToUTF16("article");
+      return u"article";
 
     case ax::mojom::Role::kAudio:
-      return base::ASCIIToUTF16("audio");
+      return u"audio";
 
     case ax::mojom::Role::kCode:
-      return base::ASCIIToUTF16("code");
+      return u"code";
 
     case ax::mojom::Role::kColorWell:
-      return base::ASCIIToUTF16("color picker");
+      return u"color picker";
 
     case ax::mojom::Role::kContentInfo:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kDate:
-      return base::ASCIIToUTF16("date picker");
+      return u"date picker";
 
     case ax::mojom::Role::kDateTime: {
       std::string input_type;
       if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
                                   &input_type)) {
         if (input_type == "datetime-local") {
-          return base::ASCIIToUTF16("local date and time picker");
+          return u"local date and time picker";
         } else if (input_type == "week") {
-          return base::ASCIIToUTF16("week picker");
+          return u"week picker";
         }
       }
       return {};
     }
 
     case ax::mojom::Role::kDetails:
-      return base::ASCIIToUTF16("details");
+      return u"details";
 
     case ax::mojom::Role::kEmphasis:
-      return base::ASCIIToUTF16("emphasis");
+      return u"emphasis";
 
     case ax::mojom::Role::kFigure:
-      return base::ASCIIToUTF16("figure");
+      return u"figure";
 
     case ax::mojom::Role::kFooter:
     case ax::mojom::Role::kFooterAsNonLandmark:
-      return base::ASCIIToUTF16("footer");
+      return u"footer";
 
     case ax::mojom::Role::kHeader:
     case ax::mojom::Role::kHeaderAsNonLandmark:
-      return base::ASCIIToUTF16("header");
+      return u"header";
 
     case ax::mojom::Role::kMark:
-      return base::ASCIIToUTF16("highlight");
+      return u"highlight";
 
     case ax::mojom::Role::kMeter:
-      return base::ASCIIToUTF16("meter");
+      return u"meter";
 
     case ax::mojom::Role::kSearchBox:
-      return base::ASCIIToUTF16("search box");
+      return u"search box";
 
     case ax::mojom::Role::kSection: {
       if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("section");
+        return u"section";
 
       return {};
     }
 
     case ax::mojom::Role::kStatus:
-      return base::ASCIIToUTF16("output");
+      return u"output";
 
     case ax::mojom::Role::kStrong:
-      return base::ASCIIToUTF16("strong");
+      return u"strong";
 
     case ax::mojom::Role::kTextField: {
       std::string input_type;
       if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
                                   &input_type)) {
         if (input_type == "email") {
-          return base::ASCIIToUTF16("email");
+          return u"email";
         } else if (input_type == "tel") {
-          return base::ASCIIToUTF16("telephone");
+          return u"telephone";
         } else if (input_type == "url") {
-          return base::ASCIIToUTF16("url");
+          return u"url";
         }
       }
       return {};
     }
 
     case ax::mojom::Role::kTime:
-      return base::ASCIIToUTF16("time");
+      return u"time";
 
     default:
       return {};
@@ -801,13 +801,13 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
       return base::ASCIIToUTF16(
           "To get missing image descriptions, open the context menu.");
     case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-      return base::ASCIIToUTF16("Getting description...");
+      return u"Getting description...";
     case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
       return base::ASCIIToUTF16(
           "Appears to contain adult content. No description available.");
     case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
     case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      return base::ASCIIToUTF16("No description available.");
+      return u"No description available.";
     case ax::mojom::ImageAnnotationStatus::kNone:
     case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
     case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
@@ -825,7 +825,7 @@ std::u16string TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
   AXNode* current_node = node_;
   while (current_node) {
     if (current_node->data().role == ax::mojom::Role::kMark)
-      return base::ASCIIToUTF16("mark");
+      return u"mark";
     current_node = current_node->parent();
   }
   return std::u16string();

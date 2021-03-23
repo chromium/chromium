@@ -682,12 +682,11 @@ void Button::OnEnabledChanged() {
   }
 }
 
-DEFINE_ENUM_CONVERTERS(
-    Button::ButtonState,
-    {Button::STATE_NORMAL, base::ASCIIToUTF16("STATE_NORMAL")},
-    {Button::STATE_HOVERED, base::ASCIIToUTF16("STATE_HOVERED")},
-    {Button::STATE_PRESSED, base::ASCIIToUTF16("STATE_PRESSED")},
-    {Button::STATE_DISABLED, base::ASCIIToUTF16("STATE_DISABLED")})
+DEFINE_ENUM_CONVERTERS(Button::ButtonState,
+                       {Button::STATE_NORMAL, u"STATE_NORMAL"},
+                       {Button::STATE_HOVERED, u"STATE_HOVERED"},
+                       {Button::STATE_PRESSED, u"STATE_PRESSED"},
+                       {Button::STATE_DISABLED, u"STATE_DISABLED"})
 
 BEGIN_METADATA(Button, InkDropHostView)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)

@@ -23,9 +23,7 @@ void PrepareEmptyTestData(base::Pickle* pickle) {
 
 void PrepareTestData(base::Pickle* pickle) {
   std::unordered_map<std::u16string, std::u16string> data = {
-      {ASCIIToUTF16("abc"), std::u16string()},
-      {ASCIIToUTF16("de"), ASCIIToUTF16("1")},
-      {ASCIIToUTF16("f"), ASCIIToUTF16("23")}};
+      {u"abc", std::u16string()}, {u"de", u"1"}, {u"f", u"23"}};
   WriteCustomDataToPickle(data, pickle);
 }
 
@@ -43,10 +41,7 @@ TEST(CustomDataHelperTest, EmptyReadSingleType) {
   PrepareEmptyTestData(&pickle);
 
   std::u16string result;
-  ReadCustomDataForType(pickle.data(),
-                        pickle.size(),
-                        ASCIIToUTF16("f"),
-                        &result);
+  ReadCustomDataForType(pickle.data(), pickle.size(), u"f", &result);
   EXPECT_EQ(std::u16string(), result);
 }
 
@@ -66,8 +61,7 @@ TEST(CustomDataHelperTest, ReadTypes) {
   std::vector<std::u16string> types;
   ReadCustomDataTypes(pickle.data(), pickle.size(), &types);
 
-  std::vector<std::u16string> expected = {
-      ASCIIToUTF16("abc"), ASCIIToUTF16("de"), ASCIIToUTF16("f")};
+  std::vector<std::u16string> expected = {u"abc", u"de", u"f"};
   // We need to sort to compare equality, as the underlying custom data is
   // unordered
   std::sort(types.begin(), types.end());
@@ -80,23 +74,14 @@ TEST(CustomDataHelperTest, ReadSingleType) {
   PrepareTestData(&pickle);
 
   std::u16string result;
-  ReadCustomDataForType(pickle.data(),
-                        pickle.size(),
-                        ASCIIToUTF16("abc"),
-                        &result);
+  ReadCustomDataForType(pickle.data(), pickle.size(), u"abc", &result);
   EXPECT_EQ(std::u16string(), result);
 
-  ReadCustomDataForType(pickle.data(),
-                        pickle.size(),
-                        ASCIIToUTF16("de"),
-                        &result);
-  EXPECT_EQ(ASCIIToUTF16("1"), result);
+  ReadCustomDataForType(pickle.data(), pickle.size(), u"de", &result);
+  EXPECT_EQ(u"1", result);
 
-  ReadCustomDataForType(pickle.data(),
-                        pickle.size(),
-                        ASCIIToUTF16("f"),
-                        &result);
-  EXPECT_EQ(ASCIIToUTF16("23"), result);
+  ReadCustomDataForType(pickle.data(), pickle.size(), u"f", &result);
+  EXPECT_EQ(u"23", result);
 }
 
 TEST(CustomDataHelperTest, ReadMap) {
@@ -107,29 +92,26 @@ TEST(CustomDataHelperTest, ReadMap) {
   ReadCustomDataIntoMap(pickle.data(), pickle.size(), &result);
 
   std::unordered_map<std::u16string, std::u16string> expected = {
-      {ASCIIToUTF16("abc"), std::u16string()},
-      {ASCIIToUTF16("de"), ASCIIToUTF16("1")},
-      {ASCIIToUTF16("f"), ASCIIToUTF16("23")}};
+      {u"abc", std::u16string()}, {u"de", u"1"}, {u"f", u"23"}};
   EXPECT_EQ(expected, result);
 }
 
 TEST(CustomDataHelperTest, BadReadTypes) {
   // ReadCustomDataTypes makes the additional guarantee that the contents of the
   // result vector will not change if the input is malformed.
-  std::vector<std::u16string> expected = {
-      ASCIIToUTF16("abc"), ASCIIToUTF16("de"), ASCIIToUTF16("f")};
+  std::vector<std::u16string> expected = {u"abc", u"de", u"f"};
 
   base::Pickle malformed;
   malformed.WriteUInt32(1000);
-  malformed.WriteString16(ASCIIToUTF16("hello"));
-  malformed.WriteString16(ASCIIToUTF16("world"));
+  malformed.WriteString16(u"hello");
+  malformed.WriteString16(u"world");
   std::vector<std::u16string> actual(expected);
   ReadCustomDataTypes(malformed.data(), malformed.size(), &actual);
   EXPECT_EQ(expected, actual);
 
   base::Pickle malformed2;
   malformed2.WriteUInt32(1);
-  malformed2.WriteString16(ASCIIToUTF16("hello"));
+  malformed2.WriteString16(u"hello");
   std::vector<std::u16string> actual2(expected);
   ReadCustomDataTypes(malformed2.data(), malformed2.size(), &actual2);
   EXPECT_EQ(expected, actual2);
@@ -141,24 +123,19 @@ TEST(CustomDataHelperTest, BadPickle) {
 
   base::Pickle malformed;
   malformed.WriteUInt32(1000);
-  malformed.WriteString16(ASCIIToUTF16("hello"));
-  malformed.WriteString16(ASCIIToUTF16("world"));
+  malformed.WriteString16(u"hello");
+  malformed.WriteString16(u"world");
 
-  ReadCustomDataForType(malformed.data(),
-                        malformed.size(),
-                        ASCIIToUTF16("f"),
-                        &result_data);
+  ReadCustomDataForType(malformed.data(), malformed.size(), u"f", &result_data);
   ReadCustomDataIntoMap(malformed.data(), malformed.size(), &result_map);
   EXPECT_EQ(0u, result_data.size());
   EXPECT_EQ(0u, result_map.size());
 
   base::Pickle malformed2;
   malformed2.WriteUInt32(1);
-  malformed2.WriteString16(ASCIIToUTF16("hello"));
+  malformed2.WriteString16(u"hello");
 
-  ReadCustomDataForType(malformed2.data(),
-                        malformed2.size(),
-                        ASCIIToUTF16("f"),
+  ReadCustomDataForType(malformed2.data(), malformed2.size(), u"f",
                         &result_data);
   ReadCustomDataIntoMap(malformed2.data(), malformed2.size(), &result_map);
   EXPECT_EQ(0u, result_data.size());

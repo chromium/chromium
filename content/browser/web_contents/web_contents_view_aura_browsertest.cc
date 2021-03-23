@@ -164,7 +164,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
     {
       // Do a swipe-right now. That should navigate backwards.
-      std::u16string expected_title = base::ASCIIToUTF16("Title: #1");
+      std::u16string expected_title = u"Title: #1";
       content::TitleWatcher title_watcher(web_contents, expected_title);
       generator.GestureScrollSequence(
           gfx::Point(bounds.x() + 2, bounds.y() + 10),
@@ -182,7 +182,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
     {
       // Do a fling-right now. That should navigate backwards.
-      std::u16string expected_title = base::ASCIIToUTF16("Title:");
+      std::u16string expected_title = u"Title:";
       content::TitleWatcher title_watcher(web_contents, expected_title);
       generator.GestureScrollSequence(
           gfx::Point(bounds.x() + 2, bounds.y() + 10),
@@ -200,7 +200,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
     {
       // Do a swipe-left now. That should navigate forward.
-      std::u16string expected_title = base::ASCIIToUTF16("Title: #1");
+      std::u16string expected_title = u"Title: #1";
       content::TitleWatcher title_watcher(web_contents, expected_title);
       generator.GestureScrollSequence(
           gfx::Point(bounds.right() - 10, bounds.y() + 10),
@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   web_contents->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents));
   EXPECT_EQ(1, GetCurrentIndex());
-  EXPECT_EQ(base::ASCIIToUTF16("Title: #1"), web_contents->GetTitle());
+  EXPECT_EQ(u"Title: #1", web_contents->GetTitle());
   EXPECT_TRUE(controller.CanGoBack());
   EXPECT_TRUE(controller.CanGoForward());
 
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   // Do a swipe left to start a forward navigation. Then quickly do a swipe
   // right.
-  std::u16string expected_title = base::ASCIIToUTF16("Title: #2");
+  std::u16string expected_title = u"Title: #2";
   content::TitleWatcher title_watcher(web_contents, expected_title);
   TestNavigationManager nav_watcher(web_contents,
       embedded_test_server()->GetURL("/overscroll_navigation.html#2"));

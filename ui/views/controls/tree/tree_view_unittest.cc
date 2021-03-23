@@ -80,7 +80,7 @@ class TestNode : public TreeNode<TestNode> {
 class TreeViewTest : public ViewsTestBase {
  public:
   TreeViewTest() : model_(std::make_unique<TestNode>()) {
-    static_cast<TestNode*>(model_.GetRoot())->SetTitle(ASCIIToUTF16("root"));
+    static_cast<TestNode*>(model_.GetRoot())->SetTitle(u"root");
     Add(model_.GetRoot(), 0, "a");
     Add(Add(model_.GetRoot(), 1, "b"), 0, "b1");
     Add(model_.GetRoot(), 2, "c");
@@ -795,7 +795,7 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
   ClearAccessibilityEvents();
 
   // Change c11, shouldn't do anything.
-  model_.SetTitle(GetNodeByTitle("c11"), ASCIIToUTF16("c11.new"));
+  model_.SetTitle(GetNodeByTitle("c11"), u"c11.new");
   EXPECT_EQ("root [a b c]", TreeViewContentsAsString());
   EXPECT_EQ("root [a b c]", TreeViewAccessibilityContentsAsString());
   EXPECT_EQ("root", GetSelectedNodeTitle());
@@ -805,7 +805,7 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
 
   // Change 'b1', shouldn't do anything.
   ClearAccessibilityEvents();
-  model_.SetTitle(GetNodeByTitle("b1"), ASCIIToUTF16("b1.new"));
+  model_.SetTitle(GetNodeByTitle("b1"), u"b1.new");
   EXPECT_EQ("root [a b c]", TreeViewContentsAsString());
   EXPECT_EQ("root [a b c]", TreeViewAccessibilityContentsAsString());
   EXPECT_EQ("root", GetSelectedNodeTitle());
@@ -815,7 +815,7 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
 
   // Change 'b'.
   ClearAccessibilityEvents();
-  model_.SetTitle(GetNodeByTitle("b"), ASCIIToUTF16("b.new"));
+  model_.SetTitle(GetNodeByTitle("b"), u"b.new");
   EXPECT_EQ("root [a b.new c]", TreeViewContentsAsString());
   EXPECT_EQ("root [a b.new c]", TreeViewAccessibilityContentsAsString());
   EXPECT_EQ("root", GetSelectedNodeTitle());
@@ -943,12 +943,12 @@ TEST_F(TreeViewTest, SelectOnKeyStroke) {
   tree_->SetModel(&model_);
   tree_->ExpandAll(model_.GetRoot());
   selector()->InsertText(
-      ASCIIToUTF16("b"),
+      u"b",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b", GetSelectedNodeTitle());
   EXPECT_EQ("b", GetSelectedAccessibilityViewName());
   selector()->InsertText(
-      ASCIIToUTF16("1"),
+      u"1",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b1", GetSelectedNodeTitle());
   EXPECT_EQ("b1", GetSelectedAccessibilityViewName());
@@ -956,14 +956,14 @@ TEST_F(TreeViewTest, SelectOnKeyStroke) {
   // Invoke OnViewBlur() to reset time.
   selector()->OnViewBlur();
   selector()->InsertText(
-      ASCIIToUTF16("z"),
+      u"z",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("b1", GetSelectedNodeTitle());
   EXPECT_EQ("b1", GetSelectedAccessibilityViewName());
 
   selector()->OnViewBlur();
   selector()->InsertText(
-      ASCIIToUTF16("a"),
+      u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
@@ -977,7 +977,7 @@ TEST_F(TreeViewTest, CommitOnFocusLost) {
   ExpandOrSelectChild();
   tree_->SetEditable(true);
   tree_->StartEditing(GetNodeByTitle("a"));
-  tree_->editor()->SetText(ASCIIToUTF16("a changed"));
+  tree_->editor()->SetText(u"a changed");
   tree_->OnDidChangeFocus(nullptr, nullptr);
   EXPECT_TRUE(GetNodeByTitle("a changed") != nullptr);
 
@@ -1167,7 +1167,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   ClearAccessibilityEvents();
   tree_->GetFocusManager()->ClearFocus();
   ui::TreeNodeModel<TestNode> empty_model(std::make_unique<TestNode>());
-  static_cast<TestNode*>(empty_model.GetRoot())->SetTitle(ASCIIToUTF16("root"));
+  static_cast<TestNode*>(empty_model.GetRoot())->SetTitle(u"root");
   tree_->SetModel(&empty_model);
   tree_->SetRootShown(false);
   data.target_node_id = -1;

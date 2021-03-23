@@ -75,13 +75,9 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     actions_.push_back(base::ASCIIToUTF16("U:" + text));
   }
 
-  void AddCompositionStartAction() {
-    actions_.push_back(base::ASCIIToUTF16("S"));
-  }
+  void AddCompositionStartAction() { actions_.push_back(u"S"); }
 
-  void AddCompositionEndAction() {
-    actions_.push_back(base::ASCIIToUTF16("E"));
-  }
+  void AddCompositionEndAction() { actions_.push_back(u"E"); }
 
  protected:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override {
@@ -127,8 +123,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override {
-    TestResult::GetInstance()->RecordAction(
-        base::ASCIIToUTF16("surroundingtext:") + text);
+    TestResult::GetInstance()->RecordAction(u"surroundingtext:" + text);
 
     std::stringstream rs;
     rs << "selectionrangestart:" << selection_range.start();
@@ -207,10 +202,9 @@ class TextInputClientForTesting : public DummyTextInputClient {
  protected:
   void SetCompositionText(const CompositionText& composition) override {
     composition_text = composition.text;
-    TestResult::GetInstance()->RecordAction(
-        base::ASCIIToUTF16("compositionstart"));
-    TestResult::GetInstance()->RecordAction(
-        base::ASCIIToUTF16("compositionupdate:") + composition.text);
+    TestResult::GetInstance()->RecordAction(u"compositionstart");
+    TestResult::GetInstance()->RecordAction(u"compositionupdate:" +
+                                            composition.text);
   }
 
   bool HasCompositionText() const override { return !composition_text.empty(); }
@@ -221,10 +215,8 @@ class TextInputClientForTesting : public DummyTextInputClient {
     if (keep_selection) {
       NOTIMPLEMENTED_LOG_ONCE();
     }
-    TestResult::GetInstance()->RecordAction(
-        base::ASCIIToUTF16("compositionend"));
-    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16("textinput:") +
-                                            composition_text);
+    TestResult::GetInstance()->RecordAction(u"compositionend");
+    TestResult::GetInstance()->RecordAction(u"textinput:" + composition_text);
     const uint32_t composition_text_length =
         static_cast<uint32_t>(composition_text.length());
     composition_text.clear();
@@ -232,8 +224,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
   }
 
   void ClearCompositionText() override {
-    TestResult::GetInstance()->RecordAction(
-        base::ASCIIToUTF16("compositionend"));
+    TestResult::GetInstance()->RecordAction(u"compositionend");
     composition_text.clear();
   }
 
@@ -241,18 +232,16 @@ class TextInputClientForTesting : public DummyTextInputClient {
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     if (HasCompositionText()) {
-      TestResult::GetInstance()->RecordAction(
-          base::ASCIIToUTF16("compositionend"));
+      TestResult::GetInstance()->RecordAction(u"compositionend");
     }
-    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16("textinput:") +
-                                            text);
+    TestResult::GetInstance()->RecordAction(u"textinput:" + text);
     composition_text.clear();
   }
 
   void InsertChar(const ui::KeyEvent& event) override {
     std::stringstream ss;
     ss << event.GetCharacter();
-    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16("keypress:") +
+    TestResult::GetInstance()->RecordAction(u"keypress:" +
                                             base::ASCIIToUTF16(ss.str()));
   }
 
@@ -375,7 +364,7 @@ TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   key_new.set_character(L'a');
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
-  input_method_auralinux_->OnCommit(base::ASCIIToUTF16("a"));
+  input_method_auralinux_->OnCommit(u"a");
 
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("textinput:a");
@@ -447,7 +436,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   // IBus issues a standalone set_composition action.
   input_method_auralinux_->OnPreeditStart();
   CompositionText comp;
-  comp.text = base::ASCIIToUTF16("a");
+  comp.text = u"a";
   input_method_auralinux_->OnPreeditChanged(comp);
 
   test_result_->ExpectAction("keydown:229");
@@ -460,7 +449,7 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   input_method_auralinux_->DispatchKeyEvent(&key_up);
 
   input_method_auralinux_->OnPreeditEnd();
-  input_method_auralinux_->OnCommit(base::ASCIIToUTF16("A"));
+  input_method_auralinux_->OnCommit(u"A");
 
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
@@ -700,7 +689,7 @@ TEST_F(InputMethodAuraLinuxTest, MixedAsyncAndSyncTest) {
   KeyEvent key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
   CompositionText comp;
-  comp.text = base::ASCIIToUTF16("a");
+  comp.text = u"a";
   input_method_auralinux_->OnPreeditChanged(comp);
 
   test_result_->ExpectAction("keydown:229");
@@ -746,7 +735,7 @@ TEST_F(InputMethodAuraLinuxTest, MixedSyncAndAsyncTest) {
 
   key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
-  input_method_auralinux_->OnCommit(base::ASCIIToUTF16("b"));
+  input_method_auralinux_->OnCommit(u"b");
 
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
@@ -810,7 +799,7 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoSelectionTest) {
   input_method_auralinux_->SetFocusedTextInputClient(client.get());
   input_method_auralinux_->OnTextInputTypeChanged(client.get());
 
-  client->surrounding_text = base::ASCIIToUTF16("abcdef");
+  client->surrounding_text = u"abcdef";
   client->text_range = gfx::Range(0, 6);
   client->selection_range = gfx::Range(3, 3);
 
@@ -828,7 +817,7 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_SelectionTest) {
   input_method_auralinux_->SetFocusedTextInputClient(client.get());
   input_method_auralinux_->OnTextInputTypeChanged(client.get());
 
-  client->surrounding_text = base::ASCIIToUTF16("abcdef");
+  client->surrounding_text = u"abcdef";
   client->text_range = gfx::Range(0, 6);
   client->selection_range = gfx::Range(2, 5);
 
@@ -846,7 +835,7 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   input_method_auralinux_->SetFocusedTextInputClient(client.get());
   input_method_auralinux_->OnTextInputTypeChanged(client.get());
 
-  client->surrounding_text = base::ASCIIToUTF16("abcdefghij");
+  client->surrounding_text = u"abcdefghij";
   client->text_range = gfx::Range(5, 10);
   client->selection_range = gfx::Range(7, 9);
 

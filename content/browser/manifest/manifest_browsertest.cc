@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UseCredentialsSendCookies) {
 
   // The custom embedded test server will fill the name field with the cookie
   // content.
-  EXPECT_EQ(base::ASCIIToUTF16("foobar"), manifest().name);
+  EXPECT_EQ(u"foobar", manifest().name);
 }
 
 namespace {
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoUseCredentialsNoCookies) {
 
   // The custom embedded test server will fill set the name to 'no cookies' if
   // it did not find cookies.
-  EXPECT_EQ(base::ASCIIToUTF16("no cookies"), manifest().name);
+  EXPECT_EQ(u"no cookies", manifest().name);
 }
 
 // This tests that fetching a Manifest from a unique origin always fails,

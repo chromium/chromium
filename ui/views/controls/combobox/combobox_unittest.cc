@@ -62,7 +62,7 @@ class TestComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(int index) const override {
     if (IsItemSeparatorAt(index)) {
       NOTREACHED();
-      return ASCIIToUTF16("SEPARATOR");
+      return u"SEPARATOR";
     }
     return ASCIIToUTF16(index % 2 == 0 ? "PEANUT BUTTER" : "JELLY");
   }
@@ -527,11 +527,11 @@ TEST_F(ComboboxTest, GetTextForRowTest) {
 TEST_F(ComboboxTest, SelectValue) {
   InitCombobox(nullptr);
   ASSERT_EQ(model_->GetDefaultIndex(), combobox_->GetSelectedIndex());
-  EXPECT_TRUE(combobox_->SelectValue(ASCIIToUTF16("PEANUT BUTTER")));
+  EXPECT_TRUE(combobox_->SelectValue(u"PEANUT BUTTER"));
   EXPECT_EQ(0, combobox_->GetSelectedIndex());
-  EXPECT_TRUE(combobox_->SelectValue(ASCIIToUTF16("JELLY")));
+  EXPECT_TRUE(combobox_->SelectValue(u"JELLY"));
   EXPECT_EQ(1, combobox_->GetSelectedIndex());
-  EXPECT_FALSE(combobox_->SelectValue(ASCIIToUTF16("BANANAS")));
+  EXPECT_FALSE(combobox_->SelectValue(u"BANANAS"));
   EXPECT_EQ(1, combobox_->GetSelectedIndex());
 }
 
@@ -854,8 +854,8 @@ TEST_F(ComboboxTest, MenuModel) {
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu_model->GetTypeAt(1));
 #endif
 
-  EXPECT_EQ(ASCIIToUTF16("PEANUT BUTTER"), menu_model->GetLabelAt(0));
-  EXPECT_EQ(ASCIIToUTF16("JELLY"), menu_model->GetLabelAt(1));
+  EXPECT_EQ(u"PEANUT BUTTER", menu_model->GetLabelAt(0));
+  EXPECT_EQ(u"JELLY", menu_model->GetLabelAt(1));
 
   EXPECT_TRUE(menu_model->IsVisibleAt(0));
 }
@@ -863,7 +863,7 @@ TEST_F(ComboboxTest, MenuModel) {
 // Verifies SetTooltipTextAndAccessibleName will call NotifyAccessibilityEvent.
 TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   InitCombobox(nullptr);
-  std::u16string test_tooltip_text = ASCIIToUTF16("Test Tooltip Text");
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   combobox_->SetTooltipTextAndAccessibleName(test_tooltip_text);

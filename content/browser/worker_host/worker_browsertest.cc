@@ -123,8 +123,8 @@ class WorkerTest : public ContentBrowserTest,
   }
 
   void RunTest(Shell* window, const GURL& url, bool expect_failure = false) {
-    const std::u16string ok_title = base::ASCIIToUTF16("OK");
-    const std::u16string fail_title = base::ASCIIToUTF16("FAIL");
+    const std::u16string ok_title = u"OK";
+    const std::u16string fail_title = u"FAIL";
     TitleWatcher title_watcher(window->web_contents(), ok_title);
     title_watcher.AlsoWaitForTitle(fail_title);
     EXPECT_TRUE(NavigateToURL(window, url));
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, WebSocketSharedWorker) {
 
   // Run test.
   Shell* window = shell();
-  const std::u16string expected_title = base::ASCIIToUTF16("OK");
+  const std::u16string expected_title = u"OK";
   TitleWatcher title_watcher(window->web_contents(), expected_title);
   EXPECT_TRUE(NavigateToURL(window, url));
   std::u16string final_title = title_watcher.WaitAndGetTitle();

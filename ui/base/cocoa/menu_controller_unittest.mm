@@ -167,7 +167,7 @@ class OwningDelegate : public Delegate {
  public:
   OwningDelegate(bool* did_delete, BOOL* did_dealloc)
       : did_delete_(did_delete), model_(this) {
-    model_.AddItem(1, ASCIIToUTF16("foo"));
+    model_.AddItem(1, u"foo");
     controller_.reset([[WatchedLifetimeMenuController alloc]
                  initWithModel:&model_
                       delegate:nil
@@ -234,12 +234,12 @@ TEST_F(MenuControllerTest, EmptyMenu) {
 TEST_F(MenuControllerTest, BasicCreation) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
-  model.AddItem(2, ASCIIToUTF16("two"));
-  model.AddItem(3, ASCIIToUTF16("three"));
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
   model.AddSeparator(NORMAL_SEPARATOR);
-  model.AddItem(4, ASCIIToUTF16("four"));
-  model.AddItem(5, ASCIIToUTF16("five"));
+  model.AddItem(4, u"four");
+  model.AddItem(5, u"five");
 
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
                initWithModel:&model
@@ -251,7 +251,7 @@ TEST_F(MenuControllerTest, BasicCreation) {
   // element.
   NSMenuItem* itemTwo = [[menu menu] itemAtIndex:2];
   NSString* title = [itemTwo title];
-  EXPECT_EQ(ASCIIToUTF16("three"), base::SysNSStringToUTF16(title));
+  EXPECT_EQ(u"three", base::SysNSStringToUTF16(title));
   EXPECT_EQ(2, [itemTwo tag]);
 
   EXPECT_TRUE([[[menu menu] itemAtIndex:3] isSeparatorItem]);
@@ -260,13 +260,13 @@ TEST_F(MenuControllerTest, BasicCreation) {
 TEST_F(MenuControllerTest, Submenus) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   SimpleMenuModel submodel(&delegate);
-  submodel.AddItem(2, ASCIIToUTF16("sub-one"));
-  submodel.AddItem(3, ASCIIToUTF16("sub-two"));
-  submodel.AddItem(4, ASCIIToUTF16("sub-three"));
+  submodel.AddItem(2, u"sub-one");
+  submodel.AddItem(3, u"sub-two");
+  submodel.AddItem(4, u"sub-three");
   model.AddSubMenuWithStringId(5, kTestLabelResourceId, &submodel);
-  model.AddItem(6, ASCIIToUTF16("three"));
+  model.AddItem(6, u"three");
 
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
                initWithModel:&model
@@ -285,21 +285,21 @@ TEST_F(MenuControllerTest, Submenus) {
   // represented object and the proper tag.
   NSMenuItem* submenuItem = [submenu itemAtIndex:1];
   NSString* title = [submenuItem title];
-  EXPECT_EQ(ASCIIToUTF16("sub-two"), base::SysNSStringToUTF16(title));
+  EXPECT_EQ(u"sub-two", base::SysNSStringToUTF16(title));
   EXPECT_EQ(1, [submenuItem tag]);
 
   // Make sure the item after the submenu is correct and its represented
   // object is back to the top model.
   NSMenuItem* item = [[menu menu] itemAtIndex:2];
   title = [item title];
-  EXPECT_EQ(ASCIIToUTF16("three"), base::SysNSStringToUTF16(title));
+  EXPECT_EQ(u"three", base::SysNSStringToUTF16(title));
   EXPECT_EQ(2, [item tag]);
 }
 
 TEST_F(MenuControllerTest, EmptySubmenu) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   SimpleMenuModel submodel(&delegate);
   model.AddSubMenuWithStringId(2, kTestLabelResourceId, &submodel);
 
@@ -322,12 +322,12 @@ TEST_F(MenuControllerTest, EmptySubmenu) {
 TEST_F(MenuControllerTest, EmptySubmenuWhenAllChildItemsAreHidden) {
   Delegate delegate;
   TestSimpleMenuModelVisibility model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   TestSimpleMenuModelVisibility submodel(&delegate);
   // Hide the two child menu items.
-  submodel.AddItem(2, ASCIIToUTF16("sub-one"));
+  submodel.AddItem(2, u"sub-one");
   submodel.SetVisibility(2, false);
-  submodel.AddItem(3, ASCIIToUTF16("sub-two"));
+  submodel.AddItem(3, u"sub-two");
   submodel.SetVisibility(3, false);
   model.AddSubMenuWithStringId(4, kTestLabelResourceId, &submodel);
 
@@ -355,10 +355,10 @@ TEST_F(MenuControllerTest, HiddenSubmenu) {
   // Create the model.
   Delegate delegate;
   TestSimpleMenuModelVisibility model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   TestSimpleMenuModelVisibility submodel(&delegate);
-  submodel.AddItem(2, ASCIIToUTF16("sub-one"));
-  submodel.AddItem(3, ASCIIToUTF16("sub-two"));
+  submodel.AddItem(2, u"sub-one");
+  submodel.AddItem(3, u"sub-two");
   // Set the submenu to be hidden.
   model.AddSubMenuWithStringId(4, kTestLabelResourceId, &submodel);
 
@@ -403,12 +403,12 @@ TEST_F(MenuControllerTest, DisabledSubmenu) {
   // Create the model.
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   SimpleMenuModel disabled_submodel(&delegate);
-  disabled_submodel.AddItem(2, ASCIIToUTF16("disabled_submodel"));
+  disabled_submodel.AddItem(2, u"disabled_submodel");
   model.AddSubMenuWithStringId(3, kTestLabelResourceId, &disabled_submodel);
   SimpleMenuModel enabled_submodel(&delegate);
-  enabled_submodel.AddItem(4, ASCIIToUTF16("enabled_submodel"));
+  enabled_submodel.AddItem(4, u"enabled_submodel");
   model.AddSubMenuWithStringId(5, kTestLabelResourceId, &enabled_submodel);
 
   // Disable the first submenu entry.
@@ -450,9 +450,9 @@ TEST_F(MenuControllerTest, DisabledSubmenu) {
 TEST_F(MenuControllerTest, PopUpButton) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
-  model.AddItem(2, ASCIIToUTF16("two"));
-  model.AddItem(3, ASCIIToUTF16("three"));
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
 
   // Menu should have an extra item inserted at position 0 that has an empty
   // title.
@@ -472,7 +472,7 @@ TEST_F(MenuControllerTest, PopUpButton) {
 TEST_F(MenuControllerTest, Execute) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
+  model.AddItem(1, u"one");
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
                initWithModel:&model
                     delegate:nil
@@ -498,10 +498,10 @@ void Validate(MenuControllerCocoa* controller, NSMenu* menu) {
 TEST_F(MenuControllerTest, Validate) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
-  model.AddItem(2, ASCIIToUTF16("two"));
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
   SimpleMenuModel submodel(&delegate);
-  submodel.AddItem(2, ASCIIToUTF16("sub-one"));
+  submodel.AddItem(2, u"sub-one");
   model.AddSubMenuWithStringId(3, kTestLabelResourceId, &submodel);
 
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
@@ -521,8 +521,8 @@ TEST_F(MenuControllerTest, LabelFontList) {
           ui::ResourceBundle::FontDetails(std::string(), 0,
                                           gfx::Font::Weight::BOLD));
   FontListMenuModel model(&delegate, &bold, 0);
-  model.AddItem(1, ASCIIToUTF16("one"));
-  model.AddItem(2, ASCIIToUTF16("two"));
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
 
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
                initWithModel:&model
@@ -539,9 +539,9 @@ TEST_F(MenuControllerTest, LabelFontList) {
 TEST_F(MenuControllerTest, DefaultInitializer) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("one"));
-  model.AddItem(2, ASCIIToUTF16("two"));
-  model.AddItem(3, ASCIIToUTF16("three"));
+  model.AddItem(1, u"one");
+  model.AddItem(2, u"two");
+  model.AddItem(3, u"three");
 
   base::scoped_nsobject<MenuControllerCocoa> menu(
       [[MenuControllerCocoa alloc] init]);
@@ -553,7 +553,7 @@ TEST_F(MenuControllerTest, DefaultInitializer) {
   EXPECT_EQ(3, [[menu menu] numberOfItems]);
 
   // Check immutability.
-  model.AddItem(4, ASCIIToUTF16("four"));
+  model.AddItem(4, u"four");
   EXPECT_EQ(3, [[menu menu] numberOfItems]);
 }
 
@@ -563,10 +563,10 @@ TEST_F(MenuControllerTest, Dynamic) {
 
   // Create a menu containing a single item whose label is "initial" and who has
   // no icon.
-  std::u16string initial = ASCIIToUTF16("initial");
+  std::u16string initial = u"initial";
   delegate.SetDynamicLabel(initial);
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("foo"));
+  model.AddItem(1, u"foo");
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]
                initWithModel:&model
                     delegate:nil
@@ -581,7 +581,7 @@ TEST_F(MenuControllerTest, Dynamic) {
   EXPECT_EQ(nil, [item image]);
 
   // Now update the item to have a label of "second" and an icon.
-  std::u16string second = ASCIIToUTF16("second");
+  std::u16string second = u"second";
   delegate.SetDynamicLabel(second);
   const gfx::Image& icon = gfx::test::CreateImage(32, 32);
   delegate.SetDynamicIcon(icon);
@@ -605,9 +605,9 @@ TEST_F(MenuControllerTest, OpenClose) {
   // Create the model.
   Delegate delegate;
   SimpleMenuModel model(&delegate);
-  model.AddItem(1, ASCIIToUTF16("allays"));
-  model.AddItem(2, ASCIIToUTF16("i"));
-  model.AddItem(3, ASCIIToUTF16("bf"));
+  model.AddItem(1, u"allays");
+  model.AddItem(2, u"i");
+  model.AddItem(3, u"bf");
 
   // Create the controller.
   base::scoped_nsobject<MenuControllerCocoa> menu([[MenuControllerCocoa alloc]

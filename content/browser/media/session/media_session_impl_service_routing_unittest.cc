@@ -123,7 +123,7 @@ class MediaSessionImplServiceRoutingTest
     sub_frame_ = main_frame_->AppendChild("sub_frame");
 
     empty_metadata_.title = contents()->GetTitle();
-    empty_metadata_.source_title = base::ASCIIToUTF16("example.com");
+    empty_metadata_.source_title = u"example.com";
   }
 
   void TearDown() override {
@@ -329,9 +329,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyMetadataAndActionsChangeWhenControllable) {
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("title");
-  expected_metadata.artist = base::ASCIIToUTF16("artist");
-  expected_metadata.album = base::ASCIIToUTF16("album");
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   CreateServiceForFrame(main_frame_);
@@ -351,9 +351,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
     blink::mojom::SpecMediaMetadataPtr spec_metadata(
         blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = base::ASCIIToUTF16("title");
-    spec_metadata->artist = base::ASCIIToUTF16("artist");
-    spec_metadata->album = base::ASCIIToUTF16("album");
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
 
     services_[main_frame_]->SetMetadata(std::move(spec_metadata));
     services_[main_frame_]->EnableAction(MediaSessionAction::kSeekForward);
@@ -367,9 +367,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyMetadataAndActionsChangeWhenTurningControllable) {
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("title");
-  expected_metadata.artist = base::ASCIIToUTF16("artist");
-  expected_metadata.album = base::ASCIIToUTF16("album");
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   CreateServiceForFrame(main_frame_);
@@ -377,9 +377,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   {
     blink::mojom::SpecMediaMetadataPtr spec_metadata(
         blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = base::ASCIIToUTF16("title");
-    spec_metadata->artist = base::ASCIIToUTF16("artist");
-    spec_metadata->album = base::ASCIIToUTF16("album");
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
 
     services_[main_frame_]->SetMetadata(std::move(spec_metadata));
   }
@@ -409,9 +409,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyActionsAndMetadataChangeWhenTurningUncontrollable) {
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("title");
-  expected_metadata.artist = base::ASCIIToUTF16("artist");
-  expected_metadata.album = base::ASCIIToUTF16("album");
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   CreateServiceForFrame(main_frame_);
@@ -419,9 +419,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
   {
     blink::mojom::SpecMediaMetadataPtr spec_metadata(
         blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = base::ASCIIToUTF16("title");
-    spec_metadata->artist = base::ASCIIToUTF16("artist");
-    spec_metadata->album = base::ASCIIToUTF16("album");
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
 
     services_[main_frame_]->SetMetadata(std::move(spec_metadata));
   }
@@ -683,9 +683,9 @@ TEST_F(MediaSessionImplServiceRoutingTest, SeekToActionEnablesScrubTo) {
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverMetadataWhenControllable) {
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("title");
-  expected_metadata.artist = base::ASCIIToUTF16("artist");
-  expected_metadata.album = base::ASCIIToUTF16("album");
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   CreateServiceForFrame(main_frame_);
@@ -697,9 +697,9 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
     blink::mojom::SpecMediaMetadataPtr spec_metadata(
         blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = base::ASCIIToUTF16("title");
-    spec_metadata->artist = base::ASCIIToUTF16("artist");
-    spec_metadata->album = base::ASCIIToUTF16("album");
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
 
     services_[main_frame_]->SetMetadata(std::move(spec_metadata));
 
@@ -806,7 +806,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnNavigation) {
 
   media_session::MediaMetadata expected_metadata;
   expected_metadata.title = contents()->GetTitle();
-  expected_metadata.source_title = base::ASCIIToUTF16("google.com");
+  expected_metadata.source_title = u"google.com";
   observer.WaitForExpectedMetadata(expected_metadata);
 }
 
@@ -815,7 +815,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, NotifyObserverOnTitleChange) {
       *GetMediaSession());
 
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("new title");
+  expected_metadata.title = u"new title";
   expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
 
   contents()->UpdateTitle(contents()->GetMainFrame(), expected_metadata.title,

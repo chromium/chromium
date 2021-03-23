@@ -198,7 +198,7 @@ void MakeBitmapOpaque(SkPixmap* pixmap) {
 void ParseBookmarkClipboardFormat(const std::u16string& bookmark,
                                   std::u16string* title,
                                   std::string* url) {
-  const std::u16string kDelim = base::ASCIIToUTF16("\r\n");
+  const std::u16string kDelim = u"\r\n";
 
   const size_t title_end = bookmark.find_first_of(kDelim);
   if (title)

@@ -288,9 +288,9 @@ struct TypeConverter<std::vector<T>>
     if (source_value.empty() || source_value.front() != u'{' ||
         source_value.back() != u'}')
       return base::nullopt;
-    const auto values = base::SplitString(
-        source_value.substr(1, source_value.length() - 2),
-        base::ASCIIToUTF16(","), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    const auto values =
+        base::SplitString(source_value.substr(1, source_value.length() - 2),
+                          u",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     std::vector<T> output;
     for (const auto& value : values) {
       auto ret = TypeConverter<T>::FromString(value);

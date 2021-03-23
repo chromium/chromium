@@ -54,9 +54,9 @@ class RadioButtonTest : public ViewsTestBase {
 };
 
 TEST_F(RadioButtonTest, Basics) {
-  RadioButton* button1 = new RadioButton(base::ASCIIToUTF16("Blah"), kGroup);
+  RadioButton* button1 = new RadioButton(u"Blah", kGroup);
   button_container().AddChildView(button1);
-  RadioButton* button2 = new RadioButton(base::ASCIIToUTF16("Blah"), kGroup);
+  RadioButton* button2 = new RadioButton(u"Blah", kGroup);
   button_container().AddChildView(button2);
 
   button1->SetChecked(true);
@@ -69,9 +69,9 @@ TEST_F(RadioButtonTest, Basics) {
 }
 
 TEST_F(RadioButtonTest, Focus) {
-  RadioButton* button1 = new RadioButton(base::ASCIIToUTF16("Blah"), kGroup);
+  RadioButton* button1 = new RadioButton(u"Blah", kGroup);
   button_container().AddChildView(button1);
-  RadioButton* button2 = new RadioButton(base::ASCIIToUTF16("Blah"), kGroup);
+  RadioButton* button2 = new RadioButton(u"Blah", kGroup);
   button_container().AddChildView(button2);
 
   // Tabbing through only focuses the checked button.

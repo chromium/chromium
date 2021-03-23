@@ -46,12 +46,12 @@ void ProgressBarExample::CreateExampleView(View* container) {
   layout->AddView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&ProgressBarExample::ButtonPressed,
                           base::Unretained(this), -0.1),
-      base::ASCIIToUTF16("-")));
+      u"-"));
   progress_bar_ = layout->AddView(std::make_unique<ProgressBar>());
   layout->AddView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&ProgressBarExample::ButtonPressed,
                           base::Unretained(this), 0.1),
-      base::ASCIIToUTF16("+")));
+      u"+"));
 
   layout->StartRowWithPadding(0, 0, 0, 10);
   layout->AddView(

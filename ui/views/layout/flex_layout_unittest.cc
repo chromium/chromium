@@ -2745,8 +2745,7 @@ TEST_F(FlexLayoutTest, LabelPreferredHeightChangesWithWidth) {
                                        MaximumFlexSizeRule::kPreferred,
                                        /*use_height_for_width*/ true));
   // Use a long text string with lots of small words that will wrap.
-  label->SetText(
-      base::ASCIIToUTF16("The quick brown fox jumps over the lazy dogs."));
+  label->SetText(u"The quick brown fox jumps over the lazy dogs.");
 
   // Verify that when there is enough space, the label takes up a single line.
   host_->SizeToPreferredSize();

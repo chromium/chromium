@@ -131,24 +131,24 @@ TEST_F(InputMethodUtilTest, GetInputMethodLongNameTest) {
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:jp::jpn", "", "jp", {"ja"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("Japanese"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"Japanese", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:us:dvorak:eng", "", "us(dvorak)", {"en-US"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("US Dvorak"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"US Dvorak", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:gb:dvorak:eng", "", "gb(dvorak)", {"en-US"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("UK Dvorak"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"UK Dvorak", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("invalid-id", "", "us", {"xx"}, "", true);
     // You can safely ignore the "Resouce ID is not found for: invalid-id"
     // error.
-    EXPECT_EQ(ASCIIToUTF16("invalid-id"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"invalid-id", util_.GetInputMethodLongName(desc));
   }
 }
 

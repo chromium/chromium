@@ -89,7 +89,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
         host->render_frame_metadata_provider());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    std::u16string ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -108,7 +108,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
   }
 
   bool URLLoaded() {
-    std::u16string ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     const std::u16string title = watcher.WaitAndGetTitle();
     return title == ready_title;

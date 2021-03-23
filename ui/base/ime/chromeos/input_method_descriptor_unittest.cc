@@ -34,39 +34,39 @@ TEST(InputMethodDescriptorTest, GetIndicatorTest) {
     InputMethodDescriptor desc =
         CreateDesc("invalid-id", "us", {"xx"}, "", true);
     // Upper-case string of the unknown language code, "xx", should be returned.
-    EXPECT_EQ(ASCIIToUTF16("XX"), desc.GetIndicator());
+    EXPECT_EQ(u"XX", desc.GetIndicator());
   }
 
   // Test special cases.
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:us:dvorak:eng", "us", {"en-US"}, "DV", true);
-    EXPECT_EQ(ASCIIToUTF16("DV"), desc.GetIndicator());
+    EXPECT_EQ(u"DV", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:us:colemak:eng", "us", {"en-US"}, "CO", true);
-    EXPECT_EQ(ASCIIToUTF16("CO"), desc.GetIndicator());
+    EXPECT_EQ(u"CO", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:us:altgr-intl:eng", "us", {"en-US"}, "EXTD", true);
-    EXPECT_EQ(ASCIIToUTF16("EXTD"), desc.GetIndicator());
+    EXPECT_EQ(u"EXTD", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:us:intl:eng", "us", {"en-US"}, "INTL", true);
-    EXPECT_EQ(ASCIIToUTF16("INTL"), desc.GetIndicator());
+    EXPECT_EQ(u"INTL", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:de:neo:ger", "de(neo)", {"de"}, "NEO", true);
-    EXPECT_EQ(ASCIIToUTF16("NEO"), desc.GetIndicator());
+    EXPECT_EQ(u"NEO", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("xkb:es:cat:cat", "es(cat)", {"ca"}, "CAT", true);
-    EXPECT_EQ(ASCIIToUTF16("CAT"), desc.GetIndicator());
+    EXPECT_EQ(u"CAT", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =

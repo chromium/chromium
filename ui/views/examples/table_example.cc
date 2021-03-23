@@ -93,14 +93,10 @@ void TableExample::CreateExampleView(View* container) {
     checkbox->SetChecked(true);
     return checkbox;
   };
-  column1_visible_checkbox_ =
-      make_checkbox(ASCIIToUTF16("Fruit column visible"), 0);
-  column2_visible_checkbox_ =
-      make_checkbox(ASCIIToUTF16("Color column visible"), 1);
-  column3_visible_checkbox_ =
-      make_checkbox(ASCIIToUTF16("Origin column visible"), 2);
-  column4_visible_checkbox_ =
-      make_checkbox(ASCIIToUTF16("Price column visible"), 3);
+  column1_visible_checkbox_ = make_checkbox(u"Fruit column visible", 0);
+  column2_visible_checkbox_ = make_checkbox(u"Color column visible", 1);
+  column3_visible_checkbox_ = make_checkbox(u"Origin column visible", 2);
+  column4_visible_checkbox_ = make_checkbox(u"Price column visible", 3);
 
   for (View* child : button_panel->children())
     child->SetProperty(views::kFlexBehaviorKey, full_flex);

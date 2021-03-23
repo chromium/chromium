@@ -52,11 +52,11 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->SetContentsView(std::make_unique<View>());
 
-    label1_ = new Label(base::ASCIIToUTF16("Label 1"));
+    label1_ = new Label(u"Label 1");
     label1_->SetBounds(1, 1, 111, 111);
     widget_->GetContentsView()->AddChildView(label1_);
 
-    label2_ = new Label(base::ASCIIToUTF16("Label 2"));
+    label2_ = new Label(u"Label 2");
     label2_->SetBounds(2, 2, 222, 222);
     widget_->GetContentsView()->AddChildView(label2_);
 

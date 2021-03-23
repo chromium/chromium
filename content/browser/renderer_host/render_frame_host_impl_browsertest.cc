@@ -1490,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // NavigationHandleGrabber::SendingNavigationCommitted(). The navigation
   // should get aborted because of the document.open() in the navigating RFH.
   NavigationHandleGrabber observer(web_contents());
-  const std::u16string title = base::ASCIIToUTF16("done");
+  const std::u16string title = u"done";
   EXPECT_TRUE(
       ExecuteScript(web_contents(), "window.location.href='/title2.html'"));
   observer.WaitForTitle2();
@@ -1579,8 +1579,8 @@ IN_PROC_BROWSER_TEST_F(
   xhr_response.Done();
 
   // 4) Wait for the XHR request to complete.
-  const std::u16string xhr_aborted_title = base::ASCIIToUTF16("xhr aborted");
-  const std::u16string xhr_loaded_title = base::ASCIIToUTF16("xhr loaded");
+  const std::u16string xhr_aborted_title = u"xhr aborted";
+  const std::u16string xhr_loaded_title = u"xhr loaded";
   TitleWatcher watcher(shell()->web_contents(), xhr_loaded_title);
   watcher.AlsoWaitForTitle(xhr_aborted_title);
 
@@ -1633,8 +1633,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   // 3) The end of the response is issued. The renderer must be able to receive
   //    it.
   {
-    const std::u16string document_loaded_title =
-        base::ASCIIToUTF16("document loaded");
+    const std::u16string document_loaded_title = u"document loaded";
     TitleWatcher watcher(shell()->web_contents(), document_loaded_title);
     main_document_response.Send(
         "<script>"
@@ -2660,8 +2659,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("setTimeout(function(){alert('hello');}, 10);"),
-      base::NullCallback());
+      u"setTimeout(function(){alert('hello');}, 10);", base::NullCallback());
   dialog_manager.Wait();
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
   EXPECT_EQ(0, dialog_manager.num_beforeunload_fired_seen());

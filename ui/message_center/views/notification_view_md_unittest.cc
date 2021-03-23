@@ -270,7 +270,7 @@ const SkBitmap NotificationViewMDTest::CreateBitmap(int width,
 }
 
 std::vector<ButtonInfo> NotificationViewMDTest::CreateButtons(int number) {
-  ButtonInfo info(base::ASCIIToUTF16("Test button."));
+  ButtonInfo info(u"Test button.");
   return std::vector<ButtonInfo>(number, info);
 }
 
@@ -662,7 +662,7 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
   generator.PressKey(ui::VKEY_RETURN, ui::EF_NONE);
   generator.ReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
   EXPECT_EQ(1, delegate_->clicked_button_index());
-  EXPECT_EQ(base::ASCIIToUTF16("test"), delegate_->submitted_reply_string());
+  EXPECT_EQ(u"test", delegate_->submitted_reply_string());
 
   // Reset values.
   delegate_->Reset();
@@ -695,7 +695,7 @@ TEST_F(NotificationViewMDTest, TestInlineReply) {
   generator.MoveMouseTo(cursor_location);
   generator.ClickLeftButton();
   EXPECT_EQ(1, delegate_->clicked_button_index());
-  EXPECT_EQ(base::ASCIIToUTF16("test"), delegate_->submitted_reply_string());
+  EXPECT_EQ(u"test", delegate_->submitted_reply_string());
 }
 
 TEST_F(NotificationViewMDTest, TestInlineReplyRemovedByUpdate) {
@@ -1405,7 +1405,7 @@ TEST_F(NotificationViewMDTest, TestDeleteOnDisableNotification) {
 TEST_F(NotificationViewMDTest, TestLongTitleAndMessage) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
-  notification->set_title(base::ASCIIToUTF16("title"));
+  notification->set_title(u"title");
   notification->set_message(base::ASCIIToUTF16(
       "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore "
       "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "

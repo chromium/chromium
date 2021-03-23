@@ -130,8 +130,8 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeData* os_exchange_data) {
   std::u16string data_as_string16 = BytesTo<std::u16string>(data);
 
   const auto lines =
-      base::SplitString(data_as_string16, base::ASCIIToUTF16("\r\n"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(data_as_string16, u"\r\n", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
   if (lines.size() != 2U) {
     LOG(WARNING) << "Invalid data passed as text/x-moz-url; it must contain "
                  << "exactly 2 lines but has " << lines.size() << " instead.";

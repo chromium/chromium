@@ -6401,12 +6401,9 @@ void WebContentsImpl::ShowContextMenu(
 namespace {
 // Normalizes the line endings: \r\n -> \n, lone \r -> \n.
 std::u16string NormalizeLineBreaks(const std::u16string& source) {
-  static const base::NoDestructor<std::u16string> kReturnNewline(
-      base::ASCIIToUTF16("\r\n"));
-  static const base::NoDestructor<std::u16string> kReturn(
-      base::ASCIIToUTF16("\r"));
-  static const base::NoDestructor<std::u16string> kNewline(
-      base::ASCIIToUTF16("\n"));
+  static const base::NoDestructor<std::u16string> kReturnNewline(u"\r\n");
+  static const base::NoDestructor<std::u16string> kReturn(u"\r");
+  static const base::NoDestructor<std::u16string> kNewline(u"\n");
 
   std::vector<base::StringPiece16> pieces;
 

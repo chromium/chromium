@@ -2396,7 +2396,7 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
           url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
           std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
-  entry->SetTitle(base::ASCIIToUTF16("Title"));
+  entry->SetTitle(u"Title");
   const base::Time timestamp = base::Time::Now();
   entry->SetTimestamp(timestamp);
   entries.push_back(std::move(entry));
@@ -2464,7 +2464,7 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
           url, Referrer(), base::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
           std::string(), browser_context(),
           nullptr /* blob_url_loader_factory */);
-  new_entry->SetTitle(base::ASCIIToUTF16("Title"));
+  new_entry->SetTitle(u"Title");
   entries.push_back(std::move(new_entry));
   std::unique_ptr<WebContents> our_contents =
       WebContents::Create(WebContents::CreateParams(browser_context()));
@@ -3082,7 +3082,7 @@ TEST_F(NavigationControllerTest, CloneAndGoBack) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1");
   const GURL url2("http://foo2");
-  const std::u16string title(base::ASCIIToUTF16("Title"));
+  const std::u16string title(u"Title");
 
   NavigateAndCommit(url1);
   controller.GetVisibleEntry()->SetTitle(title);
@@ -3107,7 +3107,7 @@ TEST_F(NavigationControllerTest, CloneAndReload) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1");
   const GURL url2("http://foo2");
-  const std::u16string title(base::ASCIIToUTF16("Title"));
+  const std::u16string title(u"Title");
 
   NavigateAndCommit(url1);
   controller.GetVisibleEntry()->SetTitle(title);
@@ -4103,7 +4103,7 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
                                                      main_test_rfh());
 
   // Set title and favicon.
-  std::u16string title(base::ASCIIToUTF16("Title"));
+  std::u16string title(u"Title");
   FaviconStatus favicon;
   favicon.valid = true;
   favicon.url = GURL("http://foo/favicon.ico");

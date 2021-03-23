@@ -1427,7 +1427,7 @@ TEST_F(WidgetTest, KeyboardInputEvent) {
   View* container = toplevel->client_view();
 
   Textfield* textfield = new Textfield();
-  textfield->SetText(base::ASCIIToUTF16("some text"));
+  textfield->SetText(u"some text");
   container->AddChildView(textfield);
   toplevel->Show();
   textfield->RequestFocus();

@@ -44,35 +44,29 @@ void FlexLayoutExample::ContentsChanged(Textfield* sender,
 void FlexLayoutExample::CreateAdditionalControls() {
   constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
   orientation_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Orientation"), kOrientationValues,
-      base::size(kOrientationValues),
+      u"Orientation", kOrientationValues, base::size(kOrientationValues),
       base::BindRepeating(&FlexLayoutExample::OrientationChanged,
                           base::Unretained(this)));
 
   constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
   main_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Main axis"), kMainAxisValues,
-      base::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues, base::size(kMainAxisValues),
       base::BindRepeating(&FlexLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
   constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
                                                "End"};
   cross_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Cross axis"), kCrossAxisValues,
-      base::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues, base::size(kCrossAxisValues),
       base::BindRepeating(&FlexLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  CreateMarginsTextFields(base::ASCIIToUTF16("Interior margin"),
-                          &interior_margin_);
+  CreateMarginsTextFields(u"Interior margin", &interior_margin_);
 
-  CreateMarginsTextFields(base::ASCIIToUTF16("Default margins"),
-                          &default_child_margins_);
+  CreateMarginsTextFields(u"Default margins", &default_child_margins_);
 
-  collapse_margins_ =
-      CreateAndAddCheckbox(base::ASCIIToUTF16("Collapse margins"),
-                           base::BindRepeating(
+  collapse_margins_ = CreateAndAddCheckbox(
+      u"Collapse margins", base::BindRepeating(
                                [](FlexLayoutExample* example) {
                                  example->layout_->SetCollapseMargins(
                                      example->collapse_margins_->GetChecked());
@@ -81,7 +75,7 @@ void FlexLayoutExample::CreateAdditionalControls() {
                                base::Unretained(this)));
 
   ignore_default_main_axis_margins_ = CreateAndAddCheckbox(
-      base::ASCIIToUTF16("Ignore main axis margins"),
+      u"Ignore main axis margins",
       base::BindRepeating(
           [](FlexLayoutExample* example) {
             example->layout_->SetIgnoreDefaultMainAxisMargins(

@@ -779,7 +779,7 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
     if (hr == S_OK && temp_bstr.Get() && wcslen(temp_bstr.Get())) {
       // Append offset:<number>.
       std::u16string offset_str =
-          base::ASCIIToUTF16("offset:") + base::NumberToString16(start_offset);
+          u"offset:" + base::NumberToString16(start_offset);
       text_attributes.Append(offset_str);
       // Append name:value pairs.
       std::vector<std::wstring> name_val_pairs =

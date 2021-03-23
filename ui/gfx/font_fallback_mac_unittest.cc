@@ -30,7 +30,7 @@ TEST(FontFallbackMacTest, GetFallbackFonts) {
 // about font properties and availability on specific macOS versions.
 TEST(FontFallbackMacTest, GetFallbackFont) {
   Font arial("Helvetica", 12);
-  const std::u16string ascii = base::ASCIIToUTF16("abc");
+  const std::u16string ascii = u"abc";
   const std::u16string hebrew = u"\x5d0\x5d1\x5d2";
   const std::u16string emoji = u"😋";
 

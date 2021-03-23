@@ -218,11 +218,11 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
   gfx::Insets insets1(8, 8, 8, 8), insets2 = insets1;
 
   std::map<std::string, std::u16string> expected_kv = {
-      {"kIntKey", base::ASCIIToUTF16("-1")},
-      {"kOwnedInsetsKey1", base::ASCIIToUTF16("(not assigned)")},
-      {"kOwnedInsetsKey2", base::ASCIIToUTF16("(not assigned)")},
-      {"kInsetsKey1", base::ASCIIToUTF16("(not assigned)")},
-      {"kInsetsKey2", base::ASCIIToUTF16("(not assigned)")}};
+      {"kIntKey", u"-1"},
+      {"kOwnedInsetsKey1", u"(not assigned)"},
+      {"kOwnedInsetsKey2", u"(not assigned)"},
+      {"kInsetsKey1", u"(not assigned)"},
+      {"kInsetsKey2", u"(not assigned)"}};
 
   auto verify = [&]() {
     views::metadata::ClassMetaData* metadata = view.GetClassMetaData();
@@ -244,11 +244,11 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
   view.SetProperty(kInsetsKey1, &insets1);
   view.SetProperty(kInsetsKey2, &insets2);
 
-  expected_kv = {{"kIntKey", base::ASCIIToUTF16("1")},
-                 {"kOwnedInsetsKey1", base::ASCIIToUTF16("8,8,8,8")},
-                 {"kOwnedInsetsKey2", base::ASCIIToUTF16("(assigned)")},
-                 {"kInsetsKey1", base::ASCIIToUTF16("8,8,8,8")},
-                 {"kInsetsKey2", base::ASCIIToUTF16("(assigned)")}};
+  expected_kv = {{"kIntKey", u"1"},
+                 {"kOwnedInsetsKey1", u"8,8,8,8"},
+                 {"kOwnedInsetsKey2", u"(assigned)"},
+                 {"kInsetsKey1", u"8,8,8,8"},
+                 {"kInsetsKey2", u"(assigned)"}};
 
   verify();
 }

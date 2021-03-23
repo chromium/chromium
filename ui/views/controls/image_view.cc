@@ -270,11 +270,10 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
   return scaled_image_;
 }
 
-DEFINE_ENUM_CONVERTERS(
-    ImageView::Alignment,
-    {ImageView::Alignment::kLeading, base::ASCIIToUTF16("kLeading")},
-    {ImageView::Alignment::kCenter, base::ASCIIToUTF16("kCenter")},
-    {ImageView::Alignment::kTrailing, base::ASCIIToUTF16("kTrailing")})
+DEFINE_ENUM_CONVERTERS(ImageView::Alignment,
+                       {ImageView::Alignment::kLeading, u"kLeading"},
+                       {ImageView::Alignment::kCenter, u"kCenter"},
+                       {ImageView::Alignment::kTrailing, u"kTrailing"})
 
 BEGIN_METADATA(ImageView, View)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)

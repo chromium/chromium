@@ -906,7 +906,7 @@ TEST_F(DesktopWidgetTestInteractive,
 
   Textfield* textfield = new Textfield;
   textfield->SetBounds(0, 0, 200, 20);
-  textfield->SetText(base::ASCIIToUTF16("some text"));
+  textfield->SetText(u"some text");
   widget->GetRootView()->AddChildView(textfield);
 
   widget->Show();

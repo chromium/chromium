@@ -60,7 +60,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
 
   void RegisterFakePlugin() {
     WebPluginInfo fake_info;
-    fake_info.name = base::ASCIIToUTF16("fake_plugin");
+    fake_info.name = u"fake_plugin";
     fake_info.path = plugin_path_;
     fake_info.type = WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
 

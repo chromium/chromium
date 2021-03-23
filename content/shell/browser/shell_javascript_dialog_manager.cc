@@ -47,7 +47,7 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
 
   std::u16string new_message_text =
       url_formatter::FormatUrl(render_frame_host->GetLastCommittedURL()) +
-      base::ASCIIToUTF16("\n\n") + message_text;
+      u"\n\n" + message_text;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
   dialog_.reset(new ShellJavaScriptDialog(this, parent_window, dialog_type,
@@ -84,8 +84,7 @@ void ShellJavaScriptDialogManager::RunBeforeUnloadDialog(
     return;
   }
 
-  std::u16string message_text =
-      base::ASCIIToUTF16("Is it OK to leave/reload this page?");
+  std::u16string message_text = u"Is it OK to leave/reload this page?";
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 

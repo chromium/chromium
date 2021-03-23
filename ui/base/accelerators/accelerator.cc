@@ -271,7 +271,7 @@ std::u16string Accelerator::GetShortcutText() const {
   if (adjust_shortcut_for_rtl) {
     int key_length = static_cast<int>(shortcut_rtl.length());
     DCHECK_GT(key_length, 0);
-    shortcut_rtl.append(base::ASCIIToUTF16("+"));
+    shortcut_rtl.append(u"+");
 
     // Subtracting the size of the shortcut key and 1 for the '+' sign.
     shortcut_rtl.append(shortcut, 0, shortcut.length() - key_length - 1);

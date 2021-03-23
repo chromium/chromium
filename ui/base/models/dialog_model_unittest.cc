@@ -92,7 +92,7 @@ class DialogModelDialogButtonTest : public testing::Test {
         &callback_called);
 
     // Label to verify the second parameter.
-    std::u16string label = base::ASCIIToUTF16("my cool button");
+    std::u16string label = u"my cool button";
 
     // The presence of an accelerator in |params| will be used to verify that
     // |params| are forwarded correctly to the DialogModelButton constructor.

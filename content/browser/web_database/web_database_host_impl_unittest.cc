@@ -29,8 +29,7 @@ std::u16string ConstructVfsFileName(const url::Origin& origin,
                                     const std::u16string& name,
                                     const std::u16string& suffix) {
   std::string identifier = storage::GetIdentifierFromOrigin(origin);
-  return base::UTF8ToUTF16(identifier) + base::ASCIIToUTF16("/") + name +
-         base::ASCIIToUTF16("#") + suffix;
+  return base::UTF8ToUTF16(identifier) + u"/" + name + u"#" + suffix;
 }
 
 }  // namespace
@@ -120,8 +119,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   const url::Origin correct_origin = url::Origin::Create(correct_url);
   const url::Origin incorrect_origin =
       url::Origin::Create(GURL("http://incorrect.net"));
-  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
-  const std::u16string suffix(base::ASCIIToUTF16("suffix"));
+  const std::u16string db_name(u"db_name");
+  const std::u16string suffix(u"suffix");
   const std::u16string bad_vfs_file_name =
       ConstructVfsFileName(incorrect_origin, db_name, suffix);
 
@@ -159,10 +158,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
     host()->GetSpaceAvailable(incorrect_origin, base::DoNothing());
   });
 
-  CheckUnauthorizedOrigin([&]() {
-    host()->Opened(incorrect_origin, db_name,
-                   base::ASCIIToUTF16("description"));
-  });
+  CheckUnauthorizedOrigin(
+      [&]() { host()->Opened(incorrect_origin, db_name, u"description"); });
 
   CheckUnauthorizedOrigin(
       [&]() { host()->Modified(incorrect_origin, db_name); });
@@ -176,14 +173,13 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
 
 TEST_F(WebDatabaseHostImplTest, BadMessagesInvalid) {
   const url::Origin opaque_origin;
-  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
+  const std::u16string db_name(u"db_name");
 
   CheckInvalidOrigin(
       [&]() { host()->GetSpaceAvailable(opaque_origin, base::DoNothing()); });
 
-  CheckInvalidOrigin([&]() {
-    host()->Opened(opaque_origin, db_name, base::ASCIIToUTF16("description"));
-  });
+  CheckInvalidOrigin(
+      [&]() { host()->Opened(opaque_origin, db_name, u"description"); });
 
   CheckInvalidOrigin([&]() { host()->Modified(opaque_origin, db_name); });
 
@@ -199,8 +195,8 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
   const url::Origin correct_origin = url::Origin::Create(correct_url);
   const url::Origin incorrect_origin =
       url::Origin::Create(GURL("http://incorrect.net"));
-  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
-  const std::u16string suffix(base::ASCIIToUTF16("suffix"));
+  const std::u16string db_name(u"db_name");
+  const std::u16string suffix(u"suffix");
   const std::u16string bad_vfs_file_name =
       ConstructVfsFileName(incorrect_origin, db_name, suffix);
 

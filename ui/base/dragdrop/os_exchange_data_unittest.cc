@@ -34,7 +34,7 @@ class OSExchangeDataTest : public PlatformTest {
 
 TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
   OSExchangeData data;
-  std::u16string input = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string input = u"I can has cheezburger?";
   EXPECT_FALSE(data.HasString());
   data.SetString(input);
   EXPECT_TRUE(data.HasString());
@@ -58,7 +58,7 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  std::u16string url_title = base::ASCIIToUTF16("www.google.com");
+  std::u16string url_title = u"www.google.com";
   EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
   data.SetURL(url, url_title);
   EXPECT_TRUE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
@@ -85,11 +85,11 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
 // Test that setting the URL does not overwrite a previously set custom string.
 TEST_F(OSExchangeDataTest, URLAndString) {
   OSExchangeData data;
-  std::u16string string = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string string = u"I can has cheezburger?";
   data.SetString(string);
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  std::u16string url_title = base::ASCIIToUTF16("www.google.com");
+  std::u16string url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
   std::u16string output_string;

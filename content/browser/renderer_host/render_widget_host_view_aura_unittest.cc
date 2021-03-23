@@ -1275,7 +1275,7 @@ TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
-  composition_text.text = base::ASCIIToUTF16("|a|b");
+  composition_text.text = u"|a|b";
 
   // Focused segment
   composition_text.ime_text_spans.push_back(
@@ -1319,7 +1319,7 @@ TEST_F(RenderWidgetHostViewAuraTest, FocusedNodeChanged) {
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
-  composition_text.text = base::ASCIIToUTF16("hello");
+  composition_text.text = u"hello";
   view_->SetCompositionText(composition_text);
   EXPECT_TRUE(view_->has_composition_text_);
 
@@ -1335,7 +1335,7 @@ TEST_F(RenderWidgetHostViewAuraTest, FinishCompositionByMouse) {
   ActivateViewForTextInputManager(view_, ui::TEXT_INPUT_TYPE_TEXT);
 
   ui::CompositionText composition_text;
-  composition_text.text = base::ASCIIToUTF16("|a|b");
+  composition_text.text = u"|a|b";
 
   // Focused segment
   composition_text.ime_text_spans.push_back(
@@ -5367,7 +5367,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   EXPECT_TRUE(view_->UsesNativeWindowFrame());
 
   // Simulate a tooltip.
-  std::u16string tooltip_text(base::ASCIIToUTF16("The tooltip!"));
+  std::u16string tooltip_text(u"The tooltip!");
   view_->SetTooltipText(tooltip_text);
   EXPECT_FALSE(widget_host_->is_hidden());
   EXPECT_EQ(tooltip_text, view_->tooltip_);
@@ -5911,7 +5911,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   void SetHasCompositionTextToTrue() {
     ui::CompositionText composition_text;
-    composition_text.text = base::ASCIIToUTF16("text");
+    composition_text.text = u"text";
     tab_view()->SetCompositionText(composition_text);
     EXPECT_TRUE(has_composition_text());
   }
@@ -6097,8 +6097,8 @@ TEST_F(InputMethodResultAuraTest, CommitTextBeforeCursor) {
     MockWidgetInputHandler::DispatchedIMEMessage* ime_message =
         events[0]->ToIME();
     EXPECT_TRUE(ime_message);
-    EXPECT_TRUE(ime_message->Matches(base::ASCIIToUTF16("hello"), {},
-                                     gfx::Range::InvalidRange(), -5, -5));
+    EXPECT_TRUE(
+        ime_message->Matches(u"hello", {}, gfx::Range::InvalidRange(), -5, -5));
   }
 }
 
@@ -6222,7 +6222,7 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
 
 // This test is for selected text.
 TEST_F(InputMethodStateAuraTest, GetSelectedText) {
-  std::u16string text = base::ASCIIToUTF16("some text of length 22");
+  std::u16string text = u"some text of length 22";
   size_t offset = 0U;
   gfx::Range selection_range(20, 21);
 
@@ -6243,7 +6243,7 @@ TEST_F(InputMethodStateAuraTest, GetSelectedText) {
 
 // This test is for text range.
 TEST_F(InputMethodStateAuraTest, GetTextRange) {
-  const std::u16string text = base::ASCIIToUTF16("some text of length 22");
+  const std::u16string text = u"some text of length 22";
 
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6305,7 +6305,7 @@ TEST_F(InputMethodStateAuraTest, GetEditableSelectionRange) {
 }
 
 TEST_F(InputMethodStateAuraTest, GetTextFromRange) {
-  const std::u16string text = base::ASCIIToUTF16("some text of length 22");
+  const std::u16string text = u"some text of length 22";
 
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6537,7 +6537,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   ui::mojom::TextInputState state;
   state.type = ui::TEXT_INPUT_TYPE_TEXT;
   state.mode = ui::TEXT_INPUT_MODE_NONE;
-  state.value = base::ASCIIToUTF16("a");
+  state.value = u"a";
   state.selection = gfx::Range(1, 1);
 
   GetTextInputManager(parent_view_)->UpdateTextInputState(parent_view_, state);

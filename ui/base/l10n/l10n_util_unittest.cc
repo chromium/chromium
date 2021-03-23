@@ -451,25 +451,25 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   EXPECT_EQ(l10n_util::GetDisplayNameForLocale("fil", "en", false), result);
 
   result = l10n_util::GetDisplayNameForLocale("pt-BR", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Portuguese (Brazil)"), result);
+  EXPECT_EQ(u"Portuguese (Brazil)", result);
 
   result = l10n_util::GetDisplayNameForLocale("es-419", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Spanish (Latin America)"), result);
+  EXPECT_EQ(u"Spanish (Latin America)", result);
 
   result = l10n_util::GetDisplayNameForLocale("mo", "en", false);
   EXPECT_EQ(l10n_util::GetDisplayNameForLocale("ro-MD", "en", false), result);
 
   result = l10n_util::GetDisplayNameForLocale("-BR", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Brazil"), result);
+  EXPECT_EQ(u"Brazil", result);
 
   result = l10n_util::GetDisplayNameForLocale("xyz-xyz", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("xyz (XYZ)"), result);
+  EXPECT_EQ(u"xyz (XYZ)", result);
 
   // Make sure that en-GB locale has the corect display names.
   result = l10n_util::GetDisplayNameForLocale("en", "en-GB", false);
-  EXPECT_EQ(ASCIIToUTF16("English"), result);
+  EXPECT_EQ(u"English", result);
   result = l10n_util::GetDisplayNameForLocale("es-419", "en-GB", false);
-  EXPECT_EQ(ASCIIToUTF16("Spanish (Latin America)"), result);
+  EXPECT_EQ(u"Spanish (Latin America)", result);
 
   // Check for directional markers when using RTL languages to ensure that
   // direction neutral characters such as parentheses are properly formatted.
@@ -502,13 +502,13 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
 
 TEST_F(L10nUtilTest, GetDisplayNameForCountry) {
   std::u16string result = l10n_util::GetDisplayNameForCountry("BR", "en");
-  EXPECT_EQ(ASCIIToUTF16("Brazil"), result);
+  EXPECT_EQ(u"Brazil", result);
 
   result = l10n_util::GetDisplayNameForCountry("419", "en");
-  EXPECT_EQ(ASCIIToUTF16("Latin America"), result);
+  EXPECT_EQ(u"Latin America", result);
 
   result = l10n_util::GetDisplayNameForCountry("xyz", "en");
-  EXPECT_EQ(ASCIIToUTF16("XYZ"), result);
+  EXPECT_EQ(u"XYZ", result);
 }
 
 TEST_F(L10nUtilTest, GetParentLocales) {

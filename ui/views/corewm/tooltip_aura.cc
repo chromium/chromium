@@ -100,8 +100,7 @@ class TooltipView : public views::View {
     // Replace tabs with whitespace to avoid placeholder character rendering
     // where previously it did not. crbug.com/993100
     std::u16string newText(text);
-    base::ReplaceChars(newText, base::ASCIIToUTF16("\t"),
-                       base::ASCIIToUTF16("        "), &newText);
+    base::ReplaceChars(newText, u"\t", u"        ", &newText);
     render_text_->SetText(newText);
     SchedulePaint();
   }

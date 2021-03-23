@@ -1175,7 +1175,7 @@ TEST_F(BubbleFrameViewTest, LayoutWithIcon) {
   Widget* widget = BubbleDialogDelegateView::CreateBubble(&delegate);
   widget->Show();
 
-  delegate.ChangeTitle(base::ASCIIToUTF16("test title"));
+  delegate.ChangeTitle(u"test title");
   BubbleFrameView* frame = delegate.GetBubbleFrameView();
   View* icon = frame->title_icon_;
   View* title = frame->title();
@@ -1206,7 +1206,7 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   // Before changing the title, get the base width of the bubble when there's no
   // title or content in it.
   const int empty_bubble_width = bubble->GetClientAreaBoundsInScreen().width();
-  std::u16string title = base::ASCIIToUTF16("This is a title string");
+  std::u16string title = u"This is a title string";
   delegate.ChangeTitle(title);
   Label* title_label =
       static_cast<Label*>(delegate.GetBubbleFrameView()->title());

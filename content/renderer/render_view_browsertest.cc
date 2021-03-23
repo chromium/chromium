@@ -578,12 +578,9 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
   }
 
   void TestEmulatedSizeDprDsf(int width, int height, float dpr, float dsf) {
-    static std::u16string get_width =
-        base::ASCIIToUTF16("Number(window.innerWidth)");
-    static std::u16string get_height =
-        base::ASCIIToUTF16("Number(window.innerHeight)");
-    static std::u16string get_dpr =
-        base::ASCIIToUTF16("Number(window.devicePixelRatio * 10)");
+    static std::u16string get_width = u"Number(window.innerWidth)";
+    static std::u16string get_height = u"Number(window.innerHeight)";
+    static std::u16string get_dpr = u"Number(window.devicePixelRatio * 10)";
 
     int emulated_width, emulated_height;
     int emulated_dpr;
@@ -917,7 +914,7 @@ TEST_F(RenderViewImplUpdateTitleTest, MAYBE_OnNavigationLoadDataWithBaseURL) {
       .Times(1);
 
   const base::Optional<::std::u16string>& title =
-      base::make_optional(base::ASCIIToUTF16("Data page"));
+      base::make_optional(u"Data page");
   EXPECT_CALL(*title_mock_frame_host(), UpdateTitle(title, testing::_))
       .Times(1);
 }
@@ -1298,15 +1295,13 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
             view()->GetWebView()->ZoomFactorForDeviceScaleFactor());
 
   double device_pixel_ratio;
-  std::u16string get_dpr =
-      base::ASCIIToUTF16("Number(window.devicePixelRatio)");
+  std::u16string get_dpr = u"Number(window.devicePixelRatio)";
   EXPECT_TRUE(
       ExecuteJavaScriptAndReturnNumberValue(get_dpr, &device_pixel_ratio));
   EXPECT_EQ(device_scale, device_pixel_ratio);
 
   int width;
-  std::u16string get_width =
-      base::ASCIIToUTF16("Number(document.documentElement.clientWidth)");
+  std::u16string get_width = u"Number(document.documentElement.clientWidth)";
   EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(get_width, &width));
   EXPECT_EQ(view()->GetWebView()->MainFrameWidget()->Size().width(),
             width * device_scale);

@@ -309,8 +309,7 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   node_data->role = ax::mojom::Role::kGenericContainer;
   node_data->SetName(app_name_view_->GetText());
-  node_data->SetDescription(summary_text_view_->GetText() +
-                            base::ASCIIToUTF16(" ") +
+  node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
 
   if (is_expanded_)

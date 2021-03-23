@@ -39,13 +39,13 @@ void MockClipboardHost::ReadAvailableTypes(
     ReadAvailableTypesCallback callback) {
   std::vector<std::u16string> types;
   if (!plain_text_.empty())
-    types.push_back(base::ASCIIToUTF16("text/plain"));
+    types.push_back(u"text/plain");
   if (!html_text_.empty())
-    types.push_back(base::ASCIIToUTF16("text/html"));
+    types.push_back(u"text/html");
   if (!svg_text_.empty())
-    types.push_back(base::ASCIIToUTF16("image/svg+xml"));
+    types.push_back(u"image/svg+xml");
   if (!image_.isNull())
-    types.push_back(base::ASCIIToUTF16("image/png"));
+    types.push_back(u"image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.first));
     types.push_back(it.first);

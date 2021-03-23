@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, JavascriptHistory) {
 IN_PROC_BROWSER_TEST_F(SessionHistoryTest, LocationReplace) {
   // Test that using location.replace doesn't leave the title of the old page
   // visible.
-  std::u16string expected_title16(base::ASCIIToUTF16("bot1"));
+  std::u16string expected_title16(u"bot1");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
   EXPECT_TRUE(NavigateToURL(shell(), GetURL("replace.html?bot1.html"),
                             GetURL("bot1.html") /* expected_commit_url */));

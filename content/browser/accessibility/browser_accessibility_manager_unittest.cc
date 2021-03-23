@@ -1130,69 +1130,60 @@ TEST_F(BrowserAccessibilityManagerTest, TestGetTextForRange) {
   EXPECT_EQ(line_break_accessible, text_only_objects[1]);
   EXPECT_EQ(paragraph_text_accessible, text_only_objects[2]);
 
-  EXPECT_EQ(base::ASCIIToUTF16("Text\nHello world."),
+  EXPECT_EQ(u"Text\nHello world.",
             BrowserAccessibilityManager::GetTextForRange(*root_accessible, 0,
                                                          *root_accessible, 16));
-  EXPECT_EQ(base::ASCIIToUTF16("xt\nHello world."),
+  EXPECT_EQ(u"xt\nHello world.",
             BrowserAccessibilityManager::GetTextForRange(*root_accessible, 2,
                                                          *root_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16("Text\nHello world."),
+  EXPECT_EQ(u"Text\nHello world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *div_accessible, 0, *paragraph_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16("xt\nHello world."),
+  EXPECT_EQ(u"xt\nHello world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *div_accessible, 2, *paragraph_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16("Text\n"),
-            BrowserAccessibilityManager::GetTextForRange(*div_accessible, 0,
-                                                         *div_accessible, 4));
-  EXPECT_EQ(base::ASCIIToUTF16("Text\n"),
-            BrowserAccessibilityManager::GetTextForRange(
-                *button_accessible, 0, *line_break_accessible, 4));
+  EXPECT_EQ(u"Text\n", BrowserAccessibilityManager::GetTextForRange(
+                           *div_accessible, 0, *div_accessible, 4));
+  EXPECT_EQ(u"Text\n", BrowserAccessibilityManager::GetTextForRange(
+                           *button_accessible, 0, *line_break_accessible, 4));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Hello world."),
+  EXPECT_EQ(u"Hello world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *paragraph_accessible, 0, *paragraph_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello wor"),
+  EXPECT_EQ(u"Hello wor",
             BrowserAccessibilityManager::GetTextForRange(
                 *paragraph_accessible, 0, *paragraph_accessible, 9));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello world."),
+  EXPECT_EQ(u"Hello world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *paragraph_text_accessible, 0, *paragraph_text_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16(" world."),
+  EXPECT_EQ(u" world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *paragraph_text_accessible, 5, *paragraph_text_accessible, 12));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello world."),
+  EXPECT_EQ(u"Hello world.",
             BrowserAccessibilityManager::GetTextForRange(
                 *paragraph_accessible, 0, *paragraph_text_accessible, 12));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Hello "),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line1_accessible, 0, *paragraph_line1_accessible, 6));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Hello"),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line1_accessible, 0, *paragraph_line1_accessible, 5));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("ello "),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line1_accessible, 1, *paragraph_line1_accessible, 6));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("world."),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line2_accessible, 0, *paragraph_line2_accessible, 6));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("orld"),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line2_accessible, 1, *paragraph_line2_accessible, 5));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Hello world."),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line1_accessible, 0, *paragraph_line2_accessible, 6));
+  EXPECT_EQ(u"Hello ", BrowserAccessibilityManager::GetTextForRange(
+                           *paragraph_line1_accessible, 0,
+                           *paragraph_line1_accessible, 6));
+  EXPECT_EQ(u"Hello", BrowserAccessibilityManager::GetTextForRange(
+                          *paragraph_line1_accessible, 0,
+                          *paragraph_line1_accessible, 5));
+  EXPECT_EQ(u"ello ", BrowserAccessibilityManager::GetTextForRange(
+                          *paragraph_line1_accessible, 1,
+                          *paragraph_line1_accessible, 6));
+  EXPECT_EQ(u"world.", BrowserAccessibilityManager::GetTextForRange(
+                           *paragraph_line2_accessible, 0,
+                           *paragraph_line2_accessible, 6));
+  EXPECT_EQ(u"orld", BrowserAccessibilityManager::GetTextForRange(
+                         *paragraph_line2_accessible, 1,
+                         *paragraph_line2_accessible, 5));
+  EXPECT_EQ(u"Hello world.", BrowserAccessibilityManager::GetTextForRange(
+                                 *paragraph_line1_accessible, 0,
+                                 *paragraph_line2_accessible, 6));
   // Start and end positions could be reversed.
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Hello world."),
-      BrowserAccessibilityManager::GetTextForRange(
-          *paragraph_line2_accessible, 6, *paragraph_line1_accessible, 0));
+  EXPECT_EQ(u"Hello world.", BrowserAccessibilityManager::GetTextForRange(
+                                 *paragraph_line2_accessible, 6,
+                                 *paragraph_line1_accessible, 0));
 }
 #endif  // defined(OS_WIN) || BUILDFLAG(USE_ATK)
 

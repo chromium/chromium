@@ -166,7 +166,7 @@ std::u16string GetText(const AXNode* node) {
       ax::mojom::StringAttribute::kDescription);
   if (!description.empty()) {
     if (!text.empty())
-      text += base::ASCIIToUTF16(" ");
+      text += u" ";
     text += description;
   }
 

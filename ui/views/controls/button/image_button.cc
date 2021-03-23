@@ -334,20 +334,16 @@ void ToggleImageButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-DEFINE_ENUM_CONVERTERS(ImageButton::HorizontalAlignment,
-                       {ImageButton::HorizontalAlignment::ALIGN_LEFT,
-                        base::ASCIIToUTF16("ALIGN_LEFT")},
-                       {ImageButton::HorizontalAlignment::ALIGN_CENTER,
-                        base::ASCIIToUTF16("ALIGN_CENTER")},
-                       {ImageButton::HorizontalAlignment::ALIGN_RIGHT,
-                        base::ASCIIToUTF16("ALIGN_RIGHT")})
-DEFINE_ENUM_CONVERTERS(ImageButton::VerticalAlignment,
-                       {ImageButton::VerticalAlignment::ALIGN_TOP,
-                        base::ASCIIToUTF16("ALIGN_TOP")},
-                       {ImageButton::VerticalAlignment::ALIGN_MIDDLE,
-                        base::ASCIIToUTF16("ALIGN_MIDDLE")},
-                       {ImageButton::VerticalAlignment::ALIGN_BOTTOM,
-                        base::ASCIIToUTF16("ALIGN_BOTTOM")})
+DEFINE_ENUM_CONVERTERS(
+    ImageButton::HorizontalAlignment,
+    {ImageButton::HorizontalAlignment::ALIGN_LEFT, u"ALIGN_LEFT"},
+    {ImageButton::HorizontalAlignment::ALIGN_CENTER, u"ALIGN_CENTER"},
+    {ImageButton::HorizontalAlignment::ALIGN_RIGHT, u"ALIGN_RIGHT"})
+DEFINE_ENUM_CONVERTERS(
+    ImageButton::VerticalAlignment,
+    {ImageButton::VerticalAlignment::ALIGN_TOP, u"ALIGN_TOP"},
+    {ImageButton::VerticalAlignment::ALIGN_MIDDLE, u"ALIGN_MIDDLE"},
+    {ImageButton::VerticalAlignment::ALIGN_BOTTOM, u"ALIGN_BOTTOM"})
 
 BEGIN_METADATA(ImageButton, Button)
 ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)

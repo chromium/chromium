@@ -59,37 +59,36 @@ void ButtonExample::CreateExampleView(View* container) {
           .SetBetweenChildSpacing(10)
           .SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter)
           .SetBackground(CreateSolidBackground(SK_ColorWHITE))
-          .AddChildren(
-              {Builder<LabelButton>()
-                   .CopyAddressTo(&label_button_)
-                   .SetText(ASCIIToUTF16(kLabelButton))
-                   .SetRequestFocusOnPress(true)
-                   .SetCallback(base::BindRepeating(
-                       &ButtonExample::LabelButtonPressed,
-                       base::Unretained(this), label_button_)),
-               Builder<MdTextButton>()
-                   .CopyAddressTo(&md_button_)
-                   .SetText(base::ASCIIToUTF16("Material Design"))
-                   .SetCallback(
-                       base::BindRepeating(start_throbber_cb, md_button_)),
-               Builder<MdTextButton>()
-                   .CopyAddressTo(&md_disabled_button_)
-                   .SetText(ASCIIToUTF16("Material Design Disabled Button"))
-                   .SetState(Button::STATE_DISABLED)
-                   .SetCallback(base::BindRepeating(start_throbber_cb,
-                                                    md_disabled_button_)),
-               Builder<MdTextButton>()
-                   .CopyAddressTo(&md_default_button_)
-                   .SetText(base::ASCIIToUTF16("Default"))
-                   .SetIsDefault(true)
-                   .SetCallback(base::BindRepeating(start_throbber_cb,
-                                                    md_default_button_)),
-               Builder<ImageButton>()
-                   .CopyAddressTo(&image_button_)
-                   .SetRequestFocusOnPress(true)
-                   .SetCallback(
-                       base::BindRepeating(&ButtonExample::ImageButtonPressed,
-                                           base::Unretained(this)))})
+          .AddChildren({Builder<LabelButton>()
+                            .CopyAddressTo(&label_button_)
+                            .SetText(ASCIIToUTF16(kLabelButton))
+                            .SetRequestFocusOnPress(true)
+                            .SetCallback(base::BindRepeating(
+                                &ButtonExample::LabelButtonPressed,
+                                base::Unretained(this), label_button_)),
+                        Builder<MdTextButton>()
+                            .CopyAddressTo(&md_button_)
+                            .SetText(u"Material Design")
+                            .SetCallback(base::BindRepeating(start_throbber_cb,
+                                                             md_button_)),
+                        Builder<MdTextButton>()
+                            .CopyAddressTo(&md_disabled_button_)
+                            .SetText(u"Material Design Disabled Button")
+                            .SetState(Button::STATE_DISABLED)
+                            .SetCallback(base::BindRepeating(
+                                start_throbber_cb, md_disabled_button_)),
+                        Builder<MdTextButton>()
+                            .CopyAddressTo(&md_default_button_)
+                            .SetText(u"Default")
+                            .SetIsDefault(true)
+                            .SetCallback(base::BindRepeating(
+                                start_throbber_cb, md_default_button_)),
+                        Builder<ImageButton>()
+                            .CopyAddressTo(&image_button_)
+                            .SetRequestFocusOnPress(true)
+                            .SetCallback(base::BindRepeating(
+                                &ButtonExample::ImageButtonPressed,
+                                base::Unretained(this)))})
           .Build();
 
   image_button_->SetImage(ImageButton::STATE_NORMAL,

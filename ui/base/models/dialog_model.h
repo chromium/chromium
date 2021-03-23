@@ -64,11 +64,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelDelegate {
 //
 // auto dialog_model =
 //     ui::DialogModel::Builder(std::move(model_delegate))
-//         .SetTitle(base::ASCIIToUTF16("Hello, world!"))
+//         .SetTitle(u"Hello, world!")
 //         .AddOkButton(base::BindOnce(&Delegate::OnDialogAccepted,
 //                                     base::Unretained(model_delegate_ptr)))
 //         .AddTextfield(
-//             base::ASCIIToUTF16("Name"), std::u16string(),
+//             u"Name", std::u16string(),
 //             ui::DialogModelTextfield::Params().SetUniqueId(kNameTextfield))
 //         .Build();
 //

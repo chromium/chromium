@@ -271,7 +271,7 @@ class WaylandWindowTest : public WaylandTest {
 
 TEST_P(WaylandWindowTest, SetTitle) {
   EXPECT_CALL(*GetXdgToplevel(), SetTitle(StrEq("hello")));
-  window_->SetTitle(base::ASCIIToUTF16("hello"));
+  window_->SetTitle(u"hello");
 }
 
 TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {

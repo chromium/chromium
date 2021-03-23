@@ -401,8 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, UntrustedSchemeLoads) {
   const GURL untrusted_url(GetChromeUntrustedUIURL("test-host/title2.html"));
   auto* web_contents = shell()->web_contents();
   EXPECT_TRUE(NavigateToURL(web_contents, untrusted_url));
-  EXPECT_EQ(base::ASCIIToUTF16("Title Of Awesomeness"),
-            web_contents->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
 }
 
 // Verify that we can successfully navigate to a chrome-untrusted:// URL
@@ -428,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, NavigateWhileWebUISend) {
 
   base::RunLoop run_loop;
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("onunload=function() { chrome.send('sendMessage')}"),
+      u"onunload=function() { chrome.send('sendMessage')}",
       base::BindOnce([](base::OnceClosure callback,
                         base::Value) { std::move(callback).Run(); },
                      run_loop.QuitClosure()));

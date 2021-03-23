@@ -56,8 +56,7 @@ const double kDefaultVolumeMultiplier = 1.0;
 const double kDuckingVolumeMultiplier = 0.2;
 const double kDifferentDuckingVolumeMultiplier = 0.018;
 
-const std::u16string kExpectedSourceTitlePrefix =
-    base::ASCIIToUTF16("http://example.com:");
+const std::u16string kExpectedSourceTitlePrefix = u"http://example.com:";
 
 constexpr gfx::Size kDefaultFaviconSize = gfx::Size(16, 16);
 
@@ -2250,16 +2249,16 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
   EnsureMediaSessionService();
 
   media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = base::ASCIIToUTF16("title");
-  expected_metadata.artist = base::ASCIIToUTF16("artist");
-  expected_metadata.album = base::ASCIIToUTF16("album");
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
   expected_metadata.source_title = GetExpectedSourceTitle();
 
   blink::mojom::SpecMediaMetadataPtr spec_metadata(
       blink::mojom::SpecMediaMetadata::New());
-  spec_metadata->title = base::ASCIIToUTF16("title");
-  spec_metadata->artist = base::ASCIIToUTF16("artist");
-  spec_metadata->album = base::ASCIIToUTF16("album");
+  spec_metadata->title = u"title";
+  spec_metadata->artist = u"artist";
+  spec_metadata->album = u"album";
   mock_media_session_service_->SetMetadata(std::move(spec_metadata));
 
   // Make sure the service is routed,
@@ -2511,7 +2510,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, MetadataWhenFileUrlScheme) {
 
   media_session::MediaMetadata expected_metadata;
   expected_metadata.title = shell()->web_contents()->GetTitle();
-  expected_metadata.source_title = base::ASCIIToUTF16("Local File");
+  expected_metadata.source_title = u"Local File";
   observer.WaitForExpectedMetadata(expected_metadata);
 }
 

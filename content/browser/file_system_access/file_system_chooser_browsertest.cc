@@ -690,10 +690,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
 
   ASSERT_EQ(3u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16("foo"),
+  EXPECT_EQ(u"foo",
             dialog_params.file_types->extension_description_overrides[0]);
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[1]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[1]);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,

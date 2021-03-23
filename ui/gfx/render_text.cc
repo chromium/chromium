@@ -2174,7 +2174,7 @@ std::u16string RenderText::ElideEmail(const std::u16string& email,
   };
 
   // Subtract the @ symbol from the available width as it is mandatory.
-  const std::u16string kAtSignUTF16 = base::ASCIIToUTF16("@");
+  const std::u16string kAtSignUTF16 = u"@";
   float at_width = get_string_width(kAtSignUTF16);
   if (available_width < at_width)
     return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);

@@ -347,8 +347,7 @@ TEST_F(PlatformNotificationContextTest, WriteReadReplacedNotification) {
   notification_database_data.service_worker_registration_id =
       kFakeServiceWorkerRegistrationId;
   notification_database_data.origin = origin;
-  notification_database_data.notification_data.title =
-      base::ASCIIToUTF16("First");
+  notification_database_data.notification_data.title = u"First";
   notification_database_data.notification_data.tag = tag;
 
   // Write the first notification with the given |tag|.
@@ -365,8 +364,7 @@ TEST_F(PlatformNotificationContextTest, WriteReadReplacedNotification) {
   ASSERT_TRUE(success());
   EXPECT_FALSE(read_notification_id.empty());
 
-  notification_database_data.notification_data.title =
-      base::ASCIIToUTF16("Second");
+  notification_database_data.notification_data.title = u"Second";
 
   // Write the second notification with the given |tag|.
   context->WriteNotificationData(
@@ -388,8 +386,7 @@ TEST_F(PlatformNotificationContextTest, WriteReadReplacedNotification) {
   ASSERT_EQ(1u, notification_database_datas.size());
 
   EXPECT_EQ(tag, notification_database_datas[0].notification_data.tag);
-  EXPECT_EQ(base::ASCIIToUTF16("Second"),
-            notification_database_datas[0].notification_data.title);
+  EXPECT_EQ(u"Second", notification_database_datas[0].notification_data.title);
 }
 
 TEST_F(PlatformNotificationContextTest, DeleteInvalidNotification) {

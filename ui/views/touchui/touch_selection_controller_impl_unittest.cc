@@ -319,7 +319,7 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 // a Textfield changes.
 TEST_F(TouchSelectionControllerImplTest, SelectionInTextfieldTest) {
   CreateTextfield();
-  textfield_->SetText(ASCIIToUTF16("some text"));
+  textfield_->SetText(u"some text");
   // Tap the textfield to invoke touch selection.
   ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
   details.set_tap_count(1);
@@ -404,7 +404,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectionInBidiTextfieldTest) {
 // handles are moved.
 TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
   CreateTextfield();
-  textfield_->SetText(ASCIIToUTF16("textfield with selected text"));
+  textfield_->SetText(u"textfield with selected text");
   // Tap the textfield to invoke touch selection.
   ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
   details.set_tap_count(1);
@@ -420,7 +420,7 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
 
   // Drag selection handle 2 to right by 3 chars.
   const gfx::FontList& font_list = textfield_->GetFontList();
-  int x = gfx::Canvas::GetStringWidth(ASCIIToUTF16("ld "), font_list);
+  int x = gfx::Canvas::GetStringWidth(u"ld ", font_list);
   SimulateSelectionHandleDrag(gfx::Vector2d(x, 0), 2);
   EXPECT_EQ("tfield ", UTF16ToUTF8(textfield_->GetSelectedText()));
   VerifyHandlePositions(false, true, FROM_HERE);
@@ -432,13 +432,13 @@ TEST_F(TouchSelectionControllerImplTest, SelectRectCallbackTest) {
   VerifyHandlePositions(true, true, FROM_HERE);
 
   // Drag selection handle 1 across selection handle 2.
-  x = gfx::Canvas::GetStringWidth(ASCIIToUTF16("textfield with "), font_list);
+  x = gfx::Canvas::GetStringWidth(u"textfield with ", font_list);
   SimulateSelectionHandleDrag(gfx::Vector2d(x, 0), 1);
   EXPECT_EQ("with ", UTF16ToUTF8(textfield_->GetSelectedText()));
   VerifyHandlePositions(true, true, FROM_HERE);
 
   // Drag selection handle 2 across selection handle 1.
-  x = gfx::Canvas::GetStringWidth(ASCIIToUTF16("with selected "), font_list);
+  x = gfx::Canvas::GetStringWidth(u"with selected ", font_list);
   SimulateSelectionHandleDrag(gfx::Vector2d(x, 0), 2);
   EXPECT_EQ("selected ", UTF16ToUTF8(textfield_->GetSelectedText()));
   VerifyHandlePositions(false, true, FROM_HERE);
@@ -617,7 +617,7 @@ TEST_F(TouchSelectionControllerImplTest, HiddenSelectionHandleExposed) {
 TEST_F(TouchSelectionControllerImplTest,
        DoubleTapInTextfieldWithCursorHandleShouldSelectText) {
   CreateTextfield();
-  textfield_->SetText(ASCIIToUTF16("some text"));
+  textfield_->SetText(u"some text");
   ui::test::EventGenerator generator(
       textfield_->GetWidget()->GetNativeView()->GetRootWindow());
 

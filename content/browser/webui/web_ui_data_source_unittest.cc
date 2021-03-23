@@ -130,7 +130,7 @@ TEST_F(WebUIDataSourceTest, SomeValues) {
   source()->AddInteger("counter", 10);
   source()->AddInteger("debt", -456);
   source()->AddDouble("threshold", 0.55);
-  source()->AddString("planet", base::ASCIIToUTF16("pluto"));
+  source()->AddString("planet", u"pluto");
   source()->AddLocalizedString("button", kDummyStringId);
   StartDataRequest("strings.js", base::BindOnce(&SomeValuesCallback));
 }

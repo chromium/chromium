@@ -37,7 +37,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Waiting for test URL: " << gurl << ", to load.";
-      const std::u16string kLoaded = base::ASCIIToUTF16("LOADED");
+      const std::u16string kLoaded = u"LOADED";
       TitleWatcher title_watcher(shell()->web_contents(), kLoaded);
       title_watcher.AlsoWaitForTitle(kError);
       EXPECT_TRUE(NavigateToURL(shell(), gurl));
@@ -46,7 +46,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Suspending and waiting for suspend to occur.";
-      const std::u16string kSuspended = base::ASCIIToUTF16("SUSPENDED");
+      const std::u16string kSuspended = u"SUSPENDED";
       TitleWatcher title_watcher(shell()->web_contents(), kSuspended);
       title_watcher.AlsoWaitForTitle(kError);
       static_cast<WebContentsImpl*>(shell()->web_contents())

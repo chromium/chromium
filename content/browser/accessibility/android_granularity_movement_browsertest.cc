@@ -87,14 +87,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
                                       &start_index, &end_index)) {
       int len = end_index - start_index;
       std::u16string selection = text.substr(start_index, len);
-      if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
+      if (base::EndsWith(selection, u"\n",
                          base::CompareCase::INSENSITIVE_ASCII))
         selection.erase(selection.size() - 1);
       if (!selection.empty()) {
         if (!concatenated.empty())
-          concatenated += base::ASCIIToUTF16(", ");
-        concatenated +=
-            base::ASCIIToUTF16("'") + selection + base::ASCIIToUTF16("'");
+          concatenated += u", ";
+        concatenated += u"'" + selection + u"'";
       }
 
       // Prevent an endless loop.
@@ -112,13 +111,12 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         granularity, start_index, android_node, &start_index, &end_index)) {
       int len = end_index - start_index;
       std::u16string selection = text.substr(start_index, len);
-      if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
+      if (base::EndsWith(selection, u"\n",
                          base::CompareCase::INSENSITIVE_ASCII))
         selection = selection.substr(0, selection.size() - 1);
       if (!reverse.empty())
-        reverse = base::ASCIIToUTF16(", ") + reverse;
-      reverse = base::ASCIIToUTF16("'") + selection + base::ASCIIToUTF16("'") +
-                reverse;
+        reverse = u", " + reverse;
+      reverse = u"'" + selection + u"'" + reverse;
 
       // Prevent an endless loop.
       if (end_index == previous_end_index) {
@@ -186,9 +184,9 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
   BrowserAccessibility* button = button_container->PlatformGetChild(0);
   ASSERT_EQ(0U, button->PlatformChildCount());
 
-  EXPECT_EQ(base::ASCIIToUTF16("'One', ',', 'two', ',', 'three', '!'"),
+  EXPECT_EQ(u"'One', ',', 'two', ',', 'three', '!'",
             TraverseNodeAtGranularity(para, GRANULARITY_WORD));
-  EXPECT_EQ(base::ASCIIToUTF16("'Seven', 'eight', 'nine'"),
+  EXPECT_EQ(u"'Seven', 'eight', 'nine'",
             TraverseNodeAtGranularity(button, GRANULARITY_WORD));
 }
 
@@ -203,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByLine) {
   BrowserAccessibility* pre = root->PlatformGetChild(0);
   ASSERT_EQ(0U, pre->PlatformChildCount());
 
-  EXPECT_EQ(base::ASCIIToUTF16("'One,', 'two,', 'three!'"),
+  EXPECT_EQ(u"'One,', 'two,', 'three!'",
             TraverseNodeAtGranularity(pre, GRANULARITY_LINE));
 }
 

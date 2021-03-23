@@ -149,7 +149,7 @@ TEST_F(LabelButtonTest, FocusBehavior) {
 }
 
 TEST_F(LabelButtonTest, Init) {
-  const std::u16string text(ASCIIToUTF16("abc"));
+  const std::u16string text(u"abc");
   TestLabelButton button(text);
 
   EXPECT_TRUE(button.GetImage(Button::STATE_NORMAL).isNull());
@@ -176,8 +176,8 @@ TEST_F(LabelButtonTest, Label) {
   EXPECT_TRUE(button_->GetText().empty());
 
   const gfx::FontList font_list = button_->label()->font_list();
-  const std::u16string short_text(ASCIIToUTF16("abcdefghijklm"));
-  const std::u16string long_text(ASCIIToUTF16("abcdefghijklmnopqrstuvwxyz"));
+  const std::u16string short_text(u"abcdefghijklm");
+  const std::u16string long_text(u"abcdefghijklmnopqrstuvwxyz");
   const int short_text_width = gfx::GetStringWidth(short_text, font_list);
   const int long_text_width = gfx::GetStringWidth(long_text, font_list);
 
@@ -253,7 +253,7 @@ TEST_F(LabelButtonTest, LabelShrinkDown) {
   ASSERT_TRUE(button_->GetText().empty());
 
   const gfx::FontList font_list = button_->label()->font_list();
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
   const int text_width = gfx::GetStringWidth(text, font_list);
 
   ASSERT_LT(button_->GetPreferredSize().width(), text_width);
@@ -277,7 +277,7 @@ TEST_F(LabelButtonTest, LabelShrinksDownOnManualSetBounds) {
   ASSERT_TRUE(button_->GetText().empty());
   ASSERT_GT(button_->GetPreferredSize().width(), 1);
 
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
 
   button_->SetText(text);
   EXPECT_EQ(button_->GetText(), text);
@@ -295,7 +295,7 @@ TEST_F(LabelButtonTest, LabelShrinksDownCanceledBySettingText) {
   ASSERT_TRUE(button_->GetText().empty());
 
   const gfx::FontList font_list = button_->label()->font_list();
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
   const int text_width = gfx::GetStringWidth(text, font_list);
 
   ASSERT_LT(button_->GetPreferredSize().width(), text_width);
@@ -326,7 +326,7 @@ TEST_F(
     LabelButtonTest,
     LabelShrinksDownImmediatelyIfAlreadySmallerThanPreferredSizeWithoutLabel) {
   button_->SetBoundsRect(gfx::Rect(1, 1));
-  button_->SetText(ASCIIToUTF16("abcdefghijklm"));
+  button_->SetText(u"abcdefghijklm");
 
   // Shrinking the text down when it's already shrunk down (its size is smaller
   // than preferred without label) should clear the text immediately.
@@ -347,7 +347,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
 
   // Without a label (e.g. image-only), the accessible name should automatically
   // be set from the tooltip.
-  const std::u16string tooltip_text = ASCIIToUTF16("abc");
+  const std::u16string tooltip_text = u"abc";
   button_->SetTooltipText(tooltip_text);
   button_->GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(tooltip_text, accessible_node_data.GetString16Attribute(
@@ -355,7 +355,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
   EXPECT_EQ(std::u16string(), button_->GetText());
 
   // Setting a label overrides the tooltip text.
-  const std::u16string label_text = ASCIIToUTF16("def");
+  const std::u16string label_text = u"def";
   button_->SetText(label_text);
   button_->GetAccessibleNodeData(&accessible_node_data);
   EXPECT_EQ(label_text, accessible_node_data.GetString16Attribute(
@@ -423,7 +423,7 @@ TEST_F(LabelButtonTest, Image) {
 
 TEST_F(LabelButtonTest, ImageAlignmentWithMultilineLabel) {
   const std::u16string text(
-      ASCIIToUTF16("Some long text that would result in multiline label"));
+      u"Some long text that would result in multiline label");
   button_->SetText(text);
 
   const int max_label_width = 40;
@@ -448,7 +448,7 @@ TEST_F(LabelButtonTest, ImageAlignmentWithMultilineLabel) {
 
 TEST_F(LabelButtonTest, LabelAndImage) {
   const gfx::FontList font_list = button_->label()->font_list();
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
   const int text_width = gfx::GetStringWidth(text, font_list);
 
   const int image_size = 50;
@@ -510,7 +510,7 @@ TEST_F(LabelButtonTest, LabelAndImage) {
 TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
   LayoutProvider* provider = LayoutProvider::Get();
   const gfx::FontList font_list = button_->label()->font_list();
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm abcdefghijklm");
   const int text_wrap_width = gfx::GetStringWidth(text, font_list) / 2;
   const int image_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -549,7 +549,7 @@ TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
 // GetHeightForWidth wouldn't. As of writing they share a large chunk of
 // logic, but this remains in place so they don't diverge as easily.
 TEST_F(LabelButtonTest, GetHeightForWidthConsistentWithGetPreferredSize) {
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
   constexpr int kTinyImageSize = 2;
   constexpr int kLargeImageSize = 50;
   const int font_height = button_->label()->font_list().GetHeight();
@@ -602,7 +602,7 @@ TEST_F(LabelButtonTest, TextSizeFromContext) {
   int alternate_delta = get_delta(kAlternateContext);
   EXPECT_LT(default_delta, alternate_delta);
 
-  const std::u16string text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abcdefghijklm");
   button_->SetText(text);
   EXPECT_EQ(default_delta, button_->label()->font_list().GetFontSize() -
                                gfx::FontList().GetFontSize());
@@ -622,8 +622,8 @@ TEST_F(LabelButtonTest, TextSizeFromContext) {
 }
 
 TEST_F(LabelButtonTest, ChangeTextSize) {
-  const std::u16string text(ASCIIToUTF16("abc"));
-  const std::u16string longer_text(ASCIIToUTF16("abcdefghijklm"));
+  const std::u16string text(u"abc");
+  const std::u16string longer_text(u"abcdefghijklm");
   button_->SetText(text);
   button_->SizeToPreferredSize();
   gfx::Rect bounds(button_->bounds());
@@ -655,7 +655,7 @@ TEST_F(LabelButtonTest, ChangeTextSize) {
 }
 
 TEST_F(LabelButtonTest, ChangeLabelImageSpacing) {
-  button_->SetText(ASCIIToUTF16("abc"));
+  button_->SetText(u"abc");
   button_->SetImage(Button::STATE_NORMAL, CreateTestImage(50, 50));
 
   const int kOriginalSpacing = 5;
@@ -724,7 +724,7 @@ TEST_F(LabelButtonTest, SetEnabledTextColorsResetsToThemeColors) {
 }
 
 TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
-  const std::u16string text(ASCIIToUTF16("abc"));
+  const std::u16string text(u"abc");
   button_->SetText(text);
 
   const gfx::FontList font_list = button_->label()->font_list();

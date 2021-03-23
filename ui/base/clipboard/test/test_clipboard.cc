@@ -145,13 +145,13 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     if (features::IsUsingOzonePlatform())
       types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
 
-    types.push_back(base::ASCIIToUTF16("TEXT"));
-    types.push_back(base::ASCIIToUTF16("STRING"));
-    types.push_back(base::ASCIIToUTF16("UTF8_STRING"));
+    types.push_back(u"TEXT");
+    types.push_back(u"STRING");
+    types.push_back(u"UTF8_STRING");
 #elif defined(OS_WIN)
-    types.push_back(base::ASCIIToUTF16("CF_OEMTEXT"));
+    types.push_back(u"CF_OEMTEXT");
 #elif defined(OS_APPLE)
-    types.push_back(base::ASCIIToUTF16("NSStringPboardType"));
+    types.push_back(u"NSStringPboardType");
 #endif
   }
 

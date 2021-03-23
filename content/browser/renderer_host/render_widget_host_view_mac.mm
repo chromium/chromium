@@ -790,8 +790,7 @@ void CombineTextNodesAndMakeCallback(SpeechCallback callback,
 
   AddTextNodesToVector(tree.root(), &text_node_contents);
 
-  std::move(callback).Run(
-      base::JoinString(text_node_contents, base::ASCIIToUTF16("\n")));
+  std::move(callback).Run(base::JoinString(text_node_contents, u"\n"));
 }
 
 }  // namespace

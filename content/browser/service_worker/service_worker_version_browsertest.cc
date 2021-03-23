@@ -1008,8 +1008,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected,
             status.value());
 
-  const std::u16string expected =
-      base::ASCIIToUTF16("Rejecting oninstall event");
+  const std::u16string expected = u"Rejecting oninstall event";
   console_listener.WaitForConsoleMessages(1);
   ASSERT_NE(std::u16string::npos,
             console_listener.messages()[0].find(expected));
@@ -1215,7 +1214,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   const std::u16string expected1 = base::ASCIIToUTF16(
       "resulted in a network error response: the promise was rejected.");
   const std::u16string expected2 =
-      base::ASCIIToUTF16("Uncaught (in promise) Rejecting respondWith promise");
+      u"Uncaught (in promise) Rejecting respondWith promise";
   console_listener.WaitForConsoleMessages(2);
   ASSERT_NE(std::u16string::npos,
             console_listener.messages()[0].find(expected1));

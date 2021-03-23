@@ -100,7 +100,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
     HitTestRegionObserver observer(GetWidgetHost()->GetFrameSinkId());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    std::u16string ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 

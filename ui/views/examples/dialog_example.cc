@@ -110,11 +110,11 @@ class DialogExample::Dialog : public Delegate<DialogDelegateView> {
 DialogExample::DialogExample()
     : ExampleBase("Dialog"),
       mode_model_({
-          base::ASCIIToUTF16("Modeless"),
-          base::ASCIIToUTF16("Window Modal"),
-          base::ASCIIToUTF16("Child Modal"),
-          base::ASCIIToUTF16("System Modal"),
-          base::ASCIIToUTF16("Fake Modeless (non-bubbles)"),
+          u"Modeless",
+          u"Window Modal",
+          u"Child Modal",
+          u"System Modal",
+          u"Fake Modeless (non-bubbles)",
       }) {}
 
 DialogExample::~DialogExample() = default;
@@ -160,7 +160,7 @@ void DialogExample::CreateExampleView(View* container) {
   StartRowWithLabel(layout, "Bubble");
   AddCheckbox(layout, &bubble_);
   AddCheckbox(layout, &persistent_bubble_);
-  persistent_bubble_->SetText(base::ASCIIToUTF16("Persistent"));
+  persistent_bubble_->SetText(u"Persistent");
 
   column_set = layout->AddColumnSet(kButtonsColumnId);
   column_set->AddColumn(GridLayout::CENTER, GridLayout::CENTER, kStretchy,
@@ -172,7 +172,7 @@ void DialogExample::CreateExampleView(View* container) {
   show_ = layout->AddView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DialogExample::ShowButtonPressed,
                           base::Unretained(this)),
-      base::ASCIIToUTF16("Show")));
+      u"Show"));
 }
 
 void DialogExample::StartRowWithLabel(GridLayout* layout, const char* label) {

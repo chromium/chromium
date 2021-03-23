@@ -118,8 +118,8 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
-  std::u16string title = base::ASCIIToUTF16("title");
-  std::u16string artist = base::ASCIIToUTF16("artist");
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
 
   EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
   EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));

@@ -767,12 +767,11 @@ class MenuControllerTest : public ViewsTestBase,
   // `single_child` is true, the hosting menu item has only one child button.
   MenuItemView* AddButtonMenuItems(bool single_child) {
     menu_item()->SetBounds(0, 0, 200, 300);
-    MenuItemView* item_view =
-        menu_item()->AppendMenuItem(5, base::ASCIIToUTF16("Five"));
+    MenuItemView* item_view = menu_item()->AppendMenuItem(5, u"Five");
     const size_t children_count = single_child ? 1 : 3;
     for (size_t i = 0; i < children_count; ++i) {
-      LabelButton* button = new LabelButton(Button::PressedCallback(),
-                                            base::ASCIIToUTF16("Label"));
+      LabelButton* button =
+          new LabelButton(Button::PressedCallback(), u"Label");
       // This is an in-menu button. Hence it must be always focusable.
       button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
       item_view->AddChildView(button);
@@ -834,10 +833,10 @@ class MenuControllerTest : public ViewsTestBase,
   void SetupMenuItem() {
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
     menu_item_ = std::make_unique<TestMenuItemViewShown>(menu_delegate_.get());
-    menu_item_->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-    menu_item_->AppendMenuItem(2, base::ASCIIToUTF16("Two"));
-    menu_item_->AppendMenuItem(3, base::ASCIIToUTF16("Three"));
-    menu_item_->AppendMenuItem(4, base::ASCIIToUTF16("Four"));
+    menu_item_->AppendMenuItem(1, u"One");
+    menu_item_->AppendMenuItem(2, u"Two");
+    menu_item_->AppendMenuItem(3, u"Three");
+    menu_item_->AppendMenuItem(4, u"Four");
   }
 
   void SetupMenuController() {
@@ -2162,7 +2161,7 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
 TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_touchable_layout(true);
   MenuItemView* sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
-  sub_item->AppendMenuItem(11, base::ASCIIToUTF16("Subitem.One"));
+  sub_item->AppendMenuItem(11, u"Subitem.One");
 
   const int menu_width = MenuConfig::instance().touchable_menu_min_width;
   const gfx::Size parent_size(menu_width, menu_width);
@@ -2249,9 +2248,8 @@ TEST_F(MenuControllerTest, MouseAtMenuItemOnShow) {
   // the menu is shown.
   std::unique_ptr<TestMenuItemViewNotShown> menu_item(
       new TestMenuItemViewNotShown(menu_delegate()));
-  MenuItemView* first_item =
-      menu_item->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-  menu_item->AppendMenuItem(2, base::ASCIIToUTF16("Two"));
+  MenuItemView* first_item = menu_item->AppendMenuItem(1, u"One");
+  menu_item->AppendMenuItem(2, u"Two");
   menu_item->SetController(menu_controller());
 
   // Move the mouse to where the first menu item will be shown,

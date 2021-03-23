@@ -3227,11 +3227,9 @@ int View::DefaultFillLayout::GetPreferredHeightForWidth(const View* host,
 
 DEFINE_ENUM_CONVERTERS(View::FocusBehavior,
                        {View::FocusBehavior::ACCESSIBLE_ONLY,
-                        base::ASCIIToUTF16("ACCESSIBLE_ONLY")},
-                       {View::FocusBehavior::ALWAYS,
-                        base::ASCIIToUTF16("ALWAYS")},
-                       {View::FocusBehavior::NEVER,
-                        base::ASCIIToUTF16("NEVER")})
+                        u"ACCESSIBLE_ONLY"},
+                       {View::FocusBehavior::ALWAYS, u"ALWAYS"},
+                       {View::FocusBehavior::NEVER, u"NEVER"})
 
 // This block requires the existence of METADATA_HEADER(View) in the class
 // declaration for View.

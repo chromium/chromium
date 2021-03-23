@@ -1138,7 +1138,7 @@ TEST_F(MessageCenterImplTest, UpdateNonProgressNotificationWhenCenterVisible) {
   message_center()->ClickOnNotification("n");
   message_center()->SetVisibility(VISIBILITY_MESSAGE_CENTER);
   observer.reset_logs();
-  notification_copy.set_title(base::ASCIIToUTF16("title2"));
+  notification_copy.set_title(u"title2");
   message_center()->UpdateNotification(
       notification_copy.id(),
       std::make_unique<Notification>(notification_copy));

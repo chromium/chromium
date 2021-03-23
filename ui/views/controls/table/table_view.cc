@@ -1691,9 +1691,8 @@ AXVirtualView* TableView::GetVirtualAccessibilityCell(
 }
 
 DEFINE_ENUM_CONVERTERS(TableTypes,
-                       {TableTypes::TEXT_ONLY, base::ASCIIToUTF16("TEXT_ONLY")},
-                       {TableTypes::ICON_AND_TEXT,
-                        base::ASCIIToUTF16("ICON_AND_TEXT")})
+                       {TableTypes::TEXT_ONLY, u"TEXT_ONLY"},
+                       {TableTypes::ICON_AND_TEXT, u"ICON_AND_TEXT"})
 
 BEGIN_METADATA(TableView, View)
 ADD_READONLY_PROPERTY_METADATA(int, RowCount)

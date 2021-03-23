@@ -773,7 +773,7 @@ std::u16string FormatString(const std::u16string& format_string,
     for (size_t i = 0; i < 9; ++i) {
       bool placeholder_should_exist = replacements.size() > i;
 
-      std::u16string placeholder = base::ASCIIToUTF16("$");
+      std::u16string placeholder = u"$";
       placeholder += (L'1' + i);
       size_t pos = format_string.find(placeholder);
       if (placeholder_should_exist) {

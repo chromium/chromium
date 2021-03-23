@@ -320,7 +320,7 @@ class AXRange {
           // When preserving layout line breaks, don't append `\n` next if the
           // previous leaf position was a <br> (already ending with a newline).
           if (crossed_paragraph_boundary && !found_trailing_newline) {
-            range_text += base::ASCIIToUTF16("\n");
+            range_text += u"\n";
             computed_newlines_count++;
           }
 

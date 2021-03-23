@@ -463,7 +463,7 @@ class X11DragDropClientTest : public ViewsTestBase {
 
   int StartDragAndDrop() {
     auto data(std::make_unique<ui::OSExchangeData>());
-    data->SetString(base::ASCIIToUTF16("Test"));
+    data->SetString(u"Test");
     SkBitmap drag_bitmap;
     drag_bitmap.allocN32Pixels(10, 10);
     drag_bitmap.eraseARGB(0xFF, 0, 0, 0);

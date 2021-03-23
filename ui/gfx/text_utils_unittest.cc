@@ -24,19 +24,18 @@ namespace {
 TEST(TextUtilsTest, GetStringWidth) {
   FontList font_list;
   EXPECT_EQ(GetStringWidth(std::u16string(), font_list), 0);
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("a"), font_list),
+  EXPECT_GT(GetStringWidth(u"a", font_list),
             GetStringWidth(std::u16string(), font_list));
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("ab"), font_list),
-            GetStringWidth(base::ASCIIToUTF16("a"), font_list));
-  EXPECT_GT(GetStringWidth(base::ASCIIToUTF16("abc"), font_list),
-            GetStringWidth(base::ASCIIToUTF16("ab"), font_list));
+  EXPECT_GT(GetStringWidth(u"ab", font_list), GetStringWidth(u"a", font_list));
+  EXPECT_GT(GetStringWidth(u"abc", font_list),
+            GetStringWidth(u"ab", font_list));
 }
 
 TEST(TextUtilsTest, GetStringSize) {
   std::vector<std::u16string> strings{
       std::u16string(),
-      base::ASCIIToUTF16("a"),
-      base::ASCIIToUTF16("abc"),
+      u"a",
+      u"abc",
   };
 
   FontList font_list;

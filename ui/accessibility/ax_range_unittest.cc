@@ -98,14 +98,14 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
 
 class AXRangeTest : public testing::Test, public TestAXTreeManager {
  public:
-  const std::u16string EMPTY = base::ASCIIToUTF16("");
-  const std::u16string NEWLINE = base::ASCIIToUTF16("\n");
-  const std::u16string BUTTON = base::ASCIIToUTF16("Button");
-  const std::u16string LINE_1 = base::ASCIIToUTF16("Line 1");
-  const std::u16string LINE_2 = base::ASCIIToUTF16("Line 2");
+  const std::u16string EMPTY = u"";
+  const std::u16string NEWLINE = u"\n";
+  const std::u16string BUTTON = u"Button";
+  const std::u16string LINE_1 = u"Line 1";
+  const std::u16string LINE_2 = u"Line 2";
   const std::u16string TEXT_FIELD =
       LINE_1.substr().append(NEWLINE).append(LINE_2).append(NEWLINE);
-  const std::u16string AFTER_LINE = base::ASCIIToUTF16("After");
+  const std::u16string AFTER_LINE = u"After";
   const std::u16string ALL_TEXT =
       BUTTON.substr().append(TEXT_FIELD).append(AFTER_LINE);
 
@@ -1013,10 +1013,10 @@ TEST_F(AXRangeTest, GetTextWithMaxCount) {
 }
 
 TEST_F(AXRangeTest, GetTextWithList) {
-  const std::u16string kListMarker1 = base::ASCIIToUTF16("1. ");
-  const std::u16string kListItemContent = base::ASCIIToUTF16("List item 1");
-  const std::u16string kListMarker2 = base::ASCIIToUTF16("2. ");
-  const std::u16string kAfterList = base::ASCIIToUTF16("After list");
+  const std::u16string kListMarker1 = u"1. ";
+  const std::u16string kListItemContent = u"List item 1";
+  const std::u16string kListMarker2 = u"2. ";
+  const std::u16string kAfterList = u"After list";
   const std::u16string kAllText = kListMarker1.substr()
                                       .append(kListItemContent)
                                       .append(NEWLINE)

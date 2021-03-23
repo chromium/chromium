@@ -167,7 +167,7 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
   std::u16string GetValueAsString(View* obj) const override {
     typename TypeHelper::TKValue value = obj->GetProperty(key_);
     if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
-      return base::ASCIIToUTF16("(not assigned)");
+      return u"(not assigned)";
     } else {
       // GetProperty() returns a pointer when this is an owned property.
       // If |TValue| is not pointer, DeRef() returns |*value|, otherwise

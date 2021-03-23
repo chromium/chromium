@@ -282,8 +282,7 @@ std::u16string TestTableModel2::GetText(int row, int column_id) {
 }
 
 std::u16string TestTableModel2::GetTooltip(int row) {
-  return tooltip_ ? *tooltip_
-                  : base::ASCIIToUTF16("Tooltip") + base::NumberToString16(row);
+  return tooltip_ ? *tooltip_ : u"Tooltip" + base::NumberToString16(row);
 }
 
 void TestTableModel2::SetObserver(ui::TableModelObserver* observer) {
@@ -422,9 +421,9 @@ class TableViewTest : public ViewsTestBase,
 
     model_ = std::make_unique<TestTableModel2>();
     std::vector<ui::TableColumn> columns(2);
-    columns[0].title = base::ASCIIToUTF16("Title Column 0");
+    columns[0].title = u"Title Column 0";
     columns[0].sortable = true;
-    columns[1].title = base::ASCIIToUTF16("Title Column 1");
+    columns[1].title = u"Title Column 1";
     columns[1].id = 1;
     columns[1].sortable = true;
 
@@ -1094,7 +1093,7 @@ TEST_P(TableViewTest, Tooltip) {
     return gfx::Point(5, (row + 0.5) * table_->GetRowHeight());
   };
   auto expected = [](int row) {
-    return base::ASCIIToUTF16("Tooltip") + base::NumberToString16(row);
+    return u"Tooltip" + base::NumberToString16(row);
   };
   EXPECT_EQ(expected(0), table_->GetTooltipText(local_point_for_row(0)));
   EXPECT_EQ(expected(1), table_->GetTooltipText(local_point_for_row(1)));
@@ -1977,7 +1976,7 @@ TEST_P(TableViewTest, RemovingSortedRowsDoesNotCauseOverflow) {
   // consequently attempt to access the last element in the model via the
   // `view_to_model_` mapping. This will result in a crash if the view-model
   // mappings have not been appropriately updated.
-  model_->SetTooltip(base::ASCIIToUTF16(""));
+  model_->SetTooltip(u"");
   model_->RemoveRow(0);
   model_->RemoveRow(0);
   model_->RemoveRow(0);

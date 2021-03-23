@@ -297,7 +297,7 @@ TEST_F(ResourceBundleTest, DelegateGetLocalizedString) {
   MockResourceBundleDelegate delegate;
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
 
-  std::u16string data = base::ASCIIToUTF16("My test data");
+  std::u16string data = u"My test data";
   int resource_id = 5;
 
   EXPECT_CALL(delegate, GetLocalizedString(resource_id, _))
@@ -311,7 +311,7 @@ TEST_F(ResourceBundleTest, DelegateGetLocalizedString) {
 TEST_F(ResourceBundleTest, OverrideStringResource) {
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
 
-  std::u16string data = base::ASCIIToUTF16("My test data");
+  std::u16string data = u"My test data";
   int resource_id = 5;
 
   std::u16string result = resource_bundle->GetLocalizedString(resource_id);
@@ -327,7 +327,7 @@ TEST_F(ResourceBundleTest, OverrideStringResource) {
 TEST_F(ResourceBundleTest, CanOverrideStringResources) {
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
 
-  std::u16string data = base::ASCIIToUTF16("My test data");
+  std::u16string data = u"My test data";
   int resource_id = 5;
 
   EXPECT_TRUE(
@@ -342,14 +342,14 @@ TEST_F(ResourceBundleTest, DelegateGetLocalizedStringWithOverride) {
   MockResourceBundleDelegate delegate;
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
 
-  std::u16string delegate_data = base::ASCIIToUTF16("My delegate data");
+  std::u16string delegate_data = u"My delegate data";
   int resource_id = 5;
 
   EXPECT_CALL(delegate, GetLocalizedString(resource_id, _))
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<1>(delegate_data), Return(true)));
 
-  std::u16string override_data = base::ASCIIToUTF16("My override data");
+  std::u16string override_data = u"My override data";
 
   std::u16string result = resource_bundle->GetLocalizedString(resource_id);
   EXPECT_EQ(delegate_data, result);

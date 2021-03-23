@@ -68,7 +68,7 @@ std::u16string ElideEmail(const std::u16string& email,
   DCHECK(!domain.empty());
 
   // Subtract the @ symbol from the available width as it is mandatory.
-  const std::u16string kAtSignUTF16 = ASCIIToUTF16("@");
+  const std::u16string kAtSignUTF16 = u"@";
   available_pixel_width -= GetStringWidthF(kAtSignUTF16, font_list);
 
   // Check whether eliding the domain is necessary: if eliding the username
@@ -299,17 +299,17 @@ bool ElideString(const std::u16string& input,
       output->assign(input.substr(0, 2));
       break;
     case 3:
-      output->assign(input.substr(0, 1) + ASCIIToUTF16(".") +
+      output->assign(input.substr(0, 1) + u"." +
                      input.substr(input.length() - 1));
       break;
     case 4:
-      output->assign(input.substr(0, 1) + ASCIIToUTF16("..") +
+      output->assign(input.substr(0, 1) + u".." +
                      input.substr(input.length() - 1));
       break;
     default: {
       size_t rstr_len = (max_len - 3) / 2;
       size_t lstr_len = rstr_len + ((max_len - 3) % 2);
-      output->assign(input.substr(0, lstr_len) + ASCIIToUTF16("...") +
+      output->assign(input.substr(0, lstr_len) + u"..." +
                      input.substr(input.length() - rstr_len));
       break;
     }
@@ -412,7 +412,7 @@ void RectangleString::AddString(const std::u16string& input) {
 
 bool RectangleString::Finalize() {
   if (suppressed_) {
-    output_->append(ASCIIToUTF16("..."));
+    output_->append(u"...");
     return true;
   }
   return false;
@@ -473,7 +473,7 @@ void RectangleString::Append(const std::u16string& string) {
 void RectangleString::NewLine(bool output) {
   if (current_row_ < max_rows_) {
     if (output)
-      output_->append(ASCIIToUTF16("\n"));
+      output_->append(u"\n");
   } else {
     suppressed_ = true;
   }

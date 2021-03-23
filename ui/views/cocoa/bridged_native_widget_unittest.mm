@@ -935,7 +935,7 @@ TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
 // Ensure a nil NSTextInputContext is returned when the ui::TextInputClient is
 // not editable, a password field, or unset.
 TEST_F(BridgedNativeWidgetTest, InputContext) {
-  const std::u16string test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_FALSE([ns_view_ inputContext]);
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
@@ -1389,7 +1389,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange_Caret) {
   EXPECT_EQ_RANGE(caret_range, actual_range);
 
   // Set composition with caret before second character ('e').
-  const std::u16string test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, &caret_range);
 
@@ -1439,7 +1439,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange) {
   InstallTextField("");
   ui::TextInputClient* client = [ns_view_ textInputClient];
 
-  const std::u16string test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, nullptr);
 

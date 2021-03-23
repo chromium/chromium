@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
   rvhi->OnHardwareConfigurationChanged();
 
   GURL test_url = GetTestUrl("", "interaction-mq-dynamic.html");
-  const std::u16string kSuccessTitle(base::ASCIIToUTF16("SUCCESS"));
+  const std::u16string kSuccessTitle(u"SUCCESS");
   TitleWatcher title_watcher(shell()->web_contents(), kSuccessTitle);
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
 

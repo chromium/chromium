@@ -64,8 +64,7 @@ void LabelExample::CreateExampleView(View* container) {
   // A very simple label example, followed by additional helpful examples.
   container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
-  container->AddChildView(
-      std::make_unique<Label>(ASCIIToUTF16("Hello world!")));
+  container->AddChildView(std::make_unique<Label>(u"Hello world!"));
 
   const char16_t hello_world_hebrew[] =
       u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd!";
@@ -77,7 +76,7 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 
-  label = std::make_unique<Label>(ASCIIToUTF16("A left-aligned blue label."));
+  label = std::make_unique<Label>(u"A left-aligned blue label.");
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(SK_ColorBLUE);
   container->AddChildView(std::move(label));
@@ -86,8 +85,7 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetObscured(true);
   container->AddChildView(std::move(label));
 
-  label =
-      std::make_unique<Label>(ASCIIToUTF16("A Courier-18 label with shadows."));
+  label = std::make_unique<Label>(u"A Courier-18 label with shadows.");
   label->SetFontList(gfx::FontList("Courier, 18px"));
   gfx::ShadowValues shadows(1,
                             gfx::ShadowValue(gfx::Vector2d(), 1, SK_ColorRED));
@@ -110,12 +108,12 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetMultiLine(true);
   container->AddChildView(std::move(label));
 
-  label = std::make_unique<Label>(ASCIIToUTF16("Label with thick border"));
+  label = std::make_unique<Label>(u"Label with thick border");
   label->SetBorder(CreateSolidBorder(20, SK_ColorRED));
   container->AddChildView(std::move(label));
 
   label = std::make_unique<Label>(
-      ASCIIToUTF16("A multiline label...\n\n...which supports text selection"));
+      u"A multiline label...\n\n...which supports text selection");
   label->SetSelectable(true);
   label->SetMultiLine(true);
   container->AddChildView(std::move(label));
@@ -160,7 +158,7 @@ void LabelExample::AddCustomLabel(View* container) {
                         GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   layout->StartRow(0, 0);
-  layout->AddView(std::make_unique<Label>(ASCIIToUTF16("Content: ")));
+  layout->AddView(std::make_unique<Label>(u"Content: "));
   auto textfield = std::make_unique<Textfield>();
   textfield->SetText(
       ASCIIToUTF16("Use the provided controls to configure the "
@@ -186,15 +184,13 @@ void LabelExample::AddCustomLabel(View* container) {
                         GridLayout::ColumnSize::kUsePreferred, 0, 0);
   layout->StartRow(0, 1);
   multiline_ = layout->AddView(std::make_unique<Checkbox>(
-      base::ASCIIToUTF16("Multiline"),
-      base::BindRepeating(&LabelExample::MultilineCheckboxPressed,
-                          base::Unretained(this))));
+      u"Multiline", base::BindRepeating(&LabelExample::MultilineCheckboxPressed,
+                                        base::Unretained(this))));
   shadows_ = layout->AddView(std::make_unique<Checkbox>(
-      base::ASCIIToUTF16("Shadows"),
-      base::BindRepeating(&LabelExample::ShadowsCheckboxPressed,
-                          base::Unretained(this))));
+      u"Shadows", base::BindRepeating(&LabelExample::ShadowsCheckboxPressed,
+                                      base::Unretained(this))));
   selectable_ = layout->AddView(std::make_unique<Checkbox>(
-      base::ASCIIToUTF16("Selectable"),
+      u"Selectable",
       base::BindRepeating(&LabelExample::SelectableCheckboxPressed,
                           base::Unretained(this))));
   layout->AddPaddingRow(0, 8);

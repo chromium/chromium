@@ -119,8 +119,7 @@ TEST_F(StyledLabelTest, TrailingWhitespaceiIgnored) {
   styled()->Layout();
 
   ASSERT_EQ(1u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16("This is a test block of text"),
-            LabelAt(styled(), 0)->GetText());
+  EXPECT_EQ(u"This is a test block of text", LabelAt(styled(), 0)->GetText());
 }
 
 TEST_F(StyledLabelTest, RespectLeadingWhitespace) {
@@ -131,7 +130,7 @@ TEST_F(StyledLabelTest, RespectLeadingWhitespace) {
   styled()->Layout();
 
   ASSERT_EQ(1u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16("   This is a test block of text"),
+  EXPECT_EQ(u"   This is a test block of text",
             LabelAt(styled(), 0)->GetText());
 }
 
@@ -173,7 +172,7 @@ TEST_F(StyledLabelTest, FirstLineNotEmptyWhenLeadingWhitespaceTooLong) {
   styled()->Layout();
 
   ASSERT_EQ(1u, styled()->children().size());
-  EXPECT_EQ(ASCIIToUTF16("a"), LabelAt(styled(), 0)->GetText());
+  EXPECT_EQ(u"a", LabelAt(styled(), 0)->GetText());
   EXPECT_EQ(label_preferred_size.height(),
             styled()->GetHeightForWidth(label_preferred_size.width() / 2));
 }
@@ -323,7 +322,7 @@ TEST_F(StyledLabelTest, StyledRangeCustomFontUnderlined) {
   const std::string underlined_text("and this should be undelined");
   InitStyledLabel(text + underlined_text);
   StyledLabel::RangeStyleInfo style_info;
-  style_info.tooltip = ASCIIToUTF16("tooltip");
+  style_info.tooltip = u"tooltip";
   style_info.custom_font =
       styled()->GetFontList().DeriveWithStyle(gfx::Font::UNDERLINE);
   styled()->AddStyleRange(
@@ -459,7 +458,7 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
 
   InitStyledLabel(text + tooltip_text + normal_text + link_text);
   StyledLabel::RangeStyleInfo tooltip_style;
-  tooltip_style.tooltip = ASCIIToUTF16("tooltip");
+  tooltip_style.tooltip = u"tooltip";
   styled()->AddStyleRange(
       gfx::Range(tooltip_start, tooltip_start + tooltip_text.size()),
       tooltip_style);
@@ -494,9 +493,9 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
 
   std::u16string tooltip =
       styled()->children()[1]->GetTooltipText(gfx::Point(1, 1));
-  EXPECT_EQ(ASCIIToUTF16("tooltip"), tooltip);
+  EXPECT_EQ(u"tooltip", tooltip);
   tooltip = styled()->children()[2]->GetTooltipText(gfx::Point(1, 1));
-  EXPECT_EQ(ASCIIToUTF16("tooltip"), tooltip);
+  EXPECT_EQ(u"tooltip", tooltip);
 }
 
 TEST_F(StyledLabelTest, SetTextContextAndDefaultStyle) {

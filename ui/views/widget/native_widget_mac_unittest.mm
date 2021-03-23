@@ -629,7 +629,7 @@ TEST_F(NativeWidgetMacTest, AccessibilityIntegration) {
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
 
-  const std::u16string test_string = base::ASCIIToUTF16("Green");
+  const std::u16string test_string = u"Green";
   views::Label* label = new views::Label(test_string);
   label->SetBounds(0, 0, 100, 100);
   widget->GetContentsView()->AddChildView(label);
@@ -872,8 +872,8 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
 
-  const std::u16string tooltip_back = base::ASCIIToUTF16("Back");
-  const std::u16string tooltip_front = base::ASCIIToUTF16("Front");
+  const std::u16string tooltip_back = u"Back";
+  const std::u16string tooltip_front = u"Front";
   const std::u16string long_tooltip(2000, 'W');
 
   // Create a nested layout to test corner cases.
@@ -935,13 +935,12 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
       CreateChildPlatformWidget(widget_below->GetNativeView());
   widget_above->SetBounds(gfx::Rect(100, 0, 100, 200));
 
-  const std::u16string tooltip_above = base::ASCIIToUTF16("Front");
+  const std::u16string tooltip_above = u"Front";
   CustomTooltipView* view_above = new CustomTooltipView(tooltip_above, nullptr);
   view_above->SetBoundsRect(widget_above->GetContentsView()->bounds());
   widget_above->GetContentsView()->AddChildView(view_above);
 
-  CustomTooltipView* view_below =
-      new CustomTooltipView(base::ASCIIToUTF16("Back"), view_above);
+  CustomTooltipView* view_below = new CustomTooltipView(u"Back", view_above);
   view_below->SetBoundsRect(widget_below->GetContentsView()->bounds());
   widget_below->GetContentsView()->AddChildView(view_below);
 
@@ -1718,7 +1717,7 @@ TEST_F(NativeWidgetMacTest, DISABLED_DoesHideTitle) {
   EXPECT_NSEQ(@"", [ns_window title]);
   NSData* empty_title_data = WindowContentsAsTIFF(ns_window);
 
-  delegate.set_title(base::ASCIIToUTF16("This is a title"));
+  delegate.set_title(u"This is a title");
   widget->UpdateWindowTitle();
   NSData* this_title_data = WindowContentsAsTIFF(ns_window);
 
@@ -1727,7 +1726,7 @@ TEST_F(NativeWidgetMacTest, DISABLED_DoesHideTitle) {
   EXPECT_NSNE(empty_title_data, this_title_data);
 
   delegate.set_should_show_title(false);
-  delegate.set_title(base::ASCIIToUTF16("This is another title"));
+  delegate.set_title(u"This is another title");
   widget->UpdateWindowTitle();
   NSData* hidden_title_data = WindowContentsAsTIFF(ns_window);
 

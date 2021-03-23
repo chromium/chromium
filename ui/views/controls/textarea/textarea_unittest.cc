@@ -105,7 +105,7 @@ TEST_F(TextareaTest, PasteNewlineTest) {
 
 // Re-enable when crbug.com/1163587 is fixed.
 TEST_F(TextareaTest, DISABLED_CursorMovement) {
-  textarea_->SetText(base::ASCIIToUTF16("one\n\ntwo three"));
+  textarea_->SetText(u"one\n\ntwo three");
 
   // Move Up/Down at the front of the line.
   RunMoveUpDownTest(0, ui::VKEY_DOWN, {4, 5, 14});
@@ -156,7 +156,7 @@ TEST_F(TextareaTest, CursorViewBounds) {
 }
 
 TEST_F(TextareaTest, LineSelection) {
-  textarea_->SetText(base::ASCIIToUTF16("12\n34567 89"));
+  textarea_->SetText(u"12\n34567 89");
 
   // Place the cursor after "5".
   textarea_->SetEditableSelectionRange(gfx::Range(6));
@@ -194,7 +194,7 @@ TEST_F(TextareaTest, LineSelection) {
 #define MAYBE_MoveUpDownAndModifySelection MoveUpDownAndModifySelection
 #endif  // defined(OS_MAC)
 TEST_F(TextareaTest, MAYBE_MoveUpDownAndModifySelection) {
-  textarea_->SetText(base::ASCIIToUTF16("12\n34567 89"));
+  textarea_->SetText(u"12\n34567 89");
   textarea_->SetEditableSelectionRange(gfx::Range(6));
   EXPECT_EQ(1U, GetCursorLine());
 
@@ -224,7 +224,7 @@ TEST_F(TextareaTest, MAYBE_MoveUpDownAndModifySelection) {
 }
 
 TEST_F(TextareaTest, MovePageUpDownAndModifySelection) {
-  textarea_->SetText(base::ASCIIToUTF16("12\n34567 89"));
+  textarea_->SetText(u"12\n34567 89");
   textarea_->SetEditableSelectionRange(gfx::Range(6));
 
   EXPECT_TRUE(

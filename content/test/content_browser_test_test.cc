@@ -277,7 +277,7 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
   void Test() {
     GURL url = GetTestUrl(".", "simple_page.html");
 
-    std::u16string expected_title(base::ASCIIToUTF16("OK"));
+    std::u16string expected_title(u"OK");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     std::u16string title = title_watcher.WaitAndGetTitle();

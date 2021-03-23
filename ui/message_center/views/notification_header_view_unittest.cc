@@ -157,7 +157,7 @@ TEST_F(NotificationHeaderViewTest, SetOverflowIndicator) {
 }
 
 TEST_F(NotificationHeaderViewTest, SetSummaryText) {
-  std::u16string expected_summary_text = base::ASCIIToUTF16("summary");
+  std::u16string expected_summary_text = u"summary";
 
   notification_header_view_->SetSummaryText(expected_summary_text);
 
@@ -180,12 +180,12 @@ TEST_F(NotificationHeaderViewTest, TimestampHiddenWithProgress) {
   EXPECT_TRUE(timestamp_view->GetVisible());
 
   // Make sure we show the timestamp view with summary text.
-  notification_header_view_->SetSummaryText(base::ASCIIToUTF16("summary"));
+  notification_header_view_->SetSummaryText(u"summary");
   EXPECT_TRUE(timestamp_view->GetVisible());
 }
 
 TEST_F(NotificationHeaderViewTest, ColorContrastEnforcement) {
-  notification_header_view_->SetSummaryText(base::ASCIIToUTF16("summary"));
+  notification_header_view_->SetSummaryText(u"summary");
   auto* summary_text = notification_header_view_->summary_text_for_testing();
   notification_header_view_->ClearAppIcon();
   notification_header_view_->SetExpandButtonEnabled(true);

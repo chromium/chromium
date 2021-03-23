@@ -83,7 +83,7 @@ class UtilityProcessSandboxBrowserTest
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     UtilityProcessHost* host = new UtilityProcessHost();
     host->SetSandboxType(GetParam());
-    host->SetName(base::ASCIIToUTF16("SandboxTestProcess"));
+    host->SetName(u"SandboxTestProcess");
     host->SetMetricsName(kTestProcessName);
     EXPECT_TRUE(host->Start());
 

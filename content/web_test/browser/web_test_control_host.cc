@@ -275,27 +275,22 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
 
 #if defined(OS_MAC)
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Apple Chancery");
-  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Papyrus");
-  prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Times");
-  prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Times");
+      u"Apple Chancery";
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";
+  prefs->serif_font_family_map[blink::web_pref::kCommonScript] = u"Times";
+  prefs->standard_font_family_map[blink::web_pref::kCommonScript] = u"Times";
 #else
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Comic Sans MS");
-  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Impact");
+      u"Comic Sans MS";
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Impact";
   prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("times new roman");
+      u"times new roman";
   prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("times new roman");
+      u"times new roman";
 #endif
-  prefs->fixed_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Courier");
+  prefs->fixed_font_family_map[blink::web_pref::kCommonScript] = u"Courier";
   prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Helvetica");
+      u"Helvetica";
 }
 
 }  // namespace

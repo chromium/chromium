@@ -6576,11 +6576,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
 
   // Load the media.
   {
-    TitleWatcher title_watcher(shell()->web_contents(),
-                               base::ASCIIToUTF16("canplaythrough"));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("error"));
-    EXPECT_EQ(base::ASCIIToUTF16("canplaythrough"),
-              title_watcher.WaitAndGetTitle());
+    TitleWatcher title_watcher(shell()->web_contents(), u"canplaythrough");
+    title_watcher.AlsoWaitForTitle(u"error");
+    EXPECT_EQ(u"canplaythrough", title_watcher.WaitAndGetTitle());
   }
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(
@@ -6656,11 +6654,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
 
   // Load the media.
   {
-    TitleWatcher title_watcher(shell()->web_contents(),
-                               base::ASCIIToUTF16("canplaythrough"));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("error"));
-    EXPECT_EQ(base::ASCIIToUTF16("canplaythrough"),
-              title_watcher.WaitAndGetTitle());
+    TitleWatcher title_watcher(shell()->web_contents(), u"canplaythrough");
+    title_watcher.AlsoWaitForTitle(u"error");
+    EXPECT_EQ(u"canplaythrough", title_watcher.WaitAndGetTitle());
   }
 
   EXPECT_TRUE(ExecJs(rfh_a, R"(

@@ -260,23 +260,21 @@ class ViewAXPlatformNodeDelegateMenuTest
     menu_ = new views::TestMenuItemView(menu_delegate_.get());
     runner_ = std::make_unique<MenuRunner>(menu_, 0);
 
-    menu_->AppendMenuItemImpl(0, base::ASCIIToUTF16("normal"), gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(0, u"normal", gfx::ImageSkia(),
                               MenuItemView::Type::kNormal);
-    menu_->AppendMenuItemImpl(1, base::ASCIIToUTF16("submenu"),
-                              gfx::ImageSkia(), MenuItemView::Type::kSubMenu);
-    menu_->AppendMenuItemImpl(2, base::ASCIIToUTF16("actionable"),
-                              gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(1, u"submenu", gfx::ImageSkia(),
+                              MenuItemView::Type::kSubMenu);
+    menu_->AppendMenuItemImpl(2, u"actionable", gfx::ImageSkia(),
                               MenuItemView::Type::kActionableSubMenu);
-    menu_->AppendMenuItemImpl(3, base::ASCIIToUTF16("checkbox"),
-                              gfx::ImageSkia(), MenuItemView::Type::kCheckbox);
-    menu_->AppendMenuItemImpl(4, base::ASCIIToUTF16("radio"), gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(3, u"checkbox", gfx::ImageSkia(),
+                              MenuItemView::Type::kCheckbox);
+    menu_->AppendMenuItemImpl(4, u"radio", gfx::ImageSkia(),
                               MenuItemView::Type::kRadio);
-    menu_->AppendMenuItemImpl(5, base::ASCIIToUTF16("separator"),
-                              gfx::ImageSkia(), MenuItemView::Type::kSeparator);
-    menu_->AppendMenuItemImpl(6, base::ASCIIToUTF16("highlighted"),
-                              gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(5, u"separator", gfx::ImageSkia(),
+                              MenuItemView::Type::kSeparator);
+    menu_->AppendMenuItemImpl(6, u"highlighted", gfx::ImageSkia(),
                               MenuItemView::Type::kHighlighted);
-    menu_->AppendMenuItemImpl(7, base::ASCIIToUTF16("title"), gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(7, u"title", gfx::ImageSkia(),
                               MenuItemView::Type::kTitle);
 
     submenu_ = menu_->GetSubmenu();

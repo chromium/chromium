@@ -133,13 +133,12 @@ void TouchSelectionMenuViews::CreateButtons() {
   }
 
   // Finally, add ellipsis button.
-  CreateButton(base::ASCIIToUTF16("..."),
-               base::BindRepeating(
-                   [](TouchSelectionMenuViews* menu) {
-                     menu->CloseMenu();
-                     menu->client_->RunContextMenu();
-                   },
-                   base::Unretained(this)))
+  CreateButton(u"...", base::BindRepeating(
+                           [](TouchSelectionMenuViews* menu) {
+                             menu->CloseMenu();
+                             menu->client_->RunContextMenu();
+                           },
+                           base::Unretained(this)))
       ->SetID(ButtonViewId::kEllipsisButton);
   InvalidateLayout();
 }

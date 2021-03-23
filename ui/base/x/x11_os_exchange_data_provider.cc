@@ -114,7 +114,7 @@ void XOSExchangeDataProvider::SetURL(const GURL& url,
 
     std::vector<unsigned char> data;
     ui::AddString16ToVector(spec, &data);
-    ui::AddString16ToVector(base::ASCIIToUTF16("\n"), &data);
+    ui::AddString16ToVector(u"\n", &data);
     ui::AddString16ToVector(title, &data);
     scoped_refptr<base::RefCountedMemory> mem(
         base::RefCountedBytes::TakeVector(&data));
@@ -219,9 +219,8 @@ bool XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy,
       std::u16string unparsed;
       data.AssignTo(&unparsed);
 
-      std::vector<std::u16string> tokens =
-          base::SplitString(unparsed, base::ASCIIToUTF16("\n"),
-                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      std::vector<std::u16string> tokens = base::SplitString(
+          unparsed, u"\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (tokens.size() > 0) {
         if (tokens.size() > 1)
           *title = tokens[1];

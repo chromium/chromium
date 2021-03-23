@@ -927,7 +927,7 @@ TEST_F(ButtonTest, SetStateNotifiesObserver) {
 
 // Verifies setting the tooltip text will call NotifyAccessibilityEvent.
 TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
-  std::u16string test_tooltip_text = base::ASCIIToUTF16("Test Tooltip Text");
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   button()->SetTooltipText(test_tooltip_text);

@@ -99,8 +99,8 @@ GFX_EXPORT std::u16string ElideFilename(const base::FilePath& filename,
 // If the size of |input| is more than |max_len|, this function returns
 // true and |input| is shortened into |output| by removing chars in the
 // middle (they are replaced with up to 3 dots, as size permits).
-// Ex: ElideString(ASCIIToUTF16("Hello"), 10, &str) puts Hello in str and
-// returns false.  ElideString(ASCIIToUTF16("Hello my name is Tom"), 10, &str)
+// Ex: ElideString(u"Hello", 10, &str) puts Hello in str and
+// returns false.  ElideString(u"Hello my name is Tom", 10, &str)
 // puts "Hell...Tom" in str and returns true.
 // TODO(tsepez): Doesn't handle UTF-16 surrogate pairs properly.
 // TODO(tsepez): Doesn't handle bidi properly.

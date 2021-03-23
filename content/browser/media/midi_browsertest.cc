@@ -23,9 +23,9 @@ class MidiBrowserTest : public ContentBrowserTest {
   ~MidiBrowserTest() override {}
 
   void NavigateAndCheckResult(const std::string& path) {
-    const std::u16string expected = base::ASCIIToUTF16("pass");
+    const std::u16string expected = u"pass";
     content::TitleWatcher watcher(shell()->web_contents(), expected);
-    const std::u16string failed = base::ASCIIToUTF16("fail");
+    const std::u16string failed = u"fail";
     watcher.AlsoWaitForTitle(failed);
 
     EXPECT_TRUE(NavigateToURL(shell(), https_test_server_->GetURL(path)));

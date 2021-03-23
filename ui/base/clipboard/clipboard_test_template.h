@@ -144,7 +144,7 @@ TYPED_TEST_SUITE(ClipboardTest, TypesToTest, NamesOfTypesToTest);
 TYPED_TEST(ClipboardTest, ClearTest) {
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(ASCIIToUTF16("clear me"));
+    clipboard_writer.WriteText(u"clear me");
   }
   this->clipboard().Clear(ClipboardBuffer::kCopyPaste);
 
@@ -160,7 +160,7 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 }
 
 TYPED_TEST(ClipboardTest, TextTest) {
-  std::u16string text(ASCIIToUTF16("This is a std::u16string!#$")), text_result;
+  std::u16string text(u"This is a std::u16string!#$"), text_result;
   std::string ascii_text;
 
   {
@@ -199,8 +199,8 @@ TYPED_TEST(ClipboardTest, TextTest) {
 }
 
 TYPED_TEST(ClipboardTest, HTMLTest) {
-  std::u16string markup(ASCIIToUTF16("<string>Hi!</string>")), markup_result;
-  std::u16string plain(ASCIIToUTF16("Hi!")), plain_result;
+  std::u16string markup(u"<string>Hi!</string>"), markup_result;
+  std::u16string plain(u"Hi!"), plain_result;
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -230,7 +230,7 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
 }
 
 TYPED_TEST(ClipboardTest, SvgTest) {
-  std::u16string markup(ASCIIToUTF16("<svg> <circle r=\"40\" /> </svg>"));
+  std::u16string markup(u"<svg> <circle r=\"40\" /> </svg>");
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -283,8 +283,8 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
     return;
   }
 
-  std::u16string text(ASCIIToUTF16("Standard")), text_result;
-  std::u16string markup(ASCIIToUTF16("<string>Selection</string>"));
+  std::u16string text(u"Standard"), text_result;
+  std::u16string markup(u"<string>Selection</string>");
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -333,10 +333,9 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
-  std::u16string markup(ASCIIToUTF16("<em>Bye!<!--EndFragment --></em>")),
-      markup_result;
+  std::u16string markup(u"<em>Bye!<!--EndFragment --></em>"), markup_result;
   std::string url, url_result;
-  std::u16string plain(ASCIIToUTF16("Bye!")), plain_result;
+  std::u16string plain(u"Bye!"), plain_result;
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -401,7 +400,7 @@ TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
 // TODO(estade): Port the following test (decide what target we use for urls)
 #if !defined(OS_POSIX) || defined(OS_APPLE)
 TYPED_TEST(ClipboardTest, BookmarkTest) {
-  std::u16string title(ASCIIToUTF16("The Example Company")), title_result;
+  std::u16string title(u"The Example Company"), title_result;
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -455,8 +454,8 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
 #endif  // !defined(OS_ANDROID)
 
 TYPED_TEST(ClipboardTest, MultiFormatTest) {
-  std::u16string text(ASCIIToUTF16("Hi!")), text_result;
-  std::u16string markup(ASCIIToUTF16("<strong>Hi!</string>")), markup_result;
+  std::u16string text(u"Hi!"), text_result;
+  std::u16string markup(u"<strong>Hi!</string>"), markup_result;
   std::string url("http://www.example.com/"), url_result;
   std::string ascii_text;
 
@@ -503,7 +502,7 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
 }
 
 TYPED_TEST(ClipboardTest, URLTest) {
-  std::u16string url(ASCIIToUTF16("http://www.google.com/"));
+  std::u16string url(u"http://www.google.com/");
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -782,7 +781,7 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
-  std::u16string text = ASCIIToUTF16("Test String");
+  std::u16string text = u"Test String";
   std::string ascii_text;
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -793,17 +792,17 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
       this->clipboard().ReadAvailablePlatformSpecificFormatNames(
           ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
 #if defined(OS_APPLE)
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("public.utf8-plain-text")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("NSStringPboardType")));
+  EXPECT_THAT(raw_types, Contains(u"public.utf8-plain-text"));
+  EXPECT_THAT(raw_types, Contains(u"NSStringPboardType"));
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(2));
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("TEXT")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("STRING")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("UTF8_STRING")));
+  EXPECT_THAT(raw_types, Contains(u"TEXT"));
+  EXPECT_THAT(raw_types, Contains(u"STRING"));
+  EXPECT_THAT(raw_types, Contains(u"UTF8_STRING"));
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));
@@ -816,9 +815,9 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(4));
 #endif  // USE_X11
 #elif defined(OS_WIN)
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_UNICODETEXT")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_TEXT")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_OEMTEXT")));
+  EXPECT_THAT(raw_types, Contains(u"CF_UNICODETEXT"));
+  EXPECT_THAT(raw_types, Contains(u"CF_TEXT"));
+  EXPECT_THAT(raw_types, Contains(u"CF_OEMTEXT"));
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(3));
 #elif defined(USE_AURA) || defined(OS_ANDROID)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
@@ -994,7 +993,7 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
     writer.WriteText(u"foo");
     writer.WriteHTML(u"foo", "bar");
     writer.WriteBookmark(u"foo", "bar");
-    writer.WriteHyperlink(ASCIIToUTF16("foo"), "bar");
+    writer.WriteHyperlink(u"foo", "bar");
     writer.WriteWebSmartPaste();
     // Left out: WriteFile, WriteFiles, WriteBitmapFromPixels, WritePickledData.
   }

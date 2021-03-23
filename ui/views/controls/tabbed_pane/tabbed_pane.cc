@@ -477,16 +477,12 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
 }
 
 DEFINE_ENUM_CONVERTERS(TabbedPane::Orientation,
-                       {TabbedPane::Orientation::kHorizontal,
-                        base::ASCIIToUTF16("HORIZONTAL")},
-                       {TabbedPane::Orientation::kVertical,
-                        base::ASCIIToUTF16("VERTICAL")})
+                       {TabbedPane::Orientation::kHorizontal, u"HORIZONTAL"},
+                       {TabbedPane::Orientation::kVertical, u"VERTICAL"})
 
 DEFINE_ENUM_CONVERTERS(TabbedPane::TabStripStyle,
-                       {TabbedPane::TabStripStyle::kBorder,
-                        base::ASCIIToUTF16("BORDER")},
-                       {TabbedPane::TabStripStyle::kHighlight,
-                        base::ASCIIToUTF16("HIGHLIGHT")})
+                       {TabbedPane::TabStripStyle::kBorder, u"BORDER"},
+                       {TabbedPane::TabStripStyle::kHighlight, u"HIGHLIGHT"})
 
 BEGIN_METADATA(TabStrip, View)
 ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)

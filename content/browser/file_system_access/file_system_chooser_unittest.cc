@@ -86,10 +86,10 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({"tExt/Plain"}),
+      u"", std::vector<std::string>({"tExt/Plain"}),
       std::vector<std::string>({})));
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16("Images"), std::vector<std::string>({"image/*"}),
+      u"Images", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/true);
 
@@ -116,9 +116,8 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
 
   ASSERT_EQ(2u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("Images"),
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"Images",
             dialog_params.file_types->extension_description_overrides[1]);
 }
 
@@ -128,7 +127,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({}),
+      u"", std::vector<std::string>({}),
       std::vector<std::string>({"text", "js", "text"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/true);
 
@@ -145,8 +144,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
@@ -155,7 +153,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({"image/*"}),
+      u"", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({"text", "jpg"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
 
@@ -178,8 +176,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
@@ -188,7 +185,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({}),
+      u"", std::vector<std::string>({}),
       std::vector<std::string>(
           {"lnk", "foo.lnk", "foo.bar.local", "text", "local"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
@@ -204,8 +201,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, LocalPath) {

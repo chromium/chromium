@@ -109,7 +109,7 @@ class OzonePlatformX11 : public OzonePlatform,
       PlatformWindowInitProperties properties) override {
     auto window = std::make_unique<X11Window>(delegate);
     window->Initialize(std::move(properties));
-    window->SetTitle(base::ASCIIToUTF16("Ozone X11"));
+    window->SetTitle(u"Ozone X11");
     return std::move(window);
   }
 

@@ -158,7 +158,7 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   media_session::MediaImage CreateTestImageWithSize(int size) const {
     media_session::MediaImage image;
     image.src = GetTestImageURL();
-    image.type = base::ASCIIToUTF16("image/jpeg");
+    image.type = u"image/jpeg";
     image.sizes.push_back(gfx::Size(size, size));
     return image;
   }
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
 
   media_session::MediaImage image;
   image.src = embedded_test_server()->GetURL("/media/session/test_image.jpg");
-  image.type = base::ASCIIToUTF16("image/jpeg");
+  image.type = u"image/jpeg";
   image.sizes.push_back(gfx::Size(1, 1));
 
   MediaImageGetterHelper helper(media_session, CreateTestImageWithSize(1), 0,

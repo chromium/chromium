@@ -49,9 +49,7 @@ using net::test_server::HttpResponse;
 // --allow-file-access-from-files flag.
 class CorsFileOriginBrowserTest : public ContentBrowserTest {
  public:
-  CorsFileOriginBrowserTest()
-      : pass_string_(base::ASCIIToUTF16("PASS")),
-        fail_string_(base::ASCIIToUTF16("FAIL")) {}
+  CorsFileOriginBrowserTest() : pass_string_(u"PASS"), fail_string_(u"FAIL") {}
   ~CorsFileOriginBrowserTest() override = default;
 
  protected:
@@ -73,8 +71,7 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
 
     // Does not appear in the expectations, but the title can be on unexpected
     // failures.
-    std::u16string wrong_origin_string =
-        base::ASCIIToUTF16("FAIL: response text does not match");
+    std::u16string wrong_origin_string = u"FAIL: response text does not match";
     watcher->AlsoWaitForTitle(wrong_origin_string);
     return watcher;
   }

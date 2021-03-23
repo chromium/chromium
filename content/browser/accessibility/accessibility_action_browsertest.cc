@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, InputSetValue) {
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kTextField, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ(u"Before", target->GetValueForControl());
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
                                           ui::kAXModeComplete,
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, InputSetValue) {
   GetManager()->SetValue(*target, "After");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("After"), target->GetValueForControl());
+  EXPECT_EQ(u"After", target->GetValueForControl());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kTextField, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ(u"Before", target->GetValueForControl());
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
                                           ui::kAXModeComplete,
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Line1\nLine2"), target->GetValueForControl());
+  EXPECT_EQ(u"Line1\nLine2", target->GetValueForControl());
 
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // which contain all of the line break information.
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kGenericContainer, "Answer");
   ASSERT_NE(nullptr, target);
-  EXPECT_EQ(base::ASCIIToUTF16("Before"), target->GetValueForControl());
+  EXPECT_EQ(u"Before", target->GetValueForControl());
 
   AccessibilityNotificationWaiter waiter2(
       shell()->web_contents(), ui::kAXModeComplete,
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Line1\nLine2"), target->GetValueForControl());
+  EXPECT_EQ(u"Line1\nLine2", target->GetValueForControl());
 
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // which contain all of the line break information.
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
 
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
-  EXPECT_EQ(base::ASCIIToUTF16("2"), context_menu_params.link_text);
+  EXPECT_EQ(u"2", context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
 }
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
-  EXPECT_EQ(base::ASCIIToUTF16("Offscreen"), context_menu_params.link_text);
+  EXPECT_EQ(u"Offscreen", context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
   // Expect the context menu point to be 0, 0.
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
 
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
-  EXPECT_EQ(base::ASCIIToUTF16("Obscured"), context_menu_params.link_text);
+  EXPECT_EQ(u"Obscured", context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
   // Expect the context menu to open on the same line as the link text. Check

@@ -47,7 +47,7 @@ class InfoBubbleTest : public ViewsTestBase {
 };
 
 TEST_F(InfoBubbleTest, CreateInfoBubble) {
-  std::u16string text = base::ASCIIToUTF16("test message");
+  std::u16string text = u"test message";
 
   InfoBubble* info_bubble =
       new InfoBubble(anchor_widget()->GetContentsView(), text);
@@ -118,8 +118,8 @@ TEST_F(InfoBubbleTest, TestInfoBubbleVisibilityHiddenAnchor) {
 }
 
 TEST_F(InfoBubbleTest, TestInfoBubbleAnchorBoundsChanged) {
-  InfoBubble* info_bubble = new InfoBubble(anchor_widget()->GetContentsView(),
-                                           base::ASCIIToUTF16(""));
+  InfoBubble* info_bubble =
+      new InfoBubble(anchor_widget()->GetContentsView(), u"");
   info_bubble->Show();
 
   gfx::Rect original_bounds =
@@ -135,8 +135,8 @@ TEST_F(InfoBubbleTest, TestInfoBubbleAnchorBoundsChanged) {
 
 // Iterate through the metadata for InfoBubble to ensure it all works.
 TEST_F(InfoBubbleTest, MetadataTest) {
-  InfoBubble* info_bubble = new InfoBubble(anchor_widget()->GetContentsView(),
-                                           base::ASCIIToUTF16(""));
+  InfoBubble* info_bubble =
+      new InfoBubble(anchor_widget()->GetContentsView(), u"");
   info_bubble->Show();
 
   test::TestViewMetadata(info_bubble);

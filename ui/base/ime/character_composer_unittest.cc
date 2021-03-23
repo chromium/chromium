@@ -320,38 +320,38 @@ TEST_F(CharacterComposerTest, HexadecimalCompositionPreedit) {
   // HIRAGANA LETTER A (U+3042)
   ExpectUnicodeKeyFiltered(VKEY_U, DomCode::US_U,
                            EF_SHIFT_DOWN | EF_CONTROL_DOWN, 'U');
-  EXPECT_EQ(ASCIIToUTF16("u"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_3, DomCode::DIGIT3, 0, '3');
-  EXPECT_EQ(ASCIIToUTF16("u3"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_0, DomCode::DIGIT0, 0, '0');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_4, DomCode::DIGIT4, 0, '4');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_A, DomCode::US_A, 0, 'a');
-  EXPECT_EQ(ASCIIToUTF16("u304a"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304a", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_BACK, DomCode::BACKSPACE, EF_NONE, '\b');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_2, DomCode::DIGIT2, EF_NONE, '2');
   ExpectUnicodeKeyComposed(VKEY_RETURN, DomCode::ENTER, EF_NONE, '\r',
                            std::u16string(1, 0x3042));
-  EXPECT_EQ(ASCIIToUTF16(""), character_composer_.preedit_string());
+  EXPECT_EQ(u"", character_composer_.preedit_string());
 
   // Sequence with an ignored character ('x') and Escape.
   ExpectUnicodeKeyFiltered(VKEY_U, DomCode::US_U,
                            EF_SHIFT_DOWN | EF_CONTROL_DOWN, 'U');
-  EXPECT_EQ(ASCIIToUTF16("u"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_3, DomCode::DIGIT3, 0, '3');
-  EXPECT_EQ(ASCIIToUTF16("u3"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_0, DomCode::DIGIT0, 0, '0');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_X, DomCode::US_X, 0, 'x');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_4, DomCode::DIGIT4, 0, '4');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_2, DomCode::DIGIT2, 0, '2');
-  EXPECT_EQ(ASCIIToUTF16("u3042"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3042", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(VKEY_ESCAPE, DomCode::ESCAPE, EF_NONE, 0x1B);
-  EXPECT_EQ(ASCIIToUTF16(""), character_composer_.preedit_string());
+  EXPECT_EQ(u"", character_composer_.preedit_string());
 }
 
 TEST_F(CharacterComposerTest, HexadecimalCompositionWithNonHexKey) {
@@ -448,40 +448,40 @@ TEST_F(CharacterComposerTest,
   const int kControlShift = EF_CONTROL_DOWN | EF_SHIFT_DOWN;
   // HIRAGANA LETTER A (U+3042)
   ExpectUnicodeKeyFiltered(ui::VKEY_U, DomCode::US_U, kControlShift, 0x15);
-  EXPECT_EQ(ASCIIToUTF16("u"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_3, DomCode::DIGIT3, kControlShift, '#');
-  EXPECT_EQ(ASCIIToUTF16("u3"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_0, DomCode::DIGIT0, kControlShift, ')');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_4, DomCode::DIGIT4, kControlShift, '$');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_A, DomCode::US_A, kControlShift, 0x01);
-  EXPECT_EQ(ASCIIToUTF16("u304a"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304a", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_BACK, DomCode::BACKSPACE, kControlShift,
                            '\b');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_2, DomCode::DIGIT2, kControlShift, 0);
-  EXPECT_EQ(ASCIIToUTF16("u3042"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3042", character_composer_.preedit_string());
   ExpectUnicodeKeyComposed(VKEY_RETURN, DomCode::ENTER, kControlShift, '\r',
                            std::u16string(1, 0x3042));
-  EXPECT_EQ(ASCIIToUTF16(""), character_composer_.preedit_string());
+  EXPECT_EQ(u"", character_composer_.preedit_string());
 
   // Sequence with an ignored character (control + shift + 'x') and Escape.
   ExpectUnicodeKeyFiltered(ui::VKEY_U, DomCode::US_U, kControlShift, 'U');
-  EXPECT_EQ(ASCIIToUTF16("u"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_3, DomCode::DIGIT3, kControlShift, '#');
-  EXPECT_EQ(ASCIIToUTF16("u3"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_0, DomCode::DIGIT0, kControlShift, ')');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_X, DomCode::US_X, kControlShift, 'X');
-  EXPECT_EQ(ASCIIToUTF16("u30"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u30", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_4, DomCode::DIGIT4, kControlShift, '$');
-  EXPECT_EQ(ASCIIToUTF16("u304"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u304", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_2, DomCode::DIGIT2, kControlShift, 0);
-  EXPECT_EQ(ASCIIToUTF16("u3042"), character_composer_.preedit_string());
+  EXPECT_EQ(u"u3042", character_composer_.preedit_string());
   ExpectUnicodeKeyFiltered(ui::VKEY_ESCAPE, DomCode::ESCAPE, kControlShift,
                            0x1B);
-  EXPECT_EQ(ASCIIToUTF16(""), character_composer_.preedit_string());
+  EXPECT_EQ(u"", character_composer_.preedit_string());
 }
 
 TEST_F(CharacterComposerTest, InvalidHexadecimalSequence) {

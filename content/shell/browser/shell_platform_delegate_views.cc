@@ -166,7 +166,7 @@ class ShellView : public views::View, public views::TextfieldController {
       auto back_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::GoBackOrForward,
                               base::Unretained(shell_.get()), -1),
-          base::ASCIIToUTF16("Back"));
+          u"Back");
       gfx::Size back_button_size = back_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -176,7 +176,7 @@ class ShellView : public views::View, public views::TextfieldController {
       auto forward_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::GoBackOrForward,
                               base::Unretained(shell_.get()), 1),
-          base::ASCIIToUTF16("Forward"));
+          u"Forward");
       gfx::Size forward_button_size = forward_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -185,7 +185,7 @@ class ShellView : public views::View, public views::TextfieldController {
       // Refresh button
       auto refresh_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
-          base::ASCIIToUTF16("Refresh"));
+          u"Refresh");
       gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -194,7 +194,7 @@ class ShellView : public views::View, public views::TextfieldController {
       // Stop button
       auto stop_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
-          base::ASCIIToUTF16("Stop"));
+          u"Stop");
       gfx::Size stop_button_size = stop_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -203,7 +203,7 @@ class ShellView : public views::View, public views::TextfieldController {
       toolbar_column_set->AddPaddingColumn(0, 2);
       // URL entry
       auto url_entry = std::make_unique<views::Textfield>();
-      url_entry->SetAccessibleName(base::ASCIIToUTF16("Enter URL"));
+      url_entry->SetAccessibleName(u"Enter URL");
       url_entry->set_controller(this);
       url_entry->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
       toolbar_column_set->AddColumn(views::GridLayout::FILL,

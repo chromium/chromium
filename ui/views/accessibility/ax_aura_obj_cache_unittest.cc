@@ -103,8 +103,7 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   parent_widget->Init(std::move(params));
-  parent_widget->GetNativeWindow()->SetTitle(
-      base::ASCIIToUTF16("ParentWindow"));
+  parent_widget->GetNativeWindow()->SetTitle(u"ParentWindow");
   parent_widget->Show();
 
   // Create a child window.
@@ -115,12 +114,11 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
   params.bounds = gfx::Rect(100, 100, 200, 200);
   params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   child_widget->Init(std::move(params));
-  child_widget->GetNativeWindow()->SetTitle(base::ASCIIToUTF16("ChildWindow"));
+  child_widget->GetNativeWindow()->SetTitle(u"ChildWindow");
   child_widget->Show();
 
   // Create a child view.
-  auto* button = new LabelButton(Button::PressedCallback(),
-                                 base::ASCIIToUTF16("ChildButton"));
+  auto* button = new LabelButton(Button::PressedCallback(), u"ChildButton");
   button->SetSize(gfx::Size(20, 20));
   child_widget->GetContentsView()->AddChildView(button);
 

@@ -97,7 +97,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
     ViewsTestBase::SetUp();
 
     menu_ = std::make_unique<TestModel>();
-    menu_->AddCheckItem(kTestCommandId, base::ASCIIToUTF16("Menu Item"));
+    menu_->AddCheckItem(kTestCommandId, u"Menu Item");
 
     parent_ = new views::Widget();
     parent_->Init(CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS));

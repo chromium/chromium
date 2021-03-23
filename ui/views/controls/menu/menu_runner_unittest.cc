@@ -48,7 +48,7 @@ class MenuRunnerTest : public ViewsTestBase {
   void InitMenuViews() {
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
     menu_item_view_ = new views::TestMenuItemView(menu_delegate_.get());
-    menu_item_view_->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+    menu_item_view_->AppendMenuItem(1, u"One");
     menu_item_view_->AppendMenuItem(2, u"\x062f\x0648");
 
     owner_ = std::make_unique<Widget>();
@@ -221,7 +221,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
   views::test::DisableMenuClosureAnimations();
   InitMenuRunner(0);
-  menu_item_view()->AppendMenuItem(3, base::ASCIIToUTF16("One Two"));
+  menu_item_view()->AppendMenuItem(3, u"One Two");
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
@@ -471,7 +471,7 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);
@@ -508,7 +508,7 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);
@@ -668,7 +668,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);

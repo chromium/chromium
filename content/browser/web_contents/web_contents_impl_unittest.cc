@@ -277,11 +277,10 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   main_test_rfh()->SendNavigateWithParams(std::move(params),
                                           false /* was_within_same_document */);
 
-  contents()->UpdateTitle(main_test_rfh(),
-                          base::ASCIIToUTF16("    Lots O' Whitespace\n"),
+  contents()->UpdateTitle(main_test_rfh(), u"    Lots O' Whitespace\n",
                           base::i18n::LEFT_TO_RIGHT);
   // Make sure that title updates get stripped of whitespace.
-  EXPECT_EQ(base::ASCIIToUTF16("Lots O' Whitespace"), contents()->GetTitle());
+  EXPECT_EQ(u"Lots O' Whitespace", contents()->GetTitle());
   EXPECT_FALSE(contents()->IsWaitingForResponse());
   EXPECT_TRUE(fake_delegate.loading_state_changed_was_called());
 
@@ -290,7 +289,7 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
 
 TEST_F(WebContentsImplTest, UpdateTitleBeforeFirstNavigation) {
   ASSERT_TRUE(controller().IsInitialNavigation());
-  const std::u16string title = base::ASCIIToUTF16("Initial Entry Title");
+  const std::u16string title = u"Initial Entry Title";
   contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
   EXPECT_EQ(title, contents()->GetTitle());
 }
@@ -311,14 +310,14 @@ TEST_F(WebContentsImplTest, DontUseTitleFromPendingEntry) {
   EXPECT_EQ(std::u16string(), contents()->GetTitle());
 
   // Also test setting title while the first navigation is still pending.
-  const std::u16string title = base::ASCIIToUTF16("Initial Entry Title");
+  const std::u16string title = u"Initial Entry Title";
   contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
   EXPECT_EQ(title, contents()->GetTitle());
 }
 
 TEST_F(WebContentsImplTest, UseTitleFromPendingEntryIfSet) {
   const GURL kGURL(GetWebUIURL("blah"));
-  const std::u16string title = base::ASCIIToUTF16("My Title");
+  const std::u16string title = u"My Title";
   controller().LoadURL(
       kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
 

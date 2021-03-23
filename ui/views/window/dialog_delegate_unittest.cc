@@ -274,7 +274,7 @@ TEST_F(DialogTest, HitTest_WithTitle) {
   // Ensure that BubbleFrameView hit-tests as expected when the title is shown
   // and the modal type is something other than not modal.
   const NonClientView* view = dialog()->GetWidget()->non_client_view();
-  dialog()->set_title(base::ASCIIToUTF16("Title"));
+  dialog()->set_title(u"Title");
   dialog()->GetWidget()->UpdateWindowTitle();
   dialog()->GetWidget()->LayoutRootViewIfNecessary();
   BubbleFrameView* frame = static_cast<BubbleFrameView*>(view->frame_view());
@@ -309,7 +309,7 @@ TEST_F(DialogTest, HitTest_CloseButton) {
 
 TEST_F(DialogTest, BoundsAccommodateTitle) {
   TestDialog* dialog2(new TestDialog());
-  dialog2->set_title(base::ASCIIToUTF16("Title"));
+  dialog2->set_title(u"Title");
   CreateDialogWidget(dialog2);
 
   // Remove the close button so it doesn't influence the bounds if it's taller
@@ -329,7 +329,7 @@ TEST_F(DialogTest, BoundsAccommodateTitle) {
             frame2->GetPreferredSize().height());
 
   // Giving the default test dialog a title will yield the same bounds.
-  dialog()->set_title(base::ASCIIToUTF16("Title"));
+  dialog()->set_title(u"Title");
   EXPECT_TRUE(dialog()->ShouldShowWindowTitle());
 
   dialog()->GetWidget()->UpdateWindowTitle();

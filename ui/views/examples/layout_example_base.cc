@@ -51,7 +51,7 @@ std::unique_ptr<Textfield> CreateCommonTextfield(
   auto textfield = std::make_unique<Textfield>();
   textfield->SetDefaultWidthInChars(3);
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
-  textfield->SetText(base::ASCIIToUTF16("0"));
+  textfield->SetText(u"0");
   textfield->set_controller(container);
   return textfield;
 }
@@ -144,7 +144,7 @@ Textfield* LayoutExampleBase::ChildPanel::CreateTextfield() {
   auto textfield = std::make_unique<Textfield>();
   textfield->SetDefaultWidthInChars(3);
   textfield->SizeToPreferredSize();
-  textfield->SetText(base::ASCIIToUTF16("0"));
+  textfield->SetText(u"0");
   textfield->set_controller(this);
   textfield->SetVisible(false);
   return AddChildView(std::move(textfield));

@@ -26,7 +26,7 @@ namespace {
 
 const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
 
-const std::u16string kCompleteTitle = base::ASCIIToUTF16("Complete");
+const std::u16string kCompleteTitle = u"Complete";
 
 }  // namespace
 
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the report table is emptied.
-  const std::u16string kDeleteTitle = base::ASCIIToUTF16("Delete");
+  const std::u16string kDeleteTitle = u"Delete";
   TitleWatcher delete_title_watcher(shell()->web_contents(), kDeleteTitle);
   SetTitleOnReportsTableEmpty(kDeleteTitle);
 
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the send reports button and expect that the report table is emptied.
-  const std::u16string kSentTitle = base::ASCIIToUTF16("Sent");
+  const std::u16string kSentTitle = u"Sent";
   TitleWatcher sent_title_watcher(shell()->web_contents(), kSentTitle);
   SetTitleOnReportsTableEmpty(kSentTitle);
 
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        MojoJsBindingsCorrectlyScoped) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  const std::u16string passed_title = base::ASCIIToUTF16("passed");
+  const std::u16string passed_title = u"passed";
 
   {
     TitleWatcher sent_title_watcher(shell()->web_contents(), passed_title);

@@ -26,7 +26,7 @@ class ContextMenuModel : public ui::SimpleMenuModel,
       : ui::SimpleMenuModel(this),
         web_contents_(web_contents),
         params_(params) {
-    AddItem(COMMAND_OPEN_DEVTOOLS, base::ASCIIToUTF16("Inspect Element"));
+    AddItem(COMMAND_OPEN_DEVTOOLS, u"Inspect Element");
   }
   ~ContextMenuModel() override {}
 

@@ -587,8 +587,7 @@ void ClipboardOzone::WriteBookmark(const char* title_data,
                                    size_t url_len) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
   std::u16string bookmark =
-      base::UTF8ToUTF16(base::StringPiece(url_data, url_len)) +
-      base::ASCIIToUTF16("\n") +
+      base::UTF8ToUTF16(base::StringPiece(url_data, url_len)) + u"\n" +
       base::UTF8ToUTF16(base::StringPiece(title_data, title_len));
 
   std::vector<uint8_t> data(

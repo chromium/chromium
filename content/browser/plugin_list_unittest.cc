@@ -42,12 +42,10 @@ class PluginListTest : public testing::Test {
   PluginListTest()
       : foo_plugin_(base::ASCIIToUTF16(kFooName),
                     base::FilePath(kFooPath),
-                    base::ASCIIToUTF16("1.2.3"),
-                    base::ASCIIToUTF16("foo")),
-        bar_plugin_(base::ASCIIToUTF16("Bar Plugin"),
-                    base::FilePath(kBarPath),
-                    base::ASCIIToUTF16("2.3.4"),
-                    base::ASCIIToUTF16("bar")) {}
+                    u"1.2.3",
+                    u"foo"),
+        bar_plugin_(u"Bar Plugin", base::FilePath(kBarPath), u"2.3.4", u"bar") {
+  }
 
   void SetUp() override {
     plugin_list_.RegisterInternalPlugin(bar_plugin_, false);

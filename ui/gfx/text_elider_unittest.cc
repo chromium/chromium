@@ -198,7 +198,7 @@ TEST(TextEliderTest, TestFilenameEliding) {
 
 TEST(TextEliderTest, ElideTextTruncate) {
   const FontList font_list;
-  const float kTestWidth = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
+  const float kTestWidth = GetStringWidthF(u"Test", font_list);
   struct TestData {
     const char* input;
     float width;
@@ -221,7 +221,7 @@ TEST(TextEliderTest, ElideTextTruncate) {
 
 TEST(TextEliderTest, ElideTextEllipsis) {
   const FontList font_list;
-  const float kTestWidth = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
+  const float kTestWidth = GetStringWidthF(u"Test", font_list);
   const char* kEllipsis = "\xE2\x80\xA6";
   const float kEllipsisWidth =
       GetStringWidthF(UTF8ToUTF16(kEllipsis), font_list);
@@ -247,7 +247,7 @@ TEST(TextEliderTest, ElideTextEllipsis) {
 
 TEST(TextEliderTest, ElideTextEllipsisFront) {
   const FontList font_list;
-  const float kTestWidth = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
+  const float kTestWidth = GetStringWidthF(u"Test", font_list);
   const std::string kEllipsisStr(kEllipsis);
   const float kEllipsisWidth =
       GetStringWidthF(UTF8ToUTF16(kEllipsis), font_list);
@@ -262,8 +262,8 @@ TEST(TextEliderTest, ElideTextEllipsisFront) {
       {"Test", 0, std::u16string()},
       {"Test", kEllipsisWidth, UTF8ToUTF16(kEllipsisStr)},
       {"", kTestWidth, std::u16string()},
-      {"Tes", kTestWidth, ASCIIToUTF16("Tes")},
-      {"Test", kTestWidth, ASCIIToUTF16("Test")},
+      {"Tes", kTestWidth, u"Tes"},
+      {"Test", kTestWidth, u"Test"},
       {"Test123", kEllipsis23Width, UTF8ToUTF16(kEllipsisStr + "23")},
   };
 
@@ -754,7 +754,7 @@ TEST(TextEliderTest, ElideString) {
 TEST(TextEliderTest, ElideRectangleText) {
   const FontList font_list;
   const int line_height = font_list.GetHeight();
-  const float test_width = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
+  const float test_width = GetStringWidthF(u"Test", font_list);
 
   struct TestData {
     const char* input;
@@ -800,8 +800,7 @@ TEST(TextEliderTest, ElideRectangleText) {
                                  TRUNCATE_LONG_WORDS,
                                  &lines));
     if (cases[i].output) {
-      const std::string result =
-          UTF16ToUTF8(base::JoinString(lines, ASCIIToUTF16("|")));
+      const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
       EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
     } else {
       EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
@@ -813,8 +812,8 @@ TEST(TextEliderTest, ElideRectangleTextFirstWordTruncated) {
   const FontList font_list;
   const int line_height = font_list.GetHeight();
 
-  const float test_width = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
-  const float tes_width = GetStringWidthF(ASCIIToUTF16("Tes"), font_list);
+  const float test_width = GetStringWidthF(u"Test", font_list);
+  const float tes_width = GetStringWidthF(u"Tes", font_list);
 
   std::vector<std::u16string> lines;
 
@@ -827,44 +826,44 @@ TEST(TextEliderTest, ElideRectangleTextFirstWordTruncated) {
   // Test base case.
   EXPECT_EQ(0, result_for_width("Test", test_width));
   EXPECT_EQ(1u, lines.size());
-  EXPECT_EQ(ASCIIToUTF16("Test"), lines[0]);
+  EXPECT_EQ(u"Test", lines[0]);
 
   // First word truncated.
   EXPECT_EQ(INSUFFICIENT_SPACE_FOR_FIRST_WORD,
             result_for_width("Test", tes_width));
   EXPECT_EQ(2u, lines.size());
-  EXPECT_EQ(ASCIIToUTF16("Tes"), lines[0]);
-  EXPECT_EQ(ASCIIToUTF16("t"), lines[1]);
+  EXPECT_EQ(u"Tes", lines[0]);
+  EXPECT_EQ(u"t", lines[1]);
 
   // Two words truncated.
   EXPECT_EQ(INSUFFICIENT_SPACE_FOR_FIRST_WORD,
             result_for_width("Test\nTest", tes_width));
   EXPECT_EQ(4u, lines.size());
-  EXPECT_EQ(ASCIIToUTF16("Tes"), lines[0]);
-  EXPECT_EQ(ASCIIToUTF16("t"), lines[1]);
-  EXPECT_EQ(ASCIIToUTF16("Tes"), lines[2]);
-  EXPECT_EQ(ASCIIToUTF16("t"), lines[3]);
+  EXPECT_EQ(u"Tes", lines[0]);
+  EXPECT_EQ(u"t", lines[1]);
+  EXPECT_EQ(u"Tes", lines[2]);
+  EXPECT_EQ(u"t", lines[3]);
 
   // Word truncated, but not the first.
   EXPECT_EQ(0, result_for_width("T Test", tes_width));
   EXPECT_EQ(3u, lines.size());
-  EXPECT_EQ(ASCIIToUTF16("T"), lines[0]);
-  EXPECT_EQ(ASCIIToUTF16("Tes"), lines[1]);
-  EXPECT_EQ(ASCIIToUTF16("t"), lines[2]);
+  EXPECT_EQ(u"T", lines[0]);
+  EXPECT_EQ(u"Tes", lines[1]);
+  EXPECT_EQ(u"t", lines[2]);
 
   // Leading \n.
   EXPECT_EQ(0, result_for_width("\nTest", tes_width));
   EXPECT_EQ(3u, lines.size());
-  EXPECT_EQ(ASCIIToUTF16(""), lines[0]);
-  EXPECT_EQ(ASCIIToUTF16("Tes"), lines[1]);
-  EXPECT_EQ(ASCIIToUTF16("t"), lines[2]);
+  EXPECT_EQ(u"", lines[0]);
+  EXPECT_EQ(u"Tes", lines[1]);
+  EXPECT_EQ(u"t", lines[2]);
 }
 
 TEST(TextEliderTest, ElideRectangleTextPunctuation) {
   const FontList font_list;
   const int line_height = font_list.GetHeight();
-  const float test_width = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
-  const float test_t_width = GetStringWidthF(ASCIIToUTF16("Test T"), font_list);
+  const float test_width = GetStringWidthF(u"Test", font_list);
+  const float test_t_width = GetStringWidthF(u"Test T", font_list);
   constexpr int kResultMask =
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
@@ -893,8 +892,7 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
                                  &lines) &
                   kResultMask);
     if (cases[i].output) {
-      const std::string result =
-          UTF16ToUTF8(base::JoinString(lines, base::ASCIIToUTF16("|")));
+      const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
       EXPECT_EQ(cases[i].output, result) << "Case " << i << " failed!";
     } else {
       EXPECT_TRUE(lines.empty()) << "Case " << i << " failed!";
@@ -908,7 +906,7 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
   const std::u16string kElidedTesting =
       UTF8ToUTF16(std::string("Tes") + kEllipsis);
   const float elided_width = GetStringWidthF(kElidedTesting, font_list);
-  const float test_width = GetStringWidthF(ASCIIToUTF16("Test"), font_list);
+  const float test_width = GetStringWidthF(u"Test", font_list);
   constexpr int kResultMask =
       INSUFFICIENT_SPACE_HORIZONTAL | INSUFFICIENT_SPACE_VERTICAL;
 
@@ -958,8 +956,7 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
             kResultMask);
     std::string expected_output(cases[i].output);
     base::ReplaceSubstringsAfterOffset(&expected_output, 0, "...", kEllipsis);
-    const std::string result =
-        UTF16ToUTF8(base::JoinString(lines, base::ASCIIToUTF16("|")));
+    const std::string result = UTF16ToUTF8(base::JoinString(lines, u"|"));
     EXPECT_EQ(expected_output, result) << "Case " << i << " failed!";
   }
 }
@@ -1205,7 +1202,7 @@ TEST(TextEliderTest, ElideRectangleWide32) {
 }
 
 TEST(TextEliderTest, TruncateString) {
-  std::u16string str = ASCIIToUTF16("fooooey    bxxxar baz  ");
+  std::u16string str = u"fooooey    bxxxar baz  ";
 
   // Test breaking at character 0.
   EXPECT_EQ(std::u16string(), TruncateString(str, 0, WORD_BREAK));
@@ -1253,7 +1250,7 @@ TEST(TextEliderTest, TruncateString) {
 
 
   // Tests of strings with leading whitespace:
-  std::u16string str2 = ASCIIToUTF16("   foo");
+  std::u16string str2 = u"   foo";
 
   // Test breaking in leading whitespace.
   EXPECT_EQ(L"\x2026", UTF16ToWide(TruncateString(str2, 2, WORD_BREAK)));

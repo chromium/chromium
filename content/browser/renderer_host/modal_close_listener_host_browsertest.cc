@@ -44,7 +44,7 @@ class ModalCloseListenerHostBrowserTest : public ContentBrowserTest {
                     render_frame_host_impl)
                     ->SignalIfActive());
 
-    const std::u16string signaled_title = base::ASCIIToUTF16("SUCCESS");
+    const std::u16string signaled_title = u"SUCCESS";
     TitleWatcher watcher(web_contents(), signaled_title);
     watcher.AlsoWaitForTitle(signaled_title);
     EXPECT_EQ(signaled_title, watcher.WaitAndGetTitle());

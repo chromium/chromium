@@ -185,9 +185,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
 
  private:
   // WidgetDelegateView:
-  std::u16string GetWindowTitle() const override {
-    return base::ASCIIToUTF16("Views Examples");
-  }
+  std::u16string GetWindowTitle() const override { return u"Views Examples"; }
   void WindowClosing() override {
     instance_ = nullptr;
     if (on_close_)

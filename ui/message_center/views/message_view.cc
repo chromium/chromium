@@ -58,10 +58,9 @@ std::u16string CreateAccessibleName(const Notification& notification) {
     accessible_lines.push_back(notification.context_message());
   std::vector<NotificationItem> items = notification.items();
   for (size_t i = 0; i < items.size() && i < kNotificationMaximumItems; ++i) {
-    accessible_lines.push_back(items[i].title + base::ASCIIToUTF16(" ") +
-                               items[i].message);
+    accessible_lines.push_back(items[i].title + u" " + items[i].message);
   }
-  return base::JoinString(accessible_lines, base::ASCIIToUTF16("\n"));
+  return base::JoinString(accessible_lines, u"\n");
 }
 
 bool ShouldShowAeroShadowBorder() {

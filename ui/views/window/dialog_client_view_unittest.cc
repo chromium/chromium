@@ -130,8 +130,8 @@ class DialogClientViewTest : public test::WidgetTest,
   // exceeded. The resulting width is around 160 pixels, but depends on system
   // fonts.
   void SetLongCancelLabel() {
-    DialogDelegate::SetButtonLabel(
-        ui::DIALOG_BUTTON_CANCEL, base::ASCIIToUTF16("Cancel Cancel Cancel"));
+    DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                                   u"Cancel Cancel Cancel");
     DialogModelChanged();
   }
 

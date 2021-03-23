@@ -139,7 +139,7 @@ void BrowserAccessibilityAndroid::AppendTextToString(
     return;
   }
 
-  *string += std::u16string(base::ASCIIToUTF16(", ")) + extra_text;
+  *string += std::u16string(u", ") + extra_text;
 }
 
 bool BrowserAccessibilityAndroid::IsCheckable() const {
@@ -692,7 +692,7 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
   if (!description.empty())
     strings.push_back(description);
 
-  return base::JoinString(strings, base::ASCIIToUTF16(" "));
+  return base::JoinString(strings, u" ");
 }
 
 std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
@@ -730,7 +730,7 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetAriaCurrentStateDescription());
 
   // Concatenate all state descriptions and return.
-  return base::JoinString(state_descs, base::ASCIIToUTF16(" "));
+  return base::JoinString(state_descs, u" ");
 }
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
@@ -980,8 +980,8 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     }
 
     if (IsHeadingLink()) {
-      role_description += base::ASCIIToUTF16(" ") +
-                          content_client->GetLocalizedString(IDS_AX_ROLE_LINK);
+      role_description +=
+          u" " + content_client->GetLocalizedString(IDS_AX_ROLE_LINK);
     }
 
     return role_description;

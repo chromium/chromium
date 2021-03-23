@@ -129,9 +129,9 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
                              embedded_test_server()->host_port_pair().host());
   }
 
-  const std::u16string pass_string_ = base::ASCIIToUTF16("PASS");
-  const std::u16string fail_string_ = base::ASCIIToUTF16("FAIL");
-  const std::u16string script_ = base::ASCIIToUTF16("reason");
+  const std::u16string pass_string_ = u"PASS";
+  const std::u16string fail_string_ = u"FAIL";
+  const std::u16string script_ = u"reason";
 
   DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetterBrowserTest);
 };

@@ -21,7 +21,7 @@ class MockContentClient : public TestContentClient {
   std::u16string GetLocalizedString(int message_id) override {
     switch (message_id) {
       case IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION:
-        return base::ASCIIToUTF16("Unlabeled image");
+        return u"Unlabeled image";
       case IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR:
         return base::ASCIIToUTF16(
             "This image isn't labeled. Open the More Options menu at the top "
@@ -31,12 +31,12 @@ class MockContentClient : public TestContentClient {
             "This image isn't labeled. Open the More Options menu at the top "
             "left to get image descriptions.");
       case IDS_AX_IMAGE_ANNOTATION_PENDING:
-        return base::ASCIIToUTF16("Getting description...");
+        return u"Getting description...";
       case IDS_AX_IMAGE_ANNOTATION_ADULT:
         return base::ASCIIToUTF16(
             "Appears to contain adult content. No description available.");
       case IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION:
-        return base::ASCIIToUTF16("No description available.");
+        return u"No description available.";
       default:
         return std::u16string();
     }
@@ -352,8 +352,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
         static_cast<BrowserAccessibilityAndroid*>(
             manager->GetRoot()->PlatformGetChild(child_index));
 
-    EXPECT_EQ(base::ASCIIToUTF16("Unlabeled image"),
-              child->GetRoleDescription());
+    EXPECT_EQ(u"Unlabeled image", child->GetRoleDescription());
   }
 }
 
@@ -499,15 +498,12 @@ TEST_F(BrowserAccessibilityAndroidTest,
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(3));
 
-  EXPECT_EQ(base::ASCIIToUTF16("Getting description..."),
-            image_pending->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16("No description available."),
-            image_empty->GetInnerText());
+  EXPECT_EQ(u"Getting description...", image_pending->GetInnerText());
+  EXPECT_EQ(u"No description available.", image_empty->GetInnerText());
   EXPECT_EQ(base::ASCIIToUTF16(
                 "Appears to contain adult content. No description available."),
             image_adult->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16("No description available."),
-            image_failed->GetInnerText());
+  EXPECT_EQ(u"No description available.", image_failed->GetInnerText());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
@@ -559,7 +555,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
           manager->GetRoot()->PlatformGetChild(3));
 
   EXPECT_EQ(std::u16string(), image_none->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16("image_name"), image_scheme->GetInnerText());
+  EXPECT_EQ(u"image_name", image_scheme->GetInnerText());
   EXPECT_EQ(std::u16string(), image_ineligible->GetInnerText());
   EXPECT_EQ(std::u16string(), image_silent->GetInnerText());
 }
@@ -599,10 +595,8 @@ TEST_F(BrowserAccessibilityAndroidTest,
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(1));
 
-  EXPECT_EQ(base::ASCIIToUTF16("test_annotation"),
-            image_succeeded->GetInnerText());
-  EXPECT_EQ(base::ASCIIToUTF16("test_annotation"),
-            image_succeeded_with_name->GetInnerText());
+  EXPECT_EQ(u"test_annotation", image_succeeded->GetInnerText());
+  EXPECT_EQ(u"test_annotation", image_succeeded_with_name->GetInnerText());
 }
 
 }  // namespace content

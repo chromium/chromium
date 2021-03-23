@@ -640,7 +640,7 @@ bool TextfieldModel::Paste() {
   base::TrimWhitespace(text, base::TRIM_ALL, &text);
   // If the clipboard contains all whitespace then paste a single space.
   if (text.empty())
-    text = base::ASCIIToUTF16(" ");
+    text = u" ";
 
   InsertTextInternal(text, false);
   return true;

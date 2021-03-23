@@ -268,7 +268,7 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
     // In order to delete a journal file in Incognito mode, we only need to
     // close the open handle to it that's stored in the database tracker.
     if (db_tracker_->IsIncognitoProfile()) {
-      const std::u16string wal_suffix(base::ASCIIToUTF16("-wal"));
+      const std::u16string wal_suffix(u"-wal");
       std::u16string sqlite_suffix;
 
       // WAL files can be deleted without having previously been opened.

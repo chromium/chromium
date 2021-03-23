@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetTitleOnUnload) {
   NavigationEntryImpl* entry1 = NavigationEntryImpl::FromNavigationEntry(
       shell()->web_contents()->GetController().GetLastCommittedEntry());
   SiteInstance* site_instance1 = entry1->site_instance();
-  EXPECT_EQ(base::ASCIIToUTF16("A"), entry1->GetTitle());
+  EXPECT_EQ(u"A", entry1->GetTitle());
 
   // Force a process switch by going to a privileged page.
   GURL web_ui_page(std::string(kChromeUIScheme) + "://" +
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetTitleOnUnload) {
   EXPECT_NE(site_instance1, site_instance2);
 
   EXPECT_EQ(2, shell()->web_contents()->GetController().GetEntryCount());
-  EXPECT_EQ(base::ASCIIToUTF16("B"), entry1->GetTitle());
+  EXPECT_EQ(u"B", entry1->GetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
@@ -608,13 +608,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   LoadStopNotificationObserver load_observer(
       &shell()->web_contents()->GetController());
-  TitleWatcher title_watcher(shell()->web_contents(),
-                             base::ASCIIToUTF16("pushState"));
+  TitleWatcher title_watcher(shell()->web_contents(), u"pushState");
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/push_state.html")));
   load_observer.Wait();
   std::u16string title = title_watcher.WaitAndGetTitle();
-  ASSERT_EQ(title, base::ASCIIToUTF16("pushState"));
+  ASSERT_EQ(title, u"pushState");
 
   // LoadingStateChanged should be called 5 times: start and stop for the
   // initial load of push_state.html, once for the switch from
@@ -1083,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ChangeDisplayMode) {
                             "document.title = "
                             " window.matchMedia('(display-mode:"
                             " minimal-ui)').matches"));
-  EXPECT_EQ(base::ASCIIToUTF16("true"), shell()->web_contents()->GetTitle());
+  EXPECT_EQ(u"true", shell()->web_contents()->GetTitle());
 
   delegate.set_mode(blink::mojom::DisplayMode::kFullscreen);
   // Simulate widget is entering fullscreen (changing size is enough).
@@ -1098,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ChangeDisplayMode) {
                             "document.title = "
                             " window.matchMedia('(display-mode:"
                             " fullscreen)').matches"));
-  EXPECT_EQ(base::ASCIIToUTF16("true"), shell()->web_contents()->GetTitle());
+  EXPECT_EQ(u"true", shell()->web_contents()->GetTitle());
 }
 
 // Observer class used to verify that WebContentsObservers are notified
@@ -2731,9 +2730,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   ASSERT_EQ(root->child_at(0), frame_tree->GetFocusedFrame());
   shell()->web_contents()->Copy();
 
-  TitleWatcher title_watcher(web_contents, base::ASCIIToUTF16("done"));
+  TitleWatcher title_watcher(web_contents, u"done");
   std::u16string title = title_watcher.WaitAndGetTitle();
-  ASSERT_EQ(title, base::ASCIIToUTF16("done"));
+  ASSERT_EQ(title, u"done");
 }
 
 class UpdateTargetURLWaiter : public WebContentsDelegate {
@@ -3278,9 +3277,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
       "document.body.onfullscreenerror = "
       "function (event) { document.title = 'onfullscreenerror' };"));
 
-  TitleWatcher title_watcher(web_contents,
-                             base::ASCIIToUTF16("onfullscreenchange"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("onfullscreenerror"));
+  TitleWatcher title_watcher(web_contents, u"onfullscreenchange");
+  title_watcher.AlsoWaitForTitle(u"onfullscreenerror");
 
   // While the |fullscreen_block| is in scope, fullscreen should fail with an
   // error.
@@ -3290,7 +3288,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   EXPECT_TRUE(ExecuteScript(main_frame, "document.body.requestFullscreen();"));
 
   std::u16string title = title_watcher.WaitAndGetTitle();
-  ASSERT_EQ(title, base::ASCIIToUTF16("onfullscreenerror"));
+  ASSERT_EQ(title, u"onfullscreenerror");
 }
 
 // Regression test for https://crbug.com/855018.
@@ -3449,15 +3447,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // Make the top page fullscreen with system navigation ui.
   {
-    TitleWatcher title_watcher(web_contents,
-                               base::ASCIIToUTF16("main_fullscreen_fulfilled"));
+    TitleWatcher title_watcher(web_contents, u"main_fullscreen_fulfilled");
     EXPECT_TRUE(ExecuteScript(
         main_frame,
         "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
         "{document.title = 'main_fullscreen_fulfilled'});"));
 
     std::u16string title = title_watcher.WaitAndGetTitle();
-    ASSERT_EQ(title, base::ASCIIToUTF16("main_fullscreen_fulfilled"));
+    ASSERT_EQ(title, u"main_fullscreen_fulfilled");
   }
 
   EXPECT_TRUE(test_delegate.fullscreen_options().prefers_navigation_bar);
@@ -3466,15 +3463,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
   // Make the child frame fullscreen without system navigation ui.
   {
-    TitleWatcher title_watcher(
-        web_contents, base::ASCIIToUTF16("child_fullscreen_fulfilled"));
+    TitleWatcher title_watcher(web_contents, u"child_fullscreen_fulfilled");
     EXPECT_TRUE(ExecuteScript(
         child_frame,
         "document.body.requestFullscreen({ navigationUI: 'hide' }).then(() => "
         "{parent.document.title = 'child_fullscreen_fulfilled'});"));
 
     std::u16string title = title_watcher.WaitAndGetTitle();
-    ASSERT_EQ(title, base::ASCIIToUTF16("child_fullscreen_fulfilled"));
+    ASSERT_EQ(title, u"child_fullscreen_fulfilled");
   }
 
   EXPECT_FALSE(test_delegate.fullscreen_options().prefers_navigation_bar);
@@ -3486,11 +3482,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
         main_frame,
         "document.body.onfullscreenchange = "
         "function (event) { document.title = 'main_in_fullscreen_again' };"));
-    TitleWatcher title_watcher(web_contents,
-                               base::ASCIIToUTF16("main_in_fullscreen_again"));
+    TitleWatcher title_watcher(web_contents, u"main_in_fullscreen_again");
     EXPECT_TRUE(ExecuteScript(child_frame, "document.exitFullscreen();"));
     std::u16string title = title_watcher.WaitAndGetTitle();
-    ASSERT_EQ(title, base::ASCIIToUTF16("main_in_fullscreen_again"));
+    ASSERT_EQ(title, u"main_in_fullscreen_again");
   }
 
   EXPECT_TRUE(test_delegate.fullscreen_options().prefers_navigation_bar);

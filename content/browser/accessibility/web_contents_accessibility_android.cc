@@ -231,7 +231,7 @@ void AddToPredicateMap(const char* search_key_ascii,
   std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
   g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
   if (!g_all_search_keys.Get().empty())
-    g_all_search_keys.Get() += base::ASCIIToUTF16(",");
+    g_all_search_keys.Get() += u",";
   g_all_search_keys.Get() += search_key_utf16;
 }
 

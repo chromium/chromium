@@ -53,8 +53,8 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     tabbed_pane->SetSize(gfx::Size(100, 100));
 
     // Create two tabs and position/size them.
-    tabbed_pane->AddTab(base::ASCIIToUTF16("Tab 1"), std::make_unique<View>());
-    tabbed_pane->AddTab(base::ASCIIToUTF16("Tab 2"), std::make_unique<View>());
+    tabbed_pane->AddTab(u"Tab 1", std::make_unique<View>());
+    tabbed_pane->AddTab(u"Tab 2", std::make_unique<View>());
     tabbed_pane->Layout();
 
     tabbed_pane_ =

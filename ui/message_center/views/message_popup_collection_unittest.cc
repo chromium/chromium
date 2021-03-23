@@ -431,7 +431,7 @@ TEST_F(MessagePopupCollectionTest, UpdateContents) {
   EXPECT_FALSE(GetPopup(id)->updated());
 
   auto updated_notification = CreateNotification(id);
-  updated_notification->set_message(base::ASCIIToUTF16("updated"));
+  updated_notification->set_message(u"updated");
   MessageCenter::Get()->UpdateNotification(id, std::move(updated_notification));
   EXPECT_EQ(1u, GetPopupCounts());
   EXPECT_TRUE(GetPopup(id)->updated());
@@ -448,7 +448,7 @@ TEST_F(MessagePopupCollectionTest, UpdateContentsCausesPopupClose) {
   GetPopup(id)->set_height_after_update(2048);
 
   auto updated_notification = CreateNotification(id);
-  updated_notification->set_message(base::ASCIIToUTF16("updated"));
+  updated_notification->set_message(u"updated");
   MessageCenter::Get()->UpdateNotification(id, std::move(updated_notification));
   RunPendingMessages();
   EXPECT_EQ(0u, GetPopupCounts());
