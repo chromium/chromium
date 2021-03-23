@@ -152,7 +152,7 @@
   {
     "name": "app-service-external-protocol",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 96
   },
   {
     "name": "arc-custom-tabs-experiment",
@@ -3178,7 +3178,7 @@
   {
     "name": "intent-handling-sharing",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "intent-picker-pwa-persistence",
