@@ -47,7 +47,10 @@ class AppListTestHelper {
   void ToggleAndRunLoop(uint64_t display_id, AppListShowSource show_source);
 
   // Check the visibility value of the app list and its target.
-  // Fails in tests if either one doesn't match |visible|,.
+  // Fails in tests if either one doesn't match |visible|.
+  // DEPRECATED: Prefer to EXPECT_TRUE or EXPECT_FALSE the visibility directly,
+  // so a failing test will print the line number of the expectation that
+  // failed.
   void CheckVisibility(bool visible);
 
   // Check the current app list view state.
