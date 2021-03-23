@@ -554,11 +554,11 @@ Av1Decoder::~Av1Decoder() {
   last_decoded_surface_.reset();
 }
 
-VideoDecoder::Result Av1Decoder::ReadNextFrame(
+Av1Decoder::ParsingResult Av1Decoder::ReadNextFrame(
     libgav1::RefCountedBufferPtr& current_frame) {
   if (!obu_parser_ || !obu_parser_->HasData()) {
     if (!ivf_parser_->ParseNextFrame(&ivf_frame_header_, &ivf_frame_data_)) {
-      return VideoDecoder::kEOStream;
+      return ParsingResult::kEOStream;
     }
 
     // The ObuParser has run out of data or did not exist in the first place. It
@@ -575,9 +575,9 @@ VideoDecoder::Result Av1Decoder::ReadNextFrame(
   libgav1::StatusCode code = obu_parser_->ParseOneFrame(&current_frame);
   if (code != libgav1::kStatusOk) {
     LOG(ERROR) << "Error parsing OBU stream: " << code;
-    return VideoDecoder::kFailed;
+    return ParsingResult::kFailed;
   }
-  return VideoDecoder::kOk;
+  return ParsingResult::kOk;
 }
 
 void Av1Decoder::RefreshReferenceSlots(
@@ -599,13 +599,15 @@ void Av1Decoder::RefreshReferenceSlots(
 VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // Parse next frame from stream.
   libgav1::RefCountedBufferPtr current_frame;
-  VideoDecoder::Result parser_res = ReadNextFrame(current_frame);
+  ParsingResult parser_res = ReadNextFrame(current_frame);
 
-  if (parser_res != VideoDecoder::kOk) {
-    if (parser_res != VideoDecoder::kEOStream) {
-      LOG_ASSERT(false) << "Failed to parse next frame, got " << parser_res;
+  if (parser_res != ParsingResult::kOk) {
+    if (parser_res != ParsingResult::kEOStream) {
+      LOG_ASSERT(false) << "Failed to parse next frame, got "
+                        << static_cast<int>(parser_res);
+      return VideoDecoder::kFailed;
     }
-    return parser_res;
+    return VideoDecoder::kEOStream;
   }
 
   libgav1::ObuFrameHeader current_frame_header = obu_parser_->frame_header();

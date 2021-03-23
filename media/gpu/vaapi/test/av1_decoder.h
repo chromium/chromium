@@ -39,6 +39,12 @@ class Av1Decoder : public VideoDecoder {
   bool LastDecodedFrameVisible() override;
 
  private:
+  enum class ParsingResult {
+    kFailed,
+    kOk,
+    kEOStream,
+  };
+
   // Reads an OBU frame, if there is one available.
   // If an |obu_parser_| didn't exist and there is data to be read,
   // |obu_parser_| will be created. If there is an existing
@@ -46,9 +52,7 @@ class Av1Decoder : public VideoDecoder {
   // created. If successful (indicated by returning VideoDecoder::kOk), then the
   // fields |ivf_frame_header_|, |ivf_frame_data_|, and |current_frame_| will be
   // set upon completion.
-  // TODO(clarissagarvey): remove and fold this into DecodeNextFrame().
-  VideoDecoder::Result ReadNextFrame(
-      libgav1::RefCountedBufferPtr& current_frame);
+  ParsingResult ReadNextFrame(libgav1::RefCountedBufferPtr& current_frame);
 
   // Refreshes current |ref_frames_| to refer to |surface|, |display_surfaces_|
   // to refer to |display_surface|, and |state_| to refer to |current_frame|
