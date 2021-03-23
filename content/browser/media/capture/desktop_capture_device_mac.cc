@@ -18,7 +18,9 @@ namespace {
 class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
  public:
   DesktopCaptureDeviceMac(CGDirectDisplayID display_id)
-      : display_id_(display_id), weak_factory_(this) {}
+      : display_id_(display_id),
+        device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        weak_factory_(this) {}
 
   ~DesktopCaptureDeviceMac() override = default;
 
@@ -48,12 +50,19 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     DCHECK_GT(requested_format_.frame_rate, 0);
     min_frame_rate_ = ComputeMinFrameRate(requested_format_.frame_rate);
 
-    CGDisplayStreamFrameAvailableHandler handler =
-        ^(CGDisplayStreamFrameStatus status, uint64_t display_time,
-          IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
-          if (status == kCGDisplayStreamFrameStatusFrameComplete)
-            OnReceivedIOSurfaceFromStream(frame_surface);
-        };
+    base::RepeatingCallback<void(IOSurfaceRef)> received_io_surface_callback =
+        base::BindRepeating(
+            &DesktopCaptureDeviceMac::OnReceivedIOSurfaceFromStream,
+            weak_factory_.GetWeakPtr());
+    CGDisplayStreamFrameAvailableHandler handler = ^(
+        CGDisplayStreamFrameStatus status, uint64_t display_time,
+        IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
+      if (status == kCGDisplayStreamFrameStatusFrameComplete) {
+        device_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindRepeating(received_io_surface_callback, frame_surface));
+      }
+    };
 
     base::ScopedCFTypeRef<CFDictionaryRef> properties;
     {
@@ -96,7 +105,11 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
           FROM_HERE, "CGDisplayStreamStart failed");
       return;
     }
-    CFRunLoopAddSource(CFRunLoopGetCurrent(),
+    // Use CFRunLoopGetMain instead of CFRunLoopGetCurrent because in some
+    // circumstances (e.g, streaming to ChromeCast), this is called on a
+    // worker thread where the CFRunLoop does not get serviced.
+    // https://crbug.com/1185388
+    CFRunLoopAddSource(CFRunLoopGetMain(),
                        CGDisplayStreamGetRunLoopSource(display_stream_),
                        kCFRunLoopCommonModes);
     client_->OnStarted();
@@ -107,7 +120,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     min_frame_rate_enforcement_timer_.reset();
     weak_factory_.InvalidateWeakPtrs();
     if (display_stream_) {
-      CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
+      CFRunLoopRemoveSource(CFRunLoopGetMain(),
                             CGDisplayStreamGetRunLoopSource(display_stream_),
                             kCFRunLoopCommonModes);
       CGDisplayStreamStop(display_stream_);
@@ -158,6 +171,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
   THREAD_CHECKER(thread_checker_);
 
   const CGDirectDisplayID display_id_;
+  const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
 
   std::unique_ptr<Client> client_;
   base::ScopedCFTypeRef<CGDisplayStreamRef> display_stream_;
