@@ -269,8 +269,10 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
   MockEmbeddedSearchClient mock_embedded_search_client_;
 };
 
+// TODO(aee): ProcessFocusOmniboxMsg and IgnoreFocusOmniboxMsg both pass with
+// unknown URLs. I'm not sure this is testing anything.
 TEST_F(SearchIPCRouterTest, ProcessFocusOmniboxMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*mock_delegate(), FocusOmnibox(OMNIBOX_FOCUS_VISIBLE)).Times(1);
@@ -325,7 +327,7 @@ TEST_F(SearchIPCRouterTest, HandleTabChangedEvents) {
 
 TEST_F(SearchIPCRouterTest, ProcessLogEventMsg) {
   base::TimeDelta delta = base::TimeDelta::FromMilliseconds(123);
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*mock_delegate(), OnLogEvent(NTP_ALL_TILES_LOADED, delta))
@@ -353,7 +355,7 @@ TEST_F(SearchIPCRouterTest, IgnoreLogEventMsg) {
 
 TEST_F(SearchIPCRouterTest, ProcessLogSuggestionEventWithValueMsg) {
   base::TimeDelta delta = base::TimeDelta::FromMilliseconds(123);
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*mock_delegate(),
@@ -392,7 +394,7 @@ TEST_F(SearchIPCRouterTest, ProcessLogMostVisitedImpressionMsg) {
       3, ntp_tiles::TileSource::SUGGESTIONS_SERVICE,
       ntp_tiles::TileTitleSource::UNKNOWN, ntp_tiles::TileVisualType::ICON_REAL,
       favicon_base::IconType::kInvalid, base::Time(), GURL());
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*mock_delegate(), OnLogMostVisitedImpression(Field(
@@ -409,7 +411,7 @@ TEST_F(SearchIPCRouterTest, ProcessLogMostVisitedNavigationMsg) {
       3, ntp_tiles::TileSource::SUGGESTIONS_SERVICE,
       ntp_tiles::TileTitleSource::UNKNOWN, ntp_tiles::TileVisualType::ICON_REAL,
       favicon_base::IconType::kInvalid, base::Time(), GURL());
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*mock_delegate(), OnLogMostVisitedNavigation(Field(
@@ -745,7 +747,7 @@ TEST_F(SearchIPCRouterTest, IgnoreToggleShortcutsVisibility) {
 }
 
 TEST_F(SearchIPCRouterTest, ProcessPasteAndOpenDropdownMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
 
@@ -780,7 +782,7 @@ TEST_F(SearchIPCRouterTest, IgnorePasteAndOpenDropdownMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, SendOmniboxFocusChange) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendOmniboxFocusChanged())
@@ -793,7 +795,7 @@ TEST_F(SearchIPCRouterTest, SendOmniboxFocusChange) {
 }
 
 TEST_F(SearchIPCRouterTest, DoNotSendOmniboxFocusChange) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendOmniboxFocusChanged())
@@ -806,7 +808,7 @@ TEST_F(SearchIPCRouterTest, DoNotSendOmniboxFocusChange) {
 }
 
 TEST_F(SearchIPCRouterTest, SendSetInputInProgress) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendSetInputInProgress(true))
@@ -818,7 +820,7 @@ TEST_F(SearchIPCRouterTest, SendSetInputInProgress) {
 }
 
 TEST_F(SearchIPCRouterTest, DoNotSendSetInputInProgress) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendSetInputInProgress(true))
@@ -830,7 +832,7 @@ TEST_F(SearchIPCRouterTest, DoNotSendSetInputInProgress) {
 }
 
 TEST_F(SearchIPCRouterTest, SendMostVisitedInfoMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendMostVisitedInfo())
@@ -842,7 +844,7 @@ TEST_F(SearchIPCRouterTest, SendMostVisitedInfoMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, DoNotSendMostVisitedInfoMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendMostVisitedInfo())
@@ -855,7 +857,7 @@ TEST_F(SearchIPCRouterTest, DoNotSendMostVisitedInfoMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, SendNtpThemeMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendNtpTheme()).Times(1).WillOnce(Return(true));
@@ -865,7 +867,7 @@ TEST_F(SearchIPCRouterTest, SendNtpThemeMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, DoNotSendNtpThemeMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendNtpTheme()).Times(1).WillOnce(Return(false));
@@ -875,7 +877,7 @@ TEST_F(SearchIPCRouterTest, DoNotSendNtpThemeMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, SendLocalBackgroundSelectedMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendLocalBackgroundSelected())
@@ -887,7 +889,7 @@ TEST_F(SearchIPCRouterTest, SendLocalBackgroundSelectedMsg) {
 }
 
 TEST_F(SearchIPCRouterTest, DoNotSendLocalBackgroundSelectedMsg) {
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
+  NavigateAndCommitActiveTab(GURL("chrome-search://foo/baz"));
   SetupMockDelegateAndPolicy();
   MockSearchIPCRouterPolicy* policy = GetSearchIPCRouterPolicy();
   EXPECT_CALL(*policy, ShouldSendLocalBackgroundSelected())

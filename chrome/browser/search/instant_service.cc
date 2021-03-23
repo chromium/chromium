@@ -27,9 +27,7 @@
 #include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/search/local_ntp_source.h"
 #include "chrome/browser/search/most_visited_iframe_source.h"
-#include "chrome/browser/search/ntp_icon_source.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -37,7 +35,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/search.mojom.h"
@@ -167,7 +164,7 @@ void CopyFileToProfilePath(const base::FilePath& from_path,
                            const base::FilePath& profile_path) {
   base::CopyFile(from_path,
                  profile_path.AppendASCII(
-                     chrome::kChromeSearchLocalNtpBackgroundFilename));
+                     chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 }
 
 // |GetBitmapMainColor| just wraps |CalculateKMeanColorOfBitmap|.
@@ -231,12 +228,6 @@ InstantService::InstantService(Profile* profile)
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
   // Set up the data sources that Instant uses on the NTP.
-  content::URLDataSource::Add(profile_,
-                              std::make_unique<ThemeSource>(profile_));
-  content::URLDataSource::Add(profile_,
-                              std::make_unique<LocalNtpSource>(profile_));
-  content::URLDataSource::Add(profile_,
-                              std::make_unique<NtpIconSource>(profile_));
   content::URLDataSource::Add(
       profile_, std::make_unique<FaviconSource>(
                     profile_, chrome::FaviconUrlFormat::kFaviconLegacy));
@@ -758,7 +749,7 @@ void InstantService::ApplyOrResetCustomBackgroundNtpTheme() {
     // Add a timestamp to the url to prevent the browser from using a cached
     // version when "Upload an image" is used multiple times.
     std::string time_string = std::to_string(base::Time::Now().ToTimeT());
-    std::string local_string(chrome::kChromeSearchLocalNtpBackgroundUrl);
+    std::string local_string(chrome::kChromeUIUntrustedNewTabPageBackgroundUrl);
     GURL timestamped_url(local_string + "?ts=" + time_string);
     GetInitializedNtpTheme()->custom_background_url = timestamped_url;
     GetInitializedNtpTheme()->custom_background_attribution_line_1 =
@@ -952,7 +943,7 @@ bool InstantService::IsCustomBackgroundPrefValid(GURL& custom_background_url) {
 
 void InstantService::RemoveLocalBackgroundImageCopy() {
   base::FilePath path = profile_->GetPath().AppendASCII(
-      chrome::kChromeSearchLocalNtpBackgroundFilename);
+      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(base::GetDeleteFileCallback(), path));

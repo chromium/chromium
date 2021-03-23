@@ -724,8 +724,6 @@ void Navigate(NavigateParams* params) {
             (params->source_contents->GetLastCommittedURL().spec() !=
                  chrome::kChromeUINewTabURL &&
              params->source_contents->GetLastCommittedURL().spec() !=
-                 chrome::kChromeSearchLocalNtpUrl &&
-             params->source_contents->GetLastCommittedURL().spec() !=
                  url::kAboutBlankURL)) {
           // Blur location bar before state save in ActivateTabAt() below.
           params->source_contents->Focus();

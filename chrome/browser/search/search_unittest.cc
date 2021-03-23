@@ -106,10 +106,11 @@ struct SearchTestCase {
 };
 
 TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
-  // Only NTPs (both local and remote) should be assigned to Instant renderers.
+  // Only remote NTPs and most-visited tiles embedded in remote NTPs should be
+  // assigned to Instant renderers.
   const SearchTestCase kTestCases[] = {
-      {chrome::kChromeSearchLocalNtpUrl, true, "Local NTP"},
-      {"chrome-search://local-ntp/local-ntp.html?bar=abc", true, "Local NTP"},
+      {"chrome-search://most-visited/title.html?bar=abc", true,
+       "Most-visited tile"},
       {"https://foo.com/newtab", true, "Remote NTP"},
       {"https://foo.com/instant", false, "Instant support was removed"},
       {"https://foo.com/url", false, "Instant support was removed"},
@@ -130,7 +131,6 @@ TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
 TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   const SearchTestCase kTestCases[] = {
       {"chrome-search://remote-ntp", true, "Remote NTP"},
-      {"invalid-scheme://local-ntp", false, "Invalid Local NTP URL"},
       {"invalid-scheme://online-ntp", false, "Invalid Online NTP URL"},
       {"chrome-search://foo.com", false, "Search result page"},
       {"https://foo.com/instant", false, ""},
@@ -164,10 +164,6 @@ const struct ProcessIsolationTestCase {
   bool same_site_instance;
   bool same_process;
 } kProcessIsolationTestCases[] = {
-    {"Local NTP -> SRP", "chrome-search://local-ntp", true,
-     "https://foo.com/url", false, false, false},
-    {"Local NTP -> Regular", "chrome-search://local-ntp", true,
-     "https://foo.com/other", false, false, false},
     {"Remote NTP -> SRP", "https://foo.com/newtab", true, "https://foo.com/url",
      false, false, false},
     {"Remote NTP -> Regular", "https://foo.com/newtab", true,
@@ -272,9 +268,6 @@ const SearchTestCase kInstantNTPTestCases[] = {
     {"chrome://blank/", false, "Chrome scheme"},
     {"chrome-search://foo", false, "Chrome-search scheme"},
     {"https://bar.com/instant", false, "Random non-search page"},
-    {chrome::kChromeSearchLocalNtpUrl, true, "Local new tab page"},
-    {"chrome-search://local-ntp/local-ntp.html?bar=abc", true,
-     "Local new tab page"},
     {"https://foo.com/newtab", true, "New tab URL"},
     {"http://foo.com/newtab", false, "Insecure New tab URL"},
 };
@@ -296,9 +289,9 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
         browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
   // Local NTP.
-  NavigateAndCommitActiveTab(GURL(chrome::kChromeSearchLocalNtpUrl));
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  NavigateAndCommitActiveTab(GURL(chrome::kChromeUINewTabPageURL));
+  EXPECT_FALSE(
+      NavEntryIsInstantNTP(contents, controller.GetLastCommittedEntry()));
   // Remote NTP.
   NavigateAndCommitActiveTab(GetNewTabPageURL(profile()));
   EXPECT_TRUE(NavEntryIsInstantNTP(contents,
@@ -403,7 +396,6 @@ TEST_F(SearchTest, IsNTPURL) {
       {"chrome://new-tab-page", true, "WebUI NTP"},
       {"chrome://new-tab-page/path?params", true,
        "WebUI NTP with path and params"},
-      {"invalid-scheme://local-ntp", false, "Invalid Local NTP URL"},
       {"invalid-scheme://remote-ntp", false, "Invalid Remote NTP URL"},
       {"chrome-search://most-visited/", false, "Most visited URL"},
       {"", false, "Invalid URL"},

@@ -9,7 +9,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
@@ -23,8 +23,10 @@
 namespace extensions {
 
 namespace {
-const std::string kAllUrlsTarget = "/extensions/api_test/all_urls/index.html";
-}
+
+const char kAllUrlsTarget[] = "/extensions/api_test/all_urls/index.html";
+
+}  // namespace
 
 class AllUrlsApiTest : public ExtensionApiTest {
  protected:
@@ -51,7 +53,7 @@ class AllUrlsApiTest : public ExtensionApiTest {
     std::string expected_url = url;
     if (url == chrome::kChromeUINewTabURL) {
       expected_url =
-          local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
+          ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
     }
     ExtensionTestMessageListener listener_a("content script: " + expected_url,
                                             false);

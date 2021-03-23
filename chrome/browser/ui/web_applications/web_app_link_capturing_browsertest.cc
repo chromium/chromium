@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -130,9 +130,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     }
   }
 
-  GURL NtpUrl() {
-    return local_ntp_test_utils::GetFinalNtpUrl(browser()->profile());
-  }
+  GURL NtpUrl() { return ntp_test_utils::GetFinalNtpUrl(browser()->profile()); }
 
  protected:
   AppId app_id_;

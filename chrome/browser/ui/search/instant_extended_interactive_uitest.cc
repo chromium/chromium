@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
-#include "chrome/browser/ui/search/instant_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -30,6 +29,28 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+std::string WrapScript(const std::string& script) {
+  return "domAutomationController.send(" + script + ")";
+}
+
+bool GetBoolFromJS(const content::ToRenderFrameHost& adapter,
+                   const std::string& script,
+                   bool* result) {
+  return content::ExecuteScriptAndExtractBool(adapter, WrapScript(script),
+                                              result);
+}
+
+bool GetIntFromJS(const content::ToRenderFrameHost& adapter,
+                  const std::string& script,
+                  int* result) {
+  return content::ExecuteScriptAndExtractInt(adapter, WrapScript(script),
+                                             result);
+}
+
+}  // namespace
 
 class InstantExtendedTest : public InProcessBrowserTest,
                             public InstantTestBase {
@@ -51,17 +72,15 @@ class InstantExtendedTest : public InProcessBrowserTest,
   }
 
   bool UpdateSearchState(content::WebContents* contents) WARN_UNUSED_RESULT {
-    return instant_test_utils::GetIntFromJS(contents,
-                                            "onMostVisitedChangedCalls",
-                                            &on_most_visited_change_calls_) &&
-           instant_test_utils::GetIntFromJS(contents, "mostVisitedItemsCount",
-                                            &most_visited_items_count_) &&
-           instant_test_utils::GetIntFromJS(contents, "firstMostVisitedItemId",
-                                            &first_most_visited_item_id_) &&
-           instant_test_utils::GetIntFromJS(contents, "onFocusChangedCalls",
-                                            &on_focus_changed_calls_) &&
-           instant_test_utils::GetBoolFromJS(contents, "isFocused",
-                                             &is_focused_);
+    return GetIntFromJS(contents, "onMostVisitedChangedCalls",
+                        &on_most_visited_change_calls_) &&
+           GetIntFromJS(contents, "mostVisitedItemsCount",
+                        &most_visited_items_count_) &&
+           GetIntFromJS(contents, "firstMostVisitedItemId",
+                        &first_most_visited_item_id_) &&
+           GetIntFromJS(contents, "onFocusChangedCalls",
+                        &on_focus_changed_calls_) &&
+           GetBoolFromJS(contents, "isFocused", &is_focused_);
   }
 
   OmniboxView* omnibox() {

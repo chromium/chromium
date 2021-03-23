@@ -67,15 +67,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   }
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
   if (!ntp_theme.custom_background_url.is_empty()) {
-    base::StringPiece url = ntp_theme.custom_background_url.spec();
-    // TODO(crbug.com/1041125): Clean up when chrome-search://local-ntp removed.
-    if (base::StartsWith(url, "chrome-search://local-ntp/")) {
-      background_image->url =
-          GURL("chrome-untrusted://new-tab-page/" +
-               url.substr(strlen("chrome-search://local-ntp/")).as_string());
-    } else {
-      background_image->url = ntp_theme.custom_background_url;
-    }
+    background_image->url = ntp_theme.custom_background_url;
   } else if (ntp_theme.has_theme_image) {
     theme->shortcut_use_title_pill = true;
     background_image->url =

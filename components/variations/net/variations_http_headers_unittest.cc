@@ -241,8 +241,10 @@ class PopulateRequestContextHistogramTest
 const PopulateRequestContextHistogramData
     PopulateRequestContextHistogramTest::kCases[] = {
         {"", false, false, "", "", false, 0, "kBrowserInitiated"},
-        {"chrome-search://local-ntp/", false, false, "", "", false, 1,
+        {"chrome://newtab/", false, false, "", "", false, 1,
          "kInternalChromePageInitiated"},
+        {"chrome-search://most-visited/title.html", false, false, "", "", false,
+         1, "kInternalChromePageInitiated"},
         {"https://www.youtube.com/", true, false, "", "", false, 2,
          "kGooglePageInitiated"},
         {"https://docs.google.com/", false, true, "https://drive.google.com/",

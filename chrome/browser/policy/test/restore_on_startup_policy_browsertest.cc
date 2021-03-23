@@ -14,7 +14,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
     if (blocked_) {
       CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
     } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
-      EXPECT_EQ(local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+      EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
                 web_contents->GetURL());
     } else {
       EXPECT_EQ(expected_urls_[i], web_contents->GetURL());

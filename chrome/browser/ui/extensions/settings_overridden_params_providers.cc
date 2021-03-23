@@ -165,7 +165,6 @@ GetNtpOverriddenParams(Profile* profile) {
   if (possible_rewrites.size() > 1) {
     default_ntp_is_secondary =
         possible_rewrites[1] == ntp_url ||
-        possible_rewrites[1] == GURL(chrome::kChromeSearchLocalNtpUrl) ||
         possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageURL) ||
         possible_rewrites[1] == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
   }

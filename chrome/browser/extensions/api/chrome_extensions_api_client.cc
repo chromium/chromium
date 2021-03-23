@@ -153,11 +153,11 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
        request.initiator ==
            url::Origin::Create(GURL(chrome::kChromeUINewTabURL)));
 
-  // Hide requests made by the browser on behalf of the local NTP.
+  // Hide requests made by the browser on behalf of the 1P WebUI NTP.
   is_sensitive_request |=
       (is_browser_request &&
        request.initiator ==
-           url::Origin::Create(GURL(chrome::kChromeSearchLocalNtpUrl)));
+           url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)));
 
   // Hide requests made by the NTP Instant renderer.
   auto* instant_service =

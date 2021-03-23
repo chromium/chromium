@@ -304,9 +304,7 @@ base::Optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   if (embedding_origin.GetOrigin() ==
       GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
     if (requesting_origin.GetOrigin() ==
-            GURL(chrome::kChromeSearchLocalNtpUrl).GetOrigin() ||
-        requesting_origin.GetOrigin() ==
-            GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
+        GURL(chrome::kChromeUINewTabPageURL).GetOrigin()) {
       return GURL(UIThreadSearchTermsData().GoogleBaseURLValue()).GetOrigin();
     }
     return requesting_origin;

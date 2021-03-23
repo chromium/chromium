@@ -30,7 +30,6 @@
 #include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search/local_ntp_source.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search/search.h"
@@ -112,8 +111,7 @@ std::string GetBitmapDataUrl(const char* data, size_t size) {
 bool IsCacheableNTP(content::WebContents* contents) {
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
-  return search::NavEntryIsInstantNTP(contents, entry) &&
-         entry->GetURL() != chrome::kChromeSearchLocalNtpUrl;
+  return search::NavEntryIsInstantNTP(contents, entry);
 }
 
 // Returns true if |contents| are rendered inside an Instant process.

@@ -67,14 +67,6 @@ const std::vector<TestItem>& TestItems() {
               content::GetWebUIURLString(chrome::kChromeUINewTabHost),
       },
       {
-          GURL("chrome-search://local-ntp/local-ntp.html"),
-          "",
-      },
-      {
-          GURL("view-source:chrome-search://local-ntp/local-ntp.html"),
-          "view-source:chrome-search://local-ntp/local-ntp.html",
-      },
-      {
           GURL("chrome-extension://fooooooooooooooooooooooooooooooo/bar.html"),
           "chrome-extension://fooooooooooooooooooooooooooooooo/bar.html",
       },

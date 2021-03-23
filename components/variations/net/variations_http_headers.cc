@@ -129,7 +129,7 @@ bool IsFirstPartyContext(Owner owner,
       request_initiator_url.SchemeIs("chrome")) {
     // A scheme matching the above patterns means that the request was
     // initiated by an internal page, e.g. a request from
-    // chrome-search://local-ntp/ for App Launcher resources.
+    // chrome://newtab/ for App Launcher resources.
     LogRequestContextHistogram(kInternalChromePageInitiated);
     return true;
   }

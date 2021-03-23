@@ -16938,6 +16938,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NTP_LinkOpenedFromContextMenu">
+  <obsolete>Replaced by NewTabPage.LinkOpenedFromContextMenu.WebUI</obsolete>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

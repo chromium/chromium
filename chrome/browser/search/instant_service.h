@@ -279,7 +279,7 @@ class InstantService : public KeyedService,
   bool IsCustomBackgroundPrefValid(GURL& custom_background_url);
 
   // Update the background pref to point to
-  // chrome-search://local-ntp/background.jpg
+  // chrome://new-tab-page/background.jpg.
   void SetBackgroundToLocalResource();
 
   // Updates custom background prefs with color if the background hasn't changed

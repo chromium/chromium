@@ -13,8 +13,8 @@
 #error "Instant is only used on desktop";
 #endif
 
-// Serves HTML for displaying suggestions using iframes, e.g.
-// chrome-search://most-visited/single.html
+// Serves HTML for displaying suggestions for 3P remote NTPs using iframes
+// of chrome-search://most-visited/title.html.
 class MostVisitedIframeSource : public content::URLDataSource {
  public:
   MostVisitedIframeSource();

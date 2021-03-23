@@ -5,22 +5,11 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  deps = [ ":local_ntp" ]
+  deps = [ ":most_visited_title" ]
 }
 
-js_library("local_ntp") {
-  sources = [
-    "animations.js",
-    "custom_links_edit.js",
-    "customize.js",
-    "doodles.js",
-    "local_ntp.js",
-    "most_visited_single.js",
-    "most_visited_title.js",
-    "most_visited_util.js",
-    "utils.js",
-    "voice.js",
-  ]
+js_library("most_visited_title") {
+  sources = [ "most_visited_title.js" ]
   deps = [ "//ui/webui/resources/js:assert" ]
   externs_list = [ "externs.js" ]
 }

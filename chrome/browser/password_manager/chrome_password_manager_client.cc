@@ -913,8 +913,7 @@ bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
 
 bool ChromePasswordManagerClient::IsNewTabPage() const {
   auto origin = GetLastCommittedURL().GetOrigin();
-  return origin == GURL(chrome::kChromeSearchLocalNtpUrl).GetOrigin() ||
-         origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
+  return origin == GURL(chrome::kChromeUINewTabPageURL).GetOrigin() ||
          origin == GURL(chrome::kChromeUINewTabURL).GetOrigin();
 }
 

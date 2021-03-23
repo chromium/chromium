@@ -146,7 +146,6 @@ TEST_F(MostVisitedIframeSourceTest, GetMimeType) {
   EXPECT_EQ("text/html", source()->GetMimeType("foo.html"));
   EXPECT_EQ("application/javascript", source()->GetMimeType("foo.js"));
   EXPECT_EQ("text/css", source()->GetMimeType("foo.css"));
-  EXPECT_EQ("image/png", source()->GetMimeType("foo.png"));
   EXPECT_EQ("", source()->GetMimeType("bogus"));
 }
 

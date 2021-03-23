@@ -101,9 +101,9 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
       WebRequestPermissions::HideRequest(permission_helper_, request_2));
 }
 
-// Ensure requests made by the local NTP are hidden from extensions. Regression
-// test for crbug.com/931013.
-TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
+// Ensure requests made by the local WebUINTP are hidden from extensions.
+// Regression test for crbug.com/931013.
+TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalWebUINTPRequests) {
   const GURL example_com("http://example.com");
 
   auto create_request_params =
@@ -120,7 +120,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
       };
 
   url::Origin ntp_origin =
-      url::Origin::Create(GURL(chrome::kChromeSearchLocalNtpUrl));
+      url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL));
 
   // Sub-resource browser initiated requests are hidden from extensions.
   WebRequestInfoInitParams info_params_1 = create_request_params(

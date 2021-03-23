@@ -5,7 +5,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
@@ -31,7 +31,7 @@ class NewTabPageNavigationThrottleTest : public InProcessBrowserTest {
 
   void SetNewTabPage(const std::string& ntp_url) {
     // Set the new tab page.
-    local_ntp_test_utils::SetUserSelectedDefaultSearchProvider(
+    ntp_test_utils::SetUserSelectedDefaultSearchProvider(
         browser()->profile(), https_test_server()->base_url().spec(), ntp_url);
 
     // Ensure we are using the newly set new_tab_url and won't be directed

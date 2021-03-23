@@ -102,17 +102,15 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, ProcessPerSite) {
     content::WebContentsAddedObserver tab1_observer;
 
     // Try to simulate as closely as possible what would have happened in the
-    // real user interaction.  In particular, do *not* use
-    // local_ntp_test_utils::OpenNewTab, which requires the caller to specify
-    // the URL of the new tab.
+    // real user interaction.
     chrome::NewTab(browser());
 
     // Wait for the new tab.
     tab1 = tab1_observer.GetWebContents();
     ASSERT_TRUE(WaitForLoadStop(tab1));
 
-    // Sanity check: the NTP should be provided by |ntp_url| (and not by
-    // chrome-search://local-ntp [1st-party NTP] or chrome://ntp [incognito]).
+    // Sanity check: the NTP should be provided by |ntp_url| and not by
+    // chrome://new-tab-page [1P WebUI NTP] or chrome://newtab [incognito].
     EXPECT_EQ(ntp_url, content::EvalJs(tab1, "window.location.href"));
   }
 
@@ -143,9 +141,8 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Sanity check: the NTP should be provided by |ntp_url| (and not by
-  // chrome-search://local-ntp [deprecated], chrome://new-tab-page [1st-party
-  // NTP] or chrome://ntp [incognito]).
+  // Sanity check: the NTP should be provided by |ntp_url| and not by
+  // chrome://new-tab-page [1P WebUI NTP] or chrome://newtab [incognito].
   EXPECT_EQ(ntp_url, content::EvalJs(web_contents, "window.location.href"));
 
   // Verify that NTP committed in remote NTP SiteInstance.

@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -20,13 +24,14 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace {
 
 class NavigationObserver : public content::WebContentsObserver {
-public:
+ public:
   enum NavigationResult {
     NOT_FINISHED,
     ERROR_PAGE,
@@ -72,7 +77,14 @@ public:
 
 }  // namespace
 
-typedef InProcessBrowserTest ChromeURLDataManagerTest;
+class ChromeURLDataManagerTest : public InProcessBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    content::URLDataSource::Add(
+        browser()->profile(),
+        std::make_unique<ThemeSource>(browser()->profile()));
+  }
+};
 
 // Makes sure navigating to the new tab page results in a http status code
 // of 200.

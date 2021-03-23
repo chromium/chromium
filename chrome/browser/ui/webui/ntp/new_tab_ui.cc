@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -72,6 +73,7 @@ NewTabUI::NewTabUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   // content::URLDataSource assumes the ownership of the html source.
   content::URLDataSource::Add(profile, std::make_unique<NewTabHTMLSource>(
                                            profile->GetOriginalProfile()));
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(

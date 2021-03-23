@@ -20,35 +20,11 @@
 
 namespace {
 
-// Single-iframe version, used by the local NTP and the Google remote NTP.
-const char kSingleHTMLPath[] = "/single.html";
-const char kSingleCSSPath[] = "/single.css";
-const char kSingleJSPath[] = "/single.js";
-
 // Multi-iframe version, used by third party remote NTPs.
 const char kAssertJsPath[] = "/assert.js";
-const char kCommonCSSPath[] = "/common.css";
-const char kDontShowPngPath[] = "/dont_show.png";
-const char kDontShow2XPngPath[] = "/dont_show_2x.png";
 const char kTitleHTMLPath[] = "/title.html";
 const char kTitleCSSPath[] = "/title.css";
 const char kTitleJSPath[] = "/title.js";
-const char kUtilJSPath[] = "/util.js";
-
-// Edit custom links dialog iframe and resources, used by the local NTP and the
-// Google remote NTP.
-const char kEditHTMLPath[] = "/edit.html";
-const char kEditCSSPath[] = "/edit.css";
-const char kEditJSPath[] = "/edit.js";
-const char kAddSvgPath[] = "/add_link.svg";
-const char kAddWhiteSvgPath[] = "/add_link_white.svg";
-const char kEditMenuSvgPath[] = "/edit_menu.svg";
-
-// Used in the single-iframe version and the edit custom links dialog iframe.
-const char kAnimationsCSSPath[] = "/animations.css";
-const char kAnimationsJSPath[] = "/animations.js";
-const char kLocalNTPCommonCSSPath[] = "/local-ntp-common.css";
-const char kLocalNTPUtilsJSPath[] = "/utils.js";
 
 }  // namespace
 
@@ -67,47 +43,12 @@ void MostVisitedIframeSource::StartDataRequest(
   // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
   const std::string path(url.path());
 
-  if (path == kSingleHTMLPath) {
-    SendResource(IDR_MOST_VISITED_SINGLE_HTML, std::move(callback));
-  } else if (path == kSingleCSSPath) {
-    SendResource(IDR_MOST_VISITED_SINGLE_CSS, std::move(callback));
-  } else if (path == kSingleJSPath) {
-    SendJSWithOrigin(IDR_MOST_VISITED_SINGLE_JS, wc_getter,
-                     std::move(callback));
-  } else if (path == kTitleHTMLPath) {
+  if (path == kTitleHTMLPath) {
     SendResource(IDR_MOST_VISITED_TITLE_HTML, std::move(callback));
   } else if (path == kTitleCSSPath) {
     SendResource(IDR_MOST_VISITED_TITLE_CSS, std::move(callback));
   } else if (path == kTitleJSPath) {
-    SendResource(IDR_MOST_VISITED_TITLE_JS, std::move(callback));
-  } else if (path == kUtilJSPath) {
-    SendJSWithOrigin(IDR_MOST_VISITED_UTIL_JS, wc_getter, std::move(callback));
-  } else if (path == kCommonCSSPath) {
-    SendResource(IDR_MOST_VISITED_IFRAME_CSS, std::move(callback));
-  } else if (path == kDontShowPngPath) {
-    SendResource(IDR_MOST_VISITED_DONT_SHOW_PNG, std::move(callback));
-  } else if (path == kDontShow2XPngPath) {
-    SendResource(IDR_MOST_VISITED_DONT_SHOW_2X_PNG, std::move(callback));
-  } else if (path == kEditHTMLPath) {
-    SendResource(IDR_CUSTOM_LINKS_EDIT_HTML, std::move(callback));
-  } else if (path == kEditCSSPath) {
-    SendResource(IDR_CUSTOM_LINKS_EDIT_CSS, std::move(callback));
-  } else if (path == kEditJSPath) {
-    SendJSWithOrigin(IDR_CUSTOM_LINKS_EDIT_JS, wc_getter, std::move(callback));
-  } else if (path == kAddSvgPath) {
-    SendResource(IDR_CUSTOM_LINKS_ADD_SVG, std::move(callback));
-  } else if (path == kAddWhiteSvgPath) {
-    SendResource(IDR_CUSTOM_LINKS_ADD_WHITE_SVG, std::move(callback));
-  } else if (path == kEditMenuSvgPath) {
-    SendResource(IDR_CUSTOM_LINKS_EDIT_MENU_SVG, std::move(callback));
-  } else if (path == kLocalNTPCommonCSSPath) {
-    SendResource(IDR_LOCAL_NTP_COMMON_CSS, std::move(callback));
-  } else if (path == kAnimationsCSSPath) {
-    SendResource(IDR_LOCAL_NTP_ANIMATIONS_CSS, std::move(callback));
-  } else if (path == kAnimationsJSPath) {
-    SendResource(IDR_LOCAL_NTP_ANIMATIONS_JS, std::move(callback));
-  } else if (path == kLocalNTPUtilsJSPath) {
-    SendResource(IDR_LOCAL_NTP_UTILS_JS, std::move(callback));
+    SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS, wc_getter, std::move(callback));
   } else if (path == kAssertJsPath) {
     SendResource(IDR_WEBUI_JS_ASSERT_JS, std::move(callback));
   } else {
@@ -120,14 +61,10 @@ std::string MostVisitedIframeSource::GetMimeType(
   std::string path(GURL("chrome-search://host/" + path_and_query).path());
   if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII))
     return "application/javascript";
-  if (base::EndsWith(path, ".png", base::CompareCase::INSENSITIVE_ASCII))
-    return "image/png";
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII))
     return "text/css";
   if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII))
     return "text/html";
-  if (base::EndsWith(path, ".svg", base::CompareCase::INSENSITIVE_ASCII))
-    return "image/svg+xml";
   return std::string();
 }
 
@@ -150,16 +87,8 @@ bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {
 }
 
 bool MostVisitedIframeSource::ServesPath(const std::string& path) const {
-  return path == kSingleHTMLPath || path == kSingleCSSPath ||
-         path == kSingleJSPath || path == kTitleHTMLPath ||
-         path == kTitleCSSPath || path == kTitleJSPath || path == kUtilJSPath ||
-         path == kCommonCSSPath || path == kEditHTMLPath ||
-         path == kEditCSSPath || path == kEditJSPath || path == kAddSvgPath ||
-         path == kAddWhiteSvgPath || path == kEditMenuSvgPath ||
-         path == kLocalNTPCommonCSSPath || path == kAnimationsCSSPath ||
-         path == kAnimationsJSPath || path == kLocalNTPUtilsJSPath ||
-         path == kAssertJsPath || path == kDontShowPngPath ||
-         path == kDontShow2XPngPath;
+  return path == kTitleHTMLPath || path == kTitleCSSPath ||
+         path == kTitleJSPath || path == kAssertJsPath;
 }
 
 void MostVisitedIframeSource::SendResource(

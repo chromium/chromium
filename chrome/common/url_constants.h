@@ -80,7 +80,6 @@ extern const char kChromeNativeScheme[];
 
 // Pages under chrome-search.
 extern const char kChromeSearchLocalNtpHost[];
-extern const char kChromeSearchLocalNtpUrl[];
 
 // Host and URL for most visited iframes used on the Instant Extended NTP.
 extern const char kChromeSearchMostVisitedHost[];
@@ -88,8 +87,8 @@ extern const char kChromeSearchMostVisitedUrl[];
 
 // URL for NTP custom background image selected from the user's machine and
 // filename for the version of the file in the Profile directory
-extern const char kChromeSearchLocalNtpBackgroundUrl[];
-extern const char kChromeSearchLocalNtpBackgroundFilename[];
+extern const char kChromeUIUntrustedNewTabPageBackgroundUrl[];
+extern const char kChromeUIUntrustedNewTabPageBackgroundFilename[];
 
 // Page under chrome-search.
 extern const char kChromeSearchRemoteNtpHost[];

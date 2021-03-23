@@ -11536,7 +11536,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageTimings" separator=".">
-  <suffix name="LocalNTP" label="Loaded local NTP."/>
+  <suffix name="LocalNTP" label="Loaded local NTP.">
+    <obsolete>
+      Deprecated NTP replaced by WebUI NTP M91.
+    </obsolete>
+  </suffix>
   <suffix name="MostLikely" label="Loaded server-side suggestions."/>
   <suffix name="MostVisited" label="Loaded client-side suggestions."/>
   <suffix name="NewTab" label="NTP loaded on a new tab."/>
@@ -11554,7 +11558,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="NewTabPageTimingsIsGoogle" separator=".">
   <suffix name="Google" label="Default search provider is Google."/>
   <suffix name="Other" label="Default search provider is not Google."/>
-  <affected-histogram name="NewTabPage.LoadTime.LocalNTP"/>
+  <affected-histogram name="NewTabPage.LoadTime.LocalNTP">
+    <obsolete>
+      Deprecated NTP replaced by WebUI NTP M91.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="NewTabPage.LoadTime.Web"/>
 </histogram_suffixes>
 

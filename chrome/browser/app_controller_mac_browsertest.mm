@@ -45,7 +45,7 @@
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
@@ -714,10 +714,10 @@ class AppControllerReplaceNTPBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
                        ReplaceNTPAfterStartup) {
   // Depending on network connectivity, the NTP URL can either be
-  // chrome://newtab/ or chrome-search://local-ntp/local-ntp.html. See
-  // local_ntp_test_utils::GetFinalNtpUrl for more details.
+  // chrome://newtab/ or chrome://new-tab-page-third-party. See
+  // ntp_test_utils::GetFinalNtpUrl for more details.
   std::string expected_url =
-      local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
+      ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
 
   // Ensure that there is exactly 1 tab showing, and the tab is the NTP.
   GURL ntp(expected_url);
