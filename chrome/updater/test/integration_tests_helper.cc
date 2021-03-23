@@ -142,34 +142,6 @@ void AppTestHelper::FirstTaskRun() {
     } else {
       Shutdown(kMissingAppIdSwitch);
     }
-  } else if (command_line->HasSwitch("set_active")) {
-    if (command_line->HasSwitch(kAppId)) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&SetActive, UpdaterScope::kSystem,
-                         command_line->GetSwitchValueASCII(kAppId)),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("expect_active")) {
-    if (command_line->HasSwitch(kAppId)) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&ExpectActive, UpdaterScope::kSystem,
-                         command_line->GetSwitchValueASCII(kAppId)),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("expect_not_active")) {
-    if (command_line->HasSwitch(kAppId)) {
-      ExpectNotActive(UpdaterScope::kSystem,
-                      command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
   } else if (command_line->HasSwitch("print_log")) {
     task_runner->PostTaskAndReply(
         FROM_HERE, base::BindOnce(&PrintLog, UpdaterScope::kSystem),

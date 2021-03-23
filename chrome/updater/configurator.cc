@@ -44,7 +44,6 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 
 namespace updater {
 
-// TODO(crbug.com/1096654): Add support for machine `activity_data_service_`.
 Configurator::Configurator(std::unique_ptr<UpdaterPrefs> prefs)
     : prefs_(std::move(prefs)),
       external_constants_(CreateExternalConstants()),

@@ -25,35 +25,31 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
  public:
   IntegrationTestCommandsUser() = default;
 
-  UpdaterScope GetUpdaterScope() const override { return UpdaterScope::kUser; }
-
-  void PrintLog() const override { updater::test::PrintLog(GetUpdaterScope()); }
+  void PrintLog() const override { updater::test::PrintLog(kUpdaterScope); }
 
   void CopyLog() const override {
-    base::Optional<base::FilePath> path = GetDataDirPath(GetUpdaterScope());
+    base::Optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
     EXPECT_TRUE(path);
     if (path)
       updater::test::CopyLog(*path);
   }
 
-  void Clean() const override { updater::test::Clean(GetUpdaterScope()); }
+  void Clean() const override { updater::test::Clean(kUpdaterScope); }
 
   void ExpectClean() const override {
-    updater::test::ExpectClean(GetUpdaterScope());
+    updater::test::ExpectClean(kUpdaterScope);
   }
 
-  void Install() const override { updater::test::Install(GetUpdaterScope()); }
+  void Install() const override { updater::test::Install(kUpdaterScope); }
 
   void ExpectInstalled() const override {
-    updater::test::ExpectInstalled(GetUpdaterScope());
+    updater::test::ExpectInstalled(kUpdaterScope);
   }
 
-  void Uninstall() const override {
-    updater::test::Uninstall(GetUpdaterScope());
-  }
+  void Uninstall() const override { updater::test::Uninstall(kUpdaterScope); }
 
   void ExpectCandidateUninstalled() const override {
-    updater::test::ExpectCandidateUninstalled(GetUpdaterScope());
+    updater::test::ExpectCandidateUninstalled(kUpdaterScope);
   }
 
   void EnterTestMode(const GURL& url) const override {
@@ -69,15 +65,15 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void ExpectActiveUpdater() const override {
-    updater::test::ExpectActiveUpdater(GetUpdaterScope());
+    updater::test::ExpectActiveUpdater(kUpdaterScope);
   }
 
   void SetupFakeUpdaterHigherVersion() const override {
-    updater::test::SetupFakeUpdaterHigherVersion(GetUpdaterScope());
+    updater::test::SetupFakeUpdaterHigherVersion(kUpdaterScope);
   }
 
   void SetupFakeUpdaterLowerVersion() const override {
-    updater::test::SetupFakeUpdaterLowerVersion(GetUpdaterScope());
+    updater::test::SetupFakeUpdaterLowerVersion(kUpdaterScope);
   }
 
   void SetFakeExistenceCheckerPath(const std::string& app_id) const override {
@@ -90,19 +86,19 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void SetActive(const std::string& app_id) const override {
-    updater::test::SetActive(GetUpdaterScope(), app_id);
+    updater::test::SetActive(kUpdaterScope, app_id);
   }
 
   void ExpectActive(const std::string& app_id) const override {
-    updater::test::ExpectActive(GetUpdaterScope(), app_id);
+    updater::test::ExpectActive(kUpdaterScope, app_id);
   }
 
   void ExpectNotActive(const std::string& app_id) const override {
-    updater::test::ExpectNotActive(GetUpdaterScope(), app_id);
+    updater::test::ExpectNotActive(kUpdaterScope, app_id);
   }
 
   void RunWake(int exit_code) const override {
-    updater::test::RunWake(GetUpdaterScope(), exit_code);
+    updater::test::RunWake(kUpdaterScope, exit_code);
   }
 
   void RegisterApp(const std::string& app_id) const override {
@@ -110,11 +106,13 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void RegisterTestApp() const override {
-    updater::test::RegisterTestApp(GetUpdaterScope());
+    updater::test::RegisterTestApp(kUpdaterScope);
   }
 
  private:
   ~IntegrationTestCommandsUser() override = default;
+
+  static constexpr UpdaterScope kUpdaterScope = UpdaterScope::kUser;
 };
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsUser() {

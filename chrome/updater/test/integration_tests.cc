@@ -109,7 +109,6 @@ class IntegrationTest
   }
   void RegisterTestApp() { test_commands_->RegisterTestApp(); }
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
-  UpdaterScope GetUpdaterScope() { return test_commands_->GetUpdaterScope(); }
 
  private:
   base::test::TaskEnvironment environment_;
@@ -171,12 +170,6 @@ TEST_P(IntegrationTest, RegisterTestApp) {
 
 // TODO(crbug.com/1163625): Failing on Mac 10.11.
 TEST_P(IntegrationTest, ReportsActive) {
-  // TODO(crbug.com/1096654): Enable for system.
-  if (GetUpdaterScope() == UpdaterScope::kSystem) {
-    Uninstall();
-    return;
-  }
-
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
   // Install, and RegisterApp cannot make progress until it shut downs and
@@ -184,7 +177,7 @@ TEST_P(IntegrationTest, ReportsActive) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
                                            base::TimeDelta::FromSeconds(18));
 
-  ScopedServer test_server;
+  ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
 

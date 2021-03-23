@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/updater/updater_scope.h"
 
 class GURL;
 
@@ -18,9 +17,6 @@ namespace test {
 class IntegrationTestCommands
     : public base::RefCountedThreadSafe<IntegrationTestCommands> {
  public:
-  // TODO(crbug.com/1096654): Remove GetUpdaterScope method when all tests are
-  // enabled for system context.
-  virtual UpdaterScope GetUpdaterScope() const = 0;
   virtual void EnterTestMode(const GURL& url) const = 0;
   virtual void Clean() const = 0;
   virtual void ExpectClean() const = 0;

@@ -13,12 +13,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,14 +36,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
  public:
   IntegrationTestCommandsSystem() = default;
 
-  UpdaterScope GetUpdaterScope() const override {
-    return UpdaterScope::kSystem;
-  }
-
   void PrintLog() const override { RunCommand("print_log"); }
 
   void CopyLog() const override {
-    base::Optional<base::FilePath> path = GetDataDirPath(GetUpdaterScope());
+    const base::Optional<base::FilePath> path = GetDataDirPath(kUpdaterScope);
     ASSERT_TRUE(path);
 
 #if defined(OS_WIN)
@@ -82,11 +80,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void ExpectActive(const std::string& app_id) const override {
-    RunCommand("expect_active", {Param("app_id", app_id)});
+    updater::test::ExpectActive(kUpdaterScope, app_id);
   }
 
   void ExpectNotActive(const std::string& app_id) const override {
-    RunCommand("expect_not_active", {Param("app_id", app_id)});
+    updater::test::ExpectNotActive(kUpdaterScope, app_id);
   }
 
   void SetupFakeUpdaterHigherVersion() const override {
@@ -108,7 +106,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void SetActive(const std::string& app_id) const override {
-    RunCommand("set_active", {Param("app_id", app_id)});
+    updater::test::SetActive(kUpdaterScope, app_id);
   }
 
   void RunWake(int expected_exit_code) const override {
@@ -155,13 +153,15 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     helper_command.AppendSwitchASCII(kLoggingModuleSwitch, "*/updater/*=2");
 
     int exit_code = -1;
-    ASSERT_TRUE(Run(GetUpdaterScope(), helper_command, &exit_code));
+    ASSERT_TRUE(Run(kUpdaterScope, helper_command, &exit_code));
     EXPECT_EQ(exit_code, 0);
   }
 
   void RunCommand(const std::string& command_switch) const {
     RunCommand(command_switch, {});
   }
+
+  static constexpr UpdaterScope kUpdaterScope = UpdaterScope::kSystem;
 };
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem() {

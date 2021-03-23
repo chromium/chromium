@@ -89,7 +89,8 @@ base::Optional<base::FilePath> GetProductPath(UpdaterScope scope) {
 
 base::Optional<base::FilePath> GetActiveFile(UpdaterScope scope,
                                              const std::string& id) {
-  base::Optional<base::FilePath> path = GetLibraryFolderPath(scope);
+  const base::Optional<base::FilePath> path =
+      GetLibraryFolderPath(UpdaterScope::kUser);
   if (!path)
     return base::nullopt;
 
@@ -290,25 +291,24 @@ base::Optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
 }
 
 void SetActive(UpdaterScope scope, const std::string& app_id) {
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  ASSERT_TRUE(path);
+  VLOG(0) << "Actives file: " << *path;
   base::File::Error err = base::File::FILE_OK;
-  base::Optional<base::FilePath> actives_file = GetActiveFile(scope, app_id);
-  ASSERT_TRUE(actives_file);
-  VLOG(0) << "Actives file: " << *actives_file;
-  VLOG(0) << "Actives file dir name: " << actives_file->DirName();
-  EXPECT_TRUE(base::CreateDirectoryAndGetError(actives_file->DirName(), &err))
+  EXPECT_TRUE(base::CreateDirectoryAndGetError(path->DirName(), &err))
       << "Error: " << err;
-  EXPECT_TRUE(base::WriteFile(*actives_file, ""));
+  EXPECT_TRUE(base::WriteFile(*path, ""));
 }
 
 void ExpectActive(UpdaterScope scope, const std::string& app_id) {
-  base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
   ASSERT_TRUE(path);
   EXPECT_TRUE(base::PathExists(*path));
   EXPECT_TRUE(base::PathIsWritable(*path));
 }
 
 void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
-  base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
   ASSERT_TRUE(path);
   EXPECT_FALSE(base::PathExists(*path));
   EXPECT_FALSE(base::PathIsWritable(*path));
