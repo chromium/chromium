@@ -29,7 +29,7 @@ class PlatformFieldTrials {
   // properties.
   virtual void SetupFeatureControllingFieldTrials(
       bool has_seed,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) = 0;
 
   // Register any synthetic field trials. Will be called later than the above
