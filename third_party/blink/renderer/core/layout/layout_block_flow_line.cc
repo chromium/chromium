@@ -335,7 +335,7 @@ RootInlineBox* LayoutBlockFlow::ConstructLine(BidiRunList<BidiRun>& bidi_runs,
 
     if (box->IsInlineTextBox()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-        cache->InlineTextBoxesUpdated(r->line_layout_item_);
+        cache->InlineTextBoxesUpdated(r->line_layout_item_.GetLayoutObject());
     }
   }
 

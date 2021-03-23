@@ -157,7 +157,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                              Element*,
                              const LayoutRect&) override;
 
-  void InlineTextBoxesUpdated(LineLayoutItem) override;
+  void InlineTextBoxesUpdated(LayoutObject*) override;
   void ProcessDeferredAccessibilityEvents(Document&) override;
   bool IsDirty() const override;
 

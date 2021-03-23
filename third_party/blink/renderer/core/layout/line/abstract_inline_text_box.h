@@ -75,6 +75,7 @@ class CORE_EXPORT AbstractInlineTextBox
   virtual Direction GetDirection() const = 0;
   Node* GetNode() const;
   LayoutObject* GetLayoutObject() const;
+  AXObjectCache* ExistingAXObjectCache() const;
   virtual void CharacterWidths(Vector<float>&) const = 0;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
   virtual String GetText() const = 0;

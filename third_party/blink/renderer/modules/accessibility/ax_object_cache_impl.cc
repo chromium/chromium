@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
@@ -579,7 +578,8 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   if (!ax_id)
     return node ? Get(node) : nullptr;
 
-  if (node && DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
+  if ((node && DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) ||
+      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
     // Change from AXLayoutObject -> AXNodeObject.
     // We previously saved the node in the cache with its layout object,
     // but now it's in a locked subtree so we should remove the entry with its
@@ -607,8 +607,20 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
   LayoutObject* layout_object = node->GetLayoutObject();
 
   // Some elements such as <area> are indexed by DOM node, not by layout object.
-  if (layout_object && !IsLayoutObjectRelevantForAccessibility(*layout_object))
+  if (!layout_object ||
+      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
+    if (node->IsTextNode() &&
+        !IsNodeRelevantForAccessibility(node, /*parent known*/ false,
+                                        /*layout relevant*/ false)) {
+      // Layout object and node both irrelevant for accessibility.
+      // For example, text becomes irrelevant when it changes to whitespace, or
+      // if it already is whitespace and the text around it changes to makes it
+      // redundant whitespace. In this case, remove any existing AXObject.
+      Remove(const_cast<Node*>(node));
+      return nullptr;
+    }
     layout_object = nullptr;
+  }
 
   AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
@@ -1009,6 +1021,9 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
 
   if (AXObject* obj = Get(inline_text_box)) {
 #if DCHECK_IS_ON()
+    DCHECK(!obj->IsDetached())
+        << "AXObject for inline text box should not be detached: "
+        << obj->ToString(true, true);
     // AXInlineTextbox objects can't get a new parent, unlike other types of
     // accessible objects that can get a new parent because they moved or
     // because of aria-owns.
@@ -2637,20 +2652,27 @@ void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {
   relation_cache_->LabelChanged(element);
 }
 
-void AXObjectCacheImpl::InlineTextBoxesUpdated(
-    LineLayoutItem line_layout_item) {
+void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
   if (!InlineTextBoxAccessibilityEnabled())
     return;
 
-  LayoutObject* layout_object =
-      LineLayoutAPIShim::LayoutObjectFrom(line_layout_item);
+  AXID ax_id = layout_object_mapping_.at(layout_object);
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(ax_id));
 
   // Only update if the accessibility object already exists and it's
   // not already marked as dirty.
-  if (AXObject* obj = Get(layout_object)) {
+  // Do not use Get(): it does extra work to determine whether the object should
+  // be invalidated, including calling IsLayoutObjectRelevantForAccessibility(),
+  // which uses the NGInlineCursor. However, the NGInlineCursor cannot be used
+  // while inline boxes are being updated.
+  if (ax_id) {
+    AXObject* obj = objects_.at(ax_id);
+    DCHECK(obj);
+    DCHECK(obj->IsAXLayoutObject());
+    DCHECK(!obj->IsDetached());
     if (!obj->NeedsToUpdateChildren()) {
       obj->SetNeedsToUpdateChildren();
-      PostNotification(layout_object, ax::mojom::Event::kChildrenChanged);
+      PostNotification(obj, ax::mojom::blink::Event::kChildrenChanged);
     }
   }
 }

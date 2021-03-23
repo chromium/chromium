@@ -45,7 +45,6 @@ class HTMLFrameOwnerElement;
 class HTMLSelectElement;
 class IntPoint;
 class LayoutRect;
-class LineLayoutItem;
 class LocalFrameView;
 
 class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
@@ -143,7 +142,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                      Element*,
                                      const LayoutRect&) = 0;
 
-  virtual void InlineTextBoxesUpdated(LineLayoutItem) = 0;
+  virtual void InlineTextBoxesUpdated(LayoutObject*) = 0;
 
   // Called when the scroll offset changes.
   virtual void HandleScrollPositionChanged(LocalFrameView*) = 0;

@@ -859,5 +859,10 @@
     "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",
               "external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html"],
     "args": [ "--enable-features=SuppressDifferentOriginSubframeJSDialogs"]
+  },
+  {
+    "prefix": "force-renderer-accessibility",
+    "bases": ["accessibility/slot-poison.html"],
+    "args": ["--force-renderer-accessibility"]
   }
 ]
