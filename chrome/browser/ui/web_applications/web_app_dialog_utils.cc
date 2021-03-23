@@ -84,13 +84,6 @@ bool CanCreateWebApp(const Browser* browser) {
   if (entry && entry->GetPageType() == content::PAGE_TYPE_ERROR)
     return false;
 
-  // Check whether the app is externally installed.
-  webapps::AppBannerManager* app_banner_manager =
-      webapps::AppBannerManager::FromWebContents(web_contents);
-
-  if (app_banner_manager && app_banner_manager->IsExternallyInstalledWebApp())
-    return false;
-
   return true;
 }
 

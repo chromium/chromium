@@ -44,9 +44,6 @@ class AppBannerManagerDesktop
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
 
-  // AppBannerManager overrides.
-  bool IsExternallyInstalledWebApp() override;
-
  protected:
   explicit AppBannerManagerDesktop(content::WebContents* web_contents);
 

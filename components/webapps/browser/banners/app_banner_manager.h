@@ -131,11 +131,6 @@ class AppBannerManager : public content::WebContentsObserver,
   static std::u16string GetInstallableWebAppName(
       content::WebContents* web_contents);
 
-  // Returns whether the page that would currently be installed by the
-  // "Install PWA" or "Create Shortcut" actions would replace an installed app
-  // with an External install source. Returns false if unknown.
-  virtual bool IsExternallyInstalledWebApp();
-
   // Returns whether installability checks satisfy promotion requirements
   // (e.g. having a service worker fetch event) or have passed previously within
   // the current manifest scope. Already-installed apps are non-promotable by

@@ -155,42 +155,12 @@ web_app::AppRegistrar& AppBannerManagerDesktop::registrar() {
   return provider->registrar();
 }
 
-// TODO(https://crbug.com/930612): Move out into a more general purpose
-// installability check class.
-bool AppBannerManagerDesktop::IsExternallyInstalledWebApp() {
-  // Public method, so ensure processing is finished before using manifest.
-  if (manifest_.start_url.is_valid()) {
-    // Use manifest as source of truth if available.
-    web_app::AppId manifest_app_id =
-        web_app::GenerateAppIdFromURL(manifest_.start_url);
-    // TODO(crbug.com/1090182): Make HasExternalApp imply IsLocallyInstalled.
-    return registrar().IsLocallyInstalled(manifest_app_id) &&
-           registrar().HasExternalApp(manifest_app_id);
-  }
-
-  // Check URL wouldn't collide with an external app's install URL.
-  const GURL& url = web_contents()->GetLastCommittedURL();
-  base::Optional<web_app::AppId> external_app_id =
-      registrar().LookupExternalAppId(url);
-  // TODO(crbug.com/1090182): Make LookupExternalAppId imply IsLocallyInstalled.
-  if (external_app_id && registrar().IsLocallyInstalled(*external_app_id))
-    return true;
-
-  // Check an app created for this page wouldn't collide with any external app.
-  web_app::AppId possible_app_id = web_app::GenerateAppIdFromURL(url);
-  // TODO(crbug.com/1090182): Make HasExternalApp imply IsLocallyInstalled.
-  return registrar().IsLocallyInstalled(possible_app_id) &&
-         registrar().HasExternalApp(possible_app_id);
-}
-
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   // Only allow replacement install if this specific app is already installed.
   web_app::AppId app_id = web_app::GenerateAppIdFromURL(manifest_.start_url);
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 
-  if (IsExternallyInstalledWebApp())
-    return false;
   auto display_mode = registrar().GetAppUserDisplayMode(app_id);
   return display_mode == blink::mojom::DisplayMode::kBrowser;
 }

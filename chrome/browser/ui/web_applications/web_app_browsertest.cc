@@ -45,12 +45,16 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -858,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverWindowPwa) {
             kEnabled);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverPolicyPwa) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
   ExternalInstallOptions options = CreateInstallOptions(GetInstallableAppURL());
   options.install_source = ExternalInstallSource::kExternalPolicy;
   PendingAppManagerInstall(profile(), options);
@@ -867,11 +871,36 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverPolicyPwa) {
   Browser* const new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
 
-  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser),
-            kDisabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
             kEnabled);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       CannotUninstallPolicyWebAppAfterUserInstall) {
+  GURL install_url = GetInstallableAppURL();
+  ExternalInstallOptions options = CreateInstallOptions(install_url);
+  options.install_source = ExternalInstallSource::kExternalPolicy;
+  PendingAppManagerInstall(profile(), options);
+
+  auto* provider = WebAppProvider::Get(browser()->profile());
+  ExternallyInstalledWebAppPrefs prefs(browser()->profile()->GetPrefs());
+  AppId app_id = prefs.LookupAppId(install_url).value();
+
+  EXPECT_FALSE(
+      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+
+  InstallWebAppFromPage(browser(), install_url);
+
+  // Performing a user install on the page should not override the "policy"
+  // install source.
+  EXPECT_FALSE(
+      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+  const WebApp& web_app =
+      *provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app.IsSynced());
+  EXPECT_TRUE(web_app.IsPolicyInstalledApp());
 }
 
 // Tests that the command for OpenActiveTabInPwaWindow is available for secure
