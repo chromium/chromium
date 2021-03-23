@@ -3715,10 +3715,6 @@ const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
 const char kMacSyscallSandboxDescription[] =
     "Controls whether the macOS sandbox filters syscalls.";
 
-const char kMacV2GPUSandboxName[] = "Mac V2 GPU Sandbox";
-const char kMacV2GPUSandboxDescription[] =
-    "Controls whether the GPU process on macOS uses the V1 or V2 sandbox.";
-
 const char kMetalName[] = "Metal";
 const char kMetalDescription[] =
     "Use Metal instead of OpenGL for rasterization (if out-of-process "

@@ -3982,21 +3982,6 @@
             ]
         }
     ],
-    "MacV2GPUSandbox": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacV2GPUSandbox"
-                    ]
-                }
-            ]
-        }
-    ],
     "ManagedSigninPopup": [
         {
             "platforms": [

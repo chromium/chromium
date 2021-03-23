@@ -97,10 +97,8 @@
 #include "base/message_loop/message_pump_mac.h"
 #include "components/metal_util/device_removal.h"
 #include "components/metal_util/test_shader.h"
-#include "content/public/common/content_features.h"
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
-#include "sandbox/policy/mac/sandbox_mac.h"
 #endif
 
 #if BUILDFLAG(USE_VAAPI)
@@ -155,7 +153,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif
 
 #if defined(OS_MAC)
-    if (base::FeatureList::IsEnabled(features::kMacV2GPUSandbox)) {
+    {
       TRACE_EVENT0("gpu", "Initialize VideoToolbox");
       media::InitializeVideoToolbox();
     }

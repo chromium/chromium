@@ -970,9 +970,6 @@ const base::Feature kIOSurfaceCapturer{"IOSurfaceCapturer",
 const base::Feature kMacSyscallSandbox{"MacSyscallSandbox",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kMacV2GPUSandbox{"MacV2GPUSandbox",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables retrying to obtain list of available cameras on Macbooks after
 // restarting the video capture service if a previous attempt delivered zero
 // cameras.
