@@ -13,9 +13,16 @@
 #include "base/scoped_observation.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/window_info.h"
-#include "ui/aura/window_observer.h"
 
 class PrefService;
+
+namespace aura {
+class Window;
+}
+
+namespace views {
+class Widget;
+}
 
 namespace ash {
 
@@ -24,7 +31,6 @@ class WindowState;
 class ASH_EXPORT FullRestoreController
     : public SessionObserver,
       public TabletModeObserver,
-      public aura::WindowObserver,
       public full_restore::FullRestoreInfo::Observer {
  public:
   using SaveWindowCallback =
@@ -56,14 +62,9 @@ class ASH_EXPORT FullRestoreController
   void OnTabletModeEnded() override;
   void OnTabletControllerDestroyed() override;
 
-  // WindowObserver:
-  void OnWindowParentChanged(aura::Window* window,
-                             aura::Window* parent) override;
-  void OnWindowDestroying(aura::Window* window) override;
-
   // full_restore::FullRestoreInfo::Observer:
   void OnAppLaunched(aura::Window* window) override;
-  void OnWindowInitialized(aura::Window* window) override;
+  void OnWidgetInitialized(views::Widget* widget) override;
 
  private:
   friend class FullRestoreControllerTest;
@@ -103,9 +104,6 @@ class ASH_EXPORT FullRestoreController
   base::ScopedObservation<full_restore::FullRestoreInfo,
                           full_restore::FullRestoreInfo::Observer>
       full_restore_info_observation_{this};
-
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      windows_observation_{this};
 };
 
 }  // namespace ash

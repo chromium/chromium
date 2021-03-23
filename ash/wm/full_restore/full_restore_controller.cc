@@ -17,6 +17,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -104,42 +105,29 @@ void FullRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
-void FullRestoreController::OnWindowParentChanged(aura::Window* window,
-                                                  aura::Window* parent) {
-  auto window_info = full_restore::GetWindowInfo(window);
-  // May be null in tests.
-  if (!window_info) {
-    windows_observation_.RemoveObservation(window);
-    return;
-  }
-
-  auto state_type = window_info->window_state_type;
-  if (!state_type.has_value()) {
-    windows_observation_.RemoveObservation(window);
-    return;
-  }
-
-  if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
-      *state_type == chromeos::WindowStateType::kRightSnapped) {
-    const ash::WMEvent snap_event(
-        *state_type == chromeos::WindowStateType::kLeftSnapped
-            ? ash::WM_EVENT_SNAP_LEFT
-            : ash::WM_EVENT_SNAP_RIGHT);
-    WindowState::Get(window)->OnWMEvent(&snap_event);
-  }
-
-  windows_observation_.RemoveObservation(window);
-}
-
-void FullRestoreController::OnWindowDestroying(aura::Window* window) {
-  if (windows_observation_.IsObservingSource(window))
-    windows_observation_.RemoveObservation(window);
-}
-
 void FullRestoreController::OnAppLaunched(aura::Window* window) {}
 
-void FullRestoreController::OnWindowInitialized(aura::Window* window) {
-  DCHECK(window);
+void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
+  DCHECK(widget);
+
+  aura::Window* window = widget->GetNativeWindow();
+  DCHECK(window->parent());
+
+  auto window_info = full_restore::GetWindowInfo(window);
+  if (window_info) {
+    // Snap the window if necessary.
+    auto state_type = window_info->window_state_type;
+    if (state_type) {
+      if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
+          *state_type == chromeos::WindowStateType::kRightSnapped) {
+        const WMEvent snap_event(*state_type ==
+                                         chromeos::WindowStateType::kLeftSnapped
+                                     ? WM_EVENT_SNAP_LEFT
+                                     : WM_EVENT_SNAP_RIGHT);
+        WindowState::Get(window)->OnWMEvent(&snap_event);
+      }
+    }
+  }
 
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);
@@ -163,8 +151,6 @@ void FullRestoreController::OnWindowInitialized(aura::Window* window) {
                        widget->widget_delegate()->SetCanActivate(true);
                      },
                      window));
-
-  windows_observation_.AddObservation(window);
 }
 
 void FullRestoreController::SaveAllWindows() {

@@ -1140,6 +1140,11 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
   EXPECT_EQ(pre_save_bounds, window->GetBoundsInScreen());
   window_state = ash::WindowState::Get(window);
   EXPECT_EQ(pre_save_state_type, window_state->GetStateType());
+
+  // Verify that |window_state| has viable restore bounds for when the user
+  // wants to return to normal window show state. Regression test for
+  // https://crbug.com/1188986.
+  EXPECT_TRUE(window_state->HasRestoreBounds());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

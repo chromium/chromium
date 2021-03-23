@@ -98,7 +98,9 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
         .SetActivatable(false);
     widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
                                      new int32_t(activation_index));
-    return widget_builder.BuildOwnedByNativeWidget();
+    views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
+    FullRestoreController::Get()->OnWidgetInitialized(widget);
+    return widget;
   }
 
   // AshTestBase:
