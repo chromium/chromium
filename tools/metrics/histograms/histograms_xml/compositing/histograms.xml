@@ -310,7 +310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -323,7 +323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Compositing.Display.OverlayProcessorOzone.IsCandidateSharedImage"
-    enum="Boolean" expires_after="2021-07-18">
+    enum="Boolean" expires_after="2021-09-19">
   <owner>samans@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -335,7 +335,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.OverlayProcessorOzone.SharedImageExists"
-    enum="Boolean" expires_after="2021-07-18">
+    enum="Boolean" expires_after="2021-09-19">
   <owner>samans@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>

@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CloudPrint.JobHandlerEvent"
-    enum="CloudPrintJobHandlerEventType" expires_after="2021-07-18">
+    enum="CloudPrintJobHandlerEventType" expires_after="2021-09-19">
   <owner>thestig@chromium.org</owner>
   <summary>Event counts in PrinterJobHandler.</summary>
 </histogram>

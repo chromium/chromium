@@ -91,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.EvictedOriginAccessCount" units="units"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.EvictedOriginDaysSinceAccess" units="units"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

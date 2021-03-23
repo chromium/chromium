@@ -545,7 +545,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundExitData" enum="MetricKitExitData"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -561,7 +561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.ForegroundTimePerDay" units="s"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -572,7 +572,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>justinchhen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -582,7 +582,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -638,7 +638,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.OpenIn.MimeType" enum="IOSOpenInMimeType"
-    expires_after="M93">
+    expires_after="2021-09-19">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>

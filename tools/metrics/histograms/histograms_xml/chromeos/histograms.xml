@@ -382,7 +382,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
-    expires_after="2021-07-15">
+    expires_after="2021-09-19">
   <owner>baileyberro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -392,7 +392,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2021-07-15">
+    expires_after="2021-09-19">
   <owner>baileyberro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -402,7 +402,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
-    expires_after="2021-07-15">
+    expires_after="2021-09-19">
   <owner>baileyberro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -557,7 +557,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.HardwareVerifier.TimeToFinish" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>itspeter@chromium.org</owner>
   <owner>stimim@chromium.org</owner>
   <owner>chromeos-hw-checker@google.com</owner>
@@ -567,7 +567,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.HardwareVerifier.TimeToProbe" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>itspeter@chromium.org</owner>
   <owner>stimim@chromium.org</owner>
   <owner>chromeos-hw-checker@google.com</owner>
@@ -649,7 +649,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen"
-    enum="BooleanLegacySupervisedUserHidden" expires_after="M93">
+    enum="BooleanLegacySupervisedUserHidden" expires_after="2021-09-19">
   <owner>tobyhuang@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -1521,7 +1521,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UserAddingScreen.LoadTimeViewsBased" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>tellier@google.com</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>

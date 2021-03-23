@@ -585,7 +585,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.ChildCrashes" enum="RendererType"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>wfh@chromium.org</owner>
   <summary>Count of renderer process crashes grouped by type.</summary>
 </histogram>

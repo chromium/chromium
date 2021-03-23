@@ -37,7 +37,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Accelerators.Deprecated.ShowTaskManager"
-    enum="DeprecatedAcceleratorUsage" expires_after="2021-07-15">
+    enum="DeprecatedAcceleratorUsage" expires_after="2021-09-19">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -176,7 +176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Ash.Assistant.AnimationSmoothness" units="%"
-    expires_after="2021-07-20">
+    expires_after="2021-09-19">
 <!-- Name completed by histogram_suffixes name="AshAssistantAnimationSmoothness" -->
 
   <owner>cowmoo@chromium.org</owner>
@@ -1075,7 +1075,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.HotseatTransition.Drag.PresentationTime.MaxLatency"
-    units="ms" expires_after="2021-07-15">
+    units="ms" expires_after="2021-09-19">
   <owner>anasalazar@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1140,7 +1140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2021-07-18">
+    enum="AuthMethodSwitchType" expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1150,7 +1150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2021-07-18">
+    enum="AuthMethod" expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1162,7 +1162,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1237,7 +1237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Login.MigrationBanner" enum="BooleanShown"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -2271,7 +2271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.TouchView.TouchViewInactive" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>girard@chromium.org</owner>
   <summary>The length of time between TouchView activations.</summary>
 </histogram>
@@ -2450,7 +2450,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Items" units="items"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>

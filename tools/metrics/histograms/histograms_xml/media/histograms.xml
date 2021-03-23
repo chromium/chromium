@@ -4388,7 +4388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.AttemptResult"
-    enum="VideoPersistenceAttemptResult" expires_after="M93">
+    enum="VideoPersistenceAttemptResult" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -4399,7 +4399,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.ControlsType"
-    enum="VideoPersistenceControlsType" expires_after="M93">
+    enum="VideoPersistenceControlsType" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4420,7 +4420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.EndReason"
-    enum="VideoPersistenceEndReason" expires_after="M93">
+    enum="VideoPersistenceEndReason" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

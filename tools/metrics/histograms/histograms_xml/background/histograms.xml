@@ -305,7 +305,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.LaunchTask.PlayServicesAvailable"
-    enum="Boolean" expires_after="2021-07-21">
+    enum="Boolean" expires_after="2021-09-19">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

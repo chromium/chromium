@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Geolocation.LocationUpdate.ErrorCode"
-    enum="GeopositionErrorCode" expires_after="2021-07-18">
+    enum="GeopositionErrorCode" expires_after="2021-09-19">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>Error code for the geoposition sent to the renderers.</summary>

@@ -207,7 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>
@@ -218,7 +218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PluginVm.SetupTime" units="ms" expires_after="2021-07-18">
+<histogram name="PluginVm.SetupTime" units="ms" expires_after="2021-09-19">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>

@@ -1242,7 +1242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsMode.Automatic.ResolveTime" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -4625,7 +4625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SameSiteBlockedCookieSiteEngagement.CookieNoSameSite"
-    enum="SiteEngagementLevel" expires_after="2021-07-18">
+    enum="SiteEngagementLevel" expires_after="2021-09-19">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>

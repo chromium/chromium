@@ -79,7 +79,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Overall" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -234,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.NoUpdate.Duration.Overall" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -263,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Update.Duration.Overall" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>

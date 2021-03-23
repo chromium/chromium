@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Assistant.BetterOnboarding.Click"
-    enum="AssistantBetterOnboardingType" expires_after="2021-07-18">
+    enum="AssistantBetterOnboardingType" expires_after="2021-09-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -284,7 +284,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Click.Duration" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -324,7 +324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2021-09-12">
+    expires_after="2021-09-19">
   <owner>updowndota@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Duration" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
