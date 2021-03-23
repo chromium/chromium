@@ -63,6 +63,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String GOOGLE_SANS_REGULAR = "google sans regular";
     private static final String GOOGLE_SANS_MEDIUM = "google sans medium";
     private static final String GOOGLE_SANS_BOLD = "google sans bold";
+    private static final String NOTO_COLOR_EMOJI_COMPAT = "noto color emoji compat";
 
     private final Context mAppContext;
     private final FontsContractWrapper mFontsContract;
@@ -95,13 +96,14 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     // numeric values should never be reused. These values must stay in sync with enums.xml.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @IntDef({FetchFontName.GOOGLE_SANS_REGULAR, FetchFontName.GOOGLE_SANS_MEDIUM,
-            FetchFontName.GOOGLE_SANS_BOLD})
+            FetchFontName.GOOGLE_SANS_BOLD, FetchFontName.NOTO_COLOR_EMOJI_COMPAT})
     @interface FetchFontName {
         int OTHER = 0;
         int GOOGLE_SANS_REGULAR = 1;
         int GOOGLE_SANS_MEDIUM = 2;
         int GOOGLE_SANS_BOLD = 3;
-        int COUNT = 4;
+        int NOTO_COLOR_EMOJI_COMPAT = 4;
+        int COUNT = 5;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -276,6 +278,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         map.put(GOOGLE_SANS_REGULAR, createFontQuery("Google Sans", 400));
         map.put(GOOGLE_SANS_MEDIUM, createFontQuery("Google Sans", 500));
         map.put(GOOGLE_SANS_BOLD, createFontQuery("Google Sans", 700));
+        map.put(NOTO_COLOR_EMOJI_COMPAT, createFontQuery("Noto Color Emoji Compat", 400));
         return map;
     }
 
@@ -308,6 +311,9 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                 break;
             case GOOGLE_SANS_BOLD:
                 result = FetchFontName.GOOGLE_SANS_BOLD;
+                break;
+            case NOTO_COLOR_EMOJI_COMPAT:
+                result = FetchFontName.NOTO_COLOR_EMOJI_COMPAT;
                 break;
             default:
                 result = FetchFontName.OTHER;

@@ -32318,6 +32318,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Google Sans Regular"/>
   <int value="2" label="Google Sans Medium"/>
   <int value="3" label="Google Sans Bold"/>
+  <int value="4" label="Noto Color Emoji Compat"/>
 </enum>
 
 <enum name="FetchFontResult">
