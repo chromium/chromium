@@ -406,31 +406,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, LoginFailed) {
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Disabled due to flakiness: https://crbug.com/1030579.
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, DISABLED_Redirects) {
-  NavigateToFile("/password/password_form.html");
-
-  // Fill a form and submit through a <input type="submit"> button. The form
-  // points to a redirection page.
-  NavigationObserver observer1(WebContents());
-  std::string fill_and_submit =
-      "document.getElementById('username_redirect').value = 'temp';"
-      "document.getElementById('password_redirect').value = 'random';"
-      "document.getElementById('submit_redirect').click()";
-  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
-  observer1.Wait();
-  BubbleObserver bubble_observer(WebContents());
-  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-
-  // The redirection page now redirects via Javascript. We check that the
-  // bubble stays.
-  NavigationObserver observer2(WebContents());
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(), "window.location.href = 'done.html';"));
-  observer2.Wait();
-  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        PromptForSubmitUsingJavaScript) {
   NavigateToFile("/password/password_form.html");
