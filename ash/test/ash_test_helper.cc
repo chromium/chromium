@@ -171,7 +171,7 @@ void AshTestHelper::TearDown() {
   test_keyboard_controller_observer_.reset();
   session_controller_client_.reset();
   test_views_delegate_.reset();
-  new_window_delegate_.reset();
+  new_window_delegate_provider_.reset();
   bluez_dbus_manager_initializer_.reset();
   system_tray_client_.reset();
   assistant_service_.reset();
@@ -226,8 +226,11 @@ void AshTestHelper::SetUp(InitParams init_params) {
     power_policy_controller_initializer_ =
         std::make_unique<PowerPolicyControllerInitializer>();
   }
-  if (!NewWindowDelegate::GetInstance())
-    new_window_delegate_ = std::make_unique<TestNewWindowDelegate>();
+  if (!NewWindowDelegate::GetInstance()) {
+    new_window_delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(
+            std::make_unique<TestNewWindowDelegate>());
+  }
   if (!views::ViewsDelegate::GetInstance())
     test_views_delegate_ = MakeTestViewsDelegate();
 

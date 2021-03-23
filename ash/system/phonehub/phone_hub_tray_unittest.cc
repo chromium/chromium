@@ -52,6 +52,10 @@ class PhoneHubTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
 
     phone_hub_tray_ =
@@ -107,7 +111,7 @@ class PhoneHubTrayTest : public AshTestBase {
     task_environment()->FastForwardBy(kConnectingViewGracePeriod);
   }
 
-  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
   views::View* bubble_view() { return phone_hub_tray_->GetBubbleView(); }
 
@@ -173,7 +177,8 @@ class PhoneHubTrayTest : public AshTestBase {
   PhoneHubTray* phone_hub_tray_ = nullptr;
   chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
   base::test::ScopedFeatureList feature_list_;
-  MockNewWindowDelegate new_window_delegate_;
+  MockNewWindowDelegate* new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(PhoneHubTrayTest, SetPhoneHubManager) {

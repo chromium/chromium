@@ -51,7 +51,12 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class PciePeripheralNotificationControllerTest : public AshTestBase {
  public:
-  PciePeripheralNotificationControllerTest() = default;
+  PciePeripheralNotificationControllerTest() {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
+  }
   PciePeripheralNotificationControllerTest(
       const PciePeripheralNotificationControllerTest&) = delete;
   PciePeripheralNotificationControllerTest& operator=(
@@ -62,7 +67,7 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
     return Shell::Get()->pcie_peripheral_notification_controller();
   }
 
-  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
   message_center::Notification* GetLimitedPerformanceNotification() {
     return MessageCenter::Get()->FindVisibleNotificationById(
@@ -128,7 +133,8 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
   }
 
  private:
-  MockNewWindowDelegate new_window_delegate_;
+  MockNewWindowDelegate* new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtOnly) {

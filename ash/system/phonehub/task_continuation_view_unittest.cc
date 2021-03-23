@@ -45,6 +45,10 @@ class TaskContinuationViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(chromeos::features::kPhoneHub);
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
 
     task_continuation_view_ = std::make_unique<TaskContinuationView>(
@@ -59,14 +63,15 @@ class TaskContinuationViewTest : public AshTestBase {
  protected:
   TaskContinuationView* task_view() { return task_continuation_view_.get(); }
   chromeos::phonehub::MutablePhoneModel* phone_model() { return &phone_model_; }
-  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
 
  private:
   std::unique_ptr<TaskContinuationView> task_continuation_view_;
   chromeos::phonehub::FakeUserActionRecorder fake_user_action_recorder_;
   chromeos::phonehub::MutablePhoneModel phone_model_;
   base::test::ScopedFeatureList feature_list_;
-  MockNewWindowDelegate new_window_delegate_;
+  MockNewWindowDelegate* new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(TaskContinuationViewTest, TaskViewVisibility) {

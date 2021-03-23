@@ -516,18 +516,18 @@ bool CanHandleNewIncognitoWindow() {
 
 void HandleNewIncognitoWindow() {
   base::RecordAction(UserMetricsAction("Accel_New_Incognito_Window"));
-  NewWindowDelegate::GetInstance()->NewWindow(true /* is_incognito */);
+  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/true);
 }
 
 void HandleNewTab(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_T)
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
-  NewWindowDelegate::GetInstance()->NewTab();
+  NewWindowDelegate::GetPrimary()->NewTab();
 }
 
 void HandleNewWindow() {
   base::RecordAction(UserMetricsAction("Accel_New_Window"));
-  NewWindowDelegate::GetInstance()->NewWindow(false /* is_incognito */);
+  NewWindowDelegate::GetPrimary()->NewWindow(/*is_incognito=*/false);
 }
 
 bool CanCycleInputMethod() {
@@ -716,7 +716,7 @@ void HandleRotateScreen() {
 
 void HandleRestoreTab() {
   base::RecordAction(UserMetricsAction("Accel_Restore_Tab"));
-  NewWindowDelegate::GetInstance()->RestoreTab();
+  NewWindowDelegate::GetPrimary()->RestoreTab();
 }
 
 // Rotate the active window.

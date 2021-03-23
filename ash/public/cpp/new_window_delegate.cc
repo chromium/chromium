@@ -4,26 +4,40 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 
 namespace ash {
 namespace {
-NewWindowDelegate* g_new_window_delegate = nullptr;
+NewWindowDelegateProvider* g_delegate_provider = nullptr;
 }
 
 // static
 NewWindowDelegate* NewWindowDelegate::GetInstance() {
-  return g_new_window_delegate;
+  if (!g_delegate_provider)
+    return nullptr;
+  return g_delegate_provider->GetInstance();
 }
 
-NewWindowDelegate::NewWindowDelegate() {
-  DCHECK(!g_new_window_delegate);
-  g_new_window_delegate = this;
+// static
+NewWindowDelegate* NewWindowDelegate::GetPrimary() {
+  if (!g_delegate_provider)
+    return nullptr;
+  return g_delegate_provider->GetPrimary();
 }
 
-NewWindowDelegate::~NewWindowDelegate() {
-  DCHECK_EQ(g_new_window_delegate, this);
-  g_new_window_delegate = nullptr;
+NewWindowDelegate::NewWindowDelegate() = default;
+
+NewWindowDelegate::~NewWindowDelegate() = default;
+
+NewWindowDelegateProvider::NewWindowDelegateProvider() {
+  DCHECK(!g_delegate_provider);
+  g_delegate_provider = this;
+}
+
+NewWindowDelegateProvider::~NewWindowDelegateProvider() {
+  DCHECK_EQ(g_delegate_provider, this);
+  g_delegate_provider = nullptr;
 }
 
 }  // namespace ash

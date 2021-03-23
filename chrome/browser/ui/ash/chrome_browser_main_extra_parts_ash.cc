@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/ash/ash_shell_init.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
+#include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
+#include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 #include "chrome/browser/ui/ash/ime_controller_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
@@ -147,7 +149,16 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   accessibility_controller_client_ =
       std::make_unique<AccessibilityControllerClient>();
 
-  chrome_new_window_client_ = std::make_unique<ChromeNewWindowClient>();
+  {
+    auto chrome_new_window_client = std::make_unique<ChromeNewWindowClient>();
+    auto crosapi_new_window_delegate =
+        std::make_unique<CrosapiNewWindowDelegate>(
+            chrome_new_window_client.get());
+    new_window_delegate_provider_ =
+        std::make_unique<ChromeNewWindowDelegateProvider>(
+            std::move(chrome_new_window_client),
+            std::move(crosapi_new_window_delegate));
+  }
 
   ime_controller_client_ = std::make_unique<ImeControllerClient>(
       chromeos::input_method::InputMethodManager::Get());
@@ -257,7 +268,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   session_controller_client_.reset();
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
-  chrome_new_window_client_.reset();
+  new_window_delegate_provider_.reset();
   accessibility_controller_client_.reset();
   // AppListClientImpl indirectly holds WebContents for answer card and
   // needs to be released before destroying the profile.

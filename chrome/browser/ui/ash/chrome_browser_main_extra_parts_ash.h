@@ -11,6 +11,10 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/common/buildflags.h"
 
+namespace ash {
+class NewWindowDelegateProvider;
+}
+
 namespace chromeos {
 class NetworkPortalNotificationController;
 }
@@ -24,7 +28,6 @@ class AmbientClientImpl;
 class AppListClientImpl;
 class AshShellInit;
 class CastConfigControllerMediaRouter;
-class ChromeNewWindowClient;
 class ImeControllerClient;
 class InSessionAuthDialogClient;
 class LoginScreenClient;
@@ -82,7 +85,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AccessibilityControllerClient>
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
-  std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
+  std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
   std::unique_ptr<ImeControllerClient> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>

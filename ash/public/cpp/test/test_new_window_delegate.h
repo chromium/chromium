@@ -5,8 +5,9 @@
 #ifndef ASH_PUBLIC_CPP_TEST_TEST_NEW_WINDOW_DELEGATE_H_
 #define ASH_PUBLIC_CPP_TEST_TEST_NEW_WINDOW_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/public/cpp/new_window_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -14,6 +15,8 @@ namespace ash {
 class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
  public:
   TestNewWindowDelegate();
+  TestNewWindowDelegate(const TestNewWindowDelegate&) = delete;
+  TestNewWindowDelegate& operator=(const TestNewWindowDelegate&) = delete;
   ~TestNewWindowDelegate() override;
 
  private:
@@ -30,8 +33,25 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void ShowKeyboardShortcutViewer() override;
   void ShowTaskManager() override;
   void OpenFeedbackPage(bool from_assistant) override;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TestNewWindowDelegate);
+// NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.
+class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
+    : public NewWindowDelegateProvider {
+ public:
+  explicit TestNewWindowDelegateProvider(
+      std::unique_ptr<TestNewWindowDelegate> delegate);
+  TestNewWindowDelegateProvider(const TestNewWindowDelegateProvider&) = delete;
+  TestNewWindowDelegateProvider& operator=(
+      const TestNewWindowDelegateProvider&) = delete;
+  ~TestNewWindowDelegateProvider() override;
+
+  // NewWindowDelegateProvider:
+  NewWindowDelegate* GetInstance() override;
+  NewWindowDelegate* GetPrimary() override;
+
+ private:
+  std::unique_ptr<TestNewWindowDelegate> delegate_;
 };
 
 }  // namespace ash
