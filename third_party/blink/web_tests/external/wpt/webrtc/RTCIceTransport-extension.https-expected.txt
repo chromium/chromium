@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+FAIL RTCIceTransport constructor does not throw Illegal constructor
+FAIL RTCIceTransport initial properties are set Illegal constructor
+FAIL gather() with { iceServers: null } should throw TypeError Illegal constructor
+FAIL gather() with { iceServers: undefined } should succeed Illegal constructor
+FAIL gather() with one turns server, one turn server, username, credential should succeed Illegal constructor
+FAIL gather() with 2 stun servers should succeed Illegal constructor
+FAIL gather() throws if closed Illegal constructor
+FAIL gather() transitions gatheringState to 'gathering' Illegal constructor
+FAIL gather() throws if called twice Illegal constructor
+FAIL eventually transition gatheringState to 'complete' promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL onicecandidate fires with null candidate before gatheringState transitions to 'complete' promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL gather() returns at least one host candidate promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL gather() returns no candidates with { gatherPolicy: 'relay'} and no turn servers promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL start() throws if closed Illegal constructor
+FAIL start() throws if usernameFragment or password not set Illegal constructor
+FAIL start() throws if usernameFragment does not conform to syntax Illegal constructor
+FAIL start() throws if password does not conform to syntax Illegal constructor
+FAIL start() does not transition state to 'checking' if no remote candidates added Illegal constructor
+FAIL start() with default role sets role attribute to 'controlled' Illegal constructor
+FAIL start() sets role attribute to 'controlling' Illegal constructor
+FAIL addRemoteCandidate() throws if closed Illegal constructor
+FAIL addRemoteCandidate() throws on invalid candidate Illegal constructor
+FAIL start() transitions state to 'checking' if one remote candidate had been added Illegal constructor
+FAIL addRemoteCandidate() transitions state to 'checking' if start() had been called before Illegal constructor
+FAIL start() throws if later called with a different role Illegal constructor
+FAIL start() flushes remote candidates and transitions state to 'new' if later called with different remote parameters Illegal constructor
+FAIL Two RTCIceTransports connect to each other promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL Two RTCIceTransports configured with the controlling role resolve the conflict in band and still connect. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL Two RTCIceTransports configured with the controlled role resolve the conflict in band and still connect. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL Selected candidate pair changes once the RTCIceTransports connect. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+FAIL getSelectedCandidatePair() returns null once the RTCIceTransport is stopped. promise_test: Unhandled rejection with value: object "TypeError: Illegal constructor"
+Harness: the test ran to completion.
+

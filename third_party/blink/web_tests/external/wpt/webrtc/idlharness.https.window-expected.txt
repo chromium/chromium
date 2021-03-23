@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 496 tests; 482 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 496 tests; 483 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Test driver for asyncInitCertificate
@@ -320,9 +320,7 @@ PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit prope
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "getRemoteCertificates()" with the proper type
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onstatechange" with the proper type
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onerror" with the proper type
-FAIL RTCIceTransport interface: existence and properties of interface object assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {
-                new interface_object();
-            }" did not throw
+PASS RTCIceTransport interface: existence and properties of interface object
 PASS RTCIceTransport interface object length
 PASS RTCIceTransport interface object name
 PASS RTCIceTransport interface: existence and properties of interface prototype object

@@ -56,7 +56,6 @@ class MODULES_EXPORT RTCIceTransport final
     kDisposed,
   };
 
-  static RTCIceTransport* Create(ExecutionContext* context);
   static RTCIceTransport* Create(
       ExecutionContext* context,
       rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel,
