@@ -51,6 +51,7 @@ ColorMixer& AddMixerForLightMode(ColorProvider* provider, bool high_contrast) {
                     {kColorSecondaryForeground, gfx::kGoogleGrey700},
                     {kColorTextSelectionBackground, gfx::kGoogleBlue200},
                 }});
+
   return mixer;
 }
 

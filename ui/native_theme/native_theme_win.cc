@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -327,7 +326,7 @@ void NativeThemeWin::ConfigureWebInstance() {
 bool NativeThemeWin::AllowColorPipelineRedirection(
     ColorScheme color_scheme) const {
   // TODO(crbug.com/1178910): Return true here (until this is removed entirely).
-  return true;
+  return NativeTheme::AllowColorPipelineRedirection(color_scheme);
 }
 
 SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
