@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -179,12 +180,50 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("http://foo/3"),
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-  navigation->Start();
-  navigation->Redirect(GURL("http://redirect/1"));
-  navigation->Commit();
+  auto* nav_list = navigation_event_list();
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  auto* nav_list = navigation_event_list();
+
+  navigation->Start();
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+  NavigationEvent* pending_event =
+      nav_list->FindPendingNavigationEvent(GURL("http://foo/3"));
+  VerifyNavigationEvent(
+      GURL("http://foo/0"),       // source_url
+      GURL("http://foo/0"),       // source_main_frame_url
+      GURL("http://foo/3"),       // original_request_url
+      GURL("http://foo/3"),       // destination_url
+      tab_id,                     // source_tab_id
+      SessionID::InvalidValue(),  // target_tab_id
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      false,  // has_committed
+      false,  // has_server_redirect
+      pending_event);
+
+  navigation->Redirect(GURL("http://redirect/1"));
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+  pending_event = nav_list->FindPendingNavigationEvent(GURL("http://foo/3"));
+  // The pending event cannot be found because the destination URL has been
+  // changed to the redirect URL.
+  ASSERT_EQ(nullptr, pending_event);
+  pending_event =
+      nav_list->FindPendingNavigationEvent(GURL("http://redirect/1"));
+  VerifyNavigationEvent(
+      GURL("http://foo/0"),       // source_url
+      GURL("http://foo/0"),       // source_main_frame_url
+      GURL("http://foo/3"),       // original_request_url
+      GURL("http://redirect/1"),  // destination_url
+      tab_id,                     // source_tab_id
+      SessionID::InvalidValue(),  // target_tab_id
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      false,  // has_committed
+      true,   // has_server_redirect
+      pending_event);
+
+  navigation->Commit();
+  // The pending navigation event should be removed because the navigation is
+  // completed.
+  ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
   ASSERT_EQ(1U, nav_list->Size());
   VerifyNavigationEvent(
       GURL("http://foo/0"),       // source_url
@@ -212,6 +251,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
+  content::MockNavigationHandle handle_0(
+      url_0, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
+  content::MockNavigationHandle handle_1(
+      url_1, browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame());
   navigation_event_list()->RecordNavigationEvent(
       CreateNavigationEventUniquePtr(url_0, in_an_hour));
   navigation_event_list()->RecordNavigationEvent(
@@ -224,16 +267,24 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
       CreateNavigationEventUniquePtr(url_0, one_minute_ago));
   navigation_event_list()->RecordNavigationEvent(
       CreateNavigationEventUniquePtr(url_0, now));
+  navigation_event_list()->RecordPendingNavigationEvent(
+      &handle_1, CreateNavigationEventUniquePtr(url_1, one_hour_ago));
+  navigation_event_list()->RecordPendingNavigationEvent(
+      &handle_0, CreateNavigationEventUniquePtr(url_0, now));
   ASSERT_EQ(6U, navigation_event_list()->Size());
+  ASSERT_EQ(2U, navigation_event_list()->PendingNavigationEventsSize());
 
   // Cleans up navigation events.
   CleanUpNavigationEvents();
 
   // Verifies all stale and invalid navigation events are removed.
   ASSERT_EQ(2U, navigation_event_list()->Size());
+  ASSERT_EQ(1U, navigation_event_list()->PendingNavigationEventsSize());
   EXPECT_EQ(nullptr,
             navigation_event_list()->FindNavigationEvent(
                 base::Time::Now(), url_1, GURL(), SessionID::InvalidValue()));
+  EXPECT_EQ(nullptr,
+            navigation_event_list()->FindPendingNavigationEvent(url_1));
 }
 
 TEST_F(SBNavigationObserverTest, TestCleanUpStaleUserGestures) {

@@ -56,6 +56,8 @@ NavigationEvent::NavigationEvent(NavigationEvent&& nav_event)
       maybe_launched_by_external_application(
           nav_event.maybe_launched_by_external_application) {}
 
+NavigationEvent::NavigationEvent(const NavigationEvent& nav_event) = default;
+
 NavigationEvent& NavigationEvent::operator=(NavigationEvent&& nav_event) {
   source_url = std::move(nav_event.source_url);
   source_main_frame_url = std::move(nav_event.source_main_frame_url);
@@ -214,7 +216,12 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
         SafeBrowsingNavigationObserverManager::ClearURLRef(
             navigation_handle->GetWebContents()->GetLastCommittedURL());
   }
+
+  std::unique_ptr<NavigationEvent> pending_nav_event =
+      std::make_unique<NavigationEvent>(*nav_event);
   navigation_handle_map_[navigation_handle] = std::move(nav_event);
+  manager_->RecordPendingNavigationEvent(navigation_handle,
+                                         std::move(pending_nav_event));
 }
 
 void SafeBrowsingNavigationObserver::DidRedirectNavigation(
@@ -229,6 +236,9 @@ void SafeBrowsingNavigationObserver::DidRedirectNavigation(
       SafeBrowsingNavigationObserverManager::ClearURLRef(
           navigation_handle->GetURL()));
   nav_event->last_updated = base::Time::Now();
+
+  manager_->AddRedirectUrlToPendingNavigationEvent(navigation_handle,
+                                                   navigation_handle->GetURL());
 }
 
 void SafeBrowsingNavigationObserver::DidFinishNavigation(
@@ -261,7 +271,7 @@ void SafeBrowsingNavigationObserver::DidFinishNavigation(
   nav_event->last_updated = base::Time::Now();
 
   manager_->RecordNavigationEvent(
-      std::move(navigation_handle_map_[navigation_handle]));
+      navigation_handle, std::move(navigation_handle_map_[navigation_handle]));
   navigation_handle_map_.erase(navigation_handle);
 }
 

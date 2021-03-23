@@ -181,6 +181,20 @@ NavigationEvent* NavigationEventList::FindNavigationEvent(
   return nullptr;
 }
 
+NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
+    const GURL& target_url) {
+  for (auto& it : pending_navigation_events_) {
+    // It is possible that several pending navigation events have the
+    // same destination URL.
+    // TODO(crbug.com/1161342): Compare the last updated time of the event and
+    // return the latest.
+    if (it.second->GetDestinationUrl() == target_url) {
+      return it.second.get();
+    }
+  }
+  return nullptr;
+}
+
 NavigationEvent* NavigationEventList::FindRetargetingNavigationEvent(
     const base::Time& last_event_timestamp,
     SessionID target_tab_id) {
@@ -216,6 +230,29 @@ void NavigationEventList::RecordNavigationEvent(
   navigation_events_.push_back(std::move(nav_event));
 }
 
+void NavigationEventList::RecordPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<NavigationEvent> nav_event) {
+  pending_navigation_events_[navigation_handle] = std::move(nav_event);
+}
+
+void NavigationEventList::AddRedirectUrlToPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    const GURL& server_redirect_url) {
+  if (!base::Contains(pending_navigation_events_, navigation_handle)) {
+    return;
+  }
+  pending_navigation_events_[navigation_handle]->server_redirect_urls.push_back(
+      SafeBrowsingNavigationObserverManager::ClearURLRef(server_redirect_url));
+}
+
+void NavigationEventList::RemovePendingNavigationEvent(
+    content::NavigationHandle* navigation_handle) {
+  if (base::Contains(pending_navigation_events_, navigation_handle)) {
+    pending_navigation_events_.erase(navigation_handle);
+  }
+}
+
 std::size_t NavigationEventList::CleanUpNavigationEvents() {
   // Remove any stale NavigationEnvent, if it is older than
   // kNavigationFootprintTTLInSecond.
@@ -226,6 +263,18 @@ std::size_t NavigationEventList::CleanUpNavigationEvents() {
     navigation_events_.pop_front();
     removal_count++;
   }
+
+  // Clean up expired pending navigation events.
+  auto it = pending_navigation_events_.begin();
+  while (it != pending_navigation_events_.end()) {
+    if (IsEventExpired(it->second->last_updated,
+                       kNavigationFootprintTTLInSecond)) {
+      it = pending_navigation_events_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   return removal_count;
 }
 
@@ -299,8 +348,25 @@ SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager()
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
+    content::NavigationHandle* navigation_handle,
     std::unique_ptr<NavigationEvent> nav_event) {
+  navigation_event_list_.RemovePendingNavigationEvent(navigation_handle);
   navigation_event_list_.RecordNavigationEvent(std::move(nav_event));
+}
+
+void SafeBrowsingNavigationObserverManager::RecordPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<NavigationEvent> nav_event) {
+  navigation_event_list_.RecordPendingNavigationEvent(navigation_handle,
+                                                      std::move(nav_event));
+}
+
+void SafeBrowsingNavigationObserverManager::
+    AddRedirectUrlToPendingNavigationEvent(
+        content::NavigationHandle* navigation_handle,
+        const GURL& server_redirect_url) {
+  navigation_event_list_.AddRedirectUrlToPendingNavigationEvent(
+      navigation_handle, server_redirect_url);
 }
 
 void SafeBrowsingNavigationObserverManager::RecordUserGestureForWebContents(

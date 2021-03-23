@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace content {
+class NavigationHandle;
+}
+
 namespace safe_browsing {
 
 class SafeBrowsingNavigationObserver;
@@ -86,6 +90,14 @@ struct NavigationEventList {
                                        const GURL& target_main_frame_url,
                                        SessionID target_tab_id);
 
+  // Finds the the navigation event in the |pending_navigation_events_| map that
+  // has the same destination URL as the |target_url|. If there are multiple
+  // matches, returns the one with the latest updated time.
+  // TODO(crbug.com/1161342): This function is currently only called in tests.
+  // It will be used when a new API IdentifyPendingReferrerChainByEventURL is
+  // added.
+  NavigationEvent* FindPendingNavigationEvent(const GURL& target_url);
+
   // Finds the most recent retargeting NavigationEvent that satisfies the
   // |target_tab_id|.
   NavigationEvent* FindRetargetingNavigationEvent(
@@ -94,11 +106,27 @@ struct NavigationEventList {
 
   void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
 
+  void RecordPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      std::unique_ptr<NavigationEvent> nav_event);
+
+  void AddRedirectUrlToPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      const GURL& server_redirect_url);
+
+  void RemovePendingNavigationEvent(
+      content::NavigationHandle* navigation_handle);
+
   // Removes stale NavigationEvents and return the number of items removed.
   std::size_t CleanUpNavigationEvents();
 
+  // TODO(crbug.com/1161342): Rename this function to NavigationEventsSize.
   std::size_t Size() { return navigation_events_.size(); }
+  std::size_t PendingNavigationEventsSize() {
+    return pending_navigation_events_.size();
+  }
 
+  // TODO(crbug.com/1161342): Rename this function to GetNavigationEvent.
   NavigationEvent* Get(std::size_t index) {
     return navigation_events_[index].get();
   }
@@ -110,6 +138,11 @@ struct NavigationEventList {
 
  private:
   base::circular_deque<std::unique_ptr<NavigationEvent>> navigation_events_;
+  // A map of pending navigation events. They are added when the navigation
+  // starts and removed when the navigation is finished.
+  base::flat_map<content::NavigationHandle*, std::unique_ptr<NavigationEvent>>
+      pending_navigation_events_;
+
   const std::size_t size_limit_;
 };
 
@@ -143,7 +176,14 @@ class SafeBrowsingNavigationObserverManager
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
   // |nav_event| will be no longer accessible after this function.
-  void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
+  void RecordNavigationEvent(content::NavigationHandle* navigation_handle,
+                             std::unique_ptr<NavigationEvent> nav_event);
+  void RecordPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      std::unique_ptr<NavigationEvent> nav_event);
+  void AddRedirectUrlToPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      const GURL& server_redirect_url);
   void RecordUserGestureForWebContents(content::WebContents* web_contents);
   void OnUserGestureConsumed(content::WebContents* web_contents);
   bool HasUserGesture(content::WebContents* web_contents);
