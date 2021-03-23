@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_EXTENSION_APPS_BASE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_EXTENSION_APPS_BASE_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_EXTENSION_APPS_BASE_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_EXTENSION_APPS_BASE_H_
 
 #include <map>
 #include <memory>
@@ -200,4 +200,4 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_EXTENSION_APPS_BASE_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_EXTENSION_APPS_BASE_H_

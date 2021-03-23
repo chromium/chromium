@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 
 #include <string>
 #include <utility>

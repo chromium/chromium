@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/plugin_vm_apps.h"
+#include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 
 #include <utility>
 #include <vector>

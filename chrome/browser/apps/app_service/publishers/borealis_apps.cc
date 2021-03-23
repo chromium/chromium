@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/borealis_apps.h"
+#include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"

@@ -11,8 +11,8 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/arc_apps.h"
-#include "chrome/browser/apps/app_service/arc_apps_factory.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_BASE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_BASE_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_
 
 #include <memory>
 #include <string>
@@ -180,4 +180,4 @@ void PopulateIntentFilters(const web_app::WebApp& web_app,
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_BASE_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_BASE_H_

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/apps/app_service/remote_apps.h"
+#include "chrome/browser/apps/app_service/publishers/remote_apps.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_model.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_types.h"

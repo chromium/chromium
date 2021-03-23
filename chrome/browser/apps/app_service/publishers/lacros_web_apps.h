@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_LACROS_WEB_APPS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_LACROS_WEB_APPS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -51,4 +51,4 @@ class LacrosWebApps : public apps::PublisherBase {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_LACROS_WEB_APPS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_

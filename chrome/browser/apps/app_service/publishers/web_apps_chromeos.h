@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_CHROMEOS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_CHROMEOS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_
 
 #include <string>
 
@@ -15,7 +15,7 @@
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/apps/app_service/web_apps_base.h"
+#include "chrome/browser/apps/app_service/publishers/web_apps_base.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -199,4 +199,4 @@ class WebAppsChromeOs : public WebAppsBase,
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_WEB_APPS_CHROMEOS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CHROMEOS_H_

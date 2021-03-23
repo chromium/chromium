@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
-#include "chrome/browser/apps/app_service/arc_apps_factory.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/arc/adbd/arc_adbd_monitor_bridge.h"

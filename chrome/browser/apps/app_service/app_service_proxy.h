@@ -29,17 +29,17 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/borealis_apps.h"
-#include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
-#include "chrome/browser/apps/app_service/crostini_apps.h"
-#include "chrome/browser/apps/app_service/extension_apps_chromeos.h"
-#include "chrome/browser/apps/app_service/lacros_web_apps.h"
-#include "chrome/browser/apps/app_service/plugin_vm_apps.h"
-#include "chrome/browser/apps/app_service/web_apps_chromeos.h"
+#include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
+#include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
+#include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
+#include "chrome/browser/apps/app_service/publishers/lacros_web_apps.h"
+#include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
+#include "chrome/browser/apps/app_service/publishers/web_apps_chromeos.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #else
-#include "chrome/browser/apps/app_service/extension_apps.h"
-#include "chrome/browser/apps/app_service/web_apps.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/web_apps.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
