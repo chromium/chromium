@@ -117,6 +117,13 @@ class CastRunner : public fuchsia::sys::Runner,
   // Returns true on success and false in case of I/O error.
   bool DeletePersistentData();
 
+  // TODO(crbug.com/1188780): Used to detect when the persisted cache directory
+  // was erased. The sentinel file is created at the top-level of the cache
+  // directory, so cannot be deleted by the Context, only by the cache being
+  // erased.
+  void CreatePersistedCacheSentinel();
+  bool WasPersistedCacheErased();
+
   // True if this Runner uses Context(s) with the HEADLESS feature set.
   const bool is_headless_;
 
@@ -172,6 +179,10 @@ class CastRunner : public fuchsia::sys::Runner,
   // in the main context from being launched. This is set to true once data
   // reset starts and does not switch back to false upon completion.
   bool data_reset_in_progress_ = false;
+
+  // True if the cache sentinel file should exist.
+  // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+  bool was_cache_sentinel_created_ = false;
 };
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_RUNNER_H_

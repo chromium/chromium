@@ -79,6 +79,10 @@ bool IsPermissionGrantedInAppConfig(
 constexpr char kCdmDataSubdirectoryName[] = "cdm_data";
 constexpr char kProfileSubdirectoryName[] = "web_profile";
 
+// Name of the file used to detect cache erasure.
+// TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+constexpr char kSentinelFileName[] = ".sentinel";
+
 // Ephemeral remote debugging port used by child contexts.
 const uint16_t kEphemeralRemoteDebuggingPort = 0;
 
@@ -335,6 +339,16 @@ void CastRunner::StartComponent(
   auto startup_context =
       std::make_unique<base::StartupContext>(std::move(startup_info));
 
+  // If the persistent cache directory was erased then re-create the main Cast
+  // app Context.
+  if (WasPersistedCacheErased()) {
+    LOG(WARNING) << "Cache erased. Restarting web.Context.";
+    // The sentinel file will be re-created the next time CreateContextParams
+    // are request for the main web.Context.
+    was_cache_sentinel_created_ = false;
+    main_context_->DestroyWebContext();
+  }
+
   if (cors_exempt_headers_) {
     StartComponentInternal(cast_url, std::move(startup_context),
                            std::move(controller_request));
@@ -553,6 +567,10 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
 
   SetDataParamsForMainContext(&params);
 
+  // Create a sentinel file to detect if the cache is erased.
+  // TODO(crbug.com/1188780): Remove once an explicit cache flush signal exists.
+  CreatePersistedCacheSentinel();
+
   // TODO(crbug.com/1023514): Remove this switch when it is no longer
   // necessary.
   params.set_unsafely_treat_insecure_origins_as_secure(
@@ -718,4 +736,20 @@ void CastRunner::StartComponentInternal(
   pending_components_.emplace(std::make_unique<PendingCastComponent>(
       this, std::move(startup_context), std::move(controller_request),
       url.GetContent()));
+}
+
+static base::FilePath SentinelFilePath() {
+  return base::FilePath(base::kPersistedCacheDirectoryPath)
+      .Append(kSentinelFileName);
+}
+
+void CastRunner::CreatePersistedCacheSentinel() {
+  base::WriteFile(SentinelFilePath(), "");
+  was_cache_sentinel_created_ = true;
+}
+
+bool CastRunner::WasPersistedCacheErased() {
+  if (!was_cache_sentinel_created_)
+    return false;
+  return !base::PathExists(SentinelFilePath());
 }
