@@ -91,10 +91,6 @@ template("fuchsia_package_runner") {
       data = []
     }
 
-    if (defined(invoker.data)) {
-      data += invoker.data
-    }
-
     wrapper_script = generated_run_pkg_script_path
 
     data_deps = [
