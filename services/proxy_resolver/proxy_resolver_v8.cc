@@ -477,8 +477,7 @@ class ProxyResolverV8::Context {
     }
 
     if (!ret->IsString()) {
-      js_bindings()->OnError(
-          -1, base::ASCIIToUTF16("FindProxyForURL() did not return a string."));
+      js_bindings()->OnError(-1, u"FindProxyForURL() did not return a string.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
@@ -616,9 +615,8 @@ class ProxyResolverV8::Context {
     // defensively just in case.
     DCHECK_EQ(function->IsEmpty(), try_catch.HasCaught());
     if (function->IsEmpty() || try_catch.HasCaught()) {
-      js_bindings()->OnError(
-          -1,
-          base::ASCIIToUTF16("Accessing FindProxyForURL threw an exception."));
+      js_bindings()->OnError(-1,
+                             u"Accessing FindProxyForURL threw an exception.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
@@ -690,7 +688,7 @@ class ProxyResolverV8::Context {
     // disregard any arguments beyond the first.
     std::u16string message;
     if (args.Length() == 0) {
-      message = base::ASCIIToUTF16("undefined");
+      message = u"undefined";
     } else {
       if (!V8ObjectToUTF16String(args[0], &message, args.GetIsolate()))
         return;  // toString() threw an exception.

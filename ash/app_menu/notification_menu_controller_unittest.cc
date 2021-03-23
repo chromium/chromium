@@ -24,9 +24,8 @@ void BuildAndSendNotification(const std::string& app_id,
   std::unique_ptr<message_center::Notification> notification =
       std::make_unique<message_center::Notification>(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          base::ASCIIToUTF16("Test Web Notification"),
-          base::ASCIIToUTF16("Notification message body."), gfx::Image(),
-          base::ASCIIToUTF16("www.test.org"), GURL(), notifier_id,
+          u"Test Web Notification", u"Notification message body.", gfx::Image(),
+          u"www.test.org", GURL(), notifier_id,
           message_center::RichNotificationData(), nullptr /* delegate */);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
@@ -71,10 +70,8 @@ class NotificationMenuControllerTest : public AshTestBase {
         kTestAppId,
         std::make_unique<ui::SimpleMenuModel>(
             nullptr /*ui::SimpleMenuModel::Delegate not required*/));
-    test_app_menu_model_adapter_->model()->AddItem(
-        0, base::ASCIIToUTF16("item 0"));
-    test_app_menu_model_adapter_->model()->AddItem(
-        1, base::ASCIIToUTF16("item 1"));
+    test_app_menu_model_adapter_->model()->AddItem(0, u"item 0");
+    test_app_menu_model_adapter_->model()->AddItem(1, u"item 1");
 
     root_menu_item_view_ =
         new views::MenuItemView(test_app_menu_model_adapter_.get());

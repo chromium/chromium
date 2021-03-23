@@ -82,7 +82,7 @@ std::u16string FormatDouble(double number, int fractional_digits) {
 
 std::u16string FormatPercent(int number) {
   return i18n::MessageFormatter::FormatWithNumberedArgs(
-      ASCIIToUTF16("{0,number,percent}"), static_cast<double>(number) / 100.0);
+      u"{0,number,percent}", static_cast<double>(number) / 100.0);
 }
 
 void ResetFormattersForTesting() {

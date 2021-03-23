@@ -254,7 +254,7 @@ base::FilePath PrintedDocument::CreateDebugDumpPath(
   std::u16string filename;
   base::Time now(base::Time::Now());
   filename = base::TimeFormatShortDateAndTime(now);
-  filename += base::ASCIIToUTF16("_");
+  filename += u"_";
   filename += document_name;
   base::FilePath::StringType system_filename;
 #if defined(OS_WIN)

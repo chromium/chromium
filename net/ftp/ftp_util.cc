@@ -197,18 +197,18 @@ class AbbreviatedMonthsMap {
     // much earlier. Note that the issue above turned out to be non-trivial
     // to reproduce - crash data is much better indicator of a problem
     // than incomplete bug reports.
-    CHECK_EQ(1, map_[ASCIIToUTF16("jan")]);
-    CHECK_EQ(2, map_[ASCIIToUTF16("feb")]);
-    CHECK_EQ(3, map_[ASCIIToUTF16("mar")]);
-    CHECK_EQ(4, map_[ASCIIToUTF16("apr")]);
-    CHECK_EQ(5, map_[ASCIIToUTF16("may")]);
-    CHECK_EQ(6, map_[ASCIIToUTF16("jun")]);
-    CHECK_EQ(7, map_[ASCIIToUTF16("jul")]);
-    CHECK_EQ(8, map_[ASCIIToUTF16("aug")]);
-    CHECK_EQ(9, map_[ASCIIToUTF16("sep")]);
-    CHECK_EQ(10, map_[ASCIIToUTF16("oct")]);
-    CHECK_EQ(11, map_[ASCIIToUTF16("nov")]);
-    CHECK_EQ(12, map_[ASCIIToUTF16("dec")]);
+    CHECK_EQ(1, map_[u"jan"]);
+    CHECK_EQ(2, map_[u"feb"]);
+    CHECK_EQ(3, map_[u"mar"]);
+    CHECK_EQ(4, map_[u"apr"]);
+    CHECK_EQ(5, map_[u"may"]);
+    CHECK_EQ(6, map_[u"jun"]);
+    CHECK_EQ(7, map_[u"jul"]);
+    CHECK_EQ(8, map_[u"aug"]);
+    CHECK_EQ(9, map_[u"sep"]);
+    CHECK_EQ(10, map_[u"oct"]);
+    CHECK_EQ(11, map_[u"nov"]);
+    CHECK_EQ(12, map_[u"dec"]);
   }
 
   // Maps lowercase month names to numbers in range 1-12.
@@ -297,9 +297,8 @@ bool FtpUtil::WindowsDateListingToTime(const std::u16string& date,
   base::Time::Exploded time_exploded = { 0 };
 
   // Date should be in format MM-DD-YY[YY].
-  std::vector<base::StringPiece16> date_parts =
-      base::SplitStringPiece(date, base::ASCIIToUTF16("-"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> date_parts = base::SplitStringPiece(
+      date, u"-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (date_parts.size() != 3)
     return false;
   if (!base::StringToInt(date_parts[0], &time_exploded.month))
@@ -321,9 +320,9 @@ bool FtpUtil::WindowsDateListingToTime(const std::u16string& date,
   if (time.length() < 5)
     return false;
 
-  std::vector<base::StringPiece16> time_parts = base::SplitStringPiece(
-      base::StringPiece16(time).substr(0, 5), base::ASCIIToUTF16(":"),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> time_parts =
+      base::SplitStringPiece(base::StringPiece16(time).substr(0, 5), u":",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (time_parts.size() != 2)
     return false;
   if (!base::StringToInt(time_parts[0], &time_exploded.hour))

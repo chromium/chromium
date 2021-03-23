@@ -520,7 +520,7 @@ std::u16string NetworkListView::GenerateAccessibilityDescription(
           base::FormatPercent(info.signal_strength),
           base::FormatPercent(info.battery_percentage));
     default:
-      return base::ASCIIToUTF16("");
+      return u"";
   }
 }  // namespace tray
 

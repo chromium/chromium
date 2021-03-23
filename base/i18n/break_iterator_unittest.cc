@@ -527,11 +527,11 @@ TEST(BreakIteratorTest, BreakCharacter) {
 // We should be able to get valid substrings with GetString() function
 // after setting new content by calling SetText().
 TEST(BreakIteratorTest, GetStringAfterSetText) {
-  const std::u16string initial_string(ASCIIToUTF16("str"));
+  const std::u16string initial_string(u"str");
   BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
-  const std::u16string long_string(ASCIIToUTF16("another,string"));
+  const std::u16string long_string(u"another,string");
   EXPECT_TRUE(iter.SetText(long_string.c_str(), long_string.size()));
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.Advance());  // Advance to ',' in |long_string|
@@ -540,22 +540,22 @@ TEST(BreakIteratorTest, GetStringAfterSetText) {
   EXPECT_LT(initial_string.size(), iter.pos());
 
   // Check that we can get a valid substring of |long_string|.
-  EXPECT_EQ(ASCIIToUTF16(","), iter.GetString());
+  EXPECT_EQ(u",", iter.GetString());
 }
 
 TEST(BreakIteratorTest, GetStringPiece) {
-  const std::u16string initial_string(ASCIIToUTF16("some string"));
+  const std::u16string initial_string(u"some string");
   BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(iter.GetString(), iter.GetStringPiece());
-  EXPECT_EQ(StringPiece16(ASCIIToUTF16("some")), iter.GetStringPiece());
+  EXPECT_EQ(StringPiece16(u"some"), iter.GetStringPiece());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(iter.GetString(), iter.GetStringPiece());
-  EXPECT_EQ(StringPiece16(ASCIIToUTF16("string")), iter.GetStringPiece());
+  EXPECT_EQ(StringPiece16(u"string"), iter.GetStringPiece());
 }
 
 // Make sure that when not in RULE_BASED or BREAK_WORD mode we're getting

@@ -201,7 +201,7 @@ LoginUserMenuView::LoginUserMenuView(
             ? IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2_SUPERVISED_USER
             : IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2,
         email);
-    warning_message_ = base::StrCat({part1, base::ASCIIToUTF16(" "), part2});
+    warning_message_ = base::StrCat({part1, u" ", part2});
 
     remove_user_confirm_data_ = AddChildView(std::make_unique<views::View>());
     remove_user_confirm_data_->SetLayoutManager(
@@ -276,7 +276,7 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetName(username_label_->GetText());
     if (management_disclosure_label_) {
       node_data->SetDescription(
-          base::StrCat({email_label_->GetText(), base::ASCIIToUTF16(" "),
+          base::StrCat({email_label_->GetText(), u" ",
                         management_disclosure_label_->GetText()}));
     } else {
       node_data->SetDescription(email_label_->GetText());

@@ -44,8 +44,8 @@ TEST_F(MediaStringViewTest, ShowMediaTitleAndArtist) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaMetadataChanged(metadata);
 
@@ -58,8 +58,8 @@ TEST_F(MediaStringViewTest, TextContainerFitsWidthOfShortText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaMetadataChanged(metadata);
 
@@ -74,8 +74,8 @@ TEST_F(MediaStringViewTest, TextContainerHasMaxWidthWithLongText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaMetadataChanged(metadata);
 
@@ -93,8 +93,8 @@ TEST_F(MediaStringViewTest, HasNoAnimationWithShortText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("name");
+  metadata.title = u"title";
+  metadata.artist = u"name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -118,8 +118,8 @@ TEST_F(MediaStringViewTest, HasAnimationWithLongText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -143,8 +143,8 @@ TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -160,8 +160,8 @@ TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
   // Change to another long text.
-  metadata.title = base::ASCIIToUTF16("Another super duper long title");
-  metadata.artist = base::ASCIIToUTF16("Another super duper long artist name");
+  metadata.title = u"Another super duper long title";
+  metadata.artist = u"Another super duper long artist name";
   SimulateMediaMetadataChanged(metadata);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
@@ -182,8 +182,8 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("name");
+  metadata.title = u"title";
+  metadata.artist = u"name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -199,8 +199,8 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
   // Change to long text.
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
   SimulateMediaMetadataChanged(metadata);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
@@ -213,8 +213,8 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
   // Change to short text.
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("name");
+  metadata.title = u"title";
+  metadata.artist = u"name";
   SimulateMediaMetadataChanged(metadata);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
@@ -235,8 +235,8 @@ TEST_F(MediaStringViewTest, PauseMediaWillNotStopAnimationWithLongText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -263,8 +263,8 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -283,8 +283,8 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -303,8 +303,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
@@ -318,8 +318,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 
   // Change to long text.
-  metadata.title = base::ASCIIToUTF16("A super duper long title");
-  metadata.artist = base::ASCIIToUTF16("A super duper long artist name");
+  metadata.title = u"A super duper long title";
+  metadata.artist = u"A super duper long artist name";
 
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
@@ -331,8 +331,8 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 
   // Change to short text.
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
@@ -392,8 +392,8 @@ TEST_F(MediaStringViewTest, ShouldHasDifferentTransform) {
 
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);

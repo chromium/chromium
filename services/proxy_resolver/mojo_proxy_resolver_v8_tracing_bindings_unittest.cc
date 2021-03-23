@@ -42,8 +42,8 @@ class MojoProxyResolverV8TracingBindingsTest : public testing::Test {
 };
 
 TEST_F(MojoProxyResolverV8TracingBindingsTest, Basic) {
-  bindings_.Alert(base::ASCIIToUTF16("alert"));
-  bindings_.OnError(-1, base::ASCIIToUTF16("error"));
+  bindings_.Alert(u"alert");
+  bindings_.OnError(-1, u"error");
 
   EXPECT_TRUE(bindings_.GetHostResolver());
   EXPECT_FALSE(bindings_.GetNetLogWithSource().net_log());

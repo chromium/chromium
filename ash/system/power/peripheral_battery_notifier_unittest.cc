@@ -27,12 +27,12 @@ using BI = ash::PeripheralBatteryListener::BatteryInfo;
 namespace {
 
 const std::u16string& NotificationMessagePrefix() {
-  static const std::u16string prefix(base::ASCIIToUTF16("Battery low ("));
+  static const std::u16string prefix(u"Battery low (");
   return prefix;
 }
 
 const std::u16string& NotificationMessageSuffix() {
-  static const std::u16string suffix(base::ASCIIToUTF16("%)"));
+  static const std::u16string suffix(u"%)");
   return suffix;
 }
 

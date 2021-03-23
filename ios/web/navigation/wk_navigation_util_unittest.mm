@@ -119,7 +119,7 @@ TEST_F(WKNavigationUtilTest, GetSafeItemRange) {
 TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrl) {
   auto item0 = std::make_unique<NavigationItemImpl>();
   item0->SetURL(GURL("http://www.0.com"));
-  item0->SetTitle(base::ASCIIToUTF16("Test Website 0"));
+  item0->SetTitle(u"Test Website 0");
   auto item1 = std::make_unique<NavigationItemImpl>();
   item1->SetURL(GURL("http://www.1.com"));
   // Create an App-specific URL

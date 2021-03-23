@@ -23,7 +23,7 @@ TEST(String16Test, Empty) {
 }
 
 TEST(String16Test, NonEmpty) {
-  std::u16string in = base::ASCIIToUTF16("hello world");
+  std::u16string in = u"hello world";
   std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::String16>(in, out));
   EXPECT_EQ(in, out);
@@ -37,7 +37,7 @@ TEST(BigString16Test, Empty) {
 }
 
 TEST(BigString16Test, Short) {
-  std::u16string in = base::ASCIIToUTF16("hello world");
+  std::u16string in = u"hello world";
   std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString16>(in, out));
   EXPECT_EQ(in, out);

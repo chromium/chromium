@@ -160,7 +160,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitIncludesPasswordText) {
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
 
   ASSERT_TRUE(password_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16("abc1"), *password_);
+  EXPECT_EQ(u"abc1", *password_);
 
   // Expect the password field to be read only after submitting.
   EXPECT_EQ(test_api.textfield()->GetReadOnly(), true);
@@ -180,7 +180,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitViaButton) {
   generator->ClickLeftButton();
 
   ASSERT_TRUE(password_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16("abc1"), *password_);
+  EXPECT_EQ(u"abc1", *password_);
 
   // Expect the password field to be read only after submitting.
   EXPECT_EQ(test_api.textfield()->GetReadOnly(), true);
@@ -202,7 +202,7 @@ TEST_F(LoginPasswordViewTest, PressingReturnTriggersUnlockWithEmptyPassword) {
   view_->SetEnabledOnEmptyPassword(true);
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
   ASSERT_TRUE(password_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16(""), *password_);
+  EXPECT_EQ(u"", *password_);
 }
 
 // Verifies that text is not cleared after submitting a password.
@@ -217,7 +217,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   EXPECT_FALSE(is_password_field_empty_);
   ASSERT_TRUE(password_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16("a"), *password_);
+  EXPECT_EQ(u"a", *password_);
 
   // Clear password.
   password_.reset();
@@ -232,7 +232,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
   EXPECT_FALSE(is_password_field_empty_);
   ASSERT_TRUE(password_.has_value());
   // The submitted password is 'b' instead of "ab".
-  EXPECT_EQ(base::ASCIIToUTF16("b"), *password_);
+  EXPECT_EQ(u"b", *password_);
 }
 
 // Verifies that clicking the easy unlock icon fires the click event.
@@ -431,7 +431,7 @@ TEST_F(LoginPasswordViewTest, ContentChangesDoNotImpactPasswordVisibility) {
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
   test_api.textfield()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
 
@@ -445,7 +445,7 @@ TEST_F(LoginPasswordViewTest, ContentChangesDoNotImpactPasswordVisibility) {
   // Type manually and programmatically, and check if the password textfield
   // remains invisible.
   test_api.textfield()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(test_api.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
@@ -469,7 +469,7 @@ TEST_F(LoginPasswordViewTest,
   EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 
   test_api.textfield()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(is_password_field_empty_);
   EXPECT_TRUE(test_api.display_password_button()->GetEnabled());

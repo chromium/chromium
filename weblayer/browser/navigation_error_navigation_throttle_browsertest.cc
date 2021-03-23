@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(NavigationErrorNavigationThrottleBrowserTest,
   delegate.set_error_page_content("<html><head><title>test error</title>");
   shell()->tab()->SetErrorPageDelegate(&delegate);
   NavigateAndWaitForFailure(url, shell());
-  EXPECT_EQ(base::ASCIIToUTF16("test error"), GetTitle(shell()));
+  EXPECT_EQ(u"test error", GetTitle(shell()));
 }
 
 // Verifies the delegate can inject an empty page.

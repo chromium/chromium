@@ -687,7 +687,7 @@ TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
   GetIdentityFromURL(url, &username, &password);
 
   // Verify that it was decoded as UTF8.
-  EXPECT_EQ(ASCIIToUTF16("foo"), username);
+  EXPECT_EQ(u"foo", username);
   EXPECT_EQ(u"\x4f60\x597d", password);
 }
 

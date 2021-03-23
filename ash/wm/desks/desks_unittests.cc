@@ -4740,9 +4740,9 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
 
   // Set desk names. Force update user prefs because `SetName()` does not
   // trigger it but `DeskMiniView::OnViewBlurred`.
-  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
-  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
-  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desk_0->SetName(u"0", /*set_by_user=*/true);
+  desk_1->SetName(u"1", /*set_by_user=*/true);
+  desk_2->SetName(u"2", /*set_by_user=*/true);
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -4810,9 +4810,9 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   Desk* desk_2 = mini_view_2->desk();
 
   // Set desk names and save to user prefs.
-  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
-  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
-  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desk_0->SetName(u"0", /*set_by_user=*/true);
+  desk_1->SetName(u"1", /*set_by_user=*/true);
+  desk_2->SetName(u"2", /*set_by_user=*/true);
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -4883,9 +4883,9 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   Desk* desk_2 = mini_view_2->desk();
 
   // Set desk names and save to user prefs.
-  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
-  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
-  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desk_0->SetName(u"0", /*set_by_user=*/true);
+  desk_1->SetName(u"1", /*set_by_user=*/true);
+  desk_2->SetName(u"2", /*set_by_user=*/true);
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
@@ -4968,9 +4968,9 @@ TEST_F(DesksBentoTest, ReorderDesksInRTLMode) {
 
   // Set desk names. Force update user prefs because `SetName()` does not
   // trigger it but `DeskMiniView::OnViewBlurred`.
-  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
-  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
-  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desk_0->SetName(u"0", /*set_by_user=*/true);
+  desk_1->SetName(u"1", /*set_by_user=*/true);
+  desk_2->SetName(u"2", /*set_by_user=*/true);
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();

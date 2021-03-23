@@ -170,11 +170,11 @@ TEST_P(ShelfContextMenuModelTest, CustomItems) {
   ASSERT_EQ(0, menu.GetItemCount());
 
   // Add some custom items.
-  menu.AddItem(203, base::ASCIIToUTF16("item"));
-  menu.AddCheckItem(107, base::ASCIIToUTF16("check"));
-  menu.AddRadioItem(101, base::ASCIIToUTF16("radio"), 0);
+  menu.AddItem(203, u"item");
+  menu.AddCheckItem(107, u"check");
+  menu.AddRadioItem(101, u"radio", 0);
   ui::SimpleMenuModel submenu(nullptr);
-  menu.AddSubMenu(55, base::ASCIIToUTF16("submenu"), &submenu);
+  menu.AddSubMenu(55, u"submenu", &submenu);
 
   // Ensure the menu contents match the items above.
   ASSERT_EQ(4, menu.GetItemCount());

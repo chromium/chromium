@@ -187,7 +187,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;
-      ap.ssid = base::ASCIIToUTF16("Some nice+network|name\\");
+      ap.ssid = u"Some nice+network|name\\";
       data.access_point_data.insert(ap);
     }
     return data;
@@ -200,7 +200,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
       ap.radio_signal_strength = ap_count - i;
       ap.channel = IndexToChannel(i);
       ap.signal_to_noise = i + 42;
-      ap.ssid = base::ASCIIToUTF16("Some nice+network|name\\");
+      ap.ssid = u"Some nice+network|name\\";
       data.access_point_data.insert(ap);
     }
     return data;

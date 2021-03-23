@@ -86,8 +86,8 @@ class TestProxyResolverFactory : public ProxyResolverV8TracingFactory {
 
     ASSERT_TRUE(bindings);
 
-    bindings->Alert(base::ASCIIToUTF16("alert"));
-    bindings->OnError(10, base::ASCIIToUTF16("error"));
+    bindings->Alert(u"alert");
+    bindings->OnError(10, u"error");
     EXPECT_TRUE(bindings->GetHostResolver());
   }
 

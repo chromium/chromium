@@ -294,7 +294,7 @@ class LockDebugView::DebugDataDispatcherTransformer
     EasyUnlockIconOptions icon;
     icon.icon = debug_user->easy_unlock_id;
     if (icon.icon == EasyUnlockIconId::SPINNER) {
-      icon.aria_label = base::ASCIIToUTF16("Icon is spinning");
+      icon.aria_label = u"Icon is spinning";
     } else if (icon.icon == EasyUnlockIconId::LOCKED ||
                icon.icon == EasyUnlockIconId::LOCKED_TO_BE_ACTIVATED) {
       icon.autoshow_tooltip = true;
@@ -303,8 +303,7 @@ class LockDebugView::DebugDataDispatcherTransformer
           "automatically. icon_id=" +
           base::NumberToString(static_cast<int>(icon.icon)));
     } else {
-      icon.tooltip =
-          base::ASCIIToUTF16("This should not show up automatically.");
+      icon.tooltip = u"This should not show up automatically.";
     }
 
     // Show icon and enable/disable click to unlock.

@@ -103,7 +103,7 @@ TEST_F(ManifestTypeConvertersTest, BasicShortcutIsCorrectlyConverted) {
 
   ASSERT_EQ(manifest.shortcuts.size(), 1u);
   EXPECT_TRUE(base::EqualsASCII(manifest.shortcuts[0].name, "name"));
-  EXPECT_EQ(manifest.shortcuts[0].short_name, base::ASCIIToUTF16("short_name"));
+  EXPECT_EQ(manifest.shortcuts[0].short_name, u"short_name");
   EXPECT_EQ(manifest.shortcuts[0].url.spec(), "http://example.com/url");
 
   ASSERT_EQ(manifest.shortcuts[0].icons.size(), 1u);

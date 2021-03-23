@@ -160,7 +160,7 @@ class PasswordDetailsTableViewControllerTest
     form.password_value = base::ASCIIToUTF16(password);
     form.url = GURL(website);
     form.action = GURL(website + "/action");
-    form.username_element = base::ASCIIToUTF16("email");
+    form.username_element = u"email";
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
 
     PasswordDetails* passwordDetails =
@@ -174,8 +174,8 @@ class PasswordDetailsTableViewControllerTest
 
   void SetFederatedPassword() {
     auto form = password_manager::PasswordForm();
-    form.username_value = base::ASCIIToUTF16("test@egmail.com");
-    form.url = GURL(base::ASCIIToUTF16("http://www.example.com/"));
+    form.username_value = u"test@egmail.com";
+    form.url = GURL(u"http://www.example.com/");
     form.signon_realm = form.url.spec();
     form.federation_origin =
         url::Origin::Create(GURL("http://www.example.com/"));

@@ -73,7 +73,7 @@ TEST_F(HttpAuthTest, SuccessfullBasicAuth) {
   ASSERT_TRUE(auth_request);
   std::move(auth_request->auth_callback).Run(@"me", @"goodpass");
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return web_state()->GetTitle() == base::ASCIIToUTF16("me/goodpass");
+    return web_state()->GetTitle() == u"me/goodpass";
   }));
 }
 
@@ -110,8 +110,7 @@ TEST_F(HttpAuthTest, UnsucessfulBasicAuth) {
   std::move(auth_request->auth_callback)
       .Run(/*username=*/nil, /*password=*/nil);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return web_state()->GetTitle() ==
-           base::ASCIIToUTF16("Denied: Missing Authorization Header");
+    return web_state()->GetTitle() == u"Denied: Missing Authorization Header";
   }));
 }
 

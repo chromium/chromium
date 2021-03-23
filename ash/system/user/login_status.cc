@@ -37,10 +37,8 @@ std::u16string GetLocalizedSignOutStringForStatus(LoginStatus status,
   // framework does not evaluate escape sequences, the \n need to be explicitly
   // handled. Depending on the value of |multiline|, actual line breaks or
   // spaces are substituted.
-  std::u16string newline =
-      multiline ? base::ASCIIToUTF16("\n") : base::ASCIIToUTF16(" ");
-  base::ReplaceSubstringsAfterOffset(&message, 0, base::ASCIIToUTF16("\\n"),
-                                     newline);
+  std::u16string newline = multiline ? u"\n" : u" ";
+  base::ReplaceSubstringsAfterOffset(&message, 0, u"\\n", newline);
   return message;
 }
 

@@ -425,12 +425,12 @@ TEST(StringUtilTest, TrimWhitespace) {
   }
 
   // Test that TrimWhitespace() can take the same string for input and output
-  output = ASCIIToUTF16("  This is a test \r\n");
+  output = u"  This is a test \r\n";
   EXPECT_EQ(TRIM_ALL, TrimWhitespace(output, TRIM_ALL, &output));
-  EXPECT_EQ(ASCIIToUTF16("This is a test"), output);
+  EXPECT_EQ(u"This is a test", output);
 
   // Once more, but with a string of whitespace
-  output = ASCIIToUTF16("  \r\n");
+  output = u"  \r\n";
   EXPECT_EQ(TRIM_ALL, TrimWhitespace(output, TRIM_ALL, &output));
   EXPECT_EQ(std::u16string(), output);
 
@@ -645,7 +645,7 @@ TEST(StringUtilTest, ToLowerASCII) {
   EXPECT_EQ(u'2', ToLowerASCII(u'2'));
 
   EXPECT_EQ("cc2", ToLowerASCII("Cc2"));
-  EXPECT_EQ(ASCIIToUTF16("cc2"), ToLowerASCII(ASCIIToUTF16("Cc2")));
+  EXPECT_EQ(u"cc2", ToLowerASCII(u"Cc2"));
 }
 
 TEST(StringUtilTest, ToUpperASCII) {
@@ -658,7 +658,7 @@ TEST(StringUtilTest, ToUpperASCII) {
   EXPECT_EQ(u'2', ToUpperASCII(u'2'));
 
   EXPECT_EQ("CC2", ToUpperASCII("Cc2"));
-  EXPECT_EQ(ASCIIToUTF16("CC2"), ToUpperASCII(ASCIIToUTF16("Cc2")));
+  EXPECT_EQ(u"CC2", ToUpperASCII(u"Cc2"));
 }
 
 TEST(StringUtilTest, LowerCaseEqualsASCII) {
@@ -859,7 +859,7 @@ TEST(StringUtilTest, JoinString) {
 }
 
 TEST(StringUtilTest, JoinString16) {
-  std::u16string separator = ASCIIToUTF16(", ");
+  std::u16string separator = u", ";
   std::vector<std::u16string> parts;
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
@@ -867,17 +867,17 @@ TEST(StringUtilTest, JoinString16) {
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
-  parts.push_back(ASCIIToUTF16("a"));
-  EXPECT_EQ(ASCIIToUTF16("a"), JoinString(parts, separator));
+  parts.push_back(u"a");
+  EXPECT_EQ(u"a", JoinString(parts, separator));
 
-  parts.push_back(ASCIIToUTF16("b"));
-  parts.push_back(ASCIIToUTF16("c"));
-  EXPECT_EQ(ASCIIToUTF16("a, b, c"), JoinString(parts, separator));
+  parts.push_back(u"b");
+  parts.push_back(u"c");
+  EXPECT_EQ(u"a, b, c", JoinString(parts, separator));
 
-  parts.push_back(ASCIIToUTF16(""));
-  EXPECT_EQ(ASCIIToUTF16("a, b, c, "), JoinString(parts, separator));
-  parts.push_back(ASCIIToUTF16(" "));
-  EXPECT_EQ(ASCIIToUTF16("a|b|c|| "), JoinString(parts, ASCIIToUTF16("|")));
+  parts.push_back(u"");
+  EXPECT_EQ(u"a, b, c, ", JoinString(parts, separator));
+  parts.push_back(u" ");
+  EXPECT_EQ(u"a|b|c|| ", JoinString(parts, u"|"));
 }
 
 TEST(StringUtilTest, JoinStringPiece) {
@@ -904,7 +904,7 @@ TEST(StringUtilTest, JoinStringPiece) {
 }
 
 TEST(StringUtilTest, JoinStringPiece16) {
-  std::u16string separator = ASCIIToUTF16(", ");
+  std::u16string separator = u", ";
   std::vector<StringPiece16> parts;
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
@@ -913,21 +913,21 @@ TEST(StringUtilTest, JoinStringPiece16) {
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
-  const std::u16string kA = ASCIIToUTF16("a");
+  const std::u16string kA = u"a";
   parts.push_back(kA);
-  EXPECT_EQ(ASCIIToUTF16("a"), JoinString(parts, separator));
+  EXPECT_EQ(u"a", JoinString(parts, separator));
 
-  const std::u16string kB = ASCIIToUTF16("b");
+  const std::u16string kB = u"b";
   parts.push_back(kB);
-  const std::u16string kC = ASCIIToUTF16("c");
+  const std::u16string kC = u"c";
   parts.push_back(kC);
-  EXPECT_EQ(ASCIIToUTF16("a, b, c"), JoinString(parts, separator));
+  EXPECT_EQ(u"a, b, c", JoinString(parts, separator));
 
   parts.push_back(StringPiece16());
-  EXPECT_EQ(ASCIIToUTF16("a, b, c, "), JoinString(parts, separator));
-  const std::u16string kSpace = ASCIIToUTF16(" ");
+  EXPECT_EQ(u"a, b, c, ", JoinString(parts, separator));
+  const std::u16string kSpace = u" ";
   parts.push_back(kSpace);
-  EXPECT_EQ(ASCIIToUTF16("a|b|c|| "), JoinString(parts, ASCIIToUTF16("|")));
+  EXPECT_EQ(u"a|b|c|| ", JoinString(parts, u"|"));
 }
 
 TEST(StringUtilTest, JoinStringInitializerList) {
@@ -955,31 +955,29 @@ TEST(StringUtilTest, JoinStringInitializerList) {
 }
 
 TEST(StringUtilTest, JoinStringInitializerList16) {
-  std::u16string separator = ASCIIToUTF16(", ");
+  std::u16string separator = u", ";
   EXPECT_EQ(std::u16string(), JoinString({}, separator));
 
   // Test empty first part (https://crbug.com/698073).
   EXPECT_EQ(std::u16string(), JoinString({StringPiece16()}, separator));
 
   // With string16s.
-  const std::u16string kA = ASCIIToUTF16("a");
-  EXPECT_EQ(ASCIIToUTF16("a"), JoinString({kA}, separator));
+  const std::u16string kA = u"a";
+  EXPECT_EQ(u"a", JoinString({kA}, separator));
 
-  const std::u16string kB = ASCIIToUTF16("b");
-  const std::u16string kC = ASCIIToUTF16("c");
-  EXPECT_EQ(ASCIIToUTF16("a, b, c"), JoinString({kA, kB, kC}, separator));
+  const std::u16string kB = u"b";
+  const std::u16string kC = u"c";
+  EXPECT_EQ(u"a, b, c", JoinString({kA, kB, kC}, separator));
 
-  EXPECT_EQ(ASCIIToUTF16("a, b, c, "),
-            JoinString({kA, kB, kC, StringPiece16()}, separator));
-  const std::u16string kSpace = ASCIIToUTF16(" ");
-  EXPECT_EQ(
-      ASCIIToUTF16("a|b|c|| "),
-      JoinString({kA, kB, kC, StringPiece16(), kSpace}, ASCIIToUTF16("|")));
+  EXPECT_EQ(u"a, b, c, ", JoinString({kA, kB, kC, StringPiece16()}, separator));
+  const std::u16string kSpace = u" ";
+  EXPECT_EQ(u"a|b|c|| ",
+            JoinString({kA, kB, kC, StringPiece16(), kSpace}, u"|"));
 
   // With StringPiece16s.
   const StringPiece16 kPieceA = kA;
   const StringPiece16 kPieceB = kB;
-  EXPECT_EQ(ASCIIToUTF16("a, b"), JoinString({kPieceA, kPieceB}, separator));
+  EXPECT_EQ(u"a, b", JoinString({kPieceA, kPieceB}, separator));
 }
 
 TEST(StringUtilTest, StartsWith) {
@@ -1002,61 +1000,55 @@ TEST(StringUtilTest, StartsWith) {
                          base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_TRUE(StartsWith("java", std::string(), base::CompareCase::SENSITIVE));
 
-  EXPECT_TRUE(StartsWith(ASCIIToUTF16("javascript:url"),
-                         ASCIIToUTF16("javascript"),
+  EXPECT_TRUE(StartsWith(u"javascript:url", u"javascript",
                          base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(StartsWith(ASCIIToUTF16("JavaScript:url"),
-                          ASCIIToUTF16("javascript"),
+  EXPECT_FALSE(StartsWith(u"JavaScript:url", u"javascript",
                           base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(StartsWith(ASCIIToUTF16("javascript:url"),
-                         ASCIIToUTF16("javascript"),
+  EXPECT_TRUE(StartsWith(u"javascript:url", u"javascript",
                          base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_TRUE(StartsWith(ASCIIToUTF16("JavaScript:url"),
-                         ASCIIToUTF16("javascript"),
+  EXPECT_TRUE(StartsWith(u"JavaScript:url", u"javascript",
                          base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(StartsWith(ASCIIToUTF16("java"), ASCIIToUTF16("javascript"),
-                          base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(StartsWith(ASCIIToUTF16("java"), ASCIIToUTF16("javascript"),
+  EXPECT_FALSE(
+      StartsWith(u"java", u"javascript", base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(
+      StartsWith(u"java", u"javascript", base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_FALSE(StartsWith(std::u16string(), u"javascript",
                           base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(StartsWith(std::u16string(), ASCIIToUTF16("javascript"),
-                          base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(StartsWith(std::u16string(), ASCIIToUTF16("javascript"),
+  EXPECT_FALSE(StartsWith(std::u16string(), u"javascript",
                           base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(StartsWith(ASCIIToUTF16("java"), std::u16string(),
+  EXPECT_TRUE(StartsWith(u"java", std::u16string(),
                          base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_TRUE(StartsWith(ASCIIToUTF16("java"), std::u16string(),
-                         base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      StartsWith(u"java", std::u16string(), base::CompareCase::SENSITIVE));
 }
 
 TEST(StringUtilTest, EndsWith) {
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16("Foo.plugin"), ASCIIToUTF16(".plugin"),
-                       base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(EndsWith(ASCIIToUTF16("Foo.Plugin"), ASCIIToUTF16(".plugin"),
-                        base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16("Foo.plugin"), ASCIIToUTF16(".plugin"),
+  EXPECT_TRUE(
+      EndsWith(u"Foo.plugin", u".plugin", base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(
+      EndsWith(u"Foo.Plugin", u".plugin", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(EndsWith(u"Foo.plugin", u".plugin",
                        base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16("Foo.Plugin"), ASCIIToUTF16(".plugin"),
+  EXPECT_TRUE(EndsWith(u"Foo.Plugin", u".plugin",
                        base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(EndsWith(ASCIIToUTF16(".plug"), ASCIIToUTF16(".plugin"),
-                        base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(EndsWith(ASCIIToUTF16(".plug"), ASCIIToUTF16(".plugin"),
+  EXPECT_FALSE(EndsWith(u".plug", u".plugin", base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(
+      EndsWith(u".plug", u".plugin", base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_FALSE(
+      EndsWith(u"Foo.plugin Bar", u".plugin", base::CompareCase::SENSITIVE));
+  EXPECT_FALSE(EndsWith(u"Foo.plugin Bar", u".plugin",
                         base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(EndsWith(ASCIIToUTF16("Foo.plugin Bar"), ASCIIToUTF16(".plugin"),
-                        base::CompareCase::SENSITIVE));
-  EXPECT_FALSE(EndsWith(ASCIIToUTF16("Foo.plugin Bar"), ASCIIToUTF16(".plugin"),
+  EXPECT_FALSE(EndsWith(std::u16string(), u".plugin",
                         base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(EndsWith(std::u16string(), ASCIIToUTF16(".plugin"),
-                        base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_FALSE(EndsWith(std::u16string(), ASCIIToUTF16(".plugin"),
-                        base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16("Foo.plugin"), std::u16string(),
+  EXPECT_FALSE(
+      EndsWith(std::u16string(), u".plugin", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(EndsWith(u"Foo.plugin", std::u16string(),
                        base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16("Foo.plugin"), std::u16string(),
-                       base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16(".plugin"), ASCIIToUTF16(".plugin"),
-                       base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_TRUE(EndsWith(ASCIIToUTF16(".plugin"), ASCIIToUTF16(".plugin"),
-                       base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      EndsWith(u"Foo.plugin", std::u16string(), base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      EndsWith(u".plugin", u".plugin", base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(EndsWith(u".plugin", u".plugin", base::CompareCase::SENSITIVE));
   EXPECT_TRUE(EndsWith(std::u16string(), std::u16string(),
                        base::CompareCase::INSENSITIVE_ASCII));
   EXPECT_TRUE(EndsWith(std::u16string(), std::u16string(),
@@ -1065,21 +1057,17 @@ TEST(StringUtilTest, EndsWith) {
 
 TEST(StringUtilTest, GetStringFWithOffsets) {
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("1"));
-  subst.push_back(ASCIIToUTF16("2"));
+  subst.push_back(u"1");
+  subst.push_back(u"2");
   std::vector<size_t> offsets;
 
-  ReplaceStringPlaceholders(ASCIIToUTF16("Hello, $1. Your number is $2."),
-                            subst,
-                            &offsets);
+  ReplaceStringPlaceholders(u"Hello, $1. Your number is $2.", subst, &offsets);
   EXPECT_EQ(2U, offsets.size());
   EXPECT_EQ(7U, offsets[0]);
   EXPECT_EQ(25U, offsets[1]);
   offsets.clear();
 
-  ReplaceStringPlaceholders(ASCIIToUTF16("Hello, $2. Your number is $1."),
-                            subst,
-                            &offsets);
+  ReplaceStringPlaceholders(u"Hello, $2. Your number is $1.", subst, &offsets);
   EXPECT_EQ(2U, offsets.size());
   EXPECT_EQ(25U, offsets[0]);
   EXPECT_EQ(7U, offsets[1]);
@@ -1090,51 +1078,51 @@ TEST(StringUtilTest, ReplaceStringPlaceholdersTooFew) {
   // Test whether replacestringplaceholders works as expected when there
   // are fewer inputs than outputs.
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("9a"));
-  subst.push_back(ASCIIToUTF16("8b"));
-  subst.push_back(ASCIIToUTF16("7c"));
+  subst.push_back(u"9a");
+  subst.push_back(u"8b");
+  subst.push_back(u"7c");
 
   std::u16string formatted = ReplaceStringPlaceholders(
-      ASCIIToUTF16("$1a,$2b,$3c,$4d,$5e,$6f,$1g,$2h,$3i"), subst, nullptr);
+      u"$1a,$2b,$3c,$4d,$5e,$6f,$1g,$2h,$3i", subst, nullptr);
 
-  EXPECT_EQ(ASCIIToUTF16("9aa,8bb,7cc,d,e,f,9ag,8bh,7ci"), formatted);
+  EXPECT_EQ(u"9aa,8bb,7cc,d,e,f,9ag,8bh,7ci", formatted);
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholders) {
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("9a"));
-  subst.push_back(ASCIIToUTF16("8b"));
-  subst.push_back(ASCIIToUTF16("7c"));
-  subst.push_back(ASCIIToUTF16("6d"));
-  subst.push_back(ASCIIToUTF16("5e"));
-  subst.push_back(ASCIIToUTF16("4f"));
-  subst.push_back(ASCIIToUTF16("3g"));
-  subst.push_back(ASCIIToUTF16("2h"));
-  subst.push_back(ASCIIToUTF16("1i"));
+  subst.push_back(u"9a");
+  subst.push_back(u"8b");
+  subst.push_back(u"7c");
+  subst.push_back(u"6d");
+  subst.push_back(u"5e");
+  subst.push_back(u"4f");
+  subst.push_back(u"3g");
+  subst.push_back(u"2h");
+  subst.push_back(u"1i");
 
   std::u16string formatted = ReplaceStringPlaceholders(
-      ASCIIToUTF16("$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i"), subst, nullptr);
+      u"$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i", subst, nullptr);
 
-  EXPECT_EQ(ASCIIToUTF16("9aa,8bb,7cc,6dd,5ee,4ff,3gg,2hh,1ii"), formatted);
+  EXPECT_EQ(u"9aa,8bb,7cc,6dd,5ee,4ff,3gg,2hh,1ii", formatted);
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholdersNetExpansionWithContraction) {
   // In this test, some of the substitutions are shorter than the placeholders,
   // but overall the string gets longer.
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("9a____"));
-  subst.push_back(ASCIIToUTF16("B"));
-  subst.push_back(ASCIIToUTF16("7c___"));
-  subst.push_back(ASCIIToUTF16("d"));
-  subst.push_back(ASCIIToUTF16("5e____"));
-  subst.push_back(ASCIIToUTF16("F"));
-  subst.push_back(ASCIIToUTF16("3g___"));
-  subst.push_back(ASCIIToUTF16("h"));
-  subst.push_back(ASCIIToUTF16("1i_____"));
+  subst.push_back(u"9a____");
+  subst.push_back(u"B");
+  subst.push_back(u"7c___");
+  subst.push_back(u"d");
+  subst.push_back(u"5e____");
+  subst.push_back(u"F");
+  subst.push_back(u"3g___");
+  subst.push_back(u"h");
+  subst.push_back(u"1i_____");
 
-  std::u16string original = ASCIIToUTF16("$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i");
+  std::u16string original = u"$1a,$2b,$3c,$4d,$5e,$6f,$7g,$8h,$9i";
   std::u16string expected =
-      ASCIIToUTF16("9a____a,Bb,7c___c,dd,5e____e,Ff,3g___g,hh,1i_____i");
+      u"9a____a,Bb,7c___c,dd,5e____e,Ff,3g___g,hh,1i_____i";
 
   EXPECT_EQ(expected, ReplaceStringPlaceholders(original, subst, nullptr));
 
@@ -1154,32 +1142,32 @@ TEST(StringUtilTest, ReplaceStringPlaceholdersNetContractionWithExpansion) {
   // but overall the string gets smaller. Additionally, the placeholders appear
   // in a permuted order.
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("z"));
-  subst.push_back(ASCIIToUTF16("y"));
-  subst.push_back(ASCIIToUTF16("XYZW"));
-  subst.push_back(ASCIIToUTF16("x"));
-  subst.push_back(ASCIIToUTF16("w"));
+  subst.push_back(u"z");
+  subst.push_back(u"y");
+  subst.push_back(u"XYZW");
+  subst.push_back(u"x");
+  subst.push_back(u"w");
 
   std::u16string formatted =
-      ReplaceStringPlaceholders(ASCIIToUTF16("$3_$4$2$1$5"), subst, nullptr);
+      ReplaceStringPlaceholders(u"$3_$4$2$1$5", subst, nullptr);
 
-  EXPECT_EQ(ASCIIToUTF16("XYZW_xyzw"), formatted);
+  EXPECT_EQ(u"XYZW_xyzw", formatted);
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholdersOneDigit) {
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("1a"));
+  subst.push_back(u"1a");
   std::u16string formatted =
-      ReplaceStringPlaceholders(ASCIIToUTF16(" $16 "), subst, nullptr);
-  EXPECT_EQ(ASCIIToUTF16(" 1a6 "), formatted);
+      ReplaceStringPlaceholders(u" $16 ", subst, nullptr);
+  EXPECT_EQ(u" 1a6 ", formatted);
 }
 
 TEST(StringUtilTest, ReplaceStringPlaceholdersInvalidPlaceholder) {
   std::vector<std::u16string> subst;
-  subst.push_back(ASCIIToUTF16("1a"));
+  subst.push_back(u"1a");
   std::u16string formatted =
-      ReplaceStringPlaceholders(ASCIIToUTF16("+$-+$A+$1+"), subst, nullptr);
-  EXPECT_EQ(ASCIIToUTF16("+++1a+"), formatted);
+      ReplaceStringPlaceholders(u"+$-+$A+$1+", subst, nullptr);
+  EXPECT_EQ(u"+++1a+", formatted);
 }
 
 TEST(StringUtilTest, StdStringReplaceStringPlaceholders) {
@@ -1460,12 +1448,11 @@ TEST(StringUtilTest, ContainsOnlyChars) {
   EXPECT_FALSE(ContainsOnlyChars("\thello\r \n  ", kWhitespaceASCII));
 
   EXPECT_TRUE(ContainsOnlyChars(std::u16string(), kWhitespaceUTF16));
-  EXPECT_TRUE(ContainsOnlyChars(ASCIIToUTF16(" "), kWhitespaceUTF16));
-  EXPECT_TRUE(ContainsOnlyChars(ASCIIToUTF16("\t"), kWhitespaceUTF16));
-  EXPECT_TRUE(ContainsOnlyChars(ASCIIToUTF16("\t \r \n  "), kWhitespaceUTF16));
-  EXPECT_FALSE(ContainsOnlyChars(ASCIIToUTF16("a"), kWhitespaceUTF16));
-  EXPECT_FALSE(ContainsOnlyChars(ASCIIToUTF16("\thello\r \n  "),
-                                  kWhitespaceUTF16));
+  EXPECT_TRUE(ContainsOnlyChars(u" ", kWhitespaceUTF16));
+  EXPECT_TRUE(ContainsOnlyChars(u"\t", kWhitespaceUTF16));
+  EXPECT_TRUE(ContainsOnlyChars(u"\t \r \n  ", kWhitespaceUTF16));
+  EXPECT_FALSE(ContainsOnlyChars(u"a", kWhitespaceUTF16));
+  EXPECT_FALSE(ContainsOnlyChars(u"\thello\r \n  ", kWhitespaceUTF16));
 }
 
 TEST(StringUtilTest, CompareCaseInsensitiveASCII) {

@@ -21,7 +21,7 @@ class TestLoginShelfFlingHandler {
   TestLoginShelfFlingHandler() {
     gesture_detection_active_ =
         Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-            base::ASCIIToUTF16("Test swipe"),
+            u"Test swipe",
             base::BindRepeating(&TestLoginShelfFlingHandler::OnFlingDetected,
                                 base::Unretained(this)),
             base::BindOnce(
@@ -707,7 +707,7 @@ TEST_F(LoginShelfGestureControllerTest, HandlerExitsOnShutdown) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      base::ASCIIToUTF16("Test swipe"), base::DoNothing(), base::DoNothing());
+      u"Test swipe", base::DoNothing(), base::DoNothing());
 }
 
 }  // namespace ash

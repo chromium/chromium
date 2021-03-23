@@ -32,8 +32,7 @@ TEST_F(ConfirmInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithTitleAndMessage) {
   // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
   std::unique_ptr<FakeInfobarDelegate> passed_delegate =
-      std::make_unique<FakeInfobarDelegate>(base::ASCIIToUTF16("title"),
-                                            base::ASCIIToUTF16("message"));
+      std::make_unique<FakeInfobarDelegate>(u"title", u"message");
   FakeInfobarDelegate* delegate = passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeConfirm,
                      std::move(passed_delegate));

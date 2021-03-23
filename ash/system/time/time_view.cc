@@ -196,8 +196,7 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
 
   SetAccessibleName(base::TimeFormatTimeOfDayWithHourClockType(
                         now, model_->hour_clock_type(), base::kKeepAmPm) +
-                    base::ASCIIToUTF16(", ") +
-                    base::TimeFormatFriendlyDate(now));
+                    u", " + base::TimeFormatFriendlyDate(now));
 
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 
@@ -213,14 +212,14 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
                                               true);
 
   // Calculate vertical clock layout labels.
-  size_t colon_pos = current_time.find(base::ASCIIToUTF16(":"));
+  size_t colon_pos = current_time.find(u":");
   std::u16string hour = current_time.substr(0, colon_pos);
   std::u16string minute = current_time.substr(colon_pos + 1);
 
   // Sometimes pad single-digit hours with a zero for aesthetic reasons.
   if (hour.length() == 1 && model_->hour_clock_type() == base::k24HourClock &&
       !base::i18n::IsRTL())
-    hour = base::ASCIIToUTF16("0") + hour;
+    hour = u"0" + hour;
 
   vertical_label_hours_->SetText(hour);
   vertical_label_minutes_->SetText(minute);

@@ -433,7 +433,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
       return;
 
     if (!bubble_text.empty())
-      bubble_text += base::ASCIIToUTF16("\n");
+      bubble_text += u"\n";
 
     bubble_text += l10n_util::GetStringFUTF16(ids, base::UTF8ToUTF16(address));
   };

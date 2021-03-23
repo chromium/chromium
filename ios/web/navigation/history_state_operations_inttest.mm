@@ -83,7 +83,7 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     return ExecuteBlockAndWaitForLoad(GetLastCommittedItem()->GetURL(), ^{
       // TODO(crbug.com/677364): Use NavigationManager::Reload() once it no
       // longer requires a web delegate.
-      web_state()->ExecuteJavaScript(ASCIIToUTF16("window.location.reload()"));
+      web_state()->ExecuteJavaScript(u"window.location.reload()");
     });
   }
 

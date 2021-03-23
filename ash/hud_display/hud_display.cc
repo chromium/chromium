@@ -162,12 +162,9 @@ HUDDisplayView::HUDDisplayView() {
 
   // Setup header.
 
-  header_view_->tab_strip()->AddTabButton(DisplayMode::CPU_DISPLAY,
-                                          base::ASCIIToUTF16("CPU"));
-  header_view_->tab_strip()->AddTabButton(DisplayMode::MEMORY_DISPLAY,
-                                          base::ASCIIToUTF16("RAM"));
-  header_view_->tab_strip()->AddTabButton(DisplayMode::FPS_DISPLAY,
-                                          base::ASCIIToUTF16("FPS"));
+  header_view_->tab_strip()->AddTabButton(DisplayMode::CPU_DISPLAY, u"CPU");
+  header_view_->tab_strip()->AddTabButton(DisplayMode::MEMORY_DISPLAY, u"RAM");
+  header_view_->tab_strip()->AddTabButton(DisplayMode::FPS_DISPLAY, u"FPS");
 
   // Setup data.
   data->SetBackground(views::CreateSolidBackground(kHUDBackground));

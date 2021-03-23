@@ -315,9 +315,8 @@ std::u16string PowerStatus::GetAccessibleNameString(
              !IsBatteryDischargingOnLinePower()) {
     int hour = 0, min = 0;
     power_utils::SplitTimeIntoHoursAndMinutes(*time, &hour, &min);
-    std::u16string minute =
-        min < 10 ? base::ASCIIToUTF16("0") + base::NumberToString16(min)
-                 : base::NumberToString16(min);
+    std::u16string minute = min < 10 ? u"0" + base::NumberToString16(min)
+                                     : base::NumberToString16(min);
     battery_time_accessible = l10n_util::GetStringFUTF16(
         IsBatteryCharging()
             ? IDS_ASH_STATUS_TRAY_BATTERY_TIME_UNTIL_FULL_ACCESSIBLE
@@ -326,8 +325,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
   }
   return battery_time_accessible.empty()
              ? battery_percentage_accessible
-             : battery_percentage_accessible + base::ASCIIToUTF16(" ") +
-                   battery_time_accessible;
+             : battery_percentage_accessible + u" " + battery_time_accessible;
 }
 
 std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()

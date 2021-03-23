@@ -93,7 +93,7 @@ std::unique_ptr<Notification> CreateNotification(
   }
 
   if (!time_message.empty())
-    message = message + base::ASCIIToUTF16("\n") + time_message;
+    message = message + u"\n" + time_message;
 
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kBatteryNotificationId,

@@ -58,12 +58,10 @@ TEST_F(FtpDirectoryListingParserVmsTest, Good) {
         GetSingleLineTestCase(good_cases[i].input));
 
     // The parser requires a directory header before accepting regular input.
-    lines.insert(lines.begin(),
-                 ASCIIToUTF16("Directory ANONYMOUS_ROOT:[000000]"));
+    lines.insert(lines.begin(), u"Directory ANONYMOUS_ROOT:[000000]");
 
     // A valid listing must also have a "Total" line at the end.
-    lines.insert(lines.end(),
-                 ASCIIToUTF16("Total of 1 file, 2 blocks."));
+    lines.insert(lines.end(), u"Total of 1 file, 2 blocks.");
 
     std::vector<FtpDirectoryListingEntry> entries;
     EXPECT_TRUE(ParseFtpDirectoryListingVms(lines,
@@ -122,12 +120,10 @@ TEST_F(FtpDirectoryListingParserVmsTest, Bad) {
     std::vector<std::u16string> lines(GetSingleLineTestCase(bad_cases[i]));
 
     // The parser requires a directory header before accepting regular input.
-    lines.insert(lines.begin(),
-                 ASCIIToUTF16("Directory ANONYMOUS_ROOT:[000000]"));
+    lines.insert(lines.begin(), u"Directory ANONYMOUS_ROOT:[000000]");
 
     // A valid listing must also have a "Total" line at the end.
-    lines.insert(lines.end(),
-                 ASCIIToUTF16("Total of 1 file, 2 blocks."));
+    lines.insert(lines.end(), u"Total of 1 file, 2 blocks.");
 
     std::vector<FtpDirectoryListingEntry> entries;
     EXPECT_FALSE(ParseFtpDirectoryListingVms(lines,
@@ -148,12 +144,10 @@ TEST_F(FtpDirectoryListingParserVmsTest, BadDataAfterFooter) {
         GetSingleLineTestCase("README.TXT;4  2  18-APR-2000 10:40:39.90"));
 
     // The parser requires a directory header before accepting regular input.
-    lines.insert(lines.begin(),
-                 ASCIIToUTF16("Directory ANONYMOUS_ROOT:[000000]"));
+    lines.insert(lines.begin(), u"Directory ANONYMOUS_ROOT:[000000]");
 
     // A valid listing must also have a "Total" line at the end.
-    lines.insert(lines.end(),
-                 ASCIIToUTF16("Total of 1 file, 2 blocks."));
+    lines.insert(lines.end(), u"Total of 1 file, 2 blocks.");
 
     {
       // Make sure the listing is valid before we add data after footer.
@@ -177,7 +171,7 @@ TEST_F(FtpDirectoryListingParserVmsTest, EmptyColumnZero) {
   std::vector<std::u16string> lines;
 
   // The parser requires a directory header before accepting regular input.
-  lines.push_back(ASCIIToUTF16("garbage"));
+  lines.push_back(u"garbage");
 
   char16_t data[] = {0x0};
   lines.push_back(std::u16string(data, 1));
@@ -190,9 +184,9 @@ TEST_F(FtpDirectoryListingParserVmsTest, EmptyColumnWhitespace) {
   std::vector<std::u16string> lines;
 
   // The parser requires a directory header before accepting regular input.
-  lines.push_back(ASCIIToUTF16("garbage"));
+  lines.push_back(u"garbage");
 
-  lines.push_back(ASCIIToUTF16("   "));
+  lines.push_back(u"   ");
 
   std::vector<FtpDirectoryListingEntry> entries;
   EXPECT_FALSE(ParseFtpDirectoryListingVms(lines, &entries));

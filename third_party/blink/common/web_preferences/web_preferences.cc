@@ -213,20 +213,13 @@ WebPreferences::WebPreferences()
       allow_mixed_content_upgrades(true),
       always_show_focus(false),
       touch_drag_drop_enabled(IsTouchDragDropEnabled()) {
-  standard_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Times New Roman");
-  fixed_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Courier New");
-  serif_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Times New Roman");
-  sans_serif_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Arial");
-  cursive_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Script");
-  fantasy_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Impact");
-  pictograph_font_family_map[web_pref::kCommonScript] =
-      base::ASCIIToUTF16("Times New Roman");
+  standard_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
+  fixed_font_family_map[web_pref::kCommonScript] = u"Courier New";
+  serif_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
+  sans_serif_font_family_map[web_pref::kCommonScript] = u"Arial";
+  cursive_font_family_map[web_pref::kCommonScript] = u"Script";
+  fantasy_font_family_map[web_pref::kCommonScript] = u"Impact";
+  pictograph_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
 }
 
 WebPreferences::WebPreferences(const WebPreferences& other) = default;

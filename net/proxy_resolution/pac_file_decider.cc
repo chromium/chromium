@@ -39,8 +39,7 @@ bool LooksLikePacScript(const std::u16string& script) {
   // file not containing the string is not likely to be a PAC script.
   //
   // An exact test would have to load the script in a javascript evaluator.
-  return script.find(base::ASCIIToUTF16("FindProxyForURL")) !=
-         std::u16string::npos;
+  return script.find(u"FindProxyForURL") != std::u16string::npos;
 }
 
 // This is the hard-coded location used by the DNS portion of web proxy

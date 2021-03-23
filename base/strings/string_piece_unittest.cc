@@ -632,7 +632,7 @@ TYPED_TEST(CommonStringPieceTest, HeterogenousStringPieceEquals) {
 // std::u16string-specific stuff
 TEST(StringPiece16Test, CheckSTL) {
   // Check some non-ascii characters.
-  std::u16string fifth(ASCIIToUTF16("123"));
+  std::u16string fifth(u"123");
   fifth.push_back(0x0000);
   fifth.push_back(0xd8c5);
   fifth.push_back(0xdffe);

@@ -139,7 +139,7 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     std::u16string part2 = l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2);
     // Uses "\n" to create a newline separator between two text paragraphs.
-    SetDescription(base::StrCat({part1, base::ASCIIToUTF16("\n\n"), part2}));
+    SetDescription(base::StrCat({part1, u"\n\n", part2}));
 
     // Adds "Ok, got it" button.
     auto ack_button = std::make_unique<InterstitialViewButton>(

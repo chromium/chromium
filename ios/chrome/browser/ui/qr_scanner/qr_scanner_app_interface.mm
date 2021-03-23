@@ -63,8 +63,8 @@ using scanner::CameraState;
 
 + (void)overrideSearchEngine:(NSString*)templateURL {
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("testSearchEngine"));
-  data.SetKeyword(base::ASCIIToUTF16("testSearchEngine"));
+  data.SetShortName(u"testSearchEngine");
+  data.SetKeyword(u"testSearchEngine");
   GURL searchableURL(base::SysNSStringToUTF8(templateURL));
   data.SetURL(searchableURL.possibly_invalid_spec());
   data.favicon_url = TemplateURL::GenerateFaviconURL(searchableURL);

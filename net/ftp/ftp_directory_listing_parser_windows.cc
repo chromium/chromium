@@ -23,9 +23,9 @@ bool ParseFtpDirectoryListingWindows(
     if (lines[i].empty())
       continue;
 
-    std::vector<std::u16string> columns = base::SplitString(
-        base::CollapseWhitespace(lines[i], false), base::ASCIIToUTF16(" "),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string> columns =
+        base::SplitString(base::CollapseWhitespace(lines[i], false), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
     // Every line of the listing consists of the following:
     //

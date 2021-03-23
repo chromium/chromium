@@ -777,7 +777,7 @@ TEST_F(LoginShelfViewTest, TapShutdownWithSwipeDetectionEnabledOnLogin) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      base::ASCIIToUTF16("Test swipe"), base::DoNothing(), base::DoNothing());
+      u"Test swipe", base::DoNothing(), base::DoNothing());
 
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
@@ -787,7 +787,7 @@ TEST_F(LoginShelfViewTest, TapShutdownWithSwipeDetectionEnabledInOobe) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      base::ASCIIToUTF16("Test swipe"), base::DoNothing(), base::DoNothing());
+      u"Test swipe", base::DoNothing(), base::DoNothing());
 
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());

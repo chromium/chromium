@@ -94,7 +94,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_title(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
       if (i < 2)
-        result->set_details(base::ASCIIToUTF16("Detail"));
+        result->set_details(u"Detail");
       results->Add(std::move(result));
     }
 
@@ -145,12 +145,10 @@ TEST_F(SearchResultListViewTest, SpokenFeedback) {
 
   // Result 0 has a detail text. Expect that the detail is appended to the
   // accessibility name.
-  EXPECT_EQ(base::ASCIIToUTF16("Result 0, Detail"),
-            GetResultViewAt(0)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 0, Detail", GetResultViewAt(0)->ComputeAccessibleName());
 
   // Result 2 has no detail text.
-  EXPECT_EQ(base::ASCIIToUTF16("Result 2"),
-            GetResultViewAt(2)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 2", GetResultViewAt(2)->ComputeAccessibleName());
 }
 
 TEST_F(SearchResultListViewTest, ModelObservers) {

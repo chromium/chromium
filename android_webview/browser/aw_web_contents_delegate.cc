@@ -141,8 +141,8 @@ void AwWebContentsDelegate::RunFileChooser(
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetID(),
       render_frame_host->GetRoutingID(), mode_flags,
-      ConvertUTF16ToJavaString(
-          env, base::JoinString(params.accept_types, base::ASCIIToUTF16(","))),
+      ConvertUTF16ToJavaString(env,
+                               base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr
                            : ConvertUTF16ToJavaString(env, params.title),
       params.default_file_name.empty()

@@ -1618,7 +1618,7 @@ TEST_F(ShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
 
   // Return the context menu model.
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1694,7 +1694,7 @@ TEST_F(ShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
 
   // Return the context menu model.
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1758,7 +1758,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1830,7 +1830,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1888,7 +1888,7 @@ TEST_F(ShelfViewTest, DragStateIsClearedIfAnotherTouchIsAddedWithContextMenu) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1959,7 +1959,7 @@ TEST_F(ShelfViewTest,
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 

@@ -94,7 +94,7 @@ base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
       // one plus and one space to replace the string resourece's placeholder so
       // that the separator will not conflict with the replacement string for
       // "VKEY_OEM_PLUS", which is "+" and "VKEY_SPACE", which is "Space".
-      return base::ASCIIToUTF16("+ ");
+      return u"+ ";
     default:
       return base::nullopt;
   }

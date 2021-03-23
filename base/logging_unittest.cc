@@ -867,7 +867,7 @@ TEST_F(LoggingTest, String16) {
   {
     std::ostringstream stream;
     stream << "Empty '" << std::u16string() << "' standard '"
-           << std::u16string(base::ASCIIToUTF16("Hello, world")) << "'";
+           << std::u16string(u"Hello, world") << "'";
     EXPECT_STREQ("Empty '' standard 'Hello, world'", stream.str().c_str());
   }
 

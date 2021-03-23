@@ -154,7 +154,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   DCHECK_EQ(replacement_strings.size(), offsets.size());
   // TODO(wutao): make this reliable.
   // If the replacement string is "+ ", it indicates to insert a seperator view.
-  const std::u16string separator_string = base::ASCIIToUTF16("+ ");
+  const std::u16string separator_string = u"+ ";
   for (size_t i = 0; i < offsets.size(); ++i) {
     views::StyledLabel::RangeStyleInfo style_info;
     style_info.disable_line_wrapping = true;
@@ -178,8 +178,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
   // redundant child label text is not also spoken.
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
   GetViewAccessibility().OverrideIsLeaf(true);
-  accessible_name_ = description_label_view_->GetText() +
-                     base::ASCIIToUTF16(", ") + accessible_string;
+  accessible_name_ =
+      description_label_view_->GetText() + u", " + accessible_string;
 }
 
 void KeyboardShortcutItemView::GetAccessibleNodeData(

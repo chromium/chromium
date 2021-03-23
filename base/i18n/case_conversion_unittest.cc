@@ -31,11 +31,9 @@ const char16_t kNonASCIIUpper[] =
 
 // Test upper and lower case string conversion.
 TEST(CaseConversionTest, UpperLower) {
-  const std::u16string mixed(ASCIIToUTF16("Text with UPPer & lowER casE."));
-  const std::u16string expected_lower(
-      ASCIIToUTF16("text with upper & lower case."));
-  const std::u16string expected_upper(
-      ASCIIToUTF16("TEXT WITH UPPER & LOWER CASE."));
+  const std::u16string mixed(u"Text with UPPer & lowER casE.");
+  const std::u16string expected_lower(u"text with upper & lower case.");
+  const std::u16string expected_upper(u"TEXT WITH UPPER & LOWER CASE.");
 
   std::u16string result = ToLower(mixed);
   EXPECT_EQ(expected_lower, result);
@@ -84,8 +82,7 @@ TEST(CaseConversionTest, TurkishLocaleConversion) {
 
 TEST(CaseConversionTest, FoldCase) {
   // Simple ASCII, should lower-case.
-  EXPECT_EQ(ASCIIToUTF16("hello, world"),
-            FoldCase(ASCIIToUTF16("Hello, World")));
+  EXPECT_EQ(u"hello, world", FoldCase(u"Hello, World"));
 
   // Non-ASCII cases from above. They should all fold to the same result.
   EXPECT_EQ(FoldCase(kNonASCIIMixed), FoldCase(kNonASCIILower));
@@ -109,7 +106,7 @@ TEST(CaseConversionTest, FoldCase) {
   EXPECT_EQ(u"i\u0307j", FoldCase(u"\u0130j"));
 
   // U+00DF (SHARP S) and U+1E9E (CAPIRAL SHARP S) are both folded to "ss".
-  EXPECT_EQ(ASCIIToUTF16("ssss"), FoldCase(u"\u00DF\u1E9E"));
+  EXPECT_EQ(u"ssss", FoldCase(u"\u00DF\u1E9E"));
 }
 
 }  // namespace i18n

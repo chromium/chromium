@@ -80,7 +80,7 @@ TEST_F(MetalayerToolTest, PaletteMenuState) {
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
       chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_INCOGNITO,
   };
-  const std::u16string kLoading(base::ASCIIToUTF16("loading"));
+  const std::u16string kLoading(u"loading");
 
   // Iterate over every possible combination of states.
   for (chromeos::assistant::AssistantStatus state : kStates) {

@@ -542,7 +542,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
             std::make_unique<TestSearchResult>();
         result->set_display_type(data.first);
         result->set_display_score(display_score);
-        result->set_title(base::ASCIIToUTF16("Test"));
+        result->set_title(u"Test");
         results->Add(std::move(result));
       }
     }
@@ -897,7 +897,7 @@ TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
@@ -951,7 +951,7 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
@@ -1134,7 +1134,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
@@ -1266,7 +1266,7 @@ TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kTileResults = 3;
   const int kListResults = 2;
@@ -1347,7 +1347,7 @@ TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
   Show();
   views::Textfield* search_box = search_box_view()->search_box();
   search_box->InsertText(
-      base::ASCIIToUTF16("TestText"),
+      u"TestText",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
 
   // Set up test results with unique titles
@@ -1378,7 +1378,7 @@ TEST_F(AppListViewFocusTest, SearchBoxTextUpdatesOnResultFocus) {
 TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
   Show();
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_EQ(app_list_view()->app_list_state(), ash::AppListViewState::kHalf);
   constexpr int kTileResults = 3;
@@ -1418,7 +1418,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   // Type something in search box to transition to HALF state and populate
   // fake list results.
   search_box_view()->search_box()->InsertText(
-      base::ASCIIToUTF16("test"),
+      u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   SetUpSearchResults(0, kListResults);

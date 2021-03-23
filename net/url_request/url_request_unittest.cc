@@ -186,9 +186,9 @@ namespace test_default {
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 
-const std::u16string kChrome(ASCIIToUTF16("chrome"));
-const std::u16string kSecret(ASCIIToUTF16("secret"));
-const std::u16string kUser(ASCIIToUTF16("user"));
+const std::u16string kChrome(u"chrome");
+const std::u16string kSecret(u"secret");
+const std::u16string kUser(u"user");
 
 const base::FilePath::CharType kTestFilePath[] =
     FILE_PATH_LITERAL("net/data/url_request_unittest");

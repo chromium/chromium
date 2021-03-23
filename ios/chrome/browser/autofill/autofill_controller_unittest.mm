@@ -148,8 +148,7 @@ void CheckField(const FormStructure& form,
 
 AutofillEntry CreateAutofillEntry(const std::u16string& value) {
   const base::Time kNow = AutofillClock::Now();
-  return AutofillEntry(AutofillKey(base::ASCIIToUTF16("Name"), value), kNow,
-                       kNow);
+  return AutofillEntry(AutofillKey(u"Name", value), kNow, kNow);
 }
 
 // Forces rendering of a UIView. This is used in tests to make sure that UIKit
@@ -529,9 +528,9 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
           chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   __block TestConsumer consumer;
   const int limit = 1;
-  consumer.result_ = {CreateAutofillEntry(base::ASCIIToUTF16("Should")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("get")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("overwritten"))};
+  consumer.result_ = {CreateAutofillEntry(u"Should"),
+                      CreateAutofillEntry(u"get"),
+                      CreateAutofillEntry(u"overwritten")};
   web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
                                                 limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();

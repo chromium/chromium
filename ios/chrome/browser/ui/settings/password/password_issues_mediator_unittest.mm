@@ -113,7 +113,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     form.password_value = base::ASCIIToUTF16(password);
     form.url = GURL(website + "/login");
     form.action = GURL(website + "/action");
-    form.username_element = base::ASCIIToUTF16("email");
+    form.username_element = u"email";
 
     store()->AddLogin(form);
     store()->AddInsecureCredential(MakeInsecureCredential(website, username));

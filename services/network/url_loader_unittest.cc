@@ -3591,12 +3591,10 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
         auth_credentials_ = base::nullopt;
         break;
       case CredentialsResponse::CORRECT_CREDENTIALS:
-        auth_credentials_ = net::AuthCredentials(base::ASCIIToUTF16("USER"),
-                                                 base::ASCIIToUTF16("PASS"));
+        auth_credentials_ = net::AuthCredentials(u"USER", u"PASS");
         break;
       case CredentialsResponse::INCORRECT_CREDENTIALS_THEN_CORRECT_ONES:
-        auth_credentials_ = net::AuthCredentials(base::ASCIIToUTF16("USER"),
-                                                 base::ASCIIToUTF16("FAIL"));
+        auth_credentials_ = net::AuthCredentials(u"USER", u"FAIL");
         credentials_response_ = CredentialsResponse::CORRECT_CREDENTIALS;
         break;
     }

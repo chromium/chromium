@@ -580,7 +580,7 @@ std::u16string AppWindow::GetTitle() const {
   } else {
     title = web_contents()->GetTitle();
   }
-  base::RemoveChars(title, base::ASCIIToUTF16("\n"), &title);
+  base::RemoveChars(title, u"\n", &title);
   return title;
 }
 

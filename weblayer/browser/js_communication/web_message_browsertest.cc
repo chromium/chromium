@@ -64,7 +64,7 @@ class WebMessageHostImpl : public WebMessageHost {
     if (++call_count_ == 1) {
       // First time called, send a message to the page.
       std::unique_ptr<WebMessage> m2 = std::make_unique<WebMessage>();
-      m2->message = base::ASCIIToUTF16("from c++");
+      m2->message = u"from c++";
       proxy_->PostMessage(std::move(m2));
     } else {
       // On subsequent calls quit.
@@ -118,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
 
   base::RunLoop run_loop;
   shell()->tab()->AddWebMessageHostFactory(
-      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()),
-      base::ASCIIToUTF16("x"), {"*"});
+      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()), u"x",
+      {"*"});
 
   // web_message_test.html posts a message immediately.
   shell()->tab()->GetNavigationController()->Navigate(
@@ -130,9 +130,8 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
   // when WebMessageHostImpl calls PostMessage().
   ASSERT_TRUE(current_connection);
   ASSERT_EQ(2u, current_connection->messages().size());
-  EXPECT_EQ(base::ASCIIToUTF16("from page"), current_connection->messages()[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("bouncing from c++"),
-            current_connection->messages()[1]);
+  EXPECT_EQ(u"from page", current_connection->messages()[0]);
+  EXPECT_EQ(u"bouncing from c++", current_connection->messages()[1]);
 }
 
 class WebMessageTestWithBfCache : public WebLayerBrowserTest {
@@ -166,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
 
   base::RunLoop run_loop;
   shell()->tab()->AddWebMessageHostFactory(
-      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()),
-      base::ASCIIToUTF16("x"), {"http://a.com:" + url1.port()});
+      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()), u"x",
+      {"http://a.com:" + url1.port()});
 
   auto* navigation_controller = shell()->tab()->GetNavigationController();
   navigation_controller->Navigate(url1);

@@ -63,8 +63,7 @@ TEST_F(SmsObserverTest, SendTextMessage) {
       MessageCenter::Get()->GetVisibleNotifications();
   EXPECT_EQ(1u, notifications.size());
 
-  EXPECT_EQ(base::ASCIIToUTF16("000-000-0000"),
-            (*notifications.begin())->title());
+  EXPECT_EQ(u"000-000-0000", (*notifications.begin())->title());
   EXPECT_EQ(base::UTF8ToUTF16("FakeSMSClient: \xF0\x9F\x98\x8A"),
             (*notifications.begin())->message());
   MessageCenter::Get()->RemoveAllNotifications(false /* by_user */,
@@ -119,11 +118,11 @@ TEST_F(SmsObserverTest, MultipleTextMessages) {
 
   for (message_center::Notification* iter : notifications) {
     if (iter->id().find("chrome://network/sms1") != std::string::npos) {
-      EXPECT_EQ(base::ASCIIToUTF16("000-000-0000"), iter->title());
-      EXPECT_EQ(base::ASCIIToUTF16("first message"), iter->message());
+      EXPECT_EQ(u"000-000-0000", iter->title());
+      EXPECT_EQ(u"first message", iter->message());
     } else if (iter->id().find("chrome://network/sms2") != std::string::npos) {
-      EXPECT_EQ(base::ASCIIToUTF16("000-000-0000"), iter->title());
-      EXPECT_EQ(base::ASCIIToUTF16("second message"), iter->message());
+      EXPECT_EQ(u"000-000-0000", iter->title());
+      EXPECT_EQ(u"second message", iter->message());
     } else {
       ASSERT_TRUE(false);
     }

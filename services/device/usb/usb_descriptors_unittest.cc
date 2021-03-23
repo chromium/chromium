@@ -39,9 +39,9 @@ ACTION_P2(InvokeCallback, data, length) {
 void ExpectStringDescriptors(
     std::unique_ptr<std::map<uint8_t, std::u16string>> string_map) {
   EXPECT_EQ(3u, string_map->size());
-  EXPECT_EQ(base::ASCIIToUTF16("String 1"), (*string_map)[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("String 2"), (*string_map)[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("String 3"), (*string_map)[3]);
+  EXPECT_EQ(u"String 1", (*string_map)[1]);
+  EXPECT_EQ(u"String 2", (*string_map)[2]);
+  EXPECT_EQ(u"String 3", (*string_map)[3]);
 }
 
 // clang-format off
@@ -365,7 +365,7 @@ TEST_F(UsbDescriptorsTest, StringDescriptor) {
   std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello world!"), string);
+  EXPECT_EQ(u"Hello world!", string);
 }
 
 TEST_F(UsbDescriptorsTest, ShortStringDescriptorHeader) {
@@ -391,7 +391,7 @@ TEST_F(UsbDescriptorsTest, OddLengthStringDescriptor) {
   std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello"), string);
+  EXPECT_EQ(u"Hello", string);
 }
 
 TEST_F(UsbDescriptorsTest, EmptyStringDescriptor) {

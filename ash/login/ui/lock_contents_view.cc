@@ -2054,8 +2054,8 @@ void LockContentsView::ShowAuthErrorMessage() {
                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   if (ime_controller->IsCapsLockEnabled()) {
-    error_text += base::ASCIIToUTF16(" ") +
-                  l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT);
+    error_text +=
+        u" " + l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT);
   }
 
   base::Optional<int> bold_start;
@@ -2063,7 +2063,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
   if (ime_controller->available_imes().size() > 1 && !IsTabletMode()) {
-    error_text += base::ASCIIToUTF16(" ");
+    error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SWITCH_SHORTCUT);

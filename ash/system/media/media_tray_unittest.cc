@@ -72,9 +72,7 @@ class MockTrayBackgroundView : public ash::TrayBackgroundView {
   ~MockTrayBackgroundView() override = default;
 
   // TrayBackgroundview implementations
-  std::u16string GetAccessibleNameForTray() override {
-    return base::ASCIIToUTF16("");
-  }
+  std::u16string GetAccessibleNameForTray() override { return u""; }
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void ClickedOutsideBubble() override {}

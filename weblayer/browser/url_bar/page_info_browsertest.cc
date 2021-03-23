@@ -100,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBrowserTest, EmbedderNameSet) {
   std::unique_ptr<PageInfoDelegate> page_info_delegate =
       page_info::GetPageInfoClient()->CreatePageInfoDelegate(GetWebContents());
   ASSERT_TRUE(page_info_delegate);
-  std::u16string expected_embedder_name =
-      base::ASCIIToUTF16("WebLayerBrowserTests");
+  std::u16string expected_embedder_name = u"WebLayerBrowserTests";
   EXPECT_EQ(expected_embedder_name,
             page_info_delegate->GetClientApplicationName().c_str());
 }

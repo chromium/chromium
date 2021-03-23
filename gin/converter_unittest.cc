@@ -88,11 +88,10 @@ TEST_F(ConverterTest, String16) {
 
   HandleScope handle_scope(isolate);
 
-  EXPECT_TRUE(Converter<std::u16string>::ToV8(isolate, base::ASCIIToUTF16(""))
+  EXPECT_TRUE(Converter<std::u16string>::ToV8(isolate, u"")
                   ->StrictEquals(StringToV8(isolate, "")));
-  EXPECT_TRUE(
-      Converter<std::u16string>::ToV8(isolate, base::ASCIIToUTF16("hello"))
-          ->StrictEquals(StringToV8(isolate, "hello")));
+  EXPECT_TRUE(Converter<std::u16string>::ToV8(isolate, u"hello")
+                  ->StrictEquals(StringToV8(isolate, "hello")));
 
   std::u16string result;
 
@@ -105,7 +104,7 @@ TEST_F(ConverterTest, String16) {
   EXPECT_EQ(result, std::u16string());
   ASSERT_TRUE(Converter<std::u16string>::FromV8(
       isolate, StringToV8(isolate, "hello"), &result));
-  EXPECT_EQ(result, base::ASCIIToUTF16("hello"));
+  EXPECT_EQ(result, u"hello");
 }
 
 TEST_F(ConverterTest, Int32) {

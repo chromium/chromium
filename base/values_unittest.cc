@@ -150,7 +150,7 @@ TEST(ValuesTest, ConstructStringFromStdStringRRef) {
 }
 
 TEST(ValuesTest, ConstructStringFromConstChar16Ptr) {
-  std::u16string str = ASCIIToUTF16("foobar");
+  std::u16string str = u"foobar";
   Value value(str.c_str());
   EXPECT_EQ(Value::Type::STRING, value.type());
   EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
@@ -158,7 +158,7 @@ TEST(ValuesTest, ConstructStringFromConstChar16Ptr) {
 }
 
 TEST(ValuesTest, ConstructStringFromStringPiece16) {
-  std::u16string str = ASCIIToUTF16("foobar");
+  std::u16string str = u"foobar";
   Value value{StringPiece16(str)};
   EXPECT_EQ(Value::Type::STRING, value.type());
   EXPECT_THAT(value.GetIfString(), testing::Pointee(std::string("foobar")));
@@ -526,7 +526,7 @@ TEST(ValuesTest, Append) {
   value.Append(std::move(str));
   EXPECT_TRUE(value.GetList().back().is_string());
 
-  std::u16string str16 = ASCIIToUTF16("bar");
+  std::u16string str16 = u"bar";
   value.Append(str16.c_str());
   EXPECT_TRUE(value.GetList().back().is_string());
 
@@ -1452,26 +1452,26 @@ TEST(ValuesTest, StringValue) {
   std::unique_ptr<Value> narrow_value(new Value("narrow"));
   ASSERT_TRUE(narrow_value.get());
   ASSERT_TRUE(narrow_value->is_string());
-  std::unique_ptr<Value> utf16_value(new Value(ASCIIToUTF16("utf16")));
+  std::unique_ptr<Value> utf16_value(new Value(u"utf16"));
   ASSERT_TRUE(utf16_value.get());
   ASSERT_TRUE(utf16_value->is_string());
 
   // Test overloaded GetAsString.
   std::string narrow = "http://google.com";
-  std::u16string utf16 = ASCIIToUTF16("http://google.com");
+  std::u16string utf16 = u"http://google.com";
   const Value* string_value = nullptr;
   ASSERT_TRUE(narrow_value->GetAsString(&narrow));
   ASSERT_TRUE(narrow_value->GetAsString(&utf16));
   ASSERT_TRUE(narrow_value->GetAsString(&string_value));
   ASSERT_EQ(std::string("narrow"), narrow);
-  ASSERT_EQ(ASCIIToUTF16("narrow"), utf16);
+  ASSERT_EQ(u"narrow", utf16);
   ASSERT_EQ(string_value->GetString(), narrow);
 
   ASSERT_TRUE(utf16_value->GetAsString(&narrow));
   ASSERT_TRUE(utf16_value->GetAsString(&utf16));
   ASSERT_TRUE(utf16_value->GetAsString(&string_value));
   ASSERT_EQ(std::string("utf16"), narrow);
-  ASSERT_EQ(ASCIIToUTF16("utf16"), utf16);
+  ASSERT_EQ(u"utf16", utf16);
   ASSERT_EQ(string_value->GetString(), narrow);
 
   // Don't choke on NULL values.
@@ -1573,7 +1573,7 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
 
   {
     DictionaryValue dict;
-    Value* string16_ptr = dict.SetString("foo.bar", ASCIIToUTF16("baz"));
+    Value* string16_ptr = dict.SetString("foo.bar", u"baz");
     EXPECT_EQ(Value::Type::STRING, string16_ptr->type());
     EXPECT_EQ("baz", string16_ptr->GetString());
   }
@@ -1703,8 +1703,8 @@ TEST(ValuesTest, DeepCopy) {
       original_dict.Set("double", std::make_unique<Value>(3.14));
   Value* string_weak =
       original_dict.Set("string", std::make_unique<Value>("hello"));
-  Value* string16_weak = original_dict.Set(
-      "string16", std::make_unique<Value>(ASCIIToUTF16("hello16")));
+  Value* string16_weak =
+      original_dict.Set("string16", std::make_unique<Value>(u"hello16"));
 
   Value* binary_weak = original_dict.Set(
       "binary", std::make_unique<Value>(Value::BlobStorage(42, '!')));
@@ -1768,7 +1768,7 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_string->GetAsString(&copy_string_value));
   ASSERT_TRUE(copy_string->GetAsString(&copy_string16_value));
   ASSERT_EQ(std::string("hello"), copy_string_value);
-  ASSERT_EQ(ASCIIToUTF16("hello"), copy_string16_value);
+  ASSERT_EQ(u"hello", copy_string16_value);
 
   Value* copy_string16 = nullptr;
   ASSERT_TRUE(copy_dict->Get("string16", &copy_string16));
@@ -1778,7 +1778,7 @@ TEST(ValuesTest, DeepCopy) {
   ASSERT_TRUE(copy_string16->GetAsString(&copy_string_value));
   ASSERT_TRUE(copy_string16->GetAsString(&copy_string16_value));
   ASSERT_EQ(std::string("hello16"), copy_string_value);
-  ASSERT_EQ(ASCIIToUTF16("hello16"), copy_string16_value);
+  ASSERT_EQ(u"hello16", copy_string16_value);
 
   Value* copy_binary = nullptr;
   ASSERT_TRUE(copy_dict->Get("binary", &copy_binary));
@@ -1839,7 +1839,7 @@ TEST(ValuesTest, Equals) {
   dv.SetIntKey("b", 2);
   dv.SetDoubleKey("c", 2.5);
   dv.SetStringKey("d1", "string");
-  dv.SetStringKey("d2", ASCIIToUTF16("http://google.com"));
+  dv.SetStringKey("d2", u"http://google.com");
   dv.Set("e", std::make_unique<Value>());
 
   auto copy = dv.CreateDeepCopy();
@@ -2000,8 +2000,7 @@ TEST(ValuesTest, DeepCopyCovariantReturnTypes) {
   Value* int_weak = original_dict.SetKey("int", Value(42));
   Value* double_weak = original_dict.SetKey("double", Value(3.14));
   Value* string_weak = original_dict.SetKey("string", Value("hello"));
-  Value* string16_weak =
-      original_dict.SetKey("string16", Value(ASCIIToUTF16("hello16")));
+  Value* string16_weak = original_dict.SetKey("string16", Value(u"hello16"));
   Value* binary_weak =
       original_dict.SetKey("binary", Value(Value::BlobStorage(42, '!')));
 

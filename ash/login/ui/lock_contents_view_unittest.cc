@@ -2328,7 +2328,7 @@ TEST_F(LockContentsViewUnitTest, PasswordClearedOnSuspend) {
   views::Textfield* textfield =
       LoginPasswordView::TestApi(password_view).textfield();
 
-  textfield->SetText(base::ASCIIToUTF16("some_password"));
+  textfield->SetText(u"some_password");
   // Suspend clears password.
   EXPECT_FALSE(textfield->GetText().empty());
   contents->SuspendImminent(power_manager::SuspendImminent_Reason_LID_CLOSED);
@@ -2493,7 +2493,7 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   EXPECT_FALSE(test_api.warning_banner_bubble()->GetVisible());
 
   // Verifies that a warning banner is shown by giving a non-empty message.
-  DataDispatcher()->UpdateWarningMessage(base::ASCIIToUTF16("foo"));
+  DataDispatcher()->UpdateWarningMessage(u"foo");
   EXPECT_TRUE(test_api.warning_banner_bubble()->GetVisible());
 
   // Verifies that a warning banner is hidden by HideWarningBanner().
@@ -2501,7 +2501,7 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   EXPECT_FALSE(test_api.warning_banner_bubble()->GetVisible());
 
   // Shows a warning banner again.
-  DataDispatcher()->UpdateWarningMessage(base::ASCIIToUTF16("foo"));
+  DataDispatcher()->UpdateWarningMessage(u"foo");
   EXPECT_TRUE(test_api.warning_banner_bubble()->GetVisible());
 
   // Attempt and fail user auth - an auth error is expected to be shown.

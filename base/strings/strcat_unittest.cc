@@ -18,14 +18,14 @@ TEST(StrCat, 8Bit) {
 }
 
 TEST(StrCat, 16Bit) {
-  std::u16string arg1 = ASCIIToUTF16("1");
-  std::u16string arg2 = ASCIIToUTF16("22");
-  std::u16string arg3 = ASCIIToUTF16("333");
+  std::u16string arg1 = u"1";
+  std::u16string arg2 = u"22";
+  std::u16string arg3 = u"333";
 
-  EXPECT_EQ(ASCIIToUTF16(""), StrCat({std::u16string()}));
-  EXPECT_EQ(ASCIIToUTF16("1"), StrCat({arg1}));
-  EXPECT_EQ(ASCIIToUTF16("122"), StrCat({arg1, arg2}));
-  EXPECT_EQ(ASCIIToUTF16("122333"), StrCat({arg1, arg2, arg3}));
+  EXPECT_EQ(u"", StrCat({std::u16string()}));
+  EXPECT_EQ(u"1", StrCat({arg1}));
+  EXPECT_EQ(u"122", StrCat({arg1, arg2}));
+  EXPECT_EQ(u"122333", StrCat({arg1, arg2, arg3}));
 }
 
 TEST(StrAppend, 8Bit) {
@@ -45,23 +45,23 @@ TEST(StrAppend, 8Bit) {
 }
 
 TEST(StrAppend, 16Bit) {
-  std::u16string arg1 = ASCIIToUTF16("1");
-  std::u16string arg2 = ASCIIToUTF16("22");
-  std::u16string arg3 = ASCIIToUTF16("333");
+  std::u16string arg1 = u"1";
+  std::u16string arg2 = u"22";
+  std::u16string arg3 = u"333";
 
   std::u16string result;
 
-  result = ASCIIToUTF16("foo");
+  result = u"foo";
   StrAppend(&result, {std::u16string()});
-  EXPECT_EQ(ASCIIToUTF16("foo"), result);
+  EXPECT_EQ(u"foo", result);
 
-  result = ASCIIToUTF16("foo");
+  result = u"foo";
   StrAppend(&result, {arg1});
-  EXPECT_EQ(ASCIIToUTF16("foo1"), result);
+  EXPECT_EQ(u"foo1", result);
 
-  result = ASCIIToUTF16("foo");
+  result = u"foo";
   StrAppend(&result, {arg1, arg2, arg3});
-  EXPECT_EQ(ASCIIToUTF16("foo122333"), result);
+  EXPECT_EQ(u"foo122333", result);
 }
 
 TEST(StrAppendT, ReserveAdditionalIfNeeded) {

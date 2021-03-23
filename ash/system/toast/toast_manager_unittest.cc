@@ -182,17 +182,17 @@ TEST_F(ToastManagerImplTest, DISABLED_QueueMessage) {
   ShowToast("DUMMY3", 10);
 
   EXPECT_EQ(1, GetToastSerial());
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY1"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY1", GetCurrentText());
 
   while (GetToastSerial() != 2)
     base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY2"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY2", GetCurrentText());
 
   while (GetToastSerial() != 3)
     base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("DUMMY3"), GetCurrentText());
+  EXPECT_EQ(u"DUMMY3", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, PositionWithVisibleBottomShelf) {
@@ -426,15 +426,15 @@ TEST_F(ToastManagerImplTest, CancelToast) {
   std::string id3 = ShowToast("TEXT3", ToastData::kInfiniteDuration);
 
   // Confirm that the first toast is shown.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
   // Cancel the queued toast.
   CancelToast(id2);
   // Confirm that the shown toast is still visible.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
   // Cancel the shown toast.
   CancelToast(id1);
   // Confirm that the next toast is visible.
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT3"), GetCurrentText());
+  EXPECT_EQ(u"TEXT3", GetCurrentText());
   // Cancel the shown toast.
   CancelToast(id3);
   // Confirm that the shown toast disappears.
@@ -455,7 +455,7 @@ TEST_F(ToastManagerImplTest, ShowToastOnLockScreen) {
   // Simulate device unlock.
   ChangeLockState(false);
   EXPECT_TRUE(GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, ShowSupportedToastOnLockScreen) {
@@ -467,13 +467,13 @@ TEST_F(ToastManagerImplTest, ShowSupportedToastOnLockScreen) {
                               /*visible_on_lock_screen=*/true);
   // Confirm it's visible and not queued.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device unlock.
   ChangeLockState(false);
   // Confirm that the toast is still visible.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, DeferToastByLockScreen) {
@@ -481,19 +481,19 @@ TEST_F(ToastManagerImplTest, DeferToastByLockScreen) {
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/true);
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device lock.
   ChangeLockState(true);
   // Confirm that it gets hidden.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device unlock.
   ChangeLockState(false);
   // Confirm that it gets visible again.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
@@ -501,7 +501,7 @@ TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
   std::string id1 = ShowToast("TEXT1", ToastData::kInfiniteDuration,
                               /*visible_on_lock_screen=*/false);
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 
   // Simulate device lock.
   ChangeLockState(true);
@@ -512,7 +512,7 @@ TEST_F(ToastManagerImplTest, NotDeferToastForLockScreen) {
   ChangeLockState(false);
   // Confirm that it gets visible again.
   EXPECT_NE(nullptr, GetCurrentOverlay());
-  EXPECT_EQ(base::ASCIIToUTF16("TEXT1"), GetCurrentText());
+  EXPECT_EQ(u"TEXT1", GetCurrentText());
 }
 
 }  // namespace ash

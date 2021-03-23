@@ -27,9 +27,8 @@ bool ParseVmsFilename(const std::u16string& raw_filename,
                       FtpDirectoryListingEntry::Type* type) {
   // On VMS, the files and directories are versioned. The version number is
   // separated from the file name by a semicolon. Example: ANNOUNCE.TXT;2.
-  std::vector<std::u16string> listing_parts =
-      base::SplitString(raw_filename, base::ASCIIToUTF16(";"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> listing_parts = base::SplitString(
+      raw_filename, u";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (listing_parts.size() != 2)
     return false;
   int version_number;
@@ -42,9 +41,8 @@ bool ParseVmsFilename(const std::u16string& raw_filename,
   // for directories; it's awkward for non-VMS users. Also, VMS is
   // case-insensitive, but generally uses uppercase characters. This may look
   // awkward, so we convert them to lower case.
-  std::vector<std::u16string> filename_parts =
-      base::SplitString(listing_parts[0], base::ASCIIToUTF16("."),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> filename_parts = base::SplitString(
+      listing_parts[0], u".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (filename_parts.size() != 2)
     return false;
   if (base::EqualsASCII(filename_parts[1], "DIR")) {
@@ -76,7 +74,7 @@ bool ApproximateFilesizeFromBlockCount(int64_t num_blocks, int64_t* out_size) {
 }
 
 bool ParseVmsFilesize(const std::u16string& input, int64_t* size) {
-  if (base::ContainsOnlyChars(input, base::ASCIIToUTF16("*"))) {
+  if (base::ContainsOnlyChars(input, u"*")) {
     // Response consisting of asterisks means unknown size.
     *size = -1;
     return true;
@@ -86,9 +84,8 @@ bool ParseVmsFilesize(const std::u16string& input, int64_t* size) {
   if (base::StringToInt64(input, &num_blocks))
     return ApproximateFilesizeFromBlockCount(num_blocks, size);
 
-  std::vector<base::StringPiece16> parts =
-      base::SplitStringPiece(input, base::ASCIIToUTF16("/"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> parts = base::SplitStringPiece(
+      input, u"/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2)
     return false;
 
@@ -130,8 +127,8 @@ bool LooksLikeVmsFileProtectionListing(const std::u16string& input) {
   // We expect four parts of the file protection listing: for System, Owner,
   // Group, and World.
   std::vector<std::u16string> parts = base::SplitString(
-      base::StringPiece16(input).substr(1, input.length() - 2),
-      base::ASCIIToUTF16(","), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      base::StringPiece16(input).substr(1, input.length() - 2), u",",
+      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 4)
     return false;
 
@@ -171,9 +168,8 @@ bool VmsDateListingToTime(const std::vector<std::u16string>& columns,
   base::Time::Exploded time_exploded = { 0 };
 
   // Date should be in format DD-MMM-YYYY.
-  std::vector<base::StringPiece16> date_parts =
-      base::SplitStringPiece(columns[2], base::ASCIIToUTF16("-"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> date_parts = base::SplitStringPiece(
+      columns[2], u"-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (date_parts.size() != 3)
     return false;
   if (!base::StringToInt(date_parts[0], &time_exploded.day_of_month))
@@ -193,9 +189,8 @@ bool VmsDateListingToTime(const std::vector<std::u16string>& columns,
     time_column = time_column.substr(0, 5);
   if (time_column.length() != 5)
     return false;
-  std::vector<base::StringPiece16> time_parts =
-      base::SplitStringPiece(time_column, base::ASCIIToUTF16(":"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<base::StringPiece16> time_parts = base::SplitStringPiece(
+      time_column, u":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (time_parts.size() != 2)
     return false;
   if (!base::StringToInt(time_parts[0], &time_exploded.hour))
@@ -222,7 +217,7 @@ bool ParseFtpDirectoryListingVms(
   // to distinguish it from "ls -l" format).
   bool seen_error = false;
 
-  std::u16string total_of = base::ASCIIToUTF16("Total of ");
+  std::u16string total_of = u"Total of ";
   char16_t space[2] = {' ', 0};
   for (size_t i = 0; i < lines.size(); i++) {
     if (lines[i].empty())

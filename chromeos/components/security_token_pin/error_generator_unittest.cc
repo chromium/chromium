@@ -35,14 +35,14 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, NoError) {
 TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPin) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/-1,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Invalid PIN."));
+            u"Invalid PIN.");
 }
 
 // Tests the message for the kInvalidPuk error.
 TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPuk) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPuk, /*attempts_left=*/-1,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Invalid PUK."));
+            u"Invalid PUK.");
 }
 
 // Tests the message for the kMaxAttemptsExceeded error.
@@ -50,7 +50,7 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, MaxAttemptsExceeded) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kMaxAttemptsExceeded,
                                  /*attempts_left=*/-1,
                                  /*accept_input=*/false),
-            base::ASCIIToUTF16("Maximum allowed attempts exceeded."));
+            u"Maximum allowed attempts exceeded.");
 }
 
 // Tests the message for the kMaxAttemptsExceeded error with the zero number of
@@ -59,24 +59,24 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, MaxAttemptsExceededZeroAttempts) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kMaxAttemptsExceeded,
                                  /*attempts_left=*/0,
                                  /*accept_input=*/false),
-            base::ASCIIToUTF16("Maximum allowed attempts exceeded."));
+            u"Maximum allowed attempts exceeded.");
 }
 
 // Tests the message for the kUnknown error.
 TEST_F(SecurityTokenPinErrorGeneratorTest, UnknownError) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kUnknown, /*attempts_left=*/-1,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Unknown error."));
+            u"Unknown error.");
 }
 
 // Tests the message when the number of attempts left is given.
 TEST_F(SecurityTokenPinErrorGeneratorTest, Attempts) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/1,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("1 attempt left"));
+            u"1 attempt left");
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/3,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("3 attempts left"));
+            u"3 attempts left");
 }
 
 // Tests that an empty message is returned when the number of attempts is given
@@ -91,10 +91,10 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, HiddenAttempts) {
 TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPinWithAttempts) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/1,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Invalid PIN. 1 attempt left"));
+            u"Invalid PIN. 1 attempt left");
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/3,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Invalid PIN. 3 attempts left"));
+            u"Invalid PIN. 3 attempts left");
 }
 
 // Tests the message for the kInvalidPin error with such a number of attempts
@@ -102,7 +102,7 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPinWithAttempts) {
 TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPinWithHiddenAttempts) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/4,
                                  /*accept_input=*/true),
-            base::ASCIIToUTF16("Invalid PIN."));
+            u"Invalid PIN.");
 }
 
 }  // namespace security_token_pin

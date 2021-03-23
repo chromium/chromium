@@ -85,7 +85,7 @@ class QuickAnswersViewsTest : public AshTestBase {
   void CreateAndShowBasicMenu() {
     menu_delegate_ = std::make_unique<views::Label>();
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(menu_delegate_.get());
-    menu_model_->AddItem(0, base::ASCIIToUTF16("Menu item"));
+    menu_model_->AddItem(0, u"Menu item");
     menu_runner_ = std::make_unique<views::MenuRunner>(
         menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
     menu_parent_ = CreateTestWidget();

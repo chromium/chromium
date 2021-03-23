@@ -152,17 +152,17 @@ namespace net {
 
 namespace {
 
-const std::u16string kBar(ASCIIToUTF16("bar"));
-const std::u16string kBar2(ASCIIToUTF16("bar2"));
-const std::u16string kBar3(ASCIIToUTF16("bar3"));
-const std::u16string kBaz(ASCIIToUTF16("baz"));
-const std::u16string kFirst(ASCIIToUTF16("first"));
-const std::u16string kFoo(ASCIIToUTF16("foo"));
-const std::u16string kFoo2(ASCIIToUTF16("foo2"));
-const std::u16string kFoo3(ASCIIToUTF16("foo3"));
-const std::u16string kFou(ASCIIToUTF16("fou"));
-const std::u16string kSecond(ASCIIToUTF16("second"));
-const std::u16string kWrongPassword(ASCIIToUTF16("wrongpassword"));
+const std::u16string kBar(u"bar");
+const std::u16string kBar2(u"bar2");
+const std::u16string kBar3(u"bar3");
+const std::u16string kBaz(u"baz");
+const std::u16string kFirst(u"first");
+const std::u16string kFoo(u"foo");
+const std::u16string kFoo2(u"foo2");
+const std::u16string kFoo3(u"foo3");
+const std::u16string kFou(u"fou");
+const std::u16string kSecond(u"second");
+const std::u16string kWrongPassword(u"wrongpassword");
 
 const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
@@ -21855,8 +21855,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverything) {
   EXPECT_TRUE(
       CheckBasicSecureProxyAuth(trans->GetResponseInfo()->auth_challenge));
   rv = callback.GetResult(trans->RestartWithAuth(
-      AuthCredentials(ASCIIToUTF16("proxyuser"), ASCIIToUTF16("proxypass")),
-      callback.callback()));
+      AuthCredentials(u"proxyuser", u"proxypass"), callback.callback()));
 
   // Handle the origin client certificate challenge.
   ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
@@ -21875,8 +21874,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverything) {
   EXPECT_TRUE(
       CheckBasicSecureServerAuth(trans->GetResponseInfo()->auth_challenge));
   rv = callback.GetResult(trans->RestartWithAuth(
-      AuthCredentials(ASCIIToUTF16("user"), ASCIIToUTF16("pass")),
-      callback.callback()));
+      AuthCredentials(u"user", u"pass"), callback.callback()));
 
   // The request completes.
   ASSERT_THAT(rv, IsOk());
@@ -22098,8 +22096,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverythingWithConnectClose) {
   EXPECT_TRUE(
       CheckBasicSecureProxyAuth(trans->GetResponseInfo()->auth_challenge));
   rv = callback.GetResult(trans->RestartWithAuth(
-      AuthCredentials(ASCIIToUTF16("proxyuser"), ASCIIToUTF16("proxypass")),
-      callback.callback()));
+      AuthCredentials(u"proxyuser", u"proxypass"), callback.callback()));
 
   // Handle the origin client certificate challenge.
   ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
@@ -22118,8 +22115,7 @@ TEST_F(HttpNetworkTransactionTest, AuthEverythingWithConnectClose) {
   EXPECT_TRUE(
       CheckBasicSecureServerAuth(trans->GetResponseInfo()->auth_challenge));
   rv = callback.GetResult(trans->RestartWithAuth(
-      AuthCredentials(ASCIIToUTF16("user"), ASCIIToUTF16("pass")),
-      callback.callback()));
+      AuthCredentials(u"user", u"pass"), callback.callback()));
 
   // The request completes.
   ASSERT_THAT(rv, IsOk());
@@ -22229,8 +22225,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyHTTPAndServerTLSAuth) {
   EXPECT_TRUE(
       CheckBasicSecureProxyAuth(trans->GetResponseInfo()->auth_challenge));
   rv = callback.GetResult(trans->RestartWithAuth(
-      AuthCredentials(ASCIIToUTF16("proxyuser"), ASCIIToUTF16("proxypass")),
-      callback.callback()));
+      AuthCredentials(u"proxyuser", u"proxypass"), callback.callback()));
 
   // Handle the origin client certificate challenge.
   ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));

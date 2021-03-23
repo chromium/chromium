@@ -70,12 +70,12 @@ TEST_F(MediaImageManagerTest, PickImageFromMimeType) {
   std::vector<MediaImage> images;
 
   MediaImage image1;
-  image1.type = base::ASCIIToUTF16("image/bmp");
+  image1.type = u"image/bmp";
   image1.sizes.push_back(gfx::Size(kIdealSize, kIdealSize));
   images.push_back(image1);
 
   MediaImage image2;
-  image2.type = base::ASCIIToUTF16("image/png");
+  image2.type = u"image/png";
   image2.sizes.push_back(gfx::Size(kIdealSize, kIdealSize));
   images.push_back(image2);
 

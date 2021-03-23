@@ -17,17 +17,17 @@ namespace net {
 
 namespace {
 
-const std::u16string kBogus(ASCIIToUTF16("bogus"));
-const std::u16string kOthername(ASCIIToUTF16("othername"));
-const std::u16string kOtherword(ASCIIToUTF16("otherword"));
-const std::u16string kPassword(ASCIIToUTF16("password"));
-const std::u16string kPassword1(ASCIIToUTF16("password1"));
-const std::u16string kPassword2(ASCIIToUTF16("password2"));
-const std::u16string kPassword3(ASCIIToUTF16("password3"));
-const std::u16string kUsername(ASCIIToUTF16("username"));
-const std::u16string kUsername1(ASCIIToUTF16("username1"));
-const std::u16string kUsername2(ASCIIToUTF16("username2"));
-const std::u16string kUsername3(ASCIIToUTF16("username3"));
+const std::u16string kBogus(u"bogus");
+const std::u16string kOthername(u"othername");
+const std::u16string kOtherword(u"otherword");
+const std::u16string kPassword(u"password");
+const std::u16string kPassword1(u"password1");
+const std::u16string kPassword2(u"password2");
+const std::u16string kPassword3(u"password3");
+const std::u16string kUsername(u"username");
+const std::u16string kUsername1(u"username1");
+const std::u16string kUsername2(u"username2");
+const std::u16string kUsername3(u"username3");
 
 }  // namespace
 

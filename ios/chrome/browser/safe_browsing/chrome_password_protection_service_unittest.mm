@@ -361,8 +361,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyRemovePhishedSavedPasswordCredential) {
   service_->SetIsIncognito(false);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", base::ASCIIToUTF16("username1")},
-      {"http://2.example.test", base::ASCIIToUTF16("username2")}};
+      {"http://example.test", u"username1"},
+      {"http://2.example.test", u"username2"}};
 
   EXPECT_CALL(*GetProfilePasswordStore(),
               RemoveInsecureCredentialsImpl(

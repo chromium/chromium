@@ -138,8 +138,7 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   suggestion_result->set_is_omnibox_search(true);
   suggestion_result->set_display_type(ash::SearchResultDisplayType::kList);
   SearchResultActions actions;
-  actions.push_back(SearchResultAction(gfx::ImageSkia(),
-                                       base::ASCIIToUTF16("Remove"),
+  actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
                                        true /*visible_on_hover*/));
   suggestion_result->SetActions(actions);
 
@@ -4610,7 +4609,7 @@ TEST_F(AppListPresenterDelegateTest, SearchBoxTextfieldGestureTap) {
   // Set the text of the search box textfield.
   views::Textfield* textfield =
       GetAppListView()->search_box_view()->search_box();
-  textfield->SetText(base::ASCIIToUTF16("Test search box string"));
+  textfield->SetText(u"Test search box string");
 
   // The textfield's cursor position should start out at the end of the string.
   size_t initial_cursor_position = textfield->GetCursorPosition();

@@ -110,35 +110,28 @@ TEST(StringSearchTest, ASCII) {
   if (locale_is_posix)
     SetICUDefaultLocale("en_US");
 
-  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("hello"), ASCIIToUTF16("hello world"),
-                           0U, 5U);
+  EXPECT_MATCH_IGNORE_CASE(u"hello", u"hello world", 0U, 5U);
 
-  EXPECT_MISS_IGNORE_CASE(ASCIIToUTF16("h    e l l o"),
-                          ASCIIToUTF16("h   e l l o"));
+  EXPECT_MISS_IGNORE_CASE(u"h    e l l o", u"h   e l l o");
 
-  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("aabaaa"), ASCIIToUTF16("aaabaabaaa"),
-                           4U, 6U);
+  EXPECT_MATCH_IGNORE_CASE(u"aabaaa", u"aaabaabaaa", 4U, 6U);
 
-  EXPECT_MISS_IGNORE_CASE(ASCIIToUTF16("searching within empty string"),
-                          std::u16string());
+  EXPECT_MISS_IGNORE_CASE(u"searching within empty string", std::u16string());
 
-  EXPECT_MATCH_IGNORE_CASE(std::u16string(),
-                           ASCIIToUTF16("searching for empty string"), 0U, 0U);
+  EXPECT_MATCH_IGNORE_CASE(std::u16string(), u"searching for empty string", 0U,
+                           0U);
 
-  EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("case insensitivity"),
-                           ASCIIToUTF16("CaSe InSeNsItIvItY"), 0U, 18U);
+  EXPECT_MATCH_IGNORE_CASE(u"case insensitivity", u"CaSe InSeNsItIvItY", 0U,
+                           18U);
 
-  EXPECT_MATCH_SENSITIVE(ASCIIToUTF16("aabaaa"), ASCIIToUTF16("aaabaabaaa"), 4U,
-                         6U);
+  EXPECT_MATCH_SENSITIVE(u"aabaaa", u"aaabaabaaa", 4U, 6U);
 
-  EXPECT_MISS_SENSITIVE(ASCIIToUTF16("searching within empty string"),
-                        std::u16string());
+  EXPECT_MISS_SENSITIVE(u"searching within empty string", std::u16string());
 
-  EXPECT_MATCH_SENSITIVE(std::u16string(),
-                         ASCIIToUTF16("searching for empty string"), 0U, 0U);
+  EXPECT_MATCH_SENSITIVE(std::u16string(), u"searching for empty string", 0U,
+                         0U);
 
-  EXPECT_MISS_SENSITIVE(ASCIIToUTF16("case insensitivity"),
-                        ASCIIToUTF16("CaSe InSeNsItIvItY"));
+  EXPECT_MISS_SENSITIVE(u"case insensitivity", u"CaSe InSeNsItIvItY");
 
   if (locale_is_posix)
     SetICUDefaultLocale(default_locale.data());
@@ -294,11 +287,9 @@ TEST(StringSearchTest, SearchBackwards) {
   if (locale_is_posix)
     SetICUDefaultLocale("en_US");
 
-  EXPECT_MATCH_IGNORE_CASE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("ABAB"),
-                                     2U, 2U);
-  EXPECT_MATCH_SENSITIVE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("abab"), 2U,
-                                   2U);
-  EXPECT_MISS_SENSITIVE_BACKWARDS(ASCIIToUTF16("ab"), ASCIIToUTF16("ABAB"));
+  EXPECT_MATCH_IGNORE_CASE_BACKWARDS(u"ab", u"ABAB", 2U, 2U);
+  EXPECT_MATCH_SENSITIVE_BACKWARDS(u"ab", u"abab", 2U, 2U);
+  EXPECT_MISS_SENSITIVE_BACKWARDS(u"ab", u"ABAB");
 
   if (locale_is_posix)
     SetICUDefaultLocale(default_locale.data());
@@ -314,26 +305,26 @@ TEST(StringSearchTest, FixedPatternMultipleSearch) {
   size_t length = 0;
 
   // Search "foo" over multiple texts.
-  FixedPatternStringSearch query1(ASCIIToUTF16("foo"), true);
-  EXPECT_TRUE(query1.Search(ASCIIToUTF16("12foo34"), &index, &length, true));
+  FixedPatternStringSearch query1(u"foo", true);
+  EXPECT_TRUE(query1.Search(u"12foo34", &index, &length, true));
   EXPECT_EQ(2U, index);
   EXPECT_EQ(3U, length);
-  EXPECT_FALSE(query1.Search(ASCIIToUTF16("bye"), &index, &length, true));
-  EXPECT_FALSE(query1.Search(ASCIIToUTF16("FOO"), &index, &length, true));
-  EXPECT_TRUE(query1.Search(ASCIIToUTF16("foobarfoo"), &index, &length, true));
+  EXPECT_FALSE(query1.Search(u"bye", &index, &length, true));
+  EXPECT_FALSE(query1.Search(u"FOO", &index, &length, true));
+  EXPECT_TRUE(query1.Search(u"foobarfoo", &index, &length, true));
   EXPECT_EQ(0U, index);
   EXPECT_EQ(3U, length);
-  EXPECT_TRUE(query1.Search(ASCIIToUTF16("foobarfoo"), &index, &length, false));
+  EXPECT_TRUE(query1.Search(u"foobarfoo", &index, &length, false));
   EXPECT_EQ(6U, index);
   EXPECT_EQ(3U, length);
 
   // Search "hello" over multiple texts.
-  FixedPatternStringSearchIgnoringCaseAndAccents query2(ASCIIToUTF16("hello"));
-  EXPECT_TRUE(query2.Search(ASCIIToUTF16("12hello34"), &index, &length));
+  FixedPatternStringSearchIgnoringCaseAndAccents query2(u"hello");
+  EXPECT_TRUE(query2.Search(u"12hello34", &index, &length));
   EXPECT_EQ(2U, index);
   EXPECT_EQ(5U, length);
-  EXPECT_FALSE(query2.Search(ASCIIToUTF16("bye"), &index, &length));
-  EXPECT_TRUE(query2.Search(ASCIIToUTF16("hELLo"), &index, &length));
+  EXPECT_FALSE(query2.Search(u"bye", &index, &length));
+  EXPECT_TRUE(query2.Search(u"hELLo", &index, &length));
   EXPECT_EQ(0U, index);
   EXPECT_EQ(5U, length);
 

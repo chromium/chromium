@@ -84,7 +84,7 @@ const base::Value* FindKeyOfType(
   const base::Value* value = dict.FindKey(key);
   if (!value) {
     error_path_reversed->push_back(key);
-    *error = base::ASCIIToUTF16("Manifest key is required.");
+    *error = u"Manifest key is required.";
     return nullptr;
   }
 

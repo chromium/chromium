@@ -2650,8 +2650,8 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   // order of the most recently active window.
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
   auto win1 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-  win2->SetTitle(base::ASCIIToUTF16("win2"));
-  win1->SetTitle(base::ASCIIToUTF16("win1"));
+  win2->SetTitle(u"win2");
+  win1->SetTitle(u"win1");
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
@@ -2659,7 +2659,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win0 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-  win0->SetTitle(base::ASCIIToUTF16("win0"));
+  win0->SetTitle(u"win0");
 
   TestAccessibilityControllerClient client;
   const std::string kAllDesksSelected =
@@ -2764,8 +2764,8 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   // Create two desks with all two windows in the non-active desk.
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
   auto win0 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-  win1->SetTitle(base::ASCIIToUTF16("win1"));
-  win0->SetTitle(base::ASCIIToUTF16("win0"));
+  win1->SetTitle(u"win1");
+  win0->SetTitle(u"win0");
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());

@@ -54,7 +54,7 @@ ToplevelWindow::ToplevelWindow(const CreateParams& params)
   SetCanMaximize(params.can_maximize);
   SetCanMinimize(params.can_maximize);
   SetCanResize(params.can_resize);
-  SetTitle(base::ASCIIToUTF16("Examples: Toplevel Window"));
+  SetTitle(u"Examples: Toplevel Window");
 }
 
 ToplevelWindow::~ToplevelWindow() = default;

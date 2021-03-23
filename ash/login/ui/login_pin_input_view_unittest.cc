@@ -95,7 +95,7 @@ TEST_P(LoginPinInputViewTest, PressingReturnTriggersUnlockWithEmptyPin) {
   view_->SetAuthenticateWithEmptyPinOnReturnKey(true);
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   ASSERT_TRUE(submitted_pin_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16(""), *submitted_pin_);
+  EXPECT_EQ(u"", *submitted_pin_);
 }
 
 // Tests that ChromeVox announces "Enter your PIN" when the

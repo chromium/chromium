@@ -1561,8 +1561,7 @@ TEST_P(WebSocketStreamCreateBasicAuthTest, OnAuthRequiredSetAuth) {
   EXPECT_FALSE(stream_);
   EXPECT_FALSE(has_failed());
 
-  AuthCredentials credentials(base::ASCIIToUTF16("foo"),
-                              base::ASCIIToUTF16("baz"));
+  AuthCredentials credentials(u"foo", u"baz");
   std::move(on_auth_required_callback_).Run(&credentials);
 
   WaitUntilConnectDone();

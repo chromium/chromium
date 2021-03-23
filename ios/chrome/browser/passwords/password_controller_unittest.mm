@@ -465,10 +465,10 @@ PasswordForm MakeSimpleForm() {
   PasswordForm form;
   form.url = GURL("http://www.google.com/a/LoginAuth");
   form.action = GURL("http://www.google.com/a/Login");
-  form.username_element = ASCIIToUTF16("Username");
-  form.password_element = ASCIIToUTF16("Passwd");
-  form.username_value = ASCIIToUTF16("googleuser");
-  form.password_value = ASCIIToUTF16("p4ssword");
+  form.username_element = u"Username";
+  form.password_element = u"Passwd";
+  form.username_value = u"googleuser";
+  form.password_value = u"p4ssword";
   form.signon_realm = "http://www.google.com/";
   form.form_data = MakeSimpleFormData();
   return form;
@@ -1281,9 +1281,9 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
 
   EXPECT_EQ("http://www.google.com/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("googleuser"),
+  EXPECT_EQ(u"googleuser",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("p4ssword"),
+  EXPECT_EQ(u"p4ssword",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -1375,9 +1375,9 @@ TEST_F(PasswordControllerTest, TouchendAsSubmissionIndicator) {
 
     EXPECT_EQ("https://chromium.test/",
               form_manager_to_save->GetPendingCredentials().signon_realm);
-    EXPECT_EQ(ASCIIToUTF16("user1"),
+    EXPECT_EQ(u"user1",
               form_manager_to_save->GetPendingCredentials().username_value);
-    EXPECT_EQ(ASCIIToUTF16("password1"),
+    EXPECT_EQ(u"password1",
               form_manager_to_save->GetPendingCredentials().password_value);
 
     auto* form_manager =
@@ -1413,9 +1413,9 @@ TEST_F(PasswordControllerTest, SavingFromSameOriginIframe) {
       SysUTF8ToNSString("<html><body>Success</body></html>"));
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user1"),
+  EXPECT_EQ(u"user1",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("pw1"),
+  EXPECT_EQ(u"pw1",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -1711,9 +1711,9 @@ TEST_F(PasswordControllerTest, ShowingSavingPromptOnSuccessfulSubmission) {
   }));
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user1"),
+  EXPECT_EQ(u"user1",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("password1"),
+  EXPECT_EQ(u"password1",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -1807,9 +1807,9 @@ TEST_F(PasswordControllerTest, ShowingUpdatePromptOnSuccessfulSubmission) {
   }));
   EXPECT_EQ("http://www.google.com/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("googleuser"),
+  EXPECT_EQ(u"googleuser",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("new_password"),
+  EXPECT_EQ(u"new_password",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -1885,9 +1885,9 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
               WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
                 return form_manager_check != nullptr;
               }));
-          EXPECT_EQ(ASCIIToUTF16("user1"),
+          EXPECT_EQ(u"user1",
                     form_manager->GetPendingCredentials().username_value);
-          EXPECT_EQ(ASCIIToUTF16("password1"),
+          EXPECT_EQ(u"password1",
                     form_manager->GetPendingCredentials().password_value);
         }
         testing::Mock::VerifyAndClearExpectations(weak_client_);
@@ -1944,7 +1944,7 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
   auto& form_managers = passwordController_.passwordManager->form_managers();
   ASSERT_EQ(1u, form_managers.size());
   auto* password_form = form_managers[0]->observed_form();
-  EXPECT_EQ(ASCIIToUTF16("dynamic_form"), password_form->name);
+  EXPECT_EQ(u"dynamic_form", password_form->name);
 }
 
 // Tests that submission is detected on removal of the form that had user input.
@@ -1974,9 +1974,9 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
   }));
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user1"),
+  EXPECT_EQ(u"user1",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("password1"),
+  EXPECT_EQ(u"password1",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -2058,9 +2058,9 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
 
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user1"),
+  EXPECT_EQ(u"user1",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("password1"),
+  EXPECT_EQ(u"password1",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -2366,10 +2366,8 @@ TEST_F(PasswordControllerTest, SavingPasswordsOutsideTheFormTag) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
     return form_manager != nullptr;
   }));
-  EXPECT_EQ(ASCIIToUTF16("user1"),
-            form_manager->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("password1"),
-            form_manager->GetPendingCredentials().password_value);
+  EXPECT_EQ(u"user1", form_manager->GetPendingCredentials().username_value);
+  EXPECT_EQ(u"password1", form_manager->GetPendingCredentials().password_value);
 }
 
 // Tests that submission is detected on change password form clearing.
@@ -2420,9 +2418,9 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
   }));
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user"),
+  EXPECT_EQ(u"user",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("newpw"),
+  EXPECT_EQ(u"newpw",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =
@@ -2477,9 +2475,9 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormlessFieldsClearing) {
   }));
   EXPECT_EQ("https://chromium.test/",
             form_manager_to_save->GetPendingCredentials().signon_realm);
-  EXPECT_EQ(ASCIIToUTF16("user"),
+  EXPECT_EQ(u"user",
             form_manager_to_save->GetPendingCredentials().username_value);
-  EXPECT_EQ(ASCIIToUTF16("newpw"),
+  EXPECT_EQ(u"newpw",
             form_manager_to_save->GetPendingCredentials().password_value);
 
   auto* form_manager =

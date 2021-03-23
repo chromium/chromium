@@ -51,8 +51,8 @@ std::unique_ptr<ui::SimpleMenuModel>
 AppListTestModel::AppListTestItem::CreateContextMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(
       nullptr /*no SimpleMenuModelDelegate for tests*/);
-  menu_model->AddItem(0, base::ASCIIToUTF16("0"));
-  menu_model->AddItem(1, base::ASCIIToUTF16("1"));
+  menu_model->AddItem(0, u"0");
+  menu_model->AddItem(1, u"1");
   return menu_model;
 }
 

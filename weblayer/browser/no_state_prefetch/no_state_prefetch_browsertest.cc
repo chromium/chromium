@@ -171,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   // Navigate to the prerendered page and wait for its title to change.
   script_fetched_ = false;
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
 
   EXPECT_FALSE(script_fetched_);
   EXPECT_TRUE(script_executed_);
@@ -187,8 +186,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
   script_resource_fetched_->Run();
 
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
 
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::NoStatePrefetch::kEntryName);
@@ -239,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_ExternalPrerender) {
   // Navigate to the prerendered page and wait for its title to change.
   script_fetched_ = false;
   NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/prerendered_page.html")),
-      base::ASCIIToUTF16("Prefetch Page"));
+      GURL(https_server_->GetURL("/prerendered_page.html")), u"Prefetch Page");
   EXPECT_FALSE(script_fetched_);
 }
 

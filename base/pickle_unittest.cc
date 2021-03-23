@@ -31,7 +31,7 @@ const float testfloat = 3.1415926935f;
 const double testdouble = 2.71828182845904523;
 const std::string teststring("Hello world");  // note non-aligned string length
 const std::wstring testwstring(L"Hello, world");
-const std::u16string teststring16(ASCIIToUTF16("Hello, world"));
+const std::u16string teststring16(u"Hello, world");
 const char testrawstring[] = "Hello new world"; // Test raw string writing
 // Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
 const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};

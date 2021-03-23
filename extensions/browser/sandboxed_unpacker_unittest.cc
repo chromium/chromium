@@ -339,9 +339,8 @@ TEST_F(SandboxedUnpackerTest, MissingMessagesFile) {
   SetupUnpacker("missing_messages_file.crx", "");
   EXPECT_TRUE(base::MatchPattern(
       GetInstallErrorMessage(),
-      base::ASCIIToUTF16("*") +
-          base::ASCIIToUTF16(manifest_errors::kLocalesMessagesFileMissing) +
-          base::ASCIIToUTF16("*_locales?en_US?messages.json'.")))
+      u"*" + base::ASCIIToUTF16(manifest_errors::kLocalesMessagesFileMissing) +
+          u"*_locales?en_US?messages.json'."))
       << GetInstallErrorMessage();
   ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
             GetInstallErrorType());

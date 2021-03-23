@@ -80,8 +80,8 @@ class MediaNotificationControllerImplTest : public AshTestBase {
 
   media_session::MediaMetadata BuildMediaMetadata() {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     return metadata;
   }
 
@@ -315,7 +315,7 @@ TEST_F(MediaNotificationControllerImplTest, MediaMetadata_NoTitle) {
       GetRequestStateWithId(id));
 
   media_session::MediaMetadata metadata;
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.artist = u"artist";
 
   Shell::Get()
       ->media_notification_controller()

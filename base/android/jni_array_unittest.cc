@@ -183,10 +183,7 @@ void CheckFloatConversion(
 
 TEST(JniArray, ArrayOfStringArrayConversion) {
   std::vector<std::vector<std::u16string>> kArrays = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
-      {},
-      {ASCIIToUTF16("")}};
+      {u"a", u"f"}, {u"a", u""}, {}, {u""}};
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
@@ -430,10 +427,7 @@ TEST(JniArray, JavaArrayOfByteArrayToBytesVector) {
 
 TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
   const std::vector<std::vector<std::u16string>> kArrays = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
-      {},
-      {ASCIIToUTF16("")}};
+      {u"a", u"f"}, {u"a", u""}, {}, {u""}};
 
   JNIEnv* env = AttachCurrentThread();
 

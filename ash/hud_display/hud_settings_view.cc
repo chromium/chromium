@@ -232,7 +232,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
 
   views::Label* title = AddChildView(std::make_unique<views::Label>(
-      base::ASCIIToUTF16("Animation speed:"), views::style::CONTEXT_LABEL));
+      u"Animation speed:", views::style::CONTEXT_LABEL));
   title->SetAutoColorReadabilityEnabled(false);
   title->SetEnabledColor(kHUDDefaultColor);
 
@@ -256,18 +256,12 @@ AnimationSpeedControl::AnimationSpeedControl() {
     multipliers.push_back(multiplier);
   };
 
-  add_speed_point(this, hints_container_, multipliers, 0,
-                  base::ASCIIToUTF16("0"));
-  add_speed_point(this, hints_container_, multipliers, 0.5,
-                  base::ASCIIToUTF16("0.5"));
-  add_speed_point(this, hints_container_, multipliers, 1,
-                  base::ASCIIToUTF16("1"));
-  add_speed_point(this, hints_container_, multipliers, 2,
-                  base::ASCIIToUTF16("2"));
-  add_speed_point(this, hints_container_, multipliers, 4,
-                  base::ASCIIToUTF16("4"));
-  add_speed_point(this, hints_container_, multipliers, 10,
-                  base::ASCIIToUTF16("10"));
+  add_speed_point(this, hints_container_, multipliers, 0, u"0");
+  add_speed_point(this, hints_container_, multipliers, 0.5, u"0.5");
+  add_speed_point(this, hints_container_, multipliers, 1, u"1");
+  add_speed_point(this, hints_container_, multipliers, 2, u"2");
+  add_speed_point(this, hints_container_, multipliers, 4, u"4");
+  add_speed_point(this, hints_container_, multipliers, 10, u"10");
 
   // Now we need to calculate discrete values for the slider and active slider
   // value.
@@ -396,8 +390,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
 
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
-          this, checkbox_container,
-          base::ASCIIToUTF16("Tint composited content"),
+          this, checkbox_container, u"Tint composited content",
           base::ASCIIToUTF16(
               "Equivalent to --tint-composited-content command-line option."),
           GetVisDebugHandleClickCallback(
@@ -406,8 +399,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           &viz::DebugRendererSettings::tint_composited_content)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
-          this, checkbox_container,
-          base::ASCIIToUTF16("Show overdraw feedback"),
+          this, checkbox_container, u"Show overdraw feedback",
           base::ASCIIToUTF16(
               "Equivalent to --show-overdraw-feedback command-line option."),
           GetVisDebugHandleClickCallback(
@@ -416,8 +408,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           &viz::DebugRendererSettings::show_overdraw_feedback)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
-          this, checkbox_container,
-          base::ASCIIToUTF16("Show aggregated damage"),
+          this, checkbox_container, u"Show aggregated damage",
           base::ASCIIToUTF16(
               "Equivalent to --show-aggregated-damage command-line option."),
           GetVisDebugHandleClickCallback(
@@ -426,7 +417,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
           &viz::DebugRendererSettings::show_aggregated_damage)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(
-          this, checkbox_container, base::ASCIIToUTF16("Show paint rect."),
+          this, checkbox_container, u"Show paint rect.",
           base::ASCIIToUTF16(
               "Equivalent to --ui-show-paint-rects command-line option."),
           GetCCDebugHandleClickCallback(
@@ -434,9 +425,8 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
       GetCCDebugUpdateStateCallback(
           &cc::LayerTreeDebugState::show_paint_rects)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
-      add_checkbox(this, checkbox_container,
-                   base::ASCIIToUTF16("HUD is overlay."),
-                   base::ASCIIToUTF16("Flips HUD overlay mode flag."),
+      add_checkbox(this, checkbox_container, u"HUD is overlay.",
+                   u"Flips HUD overlay mode flag.",
                    base::BindRepeating(
                        [](HUDDisplayView* hud_display, views::Checkbox*) {
                          hud_display->ToggleOverlay();
@@ -479,8 +469,7 @@ void HUDSettingsView::OnEnableUiDevToolsButtonPressed(const ui::Event& event) {
 
 void HUDSettingsView::UpdateDevToolsControlButtonLabel() {
   if (!Shell::Get()->shell_delegate()->IsUiDevToolsStarted()) {
-    ui_dev_tools_control_button_->SetText(
-        base::ASCIIToUTF16("Create Ui Dev Tools"));
+    ui_dev_tools_control_button_->SetText(u"Create Ui Dev Tools");
   } else {
     const int port = Shell::Get()->shell_delegate()->GetUiDevToolsPort();
     ui_dev_tools_control_button_->SetText(base::ASCIIToUTF16(

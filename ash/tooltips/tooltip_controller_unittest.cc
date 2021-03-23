@@ -104,14 +104,14 @@ TEST_F(TooltipControllerTest, HideTooltipWhenCursorHidden) {
   std::unique_ptr<views::Widget> widget(CreateNewWidgetOn(0));
   TooltipTestView* view = new TooltipTestView;
   AddViewToWidgetAndResize(widget.get(), view);
-  view->set_tooltip_text(base::ASCIIToUTF16("Tooltip Text"));
+  view->set_tooltip_text(u"Tooltip Text");
   EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(NULL, helper_->GetTooltipParentWindow());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
   generator.MoveMouseRelativeTo(widget->GetNativeView(),
                                 view->bounds().CenterPoint());
-  std::u16string expected_tooltip = base::ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = u"Tooltip Text";
 
   // Mouse event triggers tooltip update so it becomes visible.
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -138,14 +138,14 @@ TEST_F(TooltipControllerTest, TooltipsOnMultiDisplayShouldNotCrash) {
       CreateNewWidgetWithBoundsOn(0, gfx::Rect(10, 10, 100, 100)));
   TooltipTestView* view1 = new TooltipTestView;
   AddViewToWidgetAndResize(widget1.get(), view1);
-  view1->set_tooltip_text(base::ASCIIToUTF16("Tooltip Text for view 1"));
+  view1->set_tooltip_text(u"Tooltip Text for view 1");
   EXPECT_EQ(widget1->GetNativeView()->GetRootWindow(), root_windows[0]);
 
   std::unique_ptr<views::Widget> widget2(
       CreateNewWidgetWithBoundsOn(1, gfx::Rect(1200, 10, 100, 100)));
   TooltipTestView* view2 = new TooltipTestView;
   AddViewToWidgetAndResize(widget2.get(), view2);
-  view2->set_tooltip_text(base::ASCIIToUTF16("Tooltip Text for view 2"));
+  view2->set_tooltip_text(u"Tooltip Text for view 2");
   EXPECT_EQ(widget2->GetNativeView()->GetRootWindow(), root_windows[1]);
 
   // Show tooltip on second display.

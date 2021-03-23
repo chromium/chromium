@@ -24,7 +24,7 @@ class ErrorBuilder {
   // Appends a literal string |error|.
   void Append(base::StringPiece error) {
     if (!error_->empty())
-      error_->append(base::ASCIIToUTF16("; "));
+      error_->append(u"; ");
     error_->append(base::UTF8ToUTF16(error));
   }
 

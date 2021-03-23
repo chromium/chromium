@@ -59,8 +59,8 @@ CreateFormManager() {
   PasswordForm form_to_save;
   form_to_save.url = GURL("https://example.com/path");
   form_to_save.signon_realm = "https://example.com/";
-  form_to_save.username_value = ASCIIToUTF16("user1");
-  form_to_save.password_value = ASCIIToUTF16("pass1");
+  form_to_save.username_value = u"user1";
+  form_to_save.password_value = u"pass1";
   form_to_save.scheme = PasswordForm::Scheme::kHtml;
   form_to_save.type = PasswordForm::Type::kApi;
   MockDelegate delegate;

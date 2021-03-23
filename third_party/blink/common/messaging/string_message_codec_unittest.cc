@@ -80,7 +80,7 @@ std::vector<uint8_t> EncodeWithV8(const std::u16string& message) {
 }
 
 TEST(StringMessageCodecTest, SelfTest_ASCII) {
-  std::u16string message = base::ASCIIToUTF16("hello");
+  std::u16string message = u"hello";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
@@ -101,7 +101,7 @@ TEST(StringMessageCodecTest, SelfTest_NonASCIILongEnoughToForcePadding) {
 }
 
 TEST(StringMessageCodecTest, SelfToV8Test_ASCII) {
-  std::u16string message = base::ASCIIToUTF16("hello");
+  std::u16string message = u"hello";
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
@@ -116,7 +116,7 @@ TEST(StringMessageCodecTest, SelfToV8Test_NonASCIILongEnoughToForcePadding) {
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_ASCII) {
-  std::u16string message = base::ASCIIToUTF16("hello");
+  std::u16string message = u"hello";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);

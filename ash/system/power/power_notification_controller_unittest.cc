@@ -292,8 +292,7 @@ TEST_F(PowerNotificationControllerTest,
   ASSERT_TRUE(notification);
   EXPECT_TRUE(notification->never_timeout());
   EXPECT_FALSE(notification->pinned());
-  EXPECT_NE(std::string::npos,
-            notification->message().find(base::ASCIIToUTF16("60W")))
+  EXPECT_NE(std::string::npos, notification->message().find(u"60W"))
       << notification->message();
 }
 

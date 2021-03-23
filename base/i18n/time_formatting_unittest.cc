@@ -75,10 +75,10 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault12h) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  std::u16string clock24h(ASCIIToUTF16("15:42"));
-  std::u16string clock12h_pm(ASCIIToUTF16("3:42 PM"));
-  std::u16string clock12h(ASCIIToUTF16("3:42"));
-  std::u16string clock24h_millis(ASCIIToUTF16("15:42:07.000"));
+  std::u16string clock24h(u"15:42");
+  std::u16string clock12h_pm(u"3:42 PM");
+  std::u16string clock12h(u"3:42");
+  std::u16string clock24h_millis(u"15:42:07.000");
 
   // The default is 12h clock.
   EXPECT_EQ(clock12h_pm, TimeFormatTimeOfDay(time));
@@ -113,10 +113,10 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault24h) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  std::u16string clock24h(ASCIIToUTF16("15:42"));
-  std::u16string clock12h_pm(ASCIIToUTF16("3:42 pm"));
-  std::u16string clock12h(ASCIIToUTF16("3:42"));
-  std::u16string clock24h_millis(ASCIIToUTF16("15:42:07.000"));
+  std::u16string clock24h(u"15:42");
+  std::u16string clock12h_pm(u"3:42 pm");
+  std::u16string clock12h(u"3:42");
+  std::u16string clock24h_millis(u"15:42:07.000");
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -151,9 +151,9 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayJP) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock24h(u"15:42");
   std::u16string clock12h_pm(UTF8ToUTF16(u8"午後3:42"));
-  std::u16string clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock12h(u"3:42");
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -178,9 +178,9 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock24h(u"15:42");
   std::u16string clock12h_pm(u"3:42 PM");
-  std::u16string clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock12h(u"3:42");
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -215,11 +215,9 @@ TEST(TimeFormattingTest, TimeMonthYearInUTC) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  EXPECT_EQ(
-      ASCIIToUTF16("April 2011"),
-      TimeFormatMonthAndYear(time, /*time_zone=*/icu::TimeZone::getGMT()));
-  EXPECT_EQ(ASCIIToUTF16("April 2011"),
-            TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(
+                               time, /*time_zone=*/icu::TimeZone::getGMT()));
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
 
   const Time::Exploded kDiffMonthsForDiffTzTime = {
       2011, 4, 5, 1,  // Fri, Apr 1, 2011 UTC = Thurs, March 31, 2011 US PDT.
@@ -227,11 +225,9 @@ TEST(TimeFormattingTest, TimeMonthYearInUTC) {
   };
 
   EXPECT_TRUE(Time::FromUTCExploded(kDiffMonthsForDiffTzTime, &time));
-  EXPECT_EQ(
-      ASCIIToUTF16("April 2011"),
-      TimeFormatMonthAndYear(time, /*time_zone=*/icu::TimeZone::getGMT()));
-  EXPECT_EQ(ASCIIToUTF16("March 2011"),
-            TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(
+                               time, /*time_zone=*/icu::TimeZone::getGMT()));
+  EXPECT_EQ(u"March 2011", TimeFormatMonthAndYear(time, /*time_zone=*/nullptr));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -245,21 +241,19 @@ TEST(TimeFormattingTest, TimeFormatDateUS) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
 
-  EXPECT_EQ(ASCIIToUTF16("Apr 30, 2011"), TimeFormatShortDate(time));
-  EXPECT_EQ(ASCIIToUTF16("4/30/11"), TimeFormatShortDateNumeric(time));
+  EXPECT_EQ(u"Apr 30, 2011", TimeFormatShortDate(time));
+  EXPECT_EQ(u"4/30/11", TimeFormatShortDateNumeric(time));
 
-  EXPECT_EQ(ASCIIToUTF16("4/30/11, 3:42:07 PM"),
-            TimeFormatShortDateAndTime(time));
-  EXPECT_EQ(ASCIIToUTF16("4/30/11, 3:42:07 PM ") + GetShortTimeZone(time),
+  EXPECT_EQ(u"4/30/11, 3:42:07 PM", TimeFormatShortDateAndTime(time));
+  EXPECT_EQ(u"4/30/11, 3:42:07 PM " + GetShortTimeZone(time),
             TimeFormatShortDateAndTimeWithTimeZone(time));
 
-  EXPECT_EQ(ASCIIToUTF16("April 2011"), TimeFormatMonthAndYear(time));
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time));
 
-  EXPECT_EQ(ASCIIToUTF16("Saturday, April 30, 2011 at 3:42:07 PM"),
+  EXPECT_EQ(u"Saturday, April 30, 2011 at 3:42:07 PM",
             TimeFormatFriendlyDateAndTime(time));
 
-  EXPECT_EQ(ASCIIToUTF16("Saturday, April 30, 2011"),
-            TimeFormatFriendlyDate(time));
+  EXPECT_EQ(u"Saturday, April 30, 2011", TimeFormatFriendlyDate(time));
 }
 
 TEST(TimeFormattingTest, TimeFormatDateGB) {
@@ -272,17 +266,15 @@ TEST(TimeFormattingTest, TimeFormatDateGB) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
 
-  EXPECT_EQ(ASCIIToUTF16("30 Apr 2011"), TimeFormatShortDate(time));
-  EXPECT_EQ(ASCIIToUTF16("30/04/2011"), TimeFormatShortDateNumeric(time));
-  EXPECT_EQ(ASCIIToUTF16("30/04/2011, 15:42:07"),
-            TimeFormatShortDateAndTime(time));
-  EXPECT_EQ(ASCIIToUTF16("30/04/2011, 15:42:07 ") + GetShortTimeZone(time),
+  EXPECT_EQ(u"30 Apr 2011", TimeFormatShortDate(time));
+  EXPECT_EQ(u"30/04/2011", TimeFormatShortDateNumeric(time));
+  EXPECT_EQ(u"30/04/2011, 15:42:07", TimeFormatShortDateAndTime(time));
+  EXPECT_EQ(u"30/04/2011, 15:42:07 " + GetShortTimeZone(time),
             TimeFormatShortDateAndTimeWithTimeZone(time));
-  EXPECT_EQ(ASCIIToUTF16("April 2011"), TimeFormatMonthAndYear(time));
-  EXPECT_EQ(ASCIIToUTF16("Saturday, 30 April 2011 at 15:42:07"),
+  EXPECT_EQ(u"April 2011", TimeFormatMonthAndYear(time));
+  EXPECT_EQ(u"Saturday, 30 April 2011 at 15:42:07",
             TimeFormatFriendlyDateAndTime(time));
-  EXPECT_EQ(ASCIIToUTF16("Saturday, 30 April 2011"),
-            TimeFormatFriendlyDate(time));
+  EXPECT_EQ(u"Saturday, 30 April 2011", TimeFormatFriendlyDate(time));
 }
 
 TEST(TimeFormattingTest, TimeFormatWithPattern) {
@@ -293,14 +285,12 @@ TEST(TimeFormattingTest, TimeFormatWithPattern) {
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
 
   i18n::SetICUDefaultLocale("en_US");
-  EXPECT_EQ(ASCIIToUTF16("Apr 30, 2011"), TimeFormatWithPattern(time, "yMMMd"));
-  EXPECT_EQ(ASCIIToUTF16("April 30, 3:42:07 PM"),
-            TimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(u"Apr 30, 2011", TimeFormatWithPattern(time, "yMMMd"));
+  EXPECT_EQ(u"April 30, 3:42:07 PM", TimeFormatWithPattern(time, "MMMMdjmmss"));
 
   i18n::SetICUDefaultLocale("en_GB");
-  EXPECT_EQ(ASCIIToUTF16("30 Apr 2011"), TimeFormatWithPattern(time, "yMMMd"));
-  EXPECT_EQ(ASCIIToUTF16("30 April, 15:42:07"),
-            TimeFormatWithPattern(time, "MMMMdjmmss"));
+  EXPECT_EQ(u"30 Apr 2011", TimeFormatWithPattern(time, "yMMMd"));
+  EXPECT_EQ(u"30 April, 15:42:07", TimeFormatWithPattern(time, "MMMMdjmmss"));
 
   i18n::SetICUDefaultLocale("ja_JP");
   EXPECT_EQ(UTF8ToUTF16(u8"2011年4月30日"),
@@ -315,25 +305,22 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
 
   // US English.
   i18n::SetICUDefaultLocale("en_US");
-  EXPECT_EQ(ASCIIToUTF16("15 hours, 42 minutes"),
+  EXPECT_EQ(u"15 hours, 42 minutes",
             TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 hr, 42 min"),
+  EXPECT_EQ(u"15 hr, 42 min",
             TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15h 42m"),
-            TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));
-  EXPECT_EQ(ASCIIToUTF16("15:42"),
-            TimeDurationFormatString(delta, DURATION_WIDTH_NUMERIC));
+  EXPECT_EQ(u"15h 42m", TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));
+  EXPECT_EQ(u"15:42", TimeDurationFormatString(delta, DURATION_WIDTH_NUMERIC));
 
   // Danish, with Latin alphabet but different abbreviations and punctuation.
   i18n::SetICUDefaultLocale("da");
-  EXPECT_EQ(ASCIIToUTF16("15 timer og 42 minutter"),
+  EXPECT_EQ(u"15 timer og 42 minutter",
             TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 t. og 42 min."),
+  EXPECT_EQ(u"15 t. og 42 min.",
             TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15 t og 42 m"),
+  EXPECT_EQ(u"15 t og 42 m",
             TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));
-  EXPECT_EQ(ASCIIToUTF16("15.42"),
-            TimeDurationFormatString(delta, DURATION_WIDTH_NUMERIC));
+  EXPECT_EQ(u"15.42", TimeDurationFormatString(delta, DURATION_WIDTH_NUMERIC));
 
   // Persian, with non-Arabic numbers.
   i18n::SetICUDefaultLocale("fa");
@@ -362,44 +349,44 @@ TEST(TimeFormattingTest, TimeDurationFormatWithSeconds) {
 
   // Test different formats.
   TimeDelta delta = TimeDelta::FromSeconds(15 * 3600 + 42 * 60 + 30);
-  EXPECT_EQ(ASCIIToUTF16("15 hours, 42 minutes, 30 seconds"),
+  EXPECT_EQ(u"15 hours, 42 minutes, 30 seconds",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 hr, 42 min, 30 sec"),
+  EXPECT_EQ(u"15 hr, 42 min, 30 sec",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15h 42m 30s"),
+  EXPECT_EQ(u"15h 42m 30s",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
-  EXPECT_EQ(ASCIIToUTF16("15:42:30"),
+  EXPECT_EQ(u"15:42:30",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NUMERIC));
 
   // Test edge case when hour >= 100.
   delta = TimeDelta::FromSeconds(125 * 3600 + 42 * 60 + 30);
-  EXPECT_EQ(ASCIIToUTF16("125 hours, 42 minutes, 30 seconds"),
+  EXPECT_EQ(u"125 hours, 42 minutes, 30 seconds",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("125 hr, 42 min, 30 sec"),
+  EXPECT_EQ(u"125 hr, 42 min, 30 sec",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("125h 42m 30s"),
+  EXPECT_EQ(u"125h 42m 30s",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
 
   // Test edge case when minute = 0.
   delta = TimeDelta::FromSeconds(15 * 3600 + 0 * 60 + 30);
-  EXPECT_EQ(ASCIIToUTF16("15 hours, 0 minutes, 30 seconds"),
+  EXPECT_EQ(u"15 hours, 0 minutes, 30 seconds",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 hr, 0 min, 30 sec"),
+  EXPECT_EQ(u"15 hr, 0 min, 30 sec",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15h 0m 30s"),
+  EXPECT_EQ(u"15h 0m 30s",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
-  EXPECT_EQ(ASCIIToUTF16("15:00:30"),
+  EXPECT_EQ(u"15:00:30",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NUMERIC));
 
   // Test edge case when second = 0.
   delta = TimeDelta::FromSeconds(15 * 3600 + 42 * 60 + 0);
-  EXPECT_EQ(ASCIIToUTF16("15 hours, 42 minutes, 0 seconds"),
+  EXPECT_EQ(u"15 hours, 42 minutes, 0 seconds",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_WIDE));
-  EXPECT_EQ(ASCIIToUTF16("15 hr, 42 min, 0 sec"),
+  EXPECT_EQ(u"15 hr, 42 min, 0 sec",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_SHORT));
-  EXPECT_EQ(ASCIIToUTF16("15h 42m 0s"),
+  EXPECT_EQ(u"15h 42m 0s",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NARROW));
-  EXPECT_EQ(ASCIIToUTF16("15:42:00"),
+  EXPECT_EQ(u"15:42:00",
             TimeDurationFormatWithSecondsString(delta, DURATION_WIDTH_NUMERIC));
 }
 

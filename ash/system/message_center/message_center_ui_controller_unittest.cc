@@ -96,9 +96,8 @@ class MessageCenterUiControllerTest : public testing::Test {
     std::unique_ptr<message_center::Notification> notification(
         new message_center::Notification(
             message_center::NOTIFICATION_TYPE_SIMPLE, id,
-            ASCIIToUTF16("Test Web Notification"),
-            ASCIIToUTF16("Notification message body."), gfx::Image(),
-            ASCIIToUTF16("www.test.org"), GURL(), notifier_id,
+            u"Test Web Notification", u"Notification message body.",
+            gfx::Image(), u"www.test.org", GURL(), notifier_id,
             message_center::RichNotificationData(),
             new TestNotificationDelegate()));
     message_center::Notification* notification_ptr = notification.get();

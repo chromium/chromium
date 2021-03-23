@@ -139,7 +139,7 @@ std::unique_ptr<views::WidgetDelegateView> CreateModalWidgetDelegate() {
   delegate->SetCanResize(true);
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
   delegate->SetOwnedByWidget(true);
-  delegate->SetTitle(base::ASCIIToUTF16("Modal Window"));
+  delegate->SetTitle(u"Modal Window");
   return delegate;
 }
 
@@ -386,7 +386,7 @@ TEST_F(ShellTest, LockScreenClosesActiveMenu) {
   SimpleMenuDelegate menu_delegate;
   std::unique_ptr<ui::SimpleMenuModel> menu_model(
       new ui::SimpleMenuModel(&menu_delegate));
-  menu_model->AddItem(0, base::ASCIIToUTF16("Menu item"));
+  menu_model->AddItem(0, u"Menu item");
   views::Widget* widget = Shell::GetPrimaryRootWindowController()
                               ->wallpaper_widget_controller()
                               ->GetWidget();

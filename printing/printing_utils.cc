@@ -99,8 +99,7 @@ std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
       "\\", "/", "<", ">", ":", "\"", "'", "|", "?", "*", "~",
   };
   for (const char* c : kCharsToReplace) {
-    base::ReplaceChars(no_controls, base::ASCIIToUTF16(c),
-                       base::ASCIIToUTF16("_"), &no_controls);
+    base::ReplaceChars(no_controls, base::ASCIIToUTF16(c), u"_", &no_controls);
   }
 
   std::u16string result;
@@ -112,7 +111,7 @@ std::u16string FormatDocumentTitleWithOwnerAndLength(
     const std::u16string& owner,
     const std::u16string& title,
     size_t length) {
-  const std::u16string separator = base::ASCIIToUTF16(": ");
+  const std::u16string separator = u": ";
   DCHECK_LT(separator.size(), length);
 
   std::u16string short_title =

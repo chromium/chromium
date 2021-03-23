@@ -290,11 +290,11 @@ TEST_F(IPCFuzzingTest, SanityTest) {
 
   IPC::Message* msg = nullptr;
   int value = 43;
-  msg = new MsgClassIS(value, base::ASCIIToUTF16("expect 43"));
+  msg = new MsgClassIS(value, u"expect 43");
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassIS::ID));
 
-  msg = new MsgClassSI(base::ASCIIToUTF16("expect 44"), ++value);
+  msg = new MsgClassSI(u"expect 44", ++value);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(value, MsgClassSI::ID));
 
@@ -319,7 +319,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadShort) {
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMsgNotHandled(MsgClassIS::ID));
 
-  msg = new MsgClassSI(base::ASCIIToUTF16("expect one"), 1);
+  msg = new MsgClassSI(u"expect one", 1);
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(1, MsgClassSI::ID));
 
@@ -341,7 +341,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
 
   IPC::Message* msg = new IPC::Message(MSG_ROUTING_CONTROL, MsgClassSI::ID,
                                        IPC::Message::PRIORITY_NORMAL);
-  msg->WriteString16(base::ASCIIToUTF16("d"));
+  msg->WriteString16(u"d");
   msg->WriteInt(0);
   msg->WriteInt(0x65);  // Extra argument.
 
@@ -350,7 +350,7 @@ TEST_F(IPCFuzzingTest, MsgBadPayloadArgs) {
 
   // Now send a well formed message to make sure the receiver wasn't
   // thrown out of sync by the extra argument.
-  msg = new MsgClassIS(3, base::ASCIIToUTF16("expect three"));
+  msg = new MsgClassIS(3, u"expect three");
   sender()->Send(msg);
   EXPECT_TRUE(listener.ExpectMessage(3, MsgClassIS::ID));
 

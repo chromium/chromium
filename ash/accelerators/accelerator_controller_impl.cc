@@ -188,9 +188,8 @@ void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
 // Ensures that there are no word breaks at the "+"s in the shortcut texts such
 // as "Ctrl+Shift+Space".
 void EnsureNoWordBreaks(std::u16string* shortcut_text) {
-  std::vector<std::u16string> keys =
-      base::SplitString(*shortcut_text, base::ASCIIToUTF16("+"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> keys = base::SplitString(
+      *shortcut_text, u"+", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (keys.size() < 2U)
     return;

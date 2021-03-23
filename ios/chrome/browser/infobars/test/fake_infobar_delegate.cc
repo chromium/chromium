@@ -10,13 +10,13 @@ FakeInfobarDelegate::FakeInfobarDelegate()
     : FakeInfobarDelegate(
           infobars::InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR,
           /*title_text=*/std::u16string(),
-          base::ASCIIToUTF16("FakeInfobarDelegate")) {}
+          u"FakeInfobarDelegate") {}
 
 FakeInfobarDelegate::FakeInfobarDelegate(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier)
     : FakeInfobarDelegate(identifier,
                           /*title_text=*/std::u16string(),
-                          base::ASCIIToUTF16("FakeInfobarDelegate")) {}
+                          u"FakeInfobarDelegate") {}
 
 FakeInfobarDelegate::FakeInfobarDelegate(std::u16string message_text)
     : FakeInfobarDelegate(

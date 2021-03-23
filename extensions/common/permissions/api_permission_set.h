@@ -103,7 +103,7 @@ class PermissionID : public std::pair<APIPermission::ID, std::u16string> {
 //   p.insert(APIPermission::kNetworkState);
 //   // Add a permission with a parameter to the set.
 //   p.insert(APIPermission::kHostReadOnly,
-//            base::ASCIIToUTF16("http://www.google.com"));
+//            u"http://www.google.com");
 //
 // TODO(sashab): Move this to its own file and rename it to PermissionSet after
 // APIPermission is removed, the current PermissionSet is no longer used, and

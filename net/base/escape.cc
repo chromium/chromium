@@ -231,7 +231,7 @@ std::u16string UnescapeForHTML(base::StringPiece16 input) {
   };
   constexpr size_t kEscapeToCharsCount = base::size(kEscapeToChars);
 
-  if (input.find(base::ASCIIToUTF16("&")) == std::string::npos)
+  if (input.find(u"&") == std::string::npos)
     return std::u16string(input);
 
   std::u16string ampersand_chars[kEscapeToCharsCount];

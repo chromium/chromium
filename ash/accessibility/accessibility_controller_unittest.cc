@@ -913,10 +913,9 @@ TEST_F(AccessibilityControllerTest, SetDarkenScreen) {
 }
 
 TEST_F(AccessibilityControllerTest, ShowNotificationOnSpokenFeedback) {
-  const std::u16string kChromeVoxEnabledTitle =
-      base::ASCIIToUTF16("ChromeVox enabled");
+  const std::u16string kChromeVoxEnabledTitle = u"ChromeVox enabled";
   const std::u16string kChromeVoxEnabled =
-      base::ASCIIToUTF16("Press Ctrl + Alt + Z to disable spoken feedback.");
+      u"Press Ctrl + Alt + Z to disable spoken feedback.";
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
@@ -944,12 +943,11 @@ TEST_F(AccessibilityControllerTest, ShowNotificationOnSpokenFeedback) {
 
 TEST_F(AccessibilityControllerTest,
        ShowNotificationOnBrailleDisplayStateChanged) {
-  const std::u16string kBrailleConnected =
-      base::ASCIIToUTF16("Braille display connected.");
+  const std::u16string kBrailleConnected = u"Braille display connected.";
   const std::u16string kChromeVoxEnabled =
-      base::ASCIIToUTF16("Press Ctrl + Alt + Z to disable spoken feedback.");
+      u"Press Ctrl + Alt + Z to disable spoken feedback.";
   const std::u16string kBrailleConnectedAndChromeVoxEnabledTitle =
-      base::ASCIIToUTF16("Braille and ChromeVox are enabled");
+      u"Braille and ChromeVox are enabled";
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 

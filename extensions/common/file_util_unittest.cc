@@ -395,10 +395,9 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
 
   EXPECT_FALSE(
       file_util::ValidateExtension(extension.get(), &error, &warnings));
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
-                                base::ASCIIToUTF16("foo.js")),
-      error);
+  EXPECT_EQ(l10n_util::GetStringFUTF8(
+                IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED, u"foo.js"),
+            error);
   EXPECT_EQ(0U, warnings.size());
 
   scripts->Clear();
@@ -413,7 +412,7 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
       file_util::ValidateExtension(extension.get(), &error, &warnings));
   EXPECT_EQ(
       l10n_util::GetStringFUTF8(IDS_EXTENSION_LOAD_BACKGROUND_SCRIPT_FAILED,
-                                base::ASCIIToUTF16("http://google.com/foo.js")),
+                                u"http://google.com/foo.js"),
       error);
   EXPECT_EQ(0U, warnings.size());
 }

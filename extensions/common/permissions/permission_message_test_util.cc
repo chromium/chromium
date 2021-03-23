@@ -50,10 +50,8 @@ std::string MessagesVectorToString(
     const std::vector<std::u16string>& messages) {
   if (messages.empty())
     return "\n";
-  return base::StrCat({"\"",
-                       base::UTF16ToUTF8(base::JoinString(
-                           messages, base::ASCIIToUTF16("\"\n\""))),
-                       "\"\n"});
+  return base::StrCat(
+      {"\"", base::UTF16ToUTF8(base::JoinString(messages, u"\"\n\"")), "\"\n"});
 }
 
 std::string MessagesToString(const PermissionMessages& messages) {

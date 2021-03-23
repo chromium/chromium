@@ -183,11 +183,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
-    form->username_element = base::ASCIIToUTF16("Email");
-    form->username_value = base::ASCIIToUTF16("test@egmail.com");
-    form->password_element = base::ASCIIToUTF16("Passwd");
-    form->password_value = base::ASCIIToUTF16("test");
-    form->submit_element = base::ASCIIToUTF16("signIn");
+    form->username_element = u"Email";
+    form->username_value = u"test@egmail.com";
+    form->password_element = u"Passwd";
+    form->password_value = u"test";
+    form->submit_element = u"signIn";
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
@@ -203,9 +203,8 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
   void AddCompromisedCredential() {
     GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
-        "http://www.example.com/", base::ASCIIToUTF16("test@egmail.com"),
-        base::Time::Now(), InsecureType::kLeaked,
-        password_manager::IsMuted(false)));
+        "http://www.example.com/", u"test@egmail.com", base::Time::Now(),
+        InsecureType::kLeaked, password_manager::IsMuted(false)));
     RunUntilIdle();
   }
 

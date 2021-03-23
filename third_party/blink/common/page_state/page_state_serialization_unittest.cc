@@ -599,7 +599,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_ReferencedFiles) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_UrlString) {
   ExplodedPageState state;
-  state.top.url_string = base::ASCIIToUTF16("http://chromium.org");
+  state.top.url_string = u"http://chromium.org";
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("url_string", 26, &saved_state);
@@ -608,7 +608,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_UrlString) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_Referrer) {
   ExplodedPageState state;
-  state.top.referrer = base::ASCIIToUTF16("http://www.google.com");
+  state.top.referrer = u"http://www.google.com";
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("referrer", 26, &saved_state);
@@ -617,7 +617,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_Referrer) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_Target) {
   ExplodedPageState state;
-  state.top.target = base::ASCIIToUTF16("http://www.google.com");
+  state.top.target = u"http://www.google.com";
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("target", 26, &saved_state);
@@ -626,7 +626,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_Target) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_StateObject) {
   ExplodedPageState state;
-  state.top.state_object = base::ASCIIToUTF16("state");
+  state.top.state_object = u"state";
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("state_object", 26, &saved_state);
