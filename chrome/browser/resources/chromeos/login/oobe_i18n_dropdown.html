@@ -4,8 +4,17 @@
 
 <dom-module id="oobe-i18n-dropdown">
   <template>
-    <link rel="stylesheet" href="oobe_i18n_dropdown.css">
-    <style include="md-select"></style>
+    <style include="md-select">
+      :host {
+        font-size: var(--oobe-select-font-size);
+        line-height: var(--oobe-select-line-height);
+        --md-select-width: 240px;
+      }
+
+      select {
+        height: var(--oobe-select-height);
+      }
+    </style>
     <select id="select" aria-label$="[[labelForAria]]" class="md-select" >
     </select>
   </template>

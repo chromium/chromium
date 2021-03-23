@@ -59,8 +59,61 @@
 
 <dom-module id="oobe-welcome-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="oobe_welcome.css">
+    <style include="oobe-dialog-host">
+      :host {
+        --oobe-dialog-list-item-border: 1px solid var(--google-grey-200);
+        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-default-font-size);
+        font-weight: var(--oobe-default-font-weight);
+        line-height: var(--oobe-default-line-height);
+      }
+
+      /************* Language Screen **************/
+      #languageScreen .language-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 60px;
+      }
+
+      #languageScreen .language-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      /************* Accessibility Screen **************/
+      #accessibilityScreen oobe-a11y-option {
+        border-top: var(--oobe-a11y-dialog-list-item-border);
+        min-height: 64px;
+      }
+
+      #accessibilityScreen oobe-a11y-option:last-of-type {
+        border-bottom: var(--oobe-a11y-dialog-list-item-border);
+      }
+
+      /************* Timezone Screen **************/
+      #timezoneScreen .timezone-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 48px;
+      }
+
+      #timezoneScreen .timezone-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      /************* Advanced Options screen **************/
+      #oobeAdvancedOptionsScreen .advanced-options-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 64px;
+      }
+
+      #oobeAdvancedOptionsScreen .advanced-options-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      #oobeAdvancedOptionsScreen .advanced-option-subtitle {
+        color: var(--google-grey-refresh-700);
+      }
+    </style>
     <oobe-welcome-dialog id="welcomeScreen" role="dialog" for-step="greeting"
         aria-label$="[[i18nDynamic(locale, 'welcomeScreenGreeting')]]"
         current-language="[[currentLanguage]]"
@@ -88,8 +141,7 @@
         <div id="languageDropdownContainer"
             class="flex layout center horizontal justified
                 language-selection-entry">
-          <div id="language-dropdown" class=
-              "language-selection-title layout vertical center-justified">
+          <div id="language-dropdown">
             [[i18nDynamic(locale, 'languageDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="languageSelect" items="[[languages]]"
@@ -101,8 +153,7 @@
         <div id="keyboardDropdownContainer"
             class="flex layout center horizontal justified
                language-selection-entry">
-          <div  id="keyboard-dropdown" class=
-              "language-selection-title layout vertical center-justified">
+          <div id="keyboard-dropdown">
             [[i18nDynamic(locale, 'keyboardDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="keyboardSelect" items="[[keyboards]]"
@@ -249,8 +300,7 @@
       <div slot="content" class="layout vertical">
         <div class="flex layout center horizontal justified
               timezone-selection-entry">
-          <div class=
-              "timezone-selection-title layout vertical center-justified">
+          <div>
             [[i18nDynamic(locale, 'timezoneDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="timezoneSelect" items="[[timezones]]"
@@ -278,7 +328,7 @@
         <div class="flex layout vertical center-justified
             advanced-options-entry">
           <button on-click="onCFMBootstrappingClicked_">
-            <div class="advanced-option-title">
+            <div>
               [[i18nDynamic(locale, 'advancedOptionsCFMSetupTitle')]]
             </div>
             <div class="advanced-option-subtitle">
@@ -289,7 +339,7 @@
         <div class="flex layout vertical center-justified
             advanced-options-entry">
           <button on-click="onDeviceRequisitionClicked_">
-            <div class="advanced-option-title">
+            <div>
               [[i18nDynamic(locale, 'advancedOptionsDeviceRequisitionTitle')]]
             </div>
             <div class="advanced-option-subtitle">
