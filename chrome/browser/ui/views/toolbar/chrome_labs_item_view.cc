@@ -135,8 +135,8 @@ ChromeLabsItemView::ChromeLabsItemView(
           .AddChildren(
               {views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
-                   .SetTooltipTextAndAccessibleName(l10n_util::GetStringUTF16(
-                       IDS_TOOLTIP_CHROMELABS_COMBOBOX))
+                   .SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
+                       IDS_TOOLTIP_CHROMELABS_COMBOBOX, lab.visible_name))
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
                        lab, feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))

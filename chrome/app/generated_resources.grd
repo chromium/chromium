@@ -5818,7 +5818,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Experiments
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_COMBOBOX" desc="The tooltip for the Chrome Labs combobox to select between experiment states">
-        Select experiment state
+        Select experiment state for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_FEEDBACK_BUTTON" desc="The tooltip for the Chrome Labs Send Feedback button">
         Send feedback for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>
