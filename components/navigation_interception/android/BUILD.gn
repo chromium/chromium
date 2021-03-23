@@ -8,6 +8,7 @@ android_library("navigation_interception_java") {
   deps = [
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
     "//url:origin_java",
   ]
   sources = [

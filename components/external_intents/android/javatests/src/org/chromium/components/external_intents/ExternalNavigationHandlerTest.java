@@ -1252,14 +1252,14 @@ public class ExternalNavigationHandlerTest {
     @SmallTest
     public void testCanExternalAppHandleUrl() {
         mDelegate.setCanResolveActivityForExternalSchemes(false);
-        mDelegate.add(new IntentActivity("some_app", "someapp"));
+        mDelegate.add(new IntentActivity("someapp", "someapp"));
 
-        Assert.assertTrue(mUrlHandler.canExternalAppHandleUrl("some_app://some_app.com/"));
+        Assert.assertTrue(mUrlHandler.canExternalAppHandleUrl(new GURL("someapp://someapp.com/")));
 
-        Assert.assertTrue(mUrlHandler.canExternalAppHandleUrl("wtai://wp/mc;0123456789"));
+        Assert.assertTrue(mUrlHandler.canExternalAppHandleUrl(new GURL("wtai://wp/mc;0123456789")));
         Assert.assertTrue(mUrlHandler.canExternalAppHandleUrl(
-                "intent:/#Intent;scheme=no_app;package=com.no_app;end"));
-        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl("no_app://no_app.com/"));
+                new GURL("intent:/#Intent;scheme=noapp;package=com.noapp;end")));
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(new GURL("noapp://noapp.com/")));
     }
 
     @Test
@@ -1905,9 +1905,10 @@ public class ExternalNavigationHandlerTest {
         checkUrl(indexOutOfBoundsException)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
 
-        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(numberFormatException));
-        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(uriSyntaxException));
-        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(indexOutOfBoundsException));
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(new GURL(numberFormatException)));
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(new GURL(uriSyntaxException)));
+        Assert.assertFalse(
+                mUrlHandler.canExternalAppHandleUrl(new GURL(indexOutOfBoundsException)));
     }
 
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {

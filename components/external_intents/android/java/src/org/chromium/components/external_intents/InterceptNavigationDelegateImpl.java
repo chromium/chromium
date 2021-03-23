@@ -102,10 +102,11 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
     public boolean shouldIgnoreNavigation(NavigationParams navigationParams) {
         mClient.onNavigationStarted(navigationParams);
 
-        String url = navigationParams.url;
+        GURL url = navigationParams.url;
         long lastUserInteractionTime = mClient.getLastUserInteractionTime();
 
-        if (mAuthenticatorHelper != null && mAuthenticatorHelper.handleAuthenticatorUrl(url)) {
+        if (mAuthenticatorHelper != null
+                && mAuthenticatorHelper.handleAuthenticatorUrl(url.getSpec())) {
             return true;
         }
 
@@ -178,9 +179,11 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
                 mClient.wasTabLaunchedFromLongPressInBackground() && shouldCloseTab;
         // http://crbug.com/448977: If a new tab is closed by this overriding, we should open an
         // Intent in a new tab when Chrome receives it again.
+        // TODO(https://crbug.com/783819): Covert ExternalNavigationParams to GURL.
         return new ExternalNavigationParams
-                .Builder(navigationParams.url, mClient.isIncognito(), navigationParams.referrer,
-                        navigationParams.pageTransitionType, navigationParams.isRedirect)
+                .Builder(navigationParams.url.getSpec(), mClient.isIncognito(),
+                        navigationParams.referrer.getSpec(), navigationParams.pageTransitionType,
+                        navigationParams.isRedirect)
                 .setApplicationMustBeInForeground(true)
                 .setRedirectHandler(redirectHandler)
                 .setOpenInNewTab(shouldCloseTab)
@@ -298,12 +301,12 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         }
     }
 
-    private void logBlockedNavigationToDevToolsConsole(String url) {
+    private void logBlockedNavigationToDevToolsConsole(GURL url) {
         int resId = mExternalNavHandler.canExternalAppHandleUrl(url)
                 ? R.string.blocked_navigation_warning
                 : R.string.unreachable_navigation_warning;
         mClient.getWebContents().addMessageToDevToolsConsole(ConsoleMessageLevel.WARNING,
-                ContextUtils.getApplicationContext().getString(resId, url));
+                ContextUtils.getApplicationContext().getString(resId, url.getSpec()));
     }
 
     @NativeMethods

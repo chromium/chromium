@@ -1402,11 +1402,11 @@ public class ExternalNavigationHandler {
      * @return Whether the |url| could be handled by an external application on the system.
      */
     @VisibleForTesting
-    boolean canExternalAppHandleUrl(String url) {
-        if (url.startsWith(WTAI_MC_URL_PREFIX)) return true;
+    boolean canExternalAppHandleUrl(GURL url) {
+        if (url.getSpec().startsWith(WTAI_MC_URL_PREFIX)) return true;
         Intent intent;
         try {
-            intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+            intent = Intent.parseUri(url.getSpec(), Intent.URI_INTENT_SCHEME);
         } catch (Exception ex) {
             // Ignore the error.
             Log.w(TAG, "Bad URI %s", url, ex);

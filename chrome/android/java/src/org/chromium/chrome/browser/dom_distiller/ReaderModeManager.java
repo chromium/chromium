@@ -173,7 +173,8 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 return false;
             }
 
-            Intent returnIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(navParams.url));
+            Intent returnIntent =
+                    new Intent(Intent.ACTION_VIEW, Uri.parse(navParams.url.getSpec()));
             returnIntent.setClassName(activity, ChromeLauncherActivity.class.getName());
 
             // Set the parent ID of the tab to be created.

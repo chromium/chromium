@@ -693,7 +693,8 @@ public class AwContents implements SmartClipProvider {
             // UI thread. Using sendMessage here (instead of calling onPageStarted directly)
             // will allow those to run in order.
             if (!AwFeatureList.pageStartedOnCommitEnabled(navigationParams.isRendererInitiated)) {
-                mContentsClient.getCallbackHelper().postOnPageStarted(navigationParams.url);
+                mContentsClient.getCallbackHelper().postOnPageStarted(
+                        navigationParams.url.getPossiblyInvalidSpec());
             }
             return false;
         }

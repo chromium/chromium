@@ -119,6 +119,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -2489,11 +2490,12 @@ public class ContextualSearchManagerTest {
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
         final NavigationParams navigationParams = new NavigationParams(
-                "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
+                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
+                true /* hasUserGesture */, PageTransition.LINK, false /* isRedirect */,
+                true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -2524,17 +2526,19 @@ public class ContextualSearchManagerTest {
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
 
-        final NavigationParams initialNavigationParams = new NavigationParams("http://test.com", "",
-                0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, false /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+        final NavigationParams initialNavigationParams =
+                new NavigationParams(new GURL("http://test.com"), GURL.emptyGURL(),
+                        0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
+                        PageTransition.LINK, false /* isRedirect */, false /* isExternalProtocol */,
+                        true /* isMainFrame */, true /* isRendererInitiated */,
+                        false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
         final NavigationParams redirectedNavigationParams = new NavigationParams(
-                "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, false /* hasUserGesture */,
-                PageTransition.LINK, true /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
+                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
+                false /* hasUserGesture */, PageTransition.LINK, true /* isRedirect */,
+                true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -2567,11 +2571,12 @@ public class ContextualSearchManagerTest {
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
         final NavigationParams navigationParams = new NavigationParams(
-                "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
-                0 /* navigationId */, false /* isPost */, false /* hasUserGesture */,
-                PageTransition.LINK, false /* isRedirect */, true /* isExternalProtocol */,
-                true /* isMainFrame */, true /* isRendererInitiated */,
-                false /* hasUserGestureCarryover */, null /* initiatorOrigin */);
+                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
+                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
+                false /* hasUserGesture */, PageTransition.LINK, false /* isRedirect */,
+                true /* isExternalProtocol */, true /* isMainFrame */,
+                true /* isRendererInitiated */, false /* hasUserGestureCarryover */,
+                null /* initiatorOrigin */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {

@@ -1129,7 +1129,8 @@ public class ContextualSearchManager
                     mLastUserInteractionTimeSupplier.get(), RedirectHandler.INVALID_ENTRY_INDEX);
             ExternalNavigationParams params =
                     new ExternalNavigationParams
-                            .Builder(navigationParams.url, false, navigationParams.referrer,
+                            .Builder(navigationParams.url.getSpec(), false,
+                                    navigationParams.referrer.getSpec(),
                                     navigationParams.pageTransitionType,
                                     navigationParams.isRedirect)
                             .setApplicationMustBeInForeground(true)
