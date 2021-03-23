@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -90,11 +91,65 @@ base::Optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
   return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
 }
 
-using InterfaceVersions = base::flat_map<base::Token, uint32_t>;
+struct InterfaceVersionEntry {
+  base::Token uuid;
+  uint32_t version;
+};
+
 template <typename T>
-void AddVersion(InterfaceVersions* map) {
-  (*map)[T::Uuid_] = T::Version_;
+constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
+  return {T::Uuid_, T::Version_};
 }
+
+constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
+    MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Crosapi>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DeviceAttributes>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Feedback>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::IdleService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::KeystoreService>(),
+    MakeInterfaceVersionEntry<
+        chromeos::machine_learning::mojom::MachineLearningService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::MetricsReporting>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::TaskManager>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::TestController>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::UrlHandler>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
+    MakeInterfaceVersionEntry<device::mojom::HidConnection>(),
+    MakeInterfaceVersionEntry<device::mojom::HidManager>(),
+    MakeInterfaceVersionEntry<media_session::mojom::MediaControllerManager>(),
+    MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManager>(),
+    MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManagerDebug>(),
+};
+
+constexpr bool HasDuplicatedUuid() {
+  // We assume the number of entries are small enough so that simple
+  // O(N^2) check works.
+  const size_t size = base::size(kInterfaceVersionEntries);
+  for (size_t i = 0; i < size; ++i) {
+    for (size_t j = i + 1; j < size; ++j) {
+      if (kInterfaceVersionEntries[i].uuid == kInterfaceVersionEntries[j].uuid)
+        return true;
+    }
+  }
+  return false;
+}
+
+static_assert(
+    crosapi::mojom::Crosapi::Version_ == 20,
+    "if you add a new crosapi, please add it to the version map here");
+static_assert(!HasDuplicatedUuid(),
+              "Each Crosapi Mojom interface should have unique UUID.");
 
 }  // namespace
 
@@ -232,38 +287,9 @@ bool IsLacrosWindow(const aura::Window* window) {
 }
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
-  static_assert(
-      crosapi::mojom::Crosapi::Version_ == 20,
-      "if you add a new crosapi, please add it to the version map here");
-  InterfaceVersions versions;
-  AddVersion<chromeos::sensors::mojom::SensorHalClient>(&versions);
-  AddVersion<crosapi::mojom::Automation>(&versions);
-  AddVersion<crosapi::mojom::AccountManager>(&versions);
-  AddVersion<crosapi::mojom::BrowserServiceHost>(&versions);
-  AddVersion<crosapi::mojom::CertDatabase>(&versions);
-  AddVersion<crosapi::mojom::Clipboard>(&versions);
-  AddVersion<crosapi::mojom::Crosapi>(&versions);
-  AddVersion<crosapi::mojom::DeviceAttributes>(&versions);
-  AddVersion<crosapi::mojom::Feedback>(&versions);
-  AddVersion<crosapi::mojom::FileManager>(&versions);
-  AddVersion<crosapi::mojom::IdleService>(&versions);
-  AddVersion<crosapi::mojom::KeystoreService>(&versions);
-  AddVersion<chromeos::machine_learning::mojom::MachineLearningService>(
-      &versions);
-  AddVersion<crosapi::mojom::MessageCenter>(&versions);
-  AddVersion<crosapi::mojom::MetricsReporting>(&versions);
-  AddVersion<crosapi::mojom::Prefs>(&versions);
-  AddVersion<crosapi::mojom::ScreenManager>(&versions);
-  AddVersion<crosapi::mojom::SnapshotCapturer>(&versions);
-  AddVersion<crosapi::mojom::TaskManager>(&versions);
-  AddVersion<crosapi::mojom::TestController>(&versions);
-  AddVersion<crosapi::mojom::UrlHandler>(&versions);
-  AddVersion<crosapi::mojom::VideoCaptureDeviceFactory>(&versions);
-  AddVersion<device::mojom::HidConnection>(&versions);
-  AddVersion<device::mojom::HidManager>(&versions);
-  AddVersion<media_session::mojom::MediaControllerManager>(&versions);
-  AddVersion<media_session::mojom::AudioFocusManager>(&versions);
-  AddVersion<media_session::mojom::AudioFocusManagerDebug>(&versions);
+  base::flat_map<base::Token, uint32_t> versions;
+  for (const auto& entry : kInterfaceVersionEntries)
+    versions.emplace(entry.uuid, entry.version);
   return versions;
 }
 
