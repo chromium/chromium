@@ -5658,7 +5658,6 @@ crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Pass Failure ]
 crbug.com/1182677 [ Linux ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Pass Failure ]
 crbug.com/1182680 [ Linux ] http/tests/devtools/console/console-format-collections.js [ Pass Failure ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Pass Failure ]
-crbug.com/1182689 [ Mac10.14 ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
 crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Pass Failure Timeout ]
 
 # Sheriff 2021-03-01
@@ -5739,3 +5738,4 @@ crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-li
 
 # Sherif 2021-03-23
 crbug.com/1191548 [ Linux ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/background-color-transition-with-initially-transparent.html [ Pass Failure ]
+crbug.com/1182689 [ Mac ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
