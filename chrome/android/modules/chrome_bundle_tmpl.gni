@@ -105,6 +105,7 @@ template("chrome_bundle") {
                                "is_monochrome_or_trichrome",
                                "manifest_package",
                                "min_sdk_version",
+                               "target_sdk_version",
                                "version_code",
                              ])
       module_desc = _module_desc

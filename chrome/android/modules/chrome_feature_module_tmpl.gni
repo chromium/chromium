@@ -90,6 +90,7 @@ template("chrome_feature_module") {
                              "manifest_package",
                              "min_sdk_version",
                              "package_id",
+                             "target_sdk_version",
                              "uncompress_shared_libraries",
                              "version_code",
                              "version_name",
