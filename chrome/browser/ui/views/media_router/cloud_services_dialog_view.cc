@@ -104,8 +104,8 @@ void CloudServicesDialogView::Init() {
 
   std::vector<size_t> offsets;
 
-  std::u16string text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), substrings, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", substrings, &offsets);
   gfx::Range learn_more_range(offsets[1], text.length());
 
   views::StyledLabel::RangeStyleInfo link_style =

@@ -67,7 +67,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
     content_ = widget_->SetContentsView(std::make_unique<View>());
 
     textfield_ = new Textfield();
-    textfield_->SetText(base::ASCIIToUTF16("Value"));
+    textfield_->SetText(u"Value");
     content_->AddChildView(textfield_);
     widget_->Show();
   }

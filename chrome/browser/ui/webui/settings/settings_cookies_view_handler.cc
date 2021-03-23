@@ -448,7 +448,7 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
     std::u16string description;
     for (const auto& category : site->children()) {
       if (!description.empty())
-        description += base::ASCIIToUTF16(", ");
+        description += u", ";
       const auto node_type = category->GetDetailedInfo().node_type;
       size_t item_count = category->children().size();
       switch (node_type) {

@@ -356,8 +356,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, ShowsWithMixedContent) {
       document.body.appendChild(img);
     )"));
   EXPECT_TRUE(bar->GetVisible());
-  EXPECT_EQ(bar->title_for_testing(), base::ASCIIToUTF16("Google"));
-  EXPECT_EQ(bar->location_for_testing() + base::ASCIIToUTF16("/"),
+  EXPECT_EQ(bar->title_for_testing(), u"Google");
+  EXPECT_EQ(bar->location_for_testing() + u"/",
             base::ASCIIToUTF16(
                 https_server()->GetURL("app.com", "/ssl").GetOrigin().spec()));
   EXPECT_FALSE(bar->close_button_for_testing()->GetVisible());
@@ -380,14 +380,13 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, TitleAndLocationUpdate) {
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_NE(app_view, browser_view_);
 
-  SetTitleAndLocation(app_view->GetActiveWebContents(),
-                      base::ASCIIToUTF16("FooBar"), navigate_to);
+  SetTitleAndLocation(app_view->GetActiveWebContents(), u"FooBar", navigate_to);
 
   std::string expected_origin = navigate_to.GetOrigin().spec();
-  EXPECT_EQ(base::ASCIIToUTF16(expected_origin),
-            app_view->toolbar()->custom_tab_bar()->location_for_testing() +
-                base::ASCIIToUTF16("/"));
-  EXPECT_EQ(base::ASCIIToUTF16("FooBar"),
+  EXPECT_EQ(
+      base::ASCIIToUTF16(expected_origin),
+      app_view->toolbar()->custom_tab_bar()->location_for_testing() + u"/");
+  EXPECT_EQ(u"FooBar",
             app_view->toolbar()->custom_tab_bar()->title_for_testing());
 }
 
@@ -406,9 +405,9 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   // Empty title should use location.
   SetTitleAndLocation(app_view->GetActiveWebContents(), std::u16string(),
                       GURL("http://example.test/"));
-  EXPECT_EQ(base::ASCIIToUTF16("example.test"),
+  EXPECT_EQ(u"example.test",
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
-  EXPECT_EQ(base::ASCIIToUTF16("example.test"),
+  EXPECT_EQ(u"example.test",
             app_view->toolbar()->custom_tab_bar()->title_for_testing());
 }
 
@@ -564,12 +563,11 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_NE(app_view, browser_view_);
 
-  SetTitleAndLocation(app_view->GetActiveWebContents(),
-                      base::ASCIIToUTF16("FooBar"), navigate_to);
+  SetTitleAndLocation(app_view->GetActiveWebContents(), u"FooBar", navigate_to);
 
   EXPECT_EQ(u"https://xn--lv8h.example",
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
-  EXPECT_EQ(base::ASCIIToUTF16("FooBar"),
+  EXPECT_EQ(u"FooBar",
             app_view->toolbar()->custom_tab_bar()->title_for_testing());
 }
 
@@ -586,12 +584,11 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_NE(app_view, browser_view_);
 
-  SetTitleAndLocation(app_view->GetActiveWebContents(),
-                      base::ASCIIToUTF16("FooBar"), navigate_to);
+  SetTitleAndLocation(app_view->GetActiveWebContents(), u"FooBar", navigate_to);
 
   EXPECT_EQ(u"https://ΐ.example",
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
-  EXPECT_EQ(base::ASCIIToUTF16("FooBar"),
+  EXPECT_EQ(u"FooBar",
             app_view->toolbar()->custom_tab_bar()->title_for_testing());
 }
 
@@ -695,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, InterstitialCanHideOrigin) {
 
   // Verify origin is blanked on interstitial.
   UrlHidingWebContentsObserver blocker(contents);
-  SetTitleAndLocation(contents, base::ASCIIToUTF16("FooBar"),
+  SetTitleAndLocation(contents, u"FooBar",
                       https_server()->GetURL("/simple.html"));
 
   EXPECT_EQ(std::u16string(),
@@ -705,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, InterstitialCanHideOrigin) {
 
   // Verify origin returns when interstitial is gone.
   blocker.StopBlocking();
-  SetTitleAndLocation(contents, base::ASCIIToUTF16("FooBar2"),
+  SetTitleAndLocation(contents, u"FooBar2",
                       https_server()->GetURL("/title1.html"));
 
   EXPECT_NE(std::u16string(),
@@ -738,6 +735,6 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
 
   EXPECT_EQ(
       app_browser_view->toolbar()->custom_tab_bar()->location_for_testing() +
-          base::ASCIIToUTF16("/"),
+          u"/",
       base::ASCIIToUTF16(https_server()->GetURL("/").spec()));
 }

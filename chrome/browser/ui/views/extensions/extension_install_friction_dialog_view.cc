@@ -127,8 +127,7 @@ ExtensionInstallFrictionDialogView::CreateWarningLabel() {
       IDS_EXTENSION_PROMPT_INSTALL_FRICTION_WARNING_TEXT);
   std::u16string learn_more_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 
-  std::u16string text =
-      base::StrCat({warning_text, base::ASCIIToUTF16(" "), learn_more_text});
+  std::u16string text = base::StrCat({warning_text, u" ", learn_more_text});
 
   label->SetText(text);
   gfx::Range details_range(warning_text.length() + 1, text.length());

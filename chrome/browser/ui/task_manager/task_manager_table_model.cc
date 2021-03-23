@@ -115,17 +115,16 @@ class TaskManagerValuesStringifier {
  public:
   TaskManagerValuesStringifier()
       : n_a_string_(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_NA_CELL_TEXT)),
-        zero_string_(base::ASCIIToUTF16("0")),
-        backgrounded_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_BACKGROUNDED_TEXT)),
-        foregrounded_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_FOREGROUNDED_TEXT)),
-        asterisk_string_(base::ASCIIToUTF16("*")),
-        unknown_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
+        zero_string_(u"0"),
+        backgrounded_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_BACKGROUNDED_TEXT)),
+        foregrounded_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_FOREGROUNDED_TEXT)),
+        asterisk_string_(u"*"),
+        unknown_string_(
+            l10n_util::GetStringUTF16(IDS_TASK_MANAGER_UNKNOWN_VALUE_TEXT)),
         disabled_nacl_debugging_string_(l10n_util::GetStringUTF16(
-            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {
-  }
+            IDS_TASK_MANAGER_DISABLED_NACL_DBG_TEXT)) {}
 
   ~TaskManagerValuesStringifier() {}
 

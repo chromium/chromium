@@ -3315,7 +3315,7 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
 
   // Now make the created browser() visible by showing its browser window.
   browser()->window()->Show();
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
   std::u16string one_menu_item[] = {title1};
 
@@ -3326,7 +3326,7 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
       CreateBrowserWithTestWindowForProfile(profile()));
   chrome::NewTab(browser2.get());
   browser2->window()->Show();
-  std::u16string title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser2.get(), GURL("http://test2"),
                                       title2);
 
@@ -3355,7 +3355,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
 
   // Show the created |browser()| by showing its window.
   browser()->window()->Show();
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
   std::u16string one_menu_item1[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item1);
@@ -3416,7 +3416,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
   std::u16string one_menu_item[] = {title1};
@@ -3424,12 +3424,12 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
 
   // Create one empty tab.
   chrome::NewTab(browser());
-  std::u16string title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("https://bla"), title2);
 
   // and another one with another gmail instance.
   chrome::NewTab(browser());
-  std::u16string title3 = ASCIIToUTF16("Test3");
+  std::u16string title3 = u"Test3";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title3);
   std::u16string two_menu_items[] = {title1, title3};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
@@ -3473,7 +3473,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
   std::u16string one_menu_item[] = {title1};
@@ -3909,10 +3909,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  std::u16string title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -3958,10 +3958,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  std::u16string title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  std::u16string title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -4001,7 +4001,7 @@ TEST_F(ChromeLauncherControllerTest, GmailMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  std::u16string title = ASCIIToUTF16("Test");
+  std::u16string title = u"Test";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -4033,7 +4033,7 @@ TEST_F(ChromeLauncherControllerTest, GmailOfflineMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  std::u16string title = ASCIIToUTF16("Test");
+  std::u16string title = u"Test";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kOfflineGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();

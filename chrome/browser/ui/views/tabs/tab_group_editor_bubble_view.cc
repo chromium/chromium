@@ -162,7 +162,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   title_field_ = title_field_container->AddChildView(
       std::make_unique<TitleField>(stop_context_menu_propagation));
   title_field_->SetText(title);
-  title_field_->SetAccessibleName(base::ASCIIToUTF16("Group title"));
+  title_field_->SetAccessibleName(u"Group title");
   title_field_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
   title_field_->set_controller(&title_field_controller_);

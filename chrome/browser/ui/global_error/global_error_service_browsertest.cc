@@ -43,12 +43,8 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
   std::vector<std::u16string> GetBubbleViewMessages() override {
     return std::vector<std::u16string>();
   }
-  std::u16string GetBubbleViewAcceptButtonLabel() override {
-    return base::ASCIIToUTF16("OK");
-  }
-  std::u16string GetBubbleViewCancelButtonLabel() override {
-    return base::ASCIIToUTF16("Cancel");
-  }
+  std::u16string GetBubbleViewAcceptButtonLabel() override { return u"OK"; }
+  std::u16string GetBubbleViewCancelButtonLabel() override { return u"Cancel"; }
   void OnBubbleViewDidClose(Browser* browser) override {
     EXPECT_TRUE(browser);
     ++bubble_view_close_count_;

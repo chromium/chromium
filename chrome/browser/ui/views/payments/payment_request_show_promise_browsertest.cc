@@ -322,10 +322,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest,
   OpenOrderSummaryScreen();
 
   ExpectTotal("$3.00");
-  EXPECT_EQ(base::ASCIIToUTF16("$1.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$1.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$1.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$1.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
 
   ClickOnBackArrow();
   OpenShippingAddressSectionScreen();

@@ -311,9 +311,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     return profile_manager()->CreateTestingProfile(
-        kSecondaryProfileName, std::move(prefs),
-        base::ASCIIToUTF16("Test profile"), 1 /*avatar_id*/,
-        std::string() /*supervised_user_id*/,
+        kSecondaryProfileName, std::move(prefs), u"Test profile",
+        1 /*avatar_id*/, std::string() /*supervised_user_id*/,
         /*testing_factories=*/
         {{file_manager::VolumeManagerFactory::GetInstance(),
           base::BindRepeating(&BuildVolumeManager)}});
@@ -512,7 +511,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   EXPECT_EQ(item_1_virtual_path,
             GetVirtualPathFromUrl(item_1->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("Screenshot 1.png"), item_1->text());
+  EXPECT_EQ(u"Screenshot 1.png", item_1->text());
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
@@ -528,7 +527,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   EXPECT_EQ(item_2_virtual_path,
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("Screenshot 2.png"), item_2->text());
+  EXPECT_EQ(u"Screenshot 2.png", item_2->text());
 }
 
 TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
@@ -1718,7 +1717,7 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(item_1_virtual_path,
             GetVirtualPathFromUrl(item_1->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("File 1.png"), item_1->text());
+  EXPECT_EQ(u"File 1.png", item_1->text());
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
@@ -1734,7 +1733,7 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(item_2_virtual_path,
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("File 2.png"), item_2->text());
+  EXPECT_EQ(u"File 2.png", item_2->text());
 }
 
 TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
@@ -1792,7 +1791,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
   EXPECT_EQ(item_1_virtual_path,
             GetVirtualPathFromUrl(item_1->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("Screen Recording 1.mpg"), item_1->text());
+  EXPECT_EQ(u"Screen Recording 1.mpg", item_1->text());
 
   const HoldingSpaceItem* item_2 = model->items()[1].get();
   EXPECT_EQ(item_2_full_path, item_2->file_path());
@@ -1808,7 +1807,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
   EXPECT_EQ(item_2_virtual_path,
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
-  EXPECT_EQ(base::ASCIIToUTF16("Screen Recording 2.mpg"), item_2->text());
+  EXPECT_EQ(u"Screen Recording 2.mpg", item_2->text());
 
   // Attempt to add an item with an empty file. Verify nothing gets added to the
   // model.

@@ -363,38 +363,33 @@ TEST_F(BookmarkBarViewTest, ChangeTitle) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
-  model->SetTitle(bookmark_bar_node->children()[0].get(),
-                  base::ASCIIToUTF16("a1"));
+  model->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
   // Make enough room for 1 node.
   SizeUntilButtonsVisible(1);
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[1].get(),
-                  base::ASCIIToUTF16("b1"));
+  model->SetTitle(bookmark_bar_node->children()[1].get(), u"b1");
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[5].get(),
-                  base::ASCIIToUTF16("f1"));
+  model->SetTitle(bookmark_bar_node->children()[5].get(), u"f1");
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model->SetTitle(bookmark_bar_node->children()[3].get(),
-                  base::ASCIIToUTF16("d1"));
+  model->SetTitle(bookmark_bar_node->children()[3].get(), u"d1");
 
   // Make the second button visible, changes the title of the first to something
   // really long and make sure the second button hides.
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("a1 b1", GetStringForVisibleButtons());
   model->SetTitle(bookmark_bar_node->children()[0].get(),
-                  base::ASCIIToUTF16("a_really_long_title"));
+                  u"a_really_long_title");
   EXPECT_LE(1u, test_helper_->GetBookmarkButtonCount());
 
   // Change the title back and make sure the 2nd button is visible again. Don't
   // use GetStringForVisibleButtons() here as more buttons may have been
   // created.
-  model->SetTitle(bookmark_bar_node->children()[0].get(),
-                  base::ASCIIToUTF16("a1"));
+  model->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
   ASSERT_LE(2u, test_helper_->GetBookmarkButtonCount());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(0)->GetVisible());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(1)->GetVisible());
@@ -440,9 +435,9 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   views::LabelButton* button = test_helper_->GetBookmarkButton(0);
   ASSERT_TRUE(button);
   gfx::Point p;
-  EXPECT_EQ(base::ASCIIToUTF16("a\na.com"), button->GetTooltipText(p));
-  button->SetText(base::ASCIIToUTF16("new title"));
-  EXPECT_EQ(base::ASCIIToUTF16("new title\na.com"), button->GetTooltipText(p));
+  EXPECT_EQ(u"a\na.com", button->GetTooltipText(p));
+  button->SetText(u"new title");
+  EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
 }
 
 }  // namespace

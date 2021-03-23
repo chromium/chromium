@@ -45,13 +45,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
                        InvokeUi_WithCustomMessage) {
-  set_message(base::ASCIIToUTF16("message"));
+  set_message(u"message");
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
                        InvokeUi_WithLongCustomMessage) {
-  set_message(
-      base::ASCIIToUTF16("long\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmessage"));
+  set_message(u"long\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmessage");
   ShowAndVerifyUi();
 }

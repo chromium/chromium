@@ -19,8 +19,8 @@
 class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
  protected:
   ExtensionsMenuItemViewTest()
-      : initial_extension_name_(base::ASCIIToUTF16("Initial Extension Name")),
-        initial_tooltip_(base::ASCIIToUTF16("Initial tooltip")) {}
+      : initial_extension_name_(u"Initial Extension Name"),
+        initial_tooltip_(u"Initial tooltip") {}
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -73,7 +73,7 @@ TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
   EXPECT_EQ(primary_button()->label_text_for_testing(),
             initial_extension_name_);
 
-  std::u16string extension_name = base::ASCIIToUTF16("Extension Name");
+  std::u16string extension_name = u"Extension Name";
   controller_->SetActionName(extension_name);
 
   EXPECT_EQ(primary_button()->label_text_for_testing(), extension_name);
@@ -100,7 +100,7 @@ TEST_F(ExtensionsMenuItemViewTest, NotifyClickExecutesAction) {
 TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayTooltip) {
   EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), initial_tooltip_);
 
-  std::u16string tooltip = base::ASCIIToUTF16("New Tooltip");
+  std::u16string tooltip = u"New Tooltip";
   controller_->SetTooltip(tooltip);
 
   EXPECT_EQ(primary_button()->GetTooltipText(gfx::Point()), tooltip);

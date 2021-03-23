@@ -171,7 +171,7 @@ void AddPair(base::ListValue* list,
 
 // Generate an empty data-pair which acts as a line break.
 void AddLineBreak(base::ListValue* list) {
-  AddPair(list, ASCIIToUTF16(""), ASCIIToUTF16(""));
+  AddPair(list, u"", u"");
 }
 
 bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
@@ -232,26 +232,26 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
   PluginService::GetInstance()->GetPluginInfoArray(
       GURL(), "application/x-nacl", false, &info_array, NULL);
   std::u16string nacl_version;
-  std::u16string nacl_key = ASCIIToUTF16("NaCl plugin");
+  std::u16string nacl_key = u"NaCl plugin";
   if (info_array.empty()) {
-    AddPair(list, nacl_key, ASCIIToUTF16("Disabled"));
+    AddPair(list, nacl_key, u"Disabled");
   } else {
     // Only the 0th plugin is used.
-    nacl_version = info_array[0].version + ASCIIToUTF16(" ") +
-        info_array[0].path.LossyDisplayName();
+    nacl_version =
+        info_array[0].version + u" " + info_array[0].path.LossyDisplayName();
     if (!isPluginEnabled(0)) {
-      nacl_version += ASCIIToUTF16(" (Disabled in profile prefs)");
+      nacl_version += u" (Disabled in profile prefs)";
     }
 
     AddPair(list, nacl_key, nacl_version);
 
     // Mark the rest as not used.
     for (size_t i = 1; i < info_array.size(); ++i) {
-      nacl_version = info_array[i].version + ASCIIToUTF16(" ") +
-          info_array[i].path.LossyDisplayName();
-      nacl_version += ASCIIToUTF16(" (not used)");
+      nacl_version =
+          info_array[i].version + u" " + info_array[i].path.LossyDisplayName();
+      nacl_version += u" (not used)";
       if (!isPluginEnabled(i)) {
-        nacl_version += ASCIIToUTF16(" (Disabled in profile prefs)");
+        nacl_version += u" (Disabled in profile prefs)";
       }
       AddPair(list, nacl_key, nacl_version);
     }
@@ -261,42 +261,34 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
 
 void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
   // Display whether PNaCl is enabled.
-  std::u16string pnacl_enabled_string = ASCIIToUTF16("Enabled");
+  std::u16string pnacl_enabled_string = u"Enabled";
   if (!isPluginEnabled(0)) {
-    pnacl_enabled_string = ASCIIToUTF16("Disabled in profile prefs");
+    pnacl_enabled_string = u"Disabled in profile prefs";
   }
-  AddPair(list,
-          ASCIIToUTF16("Portable Native Client (PNaCl)"),
-          pnacl_enabled_string);
+  AddPair(list, u"Portable Native Client (PNaCl)", pnacl_enabled_string);
 
   // Obtain the version of the PNaCl translator.
   base::FilePath pnacl_path;
   bool got_path =
       base::PathService::Get(chrome::DIR_PNACL_COMPONENT, &pnacl_path);
   if (!got_path || pnacl_path.empty() || !pnacl_path_exists_) {
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator"),
-            ASCIIToUTF16("Not installed"));
+    AddPair(list, u"PNaCl translator", u"Not installed");
   } else {
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator path"),
-            pnacl_path.LossyDisplayName());
-    AddPair(list,
-            ASCIIToUTF16("PNaCl translator version"),
+    AddPair(list, u"PNaCl translator path", pnacl_path.LossyDisplayName());
+    AddPair(list, u"PNaCl translator version",
             ASCIIToUTF16(pnacl_version_string_));
   }
   AddLineBreak(list);
 }
 
 void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
-  std::u16string nacl_enabled_string = ASCIIToUTF16("Disabled");
+  std::u16string nacl_enabled_string = u"Disabled";
   if (isPluginEnabled(0) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNaCl)) {
-    nacl_enabled_string = ASCIIToUTF16("Enabled by flag '--enable-nacl'");
+    nacl_enabled_string = u"Enabled by flag '--enable-nacl'";
   }
-  AddPair(list,
-          ASCIIToUTF16("Native Client (non-portable, outside web store)"),
+  AddPair(list, u"Native Client (non-portable, outside web store)",
           nacl_enabled_string);
   AddLineBreak(list);
 }

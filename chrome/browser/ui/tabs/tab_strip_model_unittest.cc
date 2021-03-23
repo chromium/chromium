@@ -3720,7 +3720,7 @@ TEST_F(TabStripModelTest, SetVisualDataForGroup) {
   const tab_groups::TabGroupId group = strip.AddToNewGroup({0});
 
   const tab_groups::TabGroupVisualData new_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo", tab_groups::TabGroupColorId::kCyan);
   strip.group_model()->GetTabGroup(group)->SetVisualData(new_data);
   const tab_groups::TabGroupVisualData* data =
       strip.group_model()->GetTabGroup(group)->visual_data();
@@ -3744,7 +3744,7 @@ TEST_F(TabStripModelTest, VisualDataChangeNotifiesObservers) {
   EXPECT_EQ(1, observer.group_update(group).contents_update_count);
 
   const tab_groups::TabGroupVisualData new_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kBlue);
+      u"Foo", tab_groups::TabGroupColorId::kBlue);
   strip.group_model()->GetTabGroup(group)->SetVisualData(new_data);
 
   // Now check that we are notified when we change it, once at creation

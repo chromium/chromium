@@ -15,7 +15,7 @@ TestToolbarActionViewController::TestToolbarActionViewController(
     const std::string& id)
     : id_(id) {
   // Needs a non-empty accessible name to pass accessibility checks.
-  SetAccessibleName(base::ASCIIToUTF16("Default name"));
+  SetAccessibleName(u"Default name");
 }
 
 TestToolbarActionViewController::~TestToolbarActionViewController() {

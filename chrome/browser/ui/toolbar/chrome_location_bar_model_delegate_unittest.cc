@@ -64,7 +64,7 @@ class ChromeLocationBarModelDelegateTest
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("foo.com"));
+    data.SetShortName(u"foo.com");
     data.SetURL("http://foo.com/url?bar={searchTerms}");
     if (set_ntp_url) {
       data.new_tab_url = "https://foo.com/newtab";

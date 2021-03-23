@@ -24,9 +24,7 @@ struct DialogState {
 class TestDialogController : public SettingsOverriddenDialogController {
  public:
   explicit TestDialogController(DialogState* state)
-      : state_(state),
-        show_params_{base::ASCIIToUTF16("Dialog Title"),
-                     base::ASCIIToUTF16("Dialog Body")} {}
+      : state_(state), show_params_{u"Dialog Title", u"Dialog Body"} {}
   TestDialogController(const TestDialogController&) = delete;
   TestDialogController& operator=(const TestDialogController&) = delete;
   ~TestDialogController() override = default;

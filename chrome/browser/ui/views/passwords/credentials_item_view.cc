@@ -134,7 +134,7 @@ CredentialsItemView::CredentialsItemView(
   }
 
   if (!upper_text.empty() && !lower_text.empty())
-    SetAccessibleName(upper_text + base::ASCIIToUTF16("\n") + lower_text);
+    SetAccessibleName(upper_text + u"\n" + lower_text);
   else
     SetAccessibleName(upper_text + lower_text);
 

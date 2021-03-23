@@ -61,9 +61,9 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
 
   void SimulateTitleChange(const std::u16string title) {
     media_session::MediaMetadata metadata;
-    metadata.source_title = base::ASCIIToUTF16("source_title");
+    metadata.source_title = u"source_title";
     metadata.title = title;
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.artist = u"artist";
     GetView()->UpdateWithMediaMetadata(metadata);
   }
 
@@ -110,11 +110,11 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(OverlayMediaNotificationViewTest, TaskBarTitle) {
-  std::u16string title1 = base::ASCIIToUTF16("test");
+  std::u16string title1 = u"test";
   SimulateTitleChange(title1);
   EXPECT_EQ(GetWindowTitle(), title1);
 
-  std::u16string title2 = base::ASCIIToUTF16("title");
+  std::u16string title2 = u"title";
   SimulateTitleChange(title2);
   EXPECT_EQ(GetWindowTitle(), title2);
 }

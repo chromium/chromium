@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, HappyPath) {
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
             profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                              GetLocale()));
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
             profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                              GetLocale()));
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, Validation) {
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
             profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                              GetLocale()));
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
             profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                              GetLocale()));
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -250,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   AddAutofillProfile(incomplete_profile);
 
   autofill::AutofillProfile other_incomplete_profile;
-  other_incomplete_profile.SetInfo(autofill::NAME_FULL,
-                                   base::ASCIIToUTF16("other"), GetLocale());
+  other_incomplete_profile.SetInfo(autofill::NAME_FULL, u"other", GetLocale());
   AddAutofillProfile(other_incomplete_profile);
 
   InvokePaymentRequestUI();
@@ -284,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
       request->state()->selected_contact_profile();
   DCHECK(profile);
 
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -332,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16(kNameFull),
             profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                              GetLocale()));
-  EXPECT_EQ(base::ASCIIToUTF16("16515558946"),
+  EXPECT_EQ(u"16515558946",
             profile->GetInfo(
                 autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
                 GetLocale()));
@@ -353,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest(
       "{"
       "  payer: {"
@@ -364,11 +363,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
       "}",
       DialogEvent::CONTACT_INFO_EDITOR_OPENED, dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16("EMAIL ERROR"),
-            GetErrorLabelForType(autofill::EMAIL_ADDRESS));
-  EXPECT_EQ(base::ASCIIToUTF16("NAME ERROR"),
-            GetErrorLabelForType(autofill::NAME_FULL));
-  EXPECT_EQ(base::ASCIIToUTF16("PHONE ERROR"),
+  EXPECT_EQ(u"EMAIL ERROR", GetErrorLabelForType(autofill::EMAIL_ADDRESS));
+  EXPECT_EQ(u"NAME ERROR", GetErrorLabelForType(autofill::NAME_FULL));
+  EXPECT_EQ(u"PHONE ERROR",
             GetErrorLabelForType(autofill::PHONE_HOME_WHOLE_NUMBER));
 }
 
@@ -379,10 +376,8 @@ IN_PROC_BROWSER_TEST_F(
 
   autofill::AutofillProfile contact = autofill::test::GetFullProfile();
   // Set the same value in both of email and name field.
-  contact.SetRawInfo(autofill::EMAIL_ADDRESS,
-                     base::ASCIIToUTF16("johndoe@hades.com"));
-  contact.SetRawInfo(autofill::NAME_FULL,
-                     base::ASCIIToUTF16("johndoe@hades.com"));
+  contact.SetRawInfo(autofill::EMAIL_ADDRESS, u"johndoe@hades.com");
+  contact.SetRawInfo(autofill::NAME_FULL, u"johndoe@hades.com");
   AddAutofillProfile(contact);
 
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -390,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest(
       "{"
       "  payer: {"
@@ -401,11 +396,9 @@ IN_PROC_BROWSER_TEST_F(
       "}",
       DialogEvent::CONTACT_INFO_EDITOR_OPENED, dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16("EMAIL ERROR"),
-            GetErrorLabelForType(autofill::EMAIL_ADDRESS));
-  EXPECT_EQ(base::ASCIIToUTF16("NAME ERROR"),
-            GetErrorLabelForType(autofill::NAME_FULL));
-  EXPECT_EQ(base::ASCIIToUTF16("PHONE ERROR"),
+  EXPECT_EQ(u"EMAIL ERROR", GetErrorLabelForType(autofill::EMAIL_ADDRESS));
+  EXPECT_EQ(u"NAME ERROR", GetErrorLabelForType(autofill::NAME_FULL));
+  EXPECT_EQ(u"PHONE ERROR",
             GetErrorLabelForType(autofill::PHONE_HOME_WHOLE_NUMBER));
 }
 
@@ -421,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest(
       "{"
       "  payer: {"

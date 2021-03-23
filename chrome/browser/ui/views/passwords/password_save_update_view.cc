@@ -393,7 +393,7 @@ void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
   std::u16string new_password = controller_.pending_password().password_value;
   if (username_dropdown_) {
     new_username = username_dropdown_->GetText();
-    base::TrimString(new_username, base::ASCIIToUTF16(" "), &new_username);
+    base::TrimString(new_username, u" ", &new_username);
   }
   if (password_dropdown_)
     new_password = password_dropdown_->GetText();

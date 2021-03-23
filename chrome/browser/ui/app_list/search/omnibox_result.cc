@@ -208,7 +208,7 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
   // construct this string instead of concatenation. This currently only happens
   // for stock ticker symbols.
-  return base::JoinString(text, base::ASCIIToUTF16(" "));
+  return base::JoinString(text, u" ");
 }
 
 }  // namespace
@@ -406,10 +406,10 @@ void OmniboxResult::UpdateTitleAndDetails() {
     // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
     // construct this string instead of concatenation. This currently only
     // happens for stock ticker symbols.
-    SetTitle(additional_text
-                 ? base::JoinString({match_.contents, additional_text.value()},
-                                    base::ASCIIToUTF16(" "))
-                 : match_.contents);
+    SetTitle(
+        additional_text
+            ? base::JoinString({match_.contents, additional_text.value()}, u" ")
+            : match_.contents);
     SetDetails(ImageLineToString16(match_.answer->second_line()));
   } else if (!IsUrlResultWithDescription()) {
     SetTitle(match_.contents);

@@ -494,7 +494,7 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     text.push_back(suggestion.additional_label);
   }
 
-  node_data->SetName(base::JoinString(text, base::ASCIIToUTF16(" ")));
+  node_data->SetName(base::JoinString(text, u" "));
 
   // Options are selectable.
   node_data->role = ax::mojom::Role::kListBoxOption;

@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressInstanceTest,
 
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   WaitForObservedEvent();
 

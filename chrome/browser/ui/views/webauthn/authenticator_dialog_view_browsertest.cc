@@ -29,9 +29,7 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   ~TestSheetModel() override = default;
 
   // Getters for data on step specific content:
-  std::u16string GetStepSpecificLabelText() {
-    return base::ASCIIToUTF16("Test Label");
-  }
+  std::u16string GetStepSpecificLabelText() { return u"Test Label"; }
 
  private:
   // AuthenticatorRequestSheetModel:
@@ -39,23 +37,19 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   bool IsBackButtonVisible() const override { return true; }
   bool IsCancelButtonVisible() const override { return true; }
   std::u16string GetCancelButtonLabel() const override {
-    return base::ASCIIToUTF16("Test Cancel");
+    return u"Test Cancel";
   }
 
   bool IsAcceptButtonVisible() const override { return true; }
   bool IsAcceptButtonEnabled() const override { return true; }
-  std::u16string GetAcceptButtonLabel() const override {
-    return base::ASCIIToUTF16("Test OK");
-  }
+  std::u16string GetAcceptButtonLabel() const override { return u"Test OK"; }
 
   const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const override {
     return gfx::kNoneIcon;
   }
 
-  std::u16string GetStepTitle() const override {
-    return base::ASCIIToUTF16("Test Title");
-  }
+  std::u16string GetStepTitle() const override { return u"Test Title"; }
 
   std::u16string GetStepDescription() const override {
     return base::ASCIIToUTF16(
@@ -64,11 +58,11 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   }
 
   std::u16string GetAdditionalDescription() const override {
-    return base::ASCIIToUTF16("More description text.");
+    return u"More description text.";
   }
 
   std::u16string GetError() const override {
-    return base::ASCIIToUTF16("You must construct additional pylons.");
+    return u"You must construct additional pylons.";
   }
 
   ui::MenuModel* GetOtherTransportsMenuModel() override { return nullptr; }

@@ -72,8 +72,7 @@ class SendTabToSelfSubMenuModelTest : public BrowserWithTestWindowTest {
     // Set up all test conditions to let ShouldOfferFeature() return true.
     GURL url("https://www.test.com");
     AddTab(browser(), url);
-    NavigateAndCommitActiveTabWithTitle(browser(), url,
-                                        base::ASCIIToUTF16("test"));
+    NavigateAndCommitActiveTabWithTitle(browser(), url, u"test");
   }
 
   void SetUpTestService() {

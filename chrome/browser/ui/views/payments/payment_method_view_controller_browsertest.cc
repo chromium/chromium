@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
 
   // Slightly different visa.
   autofill::CreditCard card2 = autofill::test::GetCreditCard();
-  card2.SetNumber(base::ASCIIToUTF16("4111111111111112"));
+  card2.SetNumber(u"4111111111111112");
   card2.set_billing_address_id(billing_profile.guid());
   card2.set_use_count(1U);
   AddCreditCard(card2);

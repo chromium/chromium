@@ -62,8 +62,9 @@ bool EditSearchEngineController::IsURLValid(
   // Replace any search term with a placeholder string and make sure the
   // resulting URL is valid.
   return GURL(template_ref.ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16("x")),
-      service->search_terms_data())).is_valid();
+                  TemplateURLRef::SearchTermsArgs(u"x"),
+                  service->search_terms_data()))
+      .is_valid();
 }
 
 bool EditSearchEngineController::IsKeywordValid(
@@ -148,7 +149,7 @@ std::string EditSearchEngineController::GetFixedUpURL(
   data.SetURL(url);
   TemplateURL t_url(data);
   std::string expanded_url(t_url.url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16("x")),
+      TemplateURLRef::SearchTermsArgs(u"x"),
       TemplateURLServiceFactory::GetForProfile(profile_)->search_terms_data()));
   url::Parsed parts;
   std::string scheme(url_formatter::SegmentURL(expanded_url, &parts));

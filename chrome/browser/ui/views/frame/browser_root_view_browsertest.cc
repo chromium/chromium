@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 // Make sure plain string is droppable. http://crbug.com/838794
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
   ui::OSExchangeData data;
-  data.SetString(base::ASCIIToUTF16("Plain string"));
+  data.SetString(u"Plain string");
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                             ui::DragDropTypes::DRAG_COPY);
 

@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
 
   // Once "Pay" is clicked, the page will call complete('fail') and the error
   // message should be shown.
-  OpenCVCPromptWithCVC(base::ASCIIToUTF16("123"));
+  OpenCVCPromptWithCVC(u"123");
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,

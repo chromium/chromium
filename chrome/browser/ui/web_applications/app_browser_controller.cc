@@ -495,7 +495,7 @@ std::u16string AppBrowserController::GetTitle() const {
   } else if (raw_title.empty()) {
     return app_name;
   } else {
-    return base::StrCat({app_name, base::ASCIIToUTF16(" - "), raw_title});
+    return base::StrCat({app_name, u" - ", raw_title});
   }
 }
 

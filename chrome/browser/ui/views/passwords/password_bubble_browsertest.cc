@@ -50,8 +50,8 @@ class PasswordBubbleBrowserTest
       ExecuteManagePasswordsCommand();
     } else if (StartsWith(name, "AutoSignin", base::CompareCase::SENSITIVE)) {
       test_form()->url = GURL("https://example.com");
-      test_form()->display_name = base::ASCIIToUTF16("Peter");
-      test_form()->username_value = base::ASCIIToUTF16("pet12@gmail.com");
+      test_form()->display_name = u"Peter";
+      test_form()->username_value = u"pet12@gmail.com";
       std::vector<std::unique_ptr<password_manager::PasswordForm>>
           local_credentials;
       local_credentials.push_back(

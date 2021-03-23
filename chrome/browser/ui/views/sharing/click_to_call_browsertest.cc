@@ -348,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -378,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -454,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
   EXPECT_NE(nullptr, click_to_call_icon->GetBubble());

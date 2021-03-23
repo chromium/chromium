@@ -17,13 +17,12 @@ namespace payments {
 
 autofill::AutofillProfile CreateProfileWithPartialAddress() {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
-  profile.SetRawInfo(autofill::ADDRESS_HOME_ADDRESS, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS,
-                     base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, base::ASCIIToUTF16(""));
-  profile.SetRawInfo(autofill::ADDRESS_HOME_STATE, base::ASCIIToUTF16(""));
+  profile.SetRawInfo(autofill::ADDRESS_HOME_ADDRESS, u"");
+  profile.SetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS, u"");
+  profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1, u"");
+  profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2, u"");
+  profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, u"");
+  profile.SetRawInfo(autofill::ADDRESS_HOME_STATE, u"");
   return profile;
 }
 
@@ -73,8 +72,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
     constexpr int kId = static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1);
     return static_cast<views::Label*>(sheet->children()[num]->GetViewByID(kId));
   };
-  EXPECT_EQ(base::ASCIIToUTF16("John H. Doe"), get_label(0)->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("Jane A. Smith"), get_label(1)->GetText());
+  EXPECT_EQ(u"John H. Doe", get_label(0)->GetText());
+  EXPECT_EQ(u"Jane A. Smith", get_label(1)->GetText());
 }
 
 }  // namespace payments

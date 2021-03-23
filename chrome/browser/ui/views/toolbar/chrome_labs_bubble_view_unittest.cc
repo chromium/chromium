@@ -160,25 +160,20 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
  private:
   std::vector<LabInfo> TestLabInfo() {
     std::vector<LabInfo> test_feature_info;
-    test_feature_info.emplace_back(
-        LabInfo(kFirstTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
+    test_feature_info.emplace_back(LabInfo(kFirstTestFeatureId, u"", u"", "",
+                                           version_info::Channel::STABLE));
 
-    std::vector<std::u16string> variation_descriptions = {
-        base::ASCIIToUTF16("Description")};
+    std::vector<std::u16string> variation_descriptions = {u"Description"};
 
     test_feature_info.emplace_back(
-        LabInfo(kTestFeatureWithVariationId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE,
-                variation_descriptions));
+        LabInfo(kTestFeatureWithVariationId, u"", u"", "",
+                version_info::Channel::STABLE, variation_descriptions));
 
-    test_feature_info.emplace_back(
-        LabInfo(kThirdTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
+    test_feature_info.emplace_back(LabInfo(kThirdTestFeatureId, u"", u"", "",
+                                           version_info::Channel::STABLE));
 
-    test_feature_info.emplace_back(
-        LabInfo(kExpiredFlagTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
+    test_feature_info.emplace_back(LabInfo(kExpiredFlagTestFeatureId, u"", u"",
+                                           "", version_info::Channel::STABLE));
 
     return test_feature_info;
   }

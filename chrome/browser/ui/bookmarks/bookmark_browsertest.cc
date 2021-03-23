@@ -193,8 +193,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
 
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   GURL bookmark_url = embedded_test_server()->GetURL("example.test", "/");
-  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url,
-                                base::ASCIIToUTF16("Bookmark"));
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
 
   TestBookmarkTabHelperObserver bookmark_observer;
   content::WebContents* web_contents =
@@ -222,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
 // generation for dragging a single bookmark.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const std::u16string page_title(base::ASCIIToUTF16("foo"));
+  const std::u16string page_title(u"foo");
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node = model->AddURL(root, 0, page_title, page_url);
@@ -269,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
 // generation for dragging multiple bookmarks.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const std::u16string page_title(base::ASCIIToUTF16("foo"));
+  const std::u16string page_title(u"foo");
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
@@ -325,24 +324,24 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForDuplicates) {
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   const BookmarkNode* parent = bookmarks::GetParentForNewNodes(bookmark_model);
   const BookmarkNode* other_parent =
-      bookmark_model->AddFolder(parent, 0, base::ASCIIToUTF16("Folder"));
+      bookmark_model->AddFolder(parent, 0, u"Folder");
 
   // Add one bookmark with a unique URL, two other bookmarks with a shared URL,
   // and three more with another shared URL.
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title1"), GURL("http://a.com"));
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title2"), GURL("http://b.com"));
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title3"), GURL("http://b.com"));
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title4"), GURL("http://c.com"));
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title5"), GURL("http://c.com"));
-  bookmark_model->AddURL(parent, parent->children().size(),
-                         base::ASCIIToUTF16("title5"), GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title1",
+                         GURL("http://a.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title2",
+                         GURL("http://b.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title3",
+                         GURL("http://b.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title4",
+                         GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title5",
+                         GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), u"title5",
+                         GURL("http://c.com"));
   bookmark_model->AddURL(other_parent, other_parent->children().size(),
-                         base::ASCIIToUTF16("title5"), GURL("http://c.com"));
+                         u"title5", GURL("http://c.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {

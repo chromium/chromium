@@ -187,9 +187,9 @@ views::Widget* OmniboxPopupContentsViewTest::CreatePopupForTestQuery() {
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
-  edit_model()->SetUserText(base::ASCIIToUTF16("foo"));
+  edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
-      base::ASCIIToUTF16("foo"), metrics::OmniboxEventProto::BLANK,
+      u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
   popup_model()->autocomplete_controller()->Start(input);
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
   // should deselect the text);
   omnibox_view()->SelectAll(true);
   views::Textfield* textfield = omnibox_view();
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), textfield->GetSelectedText());
+  EXPECT_EQ(u"foo", textfield->GetSelectedText());
 
   generator.MoveMouseTo(location_bar()->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
@@ -409,11 +409,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   AutocompleteController* controller = popup_model()->autocomplete_controller();
-  match.contents = base::ASCIIToUTF16("https://foobar.com");
-  match.description = base::ASCIIToUTF16("FooBarCom");
+  match.contents = u"https://foobar.com";
+  match.description = u"FooBarCom";
   matches.push_back(match);
-  match.contents = base::ASCIIToUTF16("https://foobarbaz.com");
-  match.description = base::ASCIIToUTF16("FooBarBazCom");
+  match.contents = u"https://foobarbaz.com";
+  match.description = u"FooBarBazCom";
   matches.push_back(match);
   controller->result_.AppendMatches(controller->input_, matches);
   popup_view()->UpdatePopupAppearance();
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 
   // Changing the user text while in the input rather than the list should not
   // result in a text/name change accessibility event.
-  edit_model()->SetUserText(base::ASCIIToUTF16("bar"));
+  edit_model()->SetUserText(u"bar");
   edit_model()->StartAutocomplete(false, false);
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
@@ -483,8 +483,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   AutocompleteController* controller = popup_model()->autocomplete_controller();
-  match.contents = base::ASCIIToUTF16("https://foobar.com");
-  match.description = base::ASCIIToUTF16("The Foo Of All Bars");
+  match.contents = u"https://foobar.com";
+  match.description = u"The Foo Of All Bars";
   match.has_tab_match = true;
   matches.push_back(match);
   controller->result_.AppendMatches(controller->input_, matches);
@@ -535,22 +535,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
                        EmitSelectedChildrenChangedAccessibilityEvent) {
   // Create a popup for the matches.
   GetPopupWidget();
-  edit_model()->SetUserText(base::ASCIIToUTF16("foo"));
+  edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
-      base::ASCIIToUTF16("foo"), metrics::OmniboxEventProto::BLANK,
+      u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_want_asynchronous_matches(false);
   popup_model()->autocomplete_controller()->Start(input);
 
   // Create a match to populate the autocomplete.
-  std::u16string match_url = base::ASCIIToUTF16("https://foobar.com");
+  std::u16string match_url = u"https://foobar.com";
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
   match.destination_url = GURL(match_url);
-  match.description = base::ASCIIToUTF16("Foobar");
+  match.description = u"Foobar";
   match.allowed_to_be_default_match = true;
 
   AutocompleteController* autocomplete_controller =

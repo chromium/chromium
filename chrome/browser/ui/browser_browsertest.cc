@@ -375,11 +375,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitle) {
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File)));
   EXPECT_EQ(
-      LocaleWindowCaptionFromPageTitle(ASCIIToUTF16("title1.html")),
+      LocaleWindowCaptionFromPageTitle(u"title1.html"),
       browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
-  EXPECT_EQ(ASCIIToUTF16("title1.html"), tab_title);
+  EXPECT_EQ(u"title1.html", tab_title);
 }
 
 // Check that a file:// URL displays the filename, but no path, with any ref or
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
       browser(), ui_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle2File)));
-  const std::u16string test_title(ASCIIToUTF16("Title Of Awesomeness"));
+  const std::u16string test_title(u"Title Of Awesomeness");
   EXPECT_EQ(
       LocaleWindowCaptionFromPageTitle(test_title),
       browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     content::WebContentsConsoleObserver confirm_observer(second_tab);
     confirm_observer.SetPattern("*confirm*suppressed*");
     second_tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        ASCIIToUTF16("confirm('Activate!');"), base::NullCallback());
+        u"confirm('Activate!');", base::NullCallback());
     confirm_observer.Wait();
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     content::WebContentsConsoleObserver prompt_observer(second_tab);
     prompt_observer.SetPattern("*prompt*suppressed*");
     second_tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        ASCIIToUTF16("prompt('Activate!');"), base::NullCallback());
+        u"prompt('Activate!');", base::NullCallback());
     prompt_observer.Wait();
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -514,8 +514,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
       javascript_dialogs::TabModalDialogManager::FromWebContents(second_tab);
   base::RunLoop alert_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(alert_wait.QuitClosure());
-  second_tab->GetMainFrame()->ExecuteJavaScriptForTests(
-      ASCIIToUTF16("alert('Activate!');"), base::NullCallback());
+  second_tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert('Activate!');",
+                                                        base::NullCallback());
   alert_wait.Run();
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CrossProcessNavCancelsDialogs) {
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      ASCIIToUTF16("alert('one'); alert('two');"), base::NullCallback());
+      u"alert('one'); alert('two');", base::NullCallback());
   dialog_wait.Run();
   EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
 
@@ -725,8 +725,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, SadTabCancelsDialogs) {
 
   // Start a navigation to trigger the beforeunload dialog.
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      ASCIIToUTF16("window.location.href = 'about:blank'"),
-      base::NullCallback());
+      u"window.location.href = 'about:blank'", base::NullCallback());
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(alert->IsValid());
   AppModalDialogQueue* dialog_queue = AppModalDialogQueue::GetInstance();
@@ -799,8 +798,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ReloadThenCancelBeforeUnload) {
   EXPECT_FALSE(contents->IsLoading());
 
   // Clear the beforeunload handler so the test can easily exit.
-  contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      ASCIIToUTF16("onbeforeunload=null;"), base::NullCallback());
+  contents->GetMainFrame()->ExecuteJavaScriptForTests(u"onbeforeunload=null;",
+                                                      base::NullCallback());
 }
 
 // Test for crbug.com/11647.  A page closed with window.close() should not have
@@ -822,8 +821,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
       ->tab_strip_model()
       ->GetWebContentsAt(0)
       ->GetMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(
-          ASCIIToUTF16("w.close(); alert('bar');"));
+      ->ExecuteJavaScriptWithUserGestureForTests(u"w.close(); alert('bar');");
   AppModalDialogController* alert = ui_test_utils::WaitForAppModalDialog();
   alert->view()->AcceptAppModalDialog();
 
@@ -2018,7 +2016,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose1) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = u"Title Of Awesomeness";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2035,7 +2033,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = u"Title Of Awesomeness";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2058,7 +2056,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = u"Title Of Awesomeness";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2090,10 +2088,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
       base::FilePath(),
       base::FilePath().AppendASCII("fileurl_universalaccess.html"));
 
-  std::u16string expected_title(ASCIIToUTF16("Disallowed"));
+  std::u16string expected_title(u"Disallowed");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-  title_watcher.AlsoWaitForTitle(ASCIIToUTF16("Allowed"));
+  title_watcher.AlsoWaitForTitle(u"Allowed");
   ui_test_utils::NavigateToURL(browser(), url);
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -2284,15 +2282,11 @@ IN_PROC_BROWSER_TEST_F(AppModeTest, EnableAppModeTest) {
 IN_PROC_BROWSER_TEST_F(BrowserTest, AboutVersion) {
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_GT(ui_test_utils::FindInPage(tab, ASCIIToUTF16("WebKit"), true, true,
-                                      NULL, NULL),
+  ASSERT_GT(ui_test_utils::FindInPage(tab, u"WebKit", true, true, NULL, NULL),
             0);
-  ASSERT_GT(ui_test_utils::FindInPage(tab, ASCIIToUTF16("OS"), true, true, NULL,
-                                      NULL),
-            0);
-  ASSERT_GT(ui_test_utils::FindInPage(tab, ASCIIToUTF16("JavaScript"), true,
-                                      true, NULL, NULL),
-            0);
+  ASSERT_GT(ui_test_utils::FindInPage(tab, u"OS", true, true, NULL, NULL), 0);
+  ASSERT_GT(
+      ui_test_utils::FindInPage(tab, u"JavaScript", true, true, NULL, NULL), 0);
 }
 
 static const base::FilePath::CharType* kTestDir =
@@ -2670,8 +2664,8 @@ namespace {
 void CheckDisplayModeMQ(const std::u16string& display_mode,
                         content::WebContents* web_contents) {
   std::u16string function =
-      ASCIIToUTF16("(function() {return window.matchMedia('(display-mode: ") +
-      display_mode + ASCIIToUTF16(")').matches;})();");
+      u"(function() {return window.matchMedia('(display-mode: " + display_mode +
+      u")').matches;})();";
   bool js_result = false;
   base::RunLoop run_loop;
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
@@ -2691,13 +2685,13 @@ void CheckDisplayModeMQ(const std::u16string& display_mode,
 
 // flaky new test: http://crbug.com/471703
 IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
-  CheckDisplayModeMQ(ASCIIToUTF16("browser"),
+  CheckDisplayModeMQ(u"browser",
                      browser()->tab_strip_model()->GetActiveWebContents());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   Browser* app_browser = CreateBrowserForApp("blah", profile);
   auto* app_contents = app_browser->tab_strip_model()->GetActiveWebContents();
-  CheckDisplayModeMQ(ASCIIToUTF16("standalone"), app_contents);
+  CheckDisplayModeMQ(u"standalone", app_contents);
 
   app_browser->exclusive_access_manager()->context()->EnterFullscreen(
       GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
@@ -2709,7 +2703,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
   ui_test_utils::NavigateToURL(app_browser, GURL(url::kAboutBlankURL));
   observer.Wait();
 
-  CheckDisplayModeMQ(ASCIIToUTF16("fullscreen"), app_contents);
+  CheckDisplayModeMQ(u"fullscreen", app_contents);
 }
 
 // Test to ensure the bounds of popup, devtool, and app windows are properly

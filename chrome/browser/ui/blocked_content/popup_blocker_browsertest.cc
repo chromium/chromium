@@ -179,13 +179,12 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
   // kExpectNewWindow.
   //
   // Returns the WebContents of the launched popup.
-  WebContents* RunCheckTest(
-      Browser* browser,
-      const std::string& test_name,
-      WindowOpenDisposition disposition,
-      WhatToExpect what_to_expect,
-      ShouldCheckTitle check_title,
-      const std::u16string& expected_title = base::ASCIIToUTF16("PASS")) {
+  WebContents* RunCheckTest(Browser* browser,
+                            const std::string& test_name,
+                            WindowOpenDisposition disposition,
+                            WhatToExpect what_to_expect,
+                            ShouldCheckTitle check_title,
+                            const std::u16string& expected_title = u"PASS") {
     GURL url(embedded_test_server()->GetURL(test_name));
 
     ui_test_utils::NavigateToURL(browser, url);
@@ -463,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 
   // Make sure the navigation in the new tab actually finished.
   WebContents* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  std::u16string expected_title(base::ASCIIToUTF16("Popup Success!"));
+  std::u16string expected_title(u"Popup Success!");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   WaitForHistoryBackendToRun(browser()->profile());
@@ -570,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpenerSuppressed) {
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ShiftClick) {
   RunCheckTest(browser(), "/popup_blocker/popup-fake-click-on-anchor3.html",
                WindowOpenDisposition::CURRENT_TAB, kExpectPopup, kCheckTitle,
-               base::ASCIIToUTF16("Popup Success!"));
+               u"Popup Success!");
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, WebUI) {

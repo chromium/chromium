@@ -224,14 +224,14 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredState) {
 
 TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   // Check accessibility of result.
-  std::u16string match_url = base::ASCIIToUTF16("https://google.com");
+  std::u16string match_url = u"https://google.com";
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
   match.destination_url = GURL(match_url);
-  match.description = base::ASCIIToUTF16("Google");
+  match.description = u"Google";
   match.allowed_to_be_default_match = true;
   result_view()->SetMatch(match);
   ui::AXNodeData result_node_data;
@@ -244,7 +244,7 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   // TODO(tommycli) Find a way to test this.
   // EXPECT_EQ(
   //   result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-  //   base::ASCIIToUTF16("Google https://google.com location from history"));
+  //   u"Google https://google.com location from history");
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);

@@ -400,7 +400,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     // The test HTML files used in these tests contain "play()" functions that
     // play the video.
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("play()"), base::NullCallback());
+        u"play()", base::NullCallback());
   }
 
   void WaitForStart() {
@@ -419,12 +419,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void DisablePictureInPicture() {
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("disablePictureInPicture()"), base::NullCallback());
+        u"disablePictureInPicture()", base::NullCallback());
   }
 
   void EnablePictureInPicture() {
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("enablePictureInPicture()"), base::NullCallback());
+        u"enablePictureInPicture()", base::NullCallback());
   }
 
   void WaitForEnterPictureInPicture() {
@@ -639,8 +639,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -699,8 +699,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -749,10 +749,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   EXPECT_TRUE(IsDialogVisible());
 
   // The dialog should show both media sessions.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Different Title"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Another Artist"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
+  WaitForDialogToContainText(u"Different Title");
+  WaitForDialogToContainText(u"Another Artist");
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
@@ -780,14 +780,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsDialogVisible());
 
   // Wait for the dialog to be populated.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Different Title"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Different Title");
 
   // The second tab should be the active tab.
   EXPECT_EQ(second_web_contents, GetActiveWebContents());
 
   // Clicking the first notification should make the first tab active.
-  ClickNotificationByTitle(base::ASCIIToUTF16("Big Buck Bunny"));
+  ClickNotificationByTitle(u"Big Buck Bunny");
   EXPECT_EQ(first_web_contents, GetActiveWebContents());
 }
 

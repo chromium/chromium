@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnTextChanged) {
   frontend->Show(browser());
   ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
 
-  const std::u16string input = base::ASCIIToUTF16("orange");
+  const std::u16string input = u"orange";
   frontend->OnTextChanged(input);
   ASSERT_EQ(backend_->text_changed_invocations().size(), 1u);
   EXPECT_EQ(backend_->text_changed_invocations().back(), input);

@@ -1261,15 +1261,14 @@ void DownloadItemView::ExecuteCommand(DownloadCommands::Command command) {
   commands_.ExecuteCommand(command);
 }
 
-DEFINE_ENUM_CONVERTERS(
-    DownloadItemView::Mode,
-    {DownloadItemView::Mode::kNormal, base::ASCIIToUTF16("kNormal")},
-    {DownloadItemView::Mode::kDangerous, base::ASCIIToUTF16("kDangerous")},
-    {DownloadItemView::Mode::kMalicious, base::ASCIIToUTF16("kMalicious")},
-    {DownloadItemView::Mode::kMixedContentWarn,
-     base::ASCIIToUTF16("kMixedContentWarn")},
-    {DownloadItemView::Mode::kMixedContentBlock,
-     base::ASCIIToUTF16("kMixedContentBlock")})
+DEFINE_ENUM_CONVERTERS(DownloadItemView::Mode,
+                       {DownloadItemView::Mode::kNormal, u"kNormal"},
+                       {DownloadItemView::Mode::kDangerous, u"kDangerous"},
+                       {DownloadItemView::Mode::kMalicious, u"kMalicious"},
+                       {DownloadItemView::Mode::kMixedContentWarn,
+                        u"kMixedContentWarn"},
+                       {DownloadItemView::Mode::kMixedContentBlock,
+                        u"kMixedContentBlock"})
 
 BEGIN_METADATA(DownloadItemView, views::View)
 ADD_READONLY_PROPERTY_METADATA(Mode, Mode)

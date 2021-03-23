@@ -49,8 +49,8 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     DesktopMediaPicker::Params picker_params;
     picker_params.web_contents = web_contents;
     picker_params.context = native_window;
-    picker_params.app_name = base::ASCIIToUTF16("app_name");
-    picker_params.target_name = base::ASCIIToUTF16("target_name");
+    picker_params.app_name = u"app_name";
+    picker_params.target_name = u"target_name";
     picker_params.request_audio = true;
     picker_->Show(picker_params, std::move(sources),
                   DesktopMediaPicker::DoneCallback());
@@ -96,18 +96,18 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_default) {
 
         // Fill in a bit of test data for nicer UI screenshots :)
         sources[1]->AddSource(0);
-        sources[1]->SetSourceName(0, base::ASCIIToUTF16("Warty Warthog"));
+        sources[1]->SetSourceName(0, u"Warty Warthog");
         sources[1]->AddSource(1);
-        sources[1]->SetSourceName(1, base::ASCIIToUTF16("Hoary Hedgehog"));
+        sources[1]->SetSourceName(1, u"Hoary Hedgehog");
         sources[1]->AddSource(2);
-        sources[1]->SetSourceName(2, base::ASCIIToUTF16("Breezy Badger"));
+        sources[1]->SetSourceName(2, u"Breezy Badger");
 
         sources[2]->AddSource(0);
-        sources[2]->SetSourceName(0, base::ASCIIToUTF16("Dapper Drake"));
+        sources[2]->SetSourceName(0, u"Dapper Drake");
         sources[2]->AddSource(1);
-        sources[2]->SetSourceName(1, base::ASCIIToUTF16("Edgy Eft"));
+        sources[2]->SetSourceName(1, u"Edgy Eft");
         sources[2]->AddSource(2);
-        sources[2]->SetSourceName(2, base::ASCIIToUTF16("Feisty Fawn"));
+        sources[2]->SetSourceName(2, u"Feisty Fawn");
       });
   ShowAndVerifyUi();
 }
@@ -118,11 +118,11 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
         sources[0]->AddSource(0);
-        sources[0]->SetSourceName(0, base::ASCIIToUTF16("Dapper Drake"));
+        sources[0]->SetSourceName(0, u"Dapper Drake");
         sources[0]->AddSource(1);
-        sources[0]->SetSourceName(1, base::ASCIIToUTF16("Edgy Eft"));
+        sources[0]->SetSourceName(1, u"Edgy Eft");
         sources[0]->AddSource(2);
-        sources[0]->SetSourceName(2, base::ASCIIToUTF16("Feisty Fawn"));
+        sources[0]->SetSourceName(2, u"Feisty Fawn");
       });
   override_source_lists_.push_back(std::make_unique<FakeDesktopMediaList>(
       DesktopMediaList::Type::kWebContents));

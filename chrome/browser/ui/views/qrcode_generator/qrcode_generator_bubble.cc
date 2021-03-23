@@ -387,7 +387,7 @@ bool QRCodeGeneratorBubble::HandleMouseEvent(
 const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     const GURL& url) {
   if (!url.has_host() || url.HostIsIPAddress())
-    return base::ASCIIToUTF16("qrcode_chrome.png");
+    return u"qrcode_chrome.png";
 
   return base::ASCIIToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }

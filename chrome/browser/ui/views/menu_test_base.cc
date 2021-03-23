@@ -73,7 +73,7 @@ void MenuTestBase::TearDown() {
 std::unique_ptr<views::View> MenuTestBase::CreateContentsView() {
   auto button = std::make_unique<views::MenuButton>(
       base::BindRepeating(&MenuTestBase::ButtonPressed, base::Unretained(this)),
-      base::ASCIIToUTF16("Menu Test"));
+      u"Menu Test");
   button_ = button.get();
   return button;
 }

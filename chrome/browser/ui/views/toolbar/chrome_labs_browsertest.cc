@@ -31,8 +31,7 @@ class ChromeLabsUiTest : public DialogBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     std::vector<LabInfo> test_feature_info = {
-        {kFirstTestFeatureId, base::ASCIIToUTF16("Feature 1"),
-         base::ASCIIToUTF16("Feature description"), "",
+        {kFirstTestFeatureId, u"Feature 1", u"Feature description", "",
          version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
   }

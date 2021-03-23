@@ -127,8 +127,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   SetAccessibleName(subtitle_text.empty()
                         ? title_text
-                        : base::JoinString({title_text, subtitle_text},
-                                           base::ASCIIToUTF16("\n")));
+                        : base::JoinString({title_text, subtitle_text}, u"\n"));
 
   // Per WebAuthn UI specs, the top/bottom insets of hover buttons are 12dp for
   // a one-line button, and 8dp for a two-line button. Left/right insets are

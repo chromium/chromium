@@ -389,7 +389,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
     EXPECT_EQ(kHarmonyHeights[i].line_height,
               views::style::GetLineHeight(kHarmonyHeights[i].context, kStyle));
 
-    views::Label label(base::ASCIIToUTF16("test"), kHarmonyHeights[i].context);
+    views::Label label(u"test", kHarmonyHeights[i].context);
     label.SizeToPreferredSize();
     EXPECT_EQ(kHarmonyHeights[i].line_height, label.height());
   }
@@ -400,7 +400,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   EXPECT_EQ(kBodyLineHeight,
             views::style::GetLineHeight(views::style::CONTEXT_LABEL, kStyle));
   views::StyledLabel styled_label;
-  styled_label.SetText(base::ASCIIToUTF16("test"));
+  styled_label.SetText(u"test");
   constexpr int kStyledLabelWidth = 200;  // Enough to avoid wrapping.
   styled_label.SizeToFit(kStyledLabelWidth);
   EXPECT_EQ(kBodyLineHeight, styled_label.height());

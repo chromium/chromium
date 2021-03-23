@@ -36,8 +36,7 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     std::vector<LabInfo> test_feature_info = {
-        {kFirstTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16(""),
-         "", version_info::Channel::STABLE}};
+        {kFirstTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
 
     TestWithBrowserView::SetUp();
@@ -81,8 +80,7 @@ class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
     scoped_feature_list_.InitAndEnableFeature(features::kChromeLabs);
 
     std::vector<LabInfo> test_feature_info = {
-        {kSecondTestFeatureId, base::ASCIIToUTF16(""), base::ASCIIToUTF16(""),
-         "", version_info::Channel::STABLE}};
+        {kSecondTestFeatureId, u"", u"", "", version_info::Channel::STABLE}};
     scoped_chrome_labs_model_data_.SetModelDataForTesting(test_feature_info);
 
     TestWithBrowserView::SetUp();

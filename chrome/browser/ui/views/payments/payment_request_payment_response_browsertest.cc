@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAutofillPaymentAppTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the card details were sent to the merchant.
   ExpectBodyContains(
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseShippingAddressTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the shipping address was sent to the merchant.
   ExpectBodyContains(
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseAllContactDetailsTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the contact details were sent to the merchant.
   ExpectBodyContains({"\"payerName\": \"John H. Doe\"",
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   ExpectBodyContains({"\"payerName\": \"John H. Doe\"",
                       "\"payerEmail\": \"johndoe@hades.com\"",
                       "\"payerPhone\": \"+16502111111\""});
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentResponseOneContactDetailTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Test that the contact details were sent to the merchant.
   ExpectBodyContains({"\"payerName\": null",

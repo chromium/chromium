@@ -58,9 +58,9 @@ TEST_F(FindBackendTest, InternalState) {
   EXPECT_EQ(std::u16string(), FindPrepopulateText(contents2.get()));
   EXPECT_EQ(std::u16string(), find_tab_helper2->find_text());
 
-  std::u16string search_term1 = base::ASCIIToUTF16(" I had a 401K    ");
-  std::u16string search_term2 = base::ASCIIToUTF16(" but the economy ");
-  std::u16string search_term3 = base::ASCIIToUTF16(" eated it.       ");
+  std::u16string search_term1 = u" I had a 401K    ";
+  std::u16string search_term2 = u" but the economy ";
+  std::u16string search_term3 = u" eated it.       ";
 
   // Start searching in the first WebContents.
   find_tab_helper->StartFinding(search_term1, true /* forward_direction */,

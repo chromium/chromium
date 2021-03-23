@@ -218,7 +218,7 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuEmpty) {
 TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
   NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
 
-  const std::u16string short_url = base::ASCIIToUTF16("http://foo/");
+  const std::u16string short_url = u"http://foo/";
   const std::u16string long_url =
       base::ASCIIToUTF16("http://super-duper-long-url--."
                          "that.cannot.possibly.fit.even-in-80-columns"
@@ -366,7 +366,7 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
 TEST_F(HistoryMenuBridgeTest, GetFaviconForHistoryItem) {
   // Create a fake item.
   HistoryMenuBridge::HistoryItem item;
-  item.title = base::ASCIIToUTF16("Title");
+  item.title = u"Title";
   item.url = GURL("http://google.com");
 
   // Request the icon.

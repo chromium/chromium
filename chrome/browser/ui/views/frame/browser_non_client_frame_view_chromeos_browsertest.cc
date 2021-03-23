@@ -1042,7 +1042,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   EXPECT_FALSE(manage_passwords_icon->GetVisible());
 
   password_manager::PasswordForm password_form;
-  password_form.username_value = base::ASCIIToUTF16("test");
+  password_form.username_value = u"test";
   password_form.url = GetAppURL().GetOrigin();
   PasswordsClientUIDelegateFromWebContents(web_contents)
       ->OnPasswordAutofilled({&password_form},

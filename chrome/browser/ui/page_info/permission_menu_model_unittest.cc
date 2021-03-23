@@ -123,19 +123,17 @@ TEST_F(PermissionMenuModelTest, TestSerialGuard) {
   PermissionMenuModel default_ask_model(delegate(), permission,
                                         callback.callback());
   ASSERT_EQ(3, default_ask_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            default_ask_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_ask_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_ask_model.GetLabelAt(2));
+  EXPECT_EQ(u"Ask (default)", default_ask_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_ask_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_ask_model.GetLabelAt(2));
 
   permission.default_setting = CONTENT_SETTING_BLOCK;
   PermissionMenuModel default_block_model(delegate(), permission,
                                           callback.callback());
   ASSERT_EQ(3, default_block_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Block (default)"),
-            default_block_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_block_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_block_model.GetLabelAt(2));
+  EXPECT_EQ(u"Block (default)", default_block_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_block_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_block_model.GetLabelAt(2));
 }
 
 TEST_F(PermissionMenuModelTest, TestBluetoothScanning) {
@@ -149,19 +147,17 @@ TEST_F(PermissionMenuModelTest, TestBluetoothScanning) {
   PermissionMenuModel default_ask_model(delegate(), permission,
                                         callback.callback());
   ASSERT_EQ(3, default_ask_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            default_ask_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_ask_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_ask_model.GetLabelAt(2));
+  EXPECT_EQ(u"Ask (default)", default_ask_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_ask_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_ask_model.GetLabelAt(2));
 
   permission.default_setting = CONTENT_SETTING_BLOCK;
   PermissionMenuModel default_block_model(delegate(), permission,
                                           callback.callback());
   ASSERT_EQ(3, default_block_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Block (default)"),
-            default_block_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_block_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_block_model.GetLabelAt(2));
+  EXPECT_EQ(u"Block (default)", default_block_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_block_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_block_model.GetLabelAt(2));
 }
 
 TEST_F(PermissionMenuModelTest, TestHidGuard) {
@@ -175,17 +171,15 @@ TEST_F(PermissionMenuModelTest, TestHidGuard) {
   PermissionMenuModel default_ask_model(delegate(), permission,
                                         callback.callback());
   ASSERT_EQ(3, default_ask_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            default_ask_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_ask_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_ask_model.GetLabelAt(2));
+  EXPECT_EQ(u"Ask (default)", default_ask_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_ask_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_ask_model.GetLabelAt(2));
 
   permission.default_setting = CONTENT_SETTING_BLOCK;
   PermissionMenuModel default_block_model(delegate(), permission,
                                           callback.callback());
   ASSERT_EQ(3, default_block_model.GetItemCount());
-  EXPECT_EQ(base::ASCIIToUTF16("Block (default)"),
-            default_block_model.GetLabelAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), default_block_model.GetLabelAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), default_block_model.GetLabelAt(2));
+  EXPECT_EQ(u"Block (default)", default_block_model.GetLabelAt(0));
+  EXPECT_EQ(u"Block", default_block_model.GetLabelAt(1));
+  EXPECT_EQ(u"Ask", default_block_model.GetLabelAt(2));
 }

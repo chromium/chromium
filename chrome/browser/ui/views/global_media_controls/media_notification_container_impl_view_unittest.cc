@@ -201,9 +201,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
 
   void SimulateMetadataChanged() {
     media_session::MediaMetadata metadata;
-    metadata.source_title = base::ASCIIToUTF16("source_title2");
-    metadata.title = base::ASCIIToUTF16("title2");
-    metadata.artist = base::ASCIIToUTF16("artist2");
+    metadata.source_title = u"source_title2";
+    metadata.title = u"title2";
+    metadata.artist = u"artist2";
     GetView()->UpdateWithMediaMetadata(metadata);
   }
 
@@ -263,9 +263,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     SimulateSessionInfo(true);
 
     media_session::MediaMetadata metadata;
-    metadata.source_title = base::ASCIIToUTF16("source_title");
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.source_title = u"source_title";
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     GetView()->UpdateWithMediaMetadata(metadata);
 
     SimulateOnlyPlayPauseEnabled();

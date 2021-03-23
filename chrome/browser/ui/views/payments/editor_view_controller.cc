@@ -356,7 +356,7 @@ views::View* EditorViewController::CreateInputField(views::GridLayout* layout,
                               views::GridLayout::kFixedSize, kInputRowSpacing);
 
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      field.required ? field.label + base::ASCIIToUTF16("*") : field.label);
+      field.required ? field.label + u"*" : field.label);
 
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

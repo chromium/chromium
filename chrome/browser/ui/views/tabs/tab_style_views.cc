@@ -966,7 +966,7 @@ std::u16string views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
 base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
     TabStyle::TabColors>::FromString(const std::u16string& source_value) {
   std::u16string trimmed_string;
-  base::TrimString(source_value, base::ASCIIToUTF16("{ }"), &trimmed_string);
+  base::TrimString(source_value, u"{ }", &trimmed_string);
   std::u16string::const_iterator color_pos = trimmed_string.cbegin();
   const auto foreground_color = SkColorConverter::GetNextColor(
       color_pos, trimmed_string.cend(), color_pos);

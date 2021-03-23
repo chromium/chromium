@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   CheckPaymentSupportAndThenShow();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentMetricsTest,
   WaitForObservedEvent();
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure that no canMakePayment events were logged.
   std::vector<base::Bucket> buckets =

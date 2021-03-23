@@ -234,8 +234,7 @@ void HoverButton::SetTooltipAndAccessibleName() {
   const std::u16string accessible_name =
       subtitle_ == nullptr
           ? title_->GetText()
-          : base::JoinString({title_->GetText(), subtitle_->GetText()},
-                             base::ASCIIToUTF16("\n"));
+          : base::JoinString({title_->GetText(), subtitle_->GetText()}, u"\n");
 
   // views::StyledLabels only add tooltips for any links they may have. However,
   // since HoverButton will never insert a link inside its child StyledLabel,

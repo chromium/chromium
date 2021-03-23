@@ -554,7 +554,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
       SiteSettingSourceToString(SiteSettingSource::kPreference);
-  const std::u16string& kObjectName = base::ASCIIToUTF16("Gadget");
+  const std::u16string& kObjectName = u"Gadget";
   ChooserExceptionDetails exception_details;
 
   // Create a chooser object for testing.

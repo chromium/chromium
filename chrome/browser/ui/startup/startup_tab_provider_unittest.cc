@@ -95,9 +95,9 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
 }
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
-  std::vector<GURL> input = {GURL(base::ASCIIToUTF16("https://new_tab_page")),
-                             GURL(base::ASCIIToUTF16("https://www.google.com")),
-                             GURL(base::ASCIIToUTF16("https://welcome_page"))};
+  std::vector<GURL> input = {GURL(u"https://new_tab_page"),
+                             GURL(u"https://www.google.com"),
+                             GURL(u"https://welcome_page")};
 
   StartupTabs output =
       StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
@@ -112,8 +112,7 @@ TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
 }
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_FirstRunOnly) {
-  std::vector<GURL> input = {
-      GURL(base::ASCIIToUTF16("https://www.google.com"))};
+  std::vector<GURL> input = {GURL(u"https://www.google.com")};
 
   StartupTabs output =
       StartupTabProviderImpl::GetInitialPrefsTabsForState(false, input);
@@ -177,7 +176,7 @@ TEST(StartupTabProviderTest, GetPinnedTabsForState_Negative) {
 
 TEST(StartupTabProviderTest, GetPreferencesTabsForState) {
   SessionStartupPref pref(SessionStartupPref::Type::URLS);
-  pref.urls = {GURL(base::ASCIIToUTF16("https://www.google.com"))};
+  pref.urls = {GURL(u"https://www.google.com")};
 
   StartupTabs output =
       StartupTabProviderImpl::GetPreferencesTabsForState(pref, false);
@@ -188,7 +187,7 @@ TEST(StartupTabProviderTest, GetPreferencesTabsForState) {
 
 TEST(StartupTabProviderTest, GetPreferencesTabsForState_WrongType) {
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
-  pref_default.urls = {GURL(base::ASCIIToUTF16("https://www.google.com"))};
+  pref_default.urls = {GURL(u"https://www.google.com")};
 
   StartupTabs output =
       StartupTabProviderImpl::GetPreferencesTabsForState(pref_default, false);
@@ -196,7 +195,7 @@ TEST(StartupTabProviderTest, GetPreferencesTabsForState_WrongType) {
   EXPECT_TRUE(output.empty());
 
   SessionStartupPref pref_last(SessionStartupPref::Type::LAST);
-  pref_last.urls = {GURL(base::ASCIIToUTF16("https://www.google.com"))};
+  pref_last.urls = {GURL(u"https://www.google.com")};
 
   output = StartupTabProviderImpl::GetPreferencesTabsForState(pref_last, false);
 
@@ -205,7 +204,7 @@ TEST(StartupTabProviderTest, GetPreferencesTabsForState_WrongType) {
 
 TEST(StartupTabProviderTest, GetPreferencesTabsForState_NotFirstBrowser) {
   SessionStartupPref pref(SessionStartupPref::Type::URLS);
-  pref.urls = {GURL(base::ASCIIToUTF16("https://www.google.com"))};
+  pref.urls = {GURL(u"https://www.google.com")};
 
   StartupTabs output =
       StartupTabProviderImpl::GetPreferencesTabsForState(pref, true);

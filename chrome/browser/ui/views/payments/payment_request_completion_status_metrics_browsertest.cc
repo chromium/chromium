@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
       "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // Complete the Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
   histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.Completed",
                                     1);
   histogram_tester.ExpectTotalCount(

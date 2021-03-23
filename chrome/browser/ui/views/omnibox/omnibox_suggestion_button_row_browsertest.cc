@@ -60,19 +60,19 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     AutocompleteMatch search_match(nullptr, 500, false,
                                    AutocompleteMatchType::HISTORY_URL);
     search_match.allowed_to_be_default_match = true;
-    search_match.contents = base::ASCIIToUTF16("https://footube.com");
-    search_match.description = base::ASCIIToUTF16("The FooTube");
+    search_match.contents = u"https://footube.com";
+    search_match.description = u"The FooTube";
     search_match.contents_class = ClassifyTermMatches(
         termMatches, search_match.contents.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
-    search_match.keyword = base::ASCIIToUTF16("match");
+    search_match.keyword = u"match";
     search_match.associated_keyword = std::make_unique<AutocompleteMatch>();
 
     AutocompleteMatch switch_to_tab_match(nullptr, 500, false,
                                           AutocompleteMatchType::HISTORY_URL);
-    switch_to_tab_match.contents = base::ASCIIToUTF16("https://foobar.com");
-    switch_to_tab_match.description = base::ASCIIToUTF16("The Foo Of All Bars");
+    switch_to_tab_match.contents = u"https://foobar.com";
+    switch_to_tab_match.description = u"The Foo Of All Bars";
     switch_to_tab_match.contents_class = ClassifyTermMatches(
         termMatches, switch_to_tab_match.contents.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
@@ -81,8 +81,8 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     AutocompleteMatch pedal_match(nullptr, 500, false,
                                   AutocompleteMatchType::SEARCH_SUGGEST);
-    pedal_match.contents = base::ASCIIToUTF16("clear data");
-    pedal_match.description = base::ASCIIToUTF16("Search");
+    pedal_match.contents = u"clear data";
+    pedal_match.description = u"Search";
     pedal_match.description_class = ClassifyTermMatches(
         termMatches, pedal_match.description.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
@@ -99,14 +99,13 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     AutocompleteMatch multiple_actions_match(
         nullptr, 500, false, AutocompleteMatchType::HISTORY_URL);
-    multiple_actions_match.contents =
-        base::ASCIIToUTF16("https://foobarzon.com");
-    multiple_actions_match.description = base::ASCIIToUTF16("The FooBarZon");
+    multiple_actions_match.contents = u"https://foobarzon.com";
+    multiple_actions_match.description = u"The FooBarZon";
     multiple_actions_match.contents_class = ClassifyTermMatches(
         termMatches, multiple_actions_match.contents.size(),
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
-    multiple_actions_match.keyword = base::ASCIIToUTF16("match");
+    multiple_actions_match.keyword = u"match";
     multiple_actions_match.associated_keyword =
         std::make_unique<AutocompleteMatch>();
     multiple_actions_match.has_tab_match = true;

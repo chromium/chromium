@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   InvokePaymentRequestUI();
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // There's only the total line.
   EXPECT_EQ(1u, GetLineCount());
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(
   InvokePaymentRequestUI();
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$4.00"),
+  EXPECT_EQ(u"$4.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // A line for the discount and one for the total.
   EXPECT_EQ(2u, GetLineCount());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(
 
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$4.00"),
+  EXPECT_EQ(u"$4.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // A line for the discount and one for the total.
   EXPECT_EQ(2u, GetLineCount());
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(
 
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // There's only the total line.
   EXPECT_EQ(1u, GetLineCount());
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   InvokePaymentRequestUI();
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$4.00"),
+  EXPECT_EQ(u"$4.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // There's the total line and the discount line.
   EXPECT_EQ(2u, GetLineCount());
@@ -173,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   AddAutofillProfile(profile);
   autofill::CreditCard card(autofill::test::GetCreditCard());  // Visa card.
   // Change to Mastercard to match the test case.
-  card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
-                  base::ASCIIToUTF16("5555555555554444"));
+  card.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"5555555555554444");
   card.set_billing_address_id(profile.guid());
   AddCreditCard(card);
 
@@ -193,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
 
   OpenOrderSummaryScreen();
 
-  EXPECT_EQ(base::ASCIIToUTF16("$4.00"),
+  EXPECT_EQ(u"$4.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // There's the total line and the discount line.
   EXPECT_EQ(2u, GetLineCount());
@@ -206,8 +205,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   AddAutofillProfile(profile);
   autofill::CreditCard card(autofill::test::GetCreditCard());  // Visa card.
   // Change to Mastercard to match the test case.
-  card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
-                  base::ASCIIToUTF16("5555555555554444"));
+  card.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"5555555555554444");
   card.set_billing_address_id(profile.guid());
   AddCreditCard(card);
 
@@ -225,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestModifiersTest,
   OpenOrderSummaryScreen();
 
   // The price is the global total, because the modifier does not have total.
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
   // Only global total is available.
   EXPECT_EQ(1u, GetLineCount());

@@ -42,7 +42,7 @@ class FeaturePromoBubbleViewTest : public TestWithBrowserView {
  protected:
   FeaturePromoBubbleView::CreateParams GetBubbleParams(bool snoozable) {
     FeaturePromoBubbleView::CreateParams params;
-    params.body_text = base::ASCIIToUTF16("To X, do Y");
+    params.body_text = u"To X, do Y";
     params.anchor_view = browser_view()->contents_container();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
     params.focusable = snoozable;

@@ -70,9 +70,9 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabel) {
   builder_with_domain.OverridePolicyConnectorIsManagedForTesting(true);
   auto profile_with_domain = builder_with_domain.Build();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Managed by your organization"),
+  EXPECT_EQ(u"Managed by your organization",
             chrome::GetManagedUiMenuItemLabel(profile.get()));
-  EXPECT_EQ(base::ASCIIToUTF16("Managed by example.com"),
+  EXPECT_EQ(u"Managed by example.com",
             chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
 }
 

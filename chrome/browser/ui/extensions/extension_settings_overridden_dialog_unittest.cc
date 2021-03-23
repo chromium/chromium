@@ -30,8 +30,8 @@ ExtensionSettingsOverriddenDialog::Params CreateTestDialogParams(
   return {controlling_id,
           kTestAcknowledgedPreference,
           kTestDialogResultHistogramName,
-          base::ASCIIToUTF16("Test Dialog Title"),
-          base::ASCIIToUTF16("Test Dialog Body"),
+          u"Test Dialog Title",
+          u"Test Dialog Body",
           nullptr};
 }
 

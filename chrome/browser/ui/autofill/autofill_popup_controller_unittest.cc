@@ -504,9 +504,9 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
                                    PopupType::kUnspecified);
 
   // Add one data list entry.
-  std::u16string value1 = ASCIIToUTF16("data list value 1");
+  std::u16string value1 = u"data list value 1";
   std::vector<std::u16string> data_list_values{value1};
-  std::u16string label1 = ASCIIToUTF16("data list label 1");
+  std::u16string label1 = u"data list label 1";
   std::vector<std::u16string> data_list_labels{label1};
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,
@@ -535,9 +535,9 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(1, result2.frontend_id);
 
   // Add two data list entries (which should replace the current one).
-  std::u16string value2 = ASCIIToUTF16("data list value 2");
+  std::u16string value2 = u"data list value 2";
   data_list_values.push_back(value2);
-  std::u16string label2 = ASCIIToUTF16("data list label 2");
+  std::u16string label2 = u"data list label 2";
   data_list_labels.push_back(label2);
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,
@@ -576,9 +576,9 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
                                    PopupType::kUnspecified);
 
   // Replace the datalist element with a new one.
-  std::u16string value1 = ASCIIToUTF16("data list value 1");
+  std::u16string value1 = u"data list value 1";
   std::vector<std::u16string> data_list_values{value1};
-  std::u16string label1 = ASCIIToUTF16("data list label 1");
+  std::u16string label1 = u"data list label 1";
   std::vector<std::u16string> data_list_labels{label1};
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,

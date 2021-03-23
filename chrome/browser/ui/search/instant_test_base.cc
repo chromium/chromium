@@ -28,7 +28,7 @@ void InstantTestBase::SetupInstant(Profile* profile,
   search_test_utils::WaitForTemplateURLServiceToLoad(service);
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("name"));
+  data.SetShortName(u"name");
   data.SetURL(base_url.spec() + "q={searchTerms}&is_search");
   data.new_tab_url = ntp_url.spec();
   data.alternate_urls.push_back(base_url.spec() + "#q={searchTerms}");

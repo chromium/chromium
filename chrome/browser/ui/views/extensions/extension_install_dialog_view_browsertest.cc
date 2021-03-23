@@ -149,7 +149,7 @@ bool ScrollbarTest::IsScrollbarVisible(
 // Tests that a scrollbar _is_ shown for an excessively long extension
 // install prompt.
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
-  std::u16string permission_string(base::ASCIIToUTF16("Test"));
+  std::u16string permission_string(u"Test");
   PermissionMessages permissions;
   for (int i = 0; i < 20; i++) {
     permissions.push_back(PermissionMessage(permission_string,
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 #endif
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
   std::u16string permission_string(
-      base::ASCIIToUTF16("Read and modify your data on *.facebook.com"));
+      u"Read and modify your data on *.facebook.com");
   PermissionMessages permissions;
   permissions.push_back(PermissionMessage(permission_string,
                                           PermissionIDSet()));
@@ -423,8 +423,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        MAYBE_InvokeUi_DetailedPermission) {
   AddPermissionWithDetails(
       "Example header permission",
-      {base::ASCIIToUTF16("Detailed permission 1"),
-       base::ASCIIToUTF16("Detailed permission 2"),
+      {u"Detailed permission 1", u"Detailed permission 2",
        base::ASCIIToUTF16("Very very very very very very long detailed "
                           "permission that wraps to a new line")});
   ShowAndVerifyUi();
@@ -475,9 +474,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_AllInfoTypes) {
   AddPermission("Example permission");
-  AddPermissionWithDetails("This permission has details",
-                           {base::ASCIIToUTF16("Detailed permission 1"),
-                            base::ASCIIToUTF16("Detailed permission 2")});
+  AddPermissionWithDetails(
+      "This permission has details",
+      {u"Detailed permission 1", u"Detailed permission 2"});
   AddRetainedDevice("USB Device");
   AddRetainedFile(base::FilePath(FILE_PATH_LITERAL("/dev/null")));
   ShowAndVerifyUi();

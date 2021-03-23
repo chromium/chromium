@@ -309,7 +309,7 @@ class LocalCardMigrationBrowserTest
     local_card.set_guid("00000000-0000-0000-0000-" + card_number.substr(0, 12));
     local_card.set_record_type(CreditCard::LOCAL_CARD);
     if (set_nickname)
-      local_card.SetNickname(base::ASCIIToUTF16("card nickname"));
+      local_card.SetNickname(u"card nickname");
 
     AddTestCreditCard(browser()->profile(), local_card);
     return local_card;

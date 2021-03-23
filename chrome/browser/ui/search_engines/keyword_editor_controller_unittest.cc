@@ -23,10 +23,10 @@
 
 using base::ASCIIToUTF16;
 
-static const std::u16string kA(ASCIIToUTF16("a"));
-static const std::u16string kA1(ASCIIToUTF16("a1"));
-static const std::u16string kB(ASCIIToUTF16("b"));
-static const std::u16string kB1(ASCIIToUTF16("b1"));
+static const std::u16string kA(u"a");
+static const std::u16string kA1(u"a1");
+static const std::u16string kB(u"b");
+static const std::u16string kB1(u"b1");
 
 // Base class for keyword editor tests. Creates a profile containing an
 // empty TemplateURLService.
@@ -72,8 +72,8 @@ class KeywordEditorControllerTest : public testing::Test,
 
   void SimulateDefaultSearchIsManaged(const std::string& url) {
     TemplateURLData managed_engine;
-    managed_engine.SetShortName(ASCIIToUTF16("managed"));
-    managed_engine.SetKeyword(ASCIIToUTF16("managed"));
+    managed_engine.SetShortName(u"managed");
+    managed_engine.SetKeyword(u"managed");
     managed_engine.SetURL(url);
     SetManagedDefaultSearchPreferences(managed_engine, true, &profile_);
   }
@@ -114,8 +114,8 @@ TEST_F(KeywordEditorControllerTest, Add) {
   // Verify the TemplateURLService has the new data.
   const TemplateURL* turl = util()->model()->GetTemplateURLForKeyword(kB);
   ASSERT_TRUE(turl);
-  EXPECT_EQ(ASCIIToUTF16("a"), turl->short_name());
-  EXPECT_EQ(ASCIIToUTF16("b"), turl->keyword());
+  EXPECT_EQ(u"a", turl->short_name());
+  EXPECT_EQ(u"b", turl->keyword());
   EXPECT_EQ("http://c", turl->url());
 }
 
@@ -130,8 +130,8 @@ TEST_F(KeywordEditorControllerTest, Modify) {
 
   // Make sure it was updated appropriately.
   VerifyChanged();
-  EXPECT_EQ(ASCIIToUTF16("a1"), turl->short_name());
-  EXPECT_EQ(ASCIIToUTF16("b1"), turl->keyword());
+  EXPECT_EQ(u"a1", turl->short_name());
+  EXPECT_EQ(u"b1", turl->keyword());
   EXPECT_EQ("http://c1", turl->url());
 }
 
@@ -159,11 +159,9 @@ TEST_F(KeywordEditorControllerTest, CannotSetDefaultWhileManaged) {
   controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
 
-  const TemplateURL* turl1 =
-      util()->model()->GetTemplateURLForKeyword(ASCIIToUTF16("b"));
+  const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(u"b");
   ASSERT_TRUE(turl1 != NULL);
-  const TemplateURL* turl2 =
-      util()->model()->GetTemplateURLForKeyword(ASCIIToUTF16("b1"));
+  const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(u"b1");
   ASSERT_TRUE(turl2 != NULL);
 
   EXPECT_TRUE(controller()->CanMakeDefault(turl1));
@@ -183,11 +181,9 @@ TEST_F(KeywordEditorControllerTest, EditManagedDefault) {
   controller()->AddTemplateURL(kA1, kB1, "http://d{searchTerms}");
   ClearChangeCount();
 
-  const TemplateURL* turl1 =
-      util()->model()->GetTemplateURLForKeyword(ASCIIToUTF16("b"));
+  const TemplateURL* turl1 = util()->model()->GetTemplateURLForKeyword(u"b");
   ASSERT_TRUE(turl1 != NULL);
-  const TemplateURL* turl2 =
-      util()->model()->GetTemplateURLForKeyword(ASCIIToUTF16("b1"));
+  const TemplateURL* turl2 = util()->model()->GetTemplateURLForKeyword(u"b1");
   ASSERT_TRUE(turl2 != NULL);
 
   EXPECT_TRUE(controller()->CanEdit(turl1));
@@ -219,8 +215,8 @@ TEST_F(KeywordEditorControllerTest, MutateTemplateURLService) {
   int original_row_count = table_model()->RowCount();
 
   TemplateURLData data;
-  data.SetShortName(ASCIIToUTF16("b"));
-  data.SetKeyword(ASCIIToUTF16("a"));
+  data.SetShortName(u"b");
+  data.SetKeyword(u"a");
   TemplateURL* turl = util()->model()->Add(std::make_unique<TemplateURL>(data));
 
   // Table model should have updated.

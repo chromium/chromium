@@ -490,17 +490,14 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
 
 // The display URL used in simplified domain display tests.
 const std::u16string kSimplifiedDomainDisplayUrl =
-    base::ASCIIToUTF16("https://foo.example.test/bar");
+    u"https://foo.example.test/bar";
 const std::u16string kSimplifiedDomainDisplayUrlHostnameAndScheme =
-    base::ASCIIToUTF16("https://foo.example.test");
+    u"https://foo.example.test";
 const std::u16string kSimplifiedDomainDisplayUrlSubdomainAndScheme =
-    base::ASCIIToUTF16("https://foo.");
-const std::u16string kSimplifiedDomainDisplayUrlSubdomain =
-    base::ASCIIToUTF16("foo.");
-const std::u16string kSimplifiedDomainDisplayUrlPath =
-    base::ASCIIToUTF16("/bar");
-const std::u16string kSimplifiedDomainDisplayUrlScheme =
-    base::ASCIIToUTF16("https://");
+    u"https://foo.";
+const std::u16string kSimplifiedDomainDisplayUrlSubdomain = u"foo.";
+const std::u16string kSimplifiedDomainDisplayUrlPath = u"/bar";
+const std::u16string kSimplifiedDomainDisplayUrlScheme = u"https://";
 
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
  public:
@@ -662,20 +659,17 @@ TEST_F(OmniboxViewViewsTest, UpdatePopupCall) {
                           ui::DomKey::FromCharacter('a'),
                           ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
-  omnibox_view()->CheckUpdatePopupCallInfo(1, base::ASCIIToUTF16("a"),
-                                           Range(1));
+  omnibox_view()->CheckUpdatePopupCallInfo(1, u"a", Range(1));
 
   char_event =
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0,
                    ui::DomKey::FromCharacter('b'), ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
-  omnibox_view()->CheckUpdatePopupCallInfo(2, base::ASCIIToUTF16("ab"),
-                                           Range(2));
+  omnibox_view()->CheckUpdatePopupCallInfo(2, u"ab", Range(2));
 
   ui::KeyEvent pressed(ui::ET_KEY_PRESSED, ui::VKEY_BACK, 0);
   omnibox_textfield()->OnKeyEvent(&pressed);
-  omnibox_view()->CheckUpdatePopupCallInfo(3, base::ASCIIToUTF16("a"),
-                                           Range(1));
+  omnibox_view()->CheckUpdatePopupCallInfo(3, u"a", Range(1));
 }
 
 // Test that text cursor is shown in the omnibox after entering any single
@@ -708,8 +702,7 @@ TEST_F(OmniboxViewViewsTest, ScheduledTextEditCommand) {
 // take over. Test for crbug.com/863543 and crbug.com/892216.
 TEST_F(OmniboxViewViewsTest, SelectWithShift_863543) {
   location_bar_model()->set_url(GURL("http://www.example.com/?query=1"));
-  const std::u16string text =
-      base::ASCIIToUTF16("http://www.example.com/?query=1");
+  const std::u16string text = u"http://www.example.com/?query=1";
   omnibox_view()->SetWindowTextAndCaretPos(text, 23U, false, false);
 
   ui::KeyEvent shift_up_pressed(ui::ET_KEY_PRESSED, ui::VKEY_UP,
@@ -797,8 +790,7 @@ TEST_F(OmniboxViewViewsTest,
   // Simulate the user focusing the omnibox and typing something. This is just
   // the test setup, not the actual focus event we are testing.
   omnibox_view()->SetFocus(/*is_user_initiated*/ true);
-  omnibox_view()->SetTextAndSelectedRanges(base::ASCIIToUTF16("user text"),
-                                           {gfx::Range(9, 9)});
+  omnibox_view()->SetTextAndSelectedRanges(u"user text", {gfx::Range(9, 9)});
   ASSERT_FALSE(omnibox_view()->IsSelectAll());
   ASSERT_TRUE(omnibox_view()->GetSelectionAtEnd());
 
@@ -858,33 +850,30 @@ TEST_F(OmniboxViewViewsTest, RevertOnBlur) {
   omnibox_view()->model()->ResetDisplayTexts();
   omnibox_view()->RevertAll();
 
-  EXPECT_EQ(base::ASCIIToUTF16("https://example.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://example.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 
   // Set the view text without updating the model's user text. This usually
   // occurs when the omnibox unapplies Steady State Elisions to temporarily show
   // the full URL to the user.
-  omnibox_view()->SetWindowTextAndCaretPos(base::ASCIIToUTF16("view text"), 0,
-                                           false, false);
-  EXPECT_EQ(base::ASCIIToUTF16("view text"), omnibox_view()->GetText());
+  omnibox_view()->SetWindowTextAndCaretPos(u"view text", 0, false, false);
+  EXPECT_EQ(u"view text", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 
   // Expect that on blur, we revert to the original text and are not in user
   // input mode.
   omnibox_textfield()->OnBlur();
-  EXPECT_EQ(base::ASCIIToUTF16("https://example.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://example.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 
   // Now set user text, which is reflected into the model as well.
-  omnibox_view()->SetUserText(base::ASCIIToUTF16("user text"));
-  EXPECT_EQ(base::ASCIIToUTF16("user text"), omnibox_view()->GetText());
+  omnibox_view()->SetUserText(u"user text");
+  EXPECT_EQ(u"user text", omnibox_view()->GetText());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 
   // Expect that on blur, if the text has been edited, stay in user input mode.
   omnibox_textfield()->OnBlur();
-  EXPECT_EQ(base::ASCIIToUTF16("user text"), omnibox_view()->GetText());
+  EXPECT_EQ(u"user text", omnibox_view()->GetText());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 }
 
@@ -893,20 +882,18 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
   omnibox_view()->model()->ResetDisplayTexts();
   omnibox_view()->RevertAll();
 
-  EXPECT_EQ(base::ASCIIToUTF16("https://permanent-text.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://permanent-text.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 
-  omnibox_view()->SetUserText(base::ASCIIToUTF16("user text"));
-  EXPECT_EQ(base::ASCIIToUTF16("user text"), omnibox_view()->GetText());
+  omnibox_view()->SetUserText(u"user text");
+  EXPECT_EQ(u"user text", omnibox_view()->GetText());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 
   // Expect that on Escape, the text is reverted to the permanent URL.
   ui::KeyEvent escape(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, 0);
   omnibox_textfield()->OnKeyEvent(&escape);
 
-  EXPECT_EQ(base::ASCIIToUTF16("https://permanent-text.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://permanent-text.com/", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 }
 
@@ -960,12 +947,11 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
   // Test input that's a valid URL.
   std::u16string expected_text =
 #if defined(OS_MAC)
-      base::ASCIIToUTF16("Pa&ste and Go to https://test.com");
+      u"Pa&ste and Go to https://test.com";
 #else
-      base::ASCIIToUTF16("Pa&ste and go to https://test.com");
+      u"Pa&ste and go to https://test.com";
 #endif
-  ui::ScopedClipboardWriter(clipboard_buffer)
-      .WriteText(base::ASCIIToUTF16("https://test.com/"));
+  ui::ScopedClipboardWriter(clipboard_buffer).WriteText(u"https://test.com/");
   std::u16string returned_text =
       omnibox_view()->GetLabelForCommandId(IDC_PASTE_AND_GO);
   EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(IDC_PASTE_AND_GO));
@@ -974,12 +960,11 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
   // Test input that's URL-like. (crbug.com/980002).
   expected_text =
 #if defined(OS_MAC)
-      base::ASCIIToUTF16("Pa&ste and Go to test.com");
+      u"Pa&ste and Go to test.com";
 #else
-      base::ASCIIToUTF16("Pa&ste and go to test.com");
+      u"Pa&ste and go to test.com";
 #endif
-  ui::ScopedClipboardWriter(clipboard_buffer)
-      .WriteText(base::ASCIIToUTF16("test.com"));
+  ui::ScopedClipboardWriter(clipboard_buffer).WriteText(u"test.com");
   returned_text = omnibox_view()->GetLabelForCommandId(IDC_PASTE_AND_GO);
   EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(IDC_PASTE_AND_GO));
   EXPECT_EQ(expected_text, returned_text);
@@ -992,7 +977,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
       u"Pa&ste and search for \x201Cthis is a test sentence\x201D";
 #endif
   ui::ScopedClipboardWriter(clipboard_buffer)
-      .WriteText(base::ASCIIToUTF16("this is a test sentence"));
+      .WriteText(u"this is a test sentence");
   returned_text = omnibox_view()->GetLabelForCommandId(IDC_PASTE_AND_GO);
   EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(IDC_PASTE_AND_GO));
   EXPECT_EQ(expected_text, returned_text);
@@ -1046,7 +1031,7 @@ TEST_F(OmniboxViewViewsTest, SelectAllOnReactivateTabAfterDeleteAll) {
 TEST_F(OmniboxViewViewsTest, SelectAllDuringMouseDown) {
   omnibox_textfield()->OnMousePressed(
       CreateMouseEvent(ui::ET_MOUSE_PRESSED, {0, 0}));
-  omnibox_view()->SetUserText(base::ASCIIToUTF16("abc"));
+  omnibox_view()->SetUserText(u"abc");
   ui::KeyEvent event_a(ui::ET_KEY_PRESSED, ui::VKEY_A, 0);
   EXPECT_FALSE(omnibox_view()->IsSelectAll());
   omnibox_textfield_view()->OnKeyPressed(event_a);
@@ -1058,7 +1043,7 @@ TEST_F(OmniboxViewViewsTest, SelectAllDuringMouseDown) {
 TEST_F(OmniboxViewViewsTest, SetWindowTextAndCaretPos) {
   // googl|e.com
   omnibox_view()->SetWindowTextAndCaretPos(u"google.com", 5, false, false);
-  EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{5, 5}}));
 }
@@ -1067,21 +1052,21 @@ TEST_F(OmniboxViewViewsTest, OnInlineAutocompleteTextMaybeChanged) {
   // No selection, google.com|
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
                                                        {{10, 10}}, 10);
-  EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 10}}));
 
   // Single selection, gmai[l.com]
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"gmail.com", {{9, 4}},
                                                        4);
-  EXPECT_EQ(base::ASCIIToUTF16("gmail.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"gmail.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{9, 4}}));
 
   // Multiselection, [go]ogl[e.com]
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
                                                        {{10, 5}, {0, 2}}, 3);
-  EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"google.com", omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 5}, {0, 2}}));
 }
@@ -1160,7 +1145,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
 
   std::u16string expected_text;
   if (clipboard_command == ui::TextEditCommand::COPY)
-    expected_text = base::ASCIIToUTF16("https://test.com/");
+    expected_text = u"https://test.com/";
   EXPECT_EQ(expected_text, omnibox_view()->GetText());
 
   // Make sure the plain text format is available, but the HTML one isn't.
@@ -1187,7 +1172,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
 }
 
 TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
-  omnibox_view()->SetUserText(base::ASCIIToUTF16("user text"));
+  omnibox_view()->SetUserText(u"user text");
   omnibox_view()->SelectAll(false);
   ASSERT_TRUE(omnibox_view()->IsSelectAll());
 
@@ -1237,8 +1222,7 @@ class OmniboxViewViewsSteadyStateElisionsTest : public OmniboxViewViewsTest {
     ui::SetEventTickClockForTesting(&clock_);
 
     location_bar_model()->set_url(kFullUrl);
-    location_bar_model()->set_url_for_display(
-        base::ASCIIToUTF16("example.com"));
+    location_bar_model()->set_url_for_display(u"example.com");
 
     gfx::test::RenderTextTestApi render_text_test_api(
         omnibox_view()->GetRenderText());
@@ -1265,7 +1249,7 @@ class OmniboxViewViewsSteadyStateElisionsTest : public OmniboxViewViewsTest {
   }
 
   bool IsElidedUrlDisplayed() {
-    return omnibox_view()->GetText() == base::ASCIIToUTF16("example.com") &&
+    return omnibox_view()->GetText() == u"example.com" &&
            !omnibox_view()->model()->user_input_in_progress();
   }
 
@@ -1351,9 +1335,8 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideOnHomeKey) {
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
        UnelideViaEndKeyWorksWithIntranetUrls) {
   location_bar_model()->set_url(GURL("https://foobar/"));
-  location_bar_model()->set_formatted_full_url(
-      base::ASCIIToUTF16("https://foobar"));
-  location_bar_model()->set_url_for_display(base::ASCIIToUTF16("foobar/"));
+  location_bar_model()->set_formatted_full_url(u"https://foobar");
+  location_bar_model()->set_url_for_display(u"foobar/");
 
   omnibox_view()->model()->ResetDisplayTexts();
   omnibox_view()->RevertAll();
@@ -1364,7 +1347,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
   omnibox_textfield_view()->OnKeyPressed(
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_END, 0));
 
-  EXPECT_EQ(base::ASCIIToUTF16("https://foobar"), omnibox_view()->GetText());
+  EXPECT_EQ(u"https://foobar", omnibox_view()->GetText());
   EXPECT_FALSE(omnibox_view()->model()->user_input_in_progress());
 
   size_t start, end;
@@ -1467,7 +1450,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenDoubleClick) {
   auto point = GetPointInTextAtXOffset(4 * kCharacterWidth);
   SendMouseClickAtPoint(point, 1);
   EXPECT_TRUE(IsElidedUrlDisplayed());
-  EXPECT_EQ(base::ASCIIToUTF16("example.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"example.com", omnibox_view()->GetText());
 
   // Verify that the whole full URL is selected.
   EXPECT_TRUE(omnibox_view()->IsSelectAll());
@@ -1495,7 +1478,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenRightClick) {
   auto point = GetPointInTextAtXOffset(4 * kCharacterWidth);
   SendMouseClickAtPoint(point, 1);
   EXPECT_TRUE(IsElidedUrlDisplayed());
-  EXPECT_EQ(base::ASCIIToUTF16("example.com"), omnibox_view()->GetText());
+  EXPECT_EQ(u"example.com", omnibox_view()->GetText());
 
   // Verify that the whole full URL is selected.
   EXPECT_TRUE(omnibox_view()->IsSelectAll());
@@ -1659,14 +1642,12 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, DontReelideOnBlurIfEdited) {
                           ui::DomKey::FromCharacter('a'),
                           ui::EventTimeForNow());
   omnibox_textfield()->InsertChar(char_event);
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.a.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://www.a.com/", omnibox_view()->GetText());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 
   // Now that we've edited the text, blurring should not re-elide the URL.
   BlurOmnibox();
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.a.com/"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://www.a.com/", omnibox_view()->GetText());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 }
 
@@ -2102,7 +2083,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
 
   // Set a longer URL to ensure that the full URL stays visible even if it's
   // longer than the previous URL.
-  const std::u16string kUrlSuffix = base::ASCIIToUTF16("/foobar");
+  const std::u16string kUrlSuffix = u"/foobar";
   UpdateDisplayURL(kSimplifiedDomainDisplayUrl + kUrlSuffix);
   ASSERT_NO_FATAL_FAILURE(ExpectUnelidedFromSimplifiedDomain(
       omnibox_view()->GetRenderText(),
@@ -2485,7 +2466,7 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, CancellingAnimationDoesNotCrash) {
 
   // Stopping the animation after changing the underlying display text should
   // not crash.
-  UpdateDisplayURL(base::ASCIIToUTF16("https://foo.test"));
+  UpdateDisplayURL(u"https://foo.test");
   omnibox_view()->GetHoverElideOrUnelideAnimationForTesting()->Stop();
 }
 
@@ -2495,15 +2476,14 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
        SchemeAndTrivialSubdomainElision) {
   // Use custom setup code instead of SetUpSimplifiedDomainTest() to use a URL
   // with a "www." prefix (a trivial subdomain).
-  const std::u16string kFullUrl =
-      base::ASCIIToUTF16("https://www.example.test/foo");
+  const std::u16string kFullUrl = u"https://www.example.test/foo";
   constexpr size_t kSchemeAndSubdomainSize = 12;  // "https://www."
   UpdateDisplayURL(kFullUrl);
   omnibox_view()->OnThemeChanged();
 
   omnibox_view()->NavigateAndExpectUnelided(kFullUrl,
                                             /*is_same_document=*/false, GURL(),
-                                            base::ASCIIToUTF16("htpts://www."));
+                                            u"htpts://www.");
   EXPECT_EQ(SK_ColorTRANSPARENT, omnibox_view()->GetLatestColorForRange(
                                      gfx::Range(0, kSchemeAndSubdomainSize)));
 
@@ -2537,10 +2517,8 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   // field trial is set because the "www." should be elided as a trivial
   // subdomain.
   ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
-      omnibox_view(), base::ASCIIToUTF16("https://"),
-      base::ASCIIToUTF16("www."),
-      base::ASCIIToUTF16("https://www.example.test"),
-      base::ASCIIToUTF16("/foo"),
+      omnibox_view(), u"https://", u"www.", u"https://www.example.test",
+      u"/foo",
       /* should_elide_to_registrable_domain=*/true));
 
   // Do another hover and check that the URL gets unelided to the full URL.
@@ -2558,10 +2536,8 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   ASSERT_NO_FATAL_FAILURE(
       omnibox_view()->StepSimplifiedDomainHoverAnimation(/*step_ms=*/1000));
   ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
-      omnibox_view(), base::ASCIIToUTF16("https://"),
-      base::ASCIIToUTF16("www."),
-      base::ASCIIToUTF16("https://www.example.test"),
-      base::ASCIIToUTF16("/foo"),
+      omnibox_view(), u"https://", u"www.", u"https://www.example.test",
+      u"/foo",
       /* should_elide_to_registrable_domain=*/true));
   EXPECT_EQ(SK_ColorTRANSPARENT, omnibox_view()->GetLatestColorForRange(
                                      gfx::Range(0, kSchemeAndSubdomainSize)));
@@ -2615,8 +2591,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, AlwaysShowFullURLs) {
   // because SetUpSimplifiedDomainTest() uses a URL with a foo.example.test
   // hostname, and in this test we want to use a "www." subdomain to test that
   // the URL is displayed properly when trivial subdomain elision is disabled.
-  const std::u16string kFullUrl =
-      base::ASCIIToUTF16("https://www.example.test/foo");
+  const std::u16string kFullUrl = u"https://www.example.test/foo";
   UpdateDisplayURL(kFullUrl);
   omnibox_view()->OnThemeChanged();
 
@@ -2708,8 +2683,7 @@ TEST_P(OmniboxViewViewsRevealOnHoverAndMaybeHideOnInteractionTest,
   // because SetUpSimplifiedDomainTest() uses a URL with a foo.example.test
   // hostname, and in this test we want to use a "www." subdomain to test that
   // the URL is displayed properly when trivial subdomain elision is disabled.
-  const std::u16string kFullUrl =
-      base::ASCIIToUTF16("https://www.example.test/foo");
+  const std::u16string kFullUrl = u"https://www.example.test/foo";
   UpdateDisplayURL(kFullUrl);
   omnibox_view()->OnThemeChanged();
   gfx::RenderText* render_text = omnibox_view()->GetRenderText();
@@ -2720,20 +2694,17 @@ TEST_P(OmniboxViewViewsRevealOnHoverAndMaybeHideOnInteractionTest,
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   omnibox_view()->OnTabChanged(web_contents.get());
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://www.example.test/foo", omnibox_view()->GetText());
 
   // Now toggle the preference and check that the animations run as expected.
   location_bar_model()->set_should_prevent_elision(false);
-  location_bar_model()->set_url_for_display(
-      base::ASCIIToUTF16("https://www.example.test/foo"));
+  location_bar_model()->set_url_for_display(u"https://www.example.test/foo");
   omnibox_view()->OnShouldPreventElisionChanged();
   // When simplified domain field trials are enabled, LocationBarModelImpl
   // doesn't do any elision, leaving it all up to OmniboxViewViews, so the text
   // returned from LocationBarModelImpl is the same even though the preference
   // has changed.
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo"),
-            omnibox_view()->GetText());
+  EXPECT_EQ(u"https://www.example.test/foo", omnibox_view()->GetText());
   if (IsHideOnInteractionEnabled()) {
     ExpectUnelidedFromSimplifiedDomain(
         render_text,
@@ -2749,11 +2720,8 @@ TEST_P(OmniboxViewViewsRevealOnHoverAndMaybeHideOnInteractionTest,
     // elided to the registrable domain because the www subdomain is considered
     // trivial.
     ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
-        omnibox_view(), base::ASCIIToUTF16("https://"),
-        base::ASCIIToUTF16("www."),
-        base::ASCIIToUTF16("https://www.example.test"),
-        base::ASCIIToUTF16("/foo"),
-        true /* should elide to registrable domain */));
+        omnibox_view(), u"https://", u"www.", u"https://www.example.test",
+        u"/foo", true /* should elide to registrable domain */));
   }
   // Simulate a hover event and check the elide/unelide animations. This
   // should happen the same regardless of whether hide-on-interaction is
@@ -2796,14 +2764,14 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   // URLs are eligible for eliding). The omnibox should take up the full local
   // bounds and be reset to tail-eliding behavior, just as if the above
   // simplified domain elision had not happened.
-  UpdateDisplayURL(base::ASCIIToUTF16("ftp://foo.example.test"));
+  UpdateDisplayURL(u"ftp://foo.example.test");
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   omnibox_view()->SaveStateToTab(web_contents.get());
   omnibox_view()->OnTabChanged(web_contents.get());
 
   EXPECT_EQ(gfx::ELIDE_TAIL, omnibox_view()->GetRenderText()->elide_behavior());
-  EXPECT_EQ(base::ASCIIToUTF16("ftp://foo.example.test"),
+  EXPECT_EQ(u"ftp://foo.example.test",
             omnibox_view()->GetRenderText()->GetDisplayText());
 
   // Change the tab and simulate user input in progress. In this case, the
@@ -2829,13 +2797,13 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
 TEST_P(OmniboxViewViewsRevealOnHoverTest, UrlsNotEligibleForEliding) {
   const std::u16string kTestCases[] = {
       // Various URLs that aren't eligible for simplified domain eliding.
-      base::ASCIIToUTF16("ftp://foo.bar.test/baz"),
-      base::ASCIIToUTF16("javascript:alert(1)"),
-      base::ASCIIToUTF16("data:text/html,hello"),
-      base::ASCIIToUTF16("http://localhost:4000/foo"),
-      base::ASCIIToUTF16("blob:https://example.test/"),
-      base::ASCIIToUTF16("view-source:https://example.test/"),
-      base::ASCIIToUTF16("filesystem:https://example.test/a"),
+      u"ftp://foo.bar.test/baz",
+      u"javascript:alert(1)",
+      u"data:text/html,hello",
+      u"http://localhost:4000/foo",
+      u"blob:https://example.test/",
+      u"view-source:https://example.test/",
+      u"filesystem:https://example.test/a",
       // A smoke test to check that the test code results in
       // the URL being elided properly when eligible.
       kSimplifiedDomainDisplayUrl,
@@ -2880,7 +2848,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   EXPECT_TRUE(elide_animation->IsAnimating());
 
   // Change the path and check that the animation is cancelled.
-  UpdateDisplayURL(base::ASCIIToUTF16("foo.example.test/bar#bar"));
+  UpdateDisplayURL(u"foo.example.test/bar#bar");
   omnibox_view()->model()->ResetDisplayTexts();
   omnibox_view()->RevertAll();
   EXPECT_FALSE(elide_animation->IsAnimating());
@@ -2993,7 +2961,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, SameDocNavigations) {
   omnibox_view()->NavigateAndExpectUnelided(kSimplifiedDomainDisplayUrl,
                                             /*is_same_document=*/false, GURL(),
                                             kSimplifiedDomainDisplayUrlScheme);
-  const std::u16string kUrlSuffix = base::ASCIIToUTF16("/foobar");
+  const std::u16string kUrlSuffix = u"/foobar";
 
   // On a same-document navigation before the URL has been simplified, the URL
   // should remain unsimplified after the navigation finishes.
@@ -3043,11 +3011,11 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, SameDocNavigations) {
   // elided to the simplified domain.
   {
     omnibox_view()->NavigateAndExpectElided(
-        GURL(kSimplifiedDomainDisplayUrl + base::ASCIIToUTF16("#foobar")),
+        GURL(kSimplifiedDomainDisplayUrl + u"#foobar"),
         /*is_same_document=*/true, GURL(kSimplifiedDomainDisplayUrl),
         kSimplifiedDomainDisplayUrlScheme, kSimplifiedDomainDisplayUrlSubdomain,
         kSimplifiedDomainDisplayUrlHostnameAndScheme,
-        kSimplifiedDomainDisplayUrlPath + base::ASCIIToUTF16("#foobar"),
+        kSimplifiedDomainDisplayUrlPath + u"#foobar",
         ShouldElideToRegistrableDomain());
     OmniboxViewViews::ElideAnimation* elide_animation =
         omnibox_view()->GetElideAfterInteractionAnimationForTesting();
@@ -3568,7 +3536,7 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, RegistrableDomainRepeated) {
     return;
 
   const std::u16string kRepeatedRegistrableDomainUrl =
-      base::ASCIIToUTF16("https://example.com.example.com/foo");
+      u"https://example.com.example.com/foo";
   gfx::Range registrable_domain_and_path_range(
       20 /* "https://www.example.com." */,
       kRepeatedRegistrableDomainUrl.size());
@@ -3578,10 +3546,9 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, RegistrableDomainRepeated) {
   omnibox_view()->OnThemeChanged();
 
   ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
-      omnibox_view(), base::ASCIIToUTF16("https://"),
-      base::ASCIIToUTF16("example.com."),
-      base::ASCIIToUTF16("https://example.com.example.com"),
-      base::ASCIIToUTF16("/foo"), ShouldElideToRegistrableDomain()));
+      omnibox_view(), u"https://", u"example.com.",
+      u"https://example.com.example.com", u"/foo",
+      ShouldElideToRegistrableDomain()));
 
   // Check that the domain is elided up to the second instance of "example.com",
   // not the first.

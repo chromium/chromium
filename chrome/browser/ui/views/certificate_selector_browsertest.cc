@@ -38,8 +38,7 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   }
 
   void Init() {
-    InitWithText(std::make_unique<views::Label>(
-        base::ASCIIToUTF16("some arbitrary text")));
+    InitWithText(std::make_unique<views::Label>(u"some arbitrary text"));
   }
 
   void AcceptCertificate(

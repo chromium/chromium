@@ -170,8 +170,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     // Credentials have to be unique, so the callback is always invoked.
     form.username_value = base::ASCIIToUTF16(
         "test" + base::NumberToString(test_credential_counter_++));
-    form.password_value = base::ASCIIToUTF16("password");
-    form.username_element = base::ASCIIToUTF16("username_element");
+    form.password_value = u"password";
+    form.username_element = u"username_element";
     store_->AddLogin(form);
     base::RunLoop().RunUntilIdle();
 
@@ -415,12 +415,9 @@ void SafetyCheckHandlerTest::VerifyDisplayString(
 }
 
 void SafetyCheckHandlerTest::ReplaceBrowserName(std::u16string* s) {
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Google Chrome"),
-                                     base::ASCIIToUTF16("Browser"));
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Chrome"),
-                                     base::ASCIIToUTF16("Browser"));
-  base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Chromium"),
-                                     base::ASCIIToUTF16("Browser"));
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Google Chrome", u"Browser");
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Chrome", u"Browser");
+  base::ReplaceSubstringsAfterOffset(s, 0, u"Chromium", u"Browser");
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Checking) {
@@ -445,9 +442,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::u16string expected = base::ASCIIToUTF16("Your ") +
-                            ui::GetChromeOSDeviceName() +
-                            base::ASCIIToUTF16(" is up to date");
+  std::u16string expected =
+      u"Your " + ui::GetChromeOSDeviceName() + u" is up to date";
   VerifyDisplayString(event, expected);
 #else
   VerifyDisplayString(event, "Browser is up to date");
@@ -927,9 +923,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   // Not a "safe" state, so send an |OnCredentialDone| with is_leaked=true.
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
-      ->OnCredentialDone(
-          {base::ASCIIToUTF16("login"), base::ASCIIToUTF16("password")},
-          password_manager::IsLeaked(true));
+      ->OnCredentialDone({u"login", u"password"},
+                         password_manager::IsLeaked(true));
   // The service goes idle, but the disk still has a stale "safe" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);

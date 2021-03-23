@@ -85,14 +85,12 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::u16string HeadingString() { return base::ASCIIToUTF16("Heading"); }
-  std::u16string BodyString() { return base::ASCIIToUTF16("Body"); }
-  std::u16string ActionString() { return base::ASCIIToUTF16("Action"); }
-  std::u16string DismissString() { return base::ASCIIToUTF16("Dismiss"); }
-  std::u16string LearnMoreString() { return base::ASCIIToUTF16("Learn"); }
-  std::u16string ItemListString() {
-    return base::ASCIIToUTF16("Item 1\nItem2");
-  }
+  std::u16string HeadingString() { return u"Heading"; }
+  std::u16string BodyString() { return u"Body"; }
+  std::u16string ActionString() { return u"Action"; }
+  std::u16string DismissString() { return u"Dismiss"; }
+  std::u16string LearnMoreString() { return u"Learn"; }
+  std::u16string ItemListString() { return u"Item 1\nItem2"; }
 
   views::Widget* anchor_widget() { return anchor_widget_.get(); }
   views::Widget* bubble_widget() { return bubble_widget_; }

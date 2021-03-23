@@ -271,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
   ASSERT_NE(nullptr, widget);
   EXPECT_TRUE(widget->IsVisible());
   Tab* const tab = tab_strip()->tab_at(1);
-  EXPECT_EQ(GetHoverCardTitle(), base::ASCIIToUTF16("Test Tab 2"));
-  EXPECT_EQ(GetHoverCardDomain(), base::ASCIIToUTF16("example.com"));
+  EXPECT_EQ(GetHoverCardTitle(), u"Test Tab 2");
+  EXPECT_EQ(GetHoverCardDomain(), u"example.com");
   EXPECT_EQ(hover_card()->GetAnchorView(), static_cast<views::View*>(tab));
 }
 

@@ -527,22 +527,20 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   canvas->sk_canvas()->drawPath(stroke_path, flags);
 }
 
-DEFINE_ENUM_CONVERTERS(
-    StatusView::BubbleState,
-    {StatusView::BubbleState::kHidden, base::ASCIIToUTF16("kHidden")},
-    {StatusView::BubbleState::kPreFadeIn, base::ASCIIToUTF16("kPreFadeIn")},
-    {StatusView::BubbleState::kFadingIn, base::ASCIIToUTF16("kFadingIn")},
-    {StatusView::BubbleState::kShown, base::ASCIIToUTF16("kShown")},
-    {StatusView::BubbleState::kPreFadeOut, base::ASCIIToUTF16("kPreFadeOut")},
-    {StatusView::BubbleState::kFadingOut, base::ASCIIToUTF16("kFadingOut")})
+DEFINE_ENUM_CONVERTERS(StatusView::BubbleState,
+                       {StatusView::BubbleState::kHidden, u"kHidden"},
+                       {StatusView::BubbleState::kPreFadeIn, u"kPreFadeIn"},
+                       {StatusView::BubbleState::kFadingIn, u"kFadingIn"},
+                       {StatusView::BubbleState::kShown, u"kShown"},
+                       {StatusView::BubbleState::kPreFadeOut, u"kPreFadeOut"},
+                       {StatusView::BubbleState::kFadingOut, u"kFadingOut"})
 
-DEFINE_ENUM_CONVERTERS(
-    StatusView::BubbleStyle,
-    {StatusView::BubbleStyle::kBottom, base::ASCIIToUTF16("kBottom")},
-    {StatusView::BubbleStyle::kFloating, base::ASCIIToUTF16("kFloating")},
-    {StatusView::BubbleStyle::kStandard, base::ASCIIToUTF16("kStandard")},
-    {StatusView::BubbleStyle::kStandardRight,
-     base::ASCIIToUTF16("kStandardRight")})
+DEFINE_ENUM_CONVERTERS(StatusView::BubbleStyle,
+                       {StatusView::BubbleStyle::kBottom, u"kBottom"},
+                       {StatusView::BubbleStyle::kFloating, u"kFloating"},
+                       {StatusView::BubbleStyle::kStandard, u"kStandard"},
+                       {StatusView::BubbleStyle::kStandardRight,
+                        u"kStandardRight"})
 
 BEGIN_METADATA(StatusView, views::View)
 ADD_PROPERTY_METADATA(std::u16string, Text)

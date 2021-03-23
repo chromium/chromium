@@ -657,11 +657,9 @@ void OmniboxResultView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 DEFINE_ENUM_CONVERTERS(OmniboxPartState,
-                       {OmniboxPartState::NORMAL, base::ASCIIToUTF16("NORMAL")},
-                       {OmniboxPartState::HOVERED,
-                        base::ASCIIToUTF16("HOVERED")},
-                       {OmniboxPartState::SELECTED,
-                        base::ASCIIToUTF16("SELECTED")})
+                       {OmniboxPartState::NORMAL, u"NORMAL"},
+                       {OmniboxPartState::HOVERED, u"HOVERED"},
+                       {OmniboxPartState::SELECTED, u"SELECTED"})
 
 BEGIN_METADATA(OmniboxResultView, views::View)
 ADD_READONLY_PROPERTY_METADATA(bool, MatchSelected)

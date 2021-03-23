@@ -36,7 +36,7 @@ namespace {
 
 // Used to look up IME names.
 std::u16string GetLocalizedString(int resource_id) {
-  return base::ASCIIToUTF16("localized string");
+  return u"localized string";
 }
 
 // InputMethodManager with available IMEs.
@@ -259,11 +259,9 @@ TEST_F(ImeControllerClientTest, InputMethodChanged) {
   EXPECT_EQ("id2", ime_controller_.current_ime_id_);
   ASSERT_EQ(2u, ime_controller_.available_imes_.size());
   EXPECT_EQ("id1", ime_controller_.available_imes_[0].id);
-  EXPECT_EQ(base::ASCIIToUTF16("name1"),
-            ime_controller_.available_imes_[0].name);
+  EXPECT_EQ(u"name1", ime_controller_.available_imes_[0].name);
   EXPECT_EQ("id2", ime_controller_.available_imes_[1].id);
-  EXPECT_EQ(base::ASCIIToUTF16("name2"),
-            ime_controller_.available_imes_[1].name);
+  EXPECT_EQ(u"name2", ime_controller_.available_imes_[1].name);
   EXPECT_FALSE(ime_controller_.show_mode_indicator_);
 
   // Simulate a switch and show message.

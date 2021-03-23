@@ -306,24 +306,23 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   EXPECT_TRUE(selector);
 
   // Verify labels match the settings on the PermissionInfoList.
-  EXPECT_EQ(base::ASCIIToUTF16("Location"), api_->GetPermissionLabelTextAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Location", api_->GetPermissionLabelTextAt(0));
+  EXPECT_EQ(u"Allow", api_->GetPermissionComboboxTextAt(0));
 
   // Verify calling SetPermissionInfo() directly updates the UI.
   list.back().setting = CONTENT_SETTING_BLOCK;
   api_->SetPermissionInfo(list);
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Block", api_->GetPermissionComboboxTextAt(0));
 
   // Simulate a user selection via the UI. Note this will also cover logic in
   // PageInfo to update the pref.
   api_->SimulateUserSelectingComboboxItemAt(0, 1);
   EXPECT_EQ(num_expected_children, api_->permissions_view()->children().size());
-  EXPECT_EQ(base::ASCIIToUTF16("Allow"), api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Allow", api_->GetPermissionComboboxTextAt(0));
 
   // Setting to the default via the UI should keep the button around.
   api_->SimulateUserSelectingComboboxItemAt(0, 0);
-  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Ask (default)", api_->GetPermissionComboboxTextAt(0));
   EXPECT_EQ(num_expected_children, api_->permissions_view()->children().size());
 
   // However, since the setting is now default, recreating the dialog with those
@@ -365,7 +364,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   EXPECT_EQ(4u, children.size());
 
   views::Label* label = static_cast<views::Label*>(children[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("Gizmo"), label->GetText());
+  EXPECT_EQ(u"Gizmo", label->GetText());
 
   views::Button* button = static_cast<views::Button*>(children[2]);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -414,15 +413,13 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   EXPECT_EQ(4u, children.size());
 
   views::Label* label = static_cast<views::Label*>(children[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0x162E from Google Inc."),
-            label->GetText());
+  EXPECT_EQ(u"Unknown product 0x162E from Google Inc.", label->GetText());
 
   views::Button* button = static_cast<views::Button*>(children[2]);
   EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);
 
   views::Label* desc_label = static_cast<views::Label*>(children[3]);
-  EXPECT_EQ(base::ASCIIToUTF16("USB device allowed by your administrator"),
-            desc_label->GetText());
+  EXPECT_EQ(u"USB device allowed by your administrator", desc_label->GetText());
 
   // Policy granted USB permissions should not be able to be deleted.
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -475,13 +472,13 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
     EXPECT_EQ(4u, children.size());
 
     views::Label* label = static_cast<views::Label*>(children[1]);
-    EXPECT_EQ(base::ASCIIToUTF16("Gizmo"), label->GetText());
+    EXPECT_EQ(u"Gizmo", label->GetText());
 
     views::Button* button = static_cast<views::Button*>(children[2]);
     EXPECT_NE(button->GetState(), views::Button::STATE_DISABLED);
 
     views::Label* desc_label = static_cast<views::Label*>(children[3]);
-    EXPECT_EQ(base::ASCIIToUTF16("USB device"), desc_label->GetText());
+    EXPECT_EQ(u"USB device", desc_label->GetText());
 
     views::test::ButtonTestApi(button).NotifyClick(event);
     api_->SetPermissionInfo(list);
@@ -499,14 +496,13 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
     EXPECT_EQ(4u, children.size());
 
     views::Label* label = static_cast<views::Label*>(children[1]);
-    EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0x162E from Google Inc."),
-              label->GetText());
+    EXPECT_EQ(u"Unknown product 0x162E from Google Inc.", label->GetText());
 
     views::Button* button = static_cast<views::Button*>(children[2]);
     EXPECT_EQ(button->GetState(), views::Button::STATE_DISABLED);
 
     views::Label* desc_label = static_cast<views::Label*>(children[3]);
-    EXPECT_EQ(base::ASCIIToUTF16("USB device allowed by your administrator"),
+    EXPECT_EQ(u"USB device allowed by your administrator",
               desc_label->GetText());
 
     views::test::ButtonTestApi(button).NotifyClick(event);
@@ -535,18 +531,17 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   num_expected_children += kViewsPerPermissionRow * list.size();
   list.back().setting = CONTENT_SETTING_BLOCK;
   api_->SetPermissionInfo(list);
-  EXPECT_EQ(base::ASCIIToUTF16("Block"), api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Block", api_->GetPermissionComboboxTextAt(0));
 
   // Simulate a user selection via the UI. Note this will also cover logic in
   // PageInfo to update the pref.
   api_->SimulateUserSelectingComboboxItemAt(0, 2);
   EXPECT_EQ(num_expected_children, api_->permissions_view()->children().size());
-  EXPECT_EQ(base::ASCIIToUTF16("Ask"), api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Ask", api_->GetPermissionComboboxTextAt(0));
 
   // Setting to the default via the UI should keep the button around.
   api_->SimulateUserSelectingComboboxItemAt(0, 0);
-  EXPECT_EQ(base::ASCIIToUTF16("Ask (default)"),
-            api_->GetPermissionComboboxTextAt(0));
+  EXPECT_EQ(u"Ask (default)", api_->GetPermissionComboboxTextAt(0));
   EXPECT_EQ(num_expected_children, api_->permissions_view()->children().size());
 
   // However, since the setting is now default, recreating the dialog with

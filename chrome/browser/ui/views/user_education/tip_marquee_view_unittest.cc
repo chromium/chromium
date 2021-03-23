@@ -151,13 +151,13 @@ TEST_F(TipMarqueeViewTest, NotVisibleWhenNoTip) {
 }
 
 TEST_F(TipMarqueeViewTest, VisibleWhenTipSet) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   EXPECT_TRUE(marquee_->GetVisible());
 }
 
 TEST_F(TipMarqueeViewTest, ClearTipHidesView) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   EXPECT_TRUE(marquee_->GetVisible());
   EXPECT_EQ(marquee_->GetPreferredSize(), marquee_->size());
@@ -167,13 +167,13 @@ TEST_F(TipMarqueeViewTest, ClearTipHidesView) {
 }
 
 TEST_F(TipMarqueeViewTest, TipStartsExpanded) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 }
 
 TEST_F(TipMarqueeViewTest, TipCollapsesWhenNotEnoughSpace) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
@@ -183,7 +183,7 @@ TEST_F(TipMarqueeViewTest, TipCollapsesWhenNotEnoughSpace) {
 }
 
 TEST_F(TipMarqueeViewTest, TipCollapsesAndExpandsWhenIconIsClicked) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
 
   // This location should be comfortably inside the icon area.
@@ -205,7 +205,7 @@ TEST_F(TipMarqueeViewTest, TipCollapsesAndExpandsWhenIconIsClicked) {
 }
 
 TEST_F(TipMarqueeViewTest, TipDoesNotExpandWhenInsufficientSpace) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
@@ -222,7 +222,7 @@ TEST_F(TipMarqueeViewTest, TipDoesNotExpandWhenInsufficientSpace) {
 
 TEST_F(TipMarqueeViewTest, ClickLearnMoreLink) {
   LearnMoreCallback callback;
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"), callback.Callback());
+  marquee_->SetTip(u"Tip Text", callback.Callback());
   widget_->LayoutRootViewIfNecessary();
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 
@@ -235,7 +235,7 @@ TEST_F(TipMarqueeViewTest, ClickLearnMoreLink) {
 
 TEST_F(TipMarqueeViewTest, ClickNotInLearnMoreLinkHasNoEffect) {
   LearnMoreCallback callback;
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"), callback.Callback());
+  marquee_->SetTip(u"Tip Text", callback.Callback());
   widget_->LayoutRootViewIfNecessary();
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 
@@ -249,7 +249,7 @@ TEST_F(TipMarqueeViewTest, ClickNotInLearnMoreLinkHasNoEffect) {
 
 TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedCallsLearnMore) {
   LearnMoreCallback callback;
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"), callback.Callback());
+  marquee_->SetTip(u"Tip Text", callback.Callback());
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
@@ -265,7 +265,7 @@ TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedCallsLearnMore) {
 }
 
 TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedDisplaysOverflow) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
@@ -282,7 +282,7 @@ TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedDisplaysOverflow) {
 }
 
 TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
@@ -305,7 +305,7 @@ TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
 }
 
 TEST_F(TipMarqueeViewTest, OverflowBubbleGotItDismissesTip) {
-  marquee_->SetTip(base::ASCIIToUTF16("Tip Text"));
+  marquee_->SetTip(u"Tip Text");
   widget_->LayoutRootViewIfNecessary();
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);

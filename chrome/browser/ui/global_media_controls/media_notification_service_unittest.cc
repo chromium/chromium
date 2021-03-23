@@ -265,8 +265,8 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
     ASSERT_NE(sessions().end(), item_itr);
 
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     item_itr->second.item()->MediaSessionMetadataChanged(std::move(metadata));
   }
 

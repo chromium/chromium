@@ -97,8 +97,8 @@ SharesheetTargetButton::SharesheetTargetButton(
             ash::STYLE_SHARESHEET));
     secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
     SetLabelProperties(secondary_label);
-    accessible_name = base::StrCat(
-        {display_name, base::ASCIIToUTF16(" "), secondary_display_name});
+    accessible_name =
+        base::StrCat({display_name, u" ", secondary_display_name});
     // As there is a secondary label, don't let the initial label stretch across
     // multiple lines.
     label->SetMultiLine(false);

@@ -19,38 +19,29 @@ TEST(BookmarkEditorTest, ApplyEditsWithNoFolderChange) {
   std::unique_ptr<BookmarkModel> model(
       bookmarks::TestBookmarkClient::CreateModel());
   const BookmarkNode* bookmarkbar = model->bookmark_bar_node();
-  model->AddURL(bookmarkbar, 0, ASCIIToUTF16("url0"), GURL("chrome://newtab"));
-  model->AddURL(bookmarkbar, 1, ASCIIToUTF16("url1"), GURL("chrome://newtab"));
+  model->AddURL(bookmarkbar, 0, u"url0", GURL("chrome://newtab"));
+  model->AddURL(bookmarkbar, 1, u"url1", GURL("chrome://newtab"));
 
   {
     BookmarkEditor::EditDetails detail(
         BookmarkEditor::EditDetails::AddFolder(bookmarkbar, 1));
-    BookmarkEditor::ApplyEditsWithNoFolderChange(model.get(),
-                                                 bookmarkbar,
-                                                 detail,
-                                                 ASCIIToUTF16("folder0"),
-                                                 GURL(std::string()));
-    EXPECT_EQ(ASCIIToUTF16("folder0"), bookmarkbar->children()[1]->GetTitle());
+    BookmarkEditor::ApplyEditsWithNoFolderChange(
+        model.get(), bookmarkbar, detail, u"folder0", GURL(std::string()));
+    EXPECT_EQ(u"folder0", bookmarkbar->children()[1]->GetTitle());
   }
   {
     BookmarkEditor::EditDetails detail(
         BookmarkEditor::EditDetails::AddFolder(bookmarkbar, size_t{-1}));
-    BookmarkEditor::ApplyEditsWithNoFolderChange(model.get(),
-                                                 bookmarkbar,
-                                                 detail,
-                                                 ASCIIToUTF16("folder1"),
-                                                 GURL(std::string()));
-    EXPECT_EQ(ASCIIToUTF16("folder1"), bookmarkbar->children()[3]->GetTitle());
+    BookmarkEditor::ApplyEditsWithNoFolderChange(
+        model.get(), bookmarkbar, detail, u"folder1", GURL(std::string()));
+    EXPECT_EQ(u"folder1", bookmarkbar->children()[3]->GetTitle());
   }
   {
     BookmarkEditor::EditDetails detail(
         BookmarkEditor::EditDetails::AddFolder(bookmarkbar, 10));
-    BookmarkEditor::ApplyEditsWithNoFolderChange(model.get(),
-                                                 bookmarkbar,
-                                                 detail,
-                                                 ASCIIToUTF16("folder2"),
-                                                 GURL(std::string()));
-    EXPECT_EQ(ASCIIToUTF16("folder2"), bookmarkbar->children()[4]->GetTitle());
+    BookmarkEditor::ApplyEditsWithNoFolderChange(
+        model.get(), bookmarkbar, detail, u"folder2", GURL(std::string()));
+    EXPECT_EQ(u"folder2", bookmarkbar->children()[4]->GetTitle());
   }
 }
 

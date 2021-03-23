@@ -9,13 +9,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(FeaturePromoTextReplacements, EmptyReplacement) {
-  EXPECT_EQ(base::ASCIIToUTF16("Use this feature please"),
+  EXPECT_EQ(u"Use this feature please",
             FeaturePromoTextReplacements().ApplyTo(IDS_FEATURE_PROMO_BODY));
 }
 
 TEST(FeaturePromoTextReplacements, OneStringReplacement) {
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Click the button to do something"),
-      FeaturePromoTextReplacements::WithString(base::ASCIIToUTF16("the button"))
-          .ApplyTo(IDS_FEATURE_PROMO_BODY_WITH_STRING_PLACEHOLDER));
+  EXPECT_EQ(u"Click the button to do something",
+            FeaturePromoTextReplacements::WithString(u"the button")
+                .ApplyTo(IDS_FEATURE_PROMO_BODY_WITH_STRING_PLACEHOLDER));
 }

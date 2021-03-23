@@ -82,5 +82,5 @@ TEST_F(BookmarkTest, BookmarkReaderModePageActuallyBookmarksOriginal) {
   chrome::GetURLAndTitleToBookmark(web_contents.get(), &bookmarked_url,
                                    &bookmarked_title);
   EXPECT_EQ(original, bookmarked_url);
-  EXPECT_EQ(base::ASCIIToUTF16("Article title"), bookmarked_title);
+  EXPECT_EQ(u"Article title", bookmarked_title);
 }

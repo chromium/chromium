@@ -150,11 +150,9 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText) {
     EXPECT_TRUE(title.find(domain) != std::u16string::npos);
     if (kDomainsTestCases[i].bubble_type ==
         PasswordTitleType::UPDATE_PASSWORD) {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Update")) !=
-                  std::u16string::npos);
+      EXPECT_TRUE(title.find(u"Update") != std::u16string::npos);
     } else {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Save")) !=
-                  std::u16string::npos);
+      EXPECT_TRUE(title.find(u"Save") != std::u16string::npos);
     }
   }
 }

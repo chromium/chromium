@@ -52,15 +52,14 @@ ManagePasswordsTest::ManagePasswordsTest() {
   password_form_.signon_realm = kTestOrigin;
   password_form_.url = GURL(kTestOrigin);
   password_form_.username_value = ASCIIToUTF16(kTestUsername);
-  password_form_.password_value = ASCIIToUTF16("test_password");
+  password_form_.password_value = u"test_password";
 
   federated_form_.signon_realm =
       "federation://example.com/somelongeroriginurl.com";
   federated_form_.url = GURL(kTestOrigin);
   federated_form_.federation_origin =
       url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
-  federated_form_.username_value =
-      base::ASCIIToUTF16("test_federation_username");
+  federated_form_.username_value = u"test_federation_username";
 
   // Create a simple sign-in form.
   observed_form_.url = password_form_.url;
@@ -71,7 +70,7 @@ ManagePasswordsTest::ManagePasswordsTest() {
   observed_form_.fields.push_back(field);
 
   submitted_form_ = observed_form_;
-  submitted_form_.fields[1].value = ASCIIToUTF16("password");
+  submitted_form_.fields[1].value = u"password";
 
   // Turn off waiting for server predictions in order to avoid dealing with
   // posted tasks in PasswordFormManager.

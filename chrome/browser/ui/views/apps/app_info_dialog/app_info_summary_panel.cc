@@ -127,7 +127,7 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
     std::u16string text = base::UTF8ToUTF16(app_->description());
     if (text.length() > kMaxLength) {
       text = text.substr(0, kMaxLength - 5);
-      text += base::ASCIIToUTF16(" ... ");
+      text += u" ... ";
     }
 
     auto description_label = std::make_unique<AppInfoLabel>(text);

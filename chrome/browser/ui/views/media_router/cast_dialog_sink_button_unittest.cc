@@ -107,7 +107,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForDialSinks) {
   // If the sink is connected, we should show the session info, even if the
   // device is incompatible with the current sender page.
   sink.state = UIMediaSinkState::CONNECTED;
-  sink.status_text = base::ASCIIToUTF16("YouTube");
+  sink.status_text = u"YouTube";
   CastDialogSinkButton button3(views::Button::PressedCallback(), sink);
   EXPECT_EQ(sink.status_text, button3.subtitle()->GetText());
 }
@@ -115,9 +115,9 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForDialSinks) {
 TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
   UIMediaSink sink;
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
-  std::u16string status0 = base::ASCIIToUTF16("status0");
-  std::u16string status1 = base::ASCIIToUTF16("status1");
-  std::u16string status2 = base::ASCIIToUTF16("status2");
+  std::u16string status0 = u"status0";
+  std::u16string status1 = u"status1";
+  std::u16string status2 = u"status2";
 
   // Calling RestoreStatusText does nothing when status has not been overridden.
   button.subtitle()->SetText(status0);

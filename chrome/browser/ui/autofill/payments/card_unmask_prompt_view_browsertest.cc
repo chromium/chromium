@@ -88,10 +88,9 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
     // success is shown.
     std::u16string verification_message;
     if (expected_failure_temporary_) {
-      verification_message = base::ASCIIToUTF16("Check your CVC and try again");
+      verification_message = u"Check your CVC and try again";
     } else if (expected_failure_permanent_) {
-      verification_message =
-          base::ASCIIToUTF16("This card can't be verified right now.");
+      verification_message = u"This card can't be verified right now.";
     }
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -226,11 +225,11 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest, DisplayUI) {
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
                        EarlyCloseAfterSuccess) {
   ShowUi(kExpiryExpired);
-  controller()->OnUnmaskPromptAccepted(
-      base::ASCIIToUTF16("123"), base::ASCIIToUTF16("10"),
-      base::ASCIIToUTF16(test::NextYear()), /*should_store_locally=*/false,
-      /*enable_fido_auth=*/false);
-  EXPECT_EQ(base::ASCIIToUTF16("123"), delegate()->details().cvc);
+  controller()->OnUnmaskPromptAccepted(u"123", u"10",
+                                       base::ASCIIToUTF16(test::NextYear()),
+                                       /*should_store_locally=*/false,
+                                       /*enable_fido_auth=*/false);
+  EXPECT_EQ(u"123", delegate()->details().cvc);
   controller()->OnVerificationResult(AutofillClient::SUCCESS);
 
   // Simulate the user clicking [x] before the "Success!" message disappears.

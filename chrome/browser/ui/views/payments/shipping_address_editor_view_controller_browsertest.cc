@@ -159,7 +159,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
       // The phone can be empty when restored from a saved state, or it may be
       // formatted based on the currently selected country.
       if (!accept_empty_phone_number) {
-        EXPECT_EQ(base::ASCIIToUTF16("+1 575-555-5555"), textfield_text);
+        EXPECT_EQ(u"+1 575-555-5555", textfield_text);
       } else if (textfield_text.empty()) {
         if (unset_types)
           unset_types->insert(autofill::PHONE_HOME_WHOLE_NUMBER);
@@ -405,13 +405,13 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
               region_combobox->GetModel());
       if (use_regions1) {
         ASSERT_EQ(2, region_model->GetItemCount());
-        EXPECT_EQ(base::ASCIIToUTF16("---"), region_model->GetItemAt(0));
-        EXPECT_EQ(base::ASCIIToUTF16("region1a"), region_model->GetItemAt(1));
+        EXPECT_EQ(u"---", region_model->GetItemAt(0));
+        EXPECT_EQ(u"region1a", region_model->GetItemAt(1));
       } else {
         ASSERT_EQ(3, region_model->GetItemCount());
-        EXPECT_EQ(base::ASCIIToUTF16("---"), region_model->GetItemAt(0));
-        EXPECT_EQ(base::ASCIIToUTF16("region2a"), region_model->GetItemAt(1));
-        EXPECT_EQ(base::ASCIIToUTF16("region2b"), region_model->GetItemAt(2));
+        EXPECT_EQ(u"---", region_model->GetItemAt(0));
+        EXPECT_EQ(u"region2a", region_model->GetItemAt(1));
+        EXPECT_EQ(u"region2b", region_model->GetItemAt(2));
       }
       use_regions1 = !use_regions1;
     }
@@ -797,8 +797,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_EQ(base::ASCIIToUTF16(kCountryWithoutStatesCode),
             profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   // State/Region is no longer set.
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            profile->GetInfo(autofill::ADDRESS_HOME_STATE, kLocale));
+  EXPECT_EQ(u"", profile->GetInfo(autofill::ADDRESS_HOME_STATE, kLocale));
   EXPECT_EQ(50U, profile->use_count());
   EXPECT_EQ(kJanuary2017, profile->use_date());
 }
@@ -867,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Phone number required"),
+  EXPECT_EQ(u"Phone number required",
             static_cast<views::Label*>(error_label)->GetText());
 }
 
@@ -878,8 +877,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with a country but no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, base::ASCIIToUTF16(""),
-                  kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -894,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Enter a valid address"),
+  EXPECT_EQ(u"Enter a valid address",
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -905,12 +903,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   regions1.push_back(std::make_pair("CA", "California"));
   test_region_data_loader_.SendAsynchronousData(regions1);
   // Expect that the country is set correctly.
-  EXPECT_EQ(base::ASCIIToUTF16("United States"),
-            GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(u"United States", GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY));
 
   // Expect that no state is selected.
-  EXPECT_EQ(base::ASCIIToUTF16("---"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"---", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 
   // Expect that the save button is disabled.
   views::View* save_button = dialog_view()->GetViewByID(
@@ -926,8 +922,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address with a country but no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE,
-                  base::ASCIIToUTF16("INVALIDSTATE"), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -951,10 +946,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country or no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, base::ASCIIToUTF16(""),
-                  kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -969,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Enter a valid address"),
+  EXPECT_EQ(u"Enter a valid address",
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -984,8 +977,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY).empty());
 
   // Expect that no state is selected.
-  EXPECT_EQ(base::ASCIIToUTF16("---"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"---", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 
   // Expect that the save button is disabled.
   views::View* save_button = dialog_view()->GetViewByID(
@@ -1001,10 +993,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country or no state.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE,
-                  base::ASCIIToUTF16("INVALIDSTATE"), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"INVALIDSTATE", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1019,7 +1009,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Enter a valid address"),
+  EXPECT_EQ(u"Enter a valid address",
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -1034,8 +1024,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY).empty());
 
   // Expect that no state is selected.
-  EXPECT_EQ(base::ASCIIToUTF16("---"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"---", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 
   // Expect that the save button is disabled.
   views::View* save_button = dialog_view()->GetViewByID(
@@ -1052,10 +1041,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE,
-                  base::ASCIIToUTF16("California"), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1074,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Enter a valid address"),
+  EXPECT_EQ(u"Enter a valid address",
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -1085,8 +1072,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY).empty());
 
   // Expect that the state was selected.
-  EXPECT_EQ(base::ASCIIToUTF16("California"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"California", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 
   // Expect that the save button is enabled, since the profile is now valid.
   views::View* save_button = dialog_view()->GetViewByID(
@@ -1103,10 +1089,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE,
-                  base::ASCIIToUTF16("California"), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"California", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1121,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   ASSERT_EQ(1u, sheet->children().size());
   views::View* error_label = sheet->children().front()->GetViewByID(
       static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
-  EXPECT_EQ(base::ASCIIToUTF16("Enter a valid address"),
+  EXPECT_EQ(u"Enter a valid address",
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
@@ -1138,8 +1122,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY).empty());
 
   // Expect that the state was selected.
-  EXPECT_EQ(base::ASCIIToUTF16("California"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"California", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 
   // Expect that the save button is enabled, since the profile is now valid.
   views::View* save_button = dialog_view()->GetViewByID(
@@ -1154,10 +1137,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE, base::ASCIIToUTF16("ca"),
-                  kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"ca", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1175,8 +1156,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
-  EXPECT_EQ(base::ASCIIToUTF16("California"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"California", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 }
 
 // Tests that the state dropdown is set to the right value if the value from the
@@ -1186,10 +1166,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_STATE,
-                  base::ASCIIToUTF16("california"), kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_STATE, u"california", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1207,8 +1185,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
-  EXPECT_EQ(base::ASCIIToUTF16("California"),
-            GetComboboxValue(autofill::ADDRESS_HOME_STATE));
+  EXPECT_EQ(u"California", GetComboboxValue(autofill::ADDRESS_HOME_STATE));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
@@ -1217,8 +1194,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   // Add address without a country but a valid state for the default country.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   profile.SetInfo(autofill::NAME_FULL, base::ASCIIToUTF16(kNameFull), kLocale);
-  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(""),
-                  kLocale);
+  profile.SetInfo(autofill::ADDRESS_HOME_COUNTRY, u"", kLocale);
   AddAutofillProfile(profile);
 
   InvokePaymentRequestUI();
@@ -1230,9 +1206,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
 
   ClickOnBackArrow();
   PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            request->state()->shipping_profiles()[0]->GetInfo(
-                autofill::ADDRESS_HOME_COUNTRY, kLocale));
+  EXPECT_EQ(u"", request->state()->shipping_profiles()[0]->GetInfo(
+                     autofill::ADDRESS_HOME_COUNTRY, kLocale));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
@@ -1297,7 +1272,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest(
       "{"
       "  shippingAddress: {"
@@ -1307,10 +1282,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
       "}",
       DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED, dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16("ADDRESS LINE ERROR"),
+  EXPECT_EQ(u"ADDRESS LINE ERROR",
             GetErrorLabelForType(autofill::ADDRESS_HOME_STREET_ADDRESS));
-  EXPECT_EQ(base::ASCIIToUTF16("CITY ERROR"),
-            GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
+  EXPECT_EQ(u"CITY ERROR", GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
 }
 
 // Tests that there is error label for an impossible
@@ -1321,10 +1295,8 @@ IN_PROC_BROWSER_TEST_F(
 
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   // Set the same value in both of address line and city field.
-  address.SetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS,
-                     base::ASCIIToUTF16("Elysium"));
-  address.SetRawInfo(autofill::ADDRESS_HOME_CITY,
-                     base::ASCIIToUTF16("Elysium"));
+  address.SetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS, u"Elysium");
+  address.SetRawInfo(autofill::ADDRESS_HOME_CITY, u"Elysium");
   AddAutofillProfile(address);
 
   autofill::CreditCard card = autofill::test::GetCreditCard();
@@ -1332,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
 
   RetryPaymentRequest(
       "{"
@@ -1343,10 +1315,9 @@ IN_PROC_BROWSER_TEST_F(
       "}",
       DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED, dialog_view());
 
-  EXPECT_EQ(base::ASCIIToUTF16("ADDRESS LINE ERROR"),
+  EXPECT_EQ(u"ADDRESS LINE ERROR",
             GetErrorLabelForType(autofill::ADDRESS_HOME_STREET_ADDRESS));
-  EXPECT_EQ(base::ASCIIToUTF16("CITY ERROR"),
-            GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
+  EXPECT_EQ(u"CITY ERROR", GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
@@ -1361,7 +1332,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
   RetryPaymentRequest(
       "{"
       "  shippingAddress: {"
@@ -1400,10 +1371,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   WaitForObservedEvent();
 
-  EXPECT_EQ(base::ASCIIToUTF16("ADDRESS LINE ERROR"),
+  EXPECT_EQ(u"ADDRESS LINE ERROR",
             GetErrorLabelForType(autofill::ADDRESS_HOME_STREET_ADDRESS));
-  EXPECT_EQ(base::ASCIIToUTF16("CITY ERROR"),
-            GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
+  EXPECT_EQ(u"CITY ERROR", GetErrorLabelForType(autofill::ADDRESS_HOME_CITY));
 }
 
 }  // namespace payments

@@ -81,15 +81,15 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   static void AddTestData(BookmarkModel* model) {
     const BookmarkNode* bb_node = model->bookmark_bar_node();
     std::string test_base = "file:///c:/tmp/";
-    model->AddURL(bb_node, 0, ASCIIToUTF16("a"), GURL(test_base + "a"));
-    const BookmarkNode* f1 = model->AddFolder(bb_node, 1, ASCIIToUTF16("F1"));
-    model->AddURL(f1, 0, ASCIIToUTF16("f1a"), GURL(test_base + "f1a"));
-    const BookmarkNode* f11 = model->AddFolder(f1, 1, ASCIIToUTF16("F11"));
-    model->AddURL(f11, 0, ASCIIToUTF16("f11a"), GURL(test_base + "f11a"));
-    model->AddFolder(bb_node, 2, ASCIIToUTF16("F2"));
-    model->AddFolder(bb_node, 3, ASCIIToUTF16("F3"));
-    const BookmarkNode* f4 = model->AddFolder(bb_node, 4, ASCIIToUTF16("F4"));
-    model->AddURL(f4, 0, ASCIIToUTF16("f4a"), GURL(test_base + "f4a"));
+    model->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
+    const BookmarkNode* f1 = model->AddFolder(bb_node, 1, u"F1");
+    model->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
+    const BookmarkNode* f11 = model->AddFolder(f1, 1, u"F11");
+    model->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
+    model->AddFolder(bb_node, 2, u"F2");
+    model->AddFolder(bb_node, 3, u"F3");
+    const BookmarkNode* f4 = model->AddFolder(bb_node, 4, u"F4");
+    model->AddURL(f4, 0, u"f4a", GURL(test_base + "f4a"));
   }
 
   static base::RepeatingCallback<content::PageNavigator*()>

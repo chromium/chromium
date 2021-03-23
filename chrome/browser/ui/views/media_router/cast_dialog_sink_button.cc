@@ -199,7 +199,7 @@ class CastToMeetingDeprecationWarningView : public views::View {
     std::u16string text = l10n_util::GetStringUTF16(
         CastToMeetingEnabled() ? IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED
                                : IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED);
-    std::vector<std::u16string> substrings{base::ASCIIToUTF16("Google Meet")};
+    std::vector<std::u16string> substrings{u"Google Meet"};
     std::vector<size_t> offsets;
     text = base::ReplaceStringPlaceholders(text, substrings, &offsets);
 

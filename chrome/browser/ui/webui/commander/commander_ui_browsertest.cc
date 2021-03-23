@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(CommanderUITest, TextChanged) {
   EXPECT_EQ(text_changed_invocations().size(), 0u);
   ExecuteJS("chrome.send('textChanged', ['orange'])");
   ASSERT_EQ(text_changed_invocations().size(), 1u);
-  ASSERT_EQ(text_changed_invocations().back(), base::ASCIIToUTF16("orange"));
+  ASSERT_EQ(text_changed_invocations().back(), u"orange");
 }
 
 IN_PROC_BROWSER_TEST_F(CommanderUITest, OptionSelected) {
@@ -140,7 +140,7 @@ TEST(CommanderHandlerTest, DisplayResultsViewModelPassed) {
 
   commander::CommanderViewModel vm;
   vm.action = commander::CommanderViewModel::Action::kDisplayResults;
-  std::u16string item_title = base::ASCIIToUTF16("Test item");
+  std::u16string item_title = u"Test item";
   std::vector<gfx::Range> item_ranges = {gfx::Range(0, 4)};
   vm.items.emplace_back(item_title, item_ranges);
   vm.result_set_id = 42;
@@ -178,7 +178,7 @@ TEST(CommanderHandlerTest, PromptViewModelPassed) {
   commander::CommanderViewModel vm;
   vm.action = commander::CommanderViewModel::Action::kPrompt;
   vm.result_set_id = 42;
-  vm.prompt_text = base::ASCIIToUTF16("Select fruit");
+  vm.prompt_text = u"Select fruit";
 
   handler->AllowJavascriptForTesting();
   handler->ViewModelUpdated(std::move(vm));

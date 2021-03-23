@@ -129,7 +129,7 @@ void PageInfoHoverButton::UpdateAccessibleName() {
       subtitle() == nullptr
           ? title()->GetText()
           : base::JoinString({title()->GetText(), subtitle()->GetText()},
-                             base::ASCIIToUTF16("\n"));
+                             u"\n");
   HoverButton::SetAccessibleName(accessible_name);
 }
 

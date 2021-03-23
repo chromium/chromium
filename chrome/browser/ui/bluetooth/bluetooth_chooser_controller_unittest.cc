@@ -46,15 +46,15 @@ class BluetoothChooserControllerWithDevicesAddedTest
  public:
   BluetoothChooserControllerWithDevicesAddedTest() {
     bluetooth_chooser_controller_.AddOrUpdateDevice(
-        "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+        "id_a", false /* should_update_name */, u"a",
         true /* is_gatt_connected */, true /* is_paired */,
         -1 /* signal_strength_level */);
     bluetooth_chooser_controller_.AddOrUpdateDevice(
-        "id_b", false /* should_update_name */, base::ASCIIToUTF16("b"),
+        "id_b", false /* should_update_name */, u"b",
         true /* is_gatt_connected */, true /* is_paired */,
         0 /* signal_strength_level */);
     bluetooth_chooser_controller_.AddOrUpdateDevice(
-        "id_c", false /* should_update_name */, base::ASCIIToUTF16("c"),
+        "id_c", false /* should_update_name */, u"c",
         true /* is_gatt_connected */, true /* is_paired */,
         1 /* signal_strength_level */);
   }
@@ -63,12 +63,11 @@ class BluetoothChooserControllerWithDevicesAddedTest
 TEST_F(BluetoothChooserControllerTest, AddDevice) {
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionAdded(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_EQ(1u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
   EXPECT_EQ(-1, bluetooth_chooser_controller_.GetSignalStrengthLevel(0));
   EXPECT_TRUE(bluetooth_chooser_controller_.IsConnected(0));
   EXPECT_TRUE(bluetooth_chooser_controller_.IsPaired(0));
@@ -76,62 +75,55 @@ TEST_F(BluetoothChooserControllerTest, AddDevice) {
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionAdded(1)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_b", false /* should_update_name */, base::ASCIIToUTF16("b"),
+      "id_b", false /* should_update_name */, u"b",
       true /* is_gatt_connected */, true /* is_paired */,
       0 /* signal_strength_level */);
   EXPECT_EQ(2u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("b"),
-            bluetooth_chooser_controller_.GetOption(1));
+  EXPECT_EQ(u"b", bluetooth_chooser_controller_.GetOption(1));
   EXPECT_EQ(0, bluetooth_chooser_controller_.GetSignalStrengthLevel(1));
   testing::Mock::VerifyAndClearExpectations(&mock_bluetooth_chooser_view_);
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionAdded(2)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_c", false /* should_update_name */, base::ASCIIToUTF16("c"),
+      "id_c", false /* should_update_name */, u"c",
       true /* is_gatt_connected */, true /* is_paired */,
       1 /* signal_strength_level */);
   EXPECT_EQ(3u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("c"),
-            bluetooth_chooser_controller_.GetOption(2));
+  EXPECT_EQ(u"c", bluetooth_chooser_controller_.GetOption(2));
   EXPECT_EQ(1, bluetooth_chooser_controller_.GetSignalStrengthLevel(2));
 }
 
 TEST_F(BluetoothChooserControllerTest, RemoveDevice) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_b", false /* should_update_name */, base::ASCIIToUTF16("b"),
+      "id_b", false /* should_update_name */, u"b",
       true /* is_gatt_connected */, true /* is_paired */,
       0 /* signal_strength_level */);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_c", false /* should_update_name */, base::ASCIIToUTF16("c"),
+      "id_c", false /* should_update_name */, u"c",
       true /* is_gatt_connected */, true /* is_paired */,
       1 /* signal_strength_level */);
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionRemoved(1)).Times(1);
   bluetooth_chooser_controller_.RemoveDevice("id_b");
   EXPECT_EQ(2u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
-  EXPECT_EQ(base::ASCIIToUTF16("c"),
-            bluetooth_chooser_controller_.GetOption(1));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"c", bluetooth_chooser_controller_.GetOption(1));
   testing::Mock::VerifyAndClearExpectations(&mock_bluetooth_chooser_view_);
 
   // Remove a non-existent device, the number of devices should not change.
   bluetooth_chooser_controller_.RemoveDevice("non-existent");
   EXPECT_EQ(2u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
-  EXPECT_EQ(base::ASCIIToUTF16("c"),
-            bluetooth_chooser_controller_.GetOption(1));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"c", bluetooth_chooser_controller_.GetOption(1));
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionRemoved(0)).Times(1);
   bluetooth_chooser_controller_.RemoveDevice("id_a");
   EXPECT_EQ(1u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("c"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"c", bluetooth_chooser_controller_.GetOption(0));
   testing::Mock::VerifyAndClearExpectations(&mock_bluetooth_chooser_view_);
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionRemoved(0)).Times(1);
@@ -141,60 +133,51 @@ TEST_F(BluetoothChooserControllerTest, RemoveDevice) {
 
 TEST_F(BluetoothChooserControllerTest, MultipleDevicesWithSameNameShowIds) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a_1", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a_1", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
 
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_b", false /* should_update_name */, base::ASCIIToUTF16("b"),
+      "id_b", false /* should_update_name */, u"b",
       true /* is_gatt_connected */, true /* is_paired */,
       0 /* signal_strength_level */);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a_2", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a_2", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       1 /* signal_strength_level */);
-  EXPECT_EQ(base::ASCIIToUTF16("a (id_a_1)"),
-            bluetooth_chooser_controller_.GetOption(0));
-  EXPECT_EQ(base::ASCIIToUTF16("b"),
-            bluetooth_chooser_controller_.GetOption(1));
-  EXPECT_EQ(base::ASCIIToUTF16("a (id_a_2)"),
-            bluetooth_chooser_controller_.GetOption(2));
+  EXPECT_EQ(u"a (id_a_1)", bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"b", bluetooth_chooser_controller_.GetOption(1));
+  EXPECT_EQ(u"a (id_a_2)", bluetooth_chooser_controller_.GetOption(2));
 
   bluetooth_chooser_controller_.RemoveDevice("id_a_1");
-  EXPECT_EQ(base::ASCIIToUTF16("b"),
-            bluetooth_chooser_controller_.GetOption(0));
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(1));
+  EXPECT_EQ(u"b", bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(1));
 }
 
 TEST_F(BluetoothChooserControllerTest, UpdateDeviceName) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionUpdated(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("aa"),
+      "id_a", false /* should_update_name */, u"aa",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   // The name is still "a" since |should_update_name| is false.
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_chooser_controller_.GetOption(0));
   testing::Mock::VerifyAndClearExpectations(&mock_bluetooth_chooser_view_);
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionUpdated(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", true /* should_update_name */, base::ASCIIToUTF16("aa"),
+      "id_a", true /* should_update_name */, u"aa",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_EQ(1u, bluetooth_chooser_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("aa"),
-            bluetooth_chooser_controller_.GetOption(0));
+  EXPECT_EQ(u"aa", bluetooth_chooser_controller_.GetOption(0));
 
   bluetooth_chooser_controller_.RemoveDevice("id_a");
   EXPECT_EQ(0u, bluetooth_chooser_controller_.NumOptions());
@@ -202,14 +185,14 @@ TEST_F(BluetoothChooserControllerTest, UpdateDeviceName) {
 
 TEST_F(BluetoothChooserControllerTest, UpdateDeviceSignalStrengthLevel) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_EQ(-1, bluetooth_chooser_controller_.GetSignalStrengthLevel(0));
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionUpdated(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       1 /* signal_strength_level */);
   EXPECT_EQ(1, bluetooth_chooser_controller_.GetSignalStrengthLevel(0));
@@ -221,7 +204,7 @@ TEST_F(BluetoothChooserControllerTest, UpdateDeviceSignalStrengthLevel) {
   // stored signal strength level. So here the signal strength level is
   // still 1.
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_EQ(1, bluetooth_chooser_controller_.GetSignalStrengthLevel(0));
@@ -229,14 +212,14 @@ TEST_F(BluetoothChooserControllerTest, UpdateDeviceSignalStrengthLevel) {
 
 TEST_F(BluetoothChooserControllerTest, UpdateConnectedStatus) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       false /* is_gatt_connected */, false /* is_paired */,
       1 /* signal_strength_level */);
   EXPECT_FALSE(bluetooth_chooser_controller_.IsConnected(0));
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionUpdated(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, false /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_TRUE(bluetooth_chooser_controller_.IsConnected(0));
@@ -244,14 +227,14 @@ TEST_F(BluetoothChooserControllerTest, UpdateConnectedStatus) {
 
 TEST_F(BluetoothChooserControllerTest, UpdatePairedStatus) {
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, false /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_FALSE(bluetooth_chooser_controller_.IsPaired(0));
 
   EXPECT_CALL(mock_bluetooth_chooser_view_, OnOptionUpdated(0)).Times(1);
   bluetooth_chooser_controller_.AddOrUpdateDevice(
-      "id_a", false /* should_update_name */, base::ASCIIToUTF16("a"),
+      "id_a", false /* should_update_name */, u"a",
       true /* is_gatt_connected */, true /* is_paired */,
       -1 /* signal_strength_level */);
   EXPECT_TRUE(bluetooth_chooser_controller_.IsPaired(0));

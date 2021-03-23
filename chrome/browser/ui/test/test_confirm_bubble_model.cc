@@ -24,17 +24,16 @@ TestConfirmBubbleModel::~TestConfirmBubbleModel() {
 }
 
 std::u16string TestConfirmBubbleModel::GetTitle() const {
-  return base::ASCIIToUTF16("Test");
+  return u"Test";
 }
 
 std::u16string TestConfirmBubbleModel::GetMessageText() const {
-  return base::ASCIIToUTF16("Test Message");
+  return u"Test Message";
 }
 
 std::u16string TestConfirmBubbleModel::GetButtonLabel(
     ui::DialogButton button) const {
-  return button == ui::DIALOG_BUTTON_OK ? base::ASCIIToUTF16("OK")
-                                        : base::ASCIIToUTF16("Cancel");
+  return button == ui::DIALOG_BUTTON_OK ? u"OK" : u"Cancel";
 }
 
 void TestConfirmBubbleModel::Accept() {
@@ -48,7 +47,7 @@ void TestConfirmBubbleModel::Cancel() {
 }
 
 std::u16string TestConfirmBubbleModel::GetLinkText() const {
-  return base::ASCIIToUTF16("Link");
+  return u"Link";
 }
 
 void TestConfirmBubbleModel::OpenHelpPage() {

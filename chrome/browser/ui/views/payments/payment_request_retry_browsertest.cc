@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestRetryTest,
   EXPECT_EQ(2U, request->state()->available_apps().size());
 
   // Enter a valid CVC format for the Visa card.
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
 
   // Confirm that only one payment app is available for retry().
   RetryPaymentRequest(
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestRetryTest, DisableAddCardDuringRetry) {
   ClickOnBackArrow();
 
   // Enter a valid CVC format for the Visa card.
-  PayWithCreditCard(base::ASCIIToUTF16("123"));
+  PayWithCreditCard(u"123");
 
   // Confirm that "Add card" button does not exist in payment list view.
   RetryPaymentRequest(

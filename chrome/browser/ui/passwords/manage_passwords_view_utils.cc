@@ -87,9 +87,8 @@ std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
   if (federation.empty())
     return std::make_pair(form.display_name, form.username_value);
 
-  return std::make_pair(
-      form.display_name,
-      form.username_value + base::ASCIIToUTF16("\n") + federation);
+  return std::make_pair(form.display_name,
+                        form.username_value + u"\n" + federation);
 }
 
 std::u16string GetSavePasswordDialogTitleText(

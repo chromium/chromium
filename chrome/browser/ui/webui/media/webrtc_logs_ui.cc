@@ -301,7 +301,7 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     // was already in the variable. In case it's empty set the string to
     // inform that the time is unknown.
     if (value_w.empty())
-      value_w = std::u16string(base::ASCIIToUTF16("(unknown time)"));
+      value_w = std::u16string(u"(unknown time)");
     upload->SetString("capture_time", value_w);
 
     upload_list->Append(std::move(upload));

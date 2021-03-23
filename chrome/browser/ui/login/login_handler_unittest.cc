@@ -109,7 +109,7 @@ std::u16string ExpectedAuthority(bool is_proxy, const char* prefix) {
   extra_text = true;
 #endif
   if (extra_text)
-    str += base::ASCIIToUTF16(" requires a username and password.");
+    str += u" requires a username and password.";
 
   return str;
 }

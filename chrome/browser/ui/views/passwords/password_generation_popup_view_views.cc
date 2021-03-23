@@ -269,9 +269,8 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->SetName(
-      base::JoinString({controller_->SuggestedText(), controller_->password()},
-                       base::ASCIIToUTF16(" ")));
+  node_data->SetName(base::JoinString(
+      {controller_->SuggestedText(), controller_->password()}, u" "));
   node_data->SetDescription(controller_->HelpText());
   node_data->role = ax::mojom::Role::kMenuItem;
 }

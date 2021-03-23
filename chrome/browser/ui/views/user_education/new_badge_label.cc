@@ -131,9 +131,9 @@ void NewBadgeLabel::UpdatePaddingForNewBadge() {
 
 DEFINE_ENUM_CONVERTERS(NewBadgeLabel::BadgePlacement,
                        {NewBadgeLabel::BadgePlacement::kImmediatelyAfterText,
-                        base::ASCIIToUTF16("kImmediatelyAfterText")},
+                        u"kImmediatelyAfterText"},
                        {NewBadgeLabel::BadgePlacement::kTrailingEdge,
-                        base::ASCIIToUTF16("kTrailingEdge")})
+                        u"kTrailingEdge"})
 
 BEGIN_METADATA(NewBadgeLabel, views::Label)
 ADD_PROPERTY_METADATA(NewBadgeLabel::BadgePlacement, BadgePlacement)

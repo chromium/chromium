@@ -117,7 +117,7 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
     // by \n.
     std::u16string expected = base::JoinString(
         {base::ASCIIToUTF16(pair.title), base::ASCIIToUTF16(pair.subtitle)},
-        base::ASCIIToUTF16("\n"));
+        u"\n");
     EXPECT_EQ(expected, base::UTF8ToUTF16(accessible_name));
 
     EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
@@ -134,8 +134,7 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
   views::View* secondary_icon_raw = secondary_icon.get();
 
   HoverButton button(views::Button::PressedCallback(), std::move(primary_icon),
-                     base::ASCIIToUTF16("Title"),
-                     base::ASCIIToUTF16("Subtitle"), std::move(secondary_icon));
+                     u"Title", u"Subtitle", std::move(secondary_icon));
   EXPECT_TRUE(button.Contains(primary_icon_raw));
   EXPECT_TRUE(button.Contains(secondary_icon_raw));
 }
@@ -145,7 +144,7 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
   bool clicked = false;
   HoverButton* button = widget()->SetContentsView(std::make_unique<HoverButton>(
       base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked),
-      CreateIcon(), base::ASCIIToUTF16("Title"), std::u16string()));
+      CreateIcon(), u"Title", std::u16string()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 
@@ -175,7 +174,7 @@ TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
             widget->SetContentsView(std::make_unique<views::View>());
           },
           &clicked, widget()),
-      CreateIcon(), base::ASCIIToUTF16("Title"), std::u16string()));
+      CreateIcon(), u"Title", std::u16string()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 

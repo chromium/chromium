@@ -64,7 +64,7 @@ TEST_F(ValidatingTextfieldTest, Validation) {
       new ValidatingTextfield(std::move(delegate)));
 
   // Set an invalid string (>5 characters).
-  textfield->SetText(base::ASCIIToUTF16("evilstring"));
+  textfield->SetText(u"evilstring");
   // This should be called on new contents by the textfield controller.
   textfield->OnContentsChanged();
 
@@ -77,7 +77,7 @@ TEST_F(ValidatingTextfieldTest, Validation) {
 
   // On further text adjustements, the validation runs now. Set a valid string
   // (<=5 characters).
-  textfield->SetText(base::ASCIIToUTF16("good"));
+  textfield->SetText(u"good");
   textfield->OnContentsChanged();
 
   // No longer invalid.

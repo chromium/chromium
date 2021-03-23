@@ -141,10 +141,10 @@ OsSettingsResult::OsSettingsResult(
   // SearchResultBaseView::ComputeAccessibleName.
   std::u16string accessible_name = title();
   if (!details().empty()) {
-    accessible_name += base::ASCIIToUTF16(", ");
+    accessible_name += u", ";
     accessible_name += details();
   }
-  accessible_name += base::ASCIIToUTF16(", ");
+  accessible_name += u", ";
   // The first element in the settings hierarchy is always the top-level
   // localized name of the Settings app.
   accessible_name += hierarchy[0];

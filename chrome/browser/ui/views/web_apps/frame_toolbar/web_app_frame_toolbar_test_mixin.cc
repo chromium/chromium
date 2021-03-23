@@ -28,7 +28,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
-  web_app_info->title = base::ASCIIToUTF16("A minimal-ui app");
+  web_app_info->title = u"A minimal-ui app";
   web_app_info->display_mode = web_app::DisplayMode::kMinimalUi;
   web_app_info->open_as_window = true;
 

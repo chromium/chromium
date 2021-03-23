@@ -235,8 +235,8 @@ void BubbleHeaderView::SetDetails(const std::u16string& details_text) {
 
   std::vector<size_t> offsets;
 
-  std::u16string text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), subst, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", subst, &offsets);
   security_details_label_->SetText(text);
   gfx::Range details_range(offsets[1], text.length());
 
@@ -262,8 +262,8 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
 
   std::vector<size_t> offsets;
 
-  std::u16string text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"), subst, &offsets);
+  std::u16string text =
+      base::ReplaceStringPlaceholders(u"$1 $2", subst, &offsets);
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
           std::make_unique<views::StyledLabel>());

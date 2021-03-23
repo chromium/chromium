@@ -107,7 +107,7 @@ void AutoAcceptDialogCallback(
 AppId InstallWebApp(Profile* profile,
                     std::unique_ptr<WebApplicationInfo> web_app_info) {
   if (web_app_info->title.empty())
-    web_app_info->title = base::ASCIIToUTF16("WebApplicationInfo App Name");
+    web_app_info->title = u"WebApplicationInfo App Name";
 
   AppId app_id;
   base::RunLoop run_loop;

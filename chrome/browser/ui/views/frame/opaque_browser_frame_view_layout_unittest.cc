@@ -392,7 +392,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WithoutCaptionButtons) {
 
 TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   // Tests the layout of pop up windows.
-  delegate_->set_window_title(base::ASCIIToUTF16("Window Title"));
+  delegate_->set_window_title(u"Window Title");
   AddWindowTitleIcons();
 
   root_view_->Layout();

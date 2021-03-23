@@ -1102,8 +1102,7 @@ IN_PROC_BROWSER_TEST_F(
   // Account.
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  EXPECT_EQ(cardholder_name_textfield->GetText(),
-            base::ASCIIToUTF16("John Smith"));
+  EXPECT_EQ(cardholder_name_textfield->GetText(), u"John Smith");
 }
 
 #endif  // !OS_CHROMEOS
@@ -1229,14 +1228,13 @@ IN_PROC_BROWSER_TEST_F(
   // button.
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  cardholder_name_textfield->InsertOrReplaceText(base::ASCIIToUTF16(""));
+  cardholder_name_textfield->InsertOrReplaceText(u"");
   views::LabelButton* save_button = static_cast<views::LabelButton*>(
       FindViewInBubbleById(DialogViewId::OK_BUTTON));
   EXPECT_EQ(save_button->GetState(),
             views::LabelButton::ButtonState::STATE_DISABLED);
   // Setting a cardholder name should enable the [Save] button.
-  cardholder_name_textfield->InsertOrReplaceText(
-      base::ASCIIToUTF16("John Smith"));
+  cardholder_name_textfield->InsertOrReplaceText(u"John Smith");
   EXPECT_EQ(save_button->GetState(),
             views::LabelButton::ButtonState::STATE_NORMAL);
 }
@@ -1260,8 +1258,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  cardholder_name_textfield->InsertOrReplaceText(
-      base::ASCIIToUTF16("John Smith"));
+  cardholder_name_textfield->InsertOrReplaceText(u"John Smith");
   base::HistogramTester histogram_tester;
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   // UMA should have recorded bubble acceptance for both regular save UMA and
@@ -1299,8 +1296,7 @@ IN_PROC_BROWSER_TEST_F(
   // user's Google Account should also be visible.
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  EXPECT_EQ(cardholder_name_textfield->GetText(),
-            base::ASCIIToUTF16("John Smith"));
+  EXPECT_EQ(cardholder_name_textfield->GetText(), u"John Smith");
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCardCardholderNamePrefilled", true, 1);
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TOOLTIP));
@@ -1382,8 +1378,7 @@ IN_PROC_BROWSER_TEST_F(
   ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
-  cardholder_name_textfield->InsertOrReplaceText(
-      base::ASCIIToUTF16("Jane Doe"));
+  cardholder_name_textfield->InsertOrReplaceText(u"Jane Doe");
   base::HistogramTester histogram_tester;
   ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
   histogram_tester.ExpectUniqueSample(
@@ -1778,7 +1773,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyExpirationDateDropdownsAreVisible();
 
   // Ensure the December is pre-populated but year is not checked.
-  EXPECT_EQ(base::ASCIIToUTF16("12"),
+  EXPECT_EQ(u"12",
             month_input()->GetTextForRow(month_input()->GetSelectedIndex()));
   EXPECT_EQ(0, year_input()->GetSelectedIndex());
 }
@@ -1814,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyExpirationDateDropdownsAreVisible();
 
   // Ensure no pre-populated expiration date.
-  EXPECT_EQ(base::ASCIIToUTF16("08"),
+  EXPECT_EQ(u"08",
             month_input()->GetTextForRow(month_input()->GetSelectedIndex()));
   EXPECT_EQ(0, year_input()->GetSelectedRow());
 }
@@ -1835,9 +1830,9 @@ IN_PROC_BROWSER_TEST_F(
   VerifyExpirationDateDropdownsAreVisible();
 
   // Ensure pre-populated expiration date.
-  EXPECT_EQ(base::ASCIIToUTF16("03"),
+  EXPECT_EQ(u"03",
             month_input()->GetTextForRow(month_input()->GetSelectedIndex()));
-  EXPECT_EQ(base::ASCIIToUTF16("2017"),
+  EXPECT_EQ(u"2017",
             year_input()->GetTextForRow(year_input()->GetSelectedIndex()));
 }
 
@@ -2029,8 +2024,8 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
-  card.SetNumber(base::ASCIIToUTF16("5454545454545454"));
-  card.SetNickname(base::ASCIIToUTF16("nickname"));
+  card.SetNumber(u"5454545454545454");
+  card.SetNickname(u"nickname");
   AddTestCreditCard(browser()->profile(), card);
 
   // Start sync.
@@ -2049,7 +2044,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
-  card.SetNumber(base::ASCIIToUTF16("5454545454545454"));
+  card.SetNumber(u"5454545454545454");
   AddTestCreditCard(browser()->profile(), card);
 
   // Start sync.

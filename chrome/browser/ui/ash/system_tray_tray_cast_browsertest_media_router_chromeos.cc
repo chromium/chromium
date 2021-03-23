@@ -203,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
       multiple_routes, std::vector<media_router::MediaRoute::Id>());
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsCastingNotificationVisible());
-  EXPECT_NE(std::u16string::npos,
-            GetNotificationString().find(base::ASCIIToUTF16("Local Sink")));
+  EXPECT_NE(std::u16string::npos, GetNotificationString().find(u"Local Sink"));
 
   // When a casting session stops, we shouldn't display the cast view.
   media_routes_observer()->OnRoutesUpdated(

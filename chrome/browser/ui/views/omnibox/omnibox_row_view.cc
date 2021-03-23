@@ -259,17 +259,15 @@ class OmniboxRowView::HeaderView : public views::View {
 
 DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
                        {OmniboxPopupModel::FOCUSED_BUTTON_HEADER,
-                        base::ASCIIToUTF16("FOCUSED_BUTTON_HEADER")},
-                       {OmniboxPopupModel::NORMAL,
-                        base::ASCIIToUTF16("NORMAL")},
-                       {OmniboxPopupModel::KEYWORD_MODE,
-                        base::ASCIIToUTF16("KEYWORD_MODE")},
+                        u"FOCUSED_BUTTON_HEADER"},
+                       {OmniboxPopupModel::NORMAL, u"NORMAL"},
+                       {OmniboxPopupModel::KEYWORD_MODE, u"KEYWORD_MODE"},
                        {OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
-                        base::ASCIIToUTF16("FOCUSED_BUTTON_TAB_SWITCH")},
+                        u"FOCUSED_BUTTON_TAB_SWITCH"},
                        {OmniboxPopupModel::FOCUSED_BUTTON_PEDAL,
-                        base::ASCIIToUTF16("FOCUSED_BUTTON_PEDAL")},
+                        u"FOCUSED_BUTTON_PEDAL"},
                        {OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION,
-                        base::ASCIIToUTF16("FOCUSED_BUTTON_REMOVE_SUGGESTION")})
+                        u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 
 template <>
 struct views::metadata::TypeConverter<OmniboxPopupModel::Selection>
@@ -295,9 +293,8 @@ views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
 base::Optional<OmniboxPopupModel::Selection>
 views::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
     const std::u16string& source_value) {
-  const auto values =
-      base::SplitString(source_value, base::ASCIIToUTF16("{,}"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const auto values = base::SplitString(
+      source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (values.size() != 2)
     return base::nullopt;
   // TODO(pkasting): This should be size_t, but for some reason that won't link

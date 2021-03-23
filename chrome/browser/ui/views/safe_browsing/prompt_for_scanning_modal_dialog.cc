@@ -79,7 +79,7 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   // Create the message label text.
   std::vector<size_t> offsets;
   std::u16string message_text = base::ReplaceStringPlaceholders(
-      base::ASCIIToUTF16("$1 $2"),
+      u"$1 $2",
       {l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE,
                                   filename),
        l10n_util::GetStringUTF16(IDS_LEARN_MORE)},

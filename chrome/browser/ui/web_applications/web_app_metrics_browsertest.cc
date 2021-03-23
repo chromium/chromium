@@ -52,7 +52,7 @@ class WebAppMetricsBrowserTest : public WebAppControllerBrowserTest {
   AppId InstallWebApp() {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = GetInstallableAppURL();
-    web_app_info->title = base::ASCIIToUTF16("A Web App");
+    web_app_info->title = u"A Web App";
     web_app_info->display_mode = DisplayMode::kStandalone;
     web_app_info->open_as_window = true;
     return web_app::InstallWebApp(profile(), std::move(web_app_info));
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = GetInstallableAppURL();
-  web_app_info->title = base::ASCIIToUTF16("A Web App");
+  web_app_info->title = u"A Web App";
   web_app_info->display_mode = DisplayMode::kStandalone;
   web_app_info->open_as_window = true;
   web_app::InstallWebApp(profile(), std::move(web_app_info));
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = GetInstallableAppURL();
-  web_app_info->title = base::ASCIIToUTF16("A Web App");
+  web_app_info->title = u"A Web App";
   web_app_info->display_mode = DisplayMode::kStandalone;
   web_app_info->open_as_window = true;
   AppId app_id = web_app::InstallWebApp(profile(), std::move(web_app_info));

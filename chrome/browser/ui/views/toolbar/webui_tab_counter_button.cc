@@ -84,7 +84,7 @@ bool ShouldChangeStartThrobber(TabStripModel* tab_strip_model,
 std::u16string GetTabCounterLabelText(int num_tabs) {
   // In the triple-digit case, fall back to ':D' to match Android.
   if (num_tabs >= 100)
-    return std::u16string(base::ASCIIToUTF16(":D"));
+    return std::u16string(u":D");
   return base::FormatNumber(num_tabs);
 }
 
