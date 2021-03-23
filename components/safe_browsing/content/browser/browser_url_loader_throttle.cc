@@ -268,6 +268,10 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
                            original_url_.spec());
 }
 
+const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
+  return "SafeBrowsingBrowserThrottle";
+}
+
 void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
                                                bool proceed,
                                                bool showed_interstitial) {

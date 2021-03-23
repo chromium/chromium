@@ -67,6 +67,10 @@ void MimeSniffingThrottle::WillProcessResponse(
   }
 }
 
+const char* MimeSniffingThrottle::NameForLoggingWillProcessResponse() {
+  return "MimeSniffingThrottle";
+}
+
 void MimeSniffingThrottle::ResumeWithNewResponseHead(
     network::mojom::URLResponseHeadPtr new_response_head) {
   delegate_->UpdateDeferredResponseHead(std::move(new_response_head));

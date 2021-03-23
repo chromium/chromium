@@ -66,6 +66,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   void WillProcessResponse(const GURL& response_url,
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
+  const char* NameForLoggingWillProcessResponse() override;
 
  private:
   // CheckerOnIO handles calling methods on SafeBrowsingUrlCheckerImpl, which

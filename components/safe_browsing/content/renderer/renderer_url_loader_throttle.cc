@@ -108,6 +108,10 @@ void RendererURLLoaderThrottle::WillProcessResponse(
                            original_url_.spec());
 }
 
+const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
+  return "SafeBrowsingRendererThrottle";
+}
+
 void RendererURLLoaderThrottle::OnCompleteCheck(bool proceed,
                                                 bool showed_interstitial) {
   OnCompleteCheckInternal(true /* slow_check */, proceed, showed_interstitial);

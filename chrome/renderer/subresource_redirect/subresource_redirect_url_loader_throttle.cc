@@ -170,6 +170,11 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   StartRedirectTimeoutTimer();
 }
 
+const char*
+SubresourceRedirectURLLoaderThrottle::NameForLoggingWillStartRequest() {
+  return "SubresourceRedirectThrottle";
+}
+
 void SubresourceRedirectURLLoaderThrottle::NotifyRedirectDeciderDecision(
     RedirectResult redirect_result) {
   DCHECK_EQ(RedirectState::kRedirectDecisionPending, redirect_state_);

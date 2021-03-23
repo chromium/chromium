@@ -77,8 +77,15 @@ void RecordHistogram(const std::string& stage,
       base::StrCat({"Net.URLLoaderThrottle", metric_type, ".", stage}), delta);
 }
 
-void RecordDeferTimeHistogram(const std::string& stage, base::Time start) {
-  RecordHistogram(stage, start, "DeferTime");
+void RecordDeferTimeHistogram(const std::string& stage,
+                              base::Time start,
+                              const char* throttle_name) {
+  constexpr char kMetricType[] = "DeferTime";
+  RecordHistogram(stage, start, kMetricType);
+  if (throttle_name != nullptr) {
+    RecordHistogram(base::StrCat({stage, ".", throttle_name}), start,
+                    kMetricType);
+  }
 }
 
 void RecordExecutionTimeHistogram(const std::string& stage, base::Time start) {
@@ -600,8 +607,14 @@ void ThrottlingURLLoader::StopDeferringForThrottle(
     return;
 
   if (deferred_stage_ != DEFERRED_NONE) {
+    const char* name = nullptr;
+    if (deferred_stage_ == DEFERRED_START) {
+      name = throttle->NameForLoggingWillStartRequest();
+    } else if (deferred_stage_ == DEFERRED_RESPONSE) {
+      name = throttle->NameForLoggingWillProcessResponse();
+    }
     RecordDeferTimeHistogram(GetStageNameForHistogram(deferred_stage_),
-                             iter->second);
+                             iter->second, name);
   }
   deferring_throttles_.erase(iter);
   if (deferring_throttles_.empty() && !loader_completed_)

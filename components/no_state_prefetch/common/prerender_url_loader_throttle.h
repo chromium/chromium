@@ -39,6 +39,7 @@ class PrerenderURLLoaderThrottle
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+  const char* NameForLoggingWillStartRequest() override;
   void WillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,

@@ -34,6 +34,10 @@ class RequestBlockerThrottle : public URLLoaderThrottle,
     *defer = true;
   }
 
+  const char* NameForLoggingWillStartRequest() override {
+    return "FrameRequestBlockerThrottle";
+  }
+
   // FrameRequestBlocker::Client implementation:
   void Resume() override {
     frame_request_blocker_->RemoveObserver(this);

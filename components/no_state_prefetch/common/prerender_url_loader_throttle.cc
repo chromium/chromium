@@ -119,6 +119,10 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
                         this, &PrerenderURLLoaderThrottle::OnTimedOut);
 }
 
+const char* PrerenderURLLoaderThrottle::NameForLoggingWillStartRequest() {
+  return "PrerenderThrottle";
+}
+
 void PrerenderURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,

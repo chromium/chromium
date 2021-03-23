@@ -28,6 +28,7 @@ class BLINK_COMMON_EXPORT MimeSniffingThrottle : public URLLoaderThrottle {
   void WillProcessResponse(const GURL& response_url,
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
+  const char* NameForLoggingWillProcessResponse() override;
 
   // Called from MimeSniffingURLLoader once mime type is ready.
   void ResumeWithNewResponseHead(

@@ -58,6 +58,10 @@ void URLLoaderThrottle::DetachFromCurrentSequence() {
 void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
                                          bool* defer) {}
 
+const char* URLLoaderThrottle::NameForLoggingWillStartRequest() {
+  return nullptr;
+}
+
 void URLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
     const network::mojom::URLResponseHead& response_head,
@@ -70,6 +74,10 @@ void URLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {}
+
+const char* URLLoaderThrottle::NameForLoggingWillProcessResponse() {
+  return nullptr;
+}
 
 void URLLoaderThrottle::BeforeWillProcessResponse(
     const GURL& response_url,

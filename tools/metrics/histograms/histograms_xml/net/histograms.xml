@@ -29,6 +29,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="WillStartRequest"/>
 </variants>
 
+<variants name="WillProcessResponseThrottleNames">
+  <variant name="MimeSniffingThrottle"/>
+  <variant name="SafeBrowsingBrowserThrottle"/>
+  <variant name="SafeBrowsingRendererThrottle"/>
+</variants>
+
+<variants name="WillStartRequestThrottleNames">
+  <variant name="FrameRequestBlockerThrottle"/>
+  <variant name="PrerenderThrottle"/>
+  <variant name="SubresourceRedirectThrottle"/>
+</variants>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2021-07-27">
   <owner>dschinazi@chromium.org</owner>
@@ -5272,6 +5284,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     one does not record the OK bucket, since it's both not terribly meaningful
     and URLs are canonicalized so frequently.
   </summary>
+</histogram>
+
+<histogram name="Net.URLLoaderThrottleDeferTime.WillProcessResponse.{Throttle}"
+    units="ms" expires_after="2021-09-21">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time {Throttle} deferred a request on WillProcessResponse. Logged
+    every time {Throttle} defers a request.
+  </summary>
+  <token key="Throttle" variants="WillProcessResponseThrottleNames"/>
+</histogram>
+
+<histogram name="Net.URLLoaderThrottleDeferTime.WillStartRequest.{Throttle}"
+    units="ms" expires_after="2021-09-21">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time {Throttle} deferred a request on WillStartRequest. Logged
+    every time {Throttle} defers a request.
+  </summary>
+  <token key="Throttle" variants="WillStartRequestThrottleNames"/>
 </histogram>
 
 <histogram name="Net.URLLoaderThrottleDeferTime.{Stage}" units="ms"
