@@ -18,6 +18,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.content_capture.ContentCaptureController;
 import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.weblayer_private.interfaces.APICallException;
@@ -262,6 +263,16 @@ public final class ProfileImpl
             long toMillis, @NonNull IObjectWrapper completionCallback) {
         StrictModeWorkaround.apply();
         checkNotDestroyed();
+        // Handle ContentCapture data clearing.
+        ContentCaptureController controller = ContentCaptureController.getInstance();
+        if (controller != null) {
+            for (int type : dataTypes) {
+                if (type == BrowsingDataType.COOKIES_AND_SITE_DATA) {
+                    controller.clearAllContentCaptureData();
+                    break;
+                }
+            }
+        }
         Runnable callback = ObjectWrapper.unwrap(completionCallback, Runnable.class);
         ProfileImplJni.get().clearBrowsingData(
                 mNativeProfile, mapBrowsingDataTypes(dataTypes), fromMillis, toMillis, callback);
