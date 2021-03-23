@@ -52,7 +52,7 @@ class CanvasRenderingContext2DState final
   // FontSelectorClient implementation
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
 
-  bool HasUnrealizedSaves() const { return unrealized_save_count_; }
+  inline bool HasUnrealizedSaves() const { return unrealized_save_count_; }
   void Save() { ++unrealized_save_count_; }
   void Restore() { --unrealized_save_count_; }
   void ResetUnrealizedSaveCount() { unrealized_save_count_ = 0; }
@@ -85,7 +85,7 @@ class CanvasRenderingContext2DState final
   void SetFont(const FontDescription&, FontSelector*);
   const Font& GetFont() const;
   const FontDescription& GetFontDescription() const;
-  bool HasRealizedFont() const { return realized_font_; }
+  inline bool HasRealizedFont() const { return realized_font_; }
   void SetUnparsedFont(const String& font) { unparsed_font_ = font; }
   const String& UnparsedFont() const { return unparsed_font_; }
 

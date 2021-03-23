@@ -376,6 +376,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
  protected:
   BaseRenderingContext2D();
 
+  // API entry points that need access to ModifiableState() and use the
+  // [NoAllocDirectCall] IDL attribute, must call FallbackForUnrealizedSaves
+  // before calling ModifiableState(), and return immediately if
+  // FallbackForUnrealizedSaves returns true.
+  inline bool NoAllocFallbackForUnrealizedSaves();
+
   CanvasRenderingContext2DState& ModifiableState();
   const CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();
@@ -666,6 +672,14 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
     height = -height;
     y -= height;
   }
+}
+
+inline bool BaseRenderingContext2D::NoAllocFallbackForUnrealizedSaves() {
+  if (LIKELY(!GetState().HasUnrealizedSaves()))
+    return false;
+  if (LIKELY(!GetState().HasRealizedFont()))
+    return false;
+  return NoAllocFallbackForAllocation();
 }
 
 }  // namespace blink

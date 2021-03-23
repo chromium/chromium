@@ -547,6 +547,9 @@ void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
 }
 
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
+  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
+    return;
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -568,6 +571,9 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
 
 // All angles are in radians
 void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
+  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
+    return;
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -597,6 +603,9 @@ void BaseRenderingContext2D::rotateAxis(double axisX,
                                         double axisY,
                                         double axisZ,
                                         double angle_in_radians) {
+  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
+    return;
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -684,6 +693,9 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
 }
 
 void BaseRenderingContext2D::perspective(double length) {
+  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
+    return;
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -784,7 +796,6 @@ void BaseRenderingContext2D::transform(double m11,
   // TODO(crbug.com/1140535) Investigate the performance implications of simply
   // calling the 3d version above with:
   // transform(m11, m12, 0, 0, m21, m22, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
-
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -815,6 +826,9 @@ void BaseRenderingContext2D::transform(double m11,
 }
 
 void BaseRenderingContext2D::resetTransform() {
+  if (UNLIKELY(NoAllocFallbackForUnrealizedSaves()))
+    return;
+
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
