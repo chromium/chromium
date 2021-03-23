@@ -811,16 +811,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForFetchSubmit) {
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Flaky on chromeos: http://crbug.com/870372
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PromptForFetchSubmitWithoutNavigation \
-  DISABLED_PromptForFetchSubmitWithoutNavigation
-#else
-#define MAYBE_PromptForFetchSubmitWithoutNavigation \
-  PromptForFetchSubmitWithoutNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       MAYBE_PromptForFetchSubmitWithoutNavigation) {
+                       PromptForFetchSubmitWithoutNavigation) {
   NavigateToFile("/password/password_fetch_submit.html");
 
   // Need to pay attention for a message that XHR has finished since there
@@ -848,16 +840,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Flaky on chromeos: http://crbug.com/870372
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_PromptForFetchSubmitWithoutNavigation_SignupForm \
-  DISABLED_PromptForFetchSubmitWithoutNavigation_SignupForm
-#else
-#define MAYBE_PromptForFetchSubmitWithoutNavigation_SignupForm \
-  PromptForFetchSubmitWithoutNavigation_SignupForm
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       MAYBE_PromptForFetchSubmitWithoutNavigation_SignupForm) {
+                       PromptForFetchSubmitWithoutNavigation_SignupForm) {
   NavigateToFile("/password/password_fetch_submit.html");
 
   // Need to pay attention for a message that Fetch has finished since there
