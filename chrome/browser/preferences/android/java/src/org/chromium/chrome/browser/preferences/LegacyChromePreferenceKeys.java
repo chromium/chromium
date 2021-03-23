@@ -148,7 +148,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
                 ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME,
                 ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME,
-                ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED,
                 ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT,
                 ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS,
                 ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS,

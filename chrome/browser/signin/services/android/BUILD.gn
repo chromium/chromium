@@ -84,7 +84,6 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/signin/services/AccountInfoServiceTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninHelperTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
-    "junit/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManagerTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
   deps = [

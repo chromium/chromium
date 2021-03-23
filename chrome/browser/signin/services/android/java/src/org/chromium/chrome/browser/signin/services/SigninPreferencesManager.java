@@ -32,38 +32,6 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Sets the {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} to true.
-     */
-    public void markAccountsChangedPref() {
-        // The process may go away as soon as we return from onReceive but Android makes sure
-        // that in-flight disk writes from apply() complete before changing component states.
-        mManager.writeBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, true);
-    }
-
-    /**
-     * Gets the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} and clears it.
-     *
-     * @return the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} before the call.
-     */
-    public boolean checkAndClearAccountsChangedPref() {
-        if (mManager.readBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, false)) {
-            // Clear the value in prefs.
-            mManager.writeBoolean(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED, false);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Clears the accounts state-related shared prefs.
-     */
-    @VisibleForTesting
-    public void clearAccountsStateSharedPrefsForTesting() {
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED);
-    }
-
-    /**
      * Clears the accounts state-related shared prefs.
      */
     @VisibleForTesting

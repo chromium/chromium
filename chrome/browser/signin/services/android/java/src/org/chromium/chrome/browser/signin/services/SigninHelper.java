@@ -91,20 +91,19 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
-    public void validateAccountSettings(boolean accountsChanged) {
+    public void validateAccountSettings() {
         // validateAccountsInternal accesses account list (to check whether account exists), so
         // postpone the call until account list cache in AccountManagerFacade is ready.
         AccountManagerFacadeProvider.getInstance().runAfterCacheIsPopulated(
-                () -> validateAccountsInternal(accountsChanged));
+                () -> validateAccountsInternal());
     }
 
-    private void validateAccountsInternal(boolean accountsChanged) {
+    private void validateAccountsInternal() {
         // Ensure System accounts have been seeded.
         mAccountTrackerService.checkAndSeedSystemAccounts();
         if (mSigninManager.isOperationInProgress()) {
             // Wait for ongoing sign-in/sign-out operation to finish before validating accounts.
-            mSigninManager.runAfterOperationInProgress(
-                    () -> validateAccountsInternal(accountsChanged));
+            mSigninManager.runAfterOperationInProgress(() -> validateAccountsInternal());
             return;
         }
 
@@ -168,9 +167,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      */
     public void onMainActivityStart() {
         try (TraceEvent ignored = TraceEvent.scoped("SigninHelper.onMainActivityStart")) {
-            boolean accountsChanged =
-                    SigninPreferencesManager.getInstance().checkAndClearAccountsChangedPref();
-            validateAccountSettings(accountsChanged);
+            validateAccountSettings();
         }
     }
 
