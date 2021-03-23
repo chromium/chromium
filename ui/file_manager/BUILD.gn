@@ -410,7 +410,6 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager:fix_broken_images",
-    "//ui/file_manager/image_loader:build",
     "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",
   ]
@@ -420,8 +419,6 @@ generate_grd("build_grd") {
     "audio_player/js/main.m.rollup.js",
     "audio_player/js/main_background.m.rollup.js",
     "audio_player/js/metadata_worker.m.rollup.js",
-
-    "image_loader/background.m.rollup.js",
 
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
@@ -437,7 +434,6 @@ generate_grd("build_grd") {
     "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
     "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
     "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
-    "image_loader/background.m.rollup.js|image_loader/background.m.js",
     "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
     "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
   ]
@@ -467,6 +463,8 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/main.m.rollup.js",
       "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
       "file_manager/foreground/js/shared.m.rollup.js",
+
+      "image_loader/background.m.rollup.js",
     ]
 
     resource_path_rewrites += [
@@ -474,6 +472,8 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
       "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
       "file_manager/foreground/js/metadata_dispatcher.m.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.m.js",
+
+      "image_loader/background.m.rollup.js|image_loader/background.m.js",
     ]
 
     deps += [
@@ -481,6 +481,7 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",
+      "//ui/file_manager/image_loader:build",
     ]
   } else {
     manifest_files = [
