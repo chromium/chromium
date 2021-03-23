@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/settings_shortcut/settings_shortcut_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -86,9 +85,6 @@ constexpr size_t kMaxAppShortcutResults = 4;
 constexpr size_t kMaxAssistantChipResults = 1;
 
 constexpr size_t kMaxAssistantTextResults = 1;
-
-// TODO(wutao): Need UX spec.
-constexpr size_t kMaxSettingsShortcutResults = 6;
 
 // A flag to control whether to replace the existing Launcher Search Provider
 // with the new Drive and Local file providers, which are under development.
@@ -179,16 +175,6 @@ std::unique_ptr<SearchController> CreateSearchController(
     controller->AddProvider(app_data_api_group_id,
                             std::make_unique<ArcAppDataSearchProvider>(
                                 kMaxAppDataResults, list_controller));
-  }
-
-  // TODO(crbug.com/1028447): Remove the settings shortcut provider, superseded
-  // by OsSettingsProvider.
-  if (app_list_features::IsSettingsShortcutSearchEnabled()) {
-    size_t settings_shortcut_group_id =
-        controller->AddGroup(kMaxSettingsShortcutResults);
-    controller->AddProvider(
-        settings_shortcut_group_id,
-        std::make_unique<SettingsShortcutProvider>(profile));
   }
 
   if (arc::IsArcAllowedForProfile(profile)) {
