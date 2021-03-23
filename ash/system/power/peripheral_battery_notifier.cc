@@ -36,7 +36,7 @@ namespace {
 
 // When a peripheral device's battery level is <= kLowBatteryLevel, consider
 // it to be in low battery condition.
-const uint8_t kLowBatteryLevel = 15;
+const uint8_t kLowBatteryLevel = 16;
 
 // Don't show 2 low battery notification within |kNotificationInterval|.
 constexpr base::TimeDelta kNotificationInterval =
