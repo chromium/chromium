@@ -24,6 +24,7 @@
 
 namespace crosapi {
 
+using ExtensionPlatformKeysService = chromeos::ExtensionPlatformKeysService;
 using PlatformKeysService = chromeos::platform_keys::PlatformKeysService;
 using TokenId = chromeos::platform_keys::TokenId;
 using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
@@ -34,6 +35,7 @@ const char kEnterprisePlatformErrorInvalidX509Cert[] =
     "Certificate is not a valid X.509 certificate.";
 const char kUnsupportedKeystoreType[] = "The token is not valid.";
 const char kUnsupportedAlgorithmType[] = "Algorithm type is not supported.";
+const char kUnsupportedLacrosVersion[] = "Internal version incompatibility.";
 
 // Converts a binary blob to a certificate.
 scoped_refptr<net::X509Certificate> ParseCertificate(
@@ -44,6 +46,14 @@ scoped_refptr<net::X509Certificate> ParseCertificate(
   options.printable_string_is_utf8 = true;
   return net::X509Certificate::CreateFromBytesUnsafeOptions(
       reinterpret_cast<const char*>(input.data()), input.size(), options);
+}
+
+ExtensionPlatformKeysService* GetExtensionPlatformKeys() {
+  ExtensionPlatformKeysService* service =
+      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
+          ProfileManager::GetActiveUserProfile());
+  CHECK(service);
+  return service;
 }
 
 PlatformKeysService* GetPlatformKeys() {
@@ -159,9 +169,17 @@ void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
 void KeystoreServiceAsh::GenerateKey(
     mojom::KeystoreType keystore,
     mojom::KeystoreSigningAlgorithmPtr algorithm,
+    const base::Optional<std::string>& extension_id,
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  PlatformKeysService* platform_keys_service = GetPlatformKeys();
+  if (!extension_id) {
+    std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
+        kUnsupportedLacrosVersion));
+    return;
+  }
+
+  ExtensionPlatformKeysService* ext_platform_keys_service =
+      GetExtensionPlatformKeys();
   base::Optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
     std::move(callback).Run(
@@ -173,16 +191,17 @@ void KeystoreServiceAsh::GenerateKey(
     case mojom::KeystoreSigningAlgorithm::Tag::PKCS115: {
       auto c = base::BindOnce(&KeystoreServiceAsh::OnGenerateKey,
                               std::move(callback));
-      platform_keys_service->GenerateRSAKey(
+      ext_platform_keys_service->GenerateRSAKey(
           token_id.value(), algorithm->get_pkcs115()->modulus_length,
-          std::move(c));
+          *extension_id, std::move(c));
       break;
     }
     case mojom::KeystoreSigningAlgorithm::Tag::ECDSA: {
       auto c = base::BindOnce(&KeystoreServiceAsh::OnGenerateKey,
                               std::move(callback));
-      platform_keys_service->GenerateECKey(
-          token_id.value(), algorithm->get_ecdsa()->named_curve, std::move(c));
+      ext_platform_keys_service->GenerateECKey(
+          token_id.value(), algorithm->get_ecdsa()->named_curve, *extension_id,
+          std::move(c));
       break;
     }
     default: {
@@ -295,9 +314,7 @@ void KeystoreServiceAsh::Sign(KeystoreType keystore,
     return;
   }
 
-  chromeos::ExtensionPlatformKeysService* service =
-      chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
+  ExtensionPlatformKeysService* service = GetExtensionPlatformKeys();
   chromeos::platform_keys::HashAlgorithm hash_algorithm;
   chromeos::platform_keys::KeyType key_type;
   switch (scheme) {

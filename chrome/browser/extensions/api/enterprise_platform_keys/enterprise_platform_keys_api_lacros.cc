@@ -160,7 +160,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
       &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey, this);
   chromeos::LacrosChromeServiceImpl::Get()
       ->keystore_service_remote()
-      ->GenerateKey(keystore, std::move(signing), std::move(c));
+      ->GenerateKey(keystore, std::move(signing), extension_id(), std::move(c));
   return RespondLater();
 }
 

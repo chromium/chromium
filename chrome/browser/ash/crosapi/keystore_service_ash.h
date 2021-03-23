@@ -48,6 +48,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
                        GetCertificatesCallback callback) override;
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreSigningAlgorithmPtr algorithm,
+                   const base::Optional<std::string>& extension_id,
                    GenerateKeyCallback callback) override;
   void AddCertificate(mojom::KeystoreType keystore,
                       const std::vector<uint8_t>& certificate,
