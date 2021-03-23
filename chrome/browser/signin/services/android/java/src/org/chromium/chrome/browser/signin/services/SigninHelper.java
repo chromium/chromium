@@ -133,37 +133,16 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                     if (newAccountName != null) {
                         // Sign in to the new account if the current account is renamed
                         // to a new account
-                        signOutAndThenSignin(newAccountName);
+                        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+                            mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
+                                    AccountUtils.createAccountFromName(newAccountName), null);
+                        }, false);
                     } else {
                         mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                     }
                 }
             }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         });
-    }
-
-    /**
-     * Perform a sign-out with a callback to sign-in again.
-     */
-    private void signOutAndThenSignin(String accountEmail) {
-        final Account account = AccountUtils.createAccountFromName(accountEmail);
-        final SigninManager.SignInCallback signinCallback = new SigninManager.SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                validateAccountsInternal(true);
-            }
-
-            @Override
-            public void onSignInAborted() {}
-        };
-        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
-            // Clear the shared perf only after signOut is successful.
-            // If Chrome dies, we can try it again on next run.
-            // Otherwise, if re-sign-in fails, we'll just leave chrome
-            // signed-out.
-            mSigninManager.signinAndEnableSync(
-                    SigninAccessPoint.ACCOUNT_RENAMED, account, signinCallback);
-        }, false);
     }
 
     @VisibleForTesting
