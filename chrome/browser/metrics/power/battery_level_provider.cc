@@ -29,10 +29,9 @@ BatteryLevelProvider::BatteryInterface::BatteryInterface(
 BatteryLevelProvider::BatteryInterface::BatteryInterface(
     const BatteryInterface&) = default;
 
-BatteryLevelProvider::BatteryState BatteryLevelProvider::GetBatteryState() {
+BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
+    const std::vector<BatteryInterface>& battery_interfaces) {
   const base::TimeTicks capture_time = base::TimeTicks::Now();
-
-  std::vector<BatteryInterface> battery_interfaces = GetBatteryInterfaceList();
 
   uint64_t total_max_capacity = 0;
   uint64_t total_current_capacity = 0;

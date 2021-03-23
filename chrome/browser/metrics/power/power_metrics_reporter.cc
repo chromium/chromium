@@ -6,8 +6,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -46,21 +44,12 @@ int64_t GetBucketForSample(base::TimeDelta value) {
 PowerMetricsReporter::PowerMetricsReporter(
     const base::WeakPtr<UsageScenarioDataStore>& data_store,
     std::unique_ptr<BatteryLevelProvider> battery_level_provider)
-    : blocking_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      data_store_(data_store),
-      battery_level_provider_(
-          battery_level_provider.release(),
-          base::OnTaskRunnerDeleter(blocking_task_runner_)) {
+    : data_store_(data_store),
+      battery_level_provider_(std::move(battery_level_provider)) {
   DCHECK(performance_monitor::ProcessMonitor::Get());
   performance_monitor::ProcessMonitor::Get()->AddObserver(this);
 
-  // Unretained is safe since |battery_level_provider_| is destroyed on
-  // |blocking_task_runner_|.
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&BatteryLevelProvider::GetBatteryState,
-                     base::Unretained(battery_level_provider_.get())),
+  battery_level_provider_->GetBatteryState(
       base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
                      weak_factory_.GetWeakPtr()));
 }
@@ -71,8 +60,7 @@ PowerMetricsReporter::~PowerMetricsReporter() {
   }
 }
 
-void PowerMetricsReporter::AwaitFirstSampleForTesting(
-    base::OnceClosure closure) {
+void PowerMetricsReporter::OnFirstSampleForTesting(base::OnceClosure closure) {
   if (!interval_begin_.is_null()) {
     std::move(closure).Run();
   } else {
@@ -89,15 +77,10 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
     const performance_monitor::ProcessMonitor::Metrics& metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampling_task_scheduled_ = base::TimeTicks::Now();
-  // Unretained is safe since |battery_level_provider_| is destroyed on
-  // |blocking_task_runner_|.
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&BatteryLevelProvider::GetBatteryState,
-                     base::Unretained(battery_level_provider_.get())),
+  battery_level_provider_->GetBatteryState(
       base::BindOnce(&PowerMetricsReporter::OnBatteryStateAndMetricsSampled,
-                     weak_factory_.GetWeakPtr(), metrics));
+                     weak_factory_.GetWeakPtr(), metrics,
+                     /* scheduled_time=*/base::TimeTicks::Now()));
 }
 
 void PowerMetricsReporter::ReportBatteryHistograms(
@@ -145,6 +128,7 @@ void PowerMetricsReporter::OnFirstBatteryStateSampled(
 
 void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
+    base::TimeTicks scheduled_time,
     const BatteryLevelProvider::BatteryState& battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -157,7 +141,7 @@ void PowerMetricsReporter::OnBatteryStateAndMetricsSampled(
   interval_begin_ = now;
 
   base::UmaHistogramMicrosecondsTimes(kBatterySamplingDelayHistogramName,
-                                      now - sampling_task_scheduled_);
+                                      now - scheduled_time);
 
   auto discharge_mode_and_rate =
       GetBatteryDischargeRateDuringInterval(battery_state, interval_duration);

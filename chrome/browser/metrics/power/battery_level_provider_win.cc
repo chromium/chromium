@@ -14,6 +14,9 @@
 
 #include <vector>
 
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
@@ -116,15 +119,55 @@ class BatteryLevelProviderWin : public BatteryLevelProvider {
   BatteryLevelProviderWin() = default;
   ~BatteryLevelProviderWin() override = default;
 
-  std::vector<BatteryInterface> GetBatteryInterfaceList() override;
+  void GetBatteryState(
+      base::OnceCallback<void(const BatteryState&)> callback) override {
+    // This is run on |blocking_task_runner_| since GetBatteryInterfaceList()
+    // has blocking calls and can take up to several seconds to complete.
+    blocking_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce([]() {
+          std::vector<BatteryInterface> battery_interfaces =
+              GetBatteryInterfaceList();
+          return BatteryLevelProvider::MakeBatteryState(battery_interfaces);
+        }),
+        std::move(callback));
+  }
 
  private:
-  BatteryInterface GetInterface(HDEVINFO devices,
-                                SP_DEVICE_INTERFACE_DATA* interface_data);
+  static std::vector<BatteryInterface> GetBatteryInterfaceList();
+
+  static BatteryInterface GetInterface(
+      HDEVINFO devices,
+      SP_DEVICE_INTERFACE_DATA* interface_data);
+
+  // TaskRunner used to run blocking GetBatteryInterfaceList queries, sequenced
+  // to avoid the performance cost of concurrent calls.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderWin>();
+}
+
+BatteryLevelProvider::BatteryInterface BatteryLevelProviderWin::GetInterface(
+    HDEVINFO devices,
+    SP_DEVICE_INTERFACE_DATA* interface_data) {
+  base::win::ScopedHandle battery = GetBatteryHandle(devices, interface_data);
+  if (!battery.IsValid())
+    return BatteryInterface(false);
+
+  base::Optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
+  if (!battery_tag)
+    return BatteryInterface(false);
+  auto battery_information = GetBatteryInformation(battery.Get(), *battery_tag);
+  auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
+  // If any of the values were not available.
+  if (!battery_information.has_value() || !battery_status.has_value())
+    return BatteryInterface(true);
+
+  return BatteryInterface({battery_status->PowerState & BATTERY_POWER_ON_LINE,
+                           battery_status->Capacity,
+                           battery_information->FullChargedCapacity});
 }
 
 std::vector<BatteryLevelProvider::BatteryInterface>
@@ -165,25 +208,4 @@ BatteryLevelProviderWin::GetBatteryInterfaceList() {
     interfaces.push_back(GetInterface(devices.get(), &interface_data));
   }
   return interfaces;
-}
-
-BatteryLevelProvider::BatteryInterface BatteryLevelProviderWin::GetInterface(
-    HDEVINFO devices,
-    SP_DEVICE_INTERFACE_DATA* interface_data) {
-  base::win::ScopedHandle battery = GetBatteryHandle(devices, interface_data);
-  if (!battery.IsValid())
-    return BatteryInterface(false);
-
-  base::Optional<uint64_t> battery_tag = GetBatteryTag(battery.Get());
-  if (!battery_tag)
-    return BatteryInterface(false);
-  auto battery_information = GetBatteryInformation(battery.Get(), *battery_tag);
-  auto battery_status = GetBatteryStatus(battery.Get(), *battery_tag);
-  // If any of the values were not available.
-  if (!battery_information.has_value() || !battery_status.has_value())
-    return BatteryInterface(true);
-
-  return BatteryInterface({battery_status->PowerState & BATTERY_POWER_ON_LINE,
-                           battery_status->Capacity,
-                           battery_information->FullChargedCapacity});
 }

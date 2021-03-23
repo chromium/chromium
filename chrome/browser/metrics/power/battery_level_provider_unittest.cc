@@ -12,15 +12,12 @@ class FakeBatteryLevelProvider : public BatteryLevelProvider {
  public:
   using BatteryInterface = BatteryLevelProvider::BatteryInterface;
 
-  explicit FakeBatteryLevelProvider(std::vector<BatteryInterface> details)
-      : details_(std::move(details)) {}
+  FakeBatteryLevelProvider() = default;
 
- private:
-  std::vector<BatteryInterface> GetBatteryInterfaceList() override {
-    return details_;
+  static BatteryState MakeBatteryState(
+      const std::vector<BatteryInterface>& battery_interfaces) {
+    return BatteryLevelProvider::MakeBatteryState(battery_interfaces);
   }
-
-  std::vector<BatteryInterface> details_;
 };
 
 }  // namespace
@@ -28,8 +25,7 @@ class FakeBatteryLevelProvider : public BatteryLevelProvider {
 using BatteryInterface = FakeBatteryLevelProvider::BatteryInterface;
 
 TEST(BatteryLevelProviderTest, NoInterface) {
-  FakeBatteryLevelProvider provider({});
-  auto state = provider.GetBatteryState();
+  auto state = FakeBatteryLevelProvider::MakeBatteryState({});
   EXPECT_EQ(0U, state.interface_count);
   EXPECT_EQ(0U, state.battery_count);
   EXPECT_FALSE(state.charge_level.has_value());
@@ -37,8 +33,8 @@ TEST(BatteryLevelProviderTest, NoInterface) {
 }
 
 TEST(BatteryLevelProviderTest, NoBattery) {
-  FakeBatteryLevelProvider provider({BatteryInterface(false)});
-  auto state = provider.GetBatteryState();
+  auto state =
+      FakeBatteryLevelProvider::MakeBatteryState({BatteryInterface(false)});
   EXPECT_EQ(1U, state.interface_count);
   EXPECT_EQ(0U, state.battery_count);
   EXPECT_FALSE(state.charge_level.has_value());
@@ -46,8 +42,8 @@ TEST(BatteryLevelProviderTest, NoBattery) {
 }
 
 TEST(BatteryLevelProviderTest, PluggedBattery) {
-  FakeBatteryLevelProvider provider({BatteryInterface({true, 42, 100})});
-  auto state = provider.GetBatteryState();
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
+      {BatteryInterface({true, 42, 100})});
   EXPECT_EQ(1U, state.interface_count);
   EXPECT_EQ(1U, state.battery_count);
   ASSERT_TRUE(state.charge_level.has_value());
@@ -56,8 +52,8 @@ TEST(BatteryLevelProviderTest, PluggedBattery) {
 }
 
 TEST(BatteryLevelProviderTest, DischargingBattery) {
-  FakeBatteryLevelProvider provider({BatteryInterface({false, 42, 100})});
-  auto state = provider.GetBatteryState();
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
+      {BatteryInterface({false, 42, 100})});
   EXPECT_EQ(1U, state.interface_count);
   EXPECT_EQ(1U, state.battery_count);
   ASSERT_TRUE(state.charge_level.has_value());
@@ -66,8 +62,8 @@ TEST(BatteryLevelProviderTest, DischargingBattery) {
 }
 
 TEST(BatteryLevelProviderTest, InvalidBattery) {
-  FakeBatteryLevelProvider provider({BatteryInterface(true)});
-  auto state = provider.GetBatteryState();
+  auto state =
+      FakeBatteryLevelProvider::MakeBatteryState({BatteryInterface(true)});
   EXPECT_EQ(1U, state.interface_count);
   EXPECT_EQ(1U, state.battery_count);
   EXPECT_FALSE(state.charge_level.has_value());
@@ -75,9 +71,8 @@ TEST(BatteryLevelProviderTest, InvalidBattery) {
 }
 
 TEST(BatteryLevelProviderTest, MultipleInterfaces) {
-  FakeBatteryLevelProvider provider(
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
       {BatteryInterface(false), BatteryInterface({false, 42, 100})});
-  auto state = provider.GetBatteryState();
   EXPECT_EQ(2U, state.interface_count);
   EXPECT_EQ(1U, state.battery_count);
   ASSERT_TRUE(state.charge_level.has_value());
@@ -86,9 +81,8 @@ TEST(BatteryLevelProviderTest, MultipleInterfaces) {
 }
 
 TEST(BatteryLevelProviderTest, MultipleBatteries) {
-  FakeBatteryLevelProvider provider(
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
       {BatteryInterface({true, 10, 100}), BatteryInterface({false, 30, 100})});
-  auto state = provider.GetBatteryState();
   EXPECT_EQ(2U, state.interface_count);
   EXPECT_EQ(2U, state.battery_count);
   ASSERT_TRUE(state.charge_level.has_value());
@@ -97,9 +91,8 @@ TEST(BatteryLevelProviderTest, MultipleBatteries) {
 }
 
 TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
-  FakeBatteryLevelProvider provider(
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
       {BatteryInterface({false, 10, 100}), BatteryInterface({false, 30, 100})});
-  auto state = provider.GetBatteryState();
   EXPECT_EQ(2U, state.interface_count);
   EXPECT_EQ(2U, state.battery_count);
   ASSERT_TRUE(state.charge_level.has_value());
@@ -108,9 +101,8 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
 }
 
 TEST(BatteryLevelProviderTest, MultipleBatteriesInvalid) {
-  FakeBatteryLevelProvider provider(
+  auto state = FakeBatteryLevelProvider::MakeBatteryState(
       {BatteryInterface(true), BatteryInterface({false, 10, 100})});
-  auto state = provider.GetBatteryState();
   EXPECT_EQ(2U, state.interface_count);
   EXPECT_EQ(2U, state.battery_count);
   EXPECT_FALSE(state.charge_level.has_value());

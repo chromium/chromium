@@ -54,18 +54,15 @@ class FakeBatteryLevelProvider : public BatteryLevelProvider {
       std::queue<BatteryLevelProvider::BatteryState>* battery_states)
       : battery_states_(battery_states) {}
 
-  BatteryState GetBatteryState() override {
+  void GetBatteryState(
+      base::OnceCallback<void(const BatteryState&)> callback) override {
     DCHECK(!battery_states_->empty());
     BatteryLevelProvider::BatteryState state = battery_states_->front();
     battery_states_->pop();
-    return state;
+    std::move(callback).Run(state);
   }
 
  private:
-  std::vector<BatteryInterface> GetBatteryInterfaceList() override {
-    return {};
-  }
-
   std::queue<BatteryLevelProvider::BatteryState>* battery_states_;
 };
 
@@ -127,14 +124,14 @@ class PowerMetricsReporterUnitTest : public testing::Test {
     base::RunLoop run_loop;
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
         data_store_.AsWeakPtr(), std::move(battery_provider));
-    power_metrics_reporter_->AwaitFirstSampleForTesting(run_loop.QuitClosure());
+    power_metrics_reporter_->OnFirstSampleForTesting(run_loop.QuitClosure());
     run_loop.Run();
   }
 
   void WaitForNextSample(
       const performance_monitor::ProcessMonitor::Metrics& metrics) {
     base::RunLoop run_loop;
-    power_metrics_reporter_->AwaitNextSampleForTesting(run_loop.QuitClosure());
+    power_metrics_reporter_->OnNextSampleForTesting(run_loop.QuitClosure());
     process_monitor_.NotifyObserversForOnAggregatedMetricsSampled(metrics);
     run_loop.Run();
   }

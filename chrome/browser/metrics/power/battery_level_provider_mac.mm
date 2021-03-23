@@ -45,39 +45,23 @@ class BatteryLevelProviderMac : public BatteryLevelProvider {
   BatteryLevelProviderMac() = default;
   ~BatteryLevelProviderMac() override = default;
 
-  std::vector<BatteryInterface> GetBatteryInterfaceList() override;
+  void GetBatteryState(
+      base::OnceCallback<void(const BatteryState&)> callback) override {
+    std::vector<BatteryInterface> battery_interfaces =
+        GetBatteryInterfaceList();
+    std::move(callback).Run(
+        BatteryLevelProvider::MakeBatteryState(battery_interfaces));
+  }
 
  private:
-  BatteryLevelProvider::BatteryInterface GetInterface(
+  static std::vector<BatteryInterface> GetBatteryInterfaceList();
+
+  static BatteryLevelProvider::BatteryInterface GetInterface(
       CFDictionaryRef description);
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderMac>();
-}
-
-std::vector<BatteryLevelProvider::BatteryInterface>
-BatteryLevelProviderMac::GetBatteryInterfaceList() {
-  // Retrieve the IOPMPowerSource service.
-  const base::mac::ScopedIOObject<io_service_t> service(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
-                                  IOServiceMatching("IOPMPowerSource")));
-  if (service == IO_OBJECT_NULL)
-    return {};
-
-  // Gather a dictionary containing the power information.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-  kern_return_t result = IORegistryEntryCreateCFProperties(
-      service.get(), dict.InitializeInto(), 0, 0);
-
-  std::vector<BatteryInterface> interfaces;
-  // Retrieving dictionary failed. Cannot proceed.
-  if (result != KERN_SUCCESS) {
-    interfaces.push_back(BatteryInterface(false));
-  } else {
-    interfaces.push_back(GetInterface(dict));
-  }
-  return interfaces;
 }
 
 BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
@@ -108,4 +92,28 @@ BatteryLevelProvider::BatteryInterface BatteryLevelProviderMac::GetInterface(
   if (!current_capacity.has_value() || !max_capacity.has_value())
     return BatteryInterface(true);
   return BatteryInterface({is_connected, *current_capacity, *max_capacity});
+}
+
+std::vector<BatteryLevelProvider::BatteryInterface>
+BatteryLevelProviderMac::GetBatteryInterfaceList() {
+  // Retrieve the IOPMPowerSource service.
+  const base::mac::ScopedIOObject<io_service_t> service(
+      IOServiceGetMatchingService(kIOMasterPortDefault,
+                                  IOServiceMatching("IOPMPowerSource")));
+  if (service == IO_OBJECT_NULL)
+    return {};
+
+  // Gather a dictionary containing the power information.
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  kern_return_t result = IORegistryEntryCreateCFProperties(
+      service.get(), dict.InitializeInto(), 0, 0);
+
+  std::vector<BatteryInterface> interfaces;
+  // Retrieving dictionary failed. Cannot proceed.
+  if (result != KERN_SUCCESS) {
+    interfaces.push_back(BatteryInterface(false));
+  } else {
+    interfaces.push_back(GetInterface(dict));
+  }
+  return interfaces;
 }

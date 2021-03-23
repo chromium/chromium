@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
@@ -26,8 +25,7 @@ class PowerMetricsReporter
     : public performance_monitor::ProcessMonitor::Observer {
  public:
   // |data_store| will be queried at regular interval to report the metrics, it
-  // needs to outlive this class. If provided, |on_battery_sampled_for_testing|
-  // is called once the first battery state is available.
+  // needs to outlive this class.
   PowerMetricsReporter(
       const base::WeakPtr<UsageScenarioDataStore>& data_store,
       std::unique_ptr<BatteryLevelProvider> battery_level_provider);
@@ -39,11 +37,14 @@ class PowerMetricsReporter
     return battery_state_;
   }
 
-  // Sets |callback| to be call once the next battery state is available.
-  void AwaitNextSampleForTesting(base::OnceClosure callback) {
+  // Ensures |callback| is called once the next battery state is available.
+  void OnNextSampleForTesting(base::OnceClosure callback) {
     on_battery_sampled_for_testing_ = std::move(callback);
   }
-  void AwaitFirstSampleForTesting(base::OnceClosure closure);
+  // Ensures |callback| is called once the first battery state is available.
+  // |callback| is called synchronously if the first battery state is already
+  // available.
+  void OnFirstSampleForTesting(base::OnceClosure callback);
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
 
@@ -79,6 +80,7 @@ class PowerMetricsReporter
       const BatteryLevelProvider::BatteryState& battery_state);
   void OnBatteryStateAndMetricsSampled(
       const performance_monitor::ProcessMonitor::Metrics& metrics,
+      base::TimeTicks scheduled_time,
       const BatteryLevelProvider::BatteryState& battery_state);
 
   // Report the UKMs for the past interval.
@@ -86,9 +88,6 @@ class PowerMetricsReporter
                   base::TimeDelta interval_duration,
                   BatteryDischargeMode discharge_mode,
                   base::Optional<int64_t> discharge_rate_during_interval) const;
-
-  // TaskRunner used to run blocking BatteryLevelProvider queries.
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   // Computes and returns the battery discharge mode and rate during the
   // interval, and reset |battery_state_| to the current state. If the discharge
@@ -103,8 +102,7 @@ class PowerMetricsReporter
   // this class.
   base::WeakPtr<UsageScenarioDataStore> data_store_;
 
-  std::unique_ptr<BatteryLevelProvider, base::OnTaskRunnerDeleter>
-      battery_level_provider_;
+  std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 
   // Time that should elapse between calls to OnAggregatedMetricsSampled.
   base::TimeDelta desired_reporting_interval_;
@@ -113,9 +111,6 @@ class PowerMetricsReporter
                                                     base::TimeTicks::Now()};
 
   base::TimeTicks interval_begin_;
-
-  // The first sample is scheduled when this class gets created.
-  base::TimeTicks sampling_task_scheduled_ = base::TimeTicks::Now();
 
   base::OnceClosure on_battery_sampled_for_testing_;
 

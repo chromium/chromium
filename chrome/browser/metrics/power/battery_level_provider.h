@@ -53,9 +53,9 @@ class BatteryLevelProvider {
   BatteryLevelProvider(const BatteryLevelProvider& other) = delete;
   BatteryLevelProvider& operator=(const BatteryLevelProvider& other) = delete;
 
-  // Returns the current battery state. Since this causes blocking calls on
-  // windows, it should only be called on a sequence that's allowed to block.
-  virtual BatteryState GetBatteryState();
+  // Queries the current battery state and returns it to |callback| when ready.
+  virtual void GetBatteryState(
+      base::OnceCallback<void(const BatteryState&)> callback) = 0;
 
  protected:
   BatteryLevelProvider() = default;
@@ -88,9 +88,8 @@ class BatteryLevelProvider {
     const base::Optional<BatteryDetails> details;
   };
 
-  // Returns a vector containing BatteryInterface for each interface present on
-  // the system.
-  virtual std::vector<BatteryInterface> GetBatteryInterfaceList() = 0;
+  static BatteryState MakeBatteryState(
+      const std::vector<BatteryInterface>& battery_interfaces);
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_BATTERY_LEVEL_PROVIDER_H_

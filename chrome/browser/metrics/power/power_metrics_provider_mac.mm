@@ -197,75 +197,6 @@ ThermalStateUMA ThermalStateToUmaEnumValue(NSProcessInfoThermalState state) {
 
 }  // namespace
 
-PowerDrainRecorder::PowerDrainRecorder(base::TimeDelta recording_interval)
-    : recording_interval_(recording_interval) {}
-PowerDrainRecorder::~PowerDrainRecorder() = default;
-
-void PowerDrainRecorder::RecordBatteryDischarge() {
-  BatteryLevelProvider::BatteryState previous_battery_state =
-      std::exchange(battery_state_, battery_level_provider_->GetBatteryState());
-
-  // Missing battery values.
-  if (!battery_state_.charge_level.has_value() ||
-      !previous_battery_state.charge_level.has_value()) {
-    return;
-  }
-
-  // Not discharging.
-  if (!battery_state_.on_battery || !previous_battery_state.on_battery)
-    return;
-
-  if (*battery_state_.charge_level > *previous_battery_state.charge_level) {
-    // Charge level went up since last measurement. It's suspected the computer
-    // was charged for less than the collection interval. Consider this time
-    // slice as not even "on battery".
-    return;
-  }
-
-  const base::TimeDelta time_since_last_record =
-      battery_state_.capture_time - previous_battery_state.capture_time;
-
-  // Ratio by which the time elapsed can deviate from |recording_interval|
-  // without invalidating this sample.
-  constexpr double kTolerableTimeElapsedRatio = 0.10;
-  constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
-  constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
-
-  if (time_since_last_record >
-      (recording_interval_ * kTolerablePositiveDrift)) {
-    // Too much time passed since the last record. Either the task took
-    // too long to get executed or system sleep took place.
-    return;
-  }
-
-  if (time_since_last_record <
-      (recording_interval_ * kTolerableNegativeDrift)) {
-    // The recording task executed too early after the previous one, possibly
-    // because the previous task took too long to execute.
-    return;
-  }
-
-  // |time_elapsed_ratio| is used to normalize discharge rate measurements to
-  // the expected recording period.
-  const double time_elapsed_ratio =
-      recording_interval_.InSeconds() / time_since_last_record.InSecondsF();
-
-  // The charge_level is a ratio in range [0.00, 1.00]. The difference between
-  // two of these values is what will be stored in a histogram. This histogram
-  // will have a bucket of size 1000 so the value is multiplied by 10000 to
-  // bring it in the range of [0, 10000].
-  constexpr int kScalingFactor = 10000;
-  int discharge =
-      kScalingFactor * time_elapsed_ratio *
-      (*previous_battery_state.charge_level - *battery_state_.charge_level);
-  base::UmaHistogramCounts1000("Power.Mac.BatteryDischarge", discharge);
-}
-
-void PowerDrainRecorder::SetBatteryLevelProviderForTesting(
-    std::unique_ptr<BatteryLevelProvider> provider) {
-  battery_level_provider_ = std::move(provider);
-}
-
 class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
  public:
   static scoped_refptr<Impl> Create(
@@ -285,8 +216,7 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
         cpu_package_cpu_power_key_(connect, SMCParamStruct::SMCKey::CPUPower),
         cpu_package_gpu_power_key_(connect, SMCParamStruct::SMCKey::iGPUPower),
         gpu_0_power_key_(connect, SMCParamStruct::SMCKey::GPU0Power),
-        gpu_1_power_key_(connect, SMCParamStruct::SMCKey::GPU0Power),
-        power_drain_calculator_(kPostStartupPowerMetricsCollectionInterval) {}
+        gpu_1_power_key_(connect, SMCParamStruct::SMCKey::GPU0Power) {}
 
   ~Impl() = default;
 
@@ -315,7 +245,6 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
     } else {
       RecordSMC("All");
       RecordIsOnBattery();
-      power_drain_calculator_.RecordBatteryDischarge();
       RecordThermal();
     }
   }
@@ -360,8 +289,6 @@ class PowerMetricsProvider::Impl : public base::RefCountedThreadSafe<Impl> {
   SMCKey cpu_package_gpu_power_key_;
   SMCKey gpu_0_power_key_;
   SMCKey gpu_1_power_key_;
-
-  PowerDrainRecorder power_drain_calculator_;
 
   DISALLOW_COPY_AND_ASSIGN(Impl);
 };

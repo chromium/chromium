@@ -1712,11 +1712,6 @@ if (!is_android) {
       deps += [ "//ui/ozone" ]
     }
 
-    if (is_mac) {
-      sources +=
-          [ "../browser/metrics/power/power_metrics_provider_mac_unittest.cc" ]
-    }
-
     if (is_chromeos_ash) {
       data += [
         # TODO(GYP): figure out which of these things are

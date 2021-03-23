@@ -817,6 +817,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Power.Mac.BatteryDischarge" units="hundredth of percent"
     expires_after="2021-08-15">
+  <obsolete>
+    Replaced with cross-platform Power.BatteryDischargeRate2 03/2021.
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
