@@ -791,6 +791,7 @@ void DistributeExcessBlockSizeToRows(
       remaining_deficit -= delta;
     }
     last_row->block_size += remaining_deficit;
+    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
     distributed_block_size += remaining_deficit;
     // Rounding errors might cause us to distribute more than available length.
     distributed_block_size =
@@ -815,6 +816,7 @@ void DistributeExcessBlockSizeToRows(
       remaining_deficit -= delta;
     }
     last_row->block_size += remaining_deficit;
+    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
     return;
   }
   // Step 3: "unconstrained non-empty rows" grow in proportion to current
@@ -833,6 +835,7 @@ void DistributeExcessBlockSizeToRows(
       remaining_deficit -= delta;
     }
     last_row->block_size += remaining_deficit;
+    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
     return;
   }
 
@@ -882,6 +885,7 @@ void DistributeExcessBlockSizeToRows(
       }
       DCHECK(last_row);
       last_row->block_size += remaining_deficit;
+      last_row->block_size = std::max(last_row->block_size, LayoutUnit());
       return;
     }
   }
@@ -899,8 +903,10 @@ void DistributeExcessBlockSizeToRows(
     row->block_size += delta;
     remaining_deficit -= delta;
   }
-  if (last_row)
+  if (last_row) {
     last_row->block_size += remaining_deficit;
+    last_row->block_size = std::max(last_row->block_size, LayoutUnit());
+  }
 }
 
 }  // namespace
