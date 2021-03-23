@@ -140,9 +140,8 @@ bool SysmemBufferCollection::Initialize(
   is_protected_ = force_protected;
 
   if (register_with_image_pipe) {
-    overlay_view_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    scenic_overlay_view_ = std::make_unique<ScenicOverlayView>(
-        scenic_surface_factory->CreateScenicSession(), scenic_surface_factory);
+    scenic_overlay_view_.emplace(scenic_surface_factory->CreateScenicSession(),
+                                 scenic_surface_factory);
     surface_factory_ = scenic_surface_factory;
   }
 
@@ -336,12 +335,6 @@ SysmemBufferCollection::~SysmemBufferCollection() {
 
   if (on_deleted_)
     std::move(on_deleted_).Run();
-
-  if (scenic_overlay_view_ &&
-      !overlay_view_task_runner_->BelongsToCurrentThread()) {
-    overlay_view_task_runner_->DeleteSoon(FROM_HERE,
-                                          std::move(scenic_overlay_view_));
-  }
 }
 
 bool SysmemBufferCollection::InitializeInternal(
@@ -357,7 +350,7 @@ bool SysmemBufferCollection::InitializeInternal(
   // overlay.
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
       collection_token_for_scenic;
-  if (scenic_overlay_view_) {
+  if (scenic_overlay_view_.has_value()) {
     collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
                                 collection_token_for_scenic.NewRequest());
   }
@@ -368,7 +361,7 @@ bool SysmemBufferCollection::InitializeInternal(
     return false;
   }
 
-  if (scenic_overlay_view_) {
+  if (scenic_overlay_view_.has_value()) {
     scenic_overlay_view_->Initialize(std::move(collection_token_for_scenic));
   }
 
@@ -457,7 +450,7 @@ bool SysmemBufferCollection::InitializeInternal(
   is_protected_ = buffers_info_.settings.buffer_settings.is_secure;
 
   // Add all images to Image pipe for presentation later.
-  if (scenic_overlay_view_) {
+  if (scenic_overlay_view_.has_value()) {
     scenic_overlay_view_->AddImages(buffers_info_.buffer_count, image_size_);
   }
 
