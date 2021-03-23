@@ -28,12 +28,6 @@ CreateIt2MeNativeMessagingHostForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
     policy::PolicyService* policy_service);
 
-// The set of origins which are allowed to instantiate an It2Me host.
-extern const char* const kRemotingIt2MeOrigins[];
-
-// The number of entries defined in |kRemotingIt2MeOrigins|.
-extern const size_t kRemotingIt2MeOriginsCount;
-
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_CHROMEOS_H_

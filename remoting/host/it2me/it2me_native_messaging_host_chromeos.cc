@@ -38,13 +38,4 @@ CreateIt2MeNativeMessagingHostForChromeOS(
   return host;
 }
 
-// If you modify the list of allowed_origins, don't forget to update
-// remoting/host/it2me/com.google.chrome.remote_assistance.json.jinja2
-// to keep the two lists in sync.
-const char* const kRemotingIt2MeOrigins[] = {
-    "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
-    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"};
-
-const size_t kRemotingIt2MeOriginsCount = base::size(kRemotingIt2MeOrigins);
-
 }  // namespace remoting
