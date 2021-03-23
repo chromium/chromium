@@ -10,9 +10,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
@@ -27,7 +25,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -45,30 +42,6 @@ namespace {
 
 // The tab-index flag for browser window menu items that do not specify a tab.
 constexpr int kNoTab = std::numeric_limits<int>::max();
-
-// Returns true when the given |browser| is listed in the browser application
-// list.
-bool IsBrowserRepresentedInBrowserList(Browser* browser,
-                                       const ash::ShelfModel* model) {
-  // Only Ash desktop browser windows for the active user are represented.
-  if (!browser || !multi_user_util::IsProfileFromActiveUser(browser->profile()))
-    return false;
-
-  if (browser->deprecated_is_app()) {
-    // Crostini Terminals always have their own item.
-    // TODO(rjwright): We shouldn't need to special-case Crostini here.
-    // https://crbug.com/846546
-    if (crostini::CrostiniAppIdFromAppName(browser->app_name()))
-      return false;
-
-    // V1 App popup windows may have their own item.
-    ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
-    if (model->ItemByID(id))
-      return false;
-  }
-
-  return true;
-}
 
 // Gets a list of active browsers.
 BrowserList::BrowserVector GetListOfActiveBrowsers(
@@ -106,63 +79,11 @@ BrowserShortcutLauncherItemController::BrowserShortcutLauncherItemController(
     : ash::ShelfItemDelegate(ash::ShelfID(extension_misc::kChromeAppId)),
       shelf_model_(shelf_model) {
   BrowserList::AddObserver(this);
-  // Tag all open browser windows with the appropriate shelf id property. This
-  // associates each window with the shelf item for the active web contents.
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (IsBrowserRepresentedInBrowserList(browser, shelf_model_) &&
-        browser->tab_strip_model()->GetActiveWebContents()) {
-      SetShelfIDForBrowserWindowContents(
-          browser, browser->tab_strip_model()->GetActiveWebContents());
-    }
-  }
 }
 
 BrowserShortcutLauncherItemController::
     ~BrowserShortcutLauncherItemController() {
   BrowserList::RemoveObserver(this);
-}
-
-void BrowserShortcutLauncherItemController::UpdateBrowserItemState() {
-  // Determine the new browser's active state and change if necessary.
-  int browser_index =
-      shelf_model_->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT);
-  DCHECK_GE(browser_index, 0);
-  ash::ShelfItem browser_item = shelf_model_->items()[browser_index];
-  ash::ShelfItemStatus browser_status = ash::STATUS_CLOSED;
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
-      browser_status = ash::STATUS_RUNNING;
-      break;
-    }
-  }
-
-  if (browser_status != browser_item.status) {
-    browser_item.status = browser_status;
-    shelf_model_->Set(browser_index, browser_item);
-  }
-}
-
-void BrowserShortcutLauncherItemController::SetShelfIDForBrowserWindowContents(
-    Browser* browser,
-    content::WebContents* web_contents) {
-  // We need to set the window ShelfID for V1 applications since they are
-  // content which might change and as such change the application type.
-  // The browser window may not exist in unit tests.
-  if (!browser || !browser->window() || !browser->window()->GetNativeWindow() ||
-      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    return;
-  }
-
-  const std::string app_id =
-      ChromeLauncherController::instance()->GetAppIDForWebContents(
-          web_contents);
-  browser->window()->GetNativeWindow()->SetProperty(ash::kAppIDKey,
-                                                    new std::string(app_id));
-
-  const ash::ShelfID shelf_id =
-      ChromeLauncherController::instance()->GetShelfIDForAppId(app_id);
-  browser->window()->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
 }
 
 void BrowserShortcutLauncherItemController::ItemSelected(

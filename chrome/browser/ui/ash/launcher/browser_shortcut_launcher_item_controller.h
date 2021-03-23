@@ -15,10 +15,6 @@ namespace ash {
 class ShelfModel;
 }
 
-namespace content {
-class WebContents;
-}
-
 class ShelfContextMenu;
 
 // Shelf item delegate for a browser shortcut; only one such item should exist.
@@ -29,13 +25,6 @@ class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
   explicit BrowserShortcutLauncherItemController(ash::ShelfModel* shelf_model);
 
   ~BrowserShortcutLauncherItemController() override;
-
-  // Updates the activation state of the Broswer item.
-  void UpdateBrowserItemState();
-
-  // Sets the shelf id for the browser window if the browser is represented.
-  void SetShelfIDForBrowserWindowContents(Browser* browser,
-                                          content::WebContents* web_contents);
 
   // Check if there is any active browsers windows.
   static bool IsListOfActiveBrowserEmpty(const ash::ShelfModel* model);

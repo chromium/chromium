@@ -17,6 +17,7 @@
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_animation_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
@@ -319,6 +320,18 @@ ChromeLauncherController::~ChromeLauncherController() {
 
 void ChromeLauncherController::Init() {
   CreateBrowserShortcutLauncherItem();
+  UpdateBrowserItemState();
+
+  // Tag all open browser windows with the appropriate shelf id property. This
+  // associates each window with the shelf item for the active web contents.
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (IsBrowserRepresentedInBrowserList(browser, model_) &&
+        browser->tab_strip_model()->GetActiveWebContents()) {
+      SetShelfIDForBrowserWindowContents(
+          browser, browser->tab_strip_model()->GetActiveWebContents());
+    }
+  }
+
   UpdateAppLaunchersFromSync();
   browser_status_monitor_->Initialize();
 }
@@ -529,10 +542,8 @@ void ChromeLauncherController::UpdateV1AppState(const std::string& app_id) {
       if (launcher_controller_helper_->GetAppID(web_contents) != app_id)
         continue;
       UpdateAppState(web_contents, false /*remove*/);
-      if (browser->tab_strip_model()->GetActiveWebContents() == web_contents) {
-        GetBrowserShortcutLauncherItemController()
-            ->SetShelfIDForBrowserWindowContents(browser, web_contents);
-      }
+      if (browser->tab_strip_model()->GetActiveWebContents() == web_contents)
+        SetShelfIDForBrowserWindowContents(browser, web_contents);
     }
   }
 }
@@ -729,11 +740,50 @@ std::u16string ChromeLauncherController::GetAppMenuTitle(
 }
 
 BrowserShortcutLauncherItemController*
-ChromeLauncherController::GetBrowserShortcutLauncherItemController() {
+ChromeLauncherController::GetBrowserShortcutLauncherItemControllerForTesting() {
   ash::ShelfID id(kChromeAppId);
   ash::ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(id);
   DCHECK(delegate) << "There should be always be a browser shortcut item.";
   return static_cast<BrowserShortcutLauncherItemController*>(delegate);
+}
+
+void ChromeLauncherController::UpdateBrowserItemState() {
+  // Determine the new browser's active state and change if necessary.
+  int browser_index = model_->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT);
+  DCHECK_GE(browser_index, 0);
+  ash::ShelfItem browser_item = model_->items()[browser_index];
+  ash::ShelfItemStatus browser_status = ash::STATUS_CLOSED;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (IsBrowserRepresentedInBrowserList(browser, model_)) {
+      browser_status = ash::STATUS_RUNNING;
+      break;
+    }
+  }
+
+  if (browser_status != browser_item.status) {
+    browser_item.status = browser_status;
+    model_->Set(browser_index, browser_item);
+  }
+}
+
+void ChromeLauncherController::SetShelfIDForBrowserWindowContents(
+    Browser* browser,
+    content::WebContents* web_contents) {
+  // We need to set the window ShelfID for V1 applications since they are
+  // content which might change and as such change the application type.
+  // The browser window may not exist in unit tests.
+  if (!browser || !browser->window() || !browser->window()->GetNativeWindow() ||
+      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+    return;
+  }
+
+  const std::string app_id = GetAppIDForWebContents(web_contents);
+  browser->window()->GetNativeWindow()->SetProperty(ash::kAppIDKey,
+                                                    new std::string(app_id));
+
+  const ash::ShelfID shelf_id = GetShelfIDForAppId(app_id);
+  browser->window()->GetNativeWindow()->SetProperty(
+      ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
 }
 
 void ChromeLauncherController::OnUserProfileReadyToSwitch(Profile* profile) {
@@ -1277,14 +1327,12 @@ void ChromeLauncherController::CreateBrowserShortcutLauncherItem() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   browser_shortcut.image = *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  std::unique_ptr<BrowserShortcutLauncherItemController> item_delegate =
-      std::make_unique<BrowserShortcutLauncherItemController>(model_);
-  BrowserShortcutLauncherItemController* item_controller = item_delegate.get();
   // Set the delegate first to avoid constructing another one in ShelfItemAdded.
-  model_->SetShelfItemDelegate(browser_shortcut.id, std::move(item_delegate));
+  model_->SetShelfItemDelegate(
+      browser_shortcut.id,
+      std::make_unique<BrowserShortcutLauncherItemController>(model_));
   // Add the item towards the start of the shelf, it will be ordered by weight.
   model_->AddAt(0, browser_shortcut);
-  item_controller->UpdateBrowserItemState();
 }
 
 int ChromeLauncherController::FindInsertionPoint() {

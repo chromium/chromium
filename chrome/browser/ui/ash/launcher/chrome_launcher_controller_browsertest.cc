@@ -274,7 +274,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
   size_t NumberOfDetectedLauncherBrowsers(bool show_all_tabs) {
     ash::ShelfItemDelegate* item_controller =
-        controller_->GetBrowserShortcutLauncherItemController();
+        controller_->GetBrowserShortcutLauncherItemControllerForTesting();
     return item_controller
         ->GetAppMenuItems(show_all_tabs ? ui::EF_SHIFT_DOWN : 0,
                           base::NullCallback())
@@ -2089,8 +2089,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                        BrowserShortcutLauncherItemController) {
   ash::ShelfItemDelegate* item_controller =
-      controller_->GetBrowserShortcutLauncherItemController();
-  EXPECT_TRUE(item_controller);
+      controller_->GetBrowserShortcutLauncherItemControllerForTesting();
+  ASSERT_TRUE(item_controller);
   const ash::ShelfID browser_id = item_controller->shelf_id();
   EXPECT_EQ(extension_misc::kChromeAppId, browser_id.app_id);
 

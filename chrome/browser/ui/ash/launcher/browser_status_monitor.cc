@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
@@ -145,8 +144,7 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
 
 void BrowserStatusMonitor::UpdateBrowserItemState() {
   DCHECK(initialized_);
-  launcher_controller_->GetBrowserShortcutLauncherItemController()
-      ->UpdateBrowserItemState();
+  launcher_controller_->UpdateBrowserItemState();
 }
 
 void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
@@ -360,8 +358,8 @@ void BrowserStatusMonitor::RemoveWebContentsObserver(
 void BrowserStatusMonitor::SetShelfIDForBrowserWindowContents(
     Browser* browser,
     content::WebContents* web_contents) {
-  launcher_controller_->GetBrowserShortcutLauncherItemController()
-      ->SetShelfIDForBrowserWindowContents(browser, web_contents);
+  launcher_controller_->SetShelfIDForBrowserWindowContents(browser,
+                                                           web_contents);
 
   if (app_service_instance_helper_) {
     app_service_instance_helper_->OnSetShelfIDForBrowserWindowContents(

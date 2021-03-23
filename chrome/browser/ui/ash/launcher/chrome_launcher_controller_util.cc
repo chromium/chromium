@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 
+#include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -129,4 +132,26 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   }
 
   return AppListControllerDelegate::PIN_EDITABLE;
+}
+
+bool IsBrowserRepresentedInBrowserList(Browser* browser,
+                                       const ash::ShelfModel* model) {
+  // Only Ash desktop browser windows for the active user are represented.
+  if (!browser || !multi_user_util::IsProfileFromActiveUser(browser->profile()))
+    return false;
+
+  if (browser->deprecated_is_app()) {
+    // Crostini Terminals always have their own item.
+    // TODO(rjwright): We shouldn't need to special-case Crostini here.
+    // https://crbug.com/846546
+    if (crostini::CrostiniAppIdFromAppName(browser->app_name()))
+      return false;
+
+    // V1 App popup windows may have their own item.
+    ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
+    if (model->ItemByID(id))
+      return false;
+  }
+
+  return true;
 }

@@ -33,7 +33,7 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
   BrowserShortcutLauncherItemController* controller =
       ChromeLauncherController::instance()
-          ->GetBrowserShortcutLauncherItemController();
+          ->GetBrowserShortcutLauncherItemControllerForTesting();
   ASSERT_TRUE(controller);
 
   // InProcessBrowserTest's default browser window is shown with a blank tab.

@@ -210,7 +210,16 @@ class ChromeLauncherController
 
   // Returns the ash::ShelfItemDelegate of BrowserShortcut.
   BrowserShortcutLauncherItemController*
-  GetBrowserShortcutLauncherItemController();
+  GetBrowserShortcutLauncherItemControllerForTesting();
+
+  // Updates the browser shortcut item state.
+  // This may create or delete the item, specifically if the browser icon
+  // is not pinned. Practically, when Lacros is the primary browser.
+  void UpdateBrowserItemState();
+
+  // Sets the shelf id for the browser window if the browser is represented.
+  void SetShelfIDForBrowserWindowContents(Browser* browser,
+                                          content::WebContents* web_contents);
 
   // Called when the user profile is fully loaded and ready to switch to.
   void OnUserProfileReadyToSwitch(Profile* profile);
