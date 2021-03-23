@@ -1578,6 +1578,7 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win7-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    cores = None,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
