@@ -5735,3 +5735,6 @@ crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.ht
 crbug.com/1190905 [ Mac ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 crbug.com/1190905 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
+
+# Sherif 2021-03-23
+crbug.com/1191548 [ Linux ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/background-color-transition-with-initially-transparent.html [ Pass Failure ]
