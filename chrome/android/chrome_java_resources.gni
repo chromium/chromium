@@ -635,7 +635,6 @@ chrome_java_resources = [
   "java/res/drawable/infobar_downloading_sweep_animation.xml",
   "java/res/drawable/item_chooser_row_background.xml",
   "java/res/drawable/lens_camera_icon.xml",
-  "java/res/drawable/lens_icon.xml",
   "java/res/drawable/logo_partly_cloudy.xml",
   "java/res/drawable/logo_translate_round.xml",
   "java/res/drawable/long_screenshot.xml",
