@@ -454,6 +454,9 @@
                 "begin": 12,
                 "end": 26,
                 "abridged": false
+            },
+            "wasmpspdfkit": {
+                "abridged": false
             }
         }
     },

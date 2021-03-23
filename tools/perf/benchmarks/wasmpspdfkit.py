@@ -16,7 +16,7 @@ from benchmarks import press
 class WasmPsPdfKit(press._PressBenchmark):  # pylint: disable=protected-access
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_wasmpspdfkit'
+    return 'wasmpspdfkit'
 
   def CreateStorySet(self, options):
     return page_sets.WasmPsPdfKitStorySet()

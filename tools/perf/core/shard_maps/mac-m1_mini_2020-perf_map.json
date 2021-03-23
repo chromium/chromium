@@ -220,6 +220,9 @@
             "v8.browsing_desktop-future": {
                 "abridged": false
             },
+            "wasmpspdfkit": {
+                "abridged": false
+            },
             "webrtc": {
                 "abridged": false
             }

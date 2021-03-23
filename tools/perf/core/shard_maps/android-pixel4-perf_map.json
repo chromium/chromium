@@ -347,6 +347,9 @@
             "v8.browsing_mobile": {
                 "begin": 12,
                 "abridged": false
+            },
+            "wasmpspdfkit": {
+                "abridged": false
             }
         }
     },

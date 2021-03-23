@@ -350,6 +350,9 @@
             "v8.browsing_desktop": {
                 "end": 17,
                 "abridged": false
+            },
+            "wasmpspdfkit": {
+                "abridged": false
             }
         }
     },

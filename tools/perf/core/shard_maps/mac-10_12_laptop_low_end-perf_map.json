@@ -353,6 +353,9 @@
             "v8.browsing_desktop-future": {
                 "end": 12,
                 "abridged": false
+            },
+            "wasmpspdfkit": {
+                "abridged": false
             }
         }
     },

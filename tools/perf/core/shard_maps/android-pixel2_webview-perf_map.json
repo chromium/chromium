@@ -292,6 +292,9 @@
                 "begin": 8,
                 "abridged": false
             },
+            "wasmpspdfkit": {
+                "abridged": false
+            },
             "webrtc": {
                 "abridged": false
             }

@@ -247,6 +247,9 @@
                 "begin": 5,
                 "abridged": false
             },
+            "wasmpspdfkit": {
+                "abridged": false
+            },
             "webrtc": {
                 "abridged": false
             }

@@ -29,5 +29,5 @@ UNDOCUMENTED_BENCHMARKS = {
     'tracing_perftests',
     'v8.runtime_stats.top_25',
     'views_perftests',
-    'UNSCHEDULED_wasmpspdfkit',
+    'wasmpspdfkit',
 }
