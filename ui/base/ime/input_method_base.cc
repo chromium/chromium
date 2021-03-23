@@ -47,6 +47,12 @@ bool InputMethodBase::OnUntranslatedIMEMessage(
     InputMethod::NativeEventResult* result) {
   return false;
 }
+
+void InputMethodBase::OnInputLocaleChanged() {}
+
+bool InputMethodBase::IsInputLocaleCJK() const {
+  return false;
+}
 #endif
 
 void InputMethodBase::SetFocusedTextInputClient(TextInputClient* client) {
@@ -73,13 +79,6 @@ void InputMethodBase::OnTextInputTypeChanged(const TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
   NotifyTextInputStateChanged(client);
-}
-
-void InputMethodBase::OnInputLocaleChanged() {
-}
-
-bool InputMethodBase::IsInputLocaleCJK() const {
-  return false;
 }
 
 TextInputType InputMethodBase::GetTextInputType() const {

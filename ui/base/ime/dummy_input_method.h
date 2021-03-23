@@ -26,6 +26,8 @@ class DummyInputMethod : public InputMethod {
 #if defined(OS_WIN)
   bool OnUntranslatedIMEMessage(const MSG event,
                                 NativeEventResult* result) override;
+  void OnInputLocaleChanged() override;
+  bool IsInputLocaleCJK() const override;
 #endif
 
   void SetFocusedTextInputClient(TextInputClient* client) override;
@@ -35,8 +37,6 @@ class DummyInputMethod : public InputMethod {
   void OnTextInputTypeChanged(const TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
-  void OnInputLocaleChanged() override;
-  bool IsInputLocaleCJK() const override;
   TextInputType GetTextInputType() const override;
   TextInputMode GetTextInputMode() const override;
   int GetTextInputFlags() const override;

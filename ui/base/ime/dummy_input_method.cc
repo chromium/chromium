@@ -28,6 +28,12 @@ bool DummyInputMethod::OnUntranslatedIMEMessage(const MSG event,
                                                 NativeEventResult* result) {
   return false;
 }
+
+void DummyInputMethod::OnInputLocaleChanged() {}
+
+bool DummyInputMethod::IsInputLocaleCJK() const {
+  return false;
+}
 #endif
 
 void DummyInputMethod::SetFocusedTextInputClient(TextInputClient* client) {
@@ -52,13 +58,6 @@ void DummyInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
 }
 
 void DummyInputMethod::CancelComposition(const TextInputClient* client) {
-}
-
-void DummyInputMethod::OnInputLocaleChanged() {
-}
-
-bool DummyInputMethod::IsInputLocaleCJK() const {
-  return false;
 }
 
 TextInputType DummyInputMethod::GetTextInputType() const {

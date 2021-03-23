@@ -70,6 +70,12 @@ bool MockInputMethod::OnUntranslatedIMEMessage(const MSG event,
     *result = NativeEventResult();
   return false;
 }
+
+void MockInputMethod::OnInputLocaleChanged() {}
+
+bool MockInputMethod::IsInputLocaleCJK() const {
+  return false;
+}
 #endif
 
 void MockInputMethod::OnTextInputTypeChanged(const TextInputClient* client) {
@@ -83,13 +89,6 @@ void MockInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
 }
 
 void MockInputMethod::CancelComposition(const TextInputClient* client) {
-}
-
-void MockInputMethod::OnInputLocaleChanged() {
-}
-
-bool MockInputMethod::IsInputLocaleCJK() const {
-  return false;
 }
 
 TextInputType MockInputMethod::GetTextInputType() const {

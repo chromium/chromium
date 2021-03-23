@@ -77,6 +77,17 @@ class InputMethod {
   // used only for IME functionalities specific to Windows.
   virtual bool OnUntranslatedIMEMessage(const MSG event,
                                         NativeEventResult* result) = 0;
+
+  // Called by the focused client whenever its input locale is changed.
+  // This method is currently used only on Windows.
+  // This method does not take a parameter of TextInputClient for historical
+  // reasons.
+  // TODO(ime): Consider to take a parameter of TextInputClient.
+  virtual void OnInputLocaleChanged() = 0;
+
+  // Returns whether the system input locale is in CJK languages.
+  // This is only used in Windows platforms.
+  virtual bool IsInputLocaleCJK() const = 0;
 #endif
 
   // Sets the text input client which receives text input events such as
@@ -116,17 +127,6 @@ class InputMethod {
   // composition session. This method has no effect if the client is not the
   // focused client.
   virtual void CancelComposition(const TextInputClient* client) = 0;
-
-  // Called by the focused client whenever its input locale is changed.
-  // This method is currently used only on Windows.
-  // This method does not take a parameter of TextInputClient for historical
-  // reasons.
-  // TODO(ime): Consider to take a parameter of TextInputClient.
-  virtual void OnInputLocaleChanged() = 0;
-
-  // Returns whether the system input locale is in CJK languages.
-  // This is only used in Windows platforms.
-  virtual bool IsInputLocaleCJK() const = 0;
 
   // TODO(yoichio): Following 3 methods(GetTextInputType, GetTextInputMode and
   // CanComposeInline) calls client's same method and returns its value. It is
