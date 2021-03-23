@@ -336,12 +336,21 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(const std::string& cache_guid,
-                  const std::string& session_name,
-                  const std::string& manufacturer_name,
-                  const std::string& model_name,
-                  const std::string& last_fcm_registration_token,
-                  const ModelTypeSet& last_interested_data_types) override {
+  void Initialize(
+      const std::string& cache_guid,
+      const std::string& session_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      std::unique_ptr<DeviceInfo> device_info_restored_from_store) override {
+    std::string last_fcm_registration_token;
+    ModelTypeSet last_interested_data_types;
+    if (device_info_restored_from_store) {
+      last_fcm_registration_token =
+          device_info_restored_from_store->fcm_registration_token();
+      last_interested_data_types =
+          device_info_restored_from_store->interested_data_types();
+    }
+
     std::set<sync_pb::SharingSpecificFields::EnabledFeatures>
         sharing_enabled_features{SharingEnabledFeaturesForSuffix(kLocalSuffix)};
     local_device_info_ = std::make_unique<DeviceInfo>(

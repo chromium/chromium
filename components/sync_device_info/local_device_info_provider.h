@@ -39,12 +39,17 @@ class LocalDeviceInfoProvider {
 
 class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
  public:
-  virtual void Initialize(const std::string& cache_guid,
-                          const std::string& client_name,
-                          const std::string& manufacturer_name,
-                          const std::string& model_name,
-                          const std::string& last_fcm_registration_token,
-                          const ModelTypeSet& last_interested_data_types) = 0;
+  // Initialize initializes the LocalDeviceInfoProvider using the given values.
+  // The |device_info_restored_from_store| argument contains a previous
+  // DeviceInfo loaded from the store and may be nullptr if unavailable. If
+  // provided it is only used as a fallback and the provided arguments, and data
+  // from the DeviceInfoSyncClient, take precedence.
+  virtual void Initialize(
+      const std::string& cache_guid,
+      const std::string& client_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      std::unique_ptr<DeviceInfo> device_info_restored_from_store) = 0;
   virtual void Clear() = 0;
 
   // Updates the local device's client name. Initialize() must be called before

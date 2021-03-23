@@ -80,8 +80,7 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   void InitializeProvider(const std::string& guid) {
     provider_->Initialize(guid, kLocalDeviceClientName,
                           kLocalDeviceManufacturerName, kLocalDeviceModelName,
-                          /*last_fcm_registration_token=*/std::string(),
-                          ModelTypeSet());
+                          /*device_info_restored_from_store=*/nullptr);
   }
 
   testing::NiceMock<MockDeviceInfoSyncClient> device_info_sync_client_;
@@ -208,9 +207,21 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const std::string kFCMRegistrationToken = "fcm_token";
   const ModelTypeSet kInterestedDataTypes(BOOKMARKS);
+
+  auto device_info_restored_from_store = std::make_unique<DeviceInfo>(
+      kLocalDeviceGuid, "name", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
+      "model", base::Time(), base::TimeDelta::FromDays(1),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      /*sharing_info=*/base::nullopt, kFCMRegistrationToken,
+      kInterestedDataTypes);
+
+  // |kFCMRegistrationToken| and |kInterestedDataTypes| should be taken from
+  // |device_info_restored_from_store| when |device_info_sync_client_| returns
+  // nullopt.
   provider_->Initialize(kLocalDeviceGuid, kLocalDeviceClientName,
                         kLocalDeviceManufacturerName, kLocalDeviceModelName,
-                        kFCMRegistrationToken, kInterestedDataTypes);
+                        std::move(device_info_restored_from_store));
 
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
       .WillOnce(Return(base::nullopt));

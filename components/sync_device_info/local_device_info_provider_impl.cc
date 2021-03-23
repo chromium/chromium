@@ -73,10 +73,22 @@ void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& client_name,
     const std::string& manufacturer_name,
     const std::string& model_name,
-    const std::string& last_fcm_registration_token,
-    const ModelTypeSet& last_interested_data_types) {
+    std::unique_ptr<DeviceInfo> device_info_restored_from_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cache_guid.empty());
+
+  // Some values of |DeviceInfo| may not immediately be ready. For these, their
+  // previous value is extracted from the restored |DeviceInfo| and used to
+  // initialise the object. |GetLocalDeviceInfo| will update them if they have
+  // become ready by then.
+  std::string last_fcm_registration_token;
+  ModelTypeSet last_interested_data_types;
+  if (device_info_restored_from_store) {
+    last_fcm_registration_token =
+        device_info_restored_from_store->fcm_registration_token();
+    last_interested_data_types =
+        device_info_restored_from_store->interested_data_types();
+  }
 
   // The local device doesn't have a last updated timestamps. It will be set in
   // the specifics when it will be synced up.

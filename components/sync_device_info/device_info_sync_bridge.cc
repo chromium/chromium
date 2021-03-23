@@ -199,22 +199,6 @@ base::Optional<ModelError> ParseSpecificsOnBackendSequence(
   return base::nullopt;
 }
 
-ModelTypeSet ExtractInterestedDataTypes(const DeviceInfoSpecifics& specifics) {
-  ModelTypeSet interested_data_types;
-  for (int data_type_id :
-       specifics.invalidation_fields().interested_data_type_ids()) {
-    const ModelType model_type =
-        GetModelTypeFromSpecificsFieldNumber(data_type_id);
-
-    // This is possible if the browser has been updated and a data type has been
-    // removed.
-    if (model_type != ModelType::UNSPECIFIED) {
-      interested_data_types.Put(model_type);
-    }
-  }
-  return interested_data_types;
-}
-
 }  // namespace
 
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
@@ -299,7 +283,7 @@ base::Optional<ModelError> DeviceInfoSyncBridge::MergeSyncData(
       local_cache_guid_, GetLocalClientName(),
       local_device_name_info_.manufacturer_name,
       local_device_name_info_.model_name,
-      /*last_fcm_registration_token=*/std::string(), ModelTypeSet());
+      /*device_info_restored_from_store=*/nullptr);
 
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
   for (const auto& change : entity_data) {
@@ -612,9 +596,7 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   local_device_info_provider_->Initialize(
       local_cache_guid_, GetLocalClientName(),
       local_device_name_info_.manufacturer_name,
-      local_device_name_info_.model_name,
-      iter->second->invalidation_fields().instance_id_token(),
-      ExtractInterestedDataTypes(*iter->second));
+      local_device_name_info_.model_name, SpecificsToModel(*iter->second));
 
   // This probably isn't strictly needed, but in case the cache_guid has changed
   // we save the new one to prefs.
