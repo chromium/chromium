@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -90,6 +91,8 @@ std::string EulaScreen::GetResultString(Result result) {
       return "AcceptedWithoutStats";
     case Result::BACK:
       return "Back";
+    case Result::NOT_APPLICABLE:
+      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -105,6 +108,19 @@ EulaScreen::EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback)
 EulaScreen::~EulaScreen() {
   if (view_)
     view_->Unbind();
+}
+
+bool EulaScreen::MaybeSkip(WizardContext* context) {
+  // Remora (CfM) devices are enterprise only. To enroll device it is required
+  // to accept ToS on the server side. Thus for such devices it is not needed to
+  // accept EULA on the client side.
+  // TODO(https://crbug.com/1190897): Refactor to use `context` instead.
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  return false;
 }
 
 void EulaScreen::SetUsageStatsEnabled(bool enabled) {

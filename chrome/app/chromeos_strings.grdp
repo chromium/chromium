@@ -552,7 +552,7 @@
     If you download the update over your mobile network, it could result in overage charges.
   </message>
   <message name="IDS_REMORA_CONFIRM_MESSAGE" desc="Remora confirm message on the first OOBE screen">
-    Your Hangouts Meet hardware is ready to be set up.
+    Your Google Meet hardware is ready to set up
   </message>
   <message name="IDS_OOBE_GENERIC_FATAL_ERROR_TITLE" desc="A generic title to be shown during OOBE to be used in error screens.">
     Something went wrong

@@ -321,7 +321,16 @@
         },
         readOnly: true,
         reflectToAttribute: true,
-      }
+      },
+
+      isMeet_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('flowType') &&
+              (loadTimeData.getString('flowType') == 'meet');
+        },
+        readOnly: true,
+      },
     },
 
     onBeforeShow() {
@@ -458,7 +467,7 @@
         this.welcomeVideoController_.pause();
       }
 
-      if (this.isNewLayout_)
+      if (this.isNewLayout_ && !this.isMeet_)
         this.$.newWelcomeAnimation.setPlay(visible);
     },
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -58,6 +59,8 @@ const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
+
+const char kRemoraRequisition[] = "remora";
 
 // Helper class to wait until the WebCotnents finishes loading.
 class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
@@ -379,6 +382,36 @@ IN_PROC_BROWSER_TEST_F(EulaTest, MAYBE_AdditionalToS) {
       histogram_tester.GetAllSamples("OOBE.EulaScreen.UserActions"),
       ElementsAre(base::Bucket(
           static_cast<int>(EulaScreen::UserAction::kShowAdditionalTos), 1)));
+}
+
+// Skipped EULA for Remora Requisition.
+IN_PROC_BROWSER_TEST_F(EulaTest, SkippedEula) {
+  ASSERT_TRUE(StatsReportingController::IsInitialized());
+
+  // Explicitly set as true to make sure test modifies these values.
+  StatsReportingController::Get()->SetEnabled(
+      ProfileManager::GetActiveUserProfile(), true);
+  g_browser_process->local_state()->SetBoolean(
+      metrics::prefs::kMetricsReportingEnabled, true);
+  SetGoogleCollectStatsConsent(true);
+
+  // Start Listening for StatsReportingController updates.
+  base::RunLoop runloop;
+  auto subscription =
+      StatsReportingController::Get()->AddObserver(runloop.QuitClosure());
+
+  policy::EnrollmentRequisitionManager::SetDeviceRequisition(
+      kRemoraRequisition);
+  LoginDisplayHost::default_host()->StartWizard(EulaView::kScreenId);
+
+  // Wait for StartReportingController update.
+  runloop.Run();
+
+  // Verify stats collection is disabled.
+  EXPECT_FALSE(StatsReportingController::Get()->IsEnabled());
+  EXPECT_FALSE(g_browser_process->local_state()->GetBoolean(
+      metrics::prefs::kMetricsReportingEnabled));
+  EXPECT_FALSE(GetGoogleCollectStatsConsent());
 }
 
 }  // namespace

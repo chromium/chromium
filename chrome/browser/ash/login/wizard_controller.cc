@@ -1187,6 +1187,7 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
       OnEulaAccepted(true /*usage_statistics_reporting_enabled*/);
       break;
     case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
+    case EulaScreen::Result::NOT_APPLICABLE:
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
       break;
     case EulaScreen::Result::BACK:

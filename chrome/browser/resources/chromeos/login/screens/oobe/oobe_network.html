@@ -11,7 +11,11 @@
 
 <dom-module id="oobe-network-element">
   <template>
-    <style include="oobe-dialog-host"></style>
+    <style include="oobe-dialog-host">
+      network-select-login {
+        --cr-network-row-height: var(--oobe-network-row-height);
+      }
+    </style>
     <oobe-adaptive-dialog id="networkDialog" role="dialog"
         on-show-dialog="onShown_"
         aria-label$="[[i18nDynamic(locale, 'networkSectionTitle')]]">

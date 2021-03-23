@@ -167,9 +167,10 @@
         [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
       </h1>
       <!-- Hide the subtitle if the domain could not be determined. -->
-      <div hidden="[[isEmpty_(domainManager_)]]" class="self-start"
-          slot="subtitle">
-        <div>[[successText_(locale, deviceName_, domainManager_)]]</div>
+      <div slot="subtitle" class="self-start" hidden="[[isMeet_]]">
+        <div hidden="[[isEmpty_(domainManager_)]]">
+          [[successText_(locale, deviceName_, domainManager_)]]
+        </div>
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/enrollment_success_illustration_1x.png 1x,
@@ -180,7 +181,11 @@
         <img src="images/enrollment_complete.svg"
             alt$="[[i18nDynamic(locale,
                   'enrollmentSuccessIllustrationTitle')]]"
-            class="oobe-illustration illustration">
+            class="oobe-illustration illustration" hidden="[[isMeet_]]">
+        <img src="images/cfm/enrollment.svg"
+            alt$="[[i18nDynamic(locale,
+                'enrollmentSuccessIllustrationTitle')]]"
+            class="oobe-illustration illustration" hidden="[[!isMeet_]]">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse id="successDoneButton"

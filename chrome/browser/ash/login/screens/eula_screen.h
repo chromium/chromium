@@ -27,7 +27,9 @@ class EulaScreen : public BaseScreen {
     // The user accepted EULA, and disabled usage stats reporting.
     ACCEPTED_WITHOUT_USAGE_STATS_REPORTING,
     // The usage did not accept EULA - they clicked back button instead.
-    BACK
+    BACK,
+    // Eula screen is skipped.
+    NOT_APPLICABLE,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -69,6 +71,7 @@ class EulaScreen : public BaseScreen {
 
  private:
   // BaseScreen:
+  bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;

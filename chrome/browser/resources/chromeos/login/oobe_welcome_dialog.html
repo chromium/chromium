@@ -90,7 +90,7 @@
         grid-template-rows: auto auto auto;
       }
       :host-context([orientation=horizontal]) #newContent {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
       }
 
@@ -125,13 +125,13 @@
         min-height: 0;
         min-width: 0;
       }
-      :host-context([orientation=vertical]) #newWelcomeAnimation {
+      :host-context([orientation=vertical]) #newWelcomeAnimationSlot {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
         justify-self: stretch;
       }
-      :host-context([orientation=horizontal]) #newWelcomeAnimation {
+      :host-context([orientation=horizontal]) #newWelcomeAnimationSlot {
         align-self: stretch;
         grid-column: 2 / span 1;
         grid-row: 1 / span 2;
@@ -222,9 +222,13 @@
             disabled="[[!isNewLayout_]]"
             text-key="welcomeScreenGetStarted">
         </oobe-text-button>
-        <cr-lottie id="newWelcomeAnimation"
-                   animation-url="welcome_screen_animation.json">
-        </cr-lottie>
+        <div id="newWelcomeAnimationSlot">
+          <cr-lottie id="newWelcomeAnimation" hidden="[[isMeet_]]"
+              animation-url="welcome_screen_animation.json">
+          </cr-lottie>
+          <img src="images/cfm/welcome.svg" id="remoraWelcomeImage"
+              class="oobe-illustration" hidden="[[!isMeet_]]">
+        </div>
       </div>
     </div>
 

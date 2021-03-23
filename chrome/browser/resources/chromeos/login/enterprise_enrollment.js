@@ -147,6 +147,15 @@ Polymer({
     authFlow_: {
       type: Number,
     },
+
+    isMeet_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('flowType') &&
+            (loadTimeData.getString('flowType') == 'meet');
+      },
+      readOnly: true,
+    },
   },
 
   defaultUIStep() {
