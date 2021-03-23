@@ -444,14 +444,14 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
   if (with_alpha)
     mapped_resource_a = resource_map[resource_a];
   const gfx::Size ya_tex_size = video_frame->coded_size();
-  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSize(
+  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
       video_frame->format(), media::VideoFrame::kUPlane,
       video_frame->coded_size());
-  DCHECK(uv_tex_size == media::VideoFrame::PlaneSize(
+  DCHECK(uv_tex_size == media::VideoFrame::PlaneSizeInSamples(
                             video_frame->format(), media::VideoFrame::kVPlane,
                             video_frame->coded_size()));
   if (with_alpha) {
-    DCHECK(ya_tex_size == media::VideoFrame::PlaneSize(
+    DCHECK(ya_tex_size == media::VideoFrame::PlaneSizeInSamples(
                               video_frame->format(), media::VideoFrame::kAPlane,
                               video_frame->coded_size()));
   }
@@ -757,7 +757,7 @@ void CreateTestYUVVideoDrawQuad_NV12(
     scoped_refptr<ContextProvider> child_context_provider) {
   bool needs_blending = true;
   const gfx::Size ya_tex_size = rect.size();
-  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSize(
+  const gfx::Size uv_tex_size = media::VideoFrame::PlaneSizeInSamples(
       media::PIXEL_FORMAT_NV12, media::VideoFrame::kUVPlane, rect.size());
 
   std::vector<uint8_t> y_pixels(ya_tex_size.GetArea(), y);

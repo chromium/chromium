@@ -742,9 +742,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
       // We use the Y plane size because it may get rounded up to an even size.
       // Our implementation of GetYUVAPlanes expects this.
       gfx::Size y_size =
-          VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
+          VideoFrame::PlaneSizeInSamples(frame_->format(), VideoFrame::kYPlane,
+                                         gfx::Size(frame_->visible_rect().width(),
+                                                   frame_->visible_rect().height()));
       SkYUVAInfo yuva_info =
           SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
                      subsampling, yuv_color_space);
@@ -773,9 +773,9 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
          ++plane) {
       const gfx::Size size =
-          VideoFrame::PlaneSize(frame_->format(), plane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
+          VideoFrame::PlaneSizeInSamples(frame_->format(), plane,
+                                         gfx::Size(frame_->visible_rect().width(),
+                                                   frame_->visible_rect().height()));
       if (size.width() != pixmaps.plane(plane).width() ||
           size.height() != pixmaps.plane(plane).height()) {
         return false;

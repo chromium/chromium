@@ -978,6 +978,15 @@ size_t VideoFrame::AllocationSize(VideoPixelFormat format,
 gfx::Size VideoFrame::PlaneSize(VideoPixelFormat format,
                                 size_t plane,
                                 const gfx::Size& coded_size) {
+  gfx::Size size = PlaneSizeInSamples(format, plane, coded_size);
+  size.set_width(size.width() * BytesPerElement(format, plane));
+  return size;
+}
+
+// static
+gfx::Size VideoFrame::PlaneSizeInSamples(VideoPixelFormat format,
+                                         size_t plane,
+                                         const gfx::Size& coded_size) {
   DCHECK(IsValidPlane(format, plane));
 
   int width = coded_size.width();
@@ -993,8 +1002,7 @@ gfx::Size VideoFrame::PlaneSize(VideoPixelFormat format,
   const gfx::Size subsample = SampleSize(format, plane);
   DCHECK(width % subsample.width() == 0);
   DCHECK(height % subsample.height() == 0);
-  return gfx::Size(BytesPerElement(format, plane) * width / subsample.width(),
-                   height / subsample.height());
+  return gfx::Size(width / subsample.width(), height / subsample.height());
 }
 
 // static
