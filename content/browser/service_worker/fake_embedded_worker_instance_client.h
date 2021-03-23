@@ -63,6 +63,8 @@ class FakeEmbeddedWorkerInstanceClient
   virtual void OnConnectionError();
 
  private:
+  class LoaderClient;
+
   void CallOnConnectionError();
 
   // |helper_| owns |this|.
@@ -76,6 +78,8 @@ class FakeEmbeddedWorkerInstanceClient
 
   std::unique_ptr<FakeServiceWorkerInstalledScriptsManager>
       installed_scripts_manager_;
+
+  std::unique_ptr<LoaderClient> main_script_loader_client_;
 
   base::WeakPtrFactory<FakeEmbeddedWorkerInstanceClient> weak_factory_{this};
 

@@ -58,8 +58,8 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 
-const char kScope1[] = "https://example.com/a";
-const char kScope2[] = "https://example.com/b";
+const char kScope1[] = "https://example.com/a/";
+const char kScope2[] = "https://example.com/b/";
 const char kScript1[] = "https://example.com/a/script.js";
 const char kScript2[] = "https://example.com/b/script.js";
 

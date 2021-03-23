@@ -26,7 +26,7 @@ namespace content {
 
 using ::testing::_;
 
-const char kServiceWorkerScope[] = "https://example.com/a";
+const char kServiceWorkerScope[] = "https://example.com/a/";
 const char kServiceWorkerScript[] = "https://example.com/a/script.js";
 
 void BackgroundSyncServiceImplTestHarness::RegisterServiceWorkerCallback(

@@ -97,11 +97,11 @@ class CookieStoreSync {
   DISALLOW_COPY_AND_ASSIGN(CookieStoreSync);
 };
 
-const char kExampleScope[] = "https://example.com/a";
+const char kExampleScope[] = "https://example.com/a/";
 const char kExampleWorkerScript[] = "https://example.com/a/script.js";
-const char kGoogleScope[] = "https://google.com/a";
+const char kGoogleScope[] = "https://google.com/a/";
 const char kGoogleWorkerScript[] = "https://google.com/a/script.js";
-const char kLegacyScope[] = "https://legacy.com/a";
+const char kLegacyScope[] = "https://legacy.com/a/";
 const char kLegacyWorkerScript[] = "https://legacy.com/a/script.js";
 
 // Mocks a service worker that uses the cookieStore API.
