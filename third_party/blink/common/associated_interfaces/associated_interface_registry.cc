@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 
 AssociatedInterfaceRegistry::AssociatedInterfaceRegistry() = default;
@@ -23,10 +25,14 @@ void AssociatedInterfaceRegistry::RemoveInterface(const std::string& name) {
 bool AssociatedInterfaceRegistry::TryBindInterface(
     const std::string& name,
     mojo::ScopedInterfaceEndpointHandle* handle) {
+  V8RecordReplayAssert("AssociatedInterfaceRegistry::TryBindInterface Start");
   auto it = interfaces_.find(name);
-  if (it == interfaces_.end())
+  if (it == interfaces_.end()) {
+    V8RecordReplayAssert("AssociatedInterfaceRegistry::TryBindInterface #1");
     return false;
+  }
   it->second.Run(std::move(*handle));
+  V8RecordReplayAssert("AssociatedInterfaceRegistry::TryBindInterface Done");
   return true;
 }
 

@@ -404,8 +404,10 @@ void ChannelProxy::Context::OnDispatchBadMessage(const Message& message) {
 void ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
+  V8RecordReplayAssert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Start");
   if (listener_)
     listener_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
+  V8RecordReplayAssert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Done");
 }
 
 void ChannelProxy::Context::ClearChannel() {

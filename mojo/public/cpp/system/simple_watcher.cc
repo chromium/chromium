@@ -256,10 +256,14 @@ void SimpleWatcher::OnHandleReady(int watch_id,
                                   const HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  V8RecordReplayAssert("SimpleWatcher::OnHandleReady Start");
+
   // This notification may be for a previously watched context, in which case
   // we just ignore it.
-  if (watch_id != watch_id_)
+  if (watch_id != watch_id_) {
+    V8RecordReplayAssert("SimpleWatcher::OnHandleReady #1");
     return;
+  }
 
   ReadyCallbackWithState callback = callback_;
   if (result == MOJO_RESULT_CANCELLED) {
@@ -285,16 +289,22 @@ void SimpleWatcher::OnHandleReady(int watch_id,
 
     base::WeakPtr<SimpleWatcher> weak_self = weak_factory_.GetWeakPtr();
     callback.Run(result, state);
-    if (!weak_self)
+    if (!weak_self) {
+      V8RecordReplayAssert("SimpleWatcher::OnHandleReady #2");
       return;
+    }
 
     // Prevent |MOJO_RESULT_FAILED_PRECONDITION| task spam by only notifying
     // at most once in AUTOMATIC arming mode.
-    if (result == MOJO_RESULT_FAILED_PRECONDITION)
+    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+      V8RecordReplayAssert("SimpleWatcher::OnHandleReady #3");
       return;
+    }
 
     if (arming_policy_ == ArmingPolicy::AUTOMATIC && IsWatching())
       ArmOrNotify();
   }
+
+  V8RecordReplayAssert("SimpleWatcher::OnHandleReady Done");
 }
 }  // namespace mojo

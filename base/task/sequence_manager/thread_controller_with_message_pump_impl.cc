@@ -337,12 +337,14 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   DCHECK(main_thread_only().task_source);
 
   for (int i = 0; i < main_thread_only().work_batch_size; i++) {
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3");
     const SequencedTaskSource::SelectTaskOption select_task_option =
         power_monitor_.IsProcessInPowerSuspendState()
             ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
             : SequencedTaskSource::SelectTaskOption::kDefault;
     Task* task =
         main_thread_only().task_source->SelectNextTask(select_task_option);
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #4 %d", !!task);
     if (!task)
       break;
 
@@ -362,12 +364,16 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       // See https://crbug.com/681863 and https://crbug.com/874982
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
+      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #5");
+
       {
         // Trace events should finish before we call DidRunTask to ensure that
         // SequenceManager trace events do not interfere with them.
         TRACE_TASK_EXECUTION("ThreadControllerImpl::RunTask", *task);
         task_annotator_.RunTask("SequenceManager RunTask", task);
       }
+
+      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #6");
 
       // This processes microtasks, hence all scoped operations above must end
       // after it.
@@ -377,12 +383,14 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
     // When Quit() is called we must stop running the batch because the caller
     // expects per-task granularity.
-    if (main_thread_only().quit_pending)
+    if (main_thread_only().quit_pending) {
+      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #7");
       break;
+    }
   }
 
   if (main_thread_only().quit_pending) {
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3");
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #8");
     return TimeDelta::Max();
   }
 
@@ -395,14 +403,14 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
           ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
           : SequencedTaskSource::SelectTaskOption::kDefault;
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3.1 %d",
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl 8.1 %d",
                        select_task_option);
 
   TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
       continuation_lazy_now, select_task_option);
   DCHECK_GE(do_work_delay, TimeDelta());
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #4 %.2f",
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Done %.2f",
                        do_work_delay.InSecondsF());
   return do_work_delay;
 }

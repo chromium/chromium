@@ -43,6 +43,16 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
+// Messages implemented by blink will not currently be replayed.
+// Pass through events in these messages to avoid interacting with the recording.
+extern "C" void V8RecordReplayBeginPassThroughEvents();
+extern "C" void V8RecordReplayEndPassThroughEvents();
+
+struct RecordReplayAutoPassThroughEvents {
+  RecordReplayAutoPassThroughEvents() { V8RecordReplayBeginPassThroughEvents(); }
+  ~RecordReplayAutoPassThroughEvents() { V8RecordReplayEndPassThroughEvents(); }
+};
+
 namespace {
 
 bool SupportsUIStateTransitionProgress() {
@@ -671,6 +681,7 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)invalidate {
   _scrollbar = 0;
+  RecordReplayAutoPassThroughEvents pt;
   BEGIN_BLOCK_OBJC_EXCEPTIONS;
   [_knobAlphaAnimation invalidate];
   [_trackAlphaAnimation invalidate];

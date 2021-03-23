@@ -104,6 +104,7 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
       port_(port),
       pipe_id_(pipe_id),
       endpoint_(endpoint),
+      signal_lock_("MessagePipeDispatcher.signal_lock_"),
       watchers_(this) {
   DVLOG(2) << "Creating new MessagePipeDispatcher for port " << port.name()
            << " [pipe_id=" << pipe_id << "; endpoint=" << endpoint << "]";

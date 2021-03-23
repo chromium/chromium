@@ -6,6 +6,8 @@
 
 #include "base/task/sequence_manager/sequence_manager.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 namespace scheduler {
 
@@ -38,19 +40,28 @@ void ThrottledTimeDomain::SetNextTaskRunTime(base::TimeTicks run_time) {
 
 base::Optional<base::TimeDelta> ThrottledTimeDomain::DelayTillNextTask(
     base::sequence_manager::LazyNow* lazy_now) {
+  V8RecordReplayAssert("ThrottledTimeDomain::DelayTillNextTask Start");
+
   base::TimeTicks now = lazy_now->Now();
-  if (next_task_run_time_ && next_task_run_time_ > now)
+  if (next_task_run_time_ && next_task_run_time_ > now) {
+    V8RecordReplayAssert("ThrottledTimeDomain::DelayTillNextTask #1");
     return next_task_run_time_.value() - now;
+  }
 
   base::Optional<base::TimeTicks> next_run_time = NextScheduledRunTime();
-  if (!next_run_time)
+  if (!next_run_time) {
+    V8RecordReplayAssert("ThrottledTimeDomain::DelayTillNextTask #2");
     return base::nullopt;
+  }
 
-  if (now >= next_run_time)
+  if (now >= next_run_time) {
+    V8RecordReplayAssert("ThrottledTimeDomain::DelayTillNextTask #3");
     return base::TimeDelta();  // Makes DoWork post an immediate continuation.
+  }
 
   // We assume the owner (i.e. TaskQueueThrottler) will manage wake-ups on our
   // behalf.
+  V8RecordReplayAssert("ThrottledTimeDomain::DelayTillNextTask Done");
   return base::nullopt;
 }
 
