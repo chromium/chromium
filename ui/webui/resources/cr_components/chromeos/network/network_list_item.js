@@ -514,7 +514,7 @@ Polymer({
         this.$$('#subpage-button') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
     } else if (this.isESimPendingProfile_) {
-      this.onInstallButtonClick_();
+      this.onInstallButtonClick_(event);
     } else if (this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
     } else {
@@ -572,9 +572,14 @@ Polymer({
     return this.isFocused ? 'polite' : 'off';
   },
 
-  /** @private */
-  onInstallButtonClick_() {
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onInstallButtonClick_(event) {
     this.fire('install-profile', {iccid: this.item.customData.iccid});
+    // Stop click from propagating to 'onSelected_()' and firing event twice.
+    event.stopPropagation();
   },
 
   /**

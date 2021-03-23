@@ -161,6 +161,7 @@ suite('CellularNetworksList', function() {
   test('Install pending eSIM profile', async () => {
     eSimManagerRemote.addEuiccForTest(1);
     init();
+    cellularNetworkList.isConnectedToNonCellularNetwork = true;
     await flushAsync();
 
     let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
@@ -184,6 +185,7 @@ suite('CellularNetworksList', function() {
                                     .shadowRoot.querySelector('a');
     assertTrue(!!esimNoNetworkAnchor);
   });
+
   test('Hide esim section when no EUICC is found', async () => {
     setNetworksForTest(mojom.NetworkType.kCellular, [
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -210,4 +212,33 @@ suite('CellularNetworksList', function() {
     await flushAsync();
     assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
   });
+
+  test(
+      'Fire show toast event if download profile clicked without' +
+          'non-cellular connection.',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(1);
+        init();
+        cellularNetworkList.isConnectedToNonCellularNetwork = false;
+        await flushAsync();
+
+        const eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        assertTrue(!!eSimNetworkList);
+
+        Polymer.dom.flush();
+
+        const listItem = eSimNetworkList.$$('network-list-item');
+        assertTrue(!!listItem);
+        const installButton = listItem.$$('#installButton');
+        assertTrue(!!installButton);
+
+        const showErrorToastPromise =
+            test_util.eventToPromise('show-error-toast', cellularNetworkList);
+        installButton.click();
+
+        const showErrorToastEvent = await showErrorToastPromise;
+        assertEquals(
+            showErrorToastEvent.detail,
+            cellularNetworkList.i18n('eSimNoConnectionErrorToast'));
+      });
 });

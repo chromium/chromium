@@ -189,6 +189,12 @@ Polymer({
         chromeos.settings.mojom.Setting.kMobileOnOff,
       ]),
     },
+
+    /** @private */
+    errorToastMessage_: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -207,7 +213,8 @@ Polymer({
     'show-known-networks': 'onShowKnownNetworks_',
     'show-networks': 'onShowNetworks_',
     'show-esim-profile-rename-dialog': 'onShowESimProfileRenameDialog_',
-    'show-esim-remove-profile-dialog': 'onShowESimRemoveProfileDialog_'
+    'show-esim-remove-profile-dialog': 'onShowESimRemoveProfileDialog_',
+    'show-error-toast': 'onShowErrorToast_',
   },
 
   /** @private  {?settings.InternetPageBrowserProxy} */
@@ -391,8 +398,25 @@ Polymer({
       this.showCellularSetupDialog_ = true;
       this.cellularSetupDialogPageName_ = event.detail.pageName;
     } else {
-      this.$.errorToast.show();
+      this.showErrorToast_(this.i18n('eSimNoConnectionErrorToast'));
     }
+  },
+
+  /**
+   * @param {!CustomEvent<string>} event
+   * @private
+   */
+  onShowErrorToast_(event) {
+    this.showErrorToast_(event.detail);
+  },
+
+  /**
+   * @param {string} message
+   * @private
+   */
+  showErrorToast_(message) {
+    this.errorToastMessage_ = message;
+    this.$.errorToast.show();
   },
 
   /** @private */

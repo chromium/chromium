@@ -409,6 +409,17 @@ suite('InternetPage', function() {
         assertTrue(!!internetPage.$$('#cellularSetupDialog'));
       });
 
+  test('Show toast on show-error-toast event', async function() {
+    assertFalse(internetPage.$.errorToast.open);
+
+    const message = 'Toast message';
+    const event = new CustomEvent('show-error-toast', {detail: message});
+    internetPage.dispatchEvent(event);
+    await flushAsync();
+    assertTrue(internetPage.$.errorToast.open);
+    assertEquals(internetPage.$.errorToastMessage.innerHTML, message);
+  });
+
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.
 });

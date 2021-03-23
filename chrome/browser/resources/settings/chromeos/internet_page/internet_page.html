@@ -158,7 +158,8 @@
               tether-device-state="[[getTetherDeviceState_(deviceStates)]]"
               global-policy="[[globalPolicy_]]"
               vpn-providers="[[vpnProviders_]]"
-              show-spinner="{{showSpinner_}}">
+              show-spinner="{{showSpinner_}}"
+              is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]">
           </settings-internet-subpage>
         </settings-subpage>
       </template>
@@ -202,9 +203,7 @@
 
     <cr-toast id="errorToast" duration="5000">
       <iron-icon icon="cellular-setup:warning"></iron-icon>
-      <!-- TODO(crbug.com/1093185): Make the text more modular when
-           other toasts need to be shown. -->
-      <span>$i18n{eSimNoConnectionErrorToast}</span>
+      <span id="errorToastMessage">[[errorToastMessage_]]</span>
     </cr-toast>
   </template>
   <script src="internet_page.js"></script>

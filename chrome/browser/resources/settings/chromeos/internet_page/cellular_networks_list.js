@@ -40,6 +40,10 @@ Polymer({
      */
     deviceState: Object,
 
+    isConnectedToNonCellularNetwork: {
+      type: Boolean,
+    },
+
     /**
      * The list of eSIM network state properties for display.
      * @type {!Array<!OncMojo.NetworkStateProperties>}
@@ -377,6 +381,10 @@ Polymer({
    * @private
    */
   installProfile_(event) {
+    if (!this.isConnectedToNonCellularNetwork) {
+      this.fire('show-error-toast', this.i18n('eSimNoConnectionErrorToast'));
+      return;
+    }
     this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
     this.installingESimProfile_.installProfile('').then((response) => {
       if (response.result ===
