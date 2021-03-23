@@ -242,7 +242,7 @@ class ReusingTextShaper final {
                                      unsigned end_offset) {
     DCHECK_LT(start_offset, end_offset);
     const TextDirection direction = start_item.Direction();
-    const Font& font = start_item.Style()->GetFont();
+    const Font& font = start_item.FontWithSVGScaling();
     if (data_.segments) {
       return data_.segments->ShapeText(&shaper_, &font, direction, start_offset,
                                        end_offset,
@@ -1170,7 +1170,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     }
 
     const ComputedStyle& start_style = *start_item.Style();
-    const Font& font = start_style.GetFont();
+    const Font& font = start_item.FontWithSVGScaling();
     TextDirection direction = start_item.Direction();
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();

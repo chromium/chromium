@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -199,6 +200,16 @@ void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
     else if (item.Type() == NGInlineItem::kCloseTag)
       open_items->pop_back();
   }
+}
+
+const Font& NGInlineItem::FontWithSVGScaling() const {
+  if (const auto* svg_text = DynamicTo<LayoutSVGInlineText>(layout_object_)) {
+    DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
+    // We don't need to care about StyleVariant(). SVG 1.1 doesn't support
+    // ::first-line.
+    return svg_text->ScaledFont();
+  }
+  return Style()->GetFont();
 }
 
 String NGInlineItem::ToString() const {
