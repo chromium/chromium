@@ -64,6 +64,10 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, assign)
     UITextAutocapitalizationType autoCapitalizationType;
 
+// Background color used by the textField. If none is set the
+// cellBackgroundColor will be used as background.
+@property(nonatomic, strong) UIColor* textFieldBackgroundColor;
+
 // Whether the aspect of the cell should mark the text as valid.
 - (void)setHasValidText:(BOOL)hasValidText;
 
