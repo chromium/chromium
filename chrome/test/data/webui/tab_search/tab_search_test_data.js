@@ -81,7 +81,7 @@ export function sampleSiteNames(count) {
 
 /**
  * Generates sample tabs based on some given site names.
- * @param {!Array} siteNames
+ * @param {!Array<string>} siteNames
  * @return {!Array}
  */
 export function generateSampleTabsFromSiteNames(siteNames) {
@@ -99,7 +99,7 @@ export function generateSampleTabsFromSiteNames(siteNames) {
 
 /**
  * Generates profile data for a window with a series of tabs.
- * @param {!Array} siteNames
+ * @param {!Array<string>} siteNames
  * @return {!Object}
  */
 export function generateSampleDataFromSiteNames(siteNames) {

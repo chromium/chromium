@@ -38,6 +38,18 @@ TEST_F('TabSearchAppTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var BiMapTest = class extends TabSearchBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/bimap_test.js';
+  }
+};
+
+TEST_F('BiMapTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var FuzzySearchTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {

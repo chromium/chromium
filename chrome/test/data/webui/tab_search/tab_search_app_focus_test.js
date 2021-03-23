@@ -4,13 +4,13 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT, assertNotEquals} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
@@ -19,7 +19,8 @@ suite('TabSearchAppFocusTest', () => {
   /** @type {!TestTabSearchApiProxy} */
   let testProxy;
 
-  disableScrollIntoViewAnimations(TabSearchItem);
+  disableAnimationBehavior(InfiniteList, 'scrollTo');
+  disableAnimationBehavior(TabSearchItem, 'scrollIntoView');
 
   /**
    * @param {ProfileData} sampleData

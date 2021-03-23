@@ -36,6 +36,20 @@
       --iron-icon-fill-color: var(--google-blue-refresh-300);
     }
   }
+
+  .list-section-title {
+    align-items: center;
+    background-color: var(--mwb-background-color);
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: var(--mwb-list-section-title-font-size);
+    height: var(--mwb-list-section-title-height);
+    padding-inline-start: 8px;
+    position: sticky;
+    text-transform: uppercase;
+    top: 0;
+    z-index: 1000;
+  }
 </style>
 <iron-iconset-svg name="ts" size="24">
   <svg>
@@ -55,8 +69,11 @@
 </tab-search-search-field>
 <div hidden="[[!filteredOpenTabs_.length]]">
   <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
-      items="[[filteredOpenTabs_]]">
-    <template>
+      items="[[listItems_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+    <template data-type="TitleItem">
+      <div class="list-section-title">[[item.title]]</div>
+    </template>
+    <template data-type="TabData" data-selectable>
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
           class="mwb-list-item" data="[[item]]" index="[[index]]"
           on-click="onItemClick_" on-close="onItemClose_"

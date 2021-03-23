@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {InfiniteList, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, TabData, TabSearchItem, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {generateSampleTabsFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
+import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior} from './tab_search_test_helper.js';
 
 const SAMPLE_AVAIL_HEIGHT = 336;
 const SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT = 6;
+const SAMPLE_SECTION_CLASS = 'section-title';
 
 class TestApp extends PolymerElement {
   static get properties() {
@@ -28,7 +29,10 @@ class TestApp extends PolymerElement {
   static get template() {
     return html`
     <infinite-list id="list" max-height="[[maxHeight_]]">
-      <template>
+      <template data-type="TitleItem">
+        <div class="section-title">[[item.title]]</div>
+      </template>
+      <template data-type="TabData" data-selectable>
         <tab-search-item id="[[item.tab.tabId]]"
             style="display: flex;height: 56px" data="[[item]]" tabindex="0"
             role="option">
@@ -44,10 +48,11 @@ suite('InfiniteListTest', () => {
   /** @type {!InfiniteList} */
   let infiniteList;
 
-  disableScrollIntoViewAnimations(TabSearchItem);
+  disableAnimationBehavior(InfiniteList, 'scrollTo');
+  disableAnimationBehavior(TabSearchItem, 'scrollIntoView');
 
   /**
-   * @param {!Array<!tabSearch.mojom.Tab>} sampleData
+   * @param {!Array<!TabData>} sampleData
    */
   async function setupTest(sampleData) {
     const testApp = document.createElement('test-app');
@@ -69,12 +74,23 @@ suite('InfiniteListTest', () => {
   }
 
   /**
+   * @param {string} className
+   * @return {!NodeList<!HTMLElement>}
+   */
+  function queryClassElements(className) {
+    return /** @type {!NodeList<!HTMLElement>} */ (
+        infiniteList.querySelectorAll('.' + className));
+  }
+
+  /**
    * @param {!Array<string>} siteNames
-   * @return {!Array}
+   * @return {!Array<!TabData>}
    */
   function sampleTabItems(siteNames) {
     return generateSampleTabsFromSiteNames(siteNames).map(tab => {
-      return {hostname: new URL(tab.url).hostname, tab};
+      const tabData = {hostname: new URL(tab.url).hostname, tab};
+      Object.setPrototypeOf(tabData, TabData.prototype);
+      return tabData;
     });
   }
 
@@ -199,5 +215,34 @@ suite('InfiniteListTest', () => {
       assertEquals(selectIndex, infiniteList.selected);
       assertTabItemAndNeighborsInViewBounds(tabsDiv, queryRows(), selectIndex);
     }
+  });
+
+  test('ListSelection', async () => {
+    const tabItems = sampleTabItems(sampleSiteNames(2));
+    const listItems = [
+      new TitleItem('Title 1'), ...tabItems, new TitleItem('Title 2'),
+      ...tabItems
+    ];
+
+    setupTest(listItems);
+    assertEquals(2, queryClassElements(SAMPLE_SECTION_CLASS).length);
+    assertEquals(4, queryRows().length);
+
+    infiniteList.selected = 0;
+    await waitAfterNextRender(infiniteList);
+
+    const selectableItemCount = 2 * tabItems.length;
+    for (let i = 0; i < selectableItemCount; i++) {
+      infiniteList.navigate('ArrowDown');
+      await waitAfterNextRender(infiniteList);
+
+      assertEquals((i + 1) % selectableItemCount, infiniteList.selected);
+      assertTrue(infiniteList.selectedItem instanceof TabData);
+    }
+
+    infiniteList.items = [];
+    await waitAfterNextRender(infiniteList);
+    assertEquals(0, queryClassElements(SAMPLE_SECTION_CLASS).length);
+    assertEquals(0, queryRows().length);
   });
 });

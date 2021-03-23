@@ -21,9 +21,9 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {TabData} from './tab_data.js';
+import {TitleItem} from './title_item.js';
 import {Tab, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-import {TabSearchItem} from './tab_search_item.js';
 
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
@@ -58,6 +58,12 @@ export class TabSearchAppElement extends PolymerElement {
 
       /** @private {!Array<!TabData>} */
       filteredOpenTabs_: {
+        type: Array,
+        value: [],
+      },
+
+      /** @private {!Array<!TabData>} */
+      filteredRecentlyClosedTabs_: {
         type: Array,
         value: [],
       },
@@ -122,6 +128,14 @@ export class TabSearchAppElement extends PolymerElement {
         this.onDocumentHidden_();
       }
     };
+
+    /** @private {!TitleItem} */
+    this.openTabsTitleItem_ =
+        new TitleItem(loadTimeData.getStringF('openTabs'));
+
+    /** @private {!TitleItem} */
+    this.recentlyClosedTabsTitleItem_ = new TitleItem(
+        loadTimeData.getStringF('recentlyClosedTabs'));
   }
 
   /** @override */
@@ -470,7 +484,7 @@ export class TabSearchAppElement extends PolymerElement {
       // TODO(tluk): Fix this to use aria-activedescendant when it's updated to
       // work with ShadowDOM elements.
       this.$.searchField.announce(
-          this.ariaLabel_(this.filteredOpenTabs_[this.getSelectedIndex()]));
+          this.ariaLabel_(this.$.tabsList.selectedItem));
     } else if (e.key === 'Enter') {
       this.apiProxy_.switchToTab(
           {tabId: this.getSelectedTab_().tabId}, !!this.searchText_,
@@ -497,14 +511,38 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * @param {!Array<!TabData>} filteredOpenTabs
+   * @param {!Array<!TabData>} filteredRecentlyClosedTabs
+   * @return {!Array<!TabData|!TitleItem>}
+   * @private
+   */
+  listItems_(filteredOpenTabs, filteredRecentlyClosedTabs) {
+    const items = [];
+    if (filteredOpenTabs.length !== 0) {
+      items.push(this.openTabsTitleItem_, ...filteredOpenTabs);
+    }
+
+    if (filteredRecentlyClosedTabs.length !== 0) {
+      items.push(
+          this.recentlyClosedTabsTitleItem_, ...filteredRecentlyClosedTabs);
+    }
+
+    return items;
+  }
+
+  /**
    * @param {!Tab} tab
    * @param {boolean} inActiveWindow
    * @return {!TabData}
    * @private
    */
   tabData_(tab, inActiveWindow) {
-    const hostname = new URL(tab.url).hostname;
-    return /** @type {!TabData} */ ({hostname, inActiveWindow, tab});
+    const tabData = new TabData();
+    tabData.hostname = new URL(tab.url).hostname;
+    tabData.inActiveWindow = inActiveWindow;
+    tabData.tab = tab;
+
+    return tabData;
   }
 
   /**

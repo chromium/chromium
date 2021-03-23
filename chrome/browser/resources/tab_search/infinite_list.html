@@ -9,7 +9,7 @@
 <div id="container">
   <iron-selector id="selector" on-keydown="onKeyDown_"
       on-iron-select="onSelectedChanged_" role="listbox"
-      selected-class="selected">
+      selectable="[[selectableSelector_()]]" selected-class="selected">
     <slot></slot>
   </iron-selector>
 </div>
