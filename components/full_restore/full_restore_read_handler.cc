@@ -18,7 +18,6 @@
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/env.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace full_restore {
@@ -29,12 +28,11 @@ FullRestoreReadHandler* FullRestoreReadHandler::GetInstance() {
 }
 
 FullRestoreReadHandler::FullRestoreReadHandler() {
-  aura::Env::GetInstance()->AddObserver(this);
+  if (aura::Env::HasInstance())
+    env_observer_.Observe(aura::Env::GetInstance());
 }
 
-FullRestoreReadHandler::~FullRestoreReadHandler() {
-  aura::Env::GetInstance()->RemoveObserver(this);
-}
+FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   int32_t window_id = window->GetProperty(::full_restore::kRestoreWindowIdKey);

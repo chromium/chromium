@@ -14,8 +14,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "components/full_restore/arc_read_handler.h"
 #include "components/full_restore/full_restore_utils.h"
+#include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -153,6 +155,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
       window_id_to_app_restore_info_;
 
   std::unique_ptr<ArcReadHandler> arc_read_handler_;
+
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

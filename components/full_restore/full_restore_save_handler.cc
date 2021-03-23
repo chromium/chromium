@@ -37,12 +37,11 @@ FullRestoreSaveHandler* FullRestoreSaveHandler::GetInstance() {
 }
 
 FullRestoreSaveHandler::FullRestoreSaveHandler() {
-  aura::Env::GetInstance()->AddObserver(this);
+  if (aura::Env::HasInstance())
+    env_observer_.Observe(aura::Env::GetInstance());
 }
 
-FullRestoreSaveHandler::~FullRestoreSaveHandler() {
-  aura::Env::GetInstance()->RemoveObserver(this);
-}
+FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
 
 void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
