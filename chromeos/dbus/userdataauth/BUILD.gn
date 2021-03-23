@@ -21,6 +21,10 @@ component("userdataauth") {
   ]
 
   sources = [
+    "cryptohome_misc_client.cc",
+    "cryptohome_misc_client.h",
+    "fake_cryptohome_misc_client.cc",
+    "fake_cryptohome_misc_client.h",
     "fake_userdataauth_client.cc",
     "fake_userdataauth_client.h",
     "userdataauth_client.cc",
