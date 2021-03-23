@@ -7,6 +7,7 @@ package org.chromium.components.content_capture;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -94,6 +95,11 @@ public class ContentCaptureReceiverManager {
             }
         }
         if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame);
+    }
+
+    @CalledByNative
+    private int getOffsetY(WebContents webContents) {
+        return RenderCoordinates.fromWebContents(webContents).getContentOffsetYPixInt();
     }
 
     private FrameSession toFrameSession(Object[] session) {
