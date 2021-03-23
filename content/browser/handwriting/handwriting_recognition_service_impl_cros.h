@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNITION_SERVICE_IMPL_CROS_H_
 
 #include "content/browser/handwriting/handwriting_recognition_service_impl.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
@@ -13,7 +14,7 @@ namespace content {
 
 // Implements the mojo API of handwriting::mojom::HandwritingRecognitionService
 // for CrOS. Each renderer process can only have one such object.
-class CrOSHandwritingRecognitionServiceImpl final
+class CONTENT_EXPORT CrOSHandwritingRecognitionServiceImpl final
     : public HandwritingRecognitionServiceImpl {
  public:
   ~CrOSHandwritingRecognitionServiceImpl() override;
