@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -41,9 +42,11 @@ EduCoexistenceConsentInvalidationController::
     EduCoexistenceConsentInvalidationController(
         Profile* profile,
         AccountManager* account_manager,
+        account_manager::AccountManagerFacade* account_manager_facade,
         const AccountId& device_account_id)
     : profile_(profile),
       account_manager_(account_manager),
+      account_manager_facade_(account_manager_facade),
       device_account_id_(device_account_id) {
   DCHECK(profile_);
   DCHECK(profile_->IsChild());
@@ -54,7 +57,7 @@ EduCoexistenceConsentInvalidationController::
     ~EduCoexistenceConsentInvalidationController() = default;
 
 void EduCoexistenceConsentInvalidationController::Init() {
-  account_manager_->GetAccounts(
+  account_manager_facade_->GetAccounts(
       base::BindOnce(&EduCoexistenceConsentInvalidationController::
                          UpdateEduAccountsInTermsOfServicePref,
                      weak_factory_.GetWeakPtr()));
@@ -131,7 +134,7 @@ void EduCoexistenceConsentInvalidationController::TermsOfServicePrefChanged() {
     }
   }
 
-  account_manager_->GetAccounts(base::BindOnce(
+  account_manager_facade_->GetAccounts(base::BindOnce(
       &EduCoexistenceConsentInvalidationController::InvalidateEduAccounts,
       weak_factory_.GetWeakPtr(), std::move(to_invalidate)));
 }

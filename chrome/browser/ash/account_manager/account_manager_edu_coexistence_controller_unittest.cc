@@ -8,18 +8,22 @@
 #include <string>
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/values.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -94,25 +98,27 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
  protected:
   Profile* profile() { return &testing_profile_; }
 
-  AccountManager* account_manager() { return account_manager_.get(); }
+  AccountManager* account_manager() { return account_manager_; }
+  account_manager::AccountManagerFacade* account_manager_facade() {
+    return account_manager_facade_;
+  }
 
  private:
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<AccountManager> account_manager_;
+  AccountManager* account_manager_ = nullptr;
+  account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingProfile testing_profile_;
 };
 
 void AccountManagerEducoexistenceControllerTest::SetUp() {
   testing_profile_.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-  account_manager_ = std::make_unique<AccountManager>();
-  account_manager_->SetPrefService(profile()->GetPrefs());
-
-  base::RunLoop run_loop;
-  account_manager_->InitializeInEphemeralMode(
-      test_url_loader_factory_.GetSafeWeakWrapper(), run_loop.QuitClosure());
-  run_loop.Run();
+  account_manager_ = g_browser_process->platform_part()
+                         ->GetAccountManagerFactory()
+                         ->GetAccountManager(profile()->GetPath().value());
+  account_manager_facade_ =
+      ::GetAccountManagerFacade(profile()->GetPath().value());
 
   AddAccount(account_manager(), kPrimaryAccount, kPrimaryAccountGaiaId);
 }
@@ -172,8 +178,11 @@ TEST_F(AccountManagerEducoexistenceControllerTest,
 
   EduCoexistenceConsentInvalidationController
       edu_coexistence_invalidation_controller(profile(), account_manager(),
+                                              account_manager_facade(),
                                               kDeviceAccount);
   edu_coexistence_invalidation_controller.Init();
+
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(HasInvalidGaiaToken(
       GetAccountFor(kSecondaryAccount1, kSecondaryAccount1GaiaId)));
@@ -196,8 +205,11 @@ TEST_F(AccountManagerEducoexistenceControllerTest,
 
   EduCoexistenceConsentInvalidationController
       edu_coexistence_invalidation_controller(profile(), account_manager(),
+                                              account_manager_facade(),
                                               kDeviceAccount);
   edu_coexistence_invalidation_controller.Init();
+
+  base::RunLoop().RunUntilIdle();
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile(),
@@ -228,8 +240,11 @@ TEST_F(AccountManagerEducoexistenceControllerTest,
 
   EduCoexistenceConsentInvalidationController
       edu_coexistence_invalidation_controller(profile(), account_manager(),
+                                              account_manager_facade(),
                                               kDeviceAccount);
   edu_coexistence_invalidation_controller.Init();
+
+  base::RunLoop().RunUntilIdle();
 
   // kSecondaryAccount1 is not present
   EXPECT_EQ(edu_coexistence::GetAcceptedToSVersion(profile(),

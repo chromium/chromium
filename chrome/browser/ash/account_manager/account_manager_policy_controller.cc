@@ -64,7 +64,8 @@ void AccountManagerPolicyController::Start() {
     if (base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
       edu_coexistence_consent_invalidation_controller_ =
           std::make_unique<EduCoexistenceConsentInvalidationController>(
-              profile_, account_manager_, device_account_id_);
+              profile_, account_manager_, account_manager_facade_,
+              device_account_id_);
       edu_coexistence_consent_invalidation_controller_->Init();
     } else {
       // Invalidate secondary accounts if parental consent text version for EDU

@@ -17,6 +17,10 @@
 class PrefRegistrySimple;
 class Profile;
 
+namespace account_manager {
+class AccountManagerFacade;
+}
+
 namespace ash {
 class AccountManager;
 
@@ -30,6 +34,7 @@ class EduCoexistenceConsentInvalidationController {
   EduCoexistenceConsentInvalidationController(
       Profile* profile,
       AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
       const AccountId& device_account_id);
   EduCoexistenceConsentInvalidationController(
       const EduCoexistenceConsentInvalidationController&) = delete;
@@ -59,6 +64,7 @@ class EduCoexistenceConsentInvalidationController {
 
   Profile* const profile_;
   AccountManager* const account_manager_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
   const AccountId device_account_id_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<EduCoexistenceConsentInvalidationController>
