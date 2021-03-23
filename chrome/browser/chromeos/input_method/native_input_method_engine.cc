@@ -21,10 +21,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/common/unicode/urename.h"
-#include "third_party/icu/source/common/unicode/ustring.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -203,14 +199,12 @@ bool NativeInputMethodEngine::IsConnectedForTesting() const {
   return GetNativeObserver()->IsConnectedForTesting();
 }
 
-void NativeInputMethodEngine::OnAutocorrect(std::string typed_word,
-                                            std::string corrected_word,
-                                            int start_index) {
+void NativeInputMethodEngine::OnAutocorrect(
+    const std::u16string& typed_word,
+    const std::u16string& corrected_word,
+    int start_index) {
   autocorrect_manager_->HandleAutocorrect(
-      gfx::Range(
-          start_index,
-          start_index +
-              icu::UnicodeString::fromUTF8(corrected_word).countChar32()),
+      gfx::Range(start_index, start_index + corrected_word.length()),
       typed_word);
 }
 
@@ -556,7 +550,7 @@ void NativeInputMethodEngine::ImeObserver::HandleAutocorrect(
     ime::mojom::AutocorrectSpanPtr autocorrect_span) {
   autocorrect_manager_->HandleAutocorrect(
       autocorrect_span->autocorrect_range,
-      std::move(autocorrect_span->original_text));
+      base::UTF8ToUTF16(autocorrect_span->original_text));
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {

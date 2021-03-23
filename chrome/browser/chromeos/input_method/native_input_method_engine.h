@@ -62,8 +62,8 @@ class NativeInputMethodEngine
   }
 
   // Used to show special UI to user for interacting with autocorrected text.
-  void OnAutocorrect(std::string typed_word,
-                     std::string corrected_word,
+  void OnAutocorrect(const std::u16string& typed_word,
+                     const std::u16string& corrected_word,
                      int start_index);
 
  private:

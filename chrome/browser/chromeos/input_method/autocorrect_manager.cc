@@ -77,8 +77,9 @@ AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler)
     : suggestion_handler_(suggestion_handler) {}
 
-void AutocorrectManager::HandleAutocorrect(gfx::Range autocorrect_range,
-                                           const std::string& original_text) {
+void AutocorrectManager::HandleAutocorrect(
+    const gfx::Range autocorrect_range,
+    const std::u16string& original_text) {
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
   ui::IMEInputContextHandlerInterface* input_context =
@@ -107,9 +108,8 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
     button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
-    button.announce_string =
-        l10n_util::GetStringFUTF8(IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
-                                  base::UTF8ToUTF16(original_text_));
+    button.announce_string = l10n_util::GetStringFUTF8(
+        IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text_);
     suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                               &error);
     button_highlighted = true;
@@ -151,15 +151,14 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   if (!range.is_empty() && cursor_pos >= range.start() &&
       cursor_pos <= range.end()) {
     if (!window_visible) {
-      const std::string autocorrected_text =
-          base::UTF16ToUTF8(text.substr(range.start(), range.length()));
+      const std::u16string autocorrected_text =
+          text.substr(range.start(), range.length());
       chromeos::AssistiveWindowProperties properties;
       properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
       properties.visible = true;
       properties.announce_string = l10n_util::GetStringFUTF8(
-          IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
-          base::UTF8ToUTF16(original_text_),
-          base::UTF8ToUTF16(autocorrected_text));
+          IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN, original_text_,
+          autocorrected_text);
       window_visible = true;
       button_highlighted = false;
       suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
@@ -228,7 +227,7 @@ void AutocorrectManager::UndoAutocorrect() {
   // and the cursor position will not have changed.
   input_context->CommitText(
       surrounding_text.surrounding_text.substr(0, range.start()) +
-          base::UTF8ToUTF16(original_text_),
+          original_text_,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);

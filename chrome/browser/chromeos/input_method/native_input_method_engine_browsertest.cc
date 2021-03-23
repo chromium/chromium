@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       },
       false);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   auto* controller =
       ((input_method::
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
                 .surrounding_text,
             corrected_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 6);
+  engine_->OnAutocorrect(u"typed", u"corrected", 6);
 
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                 .surrounding_text,
             corrected_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -830,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
                                      AssistiveType::kAutocorrectWindowShown, 0);
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
                                      AssistiveType::kAutocorrectUnderlined, 1);
 

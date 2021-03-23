@@ -616,7 +616,12 @@ InputMethodPrivateOnAutocorrectFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  engine->OnAutocorrect(params.typed_word, params.corrected_word,
+  // `typed_word` and `corrected_word` are both originally encoded in UTF-16 by
+  // JavaScript, but the extensions bindings will convert them to UTF-8 without
+  // changing `start_index` (which is in UTF-16 code units). Hence, convert the
+  // two strngs back without changing `start_index`.
+  engine->OnAutocorrect(base::UTF8ToUTF16(params.typed_word),
+                        base::UTF8ToUTF16(params.corrected_word),
                         params.start_index);
   return RespondNow(NoArguments());
 }
