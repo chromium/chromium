@@ -684,6 +684,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records if a payload transfer used an upgraded bandwidth medium, and if so,
+    which medium. Emitted when the payload transfer finishes, independent of
+    whether the transfer was successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Payload.Medium.Over5MbTransferred{ShareTargetType}"
+    enum="NearbyShareUpgradedMedium" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records if a payload transfer with {ShareTargetType} used an upgraded
+    bandwidth medium, and if so, which medium. Emitted when the payload transfer
+    finishes if over 5MB was transferred, independent of whether the transfer
+    was successful.
+  </summary>
+  <token key="ShareTargetType">
+    <variant name="" summary="any device type"/>
+    <variant name=".Laptop" summary="a laptop"/>
+    <variant name=".Phone" summary="a phone"/>
+    <variant name=".Tablet" summary="a tablet"/>
+    <variant name=".UnknownDeviceType" summary="an unknown device type"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.NumAttachments{Type}" units="attachments"
     expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>

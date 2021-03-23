@@ -190,6 +190,8 @@ void PayloadTracker::EmitFinalMetrics(
   DCHECK_NE(status,
             location::nearby::connections::mojom::PayloadStatus::kInProgress);
   RecordNearbySharePayloadFinalStatusMetric(status, last_upgraded_medium_);
+  RecordNearbySharePayloadMediumMetric(
+      last_upgraded_medium_, share_target_.type, GetTotalTransferred());
   RecordNearbySharePayloadSizeMetric(share_target_.is_incoming,
                                      share_target_.type, last_upgraded_medium_,
                                      status, total_transfer_size_);
