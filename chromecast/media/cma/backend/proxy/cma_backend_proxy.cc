@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/notreached.h"
+#include "chromecast/media/cma/backend/proxy/media_pipeline_buffer_extension.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy_impl.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -165,8 +166,10 @@ CmaBackendProxy::CreateAudioDecoderProxy(
     const MediaPipelineDeviceParams& params) {
   CmaBackend::AudioDecoder* downstream_decoder =
       delegated_pipeline_->CreateAudioDecoder();
-  return std::make_unique<MultizoneAudioDecoderProxyImpl>(params,
-                                                          downstream_decoder);
+  auto buffer_extension = std::make_unique<MediaPipelineBufferExtension>(
+      params.task_runner, downstream_decoder);
+  return std::make_unique<MultizoneAudioDecoderProxyImpl>(
+      params, std::move(buffer_extension));
 }
 
 }  // namespace media

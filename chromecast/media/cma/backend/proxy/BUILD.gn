@@ -44,6 +44,8 @@ cast_source_set("proxy") {
     "cma_backend_proxy.cc",
     "cma_backend_proxy.h",
     "cma_proxy_handler.h",
+    "media_pipeline_buffer_extension.cc",
+    "media_pipeline_buffer_extension.h",
     "multizone_audio_decoder_proxy.h",
     "multizone_audio_decoder_proxy_impl.cc",
     "multizone_audio_decoder_proxy_impl.h",
