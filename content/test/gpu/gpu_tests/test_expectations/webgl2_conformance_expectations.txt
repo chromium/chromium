@@ -131,9 +131,6 @@ crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure 
 crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
 crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
 
-# This test needs looser tolerances on some Windows platforms.
-crbug.com/1136205 [ win ] conformance/textures/misc/video-rotation.html [ Failure ]
-
 # Failing on some platforms.
 crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -142,6 +139,7 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
+crbug.com/angleproject/5768 [ no-passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
@@ -578,7 +576,7 @@ crbug.com/angleproject/4242 [ linux intel no-passthrough mesa_lt_19.1 ] conforma
 
 # Linux NVIDIA
 crbug.com/905003 [ linux nvidia ] conformance2/textures/misc/integer-cubemap-specification-order-bug.html [ Failure ]
-
+crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/906846 [ linux nvidia ] conformance2/rendering/canvas-resizing-with-pbo-bound.html [ RetryOnFailure ]
 
 # Linux NVIDIA Quadro P400, OpenGL backend

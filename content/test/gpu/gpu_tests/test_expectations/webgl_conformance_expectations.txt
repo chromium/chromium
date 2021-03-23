@@ -218,9 +218,6 @@ crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure 
 crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
 crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
 
-# This test needs looser tolerances on some Windows platforms.
-crbug.com/1136205 [ win ] conformance/textures/misc/video-rotation.html [ Failure ]
-
 # Failing on most platforms. Only runs with passthrough.
 crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ chromeos ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
