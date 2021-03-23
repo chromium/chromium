@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/weak_ptr.h"
@@ -41,6 +42,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
+#include "pdf/ui/thumbnail.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -304,6 +306,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
           {"getPasswordComplete",
            &PdfViewPluginBase::HandleGetPasswordCompleteMessage},
           {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
+          {"getThumbnail", &PdfViewPluginBase::HandleGetThumbnailMessage},
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
@@ -802,6 +805,15 @@ void PdfViewPluginBase::HandleGetSelectedTextMessage(
   SendMessage(std::move(reply));
 }
 
+void PdfViewPluginBase::HandleGetThumbnailMessage(const base::Value& message) {
+  const int page_index = message.FindIntKey("page").value();
+  base::Value reply = PrepareReplyMessage("getThumbnailReply", message);
+
+  engine()->RequestThumbnail(page_index, device_scale_,
+                             base::BindOnce(&PdfViewPluginBase::SendThumbnail,
+                                            GetWeakPtr(), std::move(reply)));
+}
+
 void PdfViewPluginBase::HandleRotateClockwiseMessage(
     const base::Value& /*message*/) {
   engine()->RotateClockwise();
@@ -1049,6 +1061,19 @@ void PdfViewPluginBase::ClearDeferredInvalidates(
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
+}
+
+void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
+  const SkBitmap& bitmap = thumbnail.bitmap();
+  base::Value image_data(base::make_span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
+
+  DCHECK_EQ(*reply.FindStringKey("type"), "getThumbnailReply");
+  DCHECK(reply.FindStringKey("messageId"));
+  reply.SetKey("imageData", std::move(image_data));
+  reply.SetIntKey("width", bitmap.width());
+  reply.SetIntKey("height", bitmap.height());
+  SendMessage(std::move(reply));
 }
 
 }  // namespace chrome_pdf

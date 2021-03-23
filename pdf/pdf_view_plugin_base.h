@@ -30,6 +30,7 @@ namespace chrome_pdf {
 
 class Image;
 class PDFiumEngine;
+class Thumbnail;
 class UrlLoader;
 struct AccessibilityActionData;
 struct AccessibilityCharInfo;
@@ -291,6 +292,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleGetNamedDestinationMessage(const base::Value& message);
   void HandleGetPasswordCompleteMessage(const base::Value& message);
   void HandleGetSelectedTextMessage(const base::Value& message);
+  void HandleGetThumbnailMessage(const base::Value& message);
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
   void HandleSelectAllMessage(const base::Value& /*message*/);
@@ -313,6 +315,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates(int32_t /*unused_but_required*/);
+
+  // Sends the thumbnail image data.
+  void SendThumbnail(base::Value reply, Thumbnail thumbnail);
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
