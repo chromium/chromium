@@ -954,15 +954,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
 
-// Disabled due to flakiness on windows.
-#if defined(OS_WIN)
-#define MAYBE_VerifyPasswordGenerationUpload \
-  DISABLED_VerifyPasswordGenerationUpload
-#else
-#define MAYBE_VerifyPasswordGenerationUpload VerifyPasswordGenerationUpload
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       MAYBE_VerifyPasswordGenerationUpload) {
+                       VerifyPasswordGenerationUpload) {
   // Disable Autofill requesting access to AddressBook data. This causes
   // the test to hang on Mac.
   autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());

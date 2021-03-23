@@ -545,6 +545,9 @@ void PasswordManagerBrowserTestBase::WaitForElementValue(
     const std::string& iframe_id,
     const std::string& element_id,
     const std::string& expected_value) {
+  SCOPED_TRACE(::testing::Message()
+               << "iframe_id=" << iframe_id << ", element_id=" << element_id
+               << ", expected_value=" << expected_value);
   const std::string value_check_function = base::StringPrintf(
       "function valueCheck() {"
       "  if (%s)"
@@ -609,6 +612,8 @@ void PasswordManagerBrowserTestBase::WaitForElementValue(
 void PasswordManagerBrowserTestBase::WaitForJsElementValue(
     const std::string& element_selector,
     const std::string& expected_value) {
+  SCOPED_TRACE(::testing::Message() << "element_selector=" << element_selector
+                                    << ", expected_value=" << expected_value);
   const std::string value_check_function = base::StringPrintf(
       "function valueCheck() {"
       "  var element = %s;"
