@@ -146,6 +146,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
@@ -606,6 +607,13 @@ class DownloadTest : public InProcessBrowserTest {
     host_resolver()->AddRule("foo.com", "127.0.0.1");
     host_resolver()->AddRule("bar.com", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower builders (linux-chromeos-rel, debug, and maybe others) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void TearDownOnMainThread() override {
