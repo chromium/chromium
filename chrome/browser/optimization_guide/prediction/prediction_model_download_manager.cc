@@ -169,8 +169,8 @@ void PredictionModelDownloadManager::OnDownloadServiceReady(
   for (const std::string& pending_download_guid : pending_download_guids)
     pending_download_guids_.insert(pending_download_guid);
 
-  for (const auto& successful_download : successful_downloads)
-    OnDownloadSucceeded(successful_download.first, successful_download.second);
+  // Successful downloads should already be notified via |onDownloadSucceeded|,
+  // so we don't do anything with them here.
 }
 
 void PredictionModelDownloadManager::OnDownloadServiceUnavailable() {

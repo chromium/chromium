@@ -258,9 +258,9 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending3")));
   download_manager()->CancelAllPendingDownloads();
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
-      true, 3);
+  // The successful downloads should not trigger us to do anything with them.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded", 0);
 }
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
