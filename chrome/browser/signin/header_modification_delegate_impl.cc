@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
-#include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

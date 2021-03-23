@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data_handle.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,7 +79,6 @@ class ProfileImpl : public Profile {
       const base::FilePath& partition_path) override;
 #endif
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PushMessagingService* GetPushMessagingService() override;
@@ -279,7 +277,6 @@ class ProfileImpl : public Profile {
   // See comment in GetOffTheRecordPrefs. Field exists so something owns the
   // dummy.
   std::unique_ptr<sync_preferences::PrefServiceSyncable> dummy_otr_prefs_;
-  ProfileIODataHandle io_data_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;

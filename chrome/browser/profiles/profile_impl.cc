@@ -464,7 +464,6 @@ ProfileImpl::ProfileImpl(
     : path_(path),
       path_creation_time_(path_creation_time),
       io_task_runner_(std::move(io_task_runner)),
-      io_data_(this),
       last_session_exit_type_(EXIT_NORMAL),
       start_time_(base::Time::Now()),
       delegate_(delegate) {
@@ -787,8 +786,7 @@ void ProfileImpl::DoFinalInit() {
     if (shutting_down)
       return;
   }
-  // Ensure that the SharingService is initialized now that io_data_ is
-  // initialized. https://crbug.com/171406
+
   SharingServiceFactory::GetForBrowserContext(this);
 
   // The creation of FlocIdProvider should align with the start of a browser
@@ -1244,10 +1242,6 @@ policy::ProfilePolicyConnector* ProfileImpl::GetProfilePolicyConnector() {
 const policy::ProfilePolicyConnector* ProfileImpl::GetProfilePolicyConnector()
     const {
   return profile_policy_connector_.get();
-}
-
-content::ResourceContext* ProfileImpl::GetResourceContext() {
-  return io_data_.GetResourceContext();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

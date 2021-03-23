@@ -4,49 +4,22 @@
 
 #include "chrome/browser/profiles/profile_io_data.h"
 
-#include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/net_buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-using content::BrowserThread;
-
-void ProfileIOData::InitializeOnUIThread(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Make sure the ResourceContext is initialized.  It's unclear if this is
-  // still needed.
-  content::BrowserContext::EnsureResourceContextInitialized(profile);
-}
-
-ProfileIOData::ProfileIOData()
-    : resource_context_(std::make_unique<content::ResourceContext>()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
-ProfileIOData::~ProfileIOData() {
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, std::move(resource_context_));
-  }
-}
 
 // static
 bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
@@ -99,8 +72,4 @@ bool ProfileIOData::IsHandledURL(const GURL& url) {
   }
 
   return IsHandledProtocol(url.scheme());
-}
-
-content::ResourceContext* ProfileIOData::GetResourceContext() const {
-  return resource_context_.get();
 }

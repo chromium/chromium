@@ -131,7 +131,6 @@ OffTheRecordProfileImpl::OffTheRecordProfileImpl(
       profile_keep_alive_(profile_,
                           ProfileKeepAliveOrigin::kOffTheRecordProfile),
       otr_profile_id_(otr_profile_id),
-      io_data_(this),
       start_time_(base::Time::Now()),
       key_(std::make_unique<ProfileKey>(profile_->GetPath(),
                                         profile_->GetProfileKey())) {
@@ -419,10 +418,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 OffTheRecordProfileImpl::GetURLLoaderFactory() {
   return GetDefaultStoragePartition(this)
       ->GetURLLoaderFactoryForBrowserProcess();
-}
-
-content::ResourceContext* OffTheRecordProfileImpl::GetResourceContext() {
-  return io_data_.GetResourceContext();
 }
 
 content::BrowserPluginGuestManager* OffTheRecordProfileImpl::GetGuestManager() {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/path_service.h"
@@ -26,6 +27,9 @@
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -178,7 +182,8 @@ std::string Profile::OTRProfileID::Serialize() const {
 }
 #endif  // defined(OS_ANDROID)
 
-Profile::Profile() {
+Profile::Profile()
+    : resource_context_(std::make_unique<content::ResourceContext>()) {
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
@@ -188,6 +193,10 @@ Profile::Profile() {
 }
 
 Profile::~Profile() {
+  if (content::BrowserThread::IsThreadInitialized(content::BrowserThread::IO)) {
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(resource_context_));
+  }
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().erase(this);
@@ -508,4 +517,8 @@ variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)
     chrome_variations_client_ = std::make_unique<ChromeVariationsClient>(this);
   return chrome_variations_client_.get();
+}
+
+content::ResourceContext* Profile::GetResourceContext() {
+  return resource_context_.get();
 }

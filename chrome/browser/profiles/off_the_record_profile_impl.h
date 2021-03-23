@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_io_data_handle.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "content/public/browser/content_browser_client.h"
@@ -111,7 +110,6 @@ class OffTheRecordProfileImpl : public Profile {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PushMessagingService* GetPushMessagingService() override;
@@ -160,7 +158,6 @@ class OffTheRecordProfileImpl : public Profile {
   base::CallbackListSubscription track_zoom_subscription_;
   base::CallbackListSubscription parent_default_zoom_level_subscription_;
 #endif  // !defined(OS_ANDROID)
-  ProfileIODataHandle io_data_;
 
   // Time we were started.
   base::Time start_time_;

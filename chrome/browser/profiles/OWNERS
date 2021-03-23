@@ -6,9 +6,6 @@ sdefresne@chromium.org
 # ProfileManager and GetDefaultProfile and related
 skuhne@chromium.org
 
-# Primarily for ProfileIOData and friends.
-mmenke@chromium.org
-
 per-file profile_keep_alive_types.*=nicolaso@chromium.org
 per-file scoped_profile_keep_alive.*=nicolaso@chromium.org
 
