@@ -321,6 +321,7 @@
       'android-paeverywhere-arm-fyi-rel': 'release_trybot_paeverywhere_arm',
       'android-paeverywhere-arm64-fyi-dbg': 'debug_bot_paeverywhere_arm64',
       'android-paeverywhere-arm64-fyi-rel': 'release_trybot_paeverywhere_arm64',
+      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
@@ -906,6 +907,7 @@
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients',
+      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
       'chromeos-kevin-compile-rel': 'chromeos_kevin',
@@ -1709,6 +1711,10 @@
 
     'chromeos_amd64-generic_use_fake_dbus_clients': [
       'chromeos_amd64-generic', 'use_fake_dbus_clients',
+    ],
+
+    'chromeos_amd64-generic_use_fake_dbus_clients_dchecks': [
+      'chromeos_amd64-generic', 'use_fake_dbus_clients', 'dcheck_always_on',
     ],
 
     'chromeos_arm-generic': [

@@ -2939,6 +2939,17 @@ ci.fyi_builder(
     notifies = ["chrome-memory-safety"],
 )
 
+# TODO(crbug.com/1189748): Remove this builder once flaky DCHECKs have been
+# resolved and DCHECKs are enabled on the CQ bot.
+ci.fyi_builder(
+    name = "chromeos-amd64-generic-rel-dchecks",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "chromeos|dcheck",
+        short_name = "cros",
+    ),
+)
+
 ci.fyi_builder(
     name = "fuchsia-fyi-arm64-dbg",
     console_view_entry = consoles.console_view_entry(
