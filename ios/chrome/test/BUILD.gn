@@ -138,8 +138,8 @@ test("ios_chrome_perftests") {
     # Ensure that all perf tests are run, use fake hooks and pack resources.
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
+    "//ios/chrome/app/resources:packed_resources",
     "//ios/chrome/browser/ui/main",
-    ios_packed_resources_target,
 
     # Add perf_tests target here.
     "//ios/chrome/browser/ui/ntp:perf_tests",
@@ -161,7 +161,7 @@ test("ios_chrome_unittests") {
     # Ensure that all unit tests are run, use fake hooks and pack resources.
     ":run_all_unittests",
     "//ios/chrome/app:tests_fake_hook",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
 
     # Add unit_tests target here.
     "//ios/chrome/app:unit_tests",

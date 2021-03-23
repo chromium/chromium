@@ -9,7 +9,7 @@ group("resources") {
   public_deps = [
     ":icons",
     ":launchscreen_xib",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
   ]
 }
 

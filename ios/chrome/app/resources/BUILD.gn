@@ -17,7 +17,7 @@ group("resources") {
     ":launchscreen_xib",
     ":quick_action_icons",
     ":system_strings",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
   ]
 }
 
@@ -137,14 +137,15 @@ bundle_data_ib_file("launchscreen_xib") {
 
 generate_localizable_strings("system_strings") {
   config_file = "chrome_localize_strings_config.plist"
-  datapack_dir = get_label_info(ios_packed_resources_target, "target_gen_dir")
+  datapack_dir = get_label_info("//ios/chrome/app/resources:packed_resources",
+                                "target_gen_dir")
   packed_locales = ios_packed_locales_as_mac_outputs
   output_filenames = [
     "InfoPlist.strings",
     "Localizable.strings",
     "Intents.strings",
   ]
-  deps = [ ios_packed_resources_target ]
+  deps = [ "//ios/chrome/app/resources:packed_resources" ]
 }
 
 imageset("quick_action_incognito_search") {
