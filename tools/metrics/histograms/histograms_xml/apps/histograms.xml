@@ -438,7 +438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderError" expires_after="2021-07-18">
+    enum="OsSettingsProviderError" expires_after="2021-09-19">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1213,7 +1213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of times the different sources for showing the app list are used.

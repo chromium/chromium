@@ -85,7 +85,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
@@ -1099,7 +1099,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

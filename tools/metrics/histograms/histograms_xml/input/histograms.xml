@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled" enum="IMEAssistiveAction"
-    expires_after="2021-07-18">
+    expires_after="2021-09-19">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

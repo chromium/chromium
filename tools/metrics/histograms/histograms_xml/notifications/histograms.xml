@@ -134,7 +134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
-    units="notifications" expires_after="M93">
+    units="notifications" expires_after="2021-09-19">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -145,7 +145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.MutedCount"
-    units="notifications" expires_after="M93">
+    units="notifications" expires_after="2021-09-19">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ReplacedCount"
-    units="notifications" expires_after="M93">
+    units="notifications" expires_after="2021-09-19">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
