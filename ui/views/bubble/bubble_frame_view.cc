@@ -24,6 +24,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -124,6 +125,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       kProgressIndicatorHeight, /*allow_round_corner=*/false);
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
+  progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);
   progress_indicator_ = AddChildView(std::move(progress_indicator));
 }
 
@@ -315,7 +317,9 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
 }
 
 void BubbleFrameView::SetProgress(base::Optional<double> progress) {
-  progress_indicator_->SetVisible(progress.has_value());
+  bool visible = progress.has_value();
+  progress_indicator_->SetVisible(visible);
+  progress_indicator_->GetViewAccessibility().OverrideIsIgnored(!visible);
   if (progress)
     progress_indicator_->SetValue(progress.value());
 }
