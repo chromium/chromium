@@ -875,7 +875,13 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 }
 
 // Test that we can fetch the real allocated size after an allocation.
-TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
+#if defined(OS_ANDROID)
+#define MAYBE_AllocGetSizeAndOffsetAndStart \
+  DISABLED_AllocGetSizeAndOffsetAndStart
+#else
+#define MAYBE_AllocGetSizeAndOffsetAndStart AllocGetSizeAndOffsetAndStart
+#endif
+TEST_F(PartitionAllocTest, MAYBE_AllocGetSizeAndOffsetAndStart) {
   void* ptr;
   void* slot_start;
   size_t requested_size, actual_capacity, predicted_capacity;
