@@ -270,8 +270,24 @@ CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
     Browser* source,
     const std::u16string& input) {
   CommandSource::CommandResults results;
-  // TODO(https://crbug.com/1181879): Add "New window" here when issue 1181879
-  // is fixed.
+  // Add "New Window", if appropriate. It should score highest with no input.
+  std::u16string new_window_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
+  base::Erase(new_window_title, '&');
+  std::unique_ptr<CommandItem> item = nullptr;
+  if (input.empty()) {
+    item = std::make_unique<CommandItem>(new_window_title, .99,
+                                         std::vector<gfx::Range>());
+  } else {
+    FuzzyFinder finder(input);
+    std::vector<gfx::Range> ranges;
+    item = ItemForTitle(new_window_title, finder, &ranges);
+  }
+  if (item) {
+    item->entity_type = CommandItem::Entity::kWindow;
+    item->command = base::BindOnce(&chrome::MoveActiveTabToNewWindow,
+                                   base::Unretained(source));
+    results.push_back(std::move(item));
+  }
   for (auto& match : WindowsMatchingInput(source, input))
     results.push_back(CreateMoveTabsToWindowItem(source, match));
   return results;
@@ -295,21 +311,20 @@ CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
   // Add "New Group", if appropriate. It should score highest with no input.
   std::u16string new_group_title =
       l10n_util::GetStringUTF16(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP);
+  std::unique_ptr<CommandItem> item = nullptr;
   if (input.empty()) {
-    auto item = std::make_unique<CommandItem>(new_group_title, .99,
-                                              std::vector<gfx::Range>());
+    item = std::make_unique<CommandItem>(new_group_title, .99,
+                                         std::vector<gfx::Range>());
+  } else {
+    FuzzyFinder finder(input);
+    std::vector<gfx::Range> ranges;
+    item = ItemForTitle(new_group_title, finder, &ranges);
+  }
+  if (item) {
     item->entity_type = CommandItem::Entity::kGroup;
     item->command =
         base::BindOnce(&AddSelectedToNewGroup, base::Unretained(browser));
     results.push_back(std::move(item));
-  } else {
-    FuzzyFinder finder(input);
-    std::vector<gfx::Range> ranges;
-    if (auto item = ItemForTitle(new_group_title, finder, &ranges)) {
-      item->command =
-          base::BindOnce(&chrome::GroupTab, base::Unretained(browser));
-      results.push_back(std::move(item));
-    }
   }
   for (auto& match : GroupsMatchingInput(
            browser, input, IneligibleGroupForSelected(tab_strip_model))) {
@@ -377,7 +392,6 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     }
   }
 
-  // TODO(https://crbug.com/1181879): This should handle all selected tabs.
   if (chrome::CanMoveActiveTabToNewWindow(browser)) {
     if (auto item =
             ItemForTitle(l10n_util::GetStringUTF16(IDS_MOVE_TAB_TO_NEW_WINDOW),
