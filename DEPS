@@ -3930,7 +3930,7 @@ hooks = [
   {
     'name': 'node_mac',
     'pattern': '.',
-    'condition': 'host_os == "mac"',
+    'condition': 'host_os == "mac" and host_cpu == "x64"',
     'action': [ 'python',
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
@@ -3938,6 +3938,22 @@ hooks = [
                 '--no_auth',
                 '--bucket', 'chromium-nodejs/14.15.4',
                 '-s', 'src/third_party/node/mac/node-darwin-x64.tar.gz.sha1',
+    ],
+  },
+  {
+    # TODO: Node 16.0 will likely ship with an official universal node binary
+    # on macOS. Once node 16.0 is released, collapse this into the node_mac hook
+    # above again and use the universal binary on mac independent of host_cpu.
+    'name': 'node_mac_arm64',
+    'pattern': '.',
+    'condition': 'host_os == "mac" and host_cpu == "arm64"',
+    'action': [ 'python',
+                'src/third_party/depot_tools/download_from_google_storage.py',
+                '--no_resume',
+                '--extract',
+                '--no_auth',
+                '--bucket', 'chromium-nodejs/16.0.0-pre',
+                '-s', 'src/third_party/node/mac/node-darwin-arm64.tar.gz.sha1',
     ],
   },
   {
