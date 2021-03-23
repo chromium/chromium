@@ -309,6 +309,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // Translates the items container view to center the current page in the apps
   // grid.
   void RecenterItemsContainer();
+  // Calculates the background bounds for the grid depending on the value of
+  // |cardified_state_|
+  gfx::Rect BackgroundCardBounds(int new_page_index);
   // Appends a background card to the back of |background_cards_|.
   void AppendBackgroundCard();
   // Removes the background card at the end of |background_cards_|.
