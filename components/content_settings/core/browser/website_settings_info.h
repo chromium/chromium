@@ -43,6 +43,10 @@ class WebsiteSettingsInfo {
     // Embedded settings can be stored.
     COOKIES_SCOPE,
 
+    // Storage access specific scoped that is scoped to the pair of requesting
+    // and embedding origin.
+    STORAGE_ACCESS_SCOPE,
+
     // Settings scoped to a single origin (generally either the requesting
     // origin or the top level origin of a frame) for a request. Embedded
     // exceptions are not allowed.
@@ -53,15 +57,6 @@ class WebsiteSettingsInfo {
     // exceptions are allowed. This should only be used after careful thought.
     // Allowing embedded exceptions requires much more complicated UI.
     SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
-
-    // Settings scoped to the combination of the origin of the requesting
-    // frame and the origin of the top level frame by default.
-    //
-    // The use of this scope is highly discuraged as in introduces user
-    // confusion. Specifically, UI (e.g. prompts, page actions, etc.) should
-    // generally only change settings for the top level origin and not for
-    // embedded origins.
-    REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE
   };
 
   enum IncognitoBehavior {

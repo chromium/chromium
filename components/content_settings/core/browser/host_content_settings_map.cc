@@ -161,16 +161,16 @@ content_settings::PatternPair GetPatternsFromScopingType(
       patterns.first = ContentSettingsPattern::FromURL(primary_url);
       patterns.second = ContentSettingsPattern::Wildcard();
       break;
-    case WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE:
-    case WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE:
-      patterns.first = ContentSettingsPattern::FromURLNoWildcard(primary_url);
-      patterns.second = ContentSettingsPattern::Wildcard();
-      break;
-    case WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE:
+    case WebsiteSettingsInfo::STORAGE_ACCESS_SCOPE:
       DCHECK(!secondary_url.is_empty());
       patterns.first = ContentSettingsPattern::FromURLNoWildcard(primary_url);
       patterns.second =
           ContentSettingsPattern::FromURLNoWildcard(secondary_url);
+      break;
+    case WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE:
+    case WebsiteSettingsInfo::SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE:
+      patterns.first = ContentSettingsPattern::FromURLNoWildcard(primary_url);
+      patterns.second = ContentSettingsPattern::Wildcard();
       break;
   }
   return patterns;
