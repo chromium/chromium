@@ -2189,17 +2189,20 @@
   <message desc="Describes an audio clip that gets played for a specific event or control type. Use the default string as a guide to what the audio clip represents or conveys." name="IDS_CHROMEVOX_WRAP_EARCON_DESCRIPTION">
     Wrap from beginning to end or end to beginning inside of a page, dialog, or other container
   </message>
-  <message desc="Describes a command to turn off the visual display for accessibility without impacting usage of the machine." name="IDS_CHROMEVOX_DARKEN_SCREEN">
-    Darken screen
+  <message desc="Describes a command to turn off the visual display for accessibility without impacting usage of the machine." name="IDS_CHROMEVOX_TOGGLE_SCREEN_OFF">
+    Screen off
   </message>
-  <message desc="Describes a command to turn the visual display on for accessibility undoing any previous request to turn off the visual display." name="IDS_CHROMEVOX_UNDARKEN_SCREEN">
-    Undarken screen
+  <message desc="Describes a command to turn the visual display on for accessibility undoing any previous request to turn off the visual display." name="IDS_CHROMEVOX_TOGGLE_SCREEN_ON">
+    Screen on
   </message>
-  <message desc="Describes a command to toggle on/off the visual display for accessibility." name="IDS_CHROMEVOX_TOGGLE_DARK_SCREEN">
-    Toggle dark screen
+  <message desc="Describes a command to toggle on/off the visual display for accessibility." name="IDS_CHROMEVOX_TOGGLE_SCREEN">
+    Toggle screen on or off
   </message>
-  <message desc="Shown the first time a user requests the darken screen command: describes what the darken screen command does and how to turn the screen on again with Search + Brightness Up buttons." name="IDS_CHROMEVOX_DARKEN_SCREEN_DESCRIPTION">
-    This turns off the screen. You can turn the screen back on with Search + Brightness up. Do you want to turn it off?
+  <message desc="The title of a dialog shown the first time the user requests to turn off the visual display." name="IDS_CHROMEVOX_TOGGLE_SCREEN_TITLE">
+    Turn off screen?
+  </message>
+  <message desc="The message of a dialog Shown the first time a user requests to turn off the visual display, describes what the screen off command does and how to turn the screen on again with Search + Brightness Up buttons." name="IDS_CHROMEVOX_TOGGLE_SCREEN_DESCRIPTION">
+    This turns off the screen. You can always turn the screen back on by pressing Search + Brightness up.
   </message>
   <message desc="Describes a command that turns text to speech feedback off." name="IDS_CHROMEVOX_SPEECH_OFF">
     Speech off

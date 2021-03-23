@@ -1273,12 +1273,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.ExpectSpeech("Continue");
   sm_.ExpectSpeech("default");
   sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Darken screen");
+  sm_.ExpectSpeech("Turn off screen?");
   sm_.ExpectSpeech("Dialog");
   sm_.ExpectSpeech("This turns off the screen.");
   sm_.ExpectSpeech(
-      "You can turn the screen back on with Search plus Brightness up.");
-  sm_.ExpectSpeech("Do you want to turn it off?");
+      "You can always turn the screen back on by pressing Search plus "
+      "Brightness up.");
 
   sm_.Call([]() {
     // Accept the dialog and see that the screen is darkened.
@@ -1289,7 +1289,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
     ASSERT_TRUE(dialog_ != nullptr);
     dialog_->Accept();
   });
-  sm_.ExpectSpeech("Darken screen");
+  sm_.ExpectSpeech("Screen off");
   // Make sure Ash gets the backlight change request.
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
     if (observer.backlights_forced_off())
@@ -1300,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectNextSpeechIsNot("Continue");
-  sm_.ExpectSpeech("Undarken screen");
+  sm_.ExpectSpeech("Screen on");
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
     if (!observer.backlights_forced_off())
       return;
@@ -1310,7 +1310,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectNextSpeechIsNot("Continue");
-  sm_.ExpectSpeech("Darken screen");
+  sm_.ExpectSpeech("Screen off");
   sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
     if (observer.backlights_forced_off())
       return;

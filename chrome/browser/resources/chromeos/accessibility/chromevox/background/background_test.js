@@ -2383,17 +2383,17 @@ TEST_F('ChromeVoxBackgroundTest', 'PhoneticsAndCommands', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'ToggleDarkScreen', function() {
+TEST_F('ChromeVoxBackgroundTest', 'ToggleScreen', function() {
   const mockFeedback = this.createMockFeedback();
   // Pretend we've already accepted the confirmation dialog once.
-  localStorage['acceptDarkenScreen'] = 'true';
+  localStorage['acceptToggleScreen'] = 'true';
   this.runWithLoadedTree('<div>Unimportant web content</div>', function() {
-    mockFeedback.call(doCmd('toggleDarkScreen'))
-        .expectSpeech('Darken screen')
-        .call(doCmd('toggleDarkScreen'))
-        .expectSpeech('Undarken screen')
-        .call(doCmd('toggleDarkScreen'))
-        .expectSpeech('Darken screen')
+    mockFeedback.call(doCmd('toggleScreen'))
+        .expectSpeech('Screen off')
+        .call(doCmd('toggleScreen'))
+        .expectSpeech('Screen on')
+        .call(doCmd('toggleScreen'))
+        .expectSpeech('Screen off')
         .replay();
   });
 });
