@@ -965,7 +965,6 @@ static_library("extensions") {
     deps += [
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
-      "//remoting/host",
       "//remoting/host/it2me:chrome_os_host",
     ]
     if (is_chromeos_lacros) {
@@ -981,6 +980,7 @@ static_library("extensions") {
       deps += [ "//chromeos/lacros" ]
     } else {
       sources += [ "api/messaging/native_message_host_chromeos.cc" ]
+      deps += [ "//remoting/host" ]
     }
   } else {
     sources += [
