@@ -473,8 +473,6 @@ void CanvasPath::roundRect(
       !std::isfinite(height))
     return;
 
-  FloatRect rect = FloatRect(x, y, width, height);
-
   FloatSize r[num_radii];
   for (int i = 0; i < num_radii; ++i) {
     if (radii[i].IsUnrestrictedDouble()) {
@@ -507,6 +505,18 @@ void CanvasPath::roundRect(
                        base::saturated_cast<float>(p->y()));
     }
   }
+
+  if (UNLIKELY(width < 0)) {
+    x += width;
+    width = -width;
+  }
+
+  if (UNLIKELY(height < 0)) {
+    y += height;
+    height = -height;
+  }
+
+  FloatRect rect = FloatRect(x, y, width, height);
 
   // Order of arguments here is so that this function behaves the same as the
   // CSS border-radius property
