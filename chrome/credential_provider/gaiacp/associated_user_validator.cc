@@ -141,7 +141,7 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
     return hr;
   }
 
-  PSID psid;
+  PSID psid = nullptr;
   if (!::ConvertStringSidToSidW(sid.c_str(), &psid)) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ConvertStringSidToSidW sid=" << sid << " hr=" << putHR(hr);
@@ -151,8 +151,9 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
   std::vector<std::wstring> account_rights{
       SE_DENY_INTERACTIVE_LOGON_NAME, SE_DENY_NETWORK_LOGON_NAME,
       SE_DENY_REMOTE_INTERACTIVE_LOGON_NAME};
+  HRESULT status;
   if (!allow) {
-    return policy->AddAccountRights(psid, account_rights);
+    status = policy->AddAccountRights(psid, account_rights);
   } else {
     // Note: We are still going to keep this time restrictions flow to avoid
     // any cornercase scenario where user is blocked on login UI because
@@ -161,8 +162,10 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
     if (FAILED(hr))
       LOGFN(ERROR) << "Failed to remove time restrictions for sid : " << sid;
 
-    return policy->RemoveAccountRights(psid, account_rights);
+    status = policy->RemoveAccountRights(psid, account_rights);
   }
+  ::LocalFree(psid);
+  return status;
 }
 
 }  // namespace
