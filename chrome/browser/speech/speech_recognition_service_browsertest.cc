@@ -135,6 +135,8 @@ class SpeechRecognitionServiceTest
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
   void OnSpeechRecognitionError() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Required for the utility process to access the directory containing the
@@ -179,6 +181,11 @@ void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
 }
 
 void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
+  NOTREACHED();
+}
+
+void SpeechRecognitionServiceTest::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
   NOTREACHED();
 }
 
