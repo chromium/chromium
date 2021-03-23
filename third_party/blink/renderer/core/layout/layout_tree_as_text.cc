@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_details_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -231,25 +230,6 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
         ToInterface<LayoutNGTableCellInterface>(o);
     ts << " [r=" << c.RowIndex() << " c=" << c.AbsoluteColumnIndex()
        << " rs=" << c.ResolvedRowSpan() << " cs=" << c.ColSpan() << "]";
-  }
-
-  if (o.IsDetailsMarker()) {
-    ts << ": ";
-    const auto& marker = To<LayoutDetailsMarker>(o);
-    switch (marker.GetOrientation(marker.StyleRef(), marker.IsOpen())) {
-      case LayoutDetailsMarker::kLeft:
-        ts << "left";
-        break;
-      case LayoutDetailsMarker::kRight:
-        ts << "right";
-        break;
-      case LayoutDetailsMarker::kUp:
-        ts << "up";
-        break;
-      case LayoutDetailsMarker::kDown:
-        ts << "down";
-        break;
-    }
   }
 
   if (o.IsListMarkerForNormalContent()) {

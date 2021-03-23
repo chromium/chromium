@@ -62,8 +62,6 @@ blink_core_sources_paint = [
   "cull_rect_updater.h",
   "custom_scrollbar_theme.cc",
   "custom_scrollbar_theme.h",
-  "details_marker_painter.cc",
-  "details_marker_painter.h",
   "document_marker_painter.cc",
   "document_marker_painter.h",
   "element_timing_utils.cc",

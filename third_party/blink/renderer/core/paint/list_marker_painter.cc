@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/list_marker_text.h"
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/details_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -22,6 +21,65 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
 namespace blink {
+
+namespace {
+
+enum class DisclosureOrientation { kLeft, kRight, kUp, kDown };
+
+DisclosureOrientation GetDisclosureOrientation(const ComputedStyle& style,
+                                               bool is_open) {
+  // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
+  const auto mode = style.GetWritingMode();
+  DCHECK_NE(mode, WritingMode::kSidewaysRl);
+  DCHECK_NE(mode, WritingMode::kSidewaysLr);
+
+  if (is_open) {
+    if (blink::IsHorizontalWritingMode(mode))
+      return DisclosureOrientation::kDown;
+    return IsFlippedBlocksWritingMode(mode) ? DisclosureOrientation::kLeft
+                                            : DisclosureOrientation::kRight;
+  }
+  if (blink::IsHorizontalWritingMode(mode)) {
+    return style.IsLeftToRightDirection() ? DisclosureOrientation::kRight
+                                          : DisclosureOrientation::kLeft;
+  }
+  return style.IsLeftToRightDirection() ? DisclosureOrientation::kDown
+                                        : DisclosureOrientation::kUp;
+}
+
+Path CreatePath(const FloatPoint* path) {
+  Path result;
+  result.MoveTo(FloatPoint(path[0].X(), path[0].Y()));
+  for (int i = 1; i < 4; ++i)
+    result.AddLineTo(FloatPoint(path[i].X(), path[i].Y()));
+  return result;
+}
+
+Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
+  constexpr FloatPoint kLeftPoints[4] = {
+      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
+  constexpr FloatPoint kRightPoints[4] = {
+      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}, {0.0f, 0.0f}};
+  constexpr FloatPoint kUpPoints[4] = {
+      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}, {0.0f, 0.93f}};
+  constexpr FloatPoint kDownPoints[4] = {
+      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}, {0.0f, 0.07f}};
+
+  switch (GetDisclosureOrientation(style, is_open)) {
+    case DisclosureOrientation::kLeft:
+      return CreatePath(kLeftPoints);
+    case DisclosureOrientation::kRight:
+      return CreatePath(kRightPoints);
+    case DisclosureOrientation::kUp:
+      return CreatePath(kUpPoints);
+    case DisclosureOrientation::kDown:
+      return CreatePath(kDownPoints);
+  }
+
+  return Path();
+}
+
+}  // namespace
 
 void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
                                     const LayoutObject* object,
@@ -51,8 +109,7 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   } else if (type == "square") {
     context.FillRect(snapped_rect);
   } else if (type == "disclosure-open" || type == "disclosure-closed") {
-    Path path = DetailsMarkerPainter::GetCanonicalPath(
-        style, type == "disclosure-open");
+    Path path = GetCanonicalDisclosurePath(style, type == "disclosure-open");
     path.Transform(AffineTransform().Scale(marker.Width(), marker.Height()));
     path.Translate(FloatSize(marker.X(), marker.Y()));
     context.FillPath(path);

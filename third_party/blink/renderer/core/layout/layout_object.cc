@@ -2205,7 +2205,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
         (IsText() && !IsBR() && To<LayoutText>(this)->HasInlineFragments()) ||
         (IsSVG() && StyleRef().IsFillColorCurrentColor()) ||
         (IsSVG() && StyleRef().IsStrokeColorCurrentColor()) ||
-        IsListMarkerForNormalContent() || IsDetailsMarker() || IsMathML())
+        IsListMarkerForNormalContent() || IsMathML())
       diff.SetNeedsPaintInvalidation();
   }
 

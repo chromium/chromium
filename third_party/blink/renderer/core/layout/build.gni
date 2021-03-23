@@ -105,8 +105,6 @@ blink_core_sources_layout = [
   "layout_custom_scrollbar_part.h",
   "layout_deprecated_flexible_box.cc",
   "layout_deprecated_flexible_box.h",
-  "layout_details_marker.cc",
-  "layout_details_marker.h",
   "layout_embedded_content.cc",
   "layout_embedded_content.h",
   "layout_embedded_object.cc",

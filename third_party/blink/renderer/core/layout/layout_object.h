@@ -780,10 +780,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectCounter);
   }
-  bool IsDetailsMarker() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectDetailsMarker);
-  }
   bool IsEmbeddedObject() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectEmbeddedObject);
@@ -3411,7 +3407,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectCanvas,
     kLayoutObjectCounter,
     kLayoutObjectCustomScrollbarPart,
-    kLayoutObjectDetailsMarker,
     kLayoutObjectEmbeddedObject,
     kLayoutObjectFieldset,
     kLayoutObjectFileUploadControl,
