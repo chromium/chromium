@@ -103,8 +103,8 @@ void CollectSolidEdges(
 bool Intersects(const NGLayoutOpportunity& opportunity,
                 const NGBfcOffset& offset,
                 const LayoutUnit inline_size) {
-  return opportunity.rect.LineEndOffset() > offset.line_offset &&
-         opportunity.rect.LineStartOffset() <
+  return opportunity.rect.LineEndOffset() >= offset.line_offset &&
+         opportunity.rect.LineStartOffset() <=
              offset.line_offset + inline_size &&
          opportunity.rect.BlockEndOffset() > offset.block_offset;
 }
@@ -379,8 +379,8 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
         // In the above example the "NEW" exclusion *doesn't* overlap with the
         // above drawn shelf, and a new opportunity hasn't been created.
         bool is_overlapping =
-            exclusion.rect.LineStartOffset() < shelf.line_right &&
-            exclusion.rect.LineEndOffset() > shelf.line_left;
+            exclusion.rect.LineStartOffset() <= shelf.line_right &&
+            exclusion.rect.LineEndOffset() >= shelf.line_left;
 
         // Insert a closed-off layout opportunity if needed.
         if (has_solid_edges && is_overlapping) {
