@@ -3378,6 +3378,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "media-app-display-exif",
+    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "media-app-pdf-in-ink",
     "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
     "expiry_milestone": 93

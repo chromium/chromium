@@ -479,6 +479,10 @@ const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether EXIF metadata is displayed in the ChromeOS media app.
+const base::Feature kMediaAppDisplayExif{"MediaAppDisplayExif",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Whether known extensions for RAW image formats are handled by the ChromeOS
 // Media App.
 const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",

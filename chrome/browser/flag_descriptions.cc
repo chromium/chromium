@@ -4559,6 +4559,10 @@ const char kMediaAppAnnotationName[] = "Media App Annotation";
 const char kMediaAppAnnotationDescription[] =
     "Enables image annotation in chrome://media-app";
 
+const char kMediaAppDisplayExifName[] = "Media App Display Exif";
+const char kMediaAppDisplayExifDescription[] =
+    "Enables displaying EXIF metadata in chrome://media-app";
+
 const char kMediaAppPdfInInkName[] = "Media App Pdf in Ink";
 const char kMediaAppPdfInInkDescription[] =
     "Enables loading PDFs into Ink in chrome://media-app";

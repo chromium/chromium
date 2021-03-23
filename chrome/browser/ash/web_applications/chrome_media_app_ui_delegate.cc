@@ -43,6 +43,9 @@ void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "imageAnnotation",
       base::FeatureList::IsEnabled(chromeos::features::kMediaAppAnnotation));
+  source->AddBoolean(
+      "displayExif",
+      base::FeatureList::IsEnabled(chromeos::features::kMediaAppDisplayExif));
   source->AddBoolean("pdfInInk", base::FeatureList::IsEnabled(
                                      chromeos::features::kMediaAppPdfInInk));
   version_info::Channel channel = chrome::GetChannel();
