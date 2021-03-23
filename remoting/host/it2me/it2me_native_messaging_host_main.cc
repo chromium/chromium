@@ -35,6 +35,7 @@
 
 #include "base/linux_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/xlib_support.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 #if defined(OS_APPLE)
@@ -75,6 +76,12 @@ bool CurrentProcessHasUiAccess() {
 // Creates a It2MeNativeMessagingHost instance, attaches it to stdin/stdout and
 // runs the task executor until It2MeNativeMessagingHost signals shutdown.
 int It2MeNativeMessagingHostMain(int argc, char** argv) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
+  // use X11 safely (such as the WebRTC capturer, GTK ...)
+  x11::InitXlib();
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
   // This object instance is required by Chrome code (such as
   // SingleThreadTaskExecutor).
   base::AtExitManager exit_manager;
