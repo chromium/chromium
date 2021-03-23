@@ -186,6 +186,14 @@ class UserDataAuthClientTest : public testing::Test {
       expected_start_fingerprint_auth_session_reply_;
   ::user_data_auth::EndFingerprintAuthSessionReply
       expected_end_fingerprint_auth_session_reply_;
+  ::user_data_auth::StartMigrateToDircryptoReply
+      expected_start_migrate_to_dircrypto_reply_;
+  ::user_data_auth::NeedsDircryptoMigrationReply
+      expected_needs_dircrypto_migration_reply_;
+  ::user_data_auth::GetSupportedKeyPoliciesReply
+      expected_get_supported_key_policies_reply_;
+  ::user_data_auth::GetAccountDiskUsageReply
+      expected_get_account_disk_usage_reply_;
   ::user_data_auth::StartAuthSessionReply expected_start_auth_session_reply_;
   ::user_data_auth::AuthenticateAuthSessionReply
       expected_authenticate_auth_session_reply_;
@@ -240,6 +248,21 @@ class UserDataAuthClientTest : public testing::Test {
                ::user_data_auth::kEndFingerprintAuthSession) {
       writer.AppendProtoAsArrayOfBytes(
           expected_end_fingerprint_auth_session_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kStartMigrateToDircrypto) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_start_migrate_to_dircrypto_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kNeedsDircryptoMigration) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_needs_dircrypto_migration_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kGetSupportedKeyPolicies) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_get_supported_key_policies_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kGetAccountDiskUsage) {
+      writer.AppendProtoAsArrayOfBytes(expected_get_account_disk_usage_reply_);
     } else if (method_call->GetMember() ==
                ::user_data_auth::kStartAuthSession) {
       writer.AppendProtoAsArrayOfBytes(expected_start_auth_session_reply_);
@@ -449,6 +472,61 @@ TEST_F(UserDataAuthClientTest, EndFingerprintAuthSession) {
   ASSERT_NE(result_reply, base::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(),
                              expected_end_fingerprint_auth_session_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, StartMigrateToDircrypto) {
+  expected_start_migrate_to_dircrypto_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::StartMigrateToDircryptoReply> result_reply;
+
+  client_->StartMigrateToDircrypto(
+      ::user_data_auth::StartMigrateToDircryptoRequest(),
+      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
+                             expected_start_migrate_to_dircrypto_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, NeedsDircryptoMigration) {
+  expected_needs_dircrypto_migration_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::NeedsDircryptoMigrationReply> result_reply;
+
+  client_->NeedsDircryptoMigration(
+      ::user_data_auth::NeedsDircryptoMigrationRequest(),
+      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
+                             expected_needs_dircrypto_migration_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, GetSupportedKeyPolicies) {
+  expected_get_supported_key_policies_reply_
+      .set_low_entropy_credentials_supported(true);
+  base::Optional<::user_data_auth::GetSupportedKeyPoliciesReply> result_reply;
+
+  client_->GetSupportedKeyPolicies(
+      ::user_data_auth::GetSupportedKeyPoliciesRequest(),
+      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
+                             expected_get_supported_key_policies_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, GetAccountDiskUsage) {
+  expected_get_account_disk_usage_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::GetAccountDiskUsageReply> result_reply;
+
+  client_->GetAccountDiskUsage(::user_data_auth::GetAccountDiskUsageRequest(),
+                               CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
+                             expected_get_account_disk_usage_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, StartAuthSession) {

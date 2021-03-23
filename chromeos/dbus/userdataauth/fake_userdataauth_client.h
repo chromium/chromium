@@ -55,6 +55,18 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void EndFingerprintAuthSession(
       const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
       EndFingerprintAuthSessionCallback callback) override;
+  void StartMigrateToDircrypto(
+      const ::user_data_auth::StartMigrateToDircryptoRequest& request,
+      StartMigrateToDircryptoCallback callback) override;
+  void NeedsDircryptoMigration(
+      const ::user_data_auth::NeedsDircryptoMigrationRequest& request,
+      NeedsDircryptoMigrationCallback callback) override;
+  void GetSupportedKeyPolicies(
+      const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
+      GetSupportedKeyPoliciesCallback callback) override;
+  void GetAccountDiskUsage(
+      const ::user_data_auth::GetAccountDiskUsageRequest& request,
+      GetAccountDiskUsageCallback callback) override;
   void StartAuthSession(
       const ::user_data_auth::StartAuthSessionRequest& request,
       StartAuthSessionCallback callback) override;

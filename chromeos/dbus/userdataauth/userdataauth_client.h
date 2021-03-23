@@ -56,6 +56,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::StartFingerprintAuthSessionReply>;
   using EndFingerprintAuthSessionCallback =
       DBusMethodCallback<::user_data_auth::EndFingerprintAuthSessionReply>;
+  using StartMigrateToDircryptoCallback =
+      DBusMethodCallback<::user_data_auth::StartMigrateToDircryptoReply>;
+  using NeedsDircryptoMigrationCallback =
+      DBusMethodCallback<::user_data_auth::NeedsDircryptoMigrationReply>;
+  using GetSupportedKeyPoliciesCallback =
+      DBusMethodCallback<::user_data_auth::GetSupportedKeyPoliciesReply>;
+  using GetAccountDiskUsageCallback =
+      DBusMethodCallback<::user_data_auth::GetAccountDiskUsageReply>;
   using StartAuthSessionCallback =
       DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
   using AuthenticateAuthSessionCallback =
@@ -147,6 +155,27 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void EndFingerprintAuthSession(
       const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
       EndFingerprintAuthSessionCallback callback) = 0;
+
+  // Instructs cryptohome to migrate the vault from eCryptfs to Dircrypto.
+  virtual void StartMigrateToDircrypto(
+      const ::user_data_auth::StartMigrateToDircryptoRequest& request,
+      StartMigrateToDircryptoCallback callback) = 0;
+
+  // Check with cryptohome to see if a user's vault needs to be migrated.
+  virtual void NeedsDircryptoMigration(
+      const ::user_data_auth::NeedsDircryptoMigrationRequest& request,
+      NeedsDircryptoMigrationCallback callback) = 0;
+
+  // Check the capabilities/policies regarding a key. For instance, if low
+  // entropy credential is supported.
+  virtual void GetSupportedKeyPolicies(
+      const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
+      GetSupportedKeyPoliciesCallback callback) = 0;
+
+  // Calculate the amount of disk space used by user's vault.
+  virtual void GetAccountDiskUsage(
+      const ::user_data_auth::GetAccountDiskUsageRequest& request,
+      GetAccountDiskUsageCallback callback) = 0;
 
   // Starts an auth session.
   virtual void StartAuthSession(

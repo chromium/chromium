@@ -187,6 +187,38 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void StartMigrateToDircrypto(
+      const ::user_data_auth::StartMigrateToDircryptoRequest& request,
+      StartMigrateToDircryptoCallback callback) override {
+    CallProtoMethod(::user_data_auth::kStartMigrateToDircrypto,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void NeedsDircryptoMigration(
+      const ::user_data_auth::NeedsDircryptoMigrationRequest& request,
+      NeedsDircryptoMigrationCallback callback) override {
+    CallProtoMethod(::user_data_auth::kNeedsDircryptoMigration,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void GetSupportedKeyPolicies(
+      const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
+      GetSupportedKeyPoliciesCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetSupportedKeyPolicies,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void GetAccountDiskUsage(
+      const ::user_data_auth::GetAccountDiskUsageRequest& request,
+      GetAccountDiskUsageCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetAccountDiskUsage,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void StartAuthSession(
       const ::user_data_auth::StartAuthSessionRequest& request,
       StartAuthSessionCallback callback) override {

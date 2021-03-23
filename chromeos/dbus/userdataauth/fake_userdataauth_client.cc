@@ -86,6 +86,26 @@ void FakeUserDataAuthClient::EndFingerprintAuthSession(
     EndFingerprintAuthSessionCallback callback) {
   NOTIMPLEMENTED();
 }
+void FakeUserDataAuthClient::StartMigrateToDircrypto(
+    const ::user_data_auth::StartMigrateToDircryptoRequest& request,
+    StartMigrateToDircryptoCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::NeedsDircryptoMigration(
+    const ::user_data_auth::NeedsDircryptoMigrationRequest& request,
+    NeedsDircryptoMigrationCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::GetSupportedKeyPolicies(
+    const ::user_data_auth::GetSupportedKeyPoliciesRequest& request,
+    GetSupportedKeyPoliciesCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::GetAccountDiskUsage(
+    const ::user_data_auth::GetAccountDiskUsageRequest& request,
+    GetAccountDiskUsageCallback callback) {
+  NOTIMPLEMENTED();
+}
 void FakeUserDataAuthClient::StartAuthSession(
     const ::user_data_auth::StartAuthSessionRequest& request,
     StartAuthSessionCallback callback) {
