@@ -287,28 +287,6 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Preference"})
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
-    public void testSafeBrowsingSafeBrowsingSectionUiFlagOn() {
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Safe Browsing should be null when Safe Browsing section is enabled.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_SAFE_BROWSING));
-            Assert.assertNull(
-                    "Password leak detection should be null when Safe Browsing section is enabled.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_PASSWORD_LEAK_DETECTION));
-            Assert.assertNull(
-                    "Safe Browsing scout should be null when Safe Browsing section is enabled.",
-                    googleServicesSettings.findPreference(
-                            GoogleServicesSettings.PREF_SAFE_BROWSING_SCOUT_REPORTING));
-        });
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Preference"})
     @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
     public void testMetricsSettingsHiddenFlagOff() {
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();

@@ -65,6 +65,7 @@ public class PrivacySettings
         PrivacyPreferencesManagerImpl privacyPrefManager =
                 PrivacyPreferencesManagerImpl.getInstance();
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
+        getActivity().setTitle(R.string.prefs_privacy_security);
 
         if (PrivacySandboxBridge.isPrivacySandboxSettingsFunctional()) {
             findPreference(PREF_PRIVACY_SANDBOX)
@@ -83,23 +84,15 @@ public class PrivacySettings
             getPreferenceScreen().removePreference(findPreference(PREF_PRIVACY_SANDBOX));
         }
 
-        // If the flag for adding a "Safe Browsing" section UI is enabled, a "Safe Browsing" section
-        // will be added under this section and this section will be renamed to "Privacy and
-        // security". See (go/esb-clank-dd) for more context.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
-            getActivity().setTitle(R.string.prefs_privacy_security);
-            Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
-            safeBrowsingPreference.setSummary(
-                    SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
-            safeBrowsingPreference.setOnPreferenceClickListener((preference) -> {
-                preference.getExtras().putInt(SafeBrowsingSettingsFragment.ACCESS_POINT,
-                        SettingsAccessPoint.PARENT_SETTINGS);
-                return false;
-            });
-        } else {
-            getActivity().setTitle(R.string.prefs_privacy);
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFE_BROWSING));
-        }
+        Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
+        safeBrowsingPreference.setSummary(
+                SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(getContext()));
+        safeBrowsingPreference.setOnPreferenceClickListener((preference) -> {
+            preference.getExtras().putInt(
+                    SafeBrowsingSettingsFragment.ACCESS_POINT, SettingsAccessPoint.PARENT_SETTINGS);
+            return false;
+        });
+
         setHasOptionsMenu(true);
 
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();

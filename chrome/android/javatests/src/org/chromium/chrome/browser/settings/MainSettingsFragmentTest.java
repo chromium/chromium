@@ -173,7 +173,6 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
     @DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
@@ -191,10 +190,9 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI,
-            ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
-    public void
-    testRenderDifferentSignedInStatesWithMobileIdentityConsistency() throws IOException {
+    @EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    public void testRenderDifferentSignedInStatesWithMobileIdentityConsistency()
+            throws IOException {
         launchSettingsActivity();
         // Scroll to the middle of the page because the preference is supposed to be at the middle
         // of the page.
@@ -344,7 +342,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)
     public void testSafeBrowsingSecuritySectionUiFlagOn() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_PRIVACY, PrivacySettings.class);

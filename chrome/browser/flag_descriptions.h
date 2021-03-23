@@ -1880,9 +1880,6 @@ extern const char kSafeBrowsingEnhancedProtectionAndroidDescription[];
 extern const char kEnhancedProtectionPromoAndroidName[];
 extern const char kEnhancedProtectionPromoAndroidDescription[];
 
-extern const char kSafeBrowsingSectionUiAndroidName[];
-extern const char kSafeBrowsingSectionUiAndroidDescription[];
-
 extern const char kSafeBrowsingUseLocalBlacklistsV2Name[];
 extern const char kSafeBrowsingUseLocalBlacklistsV2Description[];
 

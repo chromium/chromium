@@ -743,24 +743,9 @@ CHAR-LIMIT guidelines:
         Darken websites
       </message>
 
-      <!-- Privacy preferences -->
-      <message name="IDS_PREFS_PRIVACY" desc="Title for the Privacy preferences. [CHAR-LIMIT=32]">
-        Privacy
-      </message>
+      <!-- Privacy and security preferences -->
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR-LIMIT=32]">
         Privacy and security
-      </message>
-      <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_TITLE" desc="Title for checkbox that controls reporting data to detect bad apps/sites. Please ensure ‘Safe Browsing’ in this message matches the ‘Safe Browsing’ settings title.">
-        Help improve Chrome security
-      </message>
-      <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_SUMMARY" desc="Body text for Chrome setting under 'Help Improve Safe Browsing'. This feature sends small amounts of data to Google about potentially-dangerous pages to help Safe Browsing improve Chrome's protection against malware and phishing.">
-        To detect dangerous apps and sites, Chrome sends URLs of some pages you visit, limited system information, and some page content to Google
-      </message>
-      <message name="IDS_SAFE_BROWSING_TITLE" desc="Title for safe browsing.">
-        Safe Browsing (protects you and your device from dangerous sites)
-      </message>
-      <message name="IDS_SAFE_BROWSING_SUMMARY" desc="Summary for safe browsing.">
-        Sends URLs of some pages you visit to Google, when your security is at risk
       </message>
       <message name="IDS_CONTEXTUAL_SEARCH_TITLE" desc="Name for the Contextual Search feature, which allows users to search for a term in a web page by tapping on it.">
         Touch to Search

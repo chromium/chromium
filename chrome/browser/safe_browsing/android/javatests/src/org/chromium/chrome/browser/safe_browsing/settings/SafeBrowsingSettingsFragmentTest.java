@@ -45,7 +45,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
 public class SafeBrowsingSettingsFragmentTest {
     // clang-format on
     private static final String ASSERT_SAFE_BROWSING_STATE_RADIO_BUTTON_GROUP =

@@ -113,9 +113,6 @@ const base::Feature kSafeBrowsingRemoveCookies{
 constexpr base::FeatureParam<bool> kShouldFillOldPhishGuardProto{
     &kPasswordProtectionForSignedInUsers, "DeprecateOldProto", false};
 
-const base::Feature kSafeBrowsingSectionUIAndroid{
-    "SafeBrowsingSecuritySectionUIAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSuspiciousSiteTriggerQuotaFeature{
     "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -159,7 +156,6 @@ constexpr struct {
     {&kRealTimeUrlLookupEnterpriseGaEndpoint, true},
     {&kRealTimeUrlLookupEnabledWithToken, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
-    {&kSafeBrowsingSectionUIAndroid, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kTriggerThrottlerDailyQuotaFeature, false},

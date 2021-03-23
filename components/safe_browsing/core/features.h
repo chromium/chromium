@@ -78,10 +78,6 @@ extern const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise;
 // profile.
 extern const base::Feature kSafeBrowsingSeparateNetworkContexts;
 
-// Controls whether the Safe Browsing section is shown on the settings UI on
-// Android.
-extern const base::Feature kSafeBrowsingSectionUIAndroid;
-
 // Controls whether cookies are removed from certain communications with Safe
 // Browsing.
 extern const base::Feature kSafeBrowsingRemoveCookies;

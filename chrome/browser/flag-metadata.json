@@ -4468,15 +4468,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "safe-browsing-security-section-ui-android",
-    "owners": [
-      "vakh",
-      "xinghuilu",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "safety-check-chrome-cleaner-child",
     "owners": [
       "rainhard",

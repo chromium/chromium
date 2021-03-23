@@ -5839,11 +5839,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedProtectionPromoAndroidName,
      flag_descriptions::kEnhancedProtectionPromoAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnhancedProtectionPromoCard)},
-
-    {"safe-browsing-security-section-ui-android",
-     flag_descriptions::kSafeBrowsingSectionUiAndroidName,
-     flag_descriptions::kSafeBrowsingSectionUiAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSectionUIAndroid)},
 #endif
 
     {"safe-browsing-real-time-url-lookup-enterprise-ga-endpoint",
