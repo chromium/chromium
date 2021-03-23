@@ -136,18 +136,6 @@ public class AccountTrackerService {
         mSystemAccountsSeedingObservers.addObserver(observer);
     }
 
-    /**
-     * Remove an |observer| from the list of observers.
-     *
-     * TODO(crbug/1185162): Remove this method after removing all the callers
-     * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
-     */
-    @Deprecated
-    public void removeSystemAccountsSeededListener(OnSystemAccountsSeededListener observer) {
-        ThreadUtils.assertOnUiThread();
-        mSystemAccountsSeedingObservers.removeObserver(observer);
-    }
-
     private void seedAccounts() {
         ThreadUtils.assertOnUiThread();
         mSystemAccountsChanged = false;
