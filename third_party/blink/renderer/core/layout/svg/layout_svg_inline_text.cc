@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -87,10 +88,13 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
     return;
 
   // The text metrics may be influenced by style changes.
-  if (LayoutSVGText* text_layout_object =
+  if (LayoutSVGBlock* text_or_ng_text =
           LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-    text_layout_object->SetNeedsTextMetricsUpdate();
-    text_layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+    if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
+      text_layout_object->SetNeedsTextMetricsUpdate();
+    else
+      To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
+    text_or_ng_text->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kStyleChange);
   }
 }
@@ -98,9 +102,12 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
-    if (LayoutSVGText* text_layout_object =
+    if (LayoutSVGBlock* text_or_ng_text =
             LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-      text_layout_object->SetNeedsTextMetricsUpdate();
+      if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
+        text_layout_object->SetNeedsTextMetricsUpdate();
+      else
+        To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
     }
   }
   LayoutText::InvalidateSubtreeLayoutForFontUpdates();

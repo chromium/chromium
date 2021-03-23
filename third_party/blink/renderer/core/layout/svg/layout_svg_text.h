@@ -52,8 +52,9 @@ class LayoutSVGText final : public LayoutSVGBlock {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
-  static LayoutSVGText* LocateLayoutSVGTextAncestor(LayoutObject*);
-  static const LayoutSVGText* LocateLayoutSVGTextAncestor(const LayoutObject*);
+  // These two functions return a LayoutSVGText, a LayoutNGSVGText, or nullptr.
+  static LayoutSVGBlock* LocateLayoutSVGTextAncestor(LayoutObject*);
+  static const LayoutSVGBlock* LocateLayoutSVGTextAncestor(const LayoutObject*);
 
   static void NotifySubtreeStructureChanged(LayoutObject*,
                                             LayoutInvalidationReasonForTracing);

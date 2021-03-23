@@ -1231,6 +1231,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectSVGFilterPrimitive);
   }
+  bool IsNGSVGText() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectNGSVGText);
+  }
 
   // FIXME: Those belong into a SVG specific base-class for all layoutObjects
   // (see above). Unfortunately we don't have such a class yet, because it's not
@@ -3460,6 +3464,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectView,
     kLayoutObjectWidget,
 
+    kLayoutObjectNGSVGText,
     kLayoutObjectSVG, /* Keep by itself? */
     kLayoutObjectSVGContainer,
     kLayoutObjectSVGFilterPrimitive,

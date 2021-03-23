@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
@@ -39,8 +40,10 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     if (layout_info.scale_factor_changed) {
       // If the screen scaling factor changed we need to update the text
       // metrics (note: this also happens for layoutSizeChanged=true).
-      if (child->IsSVGText())
-        To<LayoutSVGText>(child)->SetNeedsTextMetricsUpdate();
+      if (auto* text = DynamicTo<LayoutSVGText>(child))
+        text->SetNeedsTextMetricsUpdate();
+      else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child))
+        ng_text->SetNeedsTextMetricsUpdate();
       force_child_layout = true;
     }
 
@@ -52,11 +55,13 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
           // FIXME: this should be done on invalidation, not during layout.
           // When the layout size changed and when using relative values tell
           // the LayoutSVGShape to update its shape object
-          if (child->IsSVGShape()) {
-            To<LayoutSVGShape>(child)->SetNeedsShapeUpdate();
-          } else if (child->IsSVGText()) {
-            To<LayoutSVGText>(child)->SetNeedsTextMetricsUpdate();
-            To<LayoutSVGText>(child)->SetNeedsPositioningValuesUpdate();
+          if (auto* shape = DynamicTo<LayoutSVGShape>(child)) {
+            shape->SetNeedsShapeUpdate();
+          } else if (auto* text = DynamicTo<LayoutSVGText>(child)) {
+            text->SetNeedsTextMetricsUpdate();
+            text->SetNeedsPositioningValuesUpdate();
+          } else if (auto* ng_text = DynamicTo<LayoutNGSVGText>(child)) {
+            ng_text->SetNeedsTextMetricsUpdate();
           }
 
           force_child_layout = true;

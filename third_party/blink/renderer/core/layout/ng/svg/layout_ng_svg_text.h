@@ -14,6 +14,12 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  public:
   explicit LayoutNGSVGText(Element* element);
 
+  void SubtreeStructureChanged(LayoutInvalidationReasonForTracing);
+  void SetNeedsTextMetricsUpdate() {
+    NOT_DESTROYED();
+    needs_text_metrics_update_ = true;
+  }
+
  private:
   // LayoutObject override:
   const char* GetName() const override;
@@ -24,6 +30,17 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 
   // LayoutBlock override:
   void UpdateBlockLayout(bool relayout_children) override;
+
+  void UpdateFont();
+
+  bool needs_text_metrics_update_ : 1;
+};
+
+template <>
+struct DowncastTraits<LayoutNGSVGText> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsNGSVGText();
+  }
 };
 
 }  // namespace blink
