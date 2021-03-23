@@ -208,7 +208,11 @@ SynchronousCompositorHost::DemandDrawHwAsync(
   blink::mojom::SyncCompositorDemandDrawHwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawHwParams::New(
           viewport_size, viewport_rect_for_tile_priority,
-          transform_for_tile_priority);
+          transform_for_tile_priority,
+          /*need_new_local_surface_id=*/was_evicted_);
+
+  was_evicted_ = false;
+
   blink::mojom::SynchronousCompositor* compositor = GetSynchronousCompositor();
   if (!bridge_->SetFrameFutureOnUIThread(frame_future)) {
     frame_future->SetFrame(nullptr);
@@ -226,7 +230,11 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
   blink::mojom::SyncCompositorDemandDrawHwParamsPtr params =
       blink::mojom::SyncCompositorDemandDrawHwParams::New(
           viewport_size, viewport_rect_for_tile_priority,
-          transform_for_tile_priority);
+          transform_for_tile_priority,
+          /*need_new_local_surface_id=*/was_evicted_);
+
+  was_evicted_ = false;
+
   uint32_t layer_tree_frame_sink_id;
   uint32_t metadata_version = 0u;
   base::Optional<viz::LocalSurfaceId> local_surface_id;
@@ -727,6 +735,10 @@ void SynchronousCompositorHost::AddBeginFrameCompletionCallback(
 
 void SynchronousCompositorHost::DidInvalidate() {
   invalidate_needs_draw_ = true;
+}
+
+void SynchronousCompositorHost::WasEvicted() {
+  was_evicted_ = true;
 }
 
 }  // namespace content

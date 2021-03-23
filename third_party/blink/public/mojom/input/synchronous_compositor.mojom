@@ -20,6 +20,7 @@ struct SyncCompositorDemandDrawHwParams {
   gfx.mojom.Size viewport_size;
   gfx.mojom.Rect viewport_rect_for_tile_priority;
   gfx.mojom.Transform transform_for_tile_priority;
+  bool need_new_local_surface_id;
 };
 
 struct SyncCompositorDemandDrawSwParams {
