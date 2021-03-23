@@ -137,6 +137,8 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillOfferSpecifics& proto) {
   VISIT_REP(merchant_app_package);
   VISIT(offer_expiry_date);
   VISIT(card_linked_offer_data);
+  VISIT(promo_code_offer_data);
+  VISIT(display_strings);
   VISIT(percentage_reward);
   VISIT(fixed_amount_reward);
 }
@@ -144,6 +146,19 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillOfferSpecifics& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::AutofillOfferSpecifics::CardLinkedOfferData& proto) {
   VISIT_REP(instrument_id);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AutofillOfferSpecifics::PromoCodeOfferData& proto) {
+  VISIT(promo_code);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AutofillOfferSpecifics::DisplayStrings& proto) {
+  VISIT(value_prop_text);
+  VISIT(see_details_text_mobile);
+  VISIT(see_details_text_desktop);
+  VISIT(usage_instructions_text);
 }
 
 VISIT_PROTO_FIELDS(
