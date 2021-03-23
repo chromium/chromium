@@ -1,0 +1,39 @@
+Tests that events are received properly even when we never saw the touchstart for the first finger (eg. was skipped by cc touch hit testing) - crbug.com/363321
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Sending touchstart event.
+PASS event.target is target
+PASS event.touches.length is 2
+PASS event.touches[0].identifier is 0
+FAIL event.touches[0].pageX should be 12. Was 8.
+PASS event.touches[0].pageY is 0
+PASS event.touches[0].target is document
+PASS event.touches[1].identifier is 1
+PASS event.touches[1].pageX is targetX
+PASS event.touches[1].pageY is targetY
+PASS event.touches[1].target is target
+PASS event.changedTouches.length is 1
+PASS event.changedTouches[0].identifier is 1
+PASS event.targetTouches.length is 1
+PASS event.targetTouches[0].identifier is 1
+
+
+Sending touchmove and touchend for unrelated touch point.
+
+
+Sending touchend.
+PASS event.target is target
+PASS event.touches.length is 0
+PASS event.changedTouches.length is 1
+PASS event.changedTouches[0].identifier is 1
+PASS event.changedTouches[0].pageX is targetX
+PASS event.changedTouches[0].pageY is targetY
+PASS event.changedTouches[0].target is target
+PASS event.targetTouches.length is 0
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

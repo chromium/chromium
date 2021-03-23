@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Color picker: Moving the color well's selection ring using accelerated keyboard movement. assert_equals: expected "69" but got "66"
+Harness: the test ran to completion.
+

@@ -1,0 +1,27 @@
+Tests if clicking close to a tick mark snaps to it. Result will change depending on the return value of LayoutTheme::sliderTickSnappingThreshold().
+
+value for 40 is <500
+value for 41 is <500
+value for 42 is <500
+value for 43 is <500
+value for 44 is <500
+value for 45 is <500
+value for 46 is <500
+value for 47 is =500
+value for 48 is =500
+value for 49 is =500
+value for 50 is =500
+value for 51 is =500
+value for 52 is =500
+value for 53 is =500
+value for 54 is >500
+value for 55 is >500
+value for 56 is >500
+value for 57 is >500
+value for 58 is >500
+value for 59 is >500
+value for 60 is >500
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

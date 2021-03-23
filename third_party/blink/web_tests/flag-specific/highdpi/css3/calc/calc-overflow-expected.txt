@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Do not invoke undefined behaviour when using calc()s with large pixel values assert_equals: expected "3.35544e+07px" but got "2.23696e+07px"
+PASS Do not invoke undefined behaviour when using calc()s with large percentage values
+Harness: the test ran to completion.
+

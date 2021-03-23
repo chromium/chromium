@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Scroller should continue to scroll when MT takes over scroll handling. assert_equals: div must be fully scrolled expected 315 but got 314.6666564941406
+Harness: the test ran to completion.
+

@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS .flexbox 1
+PASS .flexbox 2
+PASS .flexbox 3
+PASS .flexbox 4
+PASS .flexbox 5
+PASS .flexbox 6
+PASS .flexbox 7
+PASS .flexbox 8
+PASS .flexbox 9
+PASS .flexbox 10
+PASS .flexbox 11
+PASS .flexbox 12
+PASS .flexbox 13
+PASS .flexbox 14
+FAIL .flexbox 15 assert_equals: 
+<div class="flexbox">
+  <div data-expected-width="600" style="flex: 100000000000000000000000000000000000000 0 600px;"></div>
+  <div data-expected-width="600" style="flex: 0 100000000000000000000000000000000000000 600px;"></div>
+  <div data-expected-width="33554428" style="flex: 1 1 100000000000000000000000000000000000000px;"></div>
+</div>
+width expected 33554428 but got 22369618
+PASS .flexbox 16
+PASS .flexbox 17
+PASS .flexbox 18
+PASS .flexbox 19
+PASS .flexbox 20
+PASS .flexbox 21
+PASS .flexbox 22
+PASS .flexbox 23
+PASS .flexbox 24
+PASS .flexbox 25
+PASS .flexbox 26
+Harness: the test ran to completion.
+

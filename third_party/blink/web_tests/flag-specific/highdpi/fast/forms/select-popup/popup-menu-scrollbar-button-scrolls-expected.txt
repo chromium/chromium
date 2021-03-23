@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Scrollbar clicks in a popup must scroll assert_greater_than: expected a number greater than 0 but got 0
+Harness: the test ran to completion.
+

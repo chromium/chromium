@@ -8,8 +8,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",
       "position": [12, 12],
       "contentsOpaque": true,
-      "drawsContent": false,
-      "backgroundColor": "#FF0000"
+      "drawsContent": false
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='stacking-context'",

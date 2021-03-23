@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL This tests scroll gesture event scrolling on a whole page with browserzoom. promise_test: Unhandled rejection with value: "Reaches the maximum frames."
+Harness: the test ran to completion.
+

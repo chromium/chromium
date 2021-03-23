@@ -1,0 +1,8 @@
+: layer(1200x900) has hit test rect (12,12 174x30)
+
+: layer(1200x900) has hit test rect (15,45 81x21)
+: layer(1200x900) has hit test rect (99,45 81x21)
+
+: layer(1200x900) has hit test rect (15,72 81x21)
+
+

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Tests the basic functionality of the standard wheel event promise_test: Unhandled rejection with value: "Reaches the maximum frames."
+Harness: the test ran to completion.
+

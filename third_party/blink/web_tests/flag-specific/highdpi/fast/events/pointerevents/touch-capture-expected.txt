@@ -1,0 +1,420 @@
+Verifies that pointer capture works for touch.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+ ======= Touch and release =======
+    **** First touch on green box & jiggle ****
+green received pointerover 2
+grey received pointerenter 2
+green received pointerenter 2
+green received pointerdown 2
+green received touchstart
+green received gotpointercapture 2
+green received pointermove 2
+green received touchmove
+    **** Move to blue box & jiggle ****
+green received pointermove 2
+green received touchmove
+green received pointermove 2
+green received touchmove
+    **** Release touch ****
+green received pointerup 2
+green received lostpointercapture 2
+green received pointerout 2
+green received pointerleave 2
+grey received pointerleave 2
+green received touchend
+
+
+ ======= Touch and cancel =======
+    **** First touch on green box & jiggle ****
+green received pointerover 3
+grey received pointerenter 3
+green received pointerenter 3
+green received pointerdown 3
+green received touchstart
+green received gotpointercapture 3
+green received pointermove 3
+green received touchmove
+    **** Move to blue box & jiggle ****
+green received pointermove 3
+green received touchmove
+green received pointermove 3
+green received touchmove
+    **** Cancel touch ****
+green received pointercancel 3
+green received lostpointercapture 3
+green received pointerout 3
+green received pointerleave 3
+grey received pointerleave 3
+green received touchcancel
+
+
+ ======= Multitouch and release =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 4
+grey received pointerenter 4
+green received pointerenter 4
+green received pointerdown 4
+green received touchstart
+blue received pointerover 5
+blue received pointerenter 5
+blue received pointerdown 5
+blue received touchstart
+green received gotpointercapture 4
+green received pointermove 4
+green received touchmove
+blue received gotpointercapture 5
+blue received pointermove 5
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+green received pointermove 4
+green received touchmove
+blue received pointermove 5
+blue received touchmove
+    **** Release first touch ****
+green received pointerup 4
+green received lostpointercapture 4
+green received pointerout 4
+green received pointerleave 4
+grey received pointerleave 4
+green received touchend
+    **** Jiggle second touch on green ****
+blue received pointermove 5
+blue received touchmove
+    **** Release second touch ****
+blue received pointerup 5
+blue received lostpointercapture 5
+blue received pointerout 5
+blue received pointerleave 5
+blue received touchend
+
+
+ ======= Multitouch and cancel =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 6
+grey received pointerenter 6
+green received pointerenter 6
+green received pointerdown 6
+green received touchstart
+blue received pointerover 7
+blue received pointerenter 7
+blue received pointerdown 7
+blue received touchstart
+green received gotpointercapture 6
+green received pointermove 6
+green received touchmove
+blue received gotpointercapture 7
+blue received pointermove 7
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+green received pointermove 6
+green received touchmove
+blue received pointermove 7
+blue received touchmove
+    **** Cancel first touch ****
+green received pointercancel 6
+green received lostpointercapture 6
+green received pointerout 6
+green received pointerleave 6
+grey received pointerleave 6
+green received touchcancel
+    **** Jiggle second touch on green ****
+blue received pointermove 7
+blue received touchmove
+    **** Cancel second touch ****
+blue received pointercancel 7
+blue received lostpointercapture 7
+blue received pointerout 7
+blue received pointerleave 7
+blue received touchcancel
+
+
+ ======= Touch and release with capture release =======
+    **** First touch on green box & jiggle ****
+green received pointerover 8
+grey received pointerenter 8
+green received pointerenter 8
+green received pointerdown 8
+green received touchstart
+green received gotpointercapture 8
+green received pointermove 8
+green received touchmove
+    **** Move to blue box & jiggle ****
+green received pointermove 8
+     &&& Releasing pointer capture for 8 &&&
+green received touchmove
+green received lostpointercapture 8
+green received pointerout 8
+green received pointerleave 8
+grey received pointerleave 8
+green received touchmove
+    **** Release touch ****
+green received touchend
+
+
+ ======= Touch and cancel with capture release =======
+    **** First touch on green box & jiggle ****
+green received pointerover 9
+grey received pointerenter 9
+green received pointerenter 9
+green received pointerdown 9
+green received touchstart
+green received gotpointercapture 9
+green received pointermove 9
+green received touchmove
+    **** Move to blue box & jiggle ****
+green received pointermove 9
+     &&& Releasing pointer capture for 9 &&&
+green received touchmove
+green received lostpointercapture 9
+green received pointerout 9
+green received pointerleave 9
+grey received pointerleave 9
+green received touchmove
+    **** Cancel touch ****
+green received touchcancel
+
+
+ ======= Multitouch and release with capture release =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 10
+grey received pointerenter 10
+green received pointerenter 10
+green received pointerdown 10
+green received touchstart
+blue received pointerover 11
+blue received pointerenter 11
+blue received pointerdown 11
+blue received touchstart
+green received gotpointercapture 10
+green received pointermove 10
+green received touchmove
+blue received gotpointercapture 11
+blue received pointermove 11
+     &&& Releasing pointer capture for 11 &&&
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+green received pointermove 10
+green received touchmove
+blue received lostpointercapture 11
+blue received pointerout 11
+blue received pointerleave 11
+grey received pointerover 11
+grey received pointerenter 11
+grey received pointermove 11
+blue received touchmove
+    **** Release first touch ****
+green received pointerup 10
+green received lostpointercapture 10
+green received pointerout 10
+green received pointerleave 10
+grey received pointerleave 10
+green received touchend
+    **** Jiggle second touch on green ****
+grey received pointermove 11
+blue received touchmove
+    **** Release second touch ****
+grey received pointerup 11
+grey received pointerout 11
+grey received pointerleave 11
+blue received touchend
+
+
+ ======= Multitouch and cancel with capture release =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 12
+grey received pointerenter 12
+green received pointerenter 12
+green received pointerdown 12
+green received touchstart
+blue received pointerover 13
+blue received pointerenter 13
+blue received pointerdown 13
+blue received touchstart
+green received gotpointercapture 12
+green received pointermove 12
+green received touchmove
+blue received gotpointercapture 13
+blue received pointermove 13
+     &&& Releasing pointer capture for 13 &&&
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+green received pointermove 12
+green received touchmove
+blue received lostpointercapture 13
+blue received pointerout 13
+blue received pointerleave 13
+grey received pointerover 13
+grey received pointerenter 13
+grey received pointermove 13
+blue received touchmove
+    **** Cancel first touch ****
+green received pointercancel 12
+green received lostpointercapture 12
+green received pointerout 12
+green received pointerleave 12
+grey received pointerleave 12
+green received touchcancel
+    **** Jiggle second touch on green ****
+grey received pointermove 13
+blue received touchmove
+    **** Cancel second touch ****
+grey received pointercancel 13
+grey received pointerout 13
+grey received pointerleave 13
+blue received touchcancel
+
+
+ ======= Touch and release with capture reset =======
+    **** First touch on green box & jiggle ****
+green received pointerover 14
+grey received pointerenter 14
+green received pointerenter 14
+green received pointerdown 14
+     --- Set pointer capture to blue 14 ---
+green received touchstart
+green received pointerout 14
+green received pointerleave 14
+grey received pointerleave 14
+blue received pointerover 14
+blue received pointerenter 14
+blue received gotpointercapture 14
+blue received pointermove 14
+green received touchmove
+    **** Move to blue box & jiggle ****
+blue received pointermove 14
+green received touchmove
+blue received pointermove 14
+green received touchmove
+    **** Release touch ****
+blue received pointerup 14
+blue received lostpointercapture 14
+blue received pointerout 14
+blue received pointerleave 14
+green received touchend
+
+
+ ======= Touch and cancel with capture reset =======
+    **** First touch on green box & jiggle ****
+green received pointerover 15
+grey received pointerenter 15
+green received pointerenter 15
+green received pointerdown 15
+     --- Set pointer capture to blue 15 ---
+green received touchstart
+green received pointerout 15
+green received pointerleave 15
+grey received pointerleave 15
+blue received pointerover 15
+blue received pointerenter 15
+blue received gotpointercapture 15
+blue received pointermove 15
+green received touchmove
+    **** Move to blue box & jiggle ****
+blue received pointermove 15
+green received touchmove
+blue received pointermove 15
+green received touchmove
+    **** Cancel touch ****
+blue received pointercancel 15
+blue received lostpointercapture 15
+blue received pointerout 15
+blue received pointerleave 15
+green received touchcancel
+
+
+ ======= Multitouch and release with capture reset =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 16
+grey received pointerenter 16
+green received pointerenter 16
+green received pointerdown 16
+     --- Set pointer capture to blue 16 ---
+green received touchstart
+blue received pointerover 17
+blue received pointerenter 17
+blue received pointerdown 17
+blue received touchstart
+green received pointerout 16
+green received pointerleave 16
+grey received pointerleave 16
+blue received pointerover 16
+blue received pointerenter 16
+blue received gotpointercapture 16
+blue received pointermove 16
+green received touchmove
+blue received gotpointercapture 17
+blue received pointermove 17
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+blue received pointermove 16
+green received touchmove
+blue received pointermove 17
+blue received touchmove
+    **** Release first touch ****
+blue received pointerup 16
+blue received lostpointercapture 16
+blue received pointerout 16
+blue received pointerleave 16
+green received touchend
+    **** Jiggle second touch on green ****
+blue received pointermove 17
+blue received touchmove
+    **** Release second touch ****
+blue received pointerup 17
+blue received lostpointercapture 17
+blue received pointerout 17
+blue received pointerleave 17
+blue received touchend
+
+
+ ======= Multitouch and cancel with capture reset =======
+    **** First touch on green & second touch on blue & jiggle ****
+green received pointerover 18
+grey received pointerenter 18
+green received pointerenter 18
+green received pointerdown 18
+     --- Set pointer capture to blue 18 ---
+green received touchstart
+blue received pointerover 19
+blue received pointerenter 19
+blue received pointerdown 19
+blue received touchstart
+green received pointerout 18
+green received pointerleave 18
+grey received pointerleave 18
+blue received pointerover 18
+blue received pointerenter 18
+blue received gotpointercapture 18
+blue received pointermove 18
+green received touchmove
+blue received gotpointercapture 19
+blue received pointermove 19
+blue received touchmove
+    **** Move first touch to blue & second touch to green ****
+blue received pointermove 18
+green received touchmove
+blue received pointermove 19
+blue received touchmove
+    **** Cancel first touch ****
+blue received pointercancel 18
+blue received lostpointercapture 18
+blue received pointerout 18
+blue received pointerleave 18
+green received touchcancel
+    **** Jiggle second touch on green ****
+blue received pointermove 19
+blue received touchmove
+    **** Cancel second touch ****
+blue received pointercancel 19
+blue received lostpointercapture 19
+blue received pointerout 19
+blue received pointerleave 19
+blue received touchcancel
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,14 @@
+Test ensures that frame scroll position is not prematurely clamped and restored before load event fires.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Scroll position should not be clamped and restored while frame is loading
+PASS document.scrollingElement.scrollLeft is 0
+PASS document.scrollingElement.scrollTop is 0
+PASS document.scrollingElement.scrollLeft is 5000
+FAIL document.scrollingElement.scrollTop should be 5001. Was 5000.66650390625.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+

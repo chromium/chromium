@@ -1,0 +1,8 @@
+FAIL popupWindow.innerWidth should be 100. Was 150.
+FAIL popupWindow.innerWidth should be 150. Was 225.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+o1
+o2

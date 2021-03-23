@@ -1,0 +1,14 @@
+Make sure we don't ASSERT when the first layer is special and can't use the LayoutGeometryMap fast path - crbug.com/339141.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS rects.length is 1
+FAIL rects[0].hitTestRect.x should be -32. Was -47.
+FAIL rects[0].hitTestRect.y should be 105. Was 158.
+FAIL rects[0].hitTestRect.width should be 864. Was 1294.
+FAIL rects[0].hitTestRect.height should be 21. Was 31.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Foo

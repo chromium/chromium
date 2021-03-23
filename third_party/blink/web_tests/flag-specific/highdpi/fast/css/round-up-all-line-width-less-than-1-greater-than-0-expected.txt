@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that chrome rounds up all borders/outlines when they are less than 1px but greater than 0px. assert_equals: expected "1px" but got "0.666667px"
+Harness: the test ran to completion.
+

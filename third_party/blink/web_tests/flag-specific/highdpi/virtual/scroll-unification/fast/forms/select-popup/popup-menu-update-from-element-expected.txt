@@ -1,0 +1,19 @@
+PASS picker._selectElement.style.color is "rgb(123, 0, 0)"
+PASS picker._selectElement.options[0].style.color is ""
+PASS picker._selectElement.value is "0"
+PASS picker._selectElement.value is "1"
+PASS picker._selectElement.value is "1"
+PASS picker._selectElement.options.length is 2
+PASS picker._selectElement.children[0].label is "FOO"
+PASS picker._selectElement.children[1].label is "BAR"
+PASS picker._selectElement.children[2].tagName is "OPTGROUP"
+PASS picker._selectElement.children[2].label is "BAZ"
+PASS picker._selectElement.value is "1"
+FAIL picker._selectElement.value should be 2. Was 1.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+FOO
+BAR
+QUX

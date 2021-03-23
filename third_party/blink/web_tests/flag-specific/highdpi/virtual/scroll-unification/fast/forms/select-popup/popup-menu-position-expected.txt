@@ -1,0 +1,18 @@
+PASS popupWindowRect.x is 0
+PASS popupWindowRect.y is menuHeight
+FAIL popupWindowRect.x should be 200. Was 300.
+FAIL popupWindowRect.y should be 386. Was 421.
+PASS popupWindowRect.x is screenWidth - 100
+PASS popupWindowRect.y is menuHeight
+PASS popupWindowRect.x is 0
+PASS popupWindowRect.y is menuHeight
+FAIL popupWindowRect.x should be 240. Was 290.
+PASS popupWindowRect.y is menuHeight
+PASS popupWindowRect.x is 0
+FAIL popupWindowRect.y should be 196. Was 264.
+PASS popupWindowRect.x is 100 - menuWidth * 0.1
+PASS popupWindowRect.y is 100 + menuHeight * 1.1
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

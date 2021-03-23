@@ -1,0 +1,35 @@
+FAIL window.innerWidth should be 800. Was 533.
+FAIL window.innerHeight should be 600. Was 400.
+FAIL getComputedStyle(test).fontSize should be 30px. Was 20px.
+FAIL getComputedStyle(test).width should be 400px. Was 266.667px.
+FAIL getComputedStyle(testpseudo, ':after').marginLeft should be 120px. Was 80px.
+FAIL getComputedStyle(testshadow).borderRightWidth should be 80px. Was 53.3333px.
+FAIL window.innerWidth should be 900. Was 600.
+FAIL window.innerHeight should be 600. Was 400.
+FAIL getComputedStyle(test).fontSize should be 30px. Was 20px.
+FAIL getComputedStyle(test).width should be 450px. Was 300px.
+FAIL getComputedStyle(testpseudo, ':after').marginLeft should be 120px. Was 80px.
+FAIL getComputedStyle(testshadow).borderRightWidth should be 90px. Was 60px.
+FAIL window.innerWidth should be 900. Was 600.
+FAIL window.innerHeight should be 640. Was 427.
+FAIL getComputedStyle(test).fontSize should be 32px. Was 21.3333px.
+FAIL getComputedStyle(test).width should be 450px. Was 300px.
+FAIL getComputedStyle(testpseudo, ':after').marginLeft should be 128px. Was 85.3333px.
+FAIL getComputedStyle(testshadow).borderRightWidth should be 90px. Was 60px.
+FAIL window.innerWidth should be 500. Was 333.
+FAIL window.innerHeight should be 640. Was 427.
+FAIL getComputedStyle(test).fontSize should be 32px. Was 21.3333px.
+FAIL getComputedStyle(test).width should be 250px. Was 166.667px.
+FAIL getComputedStyle(testpseudo, ':after').marginLeft should be 100px. Was 66.6667px.
+FAIL getComputedStyle(testshadow).borderRightWidth should be 64px. Was 42.6667px.
+FAIL window.innerWidth should be 800. Was 533.
+FAIL window.innerHeight should be 600. Was 400.
+FAIL getComputedStyle(test).fontSize should be 30px. Was 20px.
+FAIL getComputedStyle(test).width should be 400px. Was 266.667px.
+FAIL getComputedStyle(testpseudo, ':after').marginLeft should be 120px. Was 80px.
+FAIL getComputedStyle(testshadow).borderRightWidth should be 80px. Was 53.3333px.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+This test of viewport units and resizing depends on window.resizeTo.

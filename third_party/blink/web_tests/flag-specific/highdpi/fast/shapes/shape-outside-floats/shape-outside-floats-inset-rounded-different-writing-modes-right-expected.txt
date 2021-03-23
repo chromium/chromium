@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS 1st square doesn't overlap shape.
+FAIL 2nd square is properly affected by shape. assert_approx_equals: expected 97 +/- 0.5 but got 97.69792175292969
+PASS 3rd square is properly affected by shape.
+PASS 4th square is properly affected by shape.
+PASS 5th square is properly affected by shape.
+PASS 6th square is properly affected by shape.
+PASS 7th square is properly affected by shape.
+PASS 8th square is properly affected by shape.
+FAIL 9th square is properly affected by shape. assert_approx_equals: expected 92 +/- 0.5 but got 92.66667175292969
+PASS 10th square is properly affected by shape.
+PASS 11th square is properly affected by shape.
+PASS 12th square doesn't overlap shape.
+Harness: the test ran to completion.
+

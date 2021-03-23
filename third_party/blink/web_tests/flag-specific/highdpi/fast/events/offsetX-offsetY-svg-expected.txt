@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL MouseEvent.offsetX/offsetY for an SVG element is always relative to the outermost <svg> CSS layout box assert_equals: offsetX expected 80 but got 71
+Harness: the test ran to completion.
+

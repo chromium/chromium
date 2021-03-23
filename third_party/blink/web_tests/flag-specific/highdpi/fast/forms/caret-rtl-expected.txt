@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL This tests that clicking in a contenteditable div will set the caret in the right edge of the div assert_equals: expected "(207,8)+1x320" but got "(310,12)+2x480"
+Harness: the test ran to completion.
+

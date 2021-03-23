@@ -1,123 +1,27 @@
  
-FAIL:
-Expected 134 for width, but got 133. 
-
-<div class="table" data-expected-width="134">
-    <div class="td" data-expected-width="114">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 80 for width, but got 79. 
-
-<div class="table" style="width: min-content" data-expected-width="80">
-    <div class="td" data-expected-width="60">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 134 for width, but got 133. 
-
-<div class="table" style="width: max-content" data-expected-width="134">
-    <div class="td" data-expected-width="114">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 134 for width, but got 133. 
-
-<div class="table" style="width: fit-content" data-expected-width="134">
-    <div class="td" data-expected-width="114">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 134 for width, but got 133. 
-
-<div class="table" style="width: fit-content" data-expected-width="134">
-        <div class="td" data-expected-width="114">
-            <div class="child"></div>
-            <div class="child"></div>
-        </div>
-    </div>
+PASS
  
-FAIL:
-Expected 113 for width, but got 114. 
-
-<div class="table" style="width: fit-content" data-expected-width="133">
-        <div class="td" data-expected-width="113">
-            <div class="child"></div>
-            <div class="child"></div>
-        </div>
-    </div>
+PASS
  
-FAIL:
-Expected 380 for width, but got 381. 
-
-<div class="table" style="width: -webkit-fill-available" data-expected-width="400">
-        <div class="td" data-expected-width="380">
-            <div class="child"></div>
-            <div class="child"></div>
-        </div>
-    </div>
+PASS
  
-FAIL:
-Expected 114 for width, but got 113. 
-
-<div class="table collapse" data-expected-width="114">
-    <div class="td" data-expected-width="109">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 60 for width, but got 59. 
-
-<div class="table collapse" style="width: min-content" data-expected-width="60">
-    <div class="td" data-expected-width="55">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 114 for width, but got 113. 
-
-<div class="table collapse" style="width: max-content" data-expected-width="114">
-    <div class="td" data-expected-width="109">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 114 for width, but got 113. 
-
-<div class="table collapse" style="width: fit-content" data-expected-width="114">
-    <div class="td" data-expected-width="109">
-        <div class="child"></div>
-        <div class="child"></div>
-    </div>
-</div>
+PASS
  
-FAIL:
-Expected 114 for width, but got 113. 
-
-<div class="table collapse" style="width: fit-content" data-expected-width="114">
-        <div class="td" data-expected-width="109">
-            <div class="child"></div>
-            <div class="child"></div>
-        </div>
-    </div>
+PASS
  
 PASS
  

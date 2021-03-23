@@ -27,6 +27,9 @@
       "name": "Scroll Corner Layer",
       "position": [428, 428],
       "bounds": [22, 22],
+      "invalidations": [
+        [0, 0, 22, 22]
+      ],
       "transform": 1
     }
   ],

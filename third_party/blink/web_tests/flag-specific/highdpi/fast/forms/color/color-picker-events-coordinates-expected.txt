@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Color picker: Mouse and touch events should produce the same values. assert_equals: values should be the same for both touch and mouse events expected "#3b5763" but got "#718c98"
+Harness: the test ran to completion.
+

@@ -9,6 +9,9 @@
     {
       "name": "Scrolling Contents Layer",
       "bounds": [428, 1578],
+      "invalidations": [
+        [12, 39, 389, 54]
+      ],
       "transform": 1
     },
     {

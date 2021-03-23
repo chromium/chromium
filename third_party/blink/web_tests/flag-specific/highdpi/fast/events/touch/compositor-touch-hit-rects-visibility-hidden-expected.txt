@@ -1,0 +1,25 @@
+: no rects
+
+: no rects
+
+: layer(1178x1677) has hit test rect (20,330 63x63)
+
+: layer(1178x1749) has hit test rect (20,488 153x153)
+
+: no rects
+
+: layer(1178x1869) has hit test rect (12,798 150x150)
+
+: no rects
+
+: layer(1178x1989) has hit test rect (15,1107 144x150)
+
+: no rects
+
+: layer(1178x2109) has hit test rect (180,1260 153x153)
+
+: no rects
+
+: layer(1178x2229) has hit test rect (177,1416 150x150)
+
+

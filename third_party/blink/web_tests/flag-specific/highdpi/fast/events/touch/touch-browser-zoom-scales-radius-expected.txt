@@ -1,0 +1,21 @@
+This tests makes sure the touch event's radius property is scaled to account for browser zoom.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+===Initial Zoom===
+FAIL radiusX should be 4. Was 2.6666667461395264.
+FAIL radiusY should be 10. Was 6.6666669845581055.
+===Zoom 2X===
+FAIL radiusX should be 2. Was 1.3333333730697632.
+FAIL radiusY should be 5. Was 3.3333334922790527.
+===Zoom 0.5X===
+FAIL radiusX should be 8. Was 5.333333492279053.
+FAIL radiusY should be 20. Was 13.333333969116211.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

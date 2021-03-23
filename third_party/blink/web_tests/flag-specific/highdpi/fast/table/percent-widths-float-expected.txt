@@ -1,0 +1,11 @@
+	
+	
+
+crbug.com/476370: Test cells get appropriate width when we use fractional percentage values.
+
+PASS
+FAIL:
+Expected 42 for width, but got 41. 
+
+<td id="blue" data-expected-width="42"><div></div></td>
+PASS
