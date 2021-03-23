@@ -46,6 +46,7 @@ const struct {
     {"delete_confirmation_msg", IDS_DELETE_CONFIRMATION_MSG},
     {"switch_take_photo_button", IDS_SWITCH_TAKE_PHOTO_BUTTON},
     {"label_switch_take_photo_button", IDS_LABEL_SWITCH_TAKE_PHOTO_BUTTON},
+    {"open_ptz_panel_button", IDS_OPEN_PTZ_PANEL_BUTTON},
     {"toggle_grid_button", IDS_TOGGLE_GRID_BUTTON},
     {"take_photo_button", IDS_TAKE_PHOTO_BUTTON},
     {"error_msg_no_camera", IDS_ERROR_MSG_NO_CAMERA},

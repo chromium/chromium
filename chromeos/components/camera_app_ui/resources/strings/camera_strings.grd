@@ -173,6 +173,9 @@
       <message desc="Label for the exporting button." name="IDS_EXPORT_BUTTON">
         Export to disk
       </message>
+      <message desc="Label for the button to open pan tilt zoom control panel" name="IDS_OPEN_PTZ_PANEL_BUTTON">
+        Pan tilt zoom
+      </message>
       <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
         3 seconds timer
       </message>
