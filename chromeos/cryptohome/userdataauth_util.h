@@ -6,12 +6,20 @@
 #define CHROMEOS_CRYPTOHOME_USERDATAAUTH_UTIL_H_
 
 #include "base/component_export.h"
+#include "base/optional.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace user_data_auth {
+
+// Returns a MountError code from |reply|, returning MOUNT_ERROR_NONE
+// if the reply is well-formed and there is no error.
+template <typename ReplyType>
+COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
+cryptohome::MountError
+    ReplyToMountError(const base::Optional<ReplyType>& reply);
 
 // Converts user_data_auth::CryptohomeErrorCode to cryptohome::MountError.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)

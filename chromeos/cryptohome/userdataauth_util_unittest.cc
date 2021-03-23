@@ -8,6 +8,25 @@
 
 namespace user_data_auth {
 
+TEST(UserDataAuthUtilTest, ReplyToMountErrorNullOptional) {
+  const base::Optional<RemoveReply> reply = base::nullopt;
+  EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_FATAL);
+}
+
+TEST(UserDataAuthUtilTest, ReplyToMountErrorNoError) {
+  RemoveReply result;
+  result.set_error(CRYPTOHOME_ERROR_NOT_SET);
+  const base::Optional<RemoveReply> reply = std::move(result);
+  EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_NONE);
+}
+
+TEST(UserDataAuthUtilTest, BaseReplyToMountErrorAuthFailure) {
+  RemoveReply result;
+  result.set_error(CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
+  const base::Optional<RemoveReply> reply = std::move(result);
+  EXPECT_EQ(ReplyToMountError(reply), cryptohome::MOUNT_ERROR_KEY_FAILURE);
+}
+
 TEST(UserDataAuthUtilTest, CryptohomeErrorToMountError) {
   // Test a few commonly seen input output pair.
   EXPECT_EQ(CryptohomeErrorToMountError(CRYPTOHOME_ERROR_NOT_SET),

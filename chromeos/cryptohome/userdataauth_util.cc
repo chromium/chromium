@@ -4,9 +4,48 @@
 
 #include "chromeos/cryptohome/userdataauth_util.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace user_data_auth {
+
+namespace {
+
+template <typename ReplyType>
+bool IsEmpty(const base::Optional<ReplyType>& reply) {
+  if (!reply.has_value()) {
+    LOGIN_LOG(ERROR) << "Cryptohome call failed with empty reply.";
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+template <typename ReplyType>
+cryptohome::MountError ReplyToMountError(
+    const base::Optional<ReplyType>& reply) {
+  if (IsEmpty(reply)) {
+    return cryptohome::MOUNT_ERROR_FATAL;
+  }
+
+  return CryptohomeErrorToMountError(reply->error());
+}
+
+// Instantiate ReplyToMountError and export them for types actually used.
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<RemoveReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<UnmountReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<RenameReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<MountReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<MigrateKeyReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+    ReplyToMountError(const base::Optional<GetKeyDataReply>&);
 
 // TODO(crbug.com/797848): Finish testing this method.
 cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
