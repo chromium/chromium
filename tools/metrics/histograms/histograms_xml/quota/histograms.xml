@@ -257,6 +257,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
+    expires_after="2022-03-18">
+  <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Whether base::SysInfo::AmountOfTotalDiskSpace() returned zero or a negative
+    number to the quota system. Logged whenever something is pinging the system
+    for quota or device info.
+  </summary>
+</histogram>
+
 <histogram name="Quota.UsageByOrigin" units="MB" expires_after="2021-07-03">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
