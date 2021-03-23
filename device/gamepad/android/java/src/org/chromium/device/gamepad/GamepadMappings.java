@@ -32,13 +32,14 @@ abstract class GamepadMappings {
     static final String AMAZON_FIRE_DEVICE_NAME = "Amazon Fire Game Controller";
 
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_VENDOR_ID = 1356;
+    static final int SONY_VENDOR_ID = 0x054c;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_PRODUCT_ID = 1476;
+    static final int PS_DUALSHOCK_4_PRODUCT_ID = 0x05c4;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_SLIM_PRODUCT_ID = 2508;
+    static final int PS_DUALSHOCK_4_SLIM_PRODUCT_ID = 0x09cc;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID = 2976;
+    static final int PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID = 0x0ba0;
+    static final int PS_DUAL_SENSE_PRODUCT_ID = 0x0ce6;
 
     @VisibleForTesting
     static final int MICROSOFT_VENDOR_ID = 0x045e;
@@ -67,19 +68,25 @@ abstract class GamepadMappings {
 
     @VisibleForTesting
     static GamepadMappings getMappings(int vendorId, int productId, int[] axes) {
-        // Device name of a DualShock 4 gamepad is "Wireless Controller". This is not reliably
-        // unique so we better go by the product and vendor ids.
-        if (vendorId == PS_DUALSHOCK_4_VENDOR_ID
-                && (productId == PS_DUALSHOCK_4_PRODUCT_ID
-                           || productId == PS_DUALSHOCK_4_SLIM_PRODUCT_ID
-                           || productId == PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID)) {
-            // Android 9 included improvements for Sony PlayStation gamepads that changed the
-            // KeyEvent and MotionEvent codes for some buttons and axes. Use an alternate mapping
-            // for versions of Android that include these improvements.
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                return new XboxCompatibleGamepadMappings();
+        if (vendorId == SONY_VENDOR_ID) {
+            if (productId == PS_DUALSHOCK_4_PRODUCT_ID
+                    || productId == PS_DUALSHOCK_4_SLIM_PRODUCT_ID
+                    || productId == PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID) {
+                // Android 9 included improvements for PS3 and PS4 gamepads that changed the
+                // KeyEvent and MotionEvent codes for some buttons and axes. Use an alternate
+                // mapping for versions of Android that include these improvements.
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    return new XboxCompatibleGamepadMappings();
+                }
+                return new Ps4Ps5GamepadMappings();
             }
-            return new Dualshock4GamepadMappingsPreP();
+            if (productId == PS_DUAL_SENSE_PRODUCT_ID) {
+                // Android 12 includes a new driver for PS5 gamepads. Use an alternate mapping for
+                // versions of Android without this driver.
+                if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                    return new Ps4Ps5GamepadMappings();
+                }
+            }
         }
         if (vendorId == MICROSOFT_VENDOR_ID) {
             // Microsoft released a firmware update for the Xbox One S gamepad that modified the
@@ -509,15 +516,16 @@ abstract class GamepadMappings {
         }
     }
 
-    static class Dualshock4GamepadMappingsPreP extends GamepadMappings {
+    static class Ps4Ps5GamepadMappings extends GamepadMappings {
         // Scale input from [-1, 1] to [0, 1] uniformly.
         private static float scaleRxRy(float input) {
             return 1.f - ((1.f - input) / 2.f);
         }
 
         /**
-         * Method for mapping DualShock 4 gamepad inputs to standard gamepad button and axis values.
-         * This mapping function should only be used on Android 9 and earlier.
+         * Method for mapping DualShock 4 and DualSense gamepad inputs to standard gamepad button
+         * and axis values. This mapping function should only be used for DualShock 4 on Android 9
+         * and earlier and DualSense on Android 11 and earlier.
          */
         @Override
         public void mapToStandardGamepad(

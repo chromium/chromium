@@ -371,9 +371,8 @@ public class GamepadMappingsTest {
                     MotionEvent.AXIS_RX, MotionEvent.AXIS_RY, MotionEvent.AXIS_RZ,
                     MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_HAT_Y};
         }
-        GamepadMappings mappings =
-                GamepadMappings.getMappings(GamepadMappings.PS_DUALSHOCK_4_VENDOR_ID,
-                        GamepadMappings.PS_DUALSHOCK_4_PRODUCT_ID, axes);
+        GamepadMappings mappings = GamepadMappings.getMappings(
+                GamepadMappings.SONY_VENDOR_ID, GamepadMappings.PS_DUALSHOCK_4_PRODUCT_ID, axes);
         mappings.mapToStandardGamepad(mMappedAxes, mMappedButtons, mRawAxes, mRawButtons);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
