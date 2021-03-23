@@ -644,6 +644,7 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
   // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
   bool IsKnownRoot(const ParsedCertificate* cert) override {
     HashValue cert_hash(CalculateFingerprint256(cert->der_cert()));
+    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     return net::IsKnownRoot(cert_hash);
   }
 
@@ -686,6 +687,7 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
   bool IsKnownRoot(const ParsedCertificate* cert) override {
     HashValue cert_hash(CalculateFingerprint256(cert->der_cert()));
+    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     return net::IsKnownRoot(cert_hash);
   }
 

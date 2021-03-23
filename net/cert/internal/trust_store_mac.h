@@ -130,8 +130,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   class TrustImplNoCache;
   class TrustImplMRUCache;
 
-  FRIEND_TEST_ALL_PREFIXES(TrustStoreMacTest, MultiRootNotTrusted);
-  FRIEND_TEST_ALL_PREFIXES(TrustStoreMacTest, SystemCerts);
+  FRIEND_TEST_ALL_PREFIXES(TrustStoreMacImplTest, MultiRootNotTrusted);
 
   // Finds certificates in the OS keychains whose Subject matches |name_data|.
   // The result is an array of SecCertificateRef.

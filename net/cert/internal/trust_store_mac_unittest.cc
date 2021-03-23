@@ -15,6 +15,7 @@
 #include "crypto/mac_security_services_lock.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/test_helpers.h"
+#include "net/cert/known_roots_mac.h"
 #include "net/cert/pem.h"
 #include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/x509_certificate.h"
@@ -102,10 +103,13 @@ class DebugData : public base::SupportsUserData {
 
 }  // namespace
 
+class TrustStoreMacImplTest
+    : public testing::TestWithParam<TrustStoreMac::TrustImplType> {};
+
 // Test the trust store using known test certificates in a keychain.  Tests
 // that issuer searching returns the expected certificates, and that none of
 // the certificates are trusted.
-TEST(TrustStoreMacTest, MultiRootNotTrusted) {
+TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   std::unique_ptr<TestKeychainSearchList> test_keychain_search_list(
       TestKeychainSearchList::Create());
   ASSERT_TRUE(test_keychain_search_list);
@@ -121,9 +125,7 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
   ASSERT_TRUE(keychain);
   test_keychain_search_list->AddKeychain(keychain);
 
-  TrustStoreMac trust_store(kSecPolicyAppleSSL,
-                            TrustStoreMac::TrustImplType::kDomainCache,
-                            kDefaultCacheSize);
+  TrustStoreMac trust_store(kSecPolicyAppleSSL, GetParam(), kDefaultCacheSize);
 
   scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
       f_by_e, d_by_d, e_by_e;
@@ -210,13 +212,23 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
     DebugData debug_data;
     trust_store.GetTrust(cert.get(), &trust, &debug_data);
     EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
-    // Certs without trust settings should not add debug info to debug_data.
-    EXPECT_FALSE(TrustStoreMac::ResultDebugData::Get(&debug_data));
+    if (GetParam() == TrustStoreMac::TrustImplType::kDomainCache) {
+      // For TrustImplDomainCache, certs without trust settings should not add
+      // debug info to debug_data.
+      EXPECT_FALSE(TrustStoreMac::ResultDebugData::Get(&debug_data));
+    } else {
+      // TrustImplNoCache and TrustImpleMRUCache always set debug info, the
+      // combined_trust_debug_info should be 0 since no trust records should
+      // exist for these test certs.
+      const TrustStoreMac::ResultDebugData* trust_debug_data =
+          TrustStoreMac::ResultDebugData::Get(&debug_data);
+      ASSERT_TRUE(trust_debug_data);
+      EXPECT_EQ(0, trust_debug_data->combined_trust_debug_info());
+      EXPECT_EQ(GetParam(), trust_debug_data->trust_impl());
+    }
+    EXPECT_FALSE(trust_store.IsKnownRoot(cert.get()));
   }
 }
-
-class TrustStoreMacImplTest
-    : public testing::TestWithParam<TrustStoreMac::TrustImplType> {};
 
 // Test against all the certificates in the default keychains. Confirms that
 // the computed trust value matches that of SecTrustEvaluate.
@@ -335,6 +347,11 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         // The impl that was used should be specified in the debug data.
         EXPECT_EQ(GetParam(), trust_debug_data->trust_impl());
       }
+    }
+    bool trust_store_is_known_root = trust_store.IsKnownRoot(cert.get());
+    {
+      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      EXPECT_EQ(net::IsKnownRoot(cert_handle), trust_store_is_known_root);
     }
   }
 }
