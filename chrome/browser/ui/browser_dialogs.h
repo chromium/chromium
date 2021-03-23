@@ -84,7 +84,8 @@ void HideTaskManager();
 // to do so, i.e. before OnDialogClosed() is called on the delegate.
 gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
                                 content::BrowserContext* context,
-                                ui::WebDialogDelegate* delegate);
+                                ui::WebDialogDelegate* delegate,
+                                bool show = true);
 
 // Shows the create chrome app shortcut dialog box.
 // |close_callback| may be null.

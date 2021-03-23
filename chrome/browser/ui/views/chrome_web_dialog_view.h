@@ -24,7 +24,8 @@ gfx::NativeWindow ShowWebDialogWithParams(
     gfx::NativeView parent,
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
-    base::Optional<views::Widget::InitParams> extra_params);
+    base::Optional<views::Widget::InitParams> extra_params,
+    bool show = true);
 
 }  // namespace chrome
 

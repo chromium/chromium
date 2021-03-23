@@ -11,6 +11,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/webui/feedback/feedback_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,8 +47,9 @@ void FeedbackDialog::CreateOrShow(
   }
 
   current_instance_ = new FeedbackDialog(info);
-  gfx::NativeWindow window = chrome::ShowWebDialog(
-      nullptr, ProfileManager::GetActiveUserProfile(), current_instance_);
+  gfx::NativeWindow window =
+      chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
+                            current_instance_, /*show=*/false);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
 }
 
@@ -86,7 +88,9 @@ void FeedbackDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 void FeedbackDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {}
+    std::vector<WebUIMessageHandler*>* handlers) const {
+  handlers->push_back(new FeedbackHandler(this));
+}
 
 // The feedbackInfo will be available to JS via
 // chrome.getVariableValue('dialogArguments')
@@ -95,14 +99,13 @@ std::string FeedbackDialog::GetDialogArgs() const {
   base::JSONWriter::Write(*feedbackInfo_, &data);
   return data;
 }
-void FeedbackDialog::OnWebContentsFinishedLoad() {
-  if (this->widget_->IsVisible())
-    this->widget_->Hide();
-}
 
-void FeedbackDialog::OnMainFrameResourceLoadComplete(
-    const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  this->widget_->Show();
+void FeedbackDialog::Show() const {
+  // The widget_ is set to null when the FeedbackDialog is constructed.
+  // After the following two function calls, it is finally initialized.
+  // Therefore, it is safer to check whether the widget_ is null
+  if (this->widget_)
+    this->widget_->Show();
 }
 
 void FeedbackDialog::RequestMediaAccessPermission(

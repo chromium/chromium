@@ -25,6 +25,9 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   FeedbackDialog& operator=(const FeedbackDialog&) = delete;
   ~FeedbackDialog() override;
 
+  // Show this web dialog
+  void Show() const;
+
  private:
   explicit FeedbackDialog(
       const extensions::api::feedback_private::FeedbackInfo& info);
@@ -42,9 +45,6 @@ class FeedbackDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
   ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
-  void OnWebContentsFinishedLoad() override;
-  void OnMainFrameResourceLoadComplete(
-      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

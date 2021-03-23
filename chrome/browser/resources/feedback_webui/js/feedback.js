@@ -105,6 +105,11 @@ class FeedbackHelper {
           }
         });
   }
+
+  // Send a message to show the WebDialog
+  showDialog() {
+    chrome.send('showDialog');
+  }
 }
 
 /**
@@ -487,7 +492,7 @@ function initialize() {
         resizeAppWindow();
       });
 
-      window.focus();
+      feedbackHelper.showDialog();
 
       // Allow feedback to be sent even if the screenshot failed.
       if (!screenshotCanvas) {
