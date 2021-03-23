@@ -843,6 +843,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
         ],
+        # TODO(crbug.com/1137474): Revisit the shard number once failed tests
+        # are fixed.
+        'swarming': {
+          'shards': 30,
+        },
       },
       'android-arm64-proguard-rel': {
         'swarming': {
@@ -1149,8 +1154,10 @@
         ],
       },
       'android-11-x86-fyi-rel': {
+        # TODO(crbug.com/1137474): Revisit the shard number once failed tests
+        # are fixed.
         'swarming': {
-          'shards': 20,
+          'shards': 30,
         },
       },
       'android-arm64-proguard-rel': {
