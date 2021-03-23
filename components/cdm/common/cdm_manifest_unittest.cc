@@ -76,7 +76,7 @@ base::Value MakeListValue(const std::string& item1, const std::string& item2) {
 // Create a default manifest with valid values for all entries.
 base::Value DefaultManifest() {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(kCdmCodecsListName, "vp8,vp09,av01");
+  dict.SetStringKey(kCdmCodecsListName, "vp8,vp9.0,av01");
   dict.SetBoolKey(kCdmPersistentLicenseSupportName, true);
   dict.SetKey(kCdmSupportedEncryptionSchemesName,
               MakeListValue("cenc", "cbcs"));
@@ -215,9 +215,17 @@ TEST(CdmManifestTest, ManifestCodecs) {
   }
   {
     CdmCapability capability;
+    manifest.SetStringKey(kCdmCodecsListName, "vp9.0");
+    EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
+    CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP9});
+    EXPECT_FALSE(capability.supports_vp9_profile2);
+  }
+  {
+    CdmCapability capability;
     manifest.SetStringKey(kCdmCodecsListName, "vp09");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecVP9});
+    EXPECT_TRUE(capability.supports_vp9_profile2);
   }
   {
     CdmCapability capability;
@@ -236,18 +244,13 @@ TEST(CdmManifestTest, ManifestCodecs) {
   {
     // Try list of everything (except proprietary codecs).
     CdmCapability capability;
-    manifest.SetStringKey(kCdmCodecsListName, "vp8,vp09,av01");
+    manifest.SetStringKey(kCdmCodecsListName, "vp8,vp9.0,vp09,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
+    // Note that kCodecVP9 is returned twice in the list.
     CheckCodecs(capability.video_codecs,
                 {media::VideoCodec::kCodecVP8, media::VideoCodec::kCodecVP9,
-                 media::VideoCodec::kCodecAV1});
-  }
-  {
-    // Empty codecs list result in empty list.
-    CdmCapability capability;
-    manifest.SetStringKey(kCdmCodecsListName, "");
-    EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {});
+                 media::VideoCodec::kCodecVP9, media::VideoCodec::kCodecAV1});
+    EXPECT_TRUE(capability.supports_vp9_profile2);
   }
   {
     // Note that invalid codec values are simply skipped.
@@ -255,14 +258,6 @@ TEST(CdmManifestTest, ManifestCodecs) {
     manifest.SetStringKey(kCdmCodecsListName, "invalid,av01");
     EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
     CheckCodecs(capability.video_codecs, {media::VideoCodec::kCodecAV1});
-  }
-  {
-    // Legacy: "vp9.0" was used to support VP9 profile 0 (no profile 2 support).
-    // Now this has been deprecated and "vp9.0" becomes an invalid codec value.
-    CdmCapability capability;
-    manifest.SetStringKey(kCdmCodecsListName, "vp9.0");
-    EXPECT_TRUE(ParseCdmManifest(manifest, &capability));
-    CheckCodecs(capability.video_codecs, {});
   }
   {
     // Wrong types are an error.
