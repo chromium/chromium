@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -32,10 +31,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/scoped_lacros_chrome_service_test_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
@@ -235,11 +230,6 @@ class WebRequestRulesRegistryTest : public testing::Test {
   // |extension2_|.
   scoped_refptr<Extension> extension_;
   scoped_refptr<Extension> extension2_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::ScopedLacrosChromeServiceTestHelper
-      scoped_lacros_chrome_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 void WebRequestRulesRegistryTest::SetUp() {
