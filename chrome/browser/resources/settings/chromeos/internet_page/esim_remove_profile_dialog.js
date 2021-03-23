@@ -76,7 +76,13 @@ Polymer({
    * @private
    */
   onRemoveProfileTap_(event) {
-    this.esimProfileRemote_.uninstallProfile();
+    this.esimProfileRemote_.uninstallProfile().then((response) => {
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+        this.fire(
+            'show-error-toast', this.i18n('eSimRemoveProfileDialogError'));
+      }
+    });
     this.$.dialog.close();
     const params = new URLSearchParams;
     params.append(

@@ -12,6 +12,7 @@
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
@@ -114,6 +115,9 @@ suite('EsimRemoveProfileDialog', function() {
     foundProfile.setEsimOperationResultForTest(
         chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
 
+    const showErrorToastPromise =
+        test_util.eventToPromise('show-error-toast', esimRemoveProfileDialog);
+
     const removeBtn = esimRemoveProfileDialog.$$('#remove');
     assertTrue(!!removeBtn);
 
@@ -132,6 +136,11 @@ suite('EsimRemoveProfileDialog', function() {
     assertEquals(
         'type=Cellular',
         settings.Router.getInstance().getQueryParameters().toString());
+
+    const showErrorToastEvent = await showErrorToastPromise;
+    assertEquals(
+        showErrorToastEvent.detail,
+        esimRemoveProfileDialog.i18n('eSimRemoveProfileDialogError'));
   });
 
   test('Warning message visibility', function() {

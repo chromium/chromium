@@ -189,6 +189,7 @@
     <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
       <esim-remove-profile-dialog id="esimRemoveProfileDialog"
           on-close="onCloseESimRemoveProfileDialog_"
+          on-show-error-toast="onShowErrorToast_"
           network-state="[[eSimNetworkState_]]"
           show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-remove-profile-dialog>
