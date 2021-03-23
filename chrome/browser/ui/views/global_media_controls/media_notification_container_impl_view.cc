@@ -109,6 +109,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       service_(service),
       is_cros_(theme.has_value()),
       entry_point_(entry_point) {
+  DCHECK(item);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
@@ -153,13 +154,13 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   // Compute a few things related to |item| before the construction of |view|
   // below moves it.
   const bool is_cast_notification =
-      item && item->SourceType() == media_message_center::SourceType::kCast;
+      item->SourceType() == media_message_center::SourceType::kCast;
   auto* const cast_item =
       is_cast_notification ? static_cast<CastMediaNotificationItem*>(item.get())
                            : nullptr;
   const bool is_local_media_session =
-      item && item->SourceType() ==
-                  media_message_center::SourceType::kLocalMediaSession;
+      item->SourceType() ==
+      media_message_center::SourceType::kLocalMediaSession;
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
@@ -174,27 +175,20 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
         std::u16string(), kWidth, /*should_show_icon=*/false, theme);
     SetPreferredSize(kNormalSize);
   }
-
   view_ = swipeable_container_->AddChildView(std::move(view));
+
+  // Show a stop cast button for cast notifications.
   if (is_cast_notification &&
       media_router::GlobalMediaControlsCastStartStopEnabled()) {
     AddStopCastButton(cast_item);
   }
 
-  if (is_local_media_session &&
-      (base::FeatureList::IsEnabled(
-           media::kGlobalMediaControlsSeamlessTransfer) ||
-       media_router::GlobalMediaControlsCastStartStopEnabled())) {
-    auto cast_controller =
-        media_router::GlobalMediaControlsCastStartStopEnabled()
-            ? service_->CreateCastDialogControllerForSession(id_)
-            : nullptr;
-    auto device_selector_view =
-        std::make_unique<MediaNotificationDeviceSelectorView>(
-            this, std::move(cast_controller), audio_sink_id_, foreground_color_,
-            background_color_, entry_point_);
-    device_selector_view_ = AddChildView(std::move(device_selector_view));
-    view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
+  // Show a device selector view for media and supplemental notifications.
+  if (!is_cast_notification &&
+      (media_router::GlobalMediaControlsCastStartStopEnabled() ||
+       base::FeatureList::IsEnabled(
+           media::kGlobalMediaControlsSeamlessTransfer))) {
+    AddDeviceSelectorView(is_local_media_session);
   }
 
   ForceExpandedState();
@@ -526,6 +520,24 @@ void MediaNotificationContainerImplView::AddStopCastButton(
       views::CreateRoundedRectBorder(1, kStopCastButtonStripSize.height() / 2,
                                      foreground_color_),
       kStopCastButtonBorderInsets));
+}
+
+void MediaNotificationContainerImplView::AddDeviceSelectorView(
+    bool is_local_media_session) {
+  std::unique_ptr<media_router::CastDialogController> cast_controller;
+  if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
+    cast_controller =
+        is_local_media_session
+            ? service_->CreateCastDialogControllerForSession(id_)
+            : service_->CreateCastDialogControllerForPresentationRequest();
+  }
+  auto device_selector_view =
+      std::make_unique<MediaNotificationDeviceSelectorView>(
+          this, std::move(cast_controller),
+          /* has_audio_output */ is_local_media_session, audio_sink_id_,
+          foreground_color_, background_color_, entry_point_);
+  device_selector_view_ = AddChildView(std::move(device_selector_view));
+  view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
 }
 
 void MediaNotificationContainerImplView::StopCasting(

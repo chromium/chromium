@@ -92,6 +92,12 @@ PresentationRequestNotificationProducer::GetNotificationItem() {
 void PresentationRequestNotificationProducer::OnNotificationListChanged() {
   ShowOrHideItem();
 }
+void PresentationRequestNotificationProducer::SetPresentationManagerForTesting(
+    base::WeakPtr<media_router::WebContentsPresentationManager>
+        presentation_manager) {
+  presentation_manager_ = presentation_manager;
+  presentation_manager_->AddObserver(this);
+}
 
 void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
   // At the point where this method is called, MediaNotificationService is
@@ -142,6 +148,14 @@ void PresentationRequestNotificationProducer::AfterMediaDialogClosed() {
   if (presentation_manager_)
     presentation_manager_->RemoveObserver(this);
   presentation_manager_ = nullptr;
+}
+
+void PresentationRequestNotificationProducer::OnMediaRoutesChanged(
+    const std::vector<media_router::MediaRoute>& routes) {
+  if (!routes.empty()) {
+    notification_service_->HideMediaDialog();
+    item_->Dismiss();
+  }
 }
 
 void PresentationRequestNotificationProducer::OnDefaultPresentationChanged(

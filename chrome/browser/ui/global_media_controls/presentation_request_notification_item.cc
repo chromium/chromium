@@ -29,7 +29,9 @@ void PresentationRequestNotificationItem::SetView(
 void PresentationRequestNotificationItem::OnMediaSessionActionButtonPressed(
     media_session::mojom::MediaSessionAction action) {}
 
-void PresentationRequestNotificationItem::Dismiss() {}
+void PresentationRequestNotificationItem::Dismiss() {
+  notification_service_->HideNotification(id_);
+}
 
 media_message_center::SourceType
 PresentationRequestNotificationItem::SourceType() {

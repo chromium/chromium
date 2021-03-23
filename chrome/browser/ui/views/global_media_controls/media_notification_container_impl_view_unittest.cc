@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -107,8 +108,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
+    item_ = std::make_unique<MockMediaNotificationItem>();
     SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
-        kTestNotificationId, nullptr, nullptr,
+        kTestNotificationId, item_->GetWeakPtr(), nullptr,
         GlobalMediaControlsEntryPoint::kToolbarIcon));
   }
 
@@ -248,6 +250,10 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     return notification_container_;
   }
 
+  base::WeakPtr<MockMediaNotificationItem> notification_item() {
+    return item_->GetWeakPtr();
+  }
+
  private:
   void SimulateSessionInfo(bool playing) {
     media_session::mojom::MediaSessionInfoPtr session_info(
@@ -284,6 +290,7 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   MediaNotificationContainerImplView* notification_container_ = nullptr;
   std::unique_ptr<MockMediaNotificationContainerObserver> observer_;
+  std::unique_ptr<MockMediaNotificationItem> item_;
 
   // Set of actions currently enabled.
   base::flat_set<MediaSessionAction> actions_;
@@ -492,7 +499,7 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsMetadataUpdates) {
 
 TEST_F(MediaNotificationContainerImplViewTest, SendsDestroyedUpdates) {
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      kOtherTestNotificationId, nullptr, nullptr,
+      kOtherTestNotificationId, notification_item(), nullptr,
       GlobalMediaControlsEntryPoint::kToolbarIcon);
   MockMediaNotificationContainerObserver observer;
   container->AddObserver(&observer);
@@ -523,7 +530,7 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsSinkUpdates) {
 
 TEST_F(MediaNotificationContainerImplViewTest, MetadataTest) {
   auto container_view = std::make_unique<MediaNotificationContainerImplView>(
-      kOtherTestNotificationId, nullptr, nullptr,
+      kOtherTestNotificationId, notification_item(), nullptr,
       GlobalMediaControlsEntryPoint::kToolbarIcon);
   views::test::TestViewMetadata(container_view.get());
 }

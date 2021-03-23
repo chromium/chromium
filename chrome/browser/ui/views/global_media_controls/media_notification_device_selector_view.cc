@@ -83,6 +83,7 @@ void ExpandDeviceSelectorButton::OnColorsChanged() {
 MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
     MediaNotificationDeviceSelectorViewDelegate* delegate,
     std::unique_ptr<media_router::CastDialogController> cast_controller,
+    bool has_audio_output,
     const std::string& current_device_id,
     const SkColor& foreground_color,
     const SkColor& background_color,
@@ -129,8 +130,8 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
   // This view will become visible when devices are discovered.
   SetVisible(false);
 
-  if (base::FeatureList::IsEnabled(
-          media::kGlobalMediaControlsSeamlessTransfer)) {
+  if (has_audio_output && base::FeatureList::IsEnabled(
+                              media::kGlobalMediaControlsSeamlessTransfer)) {
     RegisterAudioDeviceCallbacks();
   }
 

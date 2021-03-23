@@ -134,6 +134,11 @@ class MediaNotificationService
   // the given |session_id|.
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForSession(const std::string& session_id);
+  // Instantiates a MediaRouterViewsUI object associated with the
+  // PresentationRequest that |presentation_request_notification_producer_|
+  // manages.
+  std::unique_ptr<media_router::CastDialogController>
+  CreateCastDialogControllerForPresentationRequest();
 
   void ShowAndObserveContainer(const std::string& id);
 
@@ -145,6 +150,7 @@ class MediaNotificationService
   friend class MediaNotificationServiceTest;
   friend class MediaNotificationServiceCastTest;
   friend class MediaToolbarButtonControllerTest;
+  friend class PresentationRequestNotificationProducerTest;
 
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
                            HideAfterTimeoutAndActiveAgainOnPlay);
@@ -157,8 +163,6 @@ class MediaNotificationService
                            HidingNotification_FeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
                            ShowSupplementalNotifications);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
-                           HideSupplementalNotifications);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

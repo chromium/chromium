@@ -187,10 +187,11 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
       std::unique_ptr<MockCastDialogController> controller =
           std::make_unique<MockCastDialogController>(),
       const std::string& device_description = "1",
+      bool has_audio_output = true,
       GlobalMediaControlsEntryPoint entry_point =
           GlobalMediaControlsEntryPoint::kToolbarIcon) {
     return std::make_unique<MediaNotificationDeviceSelectorView>(
-        delegate, std::move(controller), device_description,
+        delegate, std::move(controller), has_audio_output, device_description,
         gfx::kPlaceholderColor, gfx::kPlaceholderColor, entry_point);
   }
 
@@ -243,6 +244,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   // for a presentation request.
   view_ = CreateDeviceSelectorView(
       &delegate, std::make_unique<MockCastDialogController>(), "1",
+      /* has_audio_output */ true,
       GlobalMediaControlsEntryPoint::kPresentation);
   EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
 }

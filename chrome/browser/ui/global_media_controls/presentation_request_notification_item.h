@@ -32,6 +32,9 @@ class PresentationRequestNotificationItem final
       const PresentationRequestNotificationItem&) = delete;
   ~PresentationRequestNotificationItem() final;
 
+  // media_message_center::MediaNotificationItem
+  void Dismiss() final;
+
   base::WeakPtr<PresentationRequestNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -47,7 +50,6 @@ class PresentationRequestNotificationItem final
   void SetView(media_message_center::MediaNotificationView* view) final;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) final;
-  void Dismiss() final;
   media_message_center::SourceType SourceType() override;
 
   const std::string id_;

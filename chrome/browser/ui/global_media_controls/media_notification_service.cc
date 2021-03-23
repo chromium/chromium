@@ -552,6 +552,18 @@ MediaNotificationService::CreateCastDialogControllerForSession(
       ->CreateCastDialogControllerForSession(id);
 }
 
+std::unique_ptr<media_router::CastDialogController>
+MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
+  auto* web_contents =
+      presentation_request_notification_producer_->GetWebContents();
+  if (!web_contents)
+    return nullptr;
+
+  auto ui = std::make_unique<media_router::MediaRouterUI>(web_contents);
+  ui->InitWithDefaultMediaSource();
+  return ui;
+}
+
 void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
   OnNotificationChanged(&id);
   if (!dialog_delegate_) {

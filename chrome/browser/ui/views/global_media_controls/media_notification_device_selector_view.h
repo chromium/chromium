@@ -35,6 +35,7 @@ class MediaNotificationDeviceSelectorView
   MediaNotificationDeviceSelectorView(
       MediaNotificationDeviceSelectorViewDelegate* delegate,
       std::unique_ptr<media_router::CastDialogController> cast_controller,
+      bool has_audio_output,
       const std::string& current_device_id,
       const SkColor& foreground_color,
       const SkColor& background_color,

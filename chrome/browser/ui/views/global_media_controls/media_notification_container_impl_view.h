@@ -140,6 +140,7 @@ class MediaNotificationContainerImplView
   class DismissButton;
 
   void AddStopCastButton(CastMediaNotificationItem* item);
+  void AddDeviceSelectorView(bool is_local_media_session);
   void StopCasting(CastMediaNotificationItem* item);
   void UpdateDismissButtonIcon();
   void UpdateDismissButtonBackground();

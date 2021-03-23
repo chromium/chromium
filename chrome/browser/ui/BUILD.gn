@@ -4920,11 +4920,14 @@ static_library("test_support") {
       "tabs/tab_ukm_test_helper.h",
       "test/test_confirm_bubble_model.cc",
       "test/test_confirm_bubble_model.h",
+      "views/global_media_controls/test_helper.cc",
+      "views/global_media_controls/test_helper.h",
       "webui/help/test_version_updater.cc",
       "webui/help/test_version_updater.h",
     ]
     deps += [
       "//chrome/test:test_support_ui",
+      "//components/media_message_center:media_message_center",
       "//components/signin/core/browser",
       "//components/signin/public/identity_manager",
       "//components/ukm:test_support",

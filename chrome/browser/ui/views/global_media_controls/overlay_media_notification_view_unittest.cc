@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
+#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,9 +40,10 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
         media::kGlobalMediaControlsOverlayControls);
 
     manager_ = std::make_unique<MockOverlayMediaNotificationsManager>();
+    item_ = std::make_unique<MockMediaNotificationItem>();
 
     auto notification = std::make_unique<MediaNotificationContainerImplView>(
-        kTestNotificationId, nullptr, nullptr,
+        kTestNotificationId, item_->GetWeakPtr(), nullptr,
         GlobalMediaControlsEntryPoint::kToolbarIcon);
     notification->PopOut();
 
@@ -102,9 +104,9 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
     return overlay_->notification_for_testing()->view_for_testing();
   }
 
-  std::unique_ptr<MockOverlayMediaNotificationsManager> manager_ = nullptr;
-
-  std::unique_ptr<OverlayMediaNotificationView> overlay_ = nullptr;
+  std::unique_ptr<MockOverlayMediaNotificationsManager> manager_;
+  std::unique_ptr<OverlayMediaNotificationView> overlay_;
+  std::unique_ptr<MockMediaNotificationItem> item_;
 
   base::test::ScopedFeatureList feature_list_;
 };

@@ -65,7 +65,13 @@ class PresentationRequestNotificationProducer final
   content::WebContents* GetWebContents();
   base::WeakPtr<PresentationRequestNotificationItem> GetNotificationItem();
 
+  void SetPresentationManagerForTesting(
+      base::WeakPtr<media_router::WebContentsPresentationManager>
+          presentation_manager);
+
  private:
+  friend class PresentationRequestNotificationProducerTest;
+
   // MediaNotificationServiceObserver:
   void OnNotificationListChanged() final;
   void OnMediaDialogOpened() final;
@@ -77,6 +83,8 @@ class PresentationRequestNotificationProducer final
   void AfterMediaDialogClosed();
 
   // WebContentsPresentationManager::Observer:
+  void OnMediaRoutesChanged(
+      const std::vector<media_router::MediaRoute>& routes) override;
   void OnDefaultPresentationChanged(
       const content::PresentationRequest* presentation_request) final;
 
