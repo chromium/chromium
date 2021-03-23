@@ -3551,6 +3551,7 @@ test("unit_tests") {
     "../browser/custom_handlers/test_protocol_handler_registry_delegate.h",
     "../browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_unittest.cc",
     "../browser/download/chrome_download_manager_delegate_unittest.cc",
+    "../browser/download/deferred_client_wrapper_unittest.cc",
     "../browser/download/download_history_unittest.cc",
     "../browser/download/download_item_model_unittest.cc",
     "../browser/download/download_offline_content_provider_unittest.cc",

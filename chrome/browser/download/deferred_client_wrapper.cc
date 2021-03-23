@@ -190,10 +190,10 @@ void DeferredClientWrapper::RunDeferredClosures(bool force_inflate) {
 
 void DeferredClientWrapper::DoRunDeferredClosures() {
   DCHECK(wrapped_client_);
-  for (auto& closure : deferred_closures_) {
+  auto deferred_closures = std::move(deferred_closures_);
+  for (auto& closure : deferred_closures) {
     std::move(closure).Run();
   }
-  deferred_closures_.clear();
 }
 
 void DeferredClientWrapper::InflateClient(Profile* profile) {
