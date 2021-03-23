@@ -36,39 +36,36 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8.h"
 
+namespace blink {
+namespace {
+
 #if defined(OS_ANDROID)
-static size_t GetMemoryUsage() {
+size_t GetMemoryUsage() {
   size_t usage =
       base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage() +
       WTF::Partitions::TotalActiveBytes() +
-      blink::ProcessHeap::TotalAllocatedObjectSize();
+      ProcessHeap::TotalAllocatedObjectSize();
   v8::HeapStatistics v8_heap_statistics;
-  blink::V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(
-      &v8_heap_statistics);
+  V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(&v8_heap_statistics);
   usage += v8_heap_statistics.total_heap_size();
   return usage;
 }
 #endif  // defined(OS_ANDROID)
 
-namespace blink {
+}  // namespace
 
-V8GCForContextDispose::V8GCForContextDispose()
-    : pseudo_idle_timer_(ThreadScheduler::Current()->V8TaskRunner(),
-                         this,
-                         &V8GCForContextDispose::PseudoIdleTimerFired),
-      force_page_navigation_gc_(false) {
-  Reset();
+// static
+V8GCForContextDispose& V8GCForContextDispose::Instance() {
+  DEFINE_STATIC_LOCAL(V8GCForContextDispose, static_instance, ());
+  return static_instance;
 }
 
 void V8GCForContextDispose::NotifyContextDisposed(
     bool is_main_frame,
     WindowProxy::FrameReuseStatus frame_reuse_status) {
-  did_dispose_context_for_main_frame_ = is_main_frame;
-  last_context_disposal_time_ = base::Time::Now();
 #if defined(OS_ANDROID)
   // When a low end device is in a low memory situation we should prioritize
   // memory use and trigger a V8+Blink GC. However, on Android, if the frame
@@ -77,12 +74,12 @@ void V8GCForContextDispose::NotifyContextDisposed(
       ((MemoryPressureListenerRegistry::IsLowEndDevice() &&
         MemoryPressureListenerRegistry::IsCurrentlyLowMemory()) ||
        force_page_navigation_gc_)) {
-    size_t pre_gc_memory_usage = GetMemoryUsage();
+    const size_t pre_gc_memory_usage = GetMemoryUsage();
     V8PerIsolateData::MainThreadIsolate()->MemoryPressureNotification(
         v8::MemoryPressureLevel::kCritical);
-    size_t post_gc_memory_usage = GetMemoryUsage();
-    int reduction = static_cast<int>(pre_gc_memory_usage) -
-                    static_cast<int>(post_gc_memory_usage);
+    const size_t post_gc_memory_usage = GetMemoryUsage();
+    const int reduction = static_cast<int>(pre_gc_memory_usage) -
+                          static_cast<int>(post_gc_memory_usage);
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, reduction_histogram,
         ("BlinkGC.LowMemoryPageNavigationGC.Reduction", 1, 512, 50));
@@ -90,36 +87,9 @@ void V8GCForContextDispose::NotifyContextDisposed(
 
     force_page_navigation_gc_ = false;
   }
-#endif
+#endif  // defined(OS_ANDROID)
   V8PerIsolateData::MainThreadIsolate()->ContextDisposedNotification(
       !is_main_frame);
-  pseudo_idle_timer_.Stop();
-}
-
-void V8GCForContextDispose::NotifyIdle() {
-  constexpr base::TimeDelta kMaxTimeSinceLastContextDisposal =
-      base::TimeDelta::FromMilliseconds(200);
-  if (!did_dispose_context_for_main_frame_ && !pseudo_idle_timer_.IsActive() &&
-      last_context_disposal_time_ + kMaxTimeSinceLastContextDisposal >=
-          base::Time::Now()) {
-    pseudo_idle_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-  }
-}
-
-V8GCForContextDispose& V8GCForContextDispose::Instance() {
-  DEFINE_STATIC_LOCAL(V8GCForContextDispose, static_instance, ());
-  return static_instance;
-}
-
-void V8GCForContextDispose::PseudoIdleTimerFired(TimerBase*) {
-  V8PerIsolateData::MainThreadIsolate()->IdleNotificationDeadline(
-      base::TimeTicks::Now().since_origin().InSecondsF());
-  Reset();
-}
-
-void V8GCForContextDispose::Reset() {
-  did_dispose_context_for_main_frame_ = false;
-  last_context_disposal_time_ = base::Time();
 }
 
 void V8GCForContextDispose::SetForcePageNavigationGC() {

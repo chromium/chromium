@@ -142,11 +142,6 @@ int WindowOrWorkerGlobalScope::setTimeout(
   ExecutionContext* execution_context = event_target.GetExecutionContext();
   if (!IsAllowed(execution_context, false, g_empty_string))
     return 0;
-  if (timeout >= 0 && execution_context->IsWindow()) {
-    // FIXME: Crude hack that attempts to pass idle time to V8. This should
-    // be done using the scheduler instead.
-    V8GCForContextDispose::Instance().NotifyIdle();
-  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler, arguments);
   return DOMTimer::Install(execution_context, action,
@@ -165,11 +160,6 @@ int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
   // performance issue.
   if (handler.IsEmpty())
     return 0;
-  if (timeout >= 0 && execution_context->IsWindow()) {
-    // FIXME: Crude hack that attempts to pass idle time to V8. This should
-    // be done using the scheduler instead.
-    V8GCForContextDispose::Instance().NotifyIdle();
-  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
   return DOMTimer::Install(execution_context, action,
