@@ -156,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unmount) {
+// TODO(crbug.com/1167699): this test is flaky.
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, DISABLED_Unmount) {
   ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/unmount",
                                           kFlagNone, kFlagLoadAsComponent))
       << message_;
