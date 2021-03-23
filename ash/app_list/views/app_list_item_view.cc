@@ -353,6 +353,8 @@ void AppListItemView::RefreshIcon() {
 }
 
 void AppListItemView::ScaleIconImmediatly(float scale_factor) {
+  if (icon_scale_ == scale_factor)
+    return;
   icon_scale_ = scale_factor;
   SetIcon(icon_image_);
   layer()->SetTransform(gfx::Transform());

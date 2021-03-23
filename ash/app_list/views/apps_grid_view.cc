@@ -2013,9 +2013,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   if (!drag_view_)
     return;
 
-  if (cardified_state_)
-    EndAppsGridCardifiedView();
-
   DCHECK(activated_folder_item_view_);
   static_cast<AppListFolderItem*>(activated_folder_item_view_->item())
       ->NotifyOfDraggedItem(nullptr);
@@ -2053,6 +2050,8 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     SetViewHidden(drag_view_, false /* show */, true /* no animate */);
   }
 
+  if (cardified_state_)
+    EndAppsGridCardifiedView();
   SetAsFolderDroppingTarget(drop_target_, false);
 
   AppListItemView* released_drag_view = nullptr;
