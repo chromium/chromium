@@ -82,9 +82,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
-#include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
-#include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #endif  // defined(OS_ANDROID)
@@ -458,14 +456,28 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
-TEST_F(ChromePasswordManagerClientTest, SavingDependsOnAutomation) {
-  // Test that saving passwords UI is disabled for automated tests.
+class ChromePasswordManagerClientAutomatedTest
+    : public ChromePasswordManagerClientTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ChromePasswordManagerClientAutomatedTest() {
+    if (GetParam()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kEnableAutomation);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(AutomatedTestPasswordHandling,
+                         ChromePasswordManagerClientAutomatedTest,
+                         testing::Bool());
+
+TEST_P(ChromePasswordManagerClientAutomatedTest, SavingDependsOnAutomation) {
+  // Test that saving passwords UI is disabled for automated tests,
+  // and enabled for non-automated tests.
   ChromePasswordManagerClient* client = GetClient();
   const GURL kUrlOn("https://accounts.google.com");
-  EXPECT_TRUE(client->IsSavingAndFillingEnabled(kUrlOn));
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableAutomation);
-  EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
+  EXPECT_NE(client->IsSavingAndFillingEnabled(kUrlOn), GetParam());
 }
 
 // Check that password manager is disabled on about:blank pages.
