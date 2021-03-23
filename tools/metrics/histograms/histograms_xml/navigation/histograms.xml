@@ -21,6 +21,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="NavigationThrottleEvents">
+  <variant name="WillFailRequest"/>
+  <variant name="WillProcessResponse"/>
+  <variant name="WillRedirectRequest"/>
+  <variant name="WillStartRequest"/>
+</variants>
+
 <histogram name="BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason"
     enum="BackForwardCacheEvictedAfterDocumentRestoredReason"
     expires_after="2021-10-01">
@@ -1014,6 +1021,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The time delta between the start of a navigation and the time it is
     committed.
   </summary>
+</histogram>
+
+<histogram name="Navigation.ThrottleDeferTime.{Event}" units="ms"
+    expires_after="2022-03-11">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time a navigation throttle was deferred when on {Event}. Logged
+    every time a throttle defers a navigation.
+  </summary>
+  <token key="Event" variants="NavigationThrottleEvents"/>
+</histogram>
+
+<histogram name="Navigation.ThrottleExecutionTime.{Event}" units="ms"
+    expires_after="2022-03-11">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time a navigation throttle took to execute {Event}. Logged every
+    time a throttle runs.
+  </summary>
+  <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"
