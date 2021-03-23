@@ -106,17 +106,20 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   // Reduce the resolution to prevent timing attacks. See:
   // http://www.w3.org/TR/hr-time-2/#privacy-security
-  static double ClampTimeResolution(double time_seconds);
+  static double ClampTimeResolution(double time_seconds,
+                                    bool cross_origin_isolated_capability);
 
   static DOMHighResTimeStamp MonotonicTimeToDOMHighResTimeStamp(
       base::TimeTicks time_origin,
       base::TimeTicks monotonic_time,
-      bool allow_negative_value);
+      bool allow_negative_value,
+      bool cross_origin_isolated_capability);
 
   static base::TimeDelta MonotonicTimeToTimeDelta(
       base::TimeTicks time_origin,
       base::TimeTicks monotonic_time,
-      bool allow_negative_value);
+      bool allow_negative_value,
+      bool cross_origin_isolated_capability);
 
   // Translate given platform monotonic time in seconds into a high resolution
   // DOMHighResTimeStamp in milliseconds. The result timestamp is relative to
@@ -343,6 +346,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
  protected:
   Performance(base::TimeTicks time_origin,
+              bool cross_origin_isolated_capability,
               scoped_refptr<base::SingleThreadTaskRunner>,
               ExecutionContext* context = nullptr);
 
@@ -386,6 +390,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   base::TimeTicks time_origin_;
   DOMHighResTimeStamp unix_at_zero_monotonic_;
   const base::TickClock* tick_clock_;
+  bool cross_origin_isolated_capability_;
 
   PerformanceEntryTypeMask observer_filter_options_;
   HeapLinkedHashSet<Member<PerformanceObserver>> observers_;

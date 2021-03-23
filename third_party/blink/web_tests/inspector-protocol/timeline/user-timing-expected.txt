@@ -1,0 +1,14 @@
+Tests render blocking status in script traces.
+Recording started
+Tracing complete
+now to first
+now
+now to first
+first to second
+first to third
+first
+first to second
+second
+first to third
+third
+
