@@ -109,6 +109,8 @@ std::string SharingSendMessageResultToString(SharingSendMessageResult result) {
       return "EncryptionError";
     case SharingSendMessageResult::kCommitTimeout:
       return "CommitTimeout";
+    case SharingSendMessageResult::kCancelled:
+      return "RequestCancelled";
   }
 }
 

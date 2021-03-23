@@ -74,12 +74,12 @@ SharingService::SharingDeviceList SharingService::GetDeviceCandidates(
   return device_source_->GetDeviceCandidates(required_feature);
 }
 
-void SharingService::SendMessageToDevice(
+base::OnceClosure SharingService::SendMessageToDevice(
     const syncer::DeviceInfo& device,
     base::TimeDelta response_timeout,
     chrome_browser_sharing::SharingMessage message,
     SharingMessageSender::ResponseCallback callback) {
-  message_sender_->SendMessageToDevice(
+  return message_sender_->SendMessageToDevice(
       device, response_timeout, std::move(message),
       SharingMessageSender::DelegateType::kFCM, std::move(callback));
 }

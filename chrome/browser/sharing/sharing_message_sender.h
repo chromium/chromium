@@ -64,7 +64,7 @@ class SharingMessageSender {
   SharingMessageSender& operator=(const SharingMessageSender&) = delete;
   virtual ~SharingMessageSender();
 
-  virtual void SendMessageToDevice(
+  virtual base::OnceClosure SendMessageToDevice(
       const syncer::DeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,

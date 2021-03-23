@@ -283,6 +283,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
     response_message->CopyFrom(expected_response_message);
     std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                             std::move(response_message));
+    return base::DoNothing();
   };
 
   ON_CALL(*sharing_message_sender_,

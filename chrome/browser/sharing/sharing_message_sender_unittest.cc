@@ -347,3 +347,28 @@ TEST_F(SharingMessageSenderTest, NonExistingDelegate) {
       *device_info.get(), kTimeToLive, chrome_browser_sharing::SharingMessage(),
       SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
 }
+
+TEST_F(SharingMessageSenderTest, RequestCancelled) {
+  std::unique_ptr<syncer::DeviceInfo> device_info = SetupDevice();
+
+  chrome_browser_sharing::SharingMessage sent_message;
+  sent_message.mutable_sms_fetch_request()->set_origin("https://a.com");
+
+  chrome_browser_sharing::ResponseMessage expected_response_message;
+  base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(testing::Eq(SharingSendMessageResult::kCancelled),
+                  testing::Eq(nullptr)));
+
+  EXPECT_CALL(
+      *mock_sharing_fcm_sender_,
+      SendMessageToFcmTarget(testing::_, testing::_, testing::_, testing::_));
+
+  base::OnceClosure cancel_callback =
+      sharing_message_sender_.SendMessageToDevice(
+          *device_info.get(), kTimeToLive, std::move(sent_message),
+          SharingMessageSender::DelegateType::kFCM, mock_callback.Get());
+
+  ASSERT_FALSE(cancel_callback.is_null());
+  std::move(cancel_callback).Run();
+}

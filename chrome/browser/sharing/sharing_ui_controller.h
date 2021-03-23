@@ -101,7 +101,9 @@ class SharingUiController {
   // Prepares a new dialog data.
   virtual SharingDialogData CreateDialogData(SharingDialogType dialog_type);
 
-  void SendMessageToDevice(
+  // Shows an icon in the omnibox which will be removed when receiving a
+  // response or when cancelling the request by calling the returned callback.
+  base::OnceClosure SendMessageToDevice(
       const syncer::DeviceInfo& device,
       base::Optional<base::TimeDelta> response_timeout,
       chrome_browser_sharing::SharingMessage sharing_message,

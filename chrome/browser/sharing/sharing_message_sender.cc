@@ -22,7 +22,7 @@ SharingMessageSender::SharingMessageSender(
 
 SharingMessageSender::~SharingMessageSender() = default;
 
-void SharingMessageSender::SendMessageToDevice(
+base::OnceClosure SharingMessageSender::SendMessageToDevice(
     const syncer::DeviceInfo& device,
     base::TimeDelta response_timeout,
     chrome_browser_sharing::SharingMessage message,
@@ -56,7 +56,7 @@ void SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return;
+    return base::DoNothing();
   }
   SendMessageDelegate* delegate = delegate_iter->second.get();
   DCHECK(delegate);
@@ -70,7 +70,7 @@ void SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return;
+    return base::DoNothing();
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
@@ -92,6 +92,10 @@ void SharingMessageSender::SendMessageToDevice(
       device, response_timeout, std::move(message),
       base::BindOnce(&SharingMessageSender::OnMessageSent,
                      weak_ptr_factory_.GetWeakPtr(), message_guid));
+
+  return base::BindOnce(&SharingMessageSender::InvokeSendMessageCallback,
+                        weak_ptr_factory_.GetWeakPtr(), message_guid,
+                        SharingSendMessageResult::kCancelled, nullptr);
 }
 
 void SharingMessageSender::OnMessageSent(const std::string& message_guid,

@@ -23,11 +23,11 @@ class MockSharingMessageSender : public SharingMessageSender {
   ~MockSharingMessageSender() override;
 
   MOCK_METHOD5(SendMessageToDevice,
-               void(const syncer::DeviceInfo&,
-                    base::TimeDelta,
-                    chrome_browser_sharing::SharingMessage,
-                    DelegateType,
-                    ResponseCallback));
+               base::OnceClosure(const syncer::DeviceInfo&,
+                                 base::TimeDelta,
+                                 chrome_browser_sharing::SharingMessage,
+                                 DelegateType,
+                                 ResponseCallback));
 
   MOCK_METHOD2(
       OnAckReceived,

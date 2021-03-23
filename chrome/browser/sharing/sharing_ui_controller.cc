@@ -64,6 +64,7 @@ std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
           base::ToLowerASCII(GetContentType()));
 
     case SharingSendMessageResult::kSuccessful:
+    case SharingSendMessageResult::kCancelled:
       NOTREACHED();
       FALLTHROUGH;
 
@@ -94,6 +95,7 @@ std::u16string SharingUiController::GetErrorDialogText() const {
           GetTargetDeviceName());
 
     case SharingSendMessageResult::kSuccessful:
+    case SharingSendMessageResult::kCancelled:
       return std::u16string();
 
     case SharingSendMessageResult::kPayloadTooLarge:
@@ -166,7 +168,7 @@ SharingDialogData SharingUiController::CreateDialogData(
   return data;
 }
 
-void SharingUiController::SendMessageToDevice(
+base::OnceClosure SharingUiController::SendMessageToDevice(
     const syncer::DeviceInfo& device,
     base::Optional<base::TimeDelta> response_timeout,
     chrome_browser_sharing::SharingMessage sharing_message,
@@ -180,7 +182,7 @@ void SharingUiController::SendMessageToDevice(
   SharingMessageSender::ResponseCallback response_callback = base::BindOnce(
       &SharingUiController::OnResponse, weak_ptr_factory_.GetWeakPtr(),
       last_dialog_id_, std::move(custom_callback));
-  sharing_service_->SendMessageToDevice(
+  return sharing_service_->SendMessageToDevice(
       device,
       response_timeout.value_or(
           base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get())),

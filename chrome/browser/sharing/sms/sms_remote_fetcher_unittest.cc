@@ -125,6 +125,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
         response->mutable_sms_fetch_response()->set_one_time_code("ABC");
         std::move(callback).Run(SharingSendMessageResult::kSuccessful,
                                 std::move(response));
+        return base::DoNothing();
       }));
 
   FetchRemoteSms(
@@ -167,6 +168,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
                            SharingMessageSender::ResponseCallback callback) {
         std::move(callback).Run(SharingSendMessageResult::kAckTimeout,
                                 std::make_unique<ResponseMessage>());
+        return base::DoNothing();
       }));
 
   FetchRemoteSms(
