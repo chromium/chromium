@@ -660,7 +660,7 @@ template("clang_toolchain") {
     ld = cxx
     readelf = "${toolprefix}readelf"
     ar = "${prefix}/llvm-ar"
-    nm = "${toolprefix}nm"
+    nm = "${prefix}/llvm-nm"
 
     forward_variables_from(invoker,
                            [
