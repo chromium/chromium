@@ -5103,7 +5103,6 @@ test("unit_tests") {
       "../browser/ui/app_list/search/search_result_ranker/app_launch_event_logger_unittest.cc",
       "../browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h",
       "../browser/ui/app_list/search/search_result_ranker/app_launch_predictor_unittest.cc",
-      "../browser/ui/app_list/search/search_result_ranker/app_list_launch_metrics_provider_unittest.cc",
       "../browser/ui/app_list/search/search_result_ranker/app_search_result_ranker_unittest.cc",
       "../browser/ui/app_list/search/search_result_ranker/chip_ranker_unittest.cc",
       "../browser/ui/app_list/search/search_result_ranker/frecency_store_unittest.cc",
