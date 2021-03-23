@@ -183,10 +183,16 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     return common.run_command(metadata_builder_cmd)
 
   def run_test(self):
-    with NamedTemporaryDirectory() as self._metadata_dir, self._install_apks():
+    with NamedTemporaryDirectory() as tmp_dir, self._install_apks():
+      self._metadata_dir = os.path.join(tmp_dir, 'metadata_dir')
       metadata_command_ret = self._maybe_build_metadata()
       if metadata_command_ret != 0:
           return metadata_command_ret
+
+      # If there is no metadata then we need to create an
+      # empty directory to pass to wptrunner
+      if not os.path.exists(self._metadata_dir):
+        os.makedirs(self._metadata_dir)
       return super(WPTAndroidAdapter, self).run_test()
 
   def _install_apks(self):
