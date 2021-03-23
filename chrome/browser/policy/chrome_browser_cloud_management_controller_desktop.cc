@@ -275,6 +275,15 @@ void ChromeBrowserCloudManagementControllerDesktop::OnServiceAccountSet(
 
   // No need to get a refresh token if there is one present already.
   if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable()) {
+    if (account_initializer_helper_) {
+      // Bail out early if there's already an active account initializer,
+      // otherwise multiple auth requests might race to completion and attempt
+      // to initiate multiple invalidations service instances.
+      NOTREACHED() << "Trying to start an account initializer when there's "
+                      "already one. Please see crbug.com/1186159.";
+      return;
+    }
+
     // If this feature is enabled, we need to ensure the device service
     // account is initialized and fetch auth codes to exchange for a refresh
     // token. Creating this object starts that process and the callback will
@@ -342,6 +351,12 @@ void ChromeBrowserCloudManagementControllerDesktop::SetGaiaURLLoaderFactory(
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   DCHECK(
       base::FeatureList::IsEnabled(policy::features::kCBCMPolicyInvalidations));
+
+  if (invalidation_service_) {
+    NOTREACHED() << "Trying to start an invalidation service when there's "
+                    "already one. Please see crbug.com/1186159.";
+    return;
+  }
 
   identity_provider_ = std::make_unique<DeviceIdentityProvider>(
       DeviceOAuth2TokenServiceFactory::Get());
