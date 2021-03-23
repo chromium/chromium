@@ -1,0 +1,58 @@
+)]}'
+{
+    "response": {
+      "server": "prod",
+      "protocol": "3.1",
+      "daystart": {
+        "elapsed_seconds": 28980,
+        "elapsed_days": 5188
+      },
+      "app": [
+        {
+          "appid": "llkgjffcdpffmhiakmfcdcblohccpfmo",
+          "cohort": "",
+          "status": "ok",
+          "cohortname": "",
+          "ping": {
+            "status": "ok"
+          },
+          "updatecheck": {
+            "status": "ok",
+            "urls": {
+              "url": [
+                {
+                  "codebase": "http://redirector.gvt1.com/edgedl/chromewebstore/L2Nocm9tZV9leHRlbnNpb24vYmxvYnMvZmMzQUFXNXo4eEtuSTNiSWgtQVVEaW9xUQ/"
+                },
+                {
+                  "codebase": "http://dl.google.com/chromewebstore/L2Nocm9tZV9leHRlbnNpb24vYmxvYnMvZmMzQUFXNXo4eEtuSTNiSWgtQVVEaW9xUQ/"
+                },
+                {
+                  "codebase": "https://dl.google.com/chromewebstore/L2Nocm9tZV9leHRlbnNpb24vYmxvYnMvZmMzQUFXNXo4eEtuSTNiSWgtQVVEaW9xUQ/"
+                },
+                {
+                  "codebase": "http://www.google.com/dl/chromewebstore/L2Nocm9tZV9leHRlbnNpb24vYmxvYnMvZmMzQUFXNXo4eEtuSTNiSWgtQVVEaW9xUQ/"
+                },
+                {
+                  "codebase": "https://www.google.com/dl/chromewebstore/L2Nocm9tZV9leHRlbnNpb24vYmxvYnMvZmMzQUFXNXo4eEtuSTNiSWgtQVVEaW9xUQ/"
+                }
+              ]
+            },
+            "manifest": {
+              "version": "1.0.0.6",
+              "packages": {
+                "package": [
+                  {
+                    "hash_sha256": "d730fdd6875bfda19ae43c639e89fe6c24e48b53ec4f466b1d7de2001f97e03c",
+                    "size": 3902,
+                    "name": "1.0.0.6_llkgjffcdpffmhiakmfcdcblohccpfmo.crx",
+                    "fp": "1.d730fdd6875bfda19ae43c639e89fe6c24e48b53ec4f466b1d7de2001f97e03c",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }

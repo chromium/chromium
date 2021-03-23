@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/test/android/url_utils.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -27,32 +28,36 @@
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace android_webview {
 
 namespace {
 
-constexpr char kComponentId[] = "jebgalgnebhfojomionfpkfelancnnkf";
+// Size of android_webview/test/data/components/fake_component.crx.
+constexpr size_t kCrxContentLength = 3902;
+
+constexpr char kComponentId[] = "llkgjffcdpffmhiakmfcdcblohccpfmo";
+
 // This hash corresponds to kComponentId.
 constexpr uint8_t kSha256Hash[] = {
-    0x94, 0x16, 0x0b, 0x6d, 0x41, 0x75, 0xe9, 0xec, 0x8e, 0xd5, 0xfa,
-    0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
-    0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
+    0xbb, 0xa6, 0x95, 0x52, 0x3f, 0x55, 0xc7, 0x80, 0xac, 0x52, 0x32,
+    0x1b, 0xe7, 0x22, 0xf5, 0xce, 0x6a, 0xfd, 0x9c, 0x9e, 0xa9, 0x2a,
+    0x0b, 0x50, 0x60, 0x2b, 0x7f, 0x6c, 0x64, 0x80, 0x09, 0x04};
 
-constexpr char kManifestJson[] =
-    "{"
-    "\n\"manifest_version\": 2,"
-    "\n\"name\": \"jebgalgnebhfojomionfpkfelancnnkf\","
-    "\n\"version\": \"123.456.789\""
-    "\n}";
+constexpr char kTestVersion[] = "1.0.0.6";
 
-constexpr char kTestVersion[] = "123.456.789";
+base::FilePath GetTestFile(const std::string& file_name) {
+  return base::android::GetIsolatedTestRoot()
+      .AppendASCII("android_webview/test/data/components")
+      .AppendASCII(file_name);
+}
 
 void CreateTestFiles(const base::FilePath& install_dir) {
   base::CreateDirectory(install_dir);
   ASSERT_TRUE(base::WriteFile(install_dir.AppendASCII("file1.txt"), "1"));
-  ASSERT_TRUE(
-      base::WriteFile(install_dir.AppendASCII("manifest.json"), kManifestJson));
+  ASSERT_TRUE(base::CopyFile(GetTestFile("fake_component_manifest.json"),
+                             install_dir.AppendASCII("manifest.json")));
 }
 
 class FailingNetworkFetcher : public update_client::NetworkFetcher {
@@ -92,34 +97,100 @@ class FailingNetworkFetcher : public update_client::NetworkFetcher {
   }
 };
 
-class FailingNetworkFetcherFactory
-    : public update_client::NetworkFetcherFactory {
+// A NetworkFetcher that fakes downloading a CRX file.
+// TODO(crbug.com/1190310) use EmbeddedTestServer instead of Mocking the
+// NetworkFetcher.
+class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
  public:
-  FailingNetworkFetcherFactory() = default;
-  FailingNetworkFetcherFactory(const FailingNetworkFetcherFactory&) = delete;
-  FailingNetworkFetcherFactory& operator=(const FailingNetworkFetcherFactory&) =
+  FakeCrxNetworkFetcher() = default;
+  ~FakeCrxNetworkFetcher() override = default;
+  FakeCrxNetworkFetcher(const FakeCrxNetworkFetcher&) = delete;
+  FakeCrxNetworkFetcher& operator=(const FakeCrxNetworkFetcher&) = delete;
+
+  // NetworkFetcher overrides.
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override {
+    std::move(response_started_callback)
+        .Run(/* responseCode= */ 200, /* content_size= */ 0);
+    std::string response_body;
+    int network_error = 0;
+    if (post_data.find("updatecheck") != std::string::npos) {
+      ASSERT_TRUE(base::ReadFileToString(
+          GetTestFile("fake_component_update_response.json"), &response_body));
+    } else if (post_data.find("eventtype") != std::string::npos) {
+      ASSERT_TRUE(base::ReadFileToString(
+          GetTestFile("fake_component_ping_response.json"), &response_body));
+    } else {  // error post request not a ping nor update.
+      network_error = -2;
+    }
+    std::move(post_request_complete_callback)
+        .Run(/* response_body= */ std::make_unique<std::string>(response_body),
+             /* network_error= */ network_error,
+             /* header_etag= */ "",
+             /* header_x_cup_server_proof= */ "",
+             /* x_header_retry_after_sec= */ 0ll);
+  }
+
+  void DownloadToFile(const GURL& url,
+                      const base::FilePath& file_path,
+                      ResponseStartedCallback response_started_callback,
+                      ProgressCallback progress_callback,
+                      DownloadToFileCompleteCallback
+                          download_to_file_complete_callback) override {
+    ASSERT_TRUE(base::CopyFile(GetTestFile("fake_component.crx"), file_path));
+    std::move(response_started_callback)
+        .Run(/* responseCode= */ 200, /* content_size= */ kCrxContentLength);
+    std::move(download_to_file_complete_callback)
+        .Run(
+            /* network_error= */ 0,
+            /* content_size= */ kCrxContentLength);
+  }
+};
+
+template <typename T>
+class MockNetworkFetcherFactory : public update_client::NetworkFetcherFactory {
+ public:
+  MockNetworkFetcherFactory() = default;
+  MockNetworkFetcherFactory(const MockNetworkFetcherFactory&) = delete;
+  MockNetworkFetcherFactory& operator=(const MockNetworkFetcherFactory&) =
       delete;
 
   std::unique_ptr<update_client::NetworkFetcher> Create() const override {
-    return std::make_unique<FailingNetworkFetcher>();
+    return std::make_unique<T>();
   }
 
  protected:
-  ~FailingNetworkFetcherFactory() override = default;
+  ~MockNetworkFetcherFactory() override = default;
 };
 
 class MockConfigurator : public AwComponentUpdaterConfigurator {
  public:
-  explicit MockConfigurator(const base::CommandLine* cmdline,
-                            PrefService* pref_service)
-      : AwComponentUpdaterConfigurator(cmdline, pref_service) {}
+  explicit MockConfigurator(PrefService* pref_service,
+                            scoped_refptr<update_client::NetworkFetcherFactory>
+                                network_fetcher_factory)
+      : AwComponentUpdaterConfigurator(base::CommandLine::ForCurrentProcess(),
+                                       pref_service),
+        network_fetcher_factory_(std::move(network_fetcher_factory)) {}
+
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
       override {
-    return base::MakeRefCounted<FailingNetworkFetcherFactory>();
+    return network_fetcher_factory_;
   }
+
+  // Disable CUP signing so we can inject the fake CRX.
+  bool EnabledCupSigning() const override { return false; }
 
  protected:
   ~MockConfigurator() override = default;
+
+ private:
+  scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
 };
 
 class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
@@ -172,6 +243,7 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
     return update_client::InstallerAttributes();
   }
 
+  bool IsComponentReadyInvoked() { return !!manifest_; }
   base::DictionaryValue* GetManifest() { return manifest_.get(); }
   base::FilePath GetInstallDir() const { return install_dir_; }
   base::Version GetVersion() const { return version_; }
@@ -255,14 +327,40 @@ TEST_F(AwComponentUpdateServiceTest, TestComponentReadyWhenOffline) {
 
   base::RunLoop run_loop;
   TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
-      base::CommandLine::ForCurrentProcess(), test_pref_.get()));
+      test_pref_.get(),
+      base::MakeRefCounted<
+          MockNetworkFetcherFactory<FailingNetworkFetcher>>()));
+  service.StartComponentUpdateService(run_loop.QuitClosure());
+
+  run_loop.Run();
+
+  ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
+  EXPECT_EQ(service.GetMockPolicy()->GetVersion().GetString(), kTestVersion);
+  EXPECT_EQ(service.GetMockPolicy()->GetInstallDir(),
+            component_install_dir_.AppendASCII(kTestVersion));
+}
+
+TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
+  base::RunLoop run_loop;
+  TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
+      test_pref_.get(),
+      base::MakeRefCounted<
+          MockNetworkFetcherFactory<FakeCrxNetworkFetcher>>()));
 
   service.StartComponentUpdateService(run_loop.QuitClosure());
   run_loop.Run();
 
+  ASSERT_TRUE(service.GetMockPolicy()->IsComponentReadyInvoked());
   EXPECT_EQ(service.GetMockPolicy()->GetVersion().GetString(), kTestVersion);
   EXPECT_EQ(service.GetMockPolicy()->GetInstallDir(),
             component_install_dir_.AppendASCII(kTestVersion));
+
+  // Assert that the manifest is valid by asserting a field in it other than
+  // version.
+  std::string minimum_chrome_version;
+  ASSERT_TRUE(service.GetMockPolicy()->GetManifest()->GetString(
+      "minimum_chrome_version", &minimum_chrome_version));
+  EXPECT_EQ(minimum_chrome_version, "50");
 }
 
 }  // namespace android_webview

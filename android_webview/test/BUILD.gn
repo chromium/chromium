@@ -510,6 +510,8 @@ test("android_webview_unittests") {
     "//ui/gl:test_support",
   ]
 
+  data = [ "data/" ]
+
   sources = [
     "../browser/aw_browser_context_unittest.cc",
     "../browser/aw_content_browser_client_unittest.cc",
