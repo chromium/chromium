@@ -1809,43 +1809,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
 }
 
-// Tests that the security level of an HTTP page remains WARNING regardless of
-// whether a form was edited.
-// TODO(crbug.com/1190339): Test is flaky.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_MarkHttpAsWarningOnFormEdits DISABLED_MarkHttpAsWarningOnFormEdits
-#else
-#define MAYBE_MarkHttpAsWarningOnFormEdits MarkHttpAsWarningOnFormEdits
-#endif
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
-                       MAYBE_MarkHttpAsWarningOnFormEdits) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(contents);
-  ASSERT_TRUE(helper);
-
-  // Navigate to an HTTP page. Use a non-local hostname so that it is
-  // not considered secure.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GetURLWithNonLocalHostname(embedded_test_server(),
-                                 "/textinput/focus_input_on_load.html"));
-
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-
-  // Type one character into the focused input control and wait for a security
-  // state change.
-  SecurityStyleTestObserver observer(contents);
-  content::SimulateKeyPress(contents, ui::DomKey::FromCharacter('A'),
-                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
-                            false);
-  observer.WaitForDidChangeVisibleSecurityState();
-
-  // Verify that the security state remains the same.
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
-}
-
 // Tests that the histogram for security level is recorded correctly for HTTPS
 // pages.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
