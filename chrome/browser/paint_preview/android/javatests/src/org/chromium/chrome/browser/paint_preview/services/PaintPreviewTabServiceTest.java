@@ -66,13 +66,13 @@ public class PaintPreviewTabServiceTest {
     @Test
     @MediumTest
     @Feature({"PaintPreview"})
-    public void testCapturedOnStopped() throws Exception {
+    public void testCapturedAndDelete() throws Exception {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/chrome/test/data/android/about.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
-            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, false);
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true);
             mTab.loadUrl(new LoadUrlParams(url));
         });
         // Give the tab time to complete layout before hiding.
@@ -117,41 +117,6 @@ public class PaintPreviewTabServiceTest {
     }
 
     /**
-     * Verifies that a Tab's contents are captured when the tab is switched and subsequently deleted
-     * when the tab is closed.
-     */
-    @Test
-    @MediumTest
-    @Feature({"PaintPreview"})
-    public void testCapturedAndDeleted() throws Exception {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/chrome/test/data/android/about.html");
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
-            // Use capture on switch mode.
-            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, true);
-            mTab.loadUrl(new LoadUrlParams(url));
-        });
-        // Give the tab time to complete layout before hiding.
-        TimeUnit.SECONDS.sleep(1);
-
-        // This will hide mTab so that a capture occurs.
-        mActivityTestRule.loadUrlInNewTab(url);
-
-        int tabId = mTab.getId();
-        CriteriaHelper.pollUiThread(() -> {
-            return mPaintPreviewTabService.hasCaptureForTab(tabId);
-        }, "Paint Preview didn't get captured.", TIMEOUT_MS, POLLING_INTERVAL_MS);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabModel.closeTab(mTab); });
-
-        CriteriaHelper.pollUiThread(() -> {
-            return !mPaintPreviewTabService.hasCaptureForTab(tabId);
-        }, "Paint Preview didn't get deleted.", TIMEOUT_MS, POLLING_INTERVAL_MS);
-    }
-
-    /**
      * Tests that capturing and deleting via an audit works as expected.
      */
     @Test
@@ -163,20 +128,36 @@ public class PaintPreviewTabServiceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
-            // Use capture on switch mode.
-            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, true);
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true);
             mTab.loadUrl(new LoadUrlParams(url));
         });
         // Give the tab time to complete layout before hiding.
         TimeUnit.SECONDS.sleep(1);
-
-        // This will hide mTab so that a capture occurs.
-        mActivityTestRule.loadUrlInNewTab(url);
-
         int tabId = mTab.getId();
+
+        // Simulate closing the app.
+        Activity activity = mActivityTestRule.getActivity();
+        activity.getWindow().setLocalFocus(false, false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnPause(activity);
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnStop(activity);
+        });
+
+        // Allow time to capture.
         CriteriaHelper.pollUiThread(() -> {
+            mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
             return mPaintPreviewTabService.hasCaptureForTab(tabId);
         }, "Paint Preview didn't get captured.", TIMEOUT_MS, POLLING_INTERVAL_MS);
+
+        // Simulate unpausing the app (for cleanup).
+        activity.getWindow().setLocalFocus(true, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnRestart(activity);
+            InstrumentationRegistry.getInstrumentation().callActivityOnStart(activity);
+            InstrumentationRegistry.getInstrumentation().callActivityOnResume(activity);
+        });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Use the incognito tab model as the normal tab model will still have the tab ids
