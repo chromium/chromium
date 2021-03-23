@@ -32,6 +32,7 @@ android_library("java") {
     "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/BlockedCredentialFragmentView.java",
     "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditFragmentView.java",
     "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEntryFragmentViewBase.java",
+    "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/FederatedCredentialFragmentView.java",
   ]
 
   deps = [
@@ -50,6 +51,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/blocked_credential_view.xml",
     "java/res/layout/credential_edit_view.xml",
+    "java/res/layout/federated_credential_view.xml",
+    "java/res/layout/site_or_app.xml",
     "java/res/menu/credential_edit_action_bar_menu.xml",
     "java/res/values/dimens.xml",
   ]

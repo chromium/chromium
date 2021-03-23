@@ -107,5 +107,11 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
                     BlockedCredentialViewBinder::bindBlockedCredentialView);
             return;
         }
+
+        if (view instanceof FederatedCredentialFragmentView) {
+            PropertyModelChangeProcessor.create(model, (FederatedCredentialFragmentView) view,
+                    FederatedCredentialViewBinder::bindFederatedCredentialView);
+            return;
+        }
     }
 }

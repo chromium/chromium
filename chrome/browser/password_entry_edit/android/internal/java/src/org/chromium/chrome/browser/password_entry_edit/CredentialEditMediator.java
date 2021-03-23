@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.DUPLICATE_USERNAME_ERROR;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.EMPTY_PASSWORD_ERROR;
-import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.FEDERATION_ORIGIN;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD_VISIBLE;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_DISMISSED_BY_NATIVE;
@@ -62,9 +61,7 @@ public class CredentialEditMediator implements UiActionHandler {
         mOriginalUsername = username;
         mModel.set(USERNAME, username);
         mModel.set(PASSWORD, password);
-        // TODO(crbug.com/1175785): Replace the password with the identity provider in the case
-        // of federated credentials.
-        mModel.set(PASSWORD_VISIBLE, !mModel.get(FEDERATION_ORIGIN).isEmpty());
+        mModel.set(PASSWORD_VISIBLE, false);
     }
 
     void setExistingUsernames(String[] existingUsernames) {

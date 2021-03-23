@@ -43,10 +43,15 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
     @CalledByNative
     void initAndLaunchUi(long nativeCredentialEditBridge, Context context,
-            SettingsLauncher settingsLauncher, boolean isBlockedCredential) {
+            SettingsLauncher settingsLauncher, boolean isBlockedCredential,
+            boolean isFederatedCredential) {
         mNativeCredentialEditBridge = nativeCredentialEditBridge;
         if (isBlockedCredential) {
             settingsLauncher.launchSettingsActivity(context, BlockedCredentialFragmentView.class);
+            return;
+        }
+        if (isFederatedCredential) {
+            settingsLauncher.launchSettingsActivity(context, FederatedCredentialFragmentView.class);
             return;
         }
         settingsLauncher.launchSettingsActivity(context, CredentialEditFragmentView.class);

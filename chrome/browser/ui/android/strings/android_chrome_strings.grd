@@ -588,6 +588,9 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PASSWORD_ENTRY_VIEWER_PASSWORD" desc='Title preceding password on password entry viewer.'>
         Password
       </message>
+      <message name="IDS_PASSWORD_VIA_FEDERATION" desc="Text for federated credential's value.">
+        with <ph name="PROVIDER">%1$s<ex>example.com</ex></ph>
+      </message>
       <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_SITE" desc='Content description for the button that copies the stored site.'>
         Copy URL
       </message>

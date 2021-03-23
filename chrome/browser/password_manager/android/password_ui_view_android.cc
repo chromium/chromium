@@ -215,7 +215,7 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
   if (form && !credential_edit_bridge_) {
     credential_edit_bridge_ = CredentialEditBridge::MaybeCreate(
         form, password_manager_presenter_.GetUsernamesForRealm(index),
-        &saved_passwords_presenter_, nullptr,
+        &saved_passwords_presenter_, &password_manager_presenter_,
         base::BindOnce(&PasswordUIViewAndroid::OnEditUIDismissed,
                        base::Unretained(this)),
         context, settings_launcher);

@@ -59,7 +59,7 @@ CredentialEditBridge::CredentialEditBridge(
   Java_CredentialEditBridge_initAndLaunchUi(
       base::android::AttachCurrentThread(), java_bridge_,
       reinterpret_cast<intptr_t>(this), context, settings_launcher,
-      credential->blocked_by_user);
+      credential->blocked_by_user, !credential->federation_origin.opaque());
 }
 
 CredentialEditBridge::~CredentialEditBridge() {
@@ -94,10 +94,13 @@ void CredentialEditBridge::SaveChanges(
 
 void CredentialEditBridge::DeleteCredential(JNIEnv* env) {
   if (credential_->blocked_by_user) {
-    DCHECK(password_manager_presenter_);
     std::vector<std::string> sort_keys = {
         password_manager::CreateSortKey(*credential_)};
     password_manager_presenter_->RemovePasswordExceptions(sort_keys);
+  } else if (!credential_->federation_origin.opaque()) {
+    std::vector<std::string> sort_keys = {
+        password_manager::CreateSortKey(*credential_)};
+    password_manager_presenter_->RemoveSavedPasswords(sort_keys);
   } else {
     saved_passwords_presenter_->RemovePassword(*credential_);
   }
