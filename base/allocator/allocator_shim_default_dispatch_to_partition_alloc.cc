@@ -98,7 +98,11 @@ base::ThreadSafePartitionRoot* Allocator() {
   }
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot({
-    base::PartitionOptions::Alignment::kRegular,
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+    base::PartitionOptions::AlignedAlloc::kDisallowed,
+#else
+    base::PartitionOptions::AlignedAlloc::kAllowed,
+#endif
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
         base::PartitionOptions::ThreadCache::kEnabled,
@@ -122,7 +126,17 @@ base::ThreadSafePartitionRoot* Allocator() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
         base::PartitionOptions::Quarantine::kAllowed,
-        base::PartitionOptions::RefCount::kEnabled,
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+        base::PartitionOptions::Cookies::kAllowed,
+#else
+        base::PartitionOptions::Cookies::kDisallowed,
+#endif
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC) || \
+    BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+        base::PartitionOptions::RefCount::kAllowed,
+#else
+        base::PartitionOptions::RefCount::kDisallowed,
+#endif
   });
   g_root_.store(new_root, std::memory_order_release);
 
@@ -136,28 +150,25 @@ base::ThreadSafePartitionRoot* OriginalAllocator() {
 }
 
 base::ThreadSafePartitionRoot* AlignedAllocator() {
-#if !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) || \
-                        BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
-  // There are no tags or cookies in front of the allocation, so the regular
-  // allocator provides suitably aligned memory already.
-  return Allocator();
-#else
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
   // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
       base::PartitionOptions {
-        base::PartitionOptions::Alignment::kAlignedAlloc,
+        base::PartitionOptions::AlignedAlloc::kAllowed,
             base::PartitionOptions::ThreadCache::kDisabled,
             base::PartitionOptions::Quarantine::kAllowed,
+            base::PartitionOptions::Cookies::kDisallowed,
 #if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
             // Given the outer #if, this is possible only when DCHECK_IS_ON().
-            base::PartitionOptions::RefCount::kEnabled
+            base::PartitionOptions::RefCount::kAllowed,
 #else
-            base::PartitionOptions::RefCount::kDisabled
+            base::PartitionOptions::RefCount::kDisallowed,
 #endif
       });
   return aligned_allocator.get();
-#endif  // !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) ||
-        //                     BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
+#else   // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+  return Allocator();
+#endif  // BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
 }
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86)
@@ -393,11 +404,20 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 
   auto* new_root = new (g_allocator_buffer_for_ref_count_config)
       base::ThreadSafePartitionRoot({
-          base::PartitionOptions::Alignment::kRegular,
-          base::PartitionOptions::ThreadCache::kEnabled,
-          base::PartitionOptions::Quarantine::kAllowed,
-          enable_ref_count ? base::PartitionOptions::RefCount::kEnabled
-                           : base::PartitionOptions::RefCount::kDisabled,
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+        base::PartitionOptions::AlignedAlloc::kDisallowed,
+#else
+        base::PartitionOptions::AlignedAlloc::kAllowed,
+#endif
+            base::PartitionOptions::ThreadCache::kEnabled,
+            base::PartitionOptions::Quarantine::kAllowed,
+#if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC)
+            base::PartitionOptions::Cookies::kAllowed,
+#else
+            base::PartitionOptions::Cookies::kDisallowed,
+#endif
+            enable_ref_count ? base::PartitionOptions::RefCount::kAllowed
+                             : base::PartitionOptions::RefCount::kDisallowed,
       });
   g_root_.store(new_root, std::memory_order_release);
   g_original_root_ = current_root;

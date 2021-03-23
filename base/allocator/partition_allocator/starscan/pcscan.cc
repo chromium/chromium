@@ -152,10 +152,11 @@ static_assert(kSuperPageSize >= sizeof(QuarantineCardTable),
 
 ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   static base::NoDestructor<ThreadSafePartitionRoot> allocator{
-      PartitionOptions{PartitionOptions::Alignment::kRegular,
+      PartitionOptions{PartitionOptions::AlignedAlloc::kDisallowed,
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
-                       PartitionOptions::RefCount::kDisabled}};
+                       PartitionOptions::Cookies::kAllowed,
+                       PartitionOptions::RefCount::kDisallowed}};
   return *allocator;
 }
 

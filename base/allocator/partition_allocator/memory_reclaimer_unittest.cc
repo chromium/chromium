@@ -39,10 +39,11 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
     PartitionAllocGlobalInit(HandleOOM);
     PartitionAllocMemoryReclaimer::Instance()->ResetForTesting();
     allocator_ = std::make_unique<PartitionAllocator>();
-    allocator_->init({PartitionOptions::Alignment::kRegular,
+    allocator_->init({PartitionOptions::AlignedAlloc::kDisallowed,
                       PartitionOptions::ThreadCache::kDisabled,
                       PartitionOptions::Quarantine::kAllowed,
-                      PartitionOptions::RefCount::kDisabled});
+                      PartitionOptions::Cookies::kAllowed,
+                      PartitionOptions::RefCount::kDisallowed});
   }
 
   void TearDown() override {

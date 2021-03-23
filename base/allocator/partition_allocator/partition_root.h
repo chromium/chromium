@@ -96,26 +96,18 @@ enum PartitionPurgeFlags {
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
-  enum class Alignment : uint8_t {
+  enum class AlignedAlloc : uint8_t {
     // By default all allocations will be aligned to `base::kAlignment`,
     // likely to be 8B or 16B depending on platforms and toolchains.
-    kRegular,
-
-    // In addition to the above alignment enforcement, this option allows using
-    // AlignedAlloc() which can align at a larger boundary.  This option comes
-    // at a cost of disallowing cookies on Debug builds and ref-count for
-    // CheckedPtr. It also causes all allocations to go outside of GigaCage, so
-    // that CheckedPtr can easily tell if a pointer comes with a ref-count or
-    // not.
-    kAlignedAlloc,
+    // AlignedAlloc() allows to enforce higher alignment.
+    // This option determines whether it is supported for the partition.
+    // Allowing AlignedAlloc() comes at a cost of disallowing extras in front
+    // of the allocation.
+    kDisallowed,
+    kAllowed,
   };
 
   enum class ThreadCache : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
-
-  enum class RefCount : uint8_t {
     kDisabled,
     kEnabled,
   };
@@ -125,19 +117,32 @@ struct PartitionOptions {
     kAllowed,
   };
 
+  enum class Cookies : uint8_t {
+    kDisallowed,
+    kAllowed,
+  };
+
+  enum class RefCount : uint8_t {
+    kDisallowed,
+    kAllowed,
+  };
+
   // Constructor to suppress aggregate initialization.
-  constexpr PartitionOptions(Alignment alignment,
+  constexpr PartitionOptions(AlignedAlloc aligned_alloc,
                              ThreadCache thread_cache,
                              Quarantine quarantine,
+                             Cookies cookies,
                              RefCount ref_count)
-      : alignment(alignment),
+      : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
+        cookies(cookies),
         ref_count(ref_count) {}
 
-  Alignment alignment;
+  AlignedAlloc aligned_alloc;
   ThreadCache thread_cache;
   Quarantine quarantine;
+  Cookies cookies;
   RefCount ref_count;
 };
 
@@ -175,8 +180,9 @@ struct BASE_EXPORT PartitionRoot {
   bool with_thread_cache = false;
   const bool is_thread_safe = thread_safe;
 
-  bool allow_ref_count;
+  bool allow_aligned_alloc;
   bool allow_cookies;
+  bool allow_ref_count;
 
   // Lazy commit should only be enabled on Windows, because commit charge is
   // only meaningful and limited on Windows. It affects performance on other
@@ -1434,10 +1440,11 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
   // size. The code below adjusts the request size to be a power of two.
   // TODO(bartekn): Handle requests larger than partition page.
   //
-  // Extras before the allocation are forbidden as they shit the returned
+  // Extras before the allocation are forbidden as they shift the returned
   // allocation from the beginning of the slot, thus messing up alignment.
   // Extras after the allocation are acceptable, but they have to be taken into
   // account in the request size calculation to avoid crbug.com/1185484.
+  PA_DCHECK(allow_aligned_alloc);
   PA_DCHECK(!extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(base::bits::IsPowerOfTwo(alignment));

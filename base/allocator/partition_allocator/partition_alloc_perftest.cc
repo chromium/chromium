@@ -90,10 +90,11 @@ class PartitionAllocator : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{{PartitionOptions::Alignment::kRegular,
+  ThreadSafePartitionRoot alloc_{{PartitionOptions::AlignedAlloc::kDisallowed,
                                   PartitionOptions::ThreadCache::kDisabled,
                                   PartitionOptions::Quarantine::kDisallowed,
-                                  PartitionOptions::RefCount::kDisabled}};
+                                  PartitionOptions::Cookies::kAllowed,
+                                  PartitionOptions::RefCount::kDisallowed}};
 };
 
 // Only one partition with a thread cache.
@@ -103,10 +104,11 @@ class PartitionAllocatorWithThreadCache : public Allocator {
   PartitionAllocatorWithThreadCache() {
     if (!g_partition_root) {
       g_partition_root = new ThreadSafePartitionRoot(
-          {PartitionOptions::Alignment::kRegular,
+          {PartitionOptions::AlignedAlloc::kDisallowed,
            PartitionOptions::ThreadCache::kEnabled,
            PartitionOptions::Quarantine::kDisallowed,
-           PartitionOptions::RefCount::kDisabled});
+           PartitionOptions::Cookies::kAllowed,
+           PartitionOptions::RefCount::kDisallowed});
     }
     internal::ThreadCacheRegistry::Instance().PurgeAll();
   }

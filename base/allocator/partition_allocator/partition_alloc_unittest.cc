@@ -188,14 +188,16 @@ class PartitionAllocTest : public testing::Test {
 
   void SetUp() override {
     PartitionAllocGlobalInit(HandleOOM);
-    allocator.init({PartitionOptions::Alignment::kRegular,
+    allocator.init({PartitionOptions::AlignedAlloc::kDisallowed,
                     PartitionOptions::ThreadCache::kDisabled,
                     PartitionOptions::Quarantine::kDisallowed,
-                    PartitionOptions::RefCount::kEnabled});
-    aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc,
+                    PartitionOptions::Cookies::kAllowed,
+                    PartitionOptions::RefCount::kAllowed});
+    aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
                             PartitionOptions::ThreadCache::kDisabled,
                             PartitionOptions::Quarantine::kDisallowed,
-                            PartitionOptions::RefCount::kDisabled});
+                            PartitionOptions::Cookies::kDisallowed,
+                            PartitionOptions::RefCount::kDisallowed});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }
 
@@ -2993,10 +2995,11 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
 
   // Create a new root
   auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>({
-      base::PartitionOptions::Alignment::kRegular,
+      base::PartitionOptions::AlignedAlloc::kDisallowed,
       base::PartitionOptions::ThreadCache::kDisabled,
       base::PartitionOptions::Quarantine::kDisallowed,
-      base::PartitionOptions::RefCount::kDisabled,
+      base::PartitionOptions::Cookies::kAllowed,
+      base::PartitionOptions::RefCount::kDisallowed,
   });
 
   // Realloc from |allocator.root()| into |new_root|.

@@ -42,10 +42,11 @@ void NonScannableAllocator::Free(void* ptr) {
 
 void NonScannableAllocator::EnablePCScan() {
   allocator_ = std::make_unique<base::PartitionAllocator>();
-  allocator_->init(PartitionOptions(PartitionOptions::Alignment::kRegular,
+  allocator_->init(PartitionOptions(PartitionOptions::AlignedAlloc::kDisallowed,
                                     PartitionOptions::ThreadCache::kDisabled,
                                     PartitionOptions::Quarantine::kAllowed,
-                                    PartitionOptions::RefCount::kDisabled));
+                                    PartitionOptions::Cookies::kAllowed,
+                                    PartitionOptions::RefCount::kDisallowed));
   auto& pcscan = internal::PCScan::Instance();
   pcscan.RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);

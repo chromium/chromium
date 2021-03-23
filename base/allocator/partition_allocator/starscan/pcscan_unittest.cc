@@ -21,10 +21,11 @@ class PCScanTest : public testing::Test {
  public:
   PCScanTest() {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
-    allocator_.init({PartitionOptions::Alignment::kRegular,
+    allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::RefCount::kDisabled});
+                     PartitionOptions::Cookies::kAllowed,
+                     PartitionOptions::RefCount::kDisallowed});
     PCScan::Instance().RegisterScannableRoot(allocator_.root());
   }
   ~PCScanTest() override {
@@ -324,14 +325,18 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
-                                       PartitionOptions::ThreadCache::kDisabled,
-                                       PartitionOptions::Quarantine::kAllowed,
-                                       PartitionOptions::RefCount::kDisabled});
-  ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
-                                      PartitionOptions::ThreadCache::kDisabled,
-                                      PartitionOptions::Quarantine::kAllowed,
-                                      PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot source_root(
+      {PartitionOptions::AlignedAlloc::kDisallowed,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
+  ThreadSafePartitionRoot value_root(
+      {PartitionOptions::AlignedAlloc::kDisallowed,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
 
   PCScan::Instance().RegisterScannableRoot(&source_root);
   PCScan::Instance().RegisterScannableRoot(&value_root);
@@ -347,14 +352,18 @@ TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
-  ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
-                                       PartitionOptions::ThreadCache::kDisabled,
-                                       PartitionOptions::Quarantine::kAllowed,
-                                       PartitionOptions::RefCount::kDisabled});
-  ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
-                                      PartitionOptions::ThreadCache::kDisabled,
-                                      PartitionOptions::Quarantine::kAllowed,
-                                      PartitionOptions::RefCount::kDisabled});
+  ThreadSafePartitionRoot source_root(
+      {PartitionOptions::AlignedAlloc::kDisallowed,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
+  ThreadSafePartitionRoot value_root(
+      {PartitionOptions::AlignedAlloc::kDisallowed,
+       PartitionOptions::ThreadCache::kDisabled,
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
 
   PCScan::Instance().RegisterScannableRoot(&source_root);
   PCScan::Instance().RegisterNonScannableRoot(&value_root);
@@ -371,15 +380,17 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
   using ValueList = SourceList;
 
   ThreadSafePartitionRoot source_root(
-      {PartitionOptions::Alignment::kRegular,
+      {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::RefCount::kDisabled});
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
   ThreadSafePartitionRoot value_root(
-      {PartitionOptions::Alignment::kRegular,
+      {PartitionOptions::AlignedAlloc::kDisallowed,
        PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::RefCount::kDisabled});
+       PartitionOptions::Quarantine::kAllowed,
+       PartitionOptions::Cookies::kAllowed,
+       PartitionOptions::RefCount::kDisallowed});
 
   PCScan::Instance().RegisterNonScannableRoot(&source_root);
   PCScan::Instance().RegisterScannableRoot(&value_root);

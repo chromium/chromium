@@ -74,10 +74,12 @@ void Partitions::Initialize() {
 bool Partitions::InitializeOnce() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   static base::NoDestructor<base::PartitionAllocator> fast_malloc_allocator{};
-  fast_malloc_allocator->init({base::PartitionOptions::Alignment::kRegular,
-                               base::PartitionOptions::ThreadCache::kEnabled,
-                               base::PartitionOptions::Quarantine::kAllowed,
-                               base::PartitionOptions::RefCount::kDisabled});
+  fast_malloc_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kEnabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookies::kAllowed,
+       base::PartitionOptions::RefCount::kDisallowed});
 
   fast_malloc_root_ = fast_malloc_allocator->root();
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -89,18 +91,22 @@ bool Partitions::InitializeOnce() {
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
-  array_buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
-                                base::PartitionOptions::ThreadCache::kDisabled,
-                                base::PartitionOptions::Quarantine::kAllowed,
-                                base::PartitionOptions::RefCount::kDisabled});
-  buffer_allocator->init({base::PartitionOptions::Alignment::kRegular,
+  array_buffer_allocator->init(
+      {base::PartitionOptions::AlignedAlloc::kDisallowed,
+       base::PartitionOptions::ThreadCache::kDisabled,
+       base::PartitionOptions::Quarantine::kAllowed,
+       base::PartitionOptions::Cookies::kAllowed,
+       base::PartitionOptions::RefCount::kDisallowed});
+  buffer_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
                           base::PartitionOptions::ThreadCache::kDisabled,
                           base::PartitionOptions::Quarantine::kAllowed,
-                          base::PartitionOptions::RefCount::kDisabled});
-  layout_allocator->init({base::PartitionOptions::Alignment::kRegular,
+                          base::PartitionOptions::Cookies::kAllowed,
+                          base::PartitionOptions::RefCount::kDisallowed});
+  layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
                           base::PartitionOptions::ThreadCache::kDisabled,
                           base::PartitionOptions::Quarantine::kAllowed,
-                          base::PartitionOptions::RefCount::kDisabled});
+                          base::PartitionOptions::Cookies::kAllowed,
+                          base::PartitionOptions::RefCount::kDisallowed});
 
   array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();

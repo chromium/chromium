@@ -99,7 +99,7 @@ declare_args() {
 assert(!enable_mutex_priority_inheritance || is_chromecast,
        "Do not enable PI mutexes without consulting the security team")
 
-# Prevent using BackupRefPtr when PartitionAlloc - Everywhere isn't used.
+# Prevent using BackupRefPtr when PartitionAlloc-Everywhere isn't used.
 # In theory, such a configuration is possible, but its scope would be limited
 # only Blink partitions, which is currently not tested. Better to trigger an
 # error, than have BackupRefPtr silently disabled while believing it is enabled.
@@ -2433,6 +2433,16 @@ should_place_ref_count_at_end_of_allocation =
 should_use_gigacage_blocklist =
     use_gigacage_blocklist && should_use_backup_ref_ptr
 
+# AlignedAlloc relies on natural alignment offered by the allocator (see the
+# comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of the
+# allocation will mess up that alignment. Such extras are used when DCHECK is
+# on or when BackupRefPtr is on (but not when ref-count is after allocation). In
+# these cases, we have to create a separate, small partition, dedicated to
+# handle only aligned allocations, where those extras are disabled.
+use_dedicated_partition_for_aligned_alloc =
+    dcheck_always_on ||
+    (should_use_backup_ref_ptr && !should_place_ref_count_at_end_of_allocation)
+
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
   header_dir = "base"
@@ -2445,6 +2455,7 @@ buildflag_header("partition_alloc_buildflags") {
     "REF_COUNT_AT_END_OF_ALLOCATION=$should_place_ref_count_at_end_of_allocation",
     "USE_GIGACAGE_BLOCKLIST=$should_use_gigacage_blocklist",
     "MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE=$make_gigacage_granularity_partition_page_size",
+    "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$use_dedicated_partition_for_aligned_alloc",
   ]
 }
 

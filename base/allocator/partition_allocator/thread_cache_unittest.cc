@@ -73,10 +73,11 @@ class DeltaCounter {
 //
 // Forbid extras, since they make finding out which bucket is used harder.
 NoDestructor<ThreadSafePartitionRoot> g_root{
-    PartitionOptions{PartitionOptions::Alignment::kAlignedAlloc,
+    PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
                      PartitionOptions::ThreadCache::kEnabled,
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::RefCount::kDisabled}};
+                     PartitionOptions::Cookies::kDisallowed,
+                     PartitionOptions::RefCount::kDisallowed}};
 
 size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
   uint16_t bucket_index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(size);
@@ -201,10 +202,11 @@ TEST_F(ThreadCacheTest, Purge) {
 }
 
 TEST_F(ThreadCacheTest, NoCrossPartitionCache) {
-  ThreadSafePartitionRoot root{{PartitionOptions::Alignment::kAlignedAlloc,
+  ThreadSafePartitionRoot root{{PartitionOptions::AlignedAlloc::kAllowed,
                                 PartitionOptions::ThreadCache::kDisabled,
                                 PartitionOptions::Quarantine::kAllowed,
-                                PartitionOptions::RefCount::kDisabled}};
+                                PartitionOptions::Cookies::kDisallowed,
+                                PartitionOptions::RefCount::kDisallowed}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = root.Alloc(kSmallSize, "");

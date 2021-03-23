@@ -711,10 +711,10 @@ void HandleOOM(size_t unused_size) {
 }
 
 static constexpr PartitionOptions kOpts = {
-    PartitionOptions::Alignment::kRegular,
+    PartitionOptions::AlignedAlloc::kDisallowed,
     PartitionOptions::ThreadCache::kDisabled,
-    base::PartitionOptions::Quarantine::kDisallowed,
-    PartitionOptions::RefCount::kEnabled};
+    PartitionOptions::Quarantine::kDisallowed,
+    PartitionOptions::Cookies::kAllowed, PartitionOptions::RefCount::kAllowed};
 
 TEST(BackupRefPtrImpl, Basic) {
   // This test works only if GigaCage is enabled. Bail out otherwise.
