@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <drm_fourcc.h>
+
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
@@ -175,11 +181,18 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
   ~WaylandSurfaceFactoryTest() override = default;
 
   void SetUp() override {
+    const base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
+        kSupportedFormatsWithModifiers{
+            {gfx::BufferFormat::BGRA_8888, {DRM_FORMAT_MOD_LINEAR}}};
+
     WaylandTest::SetUp();
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(manager_ptr), {}, false, true,
-                                    false);
+    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
+                                    kSupportedFormatsWithModifiers,
+                                    /*supports_dma_buf=*/false,
+                                    /*supports_viewporter=*/true,
+                                    /*supports_acquire_fence=*/false);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();
