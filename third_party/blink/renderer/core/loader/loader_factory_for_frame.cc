@@ -152,9 +152,15 @@ void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
     mojom::blink::LocalFrameHost& local_frame_host,
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
   DCHECK(pending_receiver);
-  if (request.GetKeepalive()) {
+  if (request.GetKeepalive() && keep_alive_handle_factory_.is_bound()) {
     keep_alive_handle_factory_->IssueKeepAliveHandle(
         std::move(pending_receiver));
+  }
+
+  if (!keep_alive_handle_factory_.is_bound()) {
+    // TODO(crbug.com/1188074): Remove this CHECK once the investigation is
+    // done.
+    CHECK(window_->IsContextDestroyed());
   }
 }
 
