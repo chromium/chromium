@@ -130,6 +130,21 @@ component("policies") {
   ]
 }
 
+source_set("mdm_utils") {
+  sources = [
+    "mdm_utils.cc",
+    "mdm_utils.h",
+  ]
+  public_configs = [ ":gaiacp_config" ]
+  deps = [
+    ":policies",
+    ":util",
+    "//base",
+    "//build:branding_buildflags",
+    "//url:url",
+  ]
+}
+
 # This static library is shared with the test code.
 
 source_set("gaiacp_lib") {
@@ -163,8 +178,6 @@ source_set("gaiacp_lib") {
     "initguid.cc",
     "internet_availability_checker.cc",
     "internet_availability_checker.h",
-    "mdm_utils.cc",
-    "mdm_utils.h",
     "os_process_manager.cc",
     "os_process_manager.h",
     "password_recovery_manager.cc",
@@ -179,6 +192,7 @@ source_set("gaiacp_lib") {
   public_deps = [ ":common" ]
   deps = [
     ":gaia_credential_provider_idl",
+    ":mdm_utils",
     ":policies",
     ":static_resources",
     ":string_resources",
@@ -278,6 +292,7 @@ shared_library("gaia1_0") {
   deps = [
     ":common",
     ":gaiacp_lib",
+    ":mdm_utils",
     ":policies",
     ":util",
     ":version",

@@ -488,6 +488,11 @@ HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties) {
   return hr;
 }
 
+bool IsEnrolledWithGoogleMdm() {
+  base::string16 mdm_url = GetMdmUrl();
+  return !mdm_url.empty() && IsEnrolledWithGoogleMdm(mdm_url);
+}
+
 std::wstring GetUserPasswordLsaStoreKey(const std::wstring& sid) {
   DCHECK(sid.size());
 
