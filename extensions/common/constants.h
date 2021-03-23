@@ -233,7 +233,7 @@ extern const char kGoogleKeepAppId[];
 extern const char kYoutubeAppId[];
 
 // The extension id of the Youtube PWA.
-extern const char kYoutubePwaLauncherAppId[];
+extern const char kYoutubePwaAppId[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.

@@ -86,7 +86,7 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
   if (app_id == extensions::kWebStoreAppId)
     return DemoModeApp::kWebStore;
   if (app_id == extension_misc::kYoutubeAppId ||
-      app_id == extension_misc::kYoutubePwaLauncherAppId) {
+      app_id == extension_misc::kYoutubePwaAppId) {
     return DemoModeApp::kYouTube;
   }
 
