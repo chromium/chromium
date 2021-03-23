@@ -67,6 +67,14 @@ Database* DOMWindowWebDatabase::openDatabase(
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);
 
+    if (const Frame* top_frame = window.top()->GetFrame()) {
+      if (!top_frame->GetSecurityContext()->GetSecurityOrigin()->IsSameSiteWith(
+              window.GetSecurityContext().GetSecurityOrigin())) {
+        UseCounter::Count(window,
+                          WebFeature::kOpenWebDatabaseThirdPartyContext);
+      }
+    }
+
     String error_message;
     database = db_manager.OpenDatabase(&window, name, version, display_name,
                                        creation_callback, error, error_message);

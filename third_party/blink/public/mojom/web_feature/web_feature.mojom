@@ -3171,6 +3171,7 @@ enum WebFeature {
   kXRImageTracking = 3862,
   kXRSessionGetTrackedImageScores = 3863,
   kXRFrameGetImageTrackingResults = 3864,
+  kOpenWebDatabaseThirdPartyContext = 3865,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
