@@ -926,7 +926,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
   // If country code is missing, libaddressinput won't be used to format the
   // address. In this case the suggestion might include a multi-line street
   // address which needs to be flattened.
-  base::ReplaceChars(label, base::ASCIIToUTF16("\n"), separator, &label);
+  base::ReplaceChars(label, u"\n", separator, &label);
 
   return label;
 }

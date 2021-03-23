@@ -853,7 +853,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletAddressData) {
 TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
   // Create a card to be synced from the server.
   CreditCard card = test::GetMaskedServerCard();
-  card.SetNickname(base::ASCIIToUTF16("Grocery card"));
+  card.SetNickname(u"Grocery card");
   // Set the card issuer to Google.
   card.set_card_issuer(CreditCard::Issuer::GOOGLE);
   AutofillWalletSpecifics card_specifics;

@@ -324,8 +324,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
     return false;
 
   // Filter out years.
-  const std::u16string kNumericalYearRe =
-      base::ASCIIToUTF16("[1-9][0-9][0-9][0-9]");
+  const std::u16string kNumericalYearRe = u"[1-9][0-9][0-9][0-9]";
   for (const auto& value : field->option_values) {
     if (MatchesPattern(value, kNumericalYearRe))
       return false;
@@ -336,7 +335,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
   }
 
   // Look for numerical months.
-  const std::u16string kNumericalMonthRe = base::ASCIIToUTF16("12");
+  const std::u16string kNumericalMonthRe = u"12";
   if (MatchesPattern(field->option_values.back(), kNumericalMonthRe) ||
       MatchesPattern(field->option_contents.back(), kNumericalMonthRe)) {
     return true;
@@ -363,7 +362,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   // Filter out days - elements for date entries would have
   // numbers 1 to 9 as well in them, which we can filter on.
-  const std::u16string kSingleDigitDateRe = base::ASCIIToUTF16("\\b[1-9]\\b");
+  const std::u16string kSingleDigitDateRe = u"\\b[1-9]\\b";
   for (const auto& value : field->option_contents) {
     if (MatchesPattern(value, kSingleDigitDateRe)) {
       return false;
@@ -381,7 +380,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   // Filter out birth years - a website would not offer 1999 as a credit card
   // expiration year, but show it in the context of a birth year selector.
-  const std::u16string kBirthYearRe = base::ASCIIToUTF16("(1999|99)");
+  const std::u16string kBirthYearRe = u"(1999|99)";
   for (const auto& value : field->option_contents) {
     if (MatchesPattern(value, kBirthYearRe)) {
       return false;
@@ -586,12 +585,12 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
 
   // If that fails, look for just MM and/or YY(YY).
   scanner->RewindTo(month_year_saved_cursor);
-  if (ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^mm$"), kMatchCCType,
+  if (ParseFieldSpecifics(scanner, u"^mm$", kMatchCCType,
                           cc_exp_month_before_year_patterns, &expiration_month_,
                           {log_manager_, "^mm$"}) &&
-      ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^(yy|yyyy)$"),
-                          kMatchCCType, cc_exp_year_after_month_patterns,
-                          &expiration_year_, {log_manager_, "^(yy|yyyy)$"})) {
+      ParseFieldSpecifics(scanner, u"^(yy|yyyy)$", kMatchCCType,
+                          cc_exp_year_after_month_patterns, &expiration_year_,
+                          {log_manager_, "^(yy|yyyy)$"})) {
     return true;
   }
 

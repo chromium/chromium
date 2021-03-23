@@ -230,12 +230,11 @@ TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
 
 TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   std::vector<AddressToken> expected_tokens = {
-      {base::ASCIIToUTF16("AnD"), base::ASCIIToUTF16("and"), 1},
-      {base::ASCIIToUTF16("anotherOne"), base::ASCIIToUTF16("anotherone"), 2},
-      {base::ASCIIToUTF16("valUe"), base::ASCIIToUTF16("value"), 0}};
+      {u"AnD", u"and", 1},
+      {u"anotherOne", u"anotherone", 2},
+      {u"valUe", u"value", 0}};
 
-  EXPECT_EQ(TokenizeValue(base::ASCIIToUTF16("  valUe AnD    anotherOne")),
-            expected_tokens);
+  EXPECT_EQ(TokenizeValue(u"  valUe AnD    anotherOne"), expected_tokens);
 
   std::vector<AddressToken> expected_cjk_tokens = {
       {u"영", u"영", 1}, {u"이", u"이", 0}, {u"호", u"호", 2}};

@@ -65,12 +65,10 @@ TEST(AddressFormLabelFormatterTest,
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_LINE1, GetFieldTypes());
 
-  EXPECT_THAT(formatter->GetLabels(),
-              ElementsAre(ConstructLabelLine(
-                              {base::ASCIIToUTF16("John Kennedy"),
-                               base::ASCIIToUTF16("Brookline, MA 02445")}),
-                          base::ASCIIToUTF16("Hyannis, MA"),
-                          base::ASCIIToUTF16("Paul Revere"), std::u16string()));
+  EXPECT_THAT(
+      formatter->GetLabels(),
+      ElementsAre(ConstructLabelLine({u"John Kennedy", u"Brookline, MA 02445"}),
+                  u"Hyannis, MA", u"Paul Revere", std::u16string()));
 }
 
 TEST(AddressFormLabelFormatterTest,
@@ -104,10 +102,8 @@ TEST(AddressFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John Kennedy"),
-                                      base::ASCIIToUTF16("333 Washington St")}),
-                  base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("Paul Revere"), std::u16string()));
+      ElementsAre(ConstructLabelLine({u"John Kennedy", u"333 Washington St"}),
+                  u"151 Irving Ave", u"Paul Revere", std::u16string()));
 }
 
 TEST(AddressFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
@@ -127,10 +123,9 @@ TEST(AddressFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_FIRST, GetFieldTypes());
 
-  EXPECT_THAT(
-      formatter->GetLabels(),
-      ElementsAre(base::ASCIIToUTF16("333 Washington St, Brookline, MA 02445"),
-                  base::ASCIIToUTF16("151 Irving Ave, Hyannis, MA 02601")));
+  EXPECT_THAT(formatter->GetLabels(),
+              ElementsAre(u"333 Washington St, Brookline, MA 02445",
+                          u"151 Irving Ave, Hyannis, MA 02601"));
 }
 
 TEST(AddressFormLabelFormatterTest,
@@ -145,10 +140,10 @@ TEST(AddressFormLabelFormatterTest,
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_LINE1, GetFieldTypes());
 
-  EXPECT_THAT(formatter->GetLabels(),
-              ElementsAre(ConstructLabelLine(
-                  {base::ASCIIToUTF16("Tarsila Amaral"),
-                   u"Vila Mariana, São Paulo-SP, 04094-050"})));
+  EXPECT_THAT(
+      formatter->GetLabels(),
+      ElementsAre(ConstructLabelLine(
+          {u"Tarsila Amaral", u"Vila Mariana, São Paulo-SP, 04094-050"})));
 }
 
 TEST(AddressFormLabelFormatterTest,
@@ -163,10 +158,9 @@ TEST(AddressFormLabelFormatterTest,
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_ZIP, GetFieldTypes());
 
-  EXPECT_THAT(
-      formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("Tarsila Amaral"),
-                                      u"Av. Pedro Álvares Cabral, 1301"})));
+  EXPECT_THAT(formatter->GetLabels(),
+              ElementsAre(ConstructLabelLine(
+                  {u"Tarsila Amaral", u"Av. Pedro Álvares Cabral, 1301"})));
 }
 
 TEST(AddressFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
@@ -200,8 +194,7 @@ TEST(AddressFormLabelFormatterTest, GetLabelsForFormWithoutName) {
        ADDRESS_HOME_ZIP});
 
   // Checks that the name does not appear in the labels.
-  EXPECT_THAT(formatter->GetLabels(),
-              ElementsAre(base::ASCIIToUTF16("Boston, MA 02113")));
+  EXPECT_THAT(formatter->GetLabels(), ElementsAre(u"Boston, MA 02113"));
 }
 
 }  // namespace

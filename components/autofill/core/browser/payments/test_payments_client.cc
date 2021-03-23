@@ -70,8 +70,8 @@ void TestPaymentsClient::GetUploadDetails(
   std::move(callback).Run(
       app_locale == "en-US" ? AutofillClient::SUCCESS
                             : AutofillClient::PERMANENT_FAILURE,
-      base::ASCIIToUTF16("this is a context token"),
-      TestPaymentsClient::LegalMessage(), supported_card_bin_ranges_);
+      u"this is a context token", TestPaymentsClient::LegalMessage(),
+      supported_card_bin_ranges_);
 }
 
 void TestPaymentsClient::UploadCard(

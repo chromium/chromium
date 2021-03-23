@@ -27,8 +27,7 @@ std::u16string AddressComponentWithRewriter::RewriteValue(
   std::u16string country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
   // If no country is available (this should not be the case for a valid
   // importable profile), use the US as a fallback country for the rewriter.
-  return RewriterCache::Rewrite(
-      !country.empty() ? country : base::ASCIIToUTF16("US"), value);
+  return RewriterCache::Rewrite(!country.empty() ? country : u"US", value);
 }
 
 std::u16string AddressComponentWithRewriter::ValueForComparison() const {
@@ -190,9 +189,8 @@ void StreetAddress::SetValue(std::u16string value, VerificationStatus status) {
 
 void StreetAddress::CalculateAddressLines() {
   // Recalculate |address_lines_| after changing the street address.
-  address_lines_ =
-      base::SplitString(GetValue(), base::ASCIIToUTF16("\n"),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  address_lines_ = base::SplitString(GetValue(), u"\n", base::TRIM_WHITESPACE,
+                                     base::SPLIT_WANT_ALL);
 
   // If splitting of the address line results in more than 3 entries, join the
   // additional entries into the third line.
@@ -200,7 +198,7 @@ void StreetAddress::CalculateAddressLines() {
     address_lines_[2] =
         base::JoinString(std::vector<std::u16string>(address_lines_.begin() + 2,
                                                      address_lines_.end()),
-                         base::ASCIIToUTF16(" "));
+                         u" ");
     // Drop the addition address lines.
     while (address_lines_.size() > 3)
       address_lines_.pop_back();
@@ -271,8 +269,7 @@ bool StreetAddress::ConvertAndSetValueForAdditionalFieldTypeName(
   // By calling the base class implementation, the recreation of the address
   // lines from the street address is omitted.
   if (change) {
-    AddressComponent::SetValue(
-        base::JoinString(address_lines_, base::ASCIIToUTF16("\n")), status);
+    AddressComponent::SetValue(base::JoinString(address_lines_, u"\n"), status);
   }
 
   return true;

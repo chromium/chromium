@@ -240,12 +240,12 @@ class PaymentsClientTest : public testing::Test {
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetCreditCard();
     if (include_cvc)
-      request_details.cvc = base::ASCIIToUTF16("123");
+      request_details.cvc = u"123";
     if (include_nickname) {
-      upstream_nickname_ = base::ASCIIToUTF16("grocery");
+      upstream_nickname_ = u"grocery";
       request_details.card.SetNickname(upstream_nickname_);
     }
-    request_details.context_token = base::ASCIIToUTF16("context token");
+    request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
     request_details.app_locale = "language-LOCALE";
     request_details.profiles = BuildTestProfiles();
@@ -258,14 +258,14 @@ class PaymentsClientTest : public testing::Test {
   void StartMigrating(bool has_cardholder_name,
                       bool set_nickname_for_first_card = false) {
     PaymentsClient::MigrationRequestDetails request_details;
-    request_details.context_token = base::ASCIIToUTF16("context token");
+    request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
     request_details.app_locale = "language-LOCALE";
 
     migratable_credit_cards_.clear();
     CreditCard card1 = test::GetCreditCard();
     if (set_nickname_for_first_card)
-      card1.SetNickname(base::ASCIIToUTF16("grocery"));
+      card1.SetNickname(u"grocery");
     CreditCard card2 = test::GetCreditCard2();
     if (!has_cardholder_name) {
       card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");

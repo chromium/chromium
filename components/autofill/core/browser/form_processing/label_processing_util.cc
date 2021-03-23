@@ -65,8 +65,7 @@ base::Optional<std::vector<std::u16string>> GetParseableLabels(
 
     // Otherwise, try to split the label by single character separators.
     LabelPieces label_components = base::SplitStringPiece(
-        label, base::ASCIIToUTF16("/,&-"), base::TRIM_WHITESPACE,
-        base::SPLIT_WANT_NONEMPTY);
+        label, u"/,&-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
     // If the number of components does not match, try to split by common
     // separating words.

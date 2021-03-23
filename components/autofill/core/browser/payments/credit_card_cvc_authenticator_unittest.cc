@@ -136,7 +136,7 @@ class CreditCardCVCAuthenticatorTest : public testing::Test {
 
     // Mock user response.
     payments::FullCardRequest::UserProvidedUnmaskDetails details;
-    details.cvc = base::ASCIIToUTF16("123");
+    details.cvc = u"123";
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.

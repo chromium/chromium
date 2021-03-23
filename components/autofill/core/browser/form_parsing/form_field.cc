@@ -284,8 +284,8 @@ bool FormField::ParseFieldSpecifics(
 // static
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
                                 AutofillField** match) {
-  return ParseFieldSpecifics(scanner, base::ASCIIToUTF16("^$"),
-                             MATCH_LABEL | MATCH_ALL_INPUTS, match);
+  return ParseFieldSpecifics(scanner, u"^$", MATCH_LABEL | MATCH_ALL_INPUTS,
+                             match);
 }
 
 // static

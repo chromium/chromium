@@ -238,10 +238,9 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
 std::u16string NameFull::GetBestFormatString() const {
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
       HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()))) {
-    return base::ASCIIToUTF16("${NAME_LAST}${NAME_FIRST}");
+    return u"${NAME_LAST}${NAME_FIRST}";
   }
-  return
-      base::ASCIIToUTF16("${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}");
+  return u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
 }
 NameFull::~NameFull() = default;
 

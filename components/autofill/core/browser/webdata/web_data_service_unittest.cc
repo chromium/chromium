@@ -143,10 +143,10 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
  protected:
   void SetUp() override {
     WebDataServiceTest::SetUp();
-    name1_ = ASCIIToUTF16("name1");
-    name2_ = ASCIIToUTF16("name2");
-    value1_ = ASCIIToUTF16("value1");
-    value2_ = ASCIIToUTF16("value2");
+    name1_ = u"name1";
+    name2_ = u"name2";
+    value1_ = u"value1";
+    value2_ = u"value2";
 
     void (AutofillWebDataService::*add_observer_func)(
         AutofillWebDataServiceObserverOnDBSequence*) =
@@ -331,12 +331,12 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   // The GUIDs are alphabetical for easier testing.
   AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B",
                            std::string());
-  profile1.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Abe"));
+  profile1.SetRawInfo(NAME_FIRST, u"Abe");
   profile1.FinalizeAfterImport();
 
   AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15",
                            std::string());
-  profile2.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Alice"));
+  profile2.SetRawInfo(NAME_FIRST, u"Alice");
   profile2.FinalizeAfterImport();
 
   EXPECT_CALL(observer_, AutofillProfileChanged(_))
@@ -358,7 +358,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   EXPECT_EQ(profile1, *consumer.result()[1]);
 
   AutofillProfile profile2_changed(profile2);
-  profile2_changed.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bill"));
+  profile2_changed.SetRawInfo(NAME_FIRST, u"Bill");
   const AutofillProfileChange expected_change(
       AutofillProfileChange::UPDATE, profile2.guid(), &profile2_changed);
 
@@ -424,9 +424,9 @@ TEST_F(WebDataServiceAutofillTest, CreditCardRemove) {
 
 TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
   CreditCard card1("E4D2662E-5E16-44F3-AF5A-5A77FAE4A6F3", std::string());
-  card1.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("Abe"));
+  card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Abe");
   CreditCard card2("B9C52112-BD5F-4080-84E1-C651D2CB90E2", std::string());
-  card2.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("Alice"));
+  card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Alice");
 
   wds_->AddCreditCard(card1);
   wds_->AddCreditCard(card2);
@@ -442,7 +442,7 @@ TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
   EXPECT_EQ(card1, *consumer.result()[1]);
 
   CreditCard card2_changed(card2);
-  card2_changed.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("Bill"));
+  card2_changed.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Bill");
 
   wds_->UpdateCreditCard(card2_changed);
 

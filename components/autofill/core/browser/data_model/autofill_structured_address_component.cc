@@ -526,7 +526,7 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   // Collect all remaining tokens in the last subcomponent.
   std::u16string remaining_tokens = base::JoinString(
       std::vector<std::u16string>(token_iterator, space_separated_tokens.end()),
-      base::ASCIIToUTF16(" "));
+      u" ");
   // By design, it should be possible to assign the value unless the regular
   // expression is wrong.
   bool success = SetValueForTypeIfPossible(
@@ -634,9 +634,8 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       std::u16string placeholder(
           format_piece.substr(placeholder_start, i - placeholder_start));
 
-      std::vector<std::u16string> placeholder_tokens =
-          base::SplitString(placeholder, base::ASCIIToUTF16(";"),
-                            base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      std::vector<std::u16string> placeholder_tokens = base::SplitString(
+          placeholder, u";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       DCHECK(placeholder_tokens.size() > 0);
 
       // By convention, the first token is the type of the placeholder.
@@ -679,7 +678,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       format_piece.substr(processed_until_index, std::u16string::npos));
 
   // Build the final result.
-  return base::JoinString(inserted_values, base::ASCIIToUTF16(""));
+  return base::JoinString(inserted_values, u"");
 }
 
 bool AddressComponent::CompleteFullTree() {
@@ -1161,7 +1160,7 @@ void AddressComponent::ConsumeAdditionalToken(
     if (GetValue().empty()) {
       SetValue(token_value, VerificationStatus::kParsed);
     } else {
-      SetValue(base::StrCat({GetValue(), base::ASCIIToUTF16(" "), token_value}),
+      SetValue(base::StrCat({GetValue(), u" ", token_value}),
                VerificationStatus::kParsed);
     }
     return;
@@ -1176,9 +1175,8 @@ void AddressComponent::ConsumeAdditionalToken(
   }
 
   // Otherwise append the value to the first component.
-  subcomponents_[0]->SetValue(
-      base::StrCat({GetValue(), base::ASCIIToUTF16(" "), token_value}),
-      VerificationStatus::kParsed);
+  subcomponents_[0]->SetValue(base::StrCat({GetValue(), u" ", token_value}),
+                              VerificationStatus::kParsed);
 }
 
 bool AddressComponent::MergeSubsetComponent(

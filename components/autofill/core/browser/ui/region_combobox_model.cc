@@ -55,7 +55,7 @@ std::u16string RegionComboboxModel::GetItemAt(int index) const {
 
   // The separator item. Implemented for platforms that don't yet support
   // IsItemSeparatorAt().
-  return base::ASCIIToUTF16("---");
+  return u"---";
 }
 
 bool RegionComboboxModel::IsItemSeparatorAt(int index) const {

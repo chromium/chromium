@@ -39,8 +39,7 @@ bool ReplaceTemplatePlaceholders(
   // Both of these cases are noted in the header file, and are unlikely to
   // occur in any actual legal message.
   std::u16string template_icu_escaped;
-  base::ReplaceChars(template_icu, base::ASCIIToUTF16("$"),
-                     base::ASCIIToUTF16("$$"), &template_icu_escaped);
+  base::ReplaceChars(template_icu, u"$", u"$$", &template_icu_escaped);
 
   // Replace "{0}" -> "$1", "{1}" -> "$2", ... to prepare |template_dollars|
   // for ReplaceStringPlaceholders().
@@ -149,8 +148,7 @@ bool LegalMessageLine::ParseLine(const base::Value& line,
     // Italian.  Therefore, when |escape_apostrophes| is true, escape all
     // apostrophes in the string by doubling them up.
     // http://www.icu-project.org/apiref/icu4c/messagepattern_8h.html#af6e0757e0eb81c980b01ee5d68a9978b
-    base::ReplaceChars(template_icu, base::ASCIIToUTF16("'"),
-                       base::ASCIIToUTF16("''"), &template_icu);
+    base::ReplaceChars(template_icu, u"'", u"''", &template_icu);
   }
 
   // Replace the placeholders in |template_icu| with strings from

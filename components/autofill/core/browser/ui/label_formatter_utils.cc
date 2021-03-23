@@ -272,7 +272,7 @@ std::u16string GetLabelName(const std::vector<ServerFieldType>& types,
     AddLabelPartIfNotEmpty(GetLabelFirstName(profile, app_locale), &name_parts);
     AddLabelPartIfNotEmpty(profile.GetInfo(AutofillType(NAME_LAST), app_locale),
                            &name_parts);
-    return base::JoinString(name_parts, base::ASCIIToUTF16(" "));
+    return base::JoinString(name_parts, u" ");
   }
 
   if (has_first_name) {

@@ -434,8 +434,8 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   } else {
     // Split it by white spaces and commas into non-empty values.
     for (const auto& token :
-         base::SplitString(value, base::ASCIIToUTF16(", \n"),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+         base::SplitString(value, u", \n", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY)) {
       tokens.emplace_back(
           AddressToken{.value = token,
                        .normalized_value = NormalizeValue(token),

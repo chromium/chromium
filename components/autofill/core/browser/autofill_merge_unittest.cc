@@ -106,8 +106,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
       result += AutofillType::ServerFieldTypeToString(type);
       result += kFieldSeparator;
       if (!value.empty()) {
-        base::ReplaceFirstSubstringAfterOffset(
-            &value, 0, base::ASCIIToUTF16("\\n"), base::ASCIIToUTF16("\n"));
+        base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");
         result += " ";
         result += base::UTF16ToUTF8(value);
       }
@@ -244,7 +243,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
 
   // Create a test form.
   FormData form;
-  form.name = base::ASCIIToUTF16("MyTestForm");
+  form.name = u"MyTestForm";
   form.url = GURL("https://www.example.com/origin.html");
   form.action = GURL("https://www.example.com/action.html");
 
@@ -264,8 +263,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
         ++separator_pos;
       } while (separator_pos < line.size() && line[separator_pos] == ' ');
       std::u16string value = base::UTF8ToUTF16(line.substr(separator_pos));
-      base::ReplaceFirstSubstringAfterOffset(
-          &value, 0, base::ASCIIToUTF16("\\n"), base::ASCIIToUTF16("\n"));
+      base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");
 
       FormFieldData field;
       field.label = field_type;

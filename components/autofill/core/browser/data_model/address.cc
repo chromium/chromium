@@ -154,7 +154,7 @@ std::u16string Address::GetRawInfo(ServerFieldType type) const {
       return base::ASCIIToUTF16(country_code_);
 
     case ADDRESS_HOME_STREET_ADDRESS:
-      return base::JoinString(street_address_, base::ASCIIToUTF16("\n"));
+      return base::JoinString(street_address_, u"\n");
 
     case ADDRESS_HOME_APT_NUM:
       return std::u16string();
@@ -276,13 +276,11 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
     case ADDRESS_HOME_STREET_ADDRESS:
       // If the street address changes, the structured tokens must be reset.
-      if (base::SplitString(value, base::ASCIIToUTF16("\n"),
-                            base::TRIM_WHITESPACE,
+      if (base::SplitString(value, u"\n", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL) != street_address_) {
         ResetStructuredTokes();
-        street_address_ =
-            base::SplitString(value, base::ASCIIToUTF16("\n"),
-                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+        street_address_ = base::SplitString(value, u"\n", base::TRIM_WHITESPACE,
+                                            base::SPLIT_WANT_ALL);
       }
       break;
 

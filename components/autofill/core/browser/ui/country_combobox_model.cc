@@ -86,7 +86,7 @@ std::u16string CountryComboboxModel::GetItemAt(int index) const {
 
   // The separator item. Implemented for platforms that don't yet support
   // IsItemSeparatorAt().
-  return base::ASCIIToUTF16("---");
+  return u"---";
 }
 
 bool CountryComboboxModel::IsItemSeparatorAt(int index) const {

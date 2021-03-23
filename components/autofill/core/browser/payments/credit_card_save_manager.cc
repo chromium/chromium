@@ -64,12 +64,12 @@ std::u16string RemoveMiddleInitial(const std::u16string& name) {
   std::vector<base::StringPiece16> parts =
       base::SplitStringPiece(name, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() == 3 && (parts[1].length() == 1 ||
-                            (parts[1].length() == 2 &&
-                             base::EndsWith(parts[1], base::ASCIIToUTF16("."),
-                                            base::CompareCase::SENSITIVE)))) {
+  if (parts.size() == 3 &&
+      (parts[1].length() == 1 ||
+       (parts[1].length() == 2 &&
+        base::EndsWith(parts[1], u".", base::CompareCase::SENSITIVE)))) {
     parts.erase(parts.begin() + 1);
-    return base::JoinString(parts, base::ASCIIToUTF16(" "));
+    return base::JoinString(parts, u" ");
   }
   return name;
 }

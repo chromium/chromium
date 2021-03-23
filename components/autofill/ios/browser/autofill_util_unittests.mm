@@ -38,8 +38,8 @@ TEST_F(AutofillUtilTest, ExtractIDs) {
 TEST_F(AutofillUtilTest, ExtractFillingResults) {
   std::map<uint32_t, std::u16string> extracted_results;
   NSString* valid_results = @"{\"1\":\"username\",\"2\":\"adress\"}";
-  std::map<uint32_t, std::u16string> expected_result = {
-      {1, ASCIIToUTF16("username")}, {2, ASCIIToUTF16("adress")}};
+  std::map<uint32_t, std::u16string> expected_result = {{1, u"username"},
+                                                        {2, u"adress"}};
   EXPECT_TRUE(ExtractFillingResults(valid_results, &extracted_results));
   EXPECT_EQ(expected_result, extracted_results);
 

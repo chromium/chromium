@@ -281,7 +281,7 @@ TEST_F(AutofillProfileValidatorTest,
 TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_InvalidEmail_InvalidAddress) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::ASCIIToUTF16("Invalid Email"));
+  profile.SetRawInfo(EMAIL_ADDRESS, u"Invalid Email");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"Invalid Zip");
 
   // Set up the test expectations.
@@ -344,7 +344,7 @@ TEST_F(AutofillProfileValidatorTest,
 TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_InvalidEmail_InvalidPhone) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::ASCIIToUTF16("Invalid Email"));
+  profile.SetRawInfo(EMAIL_ADDRESS, u"Invalid Email");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"Invalid Phone");
 
   // Set up the test expectations.
@@ -364,7 +364,7 @@ TEST_F(AutofillProfileValidatorTest,
 // Validate a profile with an invalid email.
 TEST_F(AutofillProfileValidatorTest, StartProfileValidation_InvalidEmail) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::ASCIIToUTF16("Invalid Email"));
+  profile.SetRawInfo(EMAIL_ADDRESS, u"Invalid Email");
 
   // Set up the test expectations.
   expected_validity_ = {
@@ -384,7 +384,7 @@ TEST_F(AutofillProfileValidatorTest, StartProfileValidation_InvalidEmail) {
 TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_InvalidEmail_InvalidPhone_InvalidAddress) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::ASCIIToUTF16("Invalid Email."));
+  profile.SetRawInfo(EMAIL_ADDRESS, u"Invalid Email.");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"Invalid Phone");
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Invalid State");
 

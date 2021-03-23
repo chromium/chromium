@@ -407,9 +407,8 @@ void AutofillAgent::DoAcceptDataListSuggestion(
   // the suggestion.
   if (input_element->IsMultiple() && input_element->IsEmailField()) {
     std::u16string value = input_element->EditingValue().Utf16();
-    std::vector<base::StringPiece16> parts =
-        base::SplitStringPiece(value, base::ASCIIToUTF16(","),
-                               base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<base::StringPiece16> parts = base::SplitStringPiece(
+        value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (parts.size() == 0)
       parts.push_back(base::StringPiece16());
 
@@ -424,7 +423,7 @@ void AutofillAgent::DoAcceptDataListSuggestion(
     last_part.append(suggested_value);
     parts.back() = last_part;
 
-    new_value = base::JoinString(parts, base::ASCIIToUTF16(","));
+    new_value = base::JoinString(parts, u",");
   }
   DoFillFieldWithValue(new_value, input_element);
 }

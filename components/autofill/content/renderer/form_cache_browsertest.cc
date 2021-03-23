@@ -146,12 +146,12 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
 
   ASSERT_EQ(1u, forms.size());
   FormData values_to_fill = forms[0];
-  values_to_fill.fields[0].value = ASCIIToUTF16("test");
+  values_to_fill.fields[0].value = u"test";
   values_to_fill.fields[0].is_autofilled = true;
   values_to_fill.fields[1].check_status =
       FormFieldData::CheckStatus::kCheckableButUnchecked;
   values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = ASCIIToUTF16("first");
+  values_to_fill.fields[2].value = u"first";
   values_to_fill.fields[2].is_autofilled = true;
 
   WebDocument doc = GetMainFrame()->GetDocument();
@@ -193,9 +193,9 @@ TEST_F(FormCacheBrowserTest,
 
   ASSERT_EQ(2u, forms.size());
   FormData values_to_fill = forms[0];
-  values_to_fill.fields[0].value = ASCIIToUTF16("John");
+  values_to_fill.fields[0].value = u"John";
   values_to_fill.fields[0].is_autofilled = true;
-  values_to_fill.fields[1].value = ASCIIToUTF16("Smith");
+  values_to_fill.fields[1].value = u"Smith";
   values_to_fill.fields[1].is_autofilled = true;
 
   auto fname = GetMainFrame()
@@ -280,11 +280,11 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
 
   ASSERT_EQ(1u, forms.size());
   FormData values_to_fill = forms[0];
-  values_to_fill.fields[0].value = ASCIIToUTF16("test");
+  values_to_fill.fields[0].value = u"test";
   values_to_fill.fields[0].is_autofilled = true;
-  values_to_fill.fields[1].value = ASCIIToUTF16("first");
+  values_to_fill.fields[1].value = u"first";
   values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = ASCIIToUTF16("january");
+  values_to_fill.fields[2].value = u"january";
   values_to_fill.fields[2].is_autofilled = true;
 
   WebDocument doc = GetMainFrame()->GetDocument();
@@ -311,9 +311,9 @@ TEST_F(FormCacheBrowserTest, ClearFormSelectElementEditedStateReset) {
 
   // Fill the form again, this time the select elements are being filled
   // with different values just for additional check.
-  values_to_fill.fields[1].value = ASCIIToUTF16("third");
+  values_to_fill.fields[1].value = u"third";
   values_to_fill.fields[1].is_autofilled = true;
-  values_to_fill.fields[2].value = ASCIIToUTF16("february");
+  values_to_fill.fields[2].value = u"february";
   values_to_fill.fields[2].is_autofilled = true;
   form_util::FillForm(values_to_fill, text);
 

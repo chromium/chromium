@@ -84,10 +84,10 @@ TEST_F(CardExpirationDateFixFlowControllerImplTest, LogShown) {
 TEST_F(CardExpirationDateFixFlowControllerImplTest, LogAccepted) {
   base::HistogramTester histogram_tester;
   ShowPrompt();
-  controller_->OnAccepted(base::ASCIIToUTF16("11"), base::ASCIIToUTF16("30"));
+  controller_->OnAccepted(u"11", u"30");
 
-  ASSERT_EQ(accepted_month_, base::ASCIIToUTF16("11"));
-  ASSERT_EQ(accepted_year_, base::ASCIIToUTF16("30"));
+  ASSERT_EQ(accepted_month_, u"11");
+  ASSERT_EQ(accepted_year_, u"30");
   histogram_tester.ExpectBucketCount(
       "Autofill.ExpirationDateFixFlowPrompt.Events",
       AutofillMetrics::ExpirationDateFixFlowPromptEvent::
@@ -109,7 +109,7 @@ TEST_F(CardExpirationDateFixFlowControllerImplTest, LogDismissed) {
 
 TEST_F(CardExpirationDateFixFlowControllerImplTest, CardIdentifierString) {
   CreditCard card = test::GetCreditCard();
-  card.SetNickname(base::ASCIIToUTF16("nickname"));
+  card.SetNickname(u"nickname");
   ShowPrompt(card);
 
   EXPECT_EQ(controller_->GetCardLabel(),

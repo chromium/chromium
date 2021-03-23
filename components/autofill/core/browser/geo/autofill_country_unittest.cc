@@ -23,24 +23,24 @@ namespace autofill {
 TEST(AutofillCountryTest, AutofillCountry) {
   AutofillCountry united_states_en("US", "en_US");
   EXPECT_EQ("US", united_states_en.country_code());
-  EXPECT_EQ(ASCIIToUTF16("United States"), united_states_en.name());
+  EXPECT_EQ(u"United States", united_states_en.name());
 
   AutofillCountry united_states_es("US", "es");
   EXPECT_EQ("US", united_states_es.country_code());
-  EXPECT_EQ(ASCIIToUTF16("Estados Unidos"), united_states_es.name());
+  EXPECT_EQ(u"Estados Unidos", united_states_es.name());
 
   AutofillCountry great_britain_uk_alias("UK", "en_GB");
   EXPECT_EQ("GB", great_britain_uk_alias.country_code());
   EXPECT_EQ("GB", great_britain_uk_alias.country_code());
-  EXPECT_EQ(ASCIIToUTF16("United Kingdom"), great_britain_uk_alias.name());
+  EXPECT_EQ(u"United Kingdom", great_britain_uk_alias.name());
 
   AutofillCountry canada_en("CA", "en_US");
   EXPECT_EQ("CA", canada_en.country_code());
-  EXPECT_EQ(ASCIIToUTF16("Canada"), canada_en.name());
+  EXPECT_EQ(u"Canada", canada_en.name());
 
   AutofillCountry canada_hu("CA", "hu");
   EXPECT_EQ("CA", canada_hu.country_code());
-  EXPECT_EQ(ASCIIToUTF16("Kanada"), canada_hu.name());
+  EXPECT_EQ(u"Kanada", canada_hu.name());
 }
 
 // Test locale to country code mapping.

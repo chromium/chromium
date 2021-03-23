@@ -142,7 +142,7 @@ CreditCard::~CreditCard() {}
 // static
 const std::u16string CreditCard::StripSeparators(const std::u16string& number) {
   std::u16string stripped;
-  base::RemoveChars(number, ASCIIToUTF16("- "), &stripped);
+  base::RemoveChars(number, u"- ", &stripped);
   return stripped;
 }
 
@@ -381,7 +381,7 @@ std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
       std::u16string month = Expiration2DigitMonthAsString();
       std::u16string year = Expiration2DigitYearAsString();
       if (!month.empty() && !year.empty())
-        return month + ASCIIToUTF16("/") + year;
+        return month + u"/" + year;
       return std::u16string();
     }
 
@@ -389,7 +389,7 @@ std::u16string CreditCard::GetRawInfo(ServerFieldType type) const {
       std::u16string month = Expiration2DigitMonthAsString();
       std::u16string year = Expiration4DigitYearAsString();
       if (!month.empty() && !year.empty())
-        return month + ASCIIToUTF16("/") + year;
+        return month + u"/" + year;
       return std::u16string();
     }
 
@@ -503,7 +503,7 @@ void CreditCard::SetInfoForMonthInputType(const std::u16string& value) {
     return;
 
   std::vector<base::StringPiece16> year_month = base::SplitStringPiece(
-      value, ASCIIToUTF16("-"), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      value, u"-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK_EQ(2u, year_month.size());
   int num = 0;
   bool converted = false;
@@ -526,10 +526,9 @@ void CreditCard::SetExpirationYear(int expiration_year) {
 void CreditCard::SetNickname(const std::u16string& nickname) {
   // First replace all tabs and newlines with whitespaces and store it as
   // |nickname_|.
-  base::ReplaceChars(nickname, base::ASCIIToUTF16("\t\r\n"),
-                     base::ASCIIToUTF16(" "), &nickname_);
+  base::ReplaceChars(nickname, u"\t\r\n", u" ", &nickname_);
   // Then trim leading/trailing whitespaces from |nickname_|.
-  base::TrimString(nickname_, base::ASCIIToUTF16(" "), &nickname_);
+  base::TrimString(nickname_, u" ", &nickname_);
 }
 
 bool CreditCard::IsGoogleIssuedCard() const {
@@ -760,8 +759,7 @@ void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
 
   // Check for a separator.
   std::u16string found_separator;
-  const std::vector<std::u16string> kSeparators{
-      ASCIIToUTF16("-"), ASCIIToUTF16("/"), ASCIIToUTF16("|")};
+  const std::vector<std::u16string> kSeparators{u"-", u"/", u"|"};
   for (const std::u16string& separator : kSeparators) {
     if (text.find(separator) != std::u16string::npos) {
       found_separator = separator;
@@ -856,7 +854,7 @@ std::u16string CreditCard::NetworkAndLastFourDigits() const {
   const std::u16string obfuscated_string =
       internal::GetObfuscatedStringForCardDigits(digits);
   return network.empty() ? obfuscated_string
-                         : network + ASCIIToUTF16("  ") + obfuscated_string;
+                         : network + u"  " + obfuscated_string;
 }
 
 std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
@@ -869,8 +867,8 @@ std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
   // Plex card.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableGoogleIssuedCard) &&
       IsGoogleIssuedCard()) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) +
-           ASCIIToUTF16(" ") + networkAndLastFourDigits;
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) + u" " +
+           networkAndLastFourDigits;
   }
   return networkAndLastFourDigits;
 }
@@ -906,7 +904,7 @@ std::u16string CreditCard::AbbreviatedExpirationDateForDisplay(
 
 std::u16string CreditCard::ExpirationDateForDisplay() const {
   std::u16string formatted_date(Expiration2DigitMonthAsString());
-  formatted_date.append(ASCIIToUTF16("/"));
+  formatted_date.append(u"/");
   formatted_date.append(Expiration4DigitYearAsString());
   return formatted_date;
 }
@@ -1005,8 +1003,7 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
     return customized_nickname.empty() ? nickname_ : customized_nickname;
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
-         ASCIIToUTF16("  ") +
-         internal::GetObfuscatedStringForCardDigits(digits);
+         u"  " + internal::GetObfuscatedStringForCardDigits(digits);
 }
 
 void CreditCard::SetNumber(const std::u16string& number) {

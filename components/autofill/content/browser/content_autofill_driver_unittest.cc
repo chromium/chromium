@@ -408,7 +408,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 }
 
 TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
-  std::u16string input_value(base::ASCIIToUTF16("barfoo"));
+  std::u16string input_value(u"barfoo");
   std::u16string output_value;
 
   base::RunLoop run_loop;
@@ -439,7 +439,7 @@ TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
 }
 
 TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
-  std::u16string input_value(base::ASCIIToUTF16("barqux"));
+  std::u16string input_value(u"barqux");
   std::u16string output_value;
 
   base::RunLoop run_loop;
@@ -452,7 +452,7 @@ TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
 }
 
 TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
-  std::u16string input_value(base::ASCIIToUTF16("barqux"));
+  std::u16string input_value(u"barqux");
   std::u16string output_value;
 
   base::RunLoop run_loop;

@@ -380,15 +380,15 @@ bool FillExpirationMonthSelectControl(const std::u16string& value,
   // Trim the whitespace and specific prefixes used in AngularJS from the
   // select values before attempting to convert them to months.
   std::vector<std::u16string> trimmed_values(field->option_values.size());
-  const std::u16string kNumberPrefix = ASCIIToUTF16("number:");
-  const std::u16string kStringPrefix = ASCIIToUTF16("string:");
+  const std::u16string kNumberPrefix = u"number:";
+  const std::u16string kStringPrefix = u"string:";
   for (size_t i = 0; i < field->option_values.size(); ++i) {
     base::TrimWhitespace(field->option_values[i], base::TRIM_ALL,
                          &trimmed_values[i]);
     base::ReplaceFirstSubstringAfterOffset(&trimmed_values[i], 0, kNumberPrefix,
-                                           ASCIIToUTF16(""));
+                                           u"");
     base::ReplaceFirstSubstringAfterOffset(&trimmed_values[i], 0, kStringPrefix,
-                                           ASCIIToUTF16(""));
+                                           u"");
   }
 
   if (trimmed_values.size() == 12) {
@@ -492,7 +492,7 @@ bool FillCreditCardTypeSelectControl(const std::u16string& value,
   }
   if (value == l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX)) {
     // For American Express, also try filling as "AmEx".
-    return SetSelectControlValueSubstringMatch(ASCIIToUTF16("AmEx"),
+    return SetSelectControlValueSubstringMatch(u"AmEx",
                                                /* ignore_whitespace= */ true,
                                                field, failure_to_fill);
   }
@@ -593,7 +593,7 @@ bool FillSelectControl(const AutofillType& type,
 
 // Fills in the month control |field| with the expiration date in |card|.
 void FillMonthControl(const CreditCard& card, FormFieldData* field) {
-  field->value = card.Expiration4DigitYearAsString() + ASCIIToUTF16("-") +
+  field->value = card.Expiration4DigitYearAsString() + u"-" +
                  card.Expiration2DigitMonthAsString();
 }
 
@@ -704,7 +704,7 @@ void FillExpirationYearInput(std::u16string value,
 bool FillExpirationDateInput(const std::u16string& value,
                              FormFieldData* field,
                              std::string* failure_to_fill) {
-  const std::u16string kSeparator = ASCIIToUTF16("/");
+  const std::u16string kSeparator = u"/";
   // Autofill formats a combined date as month/year.
   std::vector<std::u16string> pieces = base::SplitString(
       value, kSeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -752,7 +752,7 @@ bool FillExpirationDateInput(const std::u16string& value,
     case 7:
       if (year.length() != 4) {
         // Will normalize 2-digit years to the 4-digit version.
-        year = ASCIIToUTF16("20") + year;
+        year = u"20" + year;
       }
 
       if (field->max_length == 6) {

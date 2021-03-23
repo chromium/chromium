@@ -228,20 +228,16 @@ TEST(LabelFormatterUtilsTest,
 TEST(LabelFormatterUtilsTest, GetLabelName) {
   AutofillProfile profile =
       AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
-  profile.SetInfo(NAME_FULL, base::ASCIIToUTF16("Maria Margaretha Kirch"),
-                  "de");
+  profile.SetInfo(NAME_FULL, u"Maria Margaretha Kirch", "de");
   profile.FinalizeAfterImport();
 
-  EXPECT_EQ(base::ASCIIToUTF16("Maria Margaretha Kirch"),
+  EXPECT_EQ(u"Maria Margaretha Kirch",
             GetLabelName({NAME_SUFFIX, NAME_FULL}, profile, "de"));
-  EXPECT_EQ(base::ASCIIToUTF16("Maria Kirch"),
+  EXPECT_EQ(u"Maria Kirch",
             GetLabelName({NAME_SUFFIX, NAME_FIRST, NAME_LAST}, profile, "de"));
-  EXPECT_EQ(base::ASCIIToUTF16("Maria"),
-            GetLabelName({NAME_SUFFIX, NAME_FIRST}, profile, "de"));
-  EXPECT_EQ(base::ASCIIToUTF16("Kirch"),
-            GetLabelName({NAME_SUFFIX, NAME_LAST}, profile, "de"));
-  EXPECT_EQ(base::ASCIIToUTF16("Margaretha"),
-            GetLabelName({NAME_MIDDLE}, profile, "de"));
+  EXPECT_EQ(u"Maria", GetLabelName({NAME_SUFFIX, NAME_FIRST}, profile, "de"));
+  EXPECT_EQ(u"Kirch", GetLabelName({NAME_SUFFIX, NAME_LAST}, profile, "de"));
+  EXPECT_EQ(u"Margaretha", GetLabelName({NAME_MIDDLE}, profile, "de"));
   EXPECT_EQ(std::u16string(), GetLabelName({EMPTY_TYPE}, profile, "de"));
   EXPECT_EQ(std::u16string(), GetLabelName({}, profile, "de"));
 }

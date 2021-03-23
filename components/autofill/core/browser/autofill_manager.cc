@@ -130,7 +130,7 @@ std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
                    &sanitized);
   // Some sites have ____-____-____-____ in their credit card number fields, for
   // example.
-  base::RemoveChars(sanitized, base::ASCIIToUTF16("-_"), &sanitized);
+  base::RemoveChars(sanitized, u"-_", &sanitized);
   return sanitized;
 }
 
@@ -510,7 +510,7 @@ bool AutofillManager::ShouldShowScanCreditCard(const FormData& form,
   bool is_card_number_field =
       autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
       base::ContainsOnlyChars(CreditCard::StripSeparators(field.value),
-                              base::ASCIIToUTF16("0123456789"));
+                              u"0123456789");
 
   if (!is_card_number_field)
     return false;

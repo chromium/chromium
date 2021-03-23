@@ -38,13 +38,13 @@ AutofillSaveAddressProfileDelegateIOS::FromInfobarDelegate(
 std::u16string
 AutofillSaveAddressProfileDelegateIOS::GetMessageDescriptionText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(base::ASCIIToUTF16("Fill forms faster in Chrome"));
+  return std::u16string(u"Fill forms faster in Chrome");
 }
 
 std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageActionText()
     const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(base::ASCIIToUTF16("Save..."));
+  return std::u16string(u"Save...");
 }
 
 bool AutofillSaveAddressProfileDelegateIOS::Accept() {
@@ -71,7 +71,7 @@ int AutofillSaveAddressProfileDelegateIOS::GetIconId() const {
 
 std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return std::u16string(base::ASCIIToUTF16("Save address?"));
+  return std::u16string(u"Save address?");
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -94,12 +94,12 @@ std::u16string AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
     // TODO(crbug.com/1167062): Replace with proper localized string.
-    return std::u16string(base::ASCIIToUTF16("Save"));
+    return std::u16string(u"Save");
   }
 
   if (button == BUTTON_CANCEL) {
     // TODO(crbug.com/1167062): Replace with proper localized string.
-    return std::u16string(base::ASCIIToUTF16("No Thanks"));
+    return std::u16string(u"No Thanks");
   }
 
   NOTREACHED() << "Unsupported button label requested.";

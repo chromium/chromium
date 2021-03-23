@@ -121,7 +121,7 @@ bool PassesLuhnCheck(const std::u16string& number) {
 bool IsValidCreditCardSecurityCode(const std::u16string& code,
                                    const base::StringPiece card_network) {
   return code.length() == GetCvcLengthForCardNetwork(card_network) &&
-         base::ContainsOnlyChars(code, base::ASCIIToUTF16("0123456789"));
+         base::ContainsOnlyChars(code, u"0123456789");
 }
 
 bool IsValidCreditCardNumberForBasicCardNetworks(
@@ -168,13 +168,13 @@ bool IsPossiblePhoneNumber(const std::u16string& text,
 }
 
 bool IsValidZip(const std::u16string& text) {
-  const std::u16string kZipPattern = base::ASCIIToUTF16("^\\d{5}(-\\d{4})?$");
+  const std::u16string kZipPattern = u"^\\d{5}(-\\d{4})?$";
   return MatchesPattern(text, kZipPattern);
 }
 
 bool IsSSN(const std::u16string& text) {
   std::u16string number_string;
-  base::RemoveChars(text, base::ASCIIToUTF16("- "), &number_string);
+  base::RemoveChars(text, u"- ", &number_string);
 
   // A SSN is of the form AAA-GG-SSSS (A = area number, G = group number, S =
   // serial number). The validation we do here is simply checking if the area,
@@ -348,7 +348,7 @@ bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
 
 bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
-  base::RemoveChars(value, base::ASCIIToUTF16(" "), &no_spaces);
+  base::RemoveChars(value, u" ", &no_spaces);
   return MatchesPattern(no_spaces,
                         base::ASCIIToUTF16(kInternationalBankAccountNumberRe));
 }

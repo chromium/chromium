@@ -29,7 +29,7 @@ std::u16string Expiration2DigitMonthAsString(int expiration_month) {
   if (expiration_month >= 10)
     return month;
 
-  std::u16string zero = base::ASCIIToUTF16("0");
+  std::u16string zero = u"0";
   return zero.append(month);
 }
 
@@ -41,7 +41,7 @@ std::u16string Expiration2DigitYearAsString(int expiration_year) {
   if (expiration_year >= 10)
     return year;
 
-  std::u16string zero = base::ASCIIToUTF16("0");
+  std::u16string zero = u"0";
   return zero.append(year);
 }
 
@@ -92,10 +92,10 @@ bool ParseExpirationMonth(const std::u16string& text,
   // Abbreviated months (jan., janv., fév.) Some abbreviations have . at the end
   // (e.g., "janv." in French). The period is removed.
   months = date_format_symbols.getShortMonths(num_months);
-  base::TrimString(trimmed, base::ASCIIToUTF16("."), &trimmed);
+  base::TrimString(trimmed, u".", &trimmed);
   for (int32_t i = 0; i < num_months; ++i) {
     std::u16string icu_month(base::i18n::UnicodeStringToString16(months[i]));
-    base::TrimString(icu_month, base::ASCIIToUTF16("."), &icu_month);
+    base::TrimString(icu_month, u".", &icu_month);
     // We look for the ICU-defined month in |trimmed_month|.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
                                                        nullptr, nullptr)) {
@@ -145,7 +145,7 @@ bool SetExpirationYear(int value, int* expiration_year) {
 
 std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
   std::u16string candidate;
-  if (text.find(base::ASCIIToUTF16("00")) != std::u16string::npos ||
+  if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
     if (MatchesPattern(text, base::ASCIIToUTF16(kAugmentedPhoneCountryCodeRe),
                        &candidate, 1))

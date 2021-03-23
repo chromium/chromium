@@ -109,7 +109,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   // function only does simple canonicalization to match against the stored
   // data, some domain specific cases will be covered below.
   std::u16string stripped_text = text;
-  base::RemoveChars(stripped_text, base::ASCIIToUTF16(" .()-"), &stripped_text);
+  base::RemoveChars(stripped_text, u" .()-", &stripped_text);
   FormGroup::GetMatchingTypes(stripped_text, app_locale, matching_types);
 
   // For US numbers, also compare to the three-digit prefix and the four-digit
@@ -225,7 +225,7 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
   // Store a formatted (i.e., pretty printed) version of the number if either
   // the number doesn't contain formatting marks.
   UpdateCacheIfNeeded(app_locale);
-  if (base::ContainsOnlyChars(number_, base::ASCIIToUTF16("+0123456789"))) {
+  if (base::ContainsOnlyChars(number_, u"+0123456789")) {
     number_ = cached_parsed_phone_.GetFormattedNumber();
   } else if (i18n::NormalizePhoneNumber(number_,
                                         GetRegion(*profile_, app_locale))

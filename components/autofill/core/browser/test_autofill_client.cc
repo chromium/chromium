@@ -178,7 +178,7 @@ void TestAutofillClient::OfferVirtualCardOptions(
 void TestAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
-  std::move(callback).Run(std::u16string(base::ASCIIToUTF16("Gaia Name")));
+  std::move(callback).Run(std::u16string(u"Gaia Name"));
 }
 
 void TestAutofillClient::ConfirmExpirationDateFixFlow(
@@ -187,7 +187,7 @@ void TestAutofillClient::ConfirmExpirationDateFixFlow(
         callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
   std::move(callback).Run(
-      std::u16string(base::ASCIIToUTF16("03")),
+      std::u16string(u"03"),
       std::u16string(base::ASCIIToUTF16(test::NextYear().c_str())));
 }
 #endif

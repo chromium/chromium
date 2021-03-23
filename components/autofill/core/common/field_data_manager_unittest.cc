@@ -18,14 +18,14 @@ class FieldDataManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     FormFieldData field1;
-    field1.id_attribute = ASCIIToUTF16("name1");
-    field1.value = ASCIIToUTF16("first");
+    field1.id_attribute = u"name1";
+    field1.value = u"first";
     field1.form_control_type = "text";
     field1.unique_renderer_id = FieldRendererId(1);
     control_elements_.push_back(field1);
 
     FormFieldData field2;
-    field2.id_attribute = ASCIIToUTF16("name2");
+    field2.id_attribute = u"name2";
     field2.form_control_type = "password";
     field2.unique_renderer_id = FieldRendererId(2);
     control_elements_.push_back(field2);

@@ -526,14 +526,10 @@ INSTANTIATE_TEST_SUITE_P(UPIVirtualPaymentAddress,
                                          "ybl"));
 
 TEST(AutofillValidation, IsUPIVirtualPaymentAddress_Others) {
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("12345@HDFC0000001.ifsc.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("234567890123@aadhaar.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("9800011111@mobile.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("1234123412341234@rupay.npci")));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"12345@HDFC0000001.ifsc.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"234567890123@aadhaar.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"9800011111@mobile.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"1234123412341234@rupay.npci"));
 }
 
 class AutofillIsInternationalBankAccountNumber

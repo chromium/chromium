@@ -95,14 +95,14 @@ TEST_F(AlternativeStateNameMapUpdaterTest, EntryAddedToStateMap) {
   test::ClearAlternativeStateNameMapForTesting();
   std::string states_data = test::CreateStatesProtoAsString();
   std::vector<AlternativeStateNameMap::StateName> test_strings = {
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria")),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Bayern")),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("B.Y")),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Bav-aria")),
+      AlternativeStateNameMap::StateName(u"Bavaria"),
+      AlternativeStateNameMap::StateName(u"Bayern"),
+      AlternativeStateNameMap::StateName(u"B.Y"),
+      AlternativeStateNameMap::StateName(u"Bav-aria"),
       AlternativeStateNameMap::StateName(u"amapá"),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Broen")),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria is in Germany")),
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("BA is in Germany"))};
+      AlternativeStateNameMap::StateName(u"Broen"),
+      AlternativeStateNameMap::StateName(u"Bavaria is in Germany"),
+      AlternativeStateNameMap::StateName(u"BA is in Germany")};
   std::vector<bool> state_data_present = {true,  true,  true,  true,
                                           false, false, false, false};
 
@@ -129,15 +129,14 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesData) {
   WritePathToPref(GetPath());
   CountryToStateNamesListMapping country_to_state_names_list_mapping = {
       {AlternativeStateNameMap::CountryCode("DE"),
-       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
+       {AlternativeStateNameMap::StateName(u"Bavaria")}}};
   base::RunLoop run_loop;
   alternative_state_name_map_updater_->LoadStatesDataForTesting(
       country_to_state_names_list_mapping, autofill_client_.GetPrefs(),
       run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
-                "DE", ASCIIToUTF16("Bavaria")),
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName("DE", u"Bavaria"),
             base::nullopt);
 }
 
@@ -153,7 +152,7 @@ TEST_F(AlternativeStateNameMapUpdaterTest, NoTaskIsPosted) {
 
   CountryToStateNamesListMapping country_to_state_names_list_mapping = {
       {AlternativeStateNameMap::CountryCode("DEE"),
-       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
+       {AlternativeStateNameMap::StateName(u"Bavaria")}}};
   base::RunLoop run_loop;
   alternative_state_name_map_updater_->LoadStatesDataForTesting(
       country_to_state_names_list_mapping, autofill_client_.GetPrefs(),
@@ -179,7 +178,7 @@ TEST_F(AlternativeStateNameMapUpdaterTest, TestLoadStatesDataUTF8) {
 
   CountryToStateNamesListMapping country_to_state_names_list_mapping = {
       {AlternativeStateNameMap::CountryCode("ES"),
-       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}}};
+       {AlternativeStateNameMap::StateName(u"Parana")}}};
 
   base::RunLoop run_loop;
   alternative_state_name_map_updater_->LoadStatesDataForTesting(
@@ -229,9 +228,9 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
 
   CountryToStateNamesListMapping country_to_state_names = {
       {AlternativeStateNameMap::CountryCode("ES"),
-       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Parana"))}},
+       {AlternativeStateNameMap::StateName(u"Parana")}},
       {AlternativeStateNameMap::CountryCode("DE"),
-       {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))}}};
+       {AlternativeStateNameMap::StateName(u"Bavaria")}}};
 
   base::RunLoop run_loop;
   alternative_state_name_map_updater_->LoadStatesDataForTesting(
@@ -265,15 +264,15 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
 // Tests the |StateNameMapUpdater::ContainsState()| functionality.
 TEST_F(AlternativeStateNameMapUpdaterTest, ContainsState) {
   EXPECT_TRUE(AlternativeStateNameMapUpdater::ContainsStateForTesting(
-      {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria")),
-       AlternativeStateNameMap::StateName(ASCIIToUTF16("Bayern")),
-       AlternativeStateNameMap::StateName(ASCIIToUTF16("BY"))},
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria"))));
+      {AlternativeStateNameMap::StateName(u"Bavaria"),
+       AlternativeStateNameMap::StateName(u"Bayern"),
+       AlternativeStateNameMap::StateName(u"BY")},
+      AlternativeStateNameMap::StateName(u"Bavaria")));
   EXPECT_FALSE(AlternativeStateNameMapUpdater::ContainsStateForTesting(
-      {AlternativeStateNameMap::StateName(ASCIIToUTF16("Bavaria")),
-       AlternativeStateNameMap::StateName(ASCIIToUTF16("Bayern")),
-       AlternativeStateNameMap::StateName(ASCIIToUTF16("BY"))},
-      AlternativeStateNameMap::StateName(ASCIIToUTF16("California"))));
+      {AlternativeStateNameMap::StateName(u"Bavaria"),
+       AlternativeStateNameMap::StateName(u"Bayern"),
+       AlternativeStateNameMap::StateName(u"BY")},
+      AlternativeStateNameMap::StateName(u"California")));
 }
 
 // Tests that the |AlternativeStateNameMap| is populated with the help of the
@@ -287,8 +286,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
                   test::CreateStatesProtoAsString());
 
   AutofillProfile profile;
-  profile.SetInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("Bavaria"), "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("DE"), "en-US");
+  profile.SetInfo(ADDRESS_HOME_STATE, u"Bavaria", "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", "en-US");
 
   base::RunLoop run_loop;
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(
@@ -301,10 +300,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
 
   EXPECT_FALSE(
       AlternativeStateNameMap::GetInstance()->IsLocalisedStateNamesMapEmpty());
-  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName(
-                "DE", base::ASCIIToUTF16("Bavaria")),
-            AlternativeStateNameMap::CanonicalStateName(
-                base::ASCIIToUTF16("Bayern")));
+  EXPECT_NE(AlternativeStateNameMap::GetCanonicalStateName("DE", u"Bavaria"),
+            AlternativeStateNameMap::CanonicalStateName(u"Bayern"));
 }
 
 }  // namespace autofill

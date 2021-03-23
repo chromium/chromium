@@ -303,57 +303,44 @@ TEST(AutofillStructuredName, HasMiddleNameInitialsCharacteristics) {
 
 // Test the reduction of a name to its initials.
 TEST(AutofillStructuredName, ReduceToInitials) {
-  EXPECT_EQ(ReduceToInitials(base::ASCIIToUTF16("")), base::ASCIIToUTF16(""));
-  EXPECT_EQ(ReduceToInitials(base::ASCIIToUTF16("George")),
-            base::ASCIIToUTF16("G"));
-  EXPECT_EQ(ReduceToInitials(base::ASCIIToUTF16("George Walker")),
-            base::ASCIIToUTF16("GW"));
-  EXPECT_EQ(ReduceToInitials(base::ASCIIToUTF16("michael myers")),
-            base::ASCIIToUTF16("MM"));
-  EXPECT_EQ(ReduceToInitials(base::ASCIIToUTF16("Hans-Peter")),
-            base::ASCIIToUTF16("HP"));
+  EXPECT_EQ(ReduceToInitials(u""), u"");
+  EXPECT_EQ(ReduceToInitials(u"George"), u"G");
+  EXPECT_EQ(ReduceToInitials(u"George Walker"), u"GW");
+  EXPECT_EQ(ReduceToInitials(u"michael myers"), u"MM");
+  EXPECT_EQ(ReduceToInitials(u"Hans-Peter"), u"HP");
 }
 
 // Test getting the field type |NAME_MIDDLE_INITIAL|.
 TEST(AutofillStructuredName, GetNameMiddleInitial) {
   NameFull full_name;
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE,
-                                      base::ASCIIToUTF16("Michael"),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Michael",
                                       VerificationStatus::kObserved);
 
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("M"));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"M");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE,
-                                      base::ASCIIToUTF16("Michael Myers"),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Michael Myers",
                                       VerificationStatus::kObserved);
 
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("MM"));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"MM");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE,
-                                      base::ASCIIToUTF16("george walker"),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"george walker",
                                       VerificationStatus::kObserved);
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("GW"));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"GW");
 
   // The the set value already has the characteristics of initials, the value
   // should be returned as it is.
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("GW"),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"GW",
                                       VerificationStatus::kObserved);
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("GW"));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"GW");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("G. W."),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"G. W.",
                                       VerificationStatus::kObserved);
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("G. W."));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"G. W.");
 
-  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("G.-W."),
+  full_name.SetValueForTypeIfPossible(NAME_MIDDLE, u"G.-W.",
                                       VerificationStatus::kObserved);
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::ASCIIToUTF16("G.-W."));
+  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL), u"G.-W.");
 }
 
 TEST(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
@@ -393,21 +380,20 @@ TEST(AutofillStructuredName, MergePermutatedNames) {
   NameFull two;
 
   // The first component has an observed substructure of the full name.
-  EXPECT_TRUE(one.SetValueForTypeIfPossible(
-      NAME_FIRST, base::ASCIIToUTF16("First"), VerificationStatus::kObserved));
-  EXPECT_TRUE(one.SetValueForTypeIfPossible(
-      NAME_LAST, base::ASCIIToUTF16("Last"), VerificationStatus::kObserved));
+  EXPECT_TRUE(one.SetValueForTypeIfPossible(NAME_FIRST, u"First",
+                                            VerificationStatus::kObserved));
+  EXPECT_TRUE(one.SetValueForTypeIfPossible(NAME_LAST, u"Last",
+                                            VerificationStatus::kObserved));
   one.CompleteFullTree();
 
   // The formatted full name has the canonical representation "FIRST LAST".
-  EXPECT_EQ(one.GetValueForType(NAME_FULL), base::ASCIIToUTF16("First Last"));
+  EXPECT_EQ(one.GetValueForType(NAME_FULL), u"First Last");
   EXPECT_EQ(one.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kFormatted);
 
   // In contrast, the second component has a verified name in an alternative
   // representation "LAST, FIRST"
-  EXPECT_TRUE(two.SetValueForTypeIfPossible(NAME_FULL,
-                                            base::ASCIIToUTF16("Last, First"),
+  EXPECT_TRUE(two.SetValueForTypeIfPossible(NAME_FULL, u"Last, First",
                                             VerificationStatus::kUserVerified));
   EXPECT_EQ(two.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
@@ -415,20 +401,20 @@ TEST(AutofillStructuredName, MergePermutatedNames) {
   EXPECT_EQ(two.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
 
-  EXPECT_EQ(two.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("First"));
-  EXPECT_EQ(two.GetValueForType(NAME_LAST), base::ASCIIToUTF16("Last"));
+  EXPECT_EQ(two.GetValueForType(NAME_FIRST), u"First");
+  EXPECT_EQ(two.GetValueForType(NAME_LAST), u"Last");
 
   EXPECT_TRUE(one.MergeWithComponent(two));
 
   // It is expected that the alternative representation of the second component
   // is merged into the first one, while maintaining the observed substructure.
-  EXPECT_EQ(one.GetValueForType(NAME_FULL), base::ASCIIToUTF16("Last, First"));
+  EXPECT_EQ(one.GetValueForType(NAME_FULL), u"Last, First");
   EXPECT_EQ(one.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
-  EXPECT_EQ(one.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("First"));
+  EXPECT_EQ(one.GetValueForType(NAME_FIRST), u"First");
   EXPECT_EQ(one.GetVerificationStatusForType(NAME_FIRST),
             VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetValueForType(NAME_LAST), base::ASCIIToUTF16("Last"));
+  EXPECT_EQ(one.GetValueForType(NAME_LAST), u"Last");
   EXPECT_EQ(one.GetVerificationStatusForType(NAME_LAST),
             VerificationStatus::kObserved);
 }
@@ -809,22 +795,17 @@ TEST(AutofillStructuredName, TestCopyConstructuror) {
   NameFull orginal;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
-  orginal.SetValueForTypeIfPossible(
-      NAME_FULL, base::ASCIIToUTF16("Mr Pablo Diego Ruiz y Picasso"),
-      VerificationStatus::kUserVerified);
-  orginal.SetValueForTypeIfPossible(NAME_HONORIFIC_PREFIX,
-                                    base::ASCIIToUTF16("Mr"),
+  orginal.SetValueForTypeIfPossible(NAME_FULL, u"Mr Pablo Diego Ruiz y Picasso",
+                                    VerificationStatus::kUserVerified);
+  orginal.SetValueForTypeIfPossible(NAME_HONORIFIC_PREFIX, u"Mr",
                                     VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_FIRST,
-                                    base::ASCIIToUTF16("Pablo Diego"),
+  orginal.SetValueForTypeIfPossible(NAME_FIRST, u"Pablo Diego",
                                     VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16(""),
+  orginal.SetValueForTypeIfPossible(NAME_MIDDLE, u"",
                                     VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_LAST,
-                                    base::ASCIIToUTF16("Ruiz y Picasso"),
+  orginal.SetValueForTypeIfPossible(NAME_LAST, u"Ruiz y Picasso",
                                     VerificationStatus::kObserved);
-  orginal.SetValueForTypeIfPossible(NAME_LAST_SECOND,
-                                    base::ASCIIToUTF16("Ruiz y Picasso"),
+  orginal.SetValueForTypeIfPossible(NAME_LAST_SECOND, u"Ruiz y Picasso",
                                     VerificationStatus::kParsed);
 
   NameFull copy = orginal;
@@ -834,27 +815,24 @@ TEST(AutofillStructuredName, TestCopyConstructuror) {
 TEST(AutofillStructuredName,
      MigrationFromLegacyStructure_WithFullName_Unverified) {
   NameFull name;
-  name.SetValueForTypeIfPossible(NAME_FULL,
-                                 base::ASCIIToUTF16("Thomas Neo Anderson"),
+  name.SetValueForTypeIfPossible(NAME_FULL, u"Thomas Neo Anderson",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, base::ASCIIToUTF16("Thomas"),
+  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("Neo"),
+  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, base::ASCIIToUTF16("Anderson"),
+  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
                                  VerificationStatus::kNoStatus);
 
   name.MigrateLegacyStructure(false);
 
   // Since the full name is set and the profile is not verified it is promoted
   // to observed. All other tokens are reset.
-  EXPECT_EQ(name.GetValueForType(NAME_FULL),
-            base::ASCIIToUTF16("Thomas Neo Anderson"));
-  EXPECT_EQ(name.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("Thomas"));
-  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), base::ASCIIToUTF16("Neo"));
-  EXPECT_EQ(name.GetValueForType(NAME_LAST), base::ASCIIToUTF16("Anderson"));
-  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND),
-            base::ASCIIToUTF16("Anderson"));
+  EXPECT_EQ(name.GetValueForType(NAME_FULL), u"Thomas Neo Anderson");
+  EXPECT_EQ(name.GetValueForType(NAME_FIRST), u"Thomas");
+  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), u"Neo");
+  EXPECT_EQ(name.GetValueForType(NAME_LAST), u"Anderson");
+  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND), u"Anderson");
 
   EXPECT_EQ(name.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kObserved);
@@ -871,27 +849,24 @@ TEST(AutofillStructuredName,
 TEST(AutofillStructuredName,
      MigrationFromLegacyStructure_WithFullName_Verified) {
   NameFull name;
-  name.SetValueForTypeIfPossible(NAME_FULL,
-                                 base::ASCIIToUTF16("Thomas Neo Anderson"),
+  name.SetValueForTypeIfPossible(NAME_FULL, u"Thomas Neo Anderson",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, base::ASCIIToUTF16("Thomas"),
+  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("Neo"),
+  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, base::ASCIIToUTF16("Anderson"),
+  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
                                  VerificationStatus::kNoStatus);
 
   name.MigrateLegacyStructure(true);
 
   // Since the full name is set and the profile is verified, it is promoted to
   // kUserVerified. All other tokens are reset.
-  EXPECT_EQ(name.GetValueForType(NAME_FULL),
-            base::ASCIIToUTF16("Thomas Neo Anderson"));
-  EXPECT_EQ(name.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("Thomas"));
-  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), base::ASCIIToUTF16("Neo"));
-  EXPECT_EQ(name.GetValueForType(NAME_LAST), base::ASCIIToUTF16("Anderson"));
-  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND),
-            base::ASCIIToUTF16("Anderson"));
+  EXPECT_EQ(name.GetValueForType(NAME_FULL), u"Thomas Neo Anderson");
+  EXPECT_EQ(name.GetValueForType(NAME_FIRST), u"Thomas");
+  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), u"Neo");
+  EXPECT_EQ(name.GetValueForType(NAME_LAST), u"Anderson");
+  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND), u"Anderson");
 
   EXPECT_EQ(name.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
@@ -909,13 +884,12 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   NameFull name;
   // The first name has an incorrect componentization of the last name, but
   // a correctly observed structure of title, first, middle, last.
-  name.SetValueForTypeIfPossible(NAME_FULL, base::ASCIIToUTF16(""),
+  name.SetValueForTypeIfPossible(NAME_FULL, u"", VerificationStatus::kNoStatus);
+  name.SetValueForTypeIfPossible(NAME_FIRST, u"Thomas",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_FIRST, base::ASCIIToUTF16("Thomas"),
+  name.SetValueForTypeIfPossible(NAME_MIDDLE, u"Neo",
                                  VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("Neo"),
-                                 VerificationStatus::kNoStatus);
-  name.SetValueForTypeIfPossible(NAME_LAST, base::ASCIIToUTF16("Anderson"),
+  name.SetValueForTypeIfPossible(NAME_LAST, u"Anderson",
                                  VerificationStatus::kNoStatus);
 
   name.MigrateLegacyStructure(false);
@@ -924,10 +898,10 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   // This is an edge case that normally should not happen.
   // Also, it is ignored that the profile might be verified because a verified
   // profile should contain a full name (or potentially no name).
-  EXPECT_EQ(name.GetValueForType(NAME_FULL), base::ASCIIToUTF16(""));
-  EXPECT_EQ(name.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("Thomas"));
-  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), base::ASCIIToUTF16("Neo"));
-  EXPECT_EQ(name.GetValueForType(NAME_LAST), base::ASCIIToUTF16("Anderson"));
+  EXPECT_EQ(name.GetValueForType(NAME_FULL), u"");
+  EXPECT_EQ(name.GetValueForType(NAME_FIRST), u"Thomas");
+  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), u"Neo");
+  EXPECT_EQ(name.GetValueForType(NAME_LAST), u"Anderson");
 
   EXPECT_EQ(name.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kNoStatus);

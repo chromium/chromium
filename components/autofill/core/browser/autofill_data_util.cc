@@ -107,7 +107,7 @@ bool ContainsString(const char* const set[],
     return false;
 
   base::StringPiece16 trimmed_element =
-      base::TrimString(element, base::ASCIIToUTF16("."), base::TRIM_ALL);
+      base::TrimString(element, u".", base::TRIM_ALL);
 
   for (size_t i = 0; i < set_size; ++i) {
     if (base::LowerCaseEqualsASCII(trimmed_element, set[i]))
@@ -435,7 +435,7 @@ NameParts SplitName(base::StringPiece16 name) {
 
   std::vector<base::StringPiece16> family_tokens(reverse_family_tokens.rbegin(),
                                                  reverse_family_tokens.rend());
-  parts.family = base::JoinString(family_tokens, base::ASCIIToUTF16(" "));
+  parts.family = base::JoinString(family_tokens, u" ");
 
   // Take the last remaining token as the middle name (if there are at least 2
   // tokens).
@@ -445,7 +445,7 @@ NameParts SplitName(base::StringPiece16 name) {
   }
 
   // Remainder is given name.
-  parts.given = base::JoinString(name_tokens, base::ASCIIToUTF16(" "));
+  parts.given = base::JoinString(name_tokens, u" ");
 
   return parts;
 }

@@ -873,8 +873,7 @@ bool AutofillTable::GetFormValuesForElementName(
 
       s2.BindString16(0, name);
       // escaper as L'!' -> 0x21.
-      s2.BindString16(1,
-                      Substitute(prefix_lower, base::ASCIIToUTF16("_%"), 0x21));
+      s2.BindString16(1, Substitute(prefix_lower, u"_%", 0x21));
       s2.BindInt(2, limit);
       while (s2.Step()) {
         entries->push_back(AutofillEntry(
@@ -2589,7 +2588,7 @@ bool AutofillTable::MigrateToVersion54AddI18nFieldsAndRemoveDeprecatedFields() {
       std::u16string line2 = s.ColumnString16(2);
       std::u16string street_address = line1;
       if (!line2.empty())
-        street_address += base::ASCIIToUTF16("\n") + line2;
+        street_address += u"\n" + line2;
 
       sql::Statement s_update(db_->GetUniqueStatement(
           "UPDATE autofill_profiles_temp SET street_address=? WHERE guid=?"));

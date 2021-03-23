@@ -358,12 +358,10 @@ TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
-            base::ASCIIToUTF16("21"));
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
-            base::ASCIIToUTF16("Laussat St"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Laussat St");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            base::ASCIIToUTF16("21 Laussat St"));
+            u"21 Laussat St");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             structured_address::VerificationStatus::kParsed);
@@ -410,12 +408,10 @@ TEST_P(FormDataImporterTest,
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
-            base::ASCIIToUTF16("21"));
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
-            base::ASCIIToUTF16("Laussat St"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Laussat St");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            base::ASCIIToUTF16("21 Laussat St"));
+            u"21 Laussat St");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             structured_address::VerificationStatus::kObserved);
@@ -469,14 +465,11 @@ TEST_P(
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
-            base::ASCIIToUTF16("21"));
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
-            base::ASCIIToUTF16("Laussat St"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Laussat St");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            base::ASCIIToUTF16("21 Laussat St APT 101"));
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_APT_NUM),
-            base::ASCIIToUTF16("101"));
+            u"21 Laussat St APT 101");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_APT_NUM), u"101");
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             structured_address::VerificationStatus::kObserved);
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_STREET_NAME),
@@ -521,12 +514,11 @@ TEST_P(FormDataImporterTest,
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
-            base::ASCIIToUTF16("23"));
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"23");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_NAME),
-            base::ASCIIToUTF16("Hermann Strasse"));
+            u"Hermann Strasse");
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-            base::ASCIIToUTF16("Hermann Strasse 23"));
+            u"Hermann Strasse 23");
 
   EXPECT_EQ(results[0]->GetVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER),
             structured_address::VerificationStatus::kObserved);
@@ -569,19 +561,13 @@ TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL),
-            base::ASCIIToUTF16("Pablo Diego Ruiz y Picasso"));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST),
-            base::ASCIIToUTF16("Pablo Diego"));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), base::ASCIIToUTF16(""));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST),
-            base::ASCIIToUTF16("Ruiz y Picasso"));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_FIRST),
-            base::ASCIIToUTF16("Ruiz"));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_CONJUNCTION),
-            base::ASCIIToUTF16("y"));
-  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_SECOND),
-            base::ASCIIToUTF16("Picasso"));
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Pablo Diego Ruiz y Picasso");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST), u"Pablo Diego");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), u"");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST), u"Ruiz y Picasso");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_FIRST), u"Ruiz");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_CONJUNCTION), u"y");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_SECOND), u"Picasso");
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles) {
@@ -1506,11 +1492,10 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
 
   // Full name, phone formatting and country are updated.
   if (!StructuredNames())
-    expected.SetRawInfo(NAME_FULL, base::ASCIIToUTF16("George Washington"));
-  expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                      base::ASCIIToUTF16("+1 650-555-6666"));
+    expected.SetRawInfo(NAME_FULL, u"George Washington");
+  expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+1 650-555-6666");
   expected.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("US"),
+      ADDRESS_HOME_COUNTRY, u"US",
       structured_address::VerificationStatus::kObserved);
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, expected.Compare(*results2[0]));
@@ -1590,7 +1575,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
   if (StructuredNames())
     expected2.FinalizeAfterImport();
   else
-    expected2.SetRawInfo(NAME_FULL, base::ASCIIToUTF16("George Washington"));
+    expected2.SetRawInfo(NAME_FULL, u"George Washington");
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, expected2.Compare(*results2[0]));
 }
@@ -1673,7 +1658,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInNew) {
   if (StructuredNames())
     expected.FinalizeAfterImport();
   else
-    expected.SetRawInfo(NAME_FULL, base::ASCIIToUTF16("George Washington"));
+    expected.SetRawInfo(NAME_FULL, u"George Washington");
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, expected.Compare(*results2[0]));
 }
@@ -1802,10 +1787,9 @@ TEST_P(FormDataImporterTest,
 
   // Set the verification status for the first and middle name to parsed.
   profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, base::ASCIIToUTF16("Marion"),
-      structured_address::VerificationStatus::kParsed);
+      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, base::ASCIIToUTF16("Mitchell"),
+      NAME_MIDDLE, u"Mitchell",
       structured_address::VerificationStatus::kParsed);
 
   base::RunLoop run_loop;
@@ -1845,13 +1829,12 @@ TEST_P(FormDataImporterTest,
 
   // The form submission should result in a change of name structure.
   profile.SetRawInfoWithVerificationStatus(
-      NAME_FIRST, base::ASCIIToUTF16("Marion Mitchell"),
+      NAME_FIRST, u"Marion Mitchell",
       structured_address::VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(
-      NAME_MIDDLE, base::ASCIIToUTF16(""),
-      structured_address::VerificationStatus::kNoStatus);
+      NAME_MIDDLE, u"", structured_address::VerificationStatus::kNoStatus);
   profile.SetRawInfoWithVerificationStatus(
-      NAME_LAST, base::ASCIIToUTF16("Morrison"),
+      NAME_LAST, u"Morrison",
       structured_address::VerificationStatus::kObserved);
 
   // Expect that no new profile is saved.
@@ -1894,13 +1877,13 @@ TEST_P(FormDataImporterTest,
 
   // Reset the structured address to emulate a failed parsing attempt.
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, base::ASCIIToUTF16(""),
+      ADDRESS_HOME_HOUSE_NUMBER, u"",
       structured_address::VerificationStatus::kNoStatus);
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, base::ASCIIToUTF16(""),
+      ADDRESS_HOME_STREET_NAME, u"",
       structured_address::VerificationStatus::kNoStatus);
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, base::ASCIIToUTF16(""),
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"",
       structured_address::VerificationStatus::kNoStatus);
 
   base::RunLoop run_loop;
@@ -1944,14 +1927,13 @@ TEST_P(FormDataImporterTest,
 
   // The form submission should result in a change of the address structure.
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-      base::ASCIIToUTF16("Zoo St."),
+      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"Zoo St.",
       structured_address::VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, base::ASCIIToUTF16("Zoo St."),
+      ADDRESS_HOME_STREET_NAME, u"Zoo St.",
       structured_address::VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_HOUSE_NUMBER, base::ASCIIToUTF16("123"),
+      ADDRESS_HOME_HOUSE_NUMBER, u"123",
       structured_address::VerificationStatus::kObserved);
 
   // Expect that no new profile is saved.
@@ -2257,15 +2239,15 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MonthSelectInvalidText) {
   AddFullCreditCardForm(&form, "Biggie Smalls", "4111-1111-1111-1111",
                         "Feb (2)", "2999");
   // Add option values and contents to the expiration month field.
-  ASSERT_EQ(base::ASCIIToUTF16("exp_month"), form.fields[2].name);
+  ASSERT_EQ(u"exp_month", form.fields[2].name);
   std::vector<std::u16string> values;
-  values.push_back(base::ASCIIToUTF16("1"));
-  values.push_back(base::ASCIIToUTF16("2"));
-  values.push_back(base::ASCIIToUTF16("3"));
+  values.push_back(u"1");
+  values.push_back(u"2");
+  values.push_back(u"3");
   std::vector<std::u16string> contents;
-  contents.push_back(base::ASCIIToUTF16("Jan (1)"));
-  contents.push_back(base::ASCIIToUTF16("Feb (2)"));
-  contents.push_back(base::ASCIIToUTF16("Mar (3)"));
+  contents.push_back(u"Jan (1)");
+  contents.push_back(u"Feb (2)");
+  contents.push_back(u"Mar (3)");
   form.fields[2].option_values = values;
   form.fields[2].option_contents = contents;
 

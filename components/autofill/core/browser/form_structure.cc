@@ -649,8 +649,7 @@ FormStructure::FormStructure(const FormData& form)
     // Make sure to prepend the counter with a non-numeric digit so that we are
     // guaranteed to avoid collisions.
     std::u16string unique_name =
-        field.name + base::ASCIIToUTF16("_") +
-        base::NumberToString16(++unique_names[field.name]);
+        field.name + u"_" + base::NumberToString16(++unique_names[field.name]);
     fields_.push_back(std::make_unique<AutofillField>(field, unique_name));
   }
 
@@ -2093,10 +2092,8 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     if (base::FeatureList::IsEnabled(
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
-          {field.name, base::ASCIIToUTF16("_"),
-           base::ASCIIToUTF16(field.host_frame.ToString()),
-           base::ASCIIToUTF16("_"),
-           base::NumberToString16(field.unique_renderer_id.value())});
+          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
+           u"_", base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
     }
@@ -2277,10 +2274,8 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
-          {field.name, base::ASCIIToUTF16("_"),
-           base::ASCIIToUTF16(field.host_frame.ToString()),
-           base::ASCIIToUTF16("_"),
-           base::NumberToString16(field.unique_renderer_id.value())});
+          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
+           u"_", base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
     }

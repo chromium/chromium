@@ -22,7 +22,7 @@ void SerializeInVersion1Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(1);
   pickle->WriteString16(form_data.name);
-  std::u16string method(base::ASCIIToUTF16("POST"));
+  std::u16string method(u"POST");
   pickle->WriteString16(method);
   pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
@@ -130,7 +130,7 @@ void SerializeIncorrectFormat(const FormData& form_data, base::Pickle* pickle) {
 }
 
 void FillInDummyFormData(FormData* data) {
-  data->name = base::ASCIIToUTF16("name");
+  data->name = u"name";
   data->url = GURL("https://example.com");
   data->action = GURL("https://example.com/action");
   data->main_frame_origin =
@@ -138,9 +138,9 @@ void FillInDummyFormData(FormData* data) {
   data->is_form_tag = true;            // Default value.
 
   FormFieldData field_data;
-  field_data.label = base::ASCIIToUTF16("label");
-  field_data.name = base::ASCIIToUTF16("name");
-  field_data.value = base::ASCIIToUTF16("value");
+  field_data.label = u"label";
+  field_data.name = u"name";
+  field_data.value = u"value";
   field_data.form_control_type = "password";
   field_data.autocomplete_attribute = "off";
   field_data.max_length = 200;
@@ -149,17 +149,17 @@ void FillInDummyFormData(FormData* data) {
   field_data.is_focusable = true;
   field_data.should_autocomplete = false;
   field_data.text_direction = base::i18n::RIGHT_TO_LEFT;
-  field_data.option_values.push_back(base::ASCIIToUTF16("First"));
-  field_data.option_values.push_back(base::ASCIIToUTF16("Second"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("First"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("Second"));
+  field_data.option_values.push_back(u"First");
+  field_data.option_values.push_back(u"Second");
+  field_data.option_contents.push_back(u"First");
+  field_data.option_contents.push_back(u"Second");
 
   data->fields.push_back(field_data);
 
   // Change a few fields.
   field_data.max_length = 150;
-  field_data.option_values.push_back(base::ASCIIToUTF16("Third"));
-  field_data.option_contents.push_back(base::ASCIIToUTF16("Third"));
+  field_data.option_values.push_back(u"Third");
+  field_data.option_contents.push_back(u"Third");
   data->fields.push_back(field_data);
 }
 

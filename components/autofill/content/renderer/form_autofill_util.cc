@@ -207,7 +207,7 @@ const std::u16string CombineAndCollapseWhitespace(const std::u16string& prefix,
 
   if (prefix_trailing_whitespace || suffix_leading_whitespace ||
       force_whitespace) {
-    return prefix_trimmed + base::ASCIIToUTF16(" ") + suffix_trimmed;
+    return prefix_trimmed + u" " + suffix_trimmed;
   }
   return prefix_trimmed + suffix_trimmed;
 }
@@ -1346,7 +1346,7 @@ void MatchLabelsAndFields(
     // Concatenate labels because some sites might have multiple label
     // candidates.
     if (!field_data->label.empty() && !label_text.empty())
-      field_data->label += base::ASCIIToUTF16(" ");
+      field_data->label += u" ";
     field_data->label += label_text;
   }
 }
@@ -2263,7 +2263,7 @@ namespace {
 // be "Billing Address".
 std::u16string CoalesceTextByIdList(const WebDocument& document,
                                     const WebString& id_list) {
-  const std::u16string kSpace = base::ASCIIToUTF16(" ");
+  const std::u16string kSpace = u" ";
 
   std::u16string text;
   std::u16string id_list_utf16 = id_list.Utf16();

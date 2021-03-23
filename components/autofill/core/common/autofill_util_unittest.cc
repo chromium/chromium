@@ -36,7 +36,7 @@ TEST_P(FieldIsTokenBoundarySubstringCaseTest,
     // FieldIsSuggestionSubstringStartingOnTokenBoundary should not work yet
     // without a flag.
     EXPECT_FALSE(FieldIsSuggestionSubstringStartingOnTokenBoundary(
-        base::ASCIIToUTF16("ab@cd.b"), base::ASCIIToUTF16("b"), false));
+        u"ab@cd.b", u"b", false));
   }
 
   base::test::ScopedFeatureList features_enabled;

@@ -61,7 +61,7 @@ std::u16string AddressComboboxModel::GetItemAt(int index) const {
 
   // Always show the "Select" entry at the top, default selection position.
   if (index == 1)
-    return base::ASCIIToUTF16("---");
+    return u"---";
 
   return addresses_[index - kNbHeaderEntries].second;
 }

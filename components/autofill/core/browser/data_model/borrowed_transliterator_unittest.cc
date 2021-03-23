@@ -15,7 +15,7 @@ namespace autofill {
 TEST(BorrowedTransliterator, RemoveDiacriticsAndConvertToLowerCase) {
   EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(
                 u"āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūž"),
-            base::ASCIIToUTF16("aeaa11.iucgklnszkaaadeilnooooorstuz"));
+            u"aeaa11.iucgklnszkaaadeilnooooorstuz");
 }
 
 }  // namespace autofill
