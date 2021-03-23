@@ -609,4 +609,18 @@ TEST_F(HTMLSelectElementTest, AddingNotOwnedOption) {
   // This test passes if the above appendChild() doesn't cause a DCHECK failure.
 }
 
+TEST_F(HTMLSelectElementTest, ChangeRenderingCrash) {
+  SetHtmlInnerHTML(R"HTML(
+    <select id="sel">
+      <option id="opt"></option>
+    </select>
+  )HTML");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // Make the option element the style recalc root.
+  GetElementById("opt")->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  // Changing the size attribute changes the rendering. This should not trigger
+  // a DCHECK failure updating the style recalc root.
+  GetElementById("sel")->setAttribute(html_names::kSizeAttr, AtomicString("2"));
+}
+
 }  // namespace blink

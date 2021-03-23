@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -2458,6 +2459,27 @@ const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
   if (CounterStyle* result = target_map->FindCounterStyleAcrossScopes(name))
     return *result;
   return CounterStyle::GetDecimal();
+}
+
+void StyleEngine::ChangeRenderingForHTMLSelect(HTMLSelectElement& select) {
+  // TODO(crbug.com/1191353): SetForceReattachLayoutTree() should be the correct
+  // way to create a new layout tree for a select element that changes rendering
+  // and not style, but the code for updating the selected index relies on the
+  // layout tree to be deleted. To work around that, we do a synchronous
+  // DetachLayoutTree as if the subtree is taken out of the flat tree.
+  // DetachLayoutTree will clear dirty bits which means we also need to simulate
+  // that we are in a dom removal to make the style recalc root be updated
+  // correctly.
+  StyleEngine::DOMRemovalScope removal_scope(*this);
+  auto& element = To<Element>(select);
+  element.DetachLayoutTree();
+  // If the recalc root is in this subtree, DetachLayoutTree() above clears the
+  // bits and we need to update the root. Otherwise the AssertRootNodeInvariants
+  // will fail for SetNeedsStyleRecalc below.
+  style_recalc_root_.SubtreeModified(element);
+  element.SetNeedsStyleRecalc(
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kControl));
 }
 
 void StyleEngine::Trace(Visitor* visitor) const {

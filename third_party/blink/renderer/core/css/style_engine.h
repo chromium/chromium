@@ -68,6 +68,7 @@ class CounterStyleMap;
 class CSSFontSelector;
 class CSSStyleSheet;
 class FontSelector;
+class HTMLSelectElement;
 class MediaQueryEvaluator;
 class Node;
 class RuleFeatureSet;
@@ -436,6 +437,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool InContainerQueryStyleRecalc() const {
     return in_container_query_style_recalc_;
   }
+  void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
 
   void SetColorSchemeFromMeta(const CSSValue* color_scheme);
   const CSSValue* GetMetaColorSchemeValue() const { return meta_color_scheme_; }
