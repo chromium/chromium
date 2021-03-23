@@ -417,7 +417,7 @@ void BrowserTestBase::SetUp() {
 
       // Mark the channel as blocking.
       int flags = fcntl(socket_fd.get(), F_GETFL);
-      PCHECK(flags != -1);
+      PCHECK(flags != -1) << "Ash is probably not running. Perhaps it crashed?";
       fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
 
       uint8_t buf[32];
