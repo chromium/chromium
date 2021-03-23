@@ -93,6 +93,17 @@ class ProfileSyncServiceStartupTest : public testing::Test {
         ->SetInvalidRefreshTokenForPrimaryAccount();
   }
 
+  void DisableAutomaticIssueOfAccessTokens() {
+    profile_sync_service_bundle_.identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(false);
+  }
+
+  void RespondToTokenRequest() {
+    profile_sync_service_bundle_.identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+            "access_token", base::Time::Max());
+  }
+
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
 
   ProfileSyncService* sync_service() { return sync_service_.get(); }
@@ -273,14 +284,21 @@ TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
 }
 
 TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
-  // There is a primary account. It is theoretically in the "web signout" aka
-  // sync-paused error state, but the identity code hasn't detected that yet
-  // (because auth errors are not persisted).
+  // This test has to wait for the access token request to complete, so disable
+  // automatic issuing of tokens.
+  DisableAutomaticIssueOfAccessTokens();
+
   SimulateTestUserSignin();
   sync_prefs()->SetFirstSetupComplete();
 
   CreateSyncService(ProfileSyncService::MANUAL_START);
   sync_service()->Initialize();
+
+  // Respond to the token request to finish the initialization flow.
+  RespondToTokenRequest();
+
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            sync_service()->GetTransportState());
 
   MockSyncServiceObserver observer;
   sync_service()->AddObserver(&observer);
