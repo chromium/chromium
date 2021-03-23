@@ -24,6 +24,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -549,7 +550,7 @@ SkColor GetSelectionBgColor(const std::string& css_selector) {
   return GdkRgbaToSkColor(selection_color);
 #else
   NOTREACHED();
-  return SK_ColorRED;
+  return gfx::kPlaceholderColor;
 #endif
 }
 
