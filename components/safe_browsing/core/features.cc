@@ -69,10 +69,6 @@ const base::Feature kPasswordProtectionReferringAppEnabledAndroid{
     "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionShowDomainsForSavedPasswords{
-    "SafeBrowsingPasswordProtectionShowDomainsForSavedPasswords",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPasswordProtectionForSignedInUsers{
   "SafeBrowsingPasswordProtectionForSignedInUsers",
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -149,7 +145,6 @@ constexpr struct {
     {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionForSavedPasswords, true},
     {&kPasswordProtectionReferringAppEnabledAndroid, true},
-    {&kPasswordProtectionShowDomainsForSavedPasswords, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kRealTimeUrlLookupEnabled, true},
     {&kRealTimeUrlLookupEnabledForEnterprise, true},

@@ -58,11 +58,6 @@ extern const base::Feature kPasswordProtectionForSavedPasswords;
 // Include referring app info in password protection requests on Android.
 extern const base::Feature kPasswordProtectionReferringAppEnabledAndroid;
 
-// Enable whether or not to show a list of domains the saved password was used
-// on the modal warning dialog during password protection. This is only checked
-// if the |kPasswordProtectionForSavedPasswords| experiment is on.
-extern const base::Feature kPasswordProtectionShowDomainsForSavedPasswords;
-
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 
