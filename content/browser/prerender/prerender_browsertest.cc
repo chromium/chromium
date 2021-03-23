@@ -105,6 +105,33 @@ std::string ToString(
   }
 }
 
+class PrerenderHostObserver : public PrerenderHost::Observer {
+ public:
+  explicit PrerenderHostObserver(PrerenderHost& host) {
+    observation_.Observe(&host);
+  }
+
+  void OnHostDestroyed() override {
+    observation_.Reset();
+    if (waiting_)
+      std::move(waiting_).Run();
+  }
+
+  void WaitForDestroyed() {
+    if (!observation_.IsObserving())
+      return;
+    DCHECK(!waiting_);
+    base::RunLoop loop;
+    waiting_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
+      this};
+  base::OnceClosure waiting_;
+};
+
 class PrerenderHostRegistryObserver : public PrerenderHostRegistry::Observer {
  public:
   explicit PrerenderHostRegistryObserver(PrerenderHostRegistry& registry) {
@@ -860,6 +887,51 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
                           kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kOnprerenderingchangeObservedScript));
+}
+
+// Test activation when the main frame of the prerender frame tree is
+// undergoing a navigation.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, InProgressNavigation) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+  const GURL kHungUrl = GetUrl("/hung");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+
+  // Make the host ready for activation.
+  prerender_host->WaitForLoadStopForTesting();
+
+  // Start a navigation in the prerender frame tree that will hang, to ensure
+  // there is an ongoing navigation when activation is attempted.
+  NavigatePrerenderedPage(*prerender_host, kHungUrl);
+
+  // Start a navigation in the primary frame tree, that attempts to activate
+  // the prendered page.
+  if (IsMPArchActive()) {
+    // In MPArch, the activation fails and the navigation fails.
+    PrerenderHostObserver observer(*prerender_host);
+    ignore_result(ExecJs(shell()->web_contents()->GetMainFrame(),
+                         JsReplace("location = $1", kPrerenderingUrl)));
+    observer.WaitForDestroyed();
+
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kInProgressNavigation, 1);
+  } else {
+    // In WebContents, the activation succeeds as normal.
+    NavigatePrimaryPage(kPrerenderingUrl);
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kActivated, 1);
+  }
 }
 
 // Makes sure that activation on navigation for a pop-up window doesn't happen.

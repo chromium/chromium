@@ -46,6 +46,15 @@ std::vector<RenderFrameHostImpl*> AllDescendantActiveRenderFrameHosts(
   return result;
 }
 
+struct ActivateResult {
+  ActivateResult(PrerenderHost::FinalStatus status,
+                 std::unique_ptr<BackForwardCacheImpl::Entry> entry)
+      : status(status), entry(std::move(entry)) {}
+
+  PrerenderHost::FinalStatus status = PrerenderHost::FinalStatus::kActivated;
+  std::unique_ptr<BackForwardCacheImpl::Entry> entry;
+};
+
 }  // namespace
 
 class PrerenderHost::PageHolderInterface {
@@ -55,7 +64,7 @@ class PrerenderHost::PageHolderInterface {
   virtual NavigationController& GetNavigationController() = 0;
   virtual RenderFrameHostImpl* GetMainFrame() = 0;
   virtual WebContents* GetWebContents() = 0;
-  virtual std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
+  virtual ActivateResult Activate(
       RenderFrameHostImpl& current_render_frame_host,
       NavigationRequest& navigation_request) = 0;
   virtual void WaitForLoadCompletionForTesting() = 0;  // IN-TEST
@@ -169,9 +178,8 @@ class PrerenderHost::MPArchPageHolder
     return frame_tree_->root()->current_frame_host();
   }
 
-  std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
-      RenderFrameHostImpl& current_render_frame_host,
-      NavigationRequest& navigation_request) override {
+  ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
+                          NavigationRequest& navigation_request) override {
     if (frame_tree_->HasNavigation()) {
       // We do not yet support activation if there is an ongoing navigation
       // anywhere in the page as it's not clear yet in which cases
@@ -179,7 +187,7 @@ class PrerenderHost::MPArchPageHolder
       // TODO(https://crbug.com/1170277): Relax the restrictions here, starting
       // with supporting activation when there are ongoing navigations in the
       // subframes.
-      return nullptr;
+      return ActivateResult(FinalStatus::kInProgressNavigation, nullptr);
     }
 
     // NOTE: TakePrerenderedPage() clears the current_frame_host value of
@@ -232,7 +240,7 @@ class PrerenderHost::MPArchPageHolder
 
     frame_tree_.reset();
 
-    return page;
+    return ActivateResult(FinalStatus::kActivated, std::move(page));
   }
 
   void WaitForLoadCompletionForTesting() override {
@@ -285,9 +293,8 @@ class PrerenderHost::WebContentsPageHolder
 
   WebContents* GetWebContents() override { return web_contents_.get(); }
 
-  std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
-      RenderFrameHostImpl& current_render_frame_host,
-      NavigationRequest& navigation_request) override {
+  ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
+                          NavigationRequest& navigation_request) override {
     auto* current_web_contents =
         WebContents::FromRenderFrameHost(&current_render_frame_host);
     DCHECK(current_web_contents);
@@ -311,7 +318,7 @@ class PrerenderHost::WebContentsPageHolder
     // Stop loading on the predecessor WebContents.
     predecessor_web_contents->Stop();
 
-    return nullptr;
+    return ActivateResult(FinalStatus::kActivated, nullptr);
   }
 
   void WaitForLoadCompletionForTesting() override {
@@ -410,18 +417,20 @@ PrerenderHost::ActivatePrerenderedContents(
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
-  // NOTE: for activation with multiple WebContents, a nullptr will be returned.
-  std::unique_ptr<BackForwardCacheImpl::Entry> entry =
+  ActivateResult result =
       page_holder_->Activate(old_render_frame_host, navigation_request);
 
-  // TODO(https://crbug.com/1126305): Record the final status for activation
-  // failure.
+  if (result.status != FinalStatus::kActivated) {
+    RecordFinalStatus(result.status);
+    return nullptr;
+  }
+
   for (auto& observer : observers_)
     observer.OnActivated();
 
   RecordFinalStatus(FinalStatus::kActivated);
-
-  return entry;
+  // NOTE: for activation with multiple WebContents, `entry` is null.
+  return std::move(result.entry);
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
