@@ -136,8 +136,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // set of scripts to be loaded.
   bool ScriptsMayHaveChanged() const;
 
-  // Attempts to initiate a load.
-  void AttemptLoad();
+  // Attempts to initiate a load. |callback| is added to
+  // |queued_load_callbacks_|, to be called when the next load completes. If no
+  // scripts will be changed then |callback| will be called immediately.
+  void AttemptLoad(ScriptsLoadedCallback callback);
 
   // Initiates procedure to start loading scripts on the file thread.
   void StartLoad();

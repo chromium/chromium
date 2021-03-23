@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -73,7 +74,7 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScripts) {
 
 // Repeat the above test, except we verify that a callback passed in will get
 // called once scripts are loaded.
-TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallback) {
+TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallbackAfterLoad) {
   TestingProfile profile;
   ExtensionUserScriptLoader loader(&profile, ExtensionId(),
                                    /*listen_for_extension_system_loaded=*/true,
@@ -88,6 +89,30 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScriptsWithCallback) {
 
   loader.StartLoadForTesting(base::BindLambdaForTesting(on_load_complete));
   run_loop.Run();
+}
+
+// Verifies that adding an empty set of scripts will trigger a callback
+// immediately but will not trigger a load.
+TEST_F(ExtensionUserScriptLoaderTest, NoScriptsAddedWithCallback) {
+  TestingProfile profile;
+  ExtensionUserScriptLoader loader(&profile, ExtensionId(),
+                                   /*listen_for_extension_system_loaded=*/true,
+                                   /*content_verifier=*/nullptr);
+
+  // Use a flag instead of a RunLoop to verify that the callback was called
+  // synchronously.
+  bool callback_called = false;
+  auto callback = [&callback_called](UserScriptLoader* loader,
+                                     const base::Optional<std::string>& error) {
+    // Check that there is at least an error message.
+    EXPECT_TRUE(error.has_value());
+    EXPECT_THAT(*error, testing::HasSubstr("No changes to loaded scripts"));
+    callback_called = true;
+  };
+
+  loader.AddScripts(std::make_unique<UserScriptList>(),
+                    base::BindLambdaForTesting(callback));
+  EXPECT_TRUE(callback_called);
 }
 
 // Test that callbacks for a queued load will be called after callbacks for the

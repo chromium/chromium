@@ -40,6 +40,11 @@ const char kSharedMemoryInvalidErrorMsg[] =
 const char kUserScriptLoaderDestroyedErrorMsg[] =
     "Scripts could not be loaded as the script loader has been destroyed.";
 
+// The error message massed inside ScriptsLoadedCallback if the operation
+// associated with the callback will not cause any script changes.
+const char kNoScriptChangesErrorMsg[] =
+    "No changes to loaded scripts would result from this operation.";
+
 #if DCHECK_IS_ON()
 bool AreScriptsUnique(const UserScriptList& scripts) {
   std::set<std::string> script_ids;
@@ -209,9 +214,7 @@ void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
       added_scripts_map_[id] = std::move(user_script);
   }
 
-  if (!callback.is_null())
-    queued_load_callbacks_.push_back(std::move(callback));
-  AttemptLoad();
+  AttemptLoad(std::move(callback));
 }
 
 void UserScriptLoader::AddScripts(std::unique_ptr<UserScriptList> scripts,
@@ -231,16 +234,14 @@ void UserScriptLoader::RemoveScripts(const std::set<UserScriptIDPair>& scripts,
     added_scripts_map_.erase(id_pair.id);
   }
 
-  if (!callback.is_null())
-    queued_load_callbacks_.push_back(std::move(callback));
-  AttemptLoad();
+  AttemptLoad(std::move(callback));
 }
 
 void UserScriptLoader::ClearScripts() {
   clear_scripts_ = true;
   added_scripts_map_.clear();
   removed_script_hosts_.clear();
-  AttemptLoad();
+  AttemptLoad(UserScriptLoader::ScriptsLoadedCallback());
 }
 
 void UserScriptLoader::OnRenderProcessHostCreated(
@@ -264,8 +265,22 @@ bool UserScriptLoader::ScriptsMayHaveChanged() const {
           (clear_scripts_ && (is_loading() || loaded_scripts_->size())));
 }
 
-void UserScriptLoader::AttemptLoad() {
-  if (ready_ && ScriptsMayHaveChanged()) {
+void UserScriptLoader::AttemptLoad(ScriptsLoadedCallback callback) {
+  bool scripts_changed = ScriptsMayHaveChanged();
+  if (!callback.is_null()) {
+    // If an operation will change the set of loaded scripts, add the callback
+    // to |queued_load_callbacks_|. Otherwise, we run the callback immediately.
+    if (scripts_changed) {
+      queued_load_callbacks_.push_back(std::move(callback));
+    } else {
+      std::move(callback).Run(this,
+                              base::make_optional(kNoScriptChangesErrorMsg));
+    }
+  }
+
+  // If the loader isn't ready yet, the load will be kicked off when it becomes
+  // ready.
+  if (ready_ && scripts_changed) {
     if (is_loading())
       queued_load_ = true;
     else
@@ -416,7 +431,7 @@ void UserScriptLoader::SetReady(bool ready) {
   bool was_ready = ready_;
   ready_ = ready;
   if (ready_ && !was_ready)
-    AttemptLoad();
+    AttemptLoad(UserScriptLoader::ScriptsLoadedCallback());
 }
 
 void UserScriptLoader::OnScriptsLoaded(
