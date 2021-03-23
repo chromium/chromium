@@ -1812,7 +1812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.PreferredApps.FileIOAction"
-    enum="PreferredAppsFileIOAction" expires_after="M89">
+    enum="PreferredAppsFileIOAction" expires_after="M93">
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
@@ -1823,7 +1823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.PreferredApps.UpdateAction"
-    enum="PreferredAppsUpdateAction" expires_after="M89">
+    enum="PreferredAppsUpdateAction" expires_after="M93">
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
