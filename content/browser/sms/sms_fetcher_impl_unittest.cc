@@ -5,6 +5,7 @@
 #include "content/browser/sms/sms_fetcher_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/test/mock_callback.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -31,12 +32,13 @@ class MockContentBrowserClient : public ContentBrowserClient {
   MockContentBrowserClient() = default;
   ~MockContentBrowserClient() override = default;
 
-  MOCK_METHOD3(FetchRemoteSms,
-               void(WebContents*,
-                    const url::Origin&,
-                    base::OnceCallback<void(base::Optional<OriginList>,
-                                            base::Optional<std::string>,
-                                            base::Optional<FailureType>)>));
+  MOCK_METHOD3(
+      FetchRemoteSms,
+      base::OnceClosure(WebContents*,
+                        const url::Origin&,
+                        base::OnceCallback<void(base::Optional<OriginList>,
+                                                base::Optional<std::string>,
+                                                base::Optional<FailureType>)>));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockContentBrowserClient);
@@ -116,6 +118,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
                 base::nullopt);
+            return base::DoNothing();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, "123", _));
@@ -136,6 +139,7 @@ TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
                                       base::Optional<FailureType>)> callback) {
             std::move(callback).Run(base::nullopt, base::nullopt,
                                     base::nullopt);
+            return base::DoNothing();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
@@ -157,6 +161,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("b.com"))}, "123",
                 base::nullopt);
+            return base::DoNothing();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
@@ -181,6 +186,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
                 base::nullopt);
+            return base::DoNothing();
           }));
 
   EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
@@ -262,12 +268,37 @@ TEST_F(SmsFetcherImplTest, FetchRemoteSmsFailed) {
             std::move(callback).Run(
                 base::nullopt, base::nullopt,
                 static_cast<FailureType>(FailureType::kPromptCancelled));
+            return base::DoNothing();
           }));
 
   EXPECT_CALL(subscriber, OnFailure(_));
 
   fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
                     &subscriber, main_rfh());
+}
+
+TEST_F(SmsFetcherImplTest, FetchRemoteSmsCancelled) {
+  StrictMock<MockSubscriber> subscriber;
+  SmsFetcherImpl fetcher(provider());
+
+  base::MockOnceClosure cancel_callback;
+  EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
+      .WillOnce(Invoke(
+          [&](WebContents*, const url::Origin&,
+              base::OnceCallback<void(base::Optional<OriginList>,
+                                      base::Optional<std::string>,
+                                      base::Optional<FailureType>)> callback) {
+            return cancel_callback.Get();
+          }));
+
+  EXPECT_CALL(cancel_callback, Run).Times(0);
+  OriginList origin_list =
+      OriginList{url::Origin::Create(GURL("https://a.com"))};
+  fetcher.Subscribe(origin_list, &subscriber, main_rfh());
+
+  testing::Mock::VerifyAndClearExpectations(&cancel_callback);
+  EXPECT_CALL(cancel_callback, Run);
+  fetcher.Unsubscribe(origin_list, &subscriber);
 }
 
 }  // namespace content

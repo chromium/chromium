@@ -20,7 +20,10 @@ class Origin;
 }
 
 // Uses the SmsRemoteFetcherUiCOntroller to fetch an SMS from a remote device.
-void FetchRemoteSms(
+// Returns a callback that cancels receiving of the response. Calling it will
+// clear the sharing states including the UI element in the omnibox. If the
+// response has been received already, running the callback will be a no-op.
+base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,

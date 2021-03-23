@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
@@ -180,6 +181,52 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
             ASSERT_FALSE(result);
             loop.Quit();
           }));
+
+  loop.Run();
+}
+
+TEST(SmsRemoteFetcherTest, RequestCancelled) {
+  base::test::ScopedFeatureList flags;
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  content::WebContents::CreateParams create_params(&profile, nullptr);
+  auto web_contents = content::WebContents::Create(create_params);
+
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
+
+  MockSharingService* service = CreateSharingService(&profile);
+
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+
+  devices.push_back(CreateFakeDeviceInfo("guid-abc"));
+
+  EXPECT_CALL(*service, GetDeviceCandidates(_))
+      .WillOnce(Return(ByMove(std::move(devices))));
+  base::RunLoop loop;
+
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(*service, SendMessageToDevice(_, _, _, _))
+      .WillOnce(Invoke([&](const syncer::DeviceInfo& device_info,
+                           base::TimeDelta response_timeout,
+                           chrome_browser_sharing::SharingMessage message,
+                           SharingMessageSender::ResponseCallback callback) {
+        std::move(callback).Run(SharingSendMessageResult::kCancelled,
+                                std::make_unique<ResponseMessage>());
+        return mock_callback.Get();
+      }));
+
+  base::OnceClosure cancel_callback = FetchRemoteSms(
+      web_contents.get(), GetOriginForURL("a.com"),
+      BindLambdaForTesting(
+          [&loop](base::Optional<std::vector<url::Origin>>,
+                  base::Optional<std::string> one_time_code,
+                  base::Optional<content::SmsFetchFailureType> failure_type) {
+            ASSERT_FALSE(one_time_code);
+            loop.Quit();
+          }));
+
+  EXPECT_CALL(mock_callback, Run);
+  std::move(cancel_callback).Run();
 
   loop.Run();
 }

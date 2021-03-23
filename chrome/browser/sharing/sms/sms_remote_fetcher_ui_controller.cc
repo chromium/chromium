@@ -105,8 +105,9 @@ void SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse(
                           base::nullopt);
 }
 
-void SmsRemoteFetcherUiController::FetchRemoteSms(const url::Origin& origin,
-                                                  OnRemoteCallback callback) {
+base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
+    const url::Origin& origin,
+    OnRemoteCallback callback) {
   SharingService::SharingDeviceList devices = GetDevices();
 
   if (devices.empty()) {
@@ -114,7 +115,7 @@ void SmsRemoteFetcherUiController::FetchRemoteSms(const url::Origin& origin,
     // TODO(crbug.com/1015645): We should have a new category for remote
     // failures.
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
-    return;
+    return base::DoNothing();
   }
 
   // Sends to the first device that has the capability enabled. User cannot
@@ -125,9 +126,7 @@ void SmsRemoteFetcherUiController::FetchRemoteSms(const url::Origin& origin,
 
   request.mutable_sms_fetch_request()->set_origin(origin.Serialize());
 
-  // TODO(crbug.com/1190311): We should notify the remote device when the local
-  // subscriber (WebOTPService) is removed.
-  SendMessageToDevice(
+  return SendMessageToDevice(
       *device.get(), blink::kWebOTPRequestTimeout, std::move(request),
       base::BindOnce(&SmsRemoteFetcherUiController::OnSmsRemoteFetchResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

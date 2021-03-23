@@ -649,7 +649,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const base::Optional<url::Origin>& top_frame_origin) override;
 
 #if !defined(OS_ANDROID)
-  void FetchRemoteSms(
+  base::OnceClosure FetchRemoteSms(
       content::WebContents* web_contents,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,

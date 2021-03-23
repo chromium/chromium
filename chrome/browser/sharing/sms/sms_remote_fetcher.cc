@@ -12,7 +12,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-void FetchRemoteSms(
+base::OnceClosure FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
@@ -23,7 +23,7 @@ void FetchRemoteSms(
   // is disabled or no device is available.
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
-    return;
+    return base::DoNothing();
   }
 
 // The current distinction of local fetcher being non-Android and remote fetcher
@@ -33,8 +33,9 @@ void FetchRemoteSms(
 #if !defined(OS_ANDROID)
   auto* ui_controller =
       SmsRemoteFetcherUiController::GetOrCreateFromWebContents(web_contents);
-  ui_controller->FetchRemoteSms(origin, std::move(callback));
+  return ui_controller->FetchRemoteSms(origin, std::move(callback));
 #else
   std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
+  return base::DoNothing();
 #endif
 }

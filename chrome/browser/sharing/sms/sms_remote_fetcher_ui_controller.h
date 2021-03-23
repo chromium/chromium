@@ -60,7 +60,8 @@ class SmsRemoteFetcherUiController
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
-  void FetchRemoteSms(const url::Origin& origin, OnRemoteCallback callback);
+  base::OnceClosure FetchRemoteSms(const url::Origin& origin,
+                                   OnRemoteCallback callback);
 
  protected:
   explicit SmsRemoteFetcherUiController(content::WebContents* web_contents);

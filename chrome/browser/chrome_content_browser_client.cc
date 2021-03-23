@@ -5667,14 +5667,14 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
 }
 
 #if !defined(OS_ANDROID)
-void ChromeContentBrowserClient::FetchRemoteSms(
+base::OnceClosure ChromeContentBrowserClient::FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
                             base::Optional<std::string>,
                             base::Optional<content::SmsFetchFailureType>)>
         callback) {
-  ::FetchRemoteSms(web_contents, origin, std::move(callback));
+  return ::FetchRemoteSms(web_contents, origin, std::move(callback));
 }
 #endif
 

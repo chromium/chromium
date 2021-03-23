@@ -1892,8 +1892,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Requests an SMS from |origin| from a remote device with telephony
   // capabilities, for example the user's mobile phone. Callbacks |callback|
   // with the origins and one-time-code from the SMS upon success or a failure
-  // type on error.
-  virtual void FetchRemoteSms(
+  // type on error. The returned callback cancels receiving of the response.
+  // Calling it will run |callback| if it hasn't been executed yet, otherwise it
+  // will be a no-op.
+  virtual base::OnceClosure FetchRemoteSms(
       content::WebContents* web_contents,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,

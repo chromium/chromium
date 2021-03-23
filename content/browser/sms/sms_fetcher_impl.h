@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
@@ -67,6 +69,11 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   SmsProvider* const provider_;
 
   SmsQueue subscribers_;
+  // A cancel callback can cancel receiving of the remote fetching response.
+  // Calling it will run a response callback if it hasn't been executed yet,
+  // otherwise it will be a no-op. The response callback can clear the sharing
+  // states including the UI element in the omnibox.
+  base::flat_map<Subscriber*, base::OnceClosure> remote_cancel_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

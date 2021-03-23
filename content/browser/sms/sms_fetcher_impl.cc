@@ -56,17 +56,20 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(subscriber);
   DCHECK(render_frame_host);
-  // Should not be called multiple times for the same subscriber and origin.
+  // Should not be called multiple times for the same subscriber.
+  DCHECK(!remote_cancel_callbacks_.count(subscriber));
   DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
 
   subscribers_.Push(origin_list, subscriber);
 
   // Fetches a remote SMS.
-  // TODO(1015645): Support iframe in cross-device WebOTP.
-  GetContentClient()->browser()->FetchRemoteSms(
-      WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
-      base::BindOnce(&SmsFetcherImpl::OnRemote,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // TODO(crbug.com/1015645): Support iframe in cross-device WebOTP.
+  base::OnceClosure cancel_callback =
+      GetContentClient()->browser()->FetchRemoteSms(
+          WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
+          base::BindOnce(&SmsFetcherImpl::OnRemote,
+                         weak_ptr_factory_.GetWeakPtr()));
+  remote_cancel_callbacks_[subscriber] = std::move(cancel_callback);
 
   // Fetches a local SMS.
   if (provider_)
@@ -79,6 +82,16 @@ void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
   // is no mechanism to cancel a subscription.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   subscribers_.Remove(origin_list, subscriber);
+  // A subscriber does not have a remote cancel callback in the map when
+  //   1. it has been unsubscribed before. e.g. we unsubscribe a subscriber when
+  //     a verification flow is successful and when the subscriber is destroyed.
+  //   2. TODO(crbug.com/1015645): no need to keep cancel callback when we don't
+  //     fetch a remote sms. e.g. when kWebOTPCrossDevice is disabled.
+  auto it = remote_cancel_callbacks_.find(subscriber);
+  if (it == remote_cancel_callbacks_.end())
+    return;
+  std::move(it->second).Run();
+  remote_cancel_callbacks_.erase(it);
 }
 
 bool SmsFetcherImpl::Notify(const OriginList& origin_list,

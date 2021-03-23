@@ -1095,13 +1095,15 @@ bool ContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
   return false;
 }
 
-void ContentBrowserClient::FetchRemoteSms(
+base::OnceClosure ContentBrowserClient::FetchRemoteSms(
     content::WebContents* web_contents,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
                             base::Optional<std::string>,
                             base::Optional<content::SmsFetchFailureType>)>
-        callback) {}
+        callback) {
+  return base::DoNothing();
+}
 
 bool ContentBrowserClient::IsClipboardPasteAllowed(
     content::RenderFrameHost* render_frame_host) {
