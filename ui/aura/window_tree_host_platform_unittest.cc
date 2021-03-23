@@ -34,7 +34,7 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
 // OnHostWill/DidProcessBoundsChange. Additionally, this triggers a bounds
 // change from within OnHostResized(). Such a scenario happens in production
 // code.
-class TestWindowTreeHostObserver : public aura::WindowTreeHostObserver {
+class TestWindowTreeHostObserver : public WindowTreeHostObserver {
  public:
   TestWindowTreeHostObserver(WindowTreeHostPlatform* host,
                              ui::PlatformWindow* platform_window)
@@ -51,7 +51,7 @@ class TestWindowTreeHostObserver : public aura::WindowTreeHostObserver {
     return on_host_will_process_bounds_change_count_;
   }
 
-  // aura::WindowTreeHostObserver:
+  // WindowTreeHostObserver:
   void OnHostResized(WindowTreeHost* host) override {
     if (!should_change_bounds_in_on_resized_)
       return;
@@ -90,6 +90,42 @@ TEST_F(WindowTreeHostPlatformTest, HostWillProcessBoundsChangeRecursion) {
   host.SetBoundsInPixels(gfx::Rect(1, 2, 3, 4));
   EXPECT_EQ(1, observer.on_host_did_process_bounds_change_count());
   EXPECT_EQ(1, observer.on_host_will_process_bounds_change_count());
+}
+
+// Deletes WindowTreeHostPlatform from OnHostMovedInPixels().
+class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
+ public:
+  explicit DeleteHostWindowTreeHostObserver(
+      std::unique_ptr<TestWindowTreeHost> host)
+      : host_(std::move(host)) {
+    host_->AddObserver(this);
+  }
+  ~DeleteHostWindowTreeHostObserver() override = default;
+
+  TestWindowTreeHost* host() { return host_.get(); }
+
+  // WindowTreeHostObserver:
+  void OnHostMovedInPixels(WindowTreeHost* host,
+                           const gfx::Point& new_origin_in_pixels) override {
+    host_->RemoveObserver(this);
+    host_.reset();
+  }
+
+ private:
+  std::unique_ptr<TestWindowTreeHost> host_;
+
+  DISALLOW_COPY_AND_ASSIGN(DeleteHostWindowTreeHostObserver);
+};
+
+// Verifies WindowTreeHostPlatform can be safely deleted when calling
+// OnHostMovedInPixels().
+// Regression test for https://crbug.com/1185482
+TEST_F(WindowTreeHostPlatformTest, DeleteHostFromOnHostMovedInPixels) {
+  std::unique_ptr<TestWindowTreeHost> host =
+      std::make_unique<TestWindowTreeHost>();
+  DeleteHostWindowTreeHostObserver observer(std::move(host));
+  observer.host()->SetBoundsInPixels(gfx::Rect(1, 2, 3, 4));
+  EXPECT_EQ(nullptr, observer.host());
 }
 
 }  // namespace
