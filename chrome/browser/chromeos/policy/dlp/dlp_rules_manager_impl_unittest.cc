@@ -62,6 +62,12 @@ base::Value GenerateClipboardCopyDisallowedRule() {
 
 }  // namespace
 
+class MockDlpRulesManager : public DlpRulesManagerImpl {
+ public:
+  explicit MockDlpRulesManager(PrefService* local_state)
+      : DlpRulesManagerImpl(local_state) {}
+};
+
 class DlpRulesManagerImplTest : public testing::Test {
  protected:
   DlpRulesManagerImplTest()
@@ -75,7 +81,7 @@ class DlpRulesManagerImplTest : public testing::Test {
   }
 
   ScopedTestingLocalState testing_local_state_;
-  DlpRulesManagerImpl dlp_rules_manager_;
+  MockDlpRulesManager dlp_rules_manager_;
   base::HistogramTester histogram_tester_;
 };
 
