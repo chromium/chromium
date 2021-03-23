@@ -137,6 +137,7 @@ public class NativePageFactory {
         protected NativePage buildLaunchpadPage(Tab tab) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LAUNCHPAD)) {
                 return new LaunchpadPage(mActivity, new TabShim(tab, mActivity),
+                        mActivity.getModalDialogManagerSupplier(),
                         LaunchpadUtils.retrieveWebApks(mActivity));
             } else {
                 return null;

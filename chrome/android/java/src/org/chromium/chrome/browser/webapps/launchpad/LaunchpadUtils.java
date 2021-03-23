@@ -55,7 +55,7 @@ public class LaunchpadUtils {
                                     null /* shareDataActivityClassName */));
                     if (webApkInfo != null) {
                         LaunchpadItem item = new LaunchpadItem(webApkInfo.webApkPackageName(),
-                                webApkInfo.name(), webApkInfo.shortName(), webApkInfo.url(),
+                                webApkInfo.shortName(), webApkInfo.name(), webApkInfo.url(),
                                 webApkInfo.icon().bitmap());
                         apps.add(item);
                     }

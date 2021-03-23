@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
 import java.util.List;
 
 /**
@@ -20,18 +23,24 @@ class LaunchpadCoordinator {
     private final ViewGroup mMainView;
     /** The coordinator for displaying the app list in Launchpad. */
     private AppListCoordinator mAppListCoordinator;
-
+    /** The coordinator for displaying the app management dialog. */
+    private AppManagementMenuCoordinator mAppManagementMenuCoordinator;
     /**
      * Creates a new LaunchpadCoordinator.
      * @param activity The activity associated with the LaunchpadCoordinator.
      * @param items The list of LaunchpadItems to be displayed.
      */
-    LaunchpadCoordinator(Activity activity, List<LaunchpadItem> items) {
+    LaunchpadCoordinator(Activity activity, Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            List<LaunchpadItem> items) {
         mMainView = (ViewGroup) activity.getLayoutInflater().inflate(
                 R.layout.launchpad_page_layout, null);
 
         RecyclerView appListRecyclerView = getView().findViewById(R.id.launchpad_recycler);
-        mAppListCoordinator = new AppListCoordinator(appListRecyclerView, items);
+
+        mAppManagementMenuCoordinator =
+                new AppManagementMenuCoordinator(activity, modalDialogManagerSupplier);
+        mAppListCoordinator =
+                new AppListCoordinator(appListRecyclerView, mAppManagementMenuCoordinator, items);
     }
 
     /**
@@ -44,5 +53,7 @@ class LaunchpadCoordinator {
     void destroy() {
         mAppListCoordinator.destroy();
         mAppListCoordinator = null;
+        mAppManagementMenuCoordinator.destroy();
+        mAppManagementMenuCoordinator = null;
     }
 }

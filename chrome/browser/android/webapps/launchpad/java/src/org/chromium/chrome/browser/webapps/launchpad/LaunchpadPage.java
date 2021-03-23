@@ -9,9 +9,11 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
@@ -31,13 +33,14 @@ public class LaunchpadPage extends BasicNativePage {
      * @param host A NativePageHost to load URLs.
      * @param items The list of LaunchpadItems to be displayed.
      */
-    public LaunchpadPage(Activity activity, NativePageHost host, List<LaunchpadItem> items) {
+    public LaunchpadPage(Activity activity, NativePageHost host,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, List<LaunchpadItem> items) {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.launchpad_title);
         mLaunchpadCoordinator = sLaunchpadCoordinatorForTesting != null
                 ? sLaunchpadCoordinatorForTesting
-                : new LaunchpadCoordinator(activity, items);
+                : new LaunchpadCoordinator(activity, modalDialogManagerSupplier, items);
 
         initWithView(mLaunchpadCoordinator.getView());
     }

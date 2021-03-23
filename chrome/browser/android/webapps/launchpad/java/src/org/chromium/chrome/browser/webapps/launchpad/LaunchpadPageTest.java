@@ -40,6 +40,9 @@ import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,8 +84,8 @@ public class LaunchpadPageTest {
     }
 
     private void openLaunchpadPage() {
-        mLaunchpadCoordinator =
-                new LaunchpadCoordinator(mActivityTestRule.getActivity(), MOCK_APP_LIST);
+        mLaunchpadCoordinator = new LaunchpadCoordinator(mActivityTestRule.getActivity(),
+                mActivityTestRule.getActivity().getModalDialogManagerSupplier(), MOCK_APP_LIST);
 
         LaunchpadPage.setCoordinatorForTesting(mLaunchpadCoordinator);
 
@@ -108,7 +111,7 @@ public class LaunchpadPageTest {
         ImageView icon2 = (ImageView) app2.findViewById(R.id.tile_view_icon);
         Assert.assertEquals(APP_SHORT_NAME_2, title2.getText());
         Assert.assertEquals(1, title2.getLineCount());
-        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon1.getDrawable()).getBitmap());
+        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon2.getDrawable()).getBitmap());
     }
 
     @Test
@@ -125,5 +128,27 @@ public class LaunchpadPageTest {
 
         intended(allOf(hasPackage(APP_PACKAGE_NAME_1), hasData(APP_URL_1)), times(1));
         Intents.release();
+    }
+
+    @Test
+    @SmallTest
+    public void testShowAppManagementMenu() {
+        openLaunchpadPage();
+        ModalDialogManager modalDialogManager =
+                mActivityTestRule.getActivity().getModalDialogManager();
+
+        View item = mItemContainer.getChildAt(1);
+        TouchCommon.longPressView(item);
+
+        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+        Assert.assertNotNull(dialogModel);
+
+        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Assert.assertEquals(
+                APP_NAME_2, ((TextView) dialogView.findViewById(R.id.menu_header_title)).getText());
+        Assert.assertEquals(
+                APP_URL_2, ((TextView) dialogView.findViewById(R.id.menu_header_url)).getText());
+        ImageView icon = (ImageView) dialogView.findViewById(R.id.menu_header_image);
+        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
     }
 }

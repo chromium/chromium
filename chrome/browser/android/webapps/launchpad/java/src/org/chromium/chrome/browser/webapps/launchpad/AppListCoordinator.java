@@ -24,6 +24,9 @@ class AppListCoordinator {
     /** The Mediator responsible for managing the list of apps to be displayed. */
     private AppListMediator mMediator;
 
+    /** The coodinaator for showing the app management menu. */
+    private AppManagementMenuCoordinator mMenuCoordinator;
+
     /**
      * The number of columns to show.
      * TODO(eirage): The number of column should not be fixed, but change with screen size.
@@ -42,7 +45,8 @@ class AppListCoordinator {
      * @param view The RecyclerView to hold the list of web apps.
      * @param items The list of LaunchpadItems to be displayed.
      */
-    AppListCoordinator(RecyclerView view, List<LaunchpadItem> items) {
+    AppListCoordinator(RecyclerView view, AppManagementMenuCoordinator menuCoordinator,
+            List<LaunchpadItem> items) {
         GridLayoutManager layoutManager = new GridLayoutManager(view.getContext(), mColumns);
         view.setLayoutManager(layoutManager);
 
@@ -52,12 +56,18 @@ class AppListCoordinator {
                 DEFAULT_TILE_TYPE, AppListCoordinator::buildTile, TileViewBinder::bind);
         view.setAdapter(adapter);
 
-        mMediator = new AppListMediator(view.getContext(), modelList, items);
+        mMediator = new AppListMediator(view.getContext(), this, modelList, items);
+        mMenuCoordinator = menuCoordinator;
     }
 
     void destroy() {
         mMediator.destroy();
         mMediator = null;
+    }
+
+    boolean showMenu(LaunchpadItem item) {
+        mMenuCoordinator.show(item);
+        return true;
     }
 
     private static TileView buildTile(ViewGroup parent) {

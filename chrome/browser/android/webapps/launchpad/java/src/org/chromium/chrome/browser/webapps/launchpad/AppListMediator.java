@@ -24,11 +24,14 @@ import java.util.List;
  */
 class AppListMediator {
     private final Context mContext;
-    private final List<LaunchpadItem> mLaunchpadItems;
+    private final AppListCoordinator mCoordinator;
     private final ModelList mListModel;
+    private final List<LaunchpadItem> mLaunchpadItems;
 
-    AppListMediator(Context context, ModelList listModel, List<LaunchpadItem> items) {
+    AppListMediator(Context context, AppListCoordinator coordinator, ModelList listModel,
+            List<LaunchpadItem> items) {
         mContext = context;
+        mCoordinator = coordinator;
         mListModel = listModel;
         mLaunchpadItems = items;
 
@@ -47,6 +50,7 @@ class AppListMediator {
             tileModel.set(TileViewProperties.CONTENT_DESCRIPTION, item.shortName);
             tileModel.set(TileViewProperties.ICON, new BitmapDrawable(item.icon));
             tileModel.set(TileViewProperties.ON_CLICK, v -> clickItem(item));
+            tileModel.set(TileViewProperties.ON_LONG_CLICK, v -> mCoordinator.showMenu(item));
 
             mListModel.add(new ListItem(AppListCoordinator.DEFAULT_TILE_TYPE, tileModel));
         }
