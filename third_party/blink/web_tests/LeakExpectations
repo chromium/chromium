@@ -196,6 +196,9 @@ crbug.com/1164553 [ Linux ] http/tests/devtools/console/console-external-array.j
 crbug.com/1164553 [ Linux ] http/tests/devtools/profiler/heap-snapshot-summary-search-by-id.js [ Pass Failure ]
 crbug.com/1164553 [ Linux ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Pass Failure ]
 
+# Sheriff 2012-03-23
+crbug.com/1191661 [ Linux ] virtual/force-renderer-accessibility/accessibility/slot-poison.html [ Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
