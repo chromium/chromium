@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_service_factory.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -31,6 +32,7 @@ FullRestoreServiceFactory::FullRestoreServiceFactory()
           "FullRestoreService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
 FullRestoreServiceFactory::~FullRestoreServiceFactory() = default;
@@ -40,9 +42,11 @@ KeyedService* FullRestoreServiceFactory::BuildServiceInstanceFor(
   if (!ash::features::IsFullRestoreEnabled())
     return nullptr;
 
-  // No service for non-regular user profile, or ephemeral user profile.
+  // No service for non-regular user profile, or ephemeral user profile, system
+  // profile.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsRegularProfile(profile) ||
+  if (!profile || profile->IsSystemProfile() ||
+      !ProfileHelper::IsRegularProfile(profile) ||
       ProfileHelper::IsEphemeralUserProfile(profile)) {
     return nullptr;
   }
