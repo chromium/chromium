@@ -116,7 +116,20 @@ class ScriptExecutor : public ActionDelegate,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
       override;
+  void ShortWaitForElementWithSlowWarning(
+      const Selector& selector,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
   void WaitForDom(
+      base::TimeDelta max_wait_time,
+      bool allow_interrupt,
+      WaitForDomObserver* observer,
+      base::RepeatingCallback<
+          void(BatchElementChecker*,
+               base::OnceCallback<void(const ClientStatus&)>)> check_elements,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override;
+  void WaitForDomWithSlowWarning(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
       WaitForDomObserver* observer,

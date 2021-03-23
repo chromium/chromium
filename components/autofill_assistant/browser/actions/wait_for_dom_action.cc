@@ -71,7 +71,7 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
   }
   wait_condition_ = std::make_unique<ElementPrecondition>(
       proto_.wait_for_dom().wait_condition());
-  delegate_->WaitForDom(
+  delegate_->WaitForDomWithSlowWarning(
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
       /* observer= */ nullptr,
       base::BindRepeating(&WaitForDomAction::CheckElements,

@@ -100,7 +100,7 @@ void GetElementStatusAction::InternalProcessAction(
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&GetElementStatusAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

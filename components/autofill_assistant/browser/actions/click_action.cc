@@ -40,7 +40,7 @@ void ClickAction::InternalProcessAction(ProcessActionCallback callback) {
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector, base::BindOnce(&ClickAction::OnWaitForElementTimed,
                                weak_ptr_factory_.GetWeakPtr(),
                                base::BindOnce(&ClickAction::OnWaitForElement,

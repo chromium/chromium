@@ -136,7 +136,7 @@ void UseAddressAction::FillFormWithData() {
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&UseAddressAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

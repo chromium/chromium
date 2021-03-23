@@ -31,7 +31,7 @@ void SetAttributeAction::InternalProcessAction(ProcessActionCallback callback) {
     std::move(callback).Run(std::move(processed_action_proto_));
     return;
   }
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector,
       base::BindOnce(&SetAttributeAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

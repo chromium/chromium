@@ -362,7 +362,7 @@ void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
   Selector value_selector = required_field.fallback_click_element.value();
   value_selector.MatchingInnerText(re2::RE2::QuoteMeta(value));
 
-  action_delegate_->ShortWaitForElement(
+  action_delegate_->ShortWaitForElementWithSlowWarning(
       value_selector,
       base::BindOnce(&RequiredFieldsFallbackHandler::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), value_selector,

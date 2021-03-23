@@ -85,6 +85,13 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
           callback) = 0;
 
+  // Same as the above, but will show a warning to the user if the website
+  // causes the checks to take longer than a given timeout.
+  virtual void ShortWaitForElementWithSlowWarning(
+      const Selector& selector,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
+
   // Wait for up to |max_wait_time| for element conditions to match on the page,
   // then call |callback| with the last status.
   //
@@ -94,6 +101,18 @@ class ActionDelegate {
   //
   // If |allow_interrupt| interrupts can run while waiting.
   virtual void WaitForDom(
+      base::TimeDelta max_wait_time,
+      bool allow_interrupt,
+      WaitForDomObserver* observer,
+      base::RepeatingCallback<
+          void(BatchElementChecker*,
+               base::OnceCallback<void(const ClientStatus&)>)> check_elements,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
+          callback) = 0;
+
+  // Same as the above, but will show a warning to the user if the website
+  // causes the checks to take longer than a given timeout.
+  virtual void WaitForDomWithSlowWarning(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
       WaitForDomObserver* observer,

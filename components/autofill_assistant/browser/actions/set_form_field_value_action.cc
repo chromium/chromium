@@ -159,7 +159,7 @@ void SetFormFieldValueAction::InternalProcessAction(
     ++keypress_index;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&SetFormFieldValueAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

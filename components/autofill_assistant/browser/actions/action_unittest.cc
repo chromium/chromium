@@ -39,7 +39,7 @@ class FakeAction : public Action {
  private:
   void InternalProcessAction(ProcessActionCallback callback) override {
     Selector selector;
-    delegate_->ShortWaitForElement(
+    delegate_->ShortWaitForElementWithSlowWarning(
         selector,
         base::BindOnce(
             &FakeAction::OnWaitForElementTimed, weak_ptr_factory_.GetWeakPtr(),

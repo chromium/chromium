@@ -297,6 +297,19 @@ void ScriptExecutor::ShortWaitForElement(
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  current_action_data_.wait_for_dom->Run();
+}
+
+void ScriptExecutor::ShortWaitForElementWithSlowWarning(
+    const Selector& selector,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
+  current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
+      this, delegate_, delegate_->GetSettings().short_wait_for_element_deadline,
+      /* allow_interrupt= */ false, /* observer= */ nullptr,
+      base::BindRepeating(&ScriptExecutor::CheckElementMatches,
+                          weak_ptr_factory_.GetWeakPtr(), selector),
+      base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   current_action_data_.wait_for_dom->SetTimeoutWarningCallback(
       base::BindOnce(&ScriptExecutor::MaybeShowSlowWebsiteWarning,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -304,6 +317,21 @@ void ScriptExecutor::ShortWaitForElement(
 }
 
 void ScriptExecutor::WaitForDom(
+    base::TimeDelta max_wait_time,
+    bool allow_interrupt,
+    WaitForDomObserver* observer,
+    base::RepeatingCallback<void(BatchElementChecker*,
+                                 base::OnceCallback<void(const ClientStatus&)>)>
+        check_elements,
+    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
+  current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
+      this, delegate_, max_wait_time, allow_interrupt, observer, check_elements,
+      base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  current_action_data_.wait_for_dom->Run();
+}
+
+void ScriptExecutor::WaitForDomWithSlowWarning(
     base::TimeDelta max_wait_time,
     bool allow_interrupt,
     WaitForDomObserver* observer,
