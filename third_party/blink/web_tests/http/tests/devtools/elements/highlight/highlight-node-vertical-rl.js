@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`\n`);
   await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <script src="/js-test-resources/ahem.js"></script>

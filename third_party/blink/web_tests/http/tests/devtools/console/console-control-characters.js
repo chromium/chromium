@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that control characters are substituted with printable characters.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('var\u001d i = 0;', onEvaluated);

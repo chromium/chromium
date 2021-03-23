@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console viewport reveals messages on searching.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     for (var i = 0; i < 200; ++i)

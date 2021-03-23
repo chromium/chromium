@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test that console.log() would linkify its location in respect with ignore-listing.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function foo()

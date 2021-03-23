@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests fragment is stripped from url by resource and page agents.\n`);
   await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadIFrame()

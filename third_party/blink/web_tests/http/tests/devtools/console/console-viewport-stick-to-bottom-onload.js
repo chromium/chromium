@@ -12,7 +12,7 @@
 
       //# sourceURL=console-viewport-stick-to-bottom-onload.js
     `);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 

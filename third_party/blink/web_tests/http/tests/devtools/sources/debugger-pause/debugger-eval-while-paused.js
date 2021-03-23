@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that evaluation in console works fine when script is paused. It also checks that stack and global variables are accessible from the console.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`

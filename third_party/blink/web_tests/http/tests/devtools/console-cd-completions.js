@@ -8,7 +8,7 @@
       names of its global variables. Test passes if all global variables are found among completions
       AND there are NO console messages. Bug 65457.
       https://bugs.webkit.org/show_bug.cgi?id=65457\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.addIframe("http://localhost:8000/devtools/resources/console-cd-completions-iframe.html", {
     name: "myIFrame"
   });

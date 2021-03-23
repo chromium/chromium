@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests that console.error does not throw exception when executed in console on call frame.\n`);
 
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function testFunction()

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that logging custom elements uses proper formatting.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
     <foo-bar></foo-bar>

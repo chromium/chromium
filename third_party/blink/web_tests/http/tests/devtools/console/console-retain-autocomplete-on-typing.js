@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that console does not hide autocomplete during typing.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadLegacyModule('text_editor');
   await TestRunner.showPanel('console');

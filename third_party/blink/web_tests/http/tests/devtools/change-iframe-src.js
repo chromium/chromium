@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that Elements panel allows to change src attribute on iframes inside inspected page. See bug 41350.\n`);
   await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
 
   var messagePromise = new Promise(x => ConsoleTestRunner.addConsoleSniffer(x));
   await TestRunner.loadHTML(`

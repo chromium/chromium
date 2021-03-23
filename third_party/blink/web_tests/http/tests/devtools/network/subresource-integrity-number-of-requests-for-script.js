@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that only one request is made for basic script requests with integrity attribute.\n`);
   await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`

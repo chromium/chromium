@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests various extreme usages of console.log()\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <p id="node">

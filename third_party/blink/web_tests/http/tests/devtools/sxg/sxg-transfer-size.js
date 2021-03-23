@@ -4,7 +4,7 @@
 (async function() {
   TestRunner.addResult('Tests the transfer size of signed exchange is set correctly.\n');
   await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   SDK.NetworkLog.instance().reset();
   await TestRunner.addIframe('/loading/sxg/resources/sxg-larger-than-10k.sxg');

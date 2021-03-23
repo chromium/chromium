@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the console enters a newline instead of running a command if the command is incomplete.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   var prompt = Console.ConsoleView.instance()._prompt;

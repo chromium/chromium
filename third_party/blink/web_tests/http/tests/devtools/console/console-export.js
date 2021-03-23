@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that exporting console messages produces proper output.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

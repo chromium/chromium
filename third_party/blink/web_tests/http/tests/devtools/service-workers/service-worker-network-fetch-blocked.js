@@ -8,7 +8,7 @@
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.showPanel('network');

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging uses proper message formatting.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log('Message format number %i, %d and %f', 1, 2, 3.5);

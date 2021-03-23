@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console can pin expressions.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
     <div tabIndex="-1" id="div1">foo 1</div>

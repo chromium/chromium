@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console preserves log on oopif navigation`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   Common.settingForTest('preserveConsoleLog').set(false);

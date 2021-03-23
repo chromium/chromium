@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the console timestamp setting.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   // It is essential that we calculate timezone for this particular moment of time

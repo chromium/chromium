@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a script tag with an external script.\n`);
   await TestRunner.loadModule('performance_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

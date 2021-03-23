@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`This test verifies that template's content DocumentFragment is accessible from DevTools.\n`);
   await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

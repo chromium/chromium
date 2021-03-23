@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console dumps native function without exception.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('Math.random', step1);

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging large messages will be truncated.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   const consoleView = Console.ConsoleView.instance();
   const maxLength = 40;

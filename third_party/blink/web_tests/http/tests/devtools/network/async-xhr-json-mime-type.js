@@ -7,7 +7,7 @@
   TestRunner.addResult('When loaded by asynchronous XHR requests (Bug 80684) or within iframes/documents.\n');
 
   await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

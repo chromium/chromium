@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Test that command line api does not mask values of scope variables while evaluating on a call frame.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('console');
 

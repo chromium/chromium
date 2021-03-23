@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests console output from AnimationWorklet.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function importWorklet()

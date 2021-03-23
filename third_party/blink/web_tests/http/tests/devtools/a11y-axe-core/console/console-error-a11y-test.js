@@ -7,7 +7,7 @@
   TestRunner.addResult(
       'Tests accessibility of console containing an error message using the axe-core linter.');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   const widget = await UI.viewManager.view('console').widget();
 

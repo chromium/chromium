@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that cross origin errors are logged with source url and line number.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.navigatePromise("http://example.test:8000/devtools/resources/empty.html");
   // NOTE: evaluateInPageAsync() waits on the promise at the end of block before
   // resolving the promise it returned. Other forms of the evaluate including

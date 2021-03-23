@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that expression which is evaluated as Object Literal, is correctly stored in console history. (crbug.com/584881)\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('{a:1, b:2}', step2);

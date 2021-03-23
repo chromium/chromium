@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that sourcemap emits warning if there's a section with "url" field.`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   const url = 'http://127.0.0.1:8000/devtools/resources/source-map-warning.html';
   await TestRunner.navigatePromise(url);

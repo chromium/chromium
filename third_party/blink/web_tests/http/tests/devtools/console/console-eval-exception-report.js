@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that evaluating an expression with an exception in the console provide correct exception information.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('\

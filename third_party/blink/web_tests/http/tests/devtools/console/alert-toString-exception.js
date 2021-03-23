@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that browser won't crash if inspector is opened for a page that fails to convert alert() argument to string. The test passes if it doesn't crash. Bug 60541\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.navigatePromise('resources/alert-toString-exception.html');
   await TestRunner.reloadPagePromise();

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that overriding global methods (like Array.prototype.push, Math.max) will not break the inspector.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       var originalError = window.Error;

@@ -13,7 +13,7 @@ function wait_for_message(number_of_messages) {
 (async function() {
   TestRunner.addResult(
       `Tests that a warning is shown in the console if addEventListener is called after initial evaluation of the service worker script.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();

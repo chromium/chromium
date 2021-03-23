@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that we skip all pauses during navigation`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();
   await TestRunner.navigatePromise('resources/page-with-unload.html');

@@ -7,7 +7,7 @@
       `Tests that webInspector.inspectedWindow.reload() successfully injects and preprocesses user's code upon reload\n`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('extensions_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/reload.html'));
 
   TestRunner.lastMessageScriptId = function(callback) {

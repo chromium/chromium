@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that evaluation with top-level await may be performed in console.');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

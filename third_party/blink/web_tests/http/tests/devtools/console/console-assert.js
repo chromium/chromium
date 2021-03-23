@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console.assert() will dump a message and stack trace with source URLs and line numbers.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

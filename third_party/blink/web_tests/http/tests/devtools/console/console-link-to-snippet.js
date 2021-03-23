@@ -6,7 +6,7 @@
   TestRunner.addResult(`Test that link to snippet works.\n`);
 
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   TestRunner.addSniffer(Workspace.UISourceCode.prototype, 'addLineMessage', dumpLineMessage, true);

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests saving nodes to temporary variables.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`<div id="node"></div>`);

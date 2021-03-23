@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests console message when script is loaded with incorrect text/html mime type and the URL contains the '^' character.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadScript()

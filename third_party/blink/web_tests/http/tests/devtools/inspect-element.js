@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that inspect element action works for iframe children (https://bugs.webkit.org/show_bug.cgi?id=76808).\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 

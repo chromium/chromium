@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that long URLs are correctly trimmed in anchor links.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadScript()

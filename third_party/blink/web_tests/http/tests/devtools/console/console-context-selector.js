@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests console execution context selector.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('console');
 
