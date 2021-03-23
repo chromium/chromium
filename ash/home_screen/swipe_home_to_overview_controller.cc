@@ -194,7 +194,7 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
                             EnterOverviewFromHomeLauncher::kOverview);
 
   // NOTE: No need to update the home launcher opacity and scale here - the
-  // HomeScreenController will update the home launcher state when it detects
+  // AppListControllerImpl will update the home launcher state when it detects
   // that the overview is starting.
   Shell::Get()->overview_controller()->StartOverview();
 

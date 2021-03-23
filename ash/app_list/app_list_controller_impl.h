@@ -397,9 +397,6 @@ class ASH_EXPORT AppListControllerImpl
   void RecordAppListState();
 
  private:
-  // TODO(jamescook): Eliminate this once the classes are merged.
-  friend class HomeScreenController;
-
   syncer::StringOrdinal GetOemFolderPos();
   std::unique_ptr<AppListItem> CreateAppListItem(
       std::unique_ptr<AppListItemMetadata> metadata);

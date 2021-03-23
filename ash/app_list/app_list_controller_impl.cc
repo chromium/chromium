@@ -24,7 +24,6 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -713,7 +712,7 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     AppListShowSource show_source,
     base::TimeTicks event_time_stamp) {
   if (IsTabletMode()) {
-    bool handled = Shell::Get()->home_screen_controller()->GoHome(display_id);
+    bool handled = GoHome(display_id);
 
     // Perform the "back" action for the app list.
     if (!handled) {

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/overview_test_api.h"

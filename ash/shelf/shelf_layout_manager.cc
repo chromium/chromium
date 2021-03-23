@@ -14,7 +14,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/home_screen/swipe_home_to_overview_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_features.h"
@@ -2670,7 +2669,7 @@ bool ShelfLayoutManager::MaybeEndDragFromOverviewToHome(
       return false;
   }
 
-  Shell::Get()->home_screen_controller()->GoHome(display_.id());
+  Shell::Get()->app_list_controller()->GoHome(display_.id());
   return true;
 }
 

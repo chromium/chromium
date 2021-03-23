@@ -11,7 +11,6 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
@@ -242,7 +241,7 @@ TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
   ResetTopWindow();
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  shell->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+  shell->app_list_controller()->GoHome(GetPrimaryDisplay().id());
   ASSERT_TRUE(shell->app_list_controller()->IsHomeScreenVisible());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   GenerateBackSequence();

@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/assistant_overlay.h"

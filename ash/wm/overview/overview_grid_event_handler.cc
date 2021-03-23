@@ -4,7 +4,7 @@
 
 #include "ash/wm/overview/overview_grid_event_handler.h"
 
-#include "ash/home_screen/home_screen_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -178,7 +178,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
     if (!SplitViewController::Get(window)->InSplitViewMode()) {
       int64_t display_id =
           display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-      Shell::Get()->home_screen_controller()->GoHome(display_id);
+      Shell::Get()->app_list_controller()->GoHome(display_id);
     }
   } else {
     Shell::Get()->overview_controller()->EndOverview();

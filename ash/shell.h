@@ -126,7 +126,6 @@ class FrameThrottlingController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
-class HomeScreenController;
 class ImeControllerImpl;
 class InSessionAuthDialogControllerImpl;
 class KeyAccessibilityEnabler;
@@ -384,9 +383,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   EventClientImpl* event_client() { return event_client_.get(); }
   EventTransformationHandler* event_transformation_handler() {
     return event_transformation_handler_.get();
-  }
-  HomeScreenController* home_screen_controller() {
-    return home_screen_controller_.get();
   }
   ::wm::FocusController* focus_controller() { return focus_controller_.get(); }
   AshFocusRules* focus_rules() { return focus_rules_; }
@@ -709,7 +705,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FullRestoreController> full_restore_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
-  std::unique_ptr<HomeScreenController> home_screen_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<InSessionAuthDialogControllerImpl>

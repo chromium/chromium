@@ -11,7 +11,6 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/focus_cycler.h"
 #include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -156,7 +155,7 @@ class HotseatWidgetTest
     // otherwise, simulate tap on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
         Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-      Shell::Get()->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+      Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
       return;
     }
 

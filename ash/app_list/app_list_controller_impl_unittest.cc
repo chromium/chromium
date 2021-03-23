@@ -19,7 +19,6 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/test/apps_grid_view_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -891,7 +890,7 @@ TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
       ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
-  Shell::Get()->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+  Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_FALSE(WindowState::Get(w2.get())->IsMinimized());
 }
@@ -1160,7 +1159,7 @@ TEST_F(AppListControllerImplMetricsTest,
   // hidden.
   std::unique_ptr<aura::Window> w(
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
-  Shell::Get()->home_screen_controller()->GoHome(
+  Shell::Get()->app_list_controller()->GoHome(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
   EXPECT_FALSE(w->IsVisible());
   EXPECT_EQ(AppListViewState::kFullscreenAllApps,

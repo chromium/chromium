@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"

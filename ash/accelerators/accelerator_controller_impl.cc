@@ -28,7 +28,6 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"

@@ -29,7 +29,6 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/test/apps_grid_view_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -3662,10 +3661,10 @@ class AppListPresenterDelegateHomeLauncherTest
   void GoHome() {
     const int64_t primary_display_id = GetPrimaryDisplay().id();
     // If home button is not expected to be shown, use
-    // HomeScreenController::GoHome() directly, otherwise tap on the primary
+    // AppListControllerImpl::GoHome() directly, otherwise tap on the primary
     // screen home button.
     if (!Shell::Get()->shelf_config()->shelf_controls_shown()) {
-      Shell::Get()->home_screen_controller()->GoHome(primary_display_id);
+      Shell::Get()->app_list_controller()->GoHome(primary_display_id);
       return;
     }
     TapHomeButton(primary_display_id);
