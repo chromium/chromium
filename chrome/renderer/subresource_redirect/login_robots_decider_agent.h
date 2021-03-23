@@ -65,6 +65,11 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   // current navigation.
   RedirectResult redirect_result_ = RedirectResult::kUnknown;
 
+  // Tracks the count of subresource redirect allowed checks that happened for
+  // the current navigation. This is used in having a different robots rules
+  // fetch timeout for the first k subresources.
+  size_t num_should_redirect_checks_ = 0;
+
   THREAD_CHECKER(thread_checker_);
 
   // Used to get a weak pointer to |this|.

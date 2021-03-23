@@ -47,6 +47,18 @@ base::TimeDelta GetRobotsRulesReceiveTimeout() {
           10));
 }
 
+size_t GetFirstKSubresourceLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      blink::features::kSubresourceRedirect, "first_k_subresource_limit", 0);
+}
+
+base::TimeDelta GetRobotsRulesReceiveFirstKSubresourceTimeout() {
+  return base::TimeDelta::FromMilliseconds(
+      base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kSubresourceRedirect,
+          "robots_rules_receive_first_k_timeout_ms", 10));
+}
+
 int MaxRobotsRulesParsersCacheSize() {
   return base::GetFieldTrialParamByFeatureAsInt(
       blink::features::kSubresourceRedirect,

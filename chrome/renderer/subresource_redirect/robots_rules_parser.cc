@@ -82,12 +82,13 @@ bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
   return IsMatchingRobotsRule(path, pattern_);
 }
 
-RobotsRulesParser::RobotsRulesParser() {
+RobotsRulesParser::RobotsRulesParser(
+    const base::TimeDelta& rules_receive_timeout) {
   // Using base::Unretained(this) is safe here, since the timer
   // |rules_receive_timeout_timer_| is owned by |this| and destroyed before
   // |this|.
   rules_receive_timeout_timer_.Start(
-      FROM_HERE, GetRobotsRulesReceiveTimeout(),
+      FROM_HERE, rules_receive_timeout,
       base::BindOnce(&RobotsRulesParser::OnRulesReceiveTimeout,
                      base::Unretained(this)));
   rules_receive_state_ = RulesReceiveState::kTimerRunning;

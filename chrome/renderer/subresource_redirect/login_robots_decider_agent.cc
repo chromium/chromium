@@ -65,6 +65,8 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     ShouldRedirectDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(url.is_valid());
+  num_should_redirect_checks_++;
+
   if (redirect_result_ != RedirectResult::kRedirectable)
     return redirect_result_;
 
@@ -80,10 +82,14 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
         base::BindOnce(&RobotsRulesParserCache::UpdateRobotsRules,
                        base::Unretained(&robots_rules_parser_cache), origin));
   }
+  auto rules_receive_timeout =
+      num_should_redirect_checks_ <= GetFirstKSubresourceLimit()
+          ? GetRobotsRulesReceiveFirstKSubresourceTimeout()
+          : GetRobotsRulesReceiveTimeout();
 
   base::Optional<RobotsRulesParser::CheckResult> result =
       robots_rules_parser_cache.CheckRobotsRules(
-          routing_id(), url,
+          routing_id(), url, rules_receive_timeout,
           base::BindOnce(
               &LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -115,6 +121,7 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PublicResourceDeciderAgent::ReadyToCommitNavigation(document_loader);
   redirect_result_ = RedirectResult::kUnknown;
+  num_should_redirect_checks_ = 0;
   GetRobotsRulesParserCache().InvalidatePendingRequests(routing_id());
 }
 

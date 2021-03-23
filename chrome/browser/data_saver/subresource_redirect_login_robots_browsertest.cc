@@ -4,9 +4,11 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
@@ -70,7 +72,10 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
           image_compression_server_.GetURL();
       // This rules fetch timeout is chosen such that the tests would have
       // enough time to fetch the rules without causing a timeout.
-      params["robots_rules_receive_timeout"] = "1000";
+      params["robots_rules_receive_timeout"] = "1500";
+      // Allow first 5 images to be loaded faster.
+      params["first_k_subresource_limit"] = "5";
+      params["robots_rules_receive_first_k_timeout_ms"] = "1000";
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
       login_detection_params["logged_in_sites"] = "https://loggedin.com";
@@ -804,6 +809,68 @@ IN_PROC_BROWSER_TEST_F(
 
   robots_rules_server_.VerifyRequestedOrigins({});
   image_compression_server_.VerifyRequestedImagePaths({});
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestFirstKImagesLoadFaster)) {
+  robots_rules_server_.set_failure_mode(
+      RobotsRulesTestServer::FailureMode::kTimeout);
+  NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
+
+  // Load 4 more images from different domain, so that they will fetch different
+  // robots rules and will all timeout with the shorter first k timeout
+  // duration.
+  for (const char* image_origin : {
+           "foo1.com",
+           "foo2.com",
+           "foo3.com",
+           "foo4.com",
+       }) {
+    base::ElapsedTimer elapsed_timer;
+    std::string load_image_url = base::StrCat(
+        {"loadNewImage('",
+         https_test_server_.GetURL(image_origin, "/load_image/image.png")
+             .spec(),
+         "')"});
+    EXPECT_TRUE(RunScriptExtractBool(load_image_url));
+    EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
+    // The image should load closer to 1 second.
+    EXPECT_LT(base::TimeDelta::FromSecondsD(0.9), elapsed_timer.Elapsed());
+    EXPECT_GT(base::TimeDelta::FromSecondsD(1.2), elapsed_timer.Elapsed());
+  }
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode",
+      net::HTTP_TEMPORARY_REDIRECT, 5);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
+
+  // The next 2 images should use longer robots rules fetch timeout duration,
+  // since this is past the 5 first K limit.
+  for (const char* image_origin : {
+           "bar1.com",
+           "bar2.com",
+       }) {
+    base::ElapsedTimer elapsed_timer;
+    std::string load_image_url = base::StrCat(
+        {"loadNewImage('",
+         https_test_server_.GetURL(image_origin, "/load_image/image.png")
+             .spec(),
+         "')"});
+    EXPECT_TRUE(RunScriptExtractBool(load_image_url));
+    EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
+    // The image should load closer to 1.5 second.
+    EXPECT_LT(base::TimeDelta::FromSecondsD(1.4), elapsed_timer.Elapsed());
+  }
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester_.ExpectUniqueSample(
+      "SubresourceRedirect.CompressionAttempt.ResponseCode",
+      net::HTTP_TEMPORARY_REDIRECT, 7);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.CompressionAttempt.ServerResponded", 0);
 }
 
 }  // namespace subresource_redirect
