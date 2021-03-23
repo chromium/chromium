@@ -6,13 +6,22 @@ package org.chromium.components.paintpreview.player.frame;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.SequencedTaskRunner;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 /**
  * A class representing a {@link Bitmap} that can be compressed into the associated byte array.
@@ -22,8 +31,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 class CompressibleBitmap {
     private static final int IN_USE_BACKOFF_MS = 50;
 
+    // For some reason this doesn't work if there isn't a color in one of the channels. As a result
+    // we need to transform alpha to also apply a solid color like red.
+    private static final ColorMatrixColorFilter sAlphaFilter = new ColorMatrixColorFilter(
+            new float[] {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0});
+
     private Bitmap mBitmap;
+    private int mWidth;
+    private int mHeight;
+
+    // Compression by this class achieves a compression ratio of about 20.
+
+    // Compressed as a JPEG.
     private byte[] mCompressedData;
+    // Compressed with zip.
+    private byte[] mCompressedAlphaBytes;
     private SequencedTaskRunner mTaskRunner;
     private AtomicBoolean mInUse = new AtomicBoolean();
 
@@ -36,6 +58,10 @@ class CompressibleBitmap {
      */
     CompressibleBitmap(Bitmap bitmap, SequencedTaskRunner taskRunner, boolean visible) {
         mBitmap = bitmap;
+        mWidth = mBitmap.getWidth();
+        mHeight = mBitmap.getHeight();
+        // The alpha flag isn't always set even though it should be.
+        mBitmap.setHasAlpha(true);
         mTaskRunner = taskRunner;
         compressInBackground(visible);
     }
@@ -96,14 +122,34 @@ class CompressibleBitmap {
 
         if (mCompressedData == null) return false;
 
-        mBitmap = BitmapFactory.decodeByteArray(mCompressedData, 0, mCompressedData.length);
-        return mBitmap != null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inMutable = true;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        mBitmap =
+                BitmapFactory.decodeByteArray(mCompressedData, 0, mCompressedData.length, options);
+        if (mBitmap == null) return false;
+
+        // The alpha flag isn't set by default despite requesting ARGB_8888.
+        mBitmap.setHasAlpha(true);
+        // Decompress the alpha channel and apply the alpha mask.
+        Bitmap alphaChannel = decompressAlpha(mCompressedAlphaBytes, mWidth, mHeight);
+        if (alphaChannel != null) {
+            applyAlpha(mBitmap, alphaChannel);
+            alphaChannel.recycle();
+        }
+        return true;
     }
 
     private void compress() {
         if (mBitmap == null) return;
 
         ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
+
+        Bitmap alphaChannel = mBitmap.extractAlpha();
+        // Bitmap#compress() doesn't work for Bitmap.Config.ALPHA_8 so use zip instead.
+        mCompressedAlphaBytes = compressAlpha(alphaChannel);
+        alphaChannel.recycle();
+
         boolean success = mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayStream);
         if (success) {
             mCompressedData = byteArrayStream.toByteArray();
@@ -142,7 +188,55 @@ class CompressibleBitmap {
             mBitmap = null;
         }
         mCompressedData = null;
+        mCompressedAlphaBytes = null;
         unlock();
+    }
+
+    private byte[] compressAlpha(Bitmap bitmap) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(bitmap.getByteCount());
+        bitmap.copyPixelsToBuffer(byteBuffer);
+
+        Deflater deflater = new Deflater();
+        deflater.setInput(byteBuffer.array());
+        deflater.finish();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192]; // This limit is arbitrary.
+        while (!deflater.finished()) {
+            int byteCount = deflater.deflate(buffer);
+            out.write(buffer, 0, byteCount);
+        }
+        deflater.end();
+
+        return out.toByteArray();
+    }
+
+    private Bitmap decompressAlpha(byte[] alpha, int width, int height) {
+        if (width == 0 || height == 0 || alpha.length == 0) return null;
+
+        Inflater inflater = new Inflater();
+        inflater.setInput(alpha, 0, alpha.length);
+
+        Bitmap alphaBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(width * height);
+        try {
+            inflater.inflate(byteBuffer.array());
+            alphaBitmap.copyPixelsFromBuffer(byteBuffer);
+        } catch (DataFormatException e) {
+            // Should never happen.
+            alphaBitmap.recycle();
+            alphaBitmap = null;
+        }
+        inflater.end();
+        return alphaBitmap;
+    }
+
+    private void applyAlpha(Bitmap bitmap, Bitmap alphaChannel) {
+        Canvas c = new Canvas(bitmap);
+        final Paint alphaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        alphaPaint.setColorFilter(sAlphaFilter);
+        alphaPaint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
+        c.drawBitmap(alphaChannel, 0, 0, alphaPaint);
     }
 
     @Override
@@ -155,6 +249,9 @@ class CompressibleBitmap {
 
         if (mCompressedData != null && od.mCompressedData != null) {
             return Arrays.equals(mCompressedData, od.mCompressedData);
+        }
+        if (mCompressedAlphaBytes != null && od.mCompressedAlphaBytes != null) {
+            return Arrays.equals(mCompressedAlphaBytes, od.mCompressedAlphaBytes);
         }
         if (mBitmap != null && od.mBitmap != null) {
             return mBitmap.equals(od.mBitmap);
