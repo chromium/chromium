@@ -811,9 +811,8 @@ bool AppListControllerImpl::GoHome(int64_t display_id) {
 
   base::RepeatingClosure window_transforms_callback = base::BarrierClosure(
       foreground_windows.size(),
-      base::BindOnce(&AppListControllerImpl::OnHomeLauncherTransitionEnded,
-                     weak_ptr_factory_.GetWeakPtr(), true /*shown*/,
-                     display_id));
+      base::BindOnce(&AppListControllerImpl::OnGoHomeWindowAnimationsEnded,
+                     weak_ptr_factory_.GetWeakPtr(), display_id));
 
   // Minimize currently active windows, but this time, using animation.
   // Home screen will show when all the windows are done minimizing.
@@ -2061,10 +2060,9 @@ void AppListControllerImpl::RecordAnimationSmoothness() {
   smoothness_tracker_.reset();
 }
 
-void AppListControllerImpl::OnHomeLauncherTransitionEnded(bool shown,
-                                                          int64_t display_id) {
+void AppListControllerImpl::OnGoHomeWindowAnimationsEnded(int64_t display_id) {
   RecordAnimationSmoothness();
-  OnHomeLauncherAnimationComplete(shown, display_id);
+  OnHomeLauncherAnimationComplete(/*shown=*/true, display_id);
 }
 
 }  // namespace ash

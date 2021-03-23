@@ -447,11 +447,9 @@ class ASH_EXPORT AppListControllerImpl
   void StartTrackingAnimationSmoothness(int64_t display_id);
   void RecordAnimationSmoothness();
 
-  // Called when a home launcher transition has ended.
-  // |shown| - whether the final home state was shown.
-  // |display_id| - the home screen display ID.
-  // TODO(jamescook): Eliminate |shown| which is always true.
-  void OnHomeLauncherTransitionEnded(bool shown, int64_t display_id);
+  // Called when all the window minimize animations triggered by a tablet mode
+  // "Go Home" have ended. |display_id| is the home screen display ID.
+  void OnGoHomeWindowAnimationsEnded(int64_t display_id);
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
