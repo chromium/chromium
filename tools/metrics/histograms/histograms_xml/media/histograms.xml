@@ -4876,7 +4876,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastWebSenderExtensionLoaded"
-    enum="BooleanEnabled" expires_after="2021-04-04">
+    enum="BooleanEnabled" expires_after="2022-04-04">
   <owner>rwkeane@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
