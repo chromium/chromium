@@ -19,7 +19,9 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {
 
@@ -254,7 +256,11 @@ SkColor NativeTheme::GetSystemColor(ColorId color_id,
 
 SkColor NativeTheme::GetUnprocessedSystemColor(ColorId color_id,
                                                ColorScheme color_scheme) const {
-  return GetSystemColorCommon(color_id, color_scheme, false);
+  auto color = GetSystemColorCommon(color_id, color_scheme, false);
+  DVLOG(2) << "GetUnprocessedSystemColor: "
+           << "NativeTheme::ColorId: " << NativeThemeColorIdName(color_id)
+           << " Color: " << SkColorName(color);
+  return color;
 }
 
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
