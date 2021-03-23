@@ -199,6 +199,13 @@ public class IntentHandler {
             "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
 
     /**
+     * A boolean to indicate whether the ChromeTabbedActivity task was started by this Intent. Only
+     * used for external View intents.
+     */
+    public static final String EXTRA_STARTED_TABBED_CHROME_TASK =
+            "org.chromium.chrome.browser.started_chrome_task";
+
+    /**
      * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
      */
     private static ComponentName sFakeComponentName;

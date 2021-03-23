@@ -99,8 +99,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
 
-    private boolean mInterceptMoveTaskToBackForTesting;
-    private boolean mBackInterceptedForTesting;
+    private static boolean sInterceptMoveTaskToBackForTesting;
+    private static boolean sBackInterceptedForTesting;
 
     public AsyncInitializationActivity() {
         mHandler = new Handler();
@@ -891,19 +891,19 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         // Activity from being finished, breaking tests. Trying to bring the
         // task back to the foreground after also happens to be flaky, so just
         // allow tests to prevent actually moving to the background.
-        if (mInterceptMoveTaskToBackForTesting) {
-            mBackInterceptedForTesting = true;
+        if (sInterceptMoveTaskToBackForTesting) {
+            sBackInterceptedForTesting = true;
             return false;
         }
         return super.moveTaskToBack(nonRoot);
     }
 
-    public void interceptMoveTaskToBackForTesting() {
-        mInterceptMoveTaskToBackForTesting = true;
-        mBackInterceptedForTesting = false;
+    public static void interceptMoveTaskToBackForTesting() {
+        sInterceptMoveTaskToBackForTesting = true;
+        sBackInterceptedForTesting = false;
     }
 
-    public boolean wasMoveTaskToBackInterceptedForTesting() {
-        return mBackInterceptedForTesting;
+    public static boolean wasMoveTaskToBackInterceptedForTesting() {
+        return sBackInterceptedForTesting;
     }
 }

@@ -6,7 +6,8 @@
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentCold
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentColdNoTask
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentColdWithTask
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentWarm
 
 # vr tests do not apply to emulator

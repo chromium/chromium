@@ -55,6 +55,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.ChromeTabbedTaskExistsTime" units="ms"
+    expires_after="2021-09-19">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Measures the amount of time it takes to check if a ChromeTabbedActivity task
+    already exists during startup.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
     units="ms" expires_after="2021-09-12">
   <owner>pasko@chromium.org</owner>

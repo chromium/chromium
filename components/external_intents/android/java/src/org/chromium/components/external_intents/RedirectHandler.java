@@ -48,6 +48,7 @@ public class RedirectHandler {
     private int mLastCommittedEntryIndexBeforeStartingNavigation;
 
     private boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
+    private boolean mExternalIntentStartedTask;
 
     public static RedirectHandler create() {
         return new RedirectHandler();
@@ -64,7 +65,7 @@ public class RedirectHandler {
      * into |mIntentHistory|.
      */
     public void updateIntent(Intent intent, boolean isCustomTabIntent, boolean sendToExternalApps,
-            boolean isCCTExternalLinkHandlingEnabled) {
+            boolean isCCTExternalLinkHandlingEnabled, boolean externalIntentStartedTask) {
         clear();
 
         if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
@@ -72,6 +73,7 @@ public class RedirectHandler {
         }
 
         mIsCustomTabIntent = isCustomTabIntent;
+        mExternalIntentStartedTask = externalIntentStartedTask;
         boolean checkIsToChrome = true;
         // All custom tabs VIEW intents are by design explicit intents, so the presence of package
         // name doesn't imply they have to be handled by Chrome explicitly. Check if external apps
@@ -99,6 +101,7 @@ public class RedirectHandler {
         mIsInitialIntentHeadingToChrome = false;
         mIsCustomTabIntent = false;
         mInitialIntent = null;
+        mExternalIntentStartedTask = false;
         mCachedResolvers.clear();
     }
 
@@ -119,6 +122,16 @@ public class RedirectHandler {
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
         mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = true;
+    }
+
+    /**
+     * @return true if the task for the Activity was created by the most recent external intent
+     *         navigation to the current tab. Note that this doesn't include cold Activity starts
+     *         that re-use an existing task (eg. Chrome was killed by Android without its task being
+     *         swiped away or timed out).
+     */
+    public boolean wasTaskStartedByExternalIntent() {
+        return mExternalIntentStartedTask;
     }
 
     /**

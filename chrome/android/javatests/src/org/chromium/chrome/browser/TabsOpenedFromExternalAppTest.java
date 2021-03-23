@@ -32,6 +32,7 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -217,10 +218,9 @@ public class TabsOpenedFromExternalAppTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Window does not have focus before pressing back.",
                     mActivityTestRule.getActivity().hasWindowFocus());
-            mActivityTestRule.getActivity().interceptMoveTaskToBackForTesting();
+            AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
             mActivityTestRule.getActivity().onBackPressed();
-            Assert.assertTrue(
-                    mActivityTestRule.getActivity().wasMoveTaskToBackInterceptedForTesting());
+            Assert.assertTrue(AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
             Assert.assertFalse(mActivityTestRule.getActivity().isFinishing());
         });
     }

@@ -6,6 +6,7 @@ package org.chromium.components.external_intents;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -259,17 +260,26 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
         // url, we would like to close it as we will load this url in a
         // different Activity.
         if (shouldCloseTab) {
-            if (mClient.wasTabLaunchedFromExternalApp()) {
-                // Moving task back before closing the tab allows back button to function better
-                // when Chrome was an intermediate link redirector between two apps.
-                // crbug.com/487938.
-                mClient.getActivity().moveTaskToBack(false);
-            }
             // Defer closing a tab (and the associated WebContents) till the navigation
             // request and the throttle finishes the job with it.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
                 @Override
                 public void run() {
+                    // If the launch was from an External app, Chrome came from the background and
+                    // acted as an intermediate link redirector between two apps (crbug.com/487938).
+                    if (mClient.wasTabLaunchedFromExternalApp()) {
+                        if (mClient.getOrCreateRedirectHandler().wasTaskStartedByExternalIntent()) {
+                            // If Chrome was only launched to perform a redirect, don't keep its
+                            // task in history.
+                            ApiCompatibilityUtils.finishAndRemoveTask(mClient.getActivity());
+                        } else {
+                            // Takes Chrome out of the back stack.
+                            mClient.getActivity().moveTaskToBack(false);
+                        }
+                    }
+                    // Closing tab must happen after we potentially call finishAndRemoveTask, as
+                    // closing tabs can lead to the Activity being finished, which would cause
+                    // Android to ignore the finishAndRemoveTask call, leaving the task around.
                     mClient.closeTab();
                 }
             });
