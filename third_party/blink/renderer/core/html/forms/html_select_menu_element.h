@@ -26,7 +26,7 @@ class HTMLSelectMenuElement final : public HTMLElement {
  public:
   explicit HTMLSelectMenuElement(Document&);
 
-  String value() const;
+  String value();
   void setValue(const String&, bool send_events = false);
 
   bool IsOpen() const;
@@ -34,12 +34,31 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
+  class SelectMutationCallback;
+
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void Open();
   void Close();
   void UpdatePartElements();
+
+  Element* FirstOptionPart() const;
+  void EnsureSelectedOptionIsValid();
+  Element* SelectedOption();
   void SetSelectedOption(Element* selected_option);
   void UpdateSelectedValuePartContents();
+
+  void ButtonPartInserted(Element*);
+  void ButtonPartRemoved(Element*);
+  void SelectedValuePartInserted(Element*);
+  void SelectedValuePartRemoved(Element*);
+  void ListboxPartInserted(Element*);
+  void ListboxPartRemoved(Element*);
+  void OptionPartInserted(Element*);
+  void OptionPartRemoved(Element*);
+
+  bool IsValidButtonPart(const Element* part, bool show_warning) const;
+  bool IsValidListboxPart(const Element* part, bool show_warning) const;
+  bool IsValidOptionPart(const Element* part, bool show_warning) const;
 
   class ButtonPartEventListener : public NativeEventListener {
    public:
@@ -71,21 +90,6 @@ class HTMLSelectMenuElement final : public HTMLElement {
     Member<HTMLSelectMenuElement> select_menu_element_;
   };
 
-  class SlotChangeEventListener : public NativeEventListener {
-   public:
-    explicit SlotChangeEventListener(HTMLSelectMenuElement* select_menu_element)
-        : select_menu_element_(select_menu_element) {}
-    void Invoke(ExecutionContext*, Event*) override;
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(select_menu_element_);
-      NativeEventListener::Trace(visitor);
-    }
-
-   private:
-    Member<HTMLSelectMenuElement> select_menu_element_;
-  };
-
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
@@ -93,7 +97,8 @@ class HTMLSelectMenuElement final : public HTMLElement {
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
-  Member<SlotChangeEventListener> slotchange_listener_;
+
+  Member<SelectMutationCallback> select_mutation_callback_;
 
   Member<Element> button_part_;
   Member<Element> selected_value_part_;
