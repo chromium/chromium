@@ -154,7 +154,7 @@ class VariationsFieldTrialCreator {
   // successfully; and if so, stores the loaded variations state into the
   // |safe_seed_manager|.
   bool CreateTrialsFromSeed(
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list,
       SafeSeedManager* safe_seed_manager);
 
