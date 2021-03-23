@@ -358,9 +358,6 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
         ConstraintSpace(), fieldset_content, *result.get(),
         ConstraintSpace().FragmentainerOffsetAtBfc() + intrinsic_block_size_,
         has_container_separation, &container_builder_);
-    EBreakBetween break_after = JoinFragmentainerBreakValues(
-        result->FinalBreakAfter(), fieldset_content.Style().BreakAfter());
-    container_builder_.SetPreviousBreakAfter(break_after);
   }
 
   if (break_status == NGBreakStatus::kContinue) {

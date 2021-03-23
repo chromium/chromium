@@ -678,14 +678,6 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
           // layout of the fragment. No more siblings should be processed.
           break;
         }
-
-        // We need to propagate the initial break-before value up our container
-        // chain, until we reach a container that's not a first child. If we get
-        // all the way to the root of the fragmentation context without finding
-        // any such container, we have no valid class A break point, and if a
-        // forced break was requested, none will be inserted.
-        if (!has_processed_first_child_ && !child.IsInline())
-          container_builder_.SetInitialBreakBefore(child.Style().BreakBefore());
         has_processed_first_child_ = true;
       }
     }
@@ -1347,10 +1339,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
     // If the child aborted layout, we cannot continue.
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
-
-    EBreakBetween break_after = JoinFragmentainerBreakValues(
-        layout_result->FinalBreakAfter(), child.Style().BreakAfter());
-    container_builder_.SetPreviousBreakAfter(break_after);
   }
 
   const auto& physical_fragment = layout_result->PhysicalFragment();
@@ -1883,9 +1871,6 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       return NGLayoutResult::kSuccess;
     if (break_status == NGBreakStatus::kNeedsEarlierBreak)
       return NGLayoutResult::kNeedsEarlierBreak;
-    EBreakBetween break_after = JoinFragmentainerBreakValues(
-        layout_result->FinalBreakAfter(), child.Style().BreakAfter());
-    container_builder_.SetPreviousBreakAfter(break_after);
 
     if (inline_child_layout_context) {
       for (auto token : inline_child_layout_context->PropagatedBreakTokens()) {

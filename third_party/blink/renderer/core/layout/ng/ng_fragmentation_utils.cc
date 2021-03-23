@@ -585,6 +585,26 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     return false;
   }
 
+  if (!child.IsInline() && builder) {
+    // We need to propagate the initial break-before value up our container
+    // chain, until we reach a container that's not a first child. If we get all
+    // the way to the root of the fragmentation context without finding any such
+    // container, we have no valid class A break point, and if a forced break
+    // was requested, none will be inserted.
+    builder->SetInitialBreakBeforeIfNeeded(child.Style().BreakBefore());
+
+    // We also need to store the previous break-after value we've seen, since it
+    // will serve as input to the next breakpoint (where we will combine the
+    // break-after value of the previous child and the break-before value of the
+    // next child, to figure out what to do at the breakpoint). The break-after
+    // value of the last child will also be propagated up our container chain,
+    // until we reach a container that's not a last child. This will be the
+    // class A break point that it affects.
+    EBreakBetween break_after = JoinFragmentainerBreakValues(
+        layout_result.FinalBreakAfter(), child.Style().BreakAfter());
+    builder->SetPreviousBreakAfter(break_after);
+  }
+
   const auto& physical_fragment = layout_result.PhysicalFragment();
   NGFragment fragment(space.GetWritingDirection(), physical_fragment);
 

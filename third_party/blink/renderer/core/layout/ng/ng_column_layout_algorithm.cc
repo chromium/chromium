@@ -817,10 +817,6 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
 
-  EBreakBetween break_after = JoinFragmentainerBreakValues(
-      result->FinalBreakAfter(), spanner_node.Style().BreakAfter());
-  container_builder_.SetPreviousBreakAfter(break_after);
-
   return NGBreakStatus::kContinue;
 }
 

@@ -324,8 +324,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
-  void SetInitialBreakBefore(EBreakBetween break_before) {
-    initial_break_before_ = break_before;
+  void SetInitialBreakBeforeIfNeeded(EBreakBetween break_before) {
+    if (!initial_break_before_)
+      initial_break_before_ = break_before;
   }
 
   void SetPreviousBreakAfter(EBreakBetween break_after) {
@@ -624,7 +625,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.
-  EBreakBetween initial_break_before_ = EBreakBetween::kAuto;
+  base::Optional<EBreakBetween> initial_break_before_;
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
