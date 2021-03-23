@@ -71,6 +71,7 @@ void TestAutofillDriver::SendAutofillTypePredictionsToRenderer(
 }
 
 void TestAutofillDriver::RendererShouldAcceptDataListSuggestion(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void TestAutofillDriver::RendererShouldClearFilledSection() {}
@@ -79,12 +80,15 @@ void TestAutofillDriver::RendererShouldClearPreviewedForm() {
 }
 
 void TestAutofillDriver::RendererShouldFillFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void TestAutofillDriver::RendererShouldPreviewFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void TestAutofillDriver::RendererShouldSetSuggestionAvailability(
+    const FieldGlobalId& field,
     const mojom::AutofillState state) {}
 
 void TestAutofillDriver::PopupHidden() {

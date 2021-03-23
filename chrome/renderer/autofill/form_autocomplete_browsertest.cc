@@ -804,11 +804,12 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
     ASSERT_FALSE(element.IsNull());
     WebInputElement* input_element = blink::ToWebInputElement(&element);
     ASSERT_TRUE(input_element);
+    FieldRendererId field_id(input_element->UniqueRendererFormControlId());
     // Select this element in |autofill_agent_|.
     autofill_agent_->FormControlElementClicked(element.To<WebInputElement>(),
                                                false);
 
-    autofill_agent_->AcceptDataListSuggestion(kSuggestion);
+    autofill_agent_->AcceptDataListSuggestion(field_id, kSuggestion);
     EXPECT_EQ(c.expected, input_element->Value().Utf8()) << "Case id: " << c.id;
   }
 }

@@ -193,10 +193,11 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
+    const FieldGlobalId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->AcceptDataListSuggestion(value);
+  GetAutofillAgent()->AcceptDataListSuggestion(field.renderer_id, value);
 }
 
 void ContentAutofillDriver::RendererShouldClearFilledSection() {
@@ -212,24 +213,27 @@ void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
 }
 
 void ContentAutofillDriver::RendererShouldFillFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->FillFieldWithValue(value);
+  GetAutofillAgent()->FillFieldWithValue(field.renderer_id, value);
 }
 
 void ContentAutofillDriver::RendererShouldPreviewFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->PreviewFieldWithValue(value);
+  GetAutofillAgent()->PreviewFieldWithValue(field.renderer_id, value);
 }
 
 void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
+    const FieldGlobalId& field,
     const mojom::AutofillState state) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->SetSuggestionAvailability(state);
+  GetAutofillAgent()->SetSuggestionAvailability(field.renderer_id, state);
 }
 
 void ContentAutofillDriver::PopupHidden() {

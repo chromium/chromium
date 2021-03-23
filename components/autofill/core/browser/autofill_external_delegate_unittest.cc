@@ -56,17 +56,17 @@ class MockAutofillDriver : public TestAutofillDriver {
   // Mock methods to enable testability.
   MOCK_METHOD(void,
               RendererShouldAcceptDataListSuggestion,
-              (const std::u16string&),
+              (const FieldGlobalId&, const std::u16string&),
               (override));
   MOCK_METHOD(void, RendererShouldClearFilledSection, (), (override));
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
               RendererShouldFillFieldWithValue,
-              (const std::u16string&),
+              (const FieldGlobalId&, const std::u16string&),
               (override));
   MOCK_METHOD(void,
               RendererShouldPreviewFieldWithValue,
-              (const std::u16string&),
+              (const FieldGlobalId&, const std::u16string&),
               (override));
 
  private:
@@ -181,8 +181,12 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 
   // Issue an OnQuery call with the given |query_id|.
   void IssueOnQuery(int query_id) {
-    const FormData form;
+    FormData form;
+    form.host_frame = form_id_.frame_token;
+    form.unique_renderer_id = form_id_.renderer_id;
     FormFieldData field;
+    field.host_frame = field_id_.frame_token;
+    field.unique_renderer_id = field_id_.renderer_id;
     field.is_focusable = true;
     field.should_autocomplete = true;
 
@@ -203,6 +207,9 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   std::unique_ptr<testing::NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<MockAutofillManager> autofill_manager_;
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
+
+  FormGlobalId form_id_ = test::MakeFormGlobalId();
+  FieldGlobalId field_id_ = test::MakeFieldGlobalId();
 };
 
 // Variant for use in cases when we expect the AutofillManager would normally
@@ -599,6 +606,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   // Ensure selecting a new password entries or Autofill entries will
   // cause any previews to get cleared.
+  IssueOnQuery(123);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   external_delegate_->DidSelectSuggestion(ASCIIToUTF16("baz foo"),
                                           POPUP_ITEM_ID_PASSWORD_ENTRY);
@@ -611,8 +619,8 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  EXPECT_CALL(*autofill_driver_,
-              RendererShouldPreviewFieldWithValue(ASCIIToUTF16("baz foo")));
+  EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
+                                     field_id_, ASCIIToUTF16("baz foo")));
   external_delegate_->DidSelectSuggestion(ASCIIToUTF16("baz foo"),
                                           POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
 }
@@ -632,11 +640,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // that the user accepted the data list suggestion.
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateAcceptDatalistSuggestion) {
+  IssueOnQuery(0);
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   std::u16string dummy_string(ASCIIToUTF16("baz qux"));
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldAcceptDataListSuggestion(dummy_string));
+              RendererShouldAcceptDataListSuggestion(field_id_, dummy_string));
   external_delegate_->DidAcceptSuggestion(dummy_string,
                                           POPUP_ITEM_ID_DATALIST_ENTRY, 0);
 }
@@ -795,9 +804,10 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  IssueOnQuery(456);
   std::u16string dummy_string(ASCIIToUTF16("baz foo"));
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldFillFieldWithValue(dummy_string));
+              RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),
               OnAutocompleteEntrySelected(dummy_string))
       .Times(1);

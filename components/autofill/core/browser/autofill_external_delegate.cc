@@ -192,7 +192,8 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
     const mojom::AutofillState state) {
   // Availability of suggestions should be communicated to Blink because
   // accessibility objects live in both the renderer and browser processes.
-  driver_->RendererShouldSetSuggestionAvailability(state);
+  driver_->RendererShouldSetSuggestionAvailability(query_field_.global_id(),
+                                                   state);
 }
 
 void AutofillExternalDelegate::SetCurrentDataListValues(
@@ -237,7 +238,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(const std::u16string& value,
   if (identifier > 0)
     FillAutofillFormData(identifier, true);
   else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
-    driver_->RendererShouldPreviewFieldWithValue(value);
+    driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
+                                                 value);
 }
 
 void AutofillExternalDelegate::DidAcceptSuggestion(const std::u16string& value,
@@ -256,10 +258,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const std::u16string& value,
              identifier == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY) {
     NOTREACHED();  // Should be handled elsewhere.
   } else if (identifier == POPUP_ITEM_ID_DATALIST_ENTRY) {
-    driver_->RendererShouldAcceptDataListSuggestion(value);
+    driver_->RendererShouldAcceptDataListSuggestion(query_field_.global_id(),
+                                                    value);
   } else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // User selected an Autocomplete, so we fill directly.
-    driver_->RendererShouldFillFieldWithValue(value);
+    driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
     AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
     manager_->OnAutocompleteEntrySelected(value);
   } else if (identifier == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {

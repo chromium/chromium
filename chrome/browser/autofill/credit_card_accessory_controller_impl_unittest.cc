@@ -100,7 +100,8 @@ class TestAccessManager : public CreditCardAccessManager {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MOCK_METHOD1(RendererShouldFillFieldWithValue, void(const std::u16string&));
+  MOCK_METHOD2(RendererShouldFillFieldWithValue,
+               void(const FieldGlobalId& field, const std::u16string&));
 };
 
 class CreditCardAccessoryControllerTest
@@ -235,8 +236,14 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
 
   std::u16string expected_number = kFirstTwelveDigits + card.number();
 
+  // TODO(crbug/1187858): Fill in correct renderer ID here.
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId()};
+
   EXPECT_CALL(mock_af_driver_,
-              RendererShouldFillFieldWithValue(expected_number));
+              RendererShouldFillFieldWithValue(field_id, expected_number));
 
   cc_controller->OnFillingTriggered(field);
 }

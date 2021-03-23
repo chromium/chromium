@@ -533,7 +533,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
     // Fill focused element (i.e. |username_element_|).
-    autofill_agent_->FillFieldWithValue(ASCIIToUTF16(text));
+    autofill_agent_->FillFieldWithValue(
+        FieldRendererId(username_element_.UniqueRendererFormControlId()),
+        ASCIIToUTF16(text));
   }
 
   void SimulateUsernameFieldChange(FieldChangeSource change_source) {

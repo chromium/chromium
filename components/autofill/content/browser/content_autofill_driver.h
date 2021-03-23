@@ -90,13 +90,17 @@ class ContentAutofillDriver : public AutofillDriver,
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(
+      const FieldGlobalId& field_id,
       const std::u16string& value) override;
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
-  void RendererShouldFillFieldWithValue(const std::u16string& value) override;
+  void RendererShouldFillFieldWithValue(const FieldGlobalId& field_id,
+                                        const std::u16string& value) override;
   void RendererShouldPreviewFieldWithValue(
+      const FieldGlobalId& field_id,
       const std::u16string& value) override;
   void RendererShouldSetSuggestionAvailability(
+      const FieldGlobalId& field_id,
       const mojom::AutofillState state) override;
   void PopupHidden() override;
   gfx::RectF TransformBoundingBoxToViewportCoordinates(

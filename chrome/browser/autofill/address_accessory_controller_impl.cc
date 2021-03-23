@@ -115,12 +115,17 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
     const UserInfo::Field& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
   // fill the focused frame - we basically behave like a keyboard here.
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh)
+    return;
   autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          web_contents_->GetFocusedFrame());
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver)
     return;
-  driver->RendererShouldFillFieldWithValue(selection.display_text());
+  // TODO(crbug/1187858): Fill in correct renderer ID here.
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId()};
+  driver->RendererShouldFillFieldWithValue(field_id, selection.display_text());
 }
 
 void AddressAccessoryControllerImpl::OnOptionSelected(

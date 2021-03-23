@@ -134,6 +134,7 @@ void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
 }
 
 void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void AutofillDriverIOS::RendererShouldClearFilledSection() {}
@@ -142,12 +143,15 @@ void AutofillDriverIOS::RendererShouldClearPreviewedForm() {
 }
 
 void AutofillDriverIOS::RendererShouldFillFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void AutofillDriverIOS::RendererShouldPreviewFieldWithValue(
+    const FieldGlobalId& field,
     const std::u16string& value) {}
 
 void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
+    const FieldGlobalId& field,
     const mojom::AutofillState state) {}
 
 void AutofillDriverIOS::PopupHidden() {

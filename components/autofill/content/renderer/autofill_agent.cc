@@ -385,49 +385,6 @@ void AutofillAgent::UserGestureObserved() {
   password_autofill_agent_->UserGestureObserved();
 }
 
-void AutofillAgent::DoAcceptDataListSuggestion(
-    const std::u16string& suggested_value) {
-  if (element_.IsNull())
-    return;
-
-  WebInputElement* input_element = ToWebInputElement(&element_);
-  if (!input_element) {
-    // For reasons not understood yet, this is triggered on elements which are
-    // not input elements.
-
-    // TODO(crbug.com/1048270) Gather debug data.
-    DEBUG_ALIAS_FOR_CSTR(element_name, element_.TagName().Latin1().c_str(), 64);
-    base::debug::DumpWithoutCrashing();
-
-    // Keep this return after removing the TODO(crbug.com/1048270) above.
-    return;
-  }
-  std::u16string new_value = suggested_value;
-  // If this element takes multiple values then replace the last part with
-  // the suggestion.
-  if (input_element->IsMultiple() && input_element->IsEmailField()) {
-    std::u16string value = input_element->EditingValue().Utf16();
-    std::vector<base::StringPiece16> parts = base::SplitStringPiece(
-        value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (parts.size() == 0)
-      parts.push_back(base::StringPiece16());
-
-    std::u16string last_part(parts.back());
-    // We want to keep just the leading whitespace.
-    for (size_t i = 0; i < last_part.size(); ++i) {
-      if (!base::IsUnicodeWhitespace(last_part[i])) {
-        last_part = last_part.substr(0, i);
-        break;
-      }
-    }
-    last_part.append(suggested_value);
-    parts.back() = last_part;
-
-    new_value = base::JoinString(parts, u",");
-  }
-  DoFillFieldWithValue(new_value, input_element);
-}
-
 void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
   ReplaceElementIfNowInvalid(form);
 
@@ -518,9 +475,16 @@ void AutofillAgent::ClearPreviewedForm() {
   previewed_elements_ = {};
 }
 
-void AutofillAgent::FillFieldWithValue(const std::u16string& value) {
-  if (element_.IsNull())
+void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
+                                       const std::u16string& value) {
+  // TODO(crbug/1187858) Remove the "field_id &&" once
+  // AddressAccessoryControllerImpl::OnFillingTriggered() sets the correct
+  // field_id renderer ID.
+  if (element_.IsNull() ||
+      (field_id &&
+       field_id != FieldRendererId(element_.UniqueRendererFormControlId()))) {
     return;
+  }
 
   WebInputElement* input_element = ToWebInputElement(&element_);
   if (input_element) {
@@ -529,9 +493,12 @@ void AutofillAgent::FillFieldWithValue(const std::u16string& value) {
   }
 }
 
-void AutofillAgent::PreviewFieldWithValue(const std::u16string& value) {
-  if (element_.IsNull())
+void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
+                                          const std::u16string& value) {
+  if (element_.IsNull() ||
+      field_id != FieldRendererId(element_.UniqueRendererFormControlId())) {
     return;
+  }
 
   WebInputElement* input_element = ToWebInputElement(&element_);
   if (input_element)
@@ -539,9 +506,12 @@ void AutofillAgent::PreviewFieldWithValue(const std::u16string& value) {
 }
 
 void AutofillAgent::SetSuggestionAvailability(
+    FieldRendererId field_id,
     const mojom::AutofillState state) {
-  if (element_.IsNull())
+  if (element_.IsNull() ||
+      field_id != FieldRendererId(element_.UniqueRendererFormControlId())) {
     return;
+  }
 
   WebInputElement* input_element = ToWebInputElement(&element_);
   if (input_element) {
@@ -566,8 +536,50 @@ void AutofillAgent::SetSuggestionAvailability(
   }
 }
 
-void AutofillAgent::AcceptDataListSuggestion(const std::u16string& value) {
-  DoAcceptDataListSuggestion(value);
+void AutofillAgent::AcceptDataListSuggestion(
+    FieldRendererId field_id,
+    const std::u16string& suggested_value) {
+  if (element_.IsNull() ||
+      field_id != FieldRendererId(element_.UniqueRendererFormControlId())) {
+    return;
+  }
+
+  WebInputElement* input_element = ToWebInputElement(&element_);
+  if (!input_element) {
+    // For reasons not understood yet, this is triggered on elements which are
+    // not input elements.
+
+    // TODO(crbug.com/1048270) Gather debug data.
+    DEBUG_ALIAS_FOR_CSTR(element_name, element_.TagName().Latin1().c_str(), 64);
+    base::debug::DumpWithoutCrashing();
+
+    // Keep this return after removing the TODO(crbug.com/1048270) above.
+    return;
+  }
+  std::u16string new_value = suggested_value;
+  // If this element takes multiple values then replace the last part with
+  // the suggestion.
+  if (input_element->IsMultiple() && input_element->IsEmailField()) {
+    std::u16string value = input_element->EditingValue().Utf16();
+    std::vector<base::StringPiece16> parts = base::SplitStringPiece(
+        value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (parts.size() == 0)
+      parts.push_back(base::StringPiece16());
+
+    std::u16string last_part(parts.back());
+    // We want to keep just the leading whitespace.
+    for (size_t i = 0; i < last_part.size(); ++i) {
+      if (!base::IsUnicodeWhitespace(last_part[i])) {
+        last_part = last_part.substr(0, i);
+        break;
+      }
+    }
+    last_part.append(suggested_value);
+    parts.back() = last_part;
+
+    new_value = base::JoinString(parts, u",");
+  }
+  DoFillFieldWithValue(new_value, input_element);
 }
 
 void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,

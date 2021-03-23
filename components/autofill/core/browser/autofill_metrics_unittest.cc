@@ -8732,6 +8732,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
   // Fill additional form.
   FormData second_form = form;
+  second_form.host_frame = test::GetLocalFrameToken();
   second_form.unique_renderer_id = test::MakeFormRendererId();
   test::CreateTestFormField("Second Phone", "second_phone", "", "text", &field);
   second_form.fields.push_back(field);

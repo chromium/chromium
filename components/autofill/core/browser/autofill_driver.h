@@ -98,6 +98,7 @@ class AutofillDriver {
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(
+      const FieldGlobalId& field_id,
       const std::u16string& value) = 0;
 
   // Tells the renderer to clear the current section of the autofilled values.
@@ -108,15 +109,18 @@ class AutofillDriver {
 
   // Tells the renderer to set the node text.
   virtual void RendererShouldFillFieldWithValue(
+      const FieldGlobalId& field_id,
       const std::u16string& value) = 0;
 
   // Tells the renderer to preview the node with suggested text.
   virtual void RendererShouldPreviewFieldWithValue(
+      const FieldGlobalId& field_id,
       const std::u16string& value) = 0;
 
   // Tells the renderer to set the currently focused node's corresponding
   // accessibility node's autofill state to |state|.
   virtual void RendererShouldSetSuggestionAvailability(
+      const FieldGlobalId& field_id,
       const mojom::AutofillState state) = 0;
 
   // Informs the renderer that the popup has been hidden.

@@ -139,6 +139,7 @@ void AutofillProviderAndroid::MaybeStartNewSession(
       form, base::BindRepeating(
                 &AutofillDriver::TransformBoundingBoxToViewportCoordinates,
                 base::Unretained(handler->driver())));
+  field_id_ = field.global_id();
 
   size_t index;
   if (!form_->GetFieldIndex(field, &index)) {
@@ -178,7 +179,7 @@ void AutofillProviderAndroid::OnAcceptDataListSuggestion(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (auto* handler = handler_.get()) {
     RendererShouldAcceptDataListSuggestion(
-        handler, ConvertJavaStringToUTF16(env, value));
+        handler, field_id_, ConvertJavaStringToUTF16(env, value));
   }
 }
 

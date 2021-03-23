@@ -85,8 +85,9 @@ class AutofillProvider {
                               const FormData& formData);
 
   // Notifies the renderer should accept the datalist suggestion given by
-  // |value| and fill the associated input field.
+  // |value| and fill the input field indified by |field_id|.
   void RendererShouldAcceptDataListSuggestion(AutofillHandlerProxy* handler,
+                                              const FieldGlobalId& field_id,
                                               const std::u16string& value);
 };
 
