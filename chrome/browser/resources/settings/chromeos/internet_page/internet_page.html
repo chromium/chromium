@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
@@ -190,6 +191,13 @@
           network-state="[[eSimNetworkState_]]"
           show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-remove-profile-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showSimLockDialog_]]" restamp>
+      <sim-lock-dialogs
+          is-dialog-open="{{showSimLockDialog_}}"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+      </sim-lock-dialogs>
     </template>
 
     <cr-toast id="errorToast" duration="5000">

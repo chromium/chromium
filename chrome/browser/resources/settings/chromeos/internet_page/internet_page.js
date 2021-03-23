@@ -155,6 +155,12 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    showSimLockDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * eSIM network used in internet detail menu.
      * @private {chromeos.networkConfig.mojom.NetworkStateProperties}
@@ -275,6 +281,10 @@ Polymer({
         this.cellularSetupDialogPageName_ =
             cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
       }
+
+      this.showSimLockDialog_ = !!queryParams.get('showSimLockDialog') &&
+          this.subpageType_ === mojom.NetworkType.kCellular &&
+          loadTimeData.getBoolean('updatedCellularActivationUi');
     } else if (route === settings.routes.KNOWN_NETWORKS) {
       // Handle direct navigation to the known networks page,
       // e.g. chrome://settings/internet/knownNetworks?type=WiFi

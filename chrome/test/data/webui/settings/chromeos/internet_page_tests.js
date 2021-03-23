@@ -351,6 +351,30 @@ suite('InternetPage', function() {
         assertTrue(!!psimFlow);
       });
 
+  test('Show sim lock dialog through URL parameters', async () => {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
+    const mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled
+    });
+
+    const params = new URLSearchParams;
+    params.append(
+        'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
+    params.append('showSimLockDialog', true);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.INTERNET_NETWORKS, params);
+
+    await flushAsync();
+
+    const simLockDialogs = internetPage.$$('sim-lock-dialogs');
+    assertTrue(!!simLockDialogs);
+    assertTrue(simLockDialogs.isDialogOpen);
+  });
+
   test(
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
