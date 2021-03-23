@@ -2359,11 +2359,16 @@ void ChildProcessSecurityPolicyImpl::
     policy->RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(id);
   };
   if (browsing_instance_cleanup_delay_in_seconds_ > 0) {
-    GetUIThreadTaskRunner({})->PostDelayedTask(
+    // Do the actual state cleanup after posting a task to the IO thread, to
+    // give a chance for any last unprocessed tasks to be handled. The cleanup
+    // itself locks the data structures and can safely happen from either
+    // thread.
+    GetIOThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, base::BindOnce(task_closure, browsing_instance_id),
         base::TimeDelta::FromSeconds(
             browsing_instance_cleanup_delay_in_seconds_));
   } else {
+    // Since this is just used in tests, it's ok to do it on either thread.
     task_closure(browsing_instance_id);
   }
 }
@@ -2375,7 +2380,7 @@ void ChildProcessSecurityPolicyImpl::
   CHECK(!browsing_instance_id.is_null());
 
   {
-    // We can't restrict this to the UI thread on account of content_unittests.
+    // content_unittests don't always report being on the IO thread.
     DCHECK(IsRunningOnExpectedThread());
     base::AutoLock lock(lock_);
     for (auto& it : security_state_)
