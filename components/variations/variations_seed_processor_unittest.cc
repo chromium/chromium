@@ -157,7 +157,7 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     if (processed_study.Init(&study, is_expired)) {
       VariationsSeedProcessor().CreateTrialFromStudy(
           processed_study, override_callback_.callback(),
-          override_entropy_provider, feature_list);
+          &override_entropy_provider, feature_list);
       return true;
     }
     return false;
@@ -178,7 +178,7 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     VariationsSeedProcessor seed_processor;
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
   }
 
  protected:
@@ -312,7 +312,7 @@ TEST_F(VariationsSeedProcessorTest,
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
 
@@ -328,7 +328,7 @@ TEST_F(VariationsSeedProcessorTest,
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
         seed, client_state, override_callback_.callback(),
-        mock_low_entropy_provider, &feature_list);
+        &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
 }
@@ -585,7 +585,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
   seed_processor.CreateTrialsFromSeed(
       seed, client_state, override_callback_.callback(),
-      mock_low_entropy_provider, base::FeatureList::GetInstance());
+      &mock_low_entropy_provider, base::FeatureList::GetInstance());
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
   // ACTIVATE_ON_STARTUP should.

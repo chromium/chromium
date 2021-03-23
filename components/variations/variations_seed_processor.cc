@@ -198,7 +198,7 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
   std::vector<ProcessedStudy> filtered_studies;
   VariationsLayers layers(seed, low_entropy_provider);
@@ -229,7 +229,7 @@ bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
 void VariationsSeedProcessor::CreateTrialFromStudy(
     const ProcessedStudy& processed_study,
     const UIStringOverrideCallback& override_callback,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
   const Study& study = *processed_study.study();
 
@@ -294,7 +294,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
           study.name(), processed_study.total_probability(),
           processed_study.GetDefaultExperimentName(), randomization_type,
           randomization_seed, nullptr,
-          ShouldStudyUseLowEntropy(study) ? &low_entropy_provider : nullptr));
+          ShouldStudyUseLowEntropy(study) ? low_entropy_provider : nullptr));
 
   bool has_overrides = false;
   bool enables_or_disables_features = false;
