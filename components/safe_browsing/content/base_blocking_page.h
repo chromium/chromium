@@ -106,10 +106,6 @@ class BaseBlockingPage
   static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
       const UnsafeResourceList& unsafe_resources);
 
-  // Called after OnProceed(). Does nothing in this class, but can be overridden
-  // to handle malicious subresources.
-  virtual void HandleSubresourcesAfterProceed();
-
   void SetThreatDetailsProceedDelayForTesting(int64_t delay);
 
   static std::unique_ptr<

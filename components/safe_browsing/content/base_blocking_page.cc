@@ -100,8 +100,6 @@ bool BaseBlockingPage::IsMainPageLoadBlocked(
          unsafe_resources[0].IsMainPageLoadBlocked();
 }
 
-void BaseBlockingPage::HandleSubresourcesAfterProceed() {}
-
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {
   threat_details_proceed_delay_ms_ = delay;
 }
