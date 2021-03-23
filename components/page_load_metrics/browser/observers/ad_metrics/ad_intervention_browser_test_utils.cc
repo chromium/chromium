@@ -7,8 +7,56 @@
 #include <memory>
 
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace {
+
+// Scales the rect by the web content's render widget host's device scale
+// factor.
+gfx::Rect ScaleRectByDeviceScaleFactor(const gfx::Rect& rect,
+                                       content::WebContents* web_contents) {
+  blink::ScreenInfo screen_info;
+  web_contents->GetRenderWidgetHostView()->GetScreenInfo(&screen_info);
+  return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
+}
+
+}  // namespace
+
+// Gets the body height of the document embedded in |web_contents|.
+int GetDocumentHeight(content::WebContents* web_contents) {
+  return EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
+}
+
+void CreateAndWaitForIframeAtRect(
+    content::WebContents* web_contents,
+    page_load_metrics::PageLoadMetricsTestWaiter* waiter,
+    net::test_server::EmbeddedTestServer* embedded_test_server,
+    const gfx::Rect& rect) {
+  // The intersections returned by the renderer are scaled to the device's
+  // scale factor.
+  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
+
+  // The renderer propagates values scaled by the device scale factor.
+  // Wait on these values.
+  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
+
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace(
+          "let frame = createAdIframeAtRect($1, $2, $3, $4); "
+          "frame.src = $5",
+          rect.x(), rect.y(), rect.width(), rect.height(),
+          embedded_test_server->GetURL("b.com", "/ads_observer/pixel.png")
+              .spec())));
+
+  waiter->Wait();
+}
 
 // Navigate to |url| in |web_contents| and wait until we see the first
 // contentful paint.

@@ -11,6 +11,31 @@ namespace content {
 class WebContents;
 }
 
+namespace gfx {
+class Rect;
+}
+
+namespace net {
+namespace test_server {
+class EmbeddedTestServer;
+}
+}  // namespace net
+
+namespace page_load_metrics {
+class PageLoadMetricsTestWaiter;
+}
+
+// Gets the body height of the document embedded in |web_contents|.
+int GetDocumentHeight(content::WebContents* web_contents);
+
+// Creates an iframe in |web_contents| at |rect| and waits for it to intersect
+// the main frame.
+void CreateAndWaitForIframeAtRect(
+    content::WebContents* web_contents,
+    page_load_metrics::PageLoadMetricsTestWaiter* waiter,
+    net::test_server::EmbeddedTestServer* embedded_test_server,
+    const gfx::Rect& rect);
+
 // Navigates to |url| in |web_contents| and waits for the first contentful
 // paint.
 void NavigateAndWaitForFirstContentfulPaint(content::WebContents* web_contents,

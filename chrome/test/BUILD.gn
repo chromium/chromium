@@ -563,6 +563,7 @@ if (is_android) {
       "//components/externalauth/android:google_delegate_public_impl_java",
       "//components/metrics/demographics:test_support",
       "//components/page_load_metrics/browser:test_support",
+      "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
       "//components/ukm:ukm_test_helper",
 
       # TODO(crbug.com/961849): This is needed for ShellManager which is what

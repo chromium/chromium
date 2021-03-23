@@ -210,6 +210,7 @@ test("weblayer_browsertests") {
   if (is_android) {
     sources += [
       "../browser/android/access_token_fetch_browsertest.cc",
+      "../browser/android/ad_density_intervention_browsertest.cc",
       "../browser/android/metrics/metrics_browsertest.cc",
       "../browser/android/metrics/metrics_test_helper.cc",
       "../browser/android/metrics/metrics_test_helper.h",

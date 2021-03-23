@@ -36,6 +36,7 @@ source_set("test_support") {
   deps = [
     "//components/page_load_metrics/browser:test_support",
     "//content/test:test_support",
+    "//net:test_support",
   ]
 }
 
