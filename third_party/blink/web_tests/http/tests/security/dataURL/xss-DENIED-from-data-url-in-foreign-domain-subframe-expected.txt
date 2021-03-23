@@ -1,4 +1,4 @@
-ALERT: PASS: Exception thrown successfully.
+CONSOLE MESSAGE: line 1: PASS: Exception thrown successfully.
 The scenario for this test is that you have an iframe with content from a foreign domain. In that foreign content is an iframe which loads a data: URL. This tests that the data: URL loaded iframe does not have access to the main frame using top.document.
 
 Pass: Cross frame access from a data: URL on a different domain was denied.

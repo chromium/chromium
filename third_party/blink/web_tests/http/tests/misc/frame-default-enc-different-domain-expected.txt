@@ -1,2 +1,2 @@
-ALERT: windows-1252
+CONSOLE MESSAGE: line 13: windows-1252
 

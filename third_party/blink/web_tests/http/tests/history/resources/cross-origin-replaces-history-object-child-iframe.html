@@ -9,14 +9,14 @@ window.onmessage = function(evt)
         setHistoryLength();
         return;
     } else
-        alert("Unknown message.");
+        console.log("Unknown message.");
 }
 
 function setHistoryLength()
 {
-    alert("About to shadow child window's history object: " + window.history);
+    console.log("About to shadow child window's history object: " + window.history);
     window.history = "";
-    alert("Child window's history object should not be shadowed: " + window.history);
+    console.log("Child window's history object should not be shadowed: " + window.history);
     parent.window.postMessage("done", "*");
 }
 

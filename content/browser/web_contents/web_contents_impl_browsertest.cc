@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -1769,25 +1770,45 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(GURL("http://a.com/title1.html"),
             GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
 
-  // A dialog from the subframe.
   test_delegate.WillWaitForDialog();
   EXPECT_TRUE(
       content::ExecuteScript(frame->current_frame_host(), alert_location));
   test_delegate.Wait();
   EXPECT_EQ("about:blank", test_delegate.last_message());
 
+  // These is a different origin iframe, so alerts won't work if the feature
+  // is enabled. Ideally we would test they don't show, but there is no way
+  // to check for a lack of dialog window.
+  if (!base::FeatureList::IsEnabled(
+          features::kSuppressDifferentOriginSubframeJSDialogs)) {
+    // A dialog from the subframe.
+    // Navigate the subframe cross-site.
+    EXPECT_TRUE(NavigateToURLFromRenderer(
+        frame, embedded_test_server()->GetURL("b.com", "/title2.html")));
+    EXPECT_TRUE(WaitForLoadStop(wc));
+
+    // A dialog from the subframe.
+    test_delegate.WillWaitForDialog();
+    EXPECT_TRUE(
+        content::ExecuteScript(frame->current_frame_host(), alert_location));
+    test_delegate.Wait();
+    EXPECT_EQ(GURL("http://b.com/title2.html"),
+              GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
+  }
+
+  // Navigate the subframe to the same origin as the main frame; ensure
+  // dialogs work.
   // Navigate the subframe cross-site.
-  EXPECT_TRUE(NavigateToURLFromRenderer(
-      frame, embedded_test_server()->GetURL("b.com", "/title2.html")));
+  GURL same_origin_url =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, same_origin_url));
   EXPECT_TRUE(WaitForLoadStop(wc));
 
-  // A dialog from the subframe.
   test_delegate.WillWaitForDialog();
   EXPECT_TRUE(
       content::ExecuteScript(frame->current_frame_host(), alert_location));
   test_delegate.Wait();
-  EXPECT_EQ(GURL("http://b.com/title2.html"),
-            GURL(test_delegate.last_message()).ReplaceComponents(clear_port));
+  EXPECT_EQ(same_origin_url.spec(), test_delegate.last_message());
 
   // A dialog from the main frame.
   test_delegate.WillWaitForDialog();

@@ -6467,10 +6467,20 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   if (GetContentClient()->browser()->SuppressDifferentOriginSubframeJSDialogs(
           GetBrowserContext())) {
-    bool is_different_origin_subframe =
-        render_frame_host->GetLastCommittedURL().GetOrigin() !=
-        render_frame_host->GetMainFrame()->GetLastCommittedURL().GetOrigin();
-    suppress_this_message |= is_different_origin_subframe;
+    // We can't check for opaque origin cases, default to allowing them to
+    // trigger dialogs.
+    // TODO(carlosil): The main use case for opaque use cases are tests,
+    // investigate if there are uses in the wild, otherwise adapt tests that
+    // require dialogs so they commit an origin first, and remove this
+    // conditional.
+    if (!render_frame_host->GetLastCommittedOrigin().opaque()) {
+      bool is_different_origin_subframe =
+          render_frame_host->GetLastCommittedOrigin() !=
+          url::Origin::Create(render_frame_host->GetMainFrame()
+                                  ->GetLastCommittedURL()
+                                  .GetOrigin());
+      suppress_this_message |= is_different_origin_subframe;
+    }
   }
 
   if (suppress_this_message) {

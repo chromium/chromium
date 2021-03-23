@@ -1,4 +1,4 @@
-ALERT: PASS: Exception thrown successfully.
+CONSOLE MESSAGE: line 1: PASS: Exception thrown successfully.
 Opener Frame
 
 Pass: Cross frame access from a data: URL on a different domain was denied.

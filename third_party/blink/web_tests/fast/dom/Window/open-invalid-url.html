@@ -11,7 +11,7 @@ if (window.testRunner) {
 
 var a = window.open("about:blank","moonshine")
 function mountainGoat() {
-        a.window.eval('setTimeout("alert(window.open(\'/\') ? \'FAIL\' : \'PASS\'); if (window.testRunner) testRunner.notifyDone()", 0)')
+        a.window.eval('setTimeout("console.log(window.open(\'/\') ? \'FAIL\' : \'PASS\'); if (window.testRunner) testRunner.notifyDone()", 0)')
 }
 setTimeout("mountainGoat()", 0)
 </script>
