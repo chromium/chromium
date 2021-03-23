@@ -252,8 +252,11 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
 void LayoutNGTable::AddVisualEffectOverflow() {
   NOT_DESTROYED();
   // TODO(1061423) Fragment painting: need a correct fragment.
+  if (PhysicalFragmentCount() != 1u) {
+    NOTREACHED();
+    return;
+  }
   if (const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0)) {
-    DCHECK_EQ(PhysicalFragmentCount(), 1u);
     // Table's collapsed borders contribute to visual overflow.
     // In the inline direction, table's border box does not include
     // visual border width (largest border), but does include
