@@ -23,14 +23,13 @@ const std::vector<content::WebContents*>
 OptimizationGuideTabUrlProviderAndroid::GetAllWebContentsForProfile(
     Profile* profile) {
   std::vector<content::WebContents*> web_contents_list;
-  for (auto tab_model = TabModelList::begin(); tab_model != TabModelList::end();
-       ++tab_model) {
-    if ((*tab_model)->GetProfile() != profile)
+  for (const TabModel* tab_model : TabModelList::models()) {
+    if (tab_model->GetProfile() != profile)
       continue;
 
-    int tab_count = (*tab_model)->GetTabCount();
+    int tab_count = tab_model->GetTabCount();
     for (int i = 0; i < tab_count; i++) {
-      content::WebContents* web_contents = (*tab_model)->GetWebContentsAt(i);
+      content::WebContents* web_contents = tab_model->GetWebContentsAt(i);
       if (web_contents)
         web_contents_list.push_back(web_contents);
     }

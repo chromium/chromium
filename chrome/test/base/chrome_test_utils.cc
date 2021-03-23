@@ -18,9 +18,9 @@ namespace chrome_test_utils {
 
 content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
 #if defined(OS_ANDROID)
-  for (size_t i = 0; i < TabModelList::size(); ++i) {
-    if (TabModelList::get(i)->IsActiveModel())
-      return TabModelList::get(i)->GetActiveWebContents();
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->IsActiveModel())
+      return model->GetActiveWebContents();
   }
   NOTREACHED() << "No active TabModel??";
   return nullptr;
@@ -31,9 +31,9 @@ content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
 
 Profile* GetProfile(PlatformBrowserTest* browser_test) {
 #if defined(OS_ANDROID)
-  for (size_t i = 0; i < TabModelList::size(); ++i) {
-    if (TabModelList::get(i)->IsActiveModel())
-      return TabModelList::get(i)->GetProfile();
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->IsActiveModel())
+      return model->GetProfile();
   }
   NOTREACHED() << "No active TabModel??";
   return nullptr;

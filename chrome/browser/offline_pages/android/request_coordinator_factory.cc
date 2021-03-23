@@ -41,9 +41,7 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   ~ActiveTabInfo() override {}
   bool DoesActiveTabMatch(const GURL& url) override {
     // Loop through to find the active tab and report whether the URL matches.
-    for (auto iter = TabModelList::begin(); iter != TabModelList::end();
-         ++iter) {
-      TabModel* model = *iter;
+    for (const TabModel* model : TabModelList::models()) {
       if (model->GetProfile() == profile_) {
         content::WebContents* contents = model->GetActiveWebContents();
         // Check visibility to make sure Chrome is in the foreground.

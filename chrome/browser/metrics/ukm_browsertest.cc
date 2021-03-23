@@ -303,8 +303,8 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     // would need to remove the pre-existing TabModel and add a new one.
     // Having an empty TabModelList allows us to simply add the appropriate
     // TabModel.
-    TabModelList::RemoveTabModel(TabModelList::get(0));
-    EXPECT_EQ(0U, TabModelList::size());
+    TabModelList::RemoveTabModel(TabModelList::models()[0]);
+    EXPECT_EQ(0U, TabModelList::models().size());
   }
 #endif  // defined(OS_ANDROID)
 

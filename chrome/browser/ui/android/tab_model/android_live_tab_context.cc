@@ -179,8 +179,7 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
 
   // If we can't find the correct model, fall back to first non-incognito model.
   if (!tab_model || tab_model->IsOffTheRecord()) {
-    for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
-      TabModel* model = *it;
+    for (const TabModel* model : TabModelList::models()) {
       if (!model->IsOffTheRecord()) {
         return model->GetLiveTabContext();
       }

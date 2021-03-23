@@ -98,9 +98,8 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 
 #if defined(OS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded() {
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    if ((*i)->GetProfile()->IsOffTheRecord())
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->GetProfile()->IsOffTheRecord())
       incognito_launched_ = true;
   }
 }

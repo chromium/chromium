@@ -113,8 +113,7 @@ void DeleteTabNavigationEntries(
           : base::BindRepeating(&UrlMatcherForSerializedNavigationEntry,
                                 std::cref(url_set));
 
-  for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
-    TabModel* tab_model = *it;
+  for (const TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() == profile) {
       for (int i = 0; i < tab_model->GetTabCount(); i++) {
         TabAndroid* tab = tab_model->GetTabAt(i);

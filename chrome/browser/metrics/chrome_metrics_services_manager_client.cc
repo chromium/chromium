@@ -282,9 +282,8 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
   // work correctly.
   // TODO(crbug/741888): Check if TabModelList's version can be updated safely.
   // TODO(crbug/1023759): This function should return true for Incognito CCTs.
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    if ((*i)->IsOffTheRecord())
+  for (const TabModel* model : TabModelList::models()) {
+    if (model->IsOffTheRecord())
       return true;
   }
 

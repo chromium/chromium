@@ -31,6 +31,12 @@ class TabModelList {
   typedef TabModelVector::iterator iterator;
   typedef TabModelVector::const_iterator const_iterator;
 
+  TabModelList(const TabModelList& other) = delete;
+  TabModelList(TabModelList&& other) = delete;
+  TabModelList& operator=(const TabModelList& other) = delete;
+  TabModelList&& operator=(TabModelList&& other) = delete;
+  ~TabModelList();
+
   static void HandlePopupNavigation(NavigateParams* params);
   static void AddTabModel(TabModel* tab_model);
   static void RemoveTabModel(TabModel* tab_model);
@@ -44,20 +50,17 @@ class TabModelList {
   static TabModel* FindTabModelWithId(SessionID desired_id);
   static bool IsOffTheRecordSessionActive();
 
-  static const_iterator begin();
-  static const_iterator end();
-  static bool empty();
-  static size_t size();
+  static const TabModelVector& models();
 
-  static TabModel* get(size_t index);
+ private:
+  TabModelList();
 
   // A list of observers which will be notified of every TabModel addition and
   // removal across all TabModelLists.
-  static base::LazyInstance<
-      base::ObserverList<TabModelListObserver>::Unchecked>::Leaky observers_;
+  base::ObserverList<TabModelListObserver>::Unchecked observers_;
+  TabModelVector models_;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TabModelList);
+  friend base::LazyInstanceTraitsBase<TabModelList>;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_

@@ -49,9 +49,7 @@ std::map<int, TabInfo> AndroidTabFinder::FindAndroidTabs(
   if (android_tab_ids.empty())
     return result;
 
-  for (TabModelList::const_iterator i = TabModelList::begin();
-       i != TabModelList::end(); i++) {
-    TabModel* model = *i;
+  for (const TabModel* model : TabModelList::models()) {
     if (model->IsOffTheRecord())
       continue;
 
@@ -352,7 +350,7 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
   }
 
   void RegisterTabObserver() {
-    if (!TabModelList::empty()) {
+    if (!TabModelList::models().empty()) {
       OnTabModelAdded();
     } else {
       TabModelList::AddObserver(this);
@@ -370,10 +368,9 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
       return;
     // The assumption is that there can be at most one non-off-the-record tab
     // model. Observe it if it exists.
-    for (auto model = TabModelList::begin(); model != TabModelList::end();
-         ++model) {
-      if (!(*model)->IsOffTheRecord()) {
-        observed_tab_model_ = *model;
+    for (TabModel* model : TabModelList::models()) {
+      if (!model->IsOffTheRecord()) {
+        observed_tab_model_ = model;
         observed_tab_model_->AddObserver(this);
         impl_->TabModelReady();
         break;
@@ -385,9 +382,8 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
     if (!observed_tab_model_)
       return;
 
-    for (auto remaining_model = TabModelList::begin();
-         remaining_model != TabModelList::end(); ++remaining_model) {
-      if (observed_tab_model_ == *remaining_model)
+    for (const TabModel* remaining_model : TabModelList::models()) {
+      if (observed_tab_model_ == remaining_model)
         return;
     }
     observed_tab_model_ = nullptr;

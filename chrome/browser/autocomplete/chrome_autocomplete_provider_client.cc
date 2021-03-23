@@ -534,8 +534,7 @@ TabAndroid* ChromeAutocompleteProviderClient::GetTabOpenWithURL(
       url, *input, GetTemplateURLService(), std::u16string());
 
   std::vector<TabModel*> tab_models;
-  for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
-    TabModel* model = *it;
+  for (TabModel* model : TabModelList::models()) {
     if (profile_ != model->GetProfile())
       continue;
 

@@ -126,9 +126,7 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* this_contents = navigation_handle->GetWebContents();
   int num_loading = 0;
-  for (TabModelList::const_iterator it = TabModelList::begin();
-       it != TabModelList::end(); ++it) {
-    TabModel* model = *it;
+  for (const TabModel* model : TabModelList::models()) {
     // Note: |this_contents| may not appear in |model|.
     for (int i = 0; i < model->GetTabCount(); ++i) {
       content::WebContents* other_contents = model->GetWebContentsAt(i);
