@@ -205,7 +205,11 @@ blink_platform_sources("heap") {
 source_set("test_support") {
   testonly = true
 
-  sources = [ "heap_test_utilities.h" ]
+  sources = [
+    "heap_test_objects.cc",
+    "heap_test_objects.h",
+    "heap_test_utilities.h",
+  ]
 
   if (enable_blink_heap_use_v8_oilpan) {
     sources += [ "v8_wrapper/heap_test_utilities.h" ]
@@ -250,7 +254,7 @@ source_set("blink_heap_unittests_sources") {
   sources = [ "../testing/run_all_tests.cc" ]
 
   # TODO(1056170): Remove branch after implementing
-  # v8_wrapper/heap_test_unitilities.* as tests should work for both
+  # v8_wrapper/heap_test_utilities.* as tests should work for both
   # implementations.
   if (!enable_blink_heap_use_v8_oilpan) {
     sources += [

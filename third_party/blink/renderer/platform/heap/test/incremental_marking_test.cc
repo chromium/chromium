@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/impl/heap_compact.h"
 #include "third_party/blink/renderer/platform/heap/impl/trace_traits.h"
@@ -1411,9 +1412,9 @@ TEST_F(IncrementalMarkingTest, OverrideAfterMixinConstruction) {
 
 TEST_F(IncrementalMarkingTest, TestDriver) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   EXPECT_TRUE(ThreadState::Current()->IsIncrementalMarking());
-  driver.SingleStep();
+  driver.TriggerMarkingSteps();
   EXPECT_TRUE(ThreadState::Current()->IsIncrementalMarking());
   driver.FinishGC();
   EXPECT_FALSE(ThreadState::Current()->IsIncrementalMarking());
@@ -1426,8 +1427,8 @@ TEST_F(IncrementalMarkingTest, DropBackingStore) {
   Persistent<WeakStore> persistent(MakeGarbageCollected<WeakStore>());
   persistent->insert(MakeGarbageCollected<Object>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   persistent->clear();
   // Marking verifier should not crash on a black backing store with all
   // black->white edges.
@@ -1447,12 +1448,12 @@ TEST_F(IncrementalMarkingTest, NoBackingFreeDuringIncrementalMarking) {
     persistent->insert(MakeGarbageCollected<Object>());
   }
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   persistent->insert(MakeGarbageCollected<Object>());
   // Is not allowed to free the backing store as the previous insert may have
   // registered a slot.
   persistent->clear();
-  driver.FinishSteps();
+  driver.TriggerMarkingSteps();
   driver.FinishGC();
 }
 
@@ -1463,8 +1464,8 @@ TEST_F(IncrementalMarkingTest, DropReferenceWithHeapCompaction) {
   persistent->insert(MakeGarbageCollected<Object>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   persistent->clear();
   // Registration of movable and updatable references should not crash because
   // if a slot have nullptr reference, it doesn't call registeration method.
@@ -1480,7 +1481,7 @@ TEST_F(IncrementalMarkingTest, HasInlineCapacityCollectionWithHeapCompaction) {
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
   persistent->push_back(MakeGarbageCollected<Object>());
-  driver.Start();
+  driver.StartGC();
   driver.FinishGC();
 
   // Should collect also slots that has only inline buffer and nullptr
@@ -1500,8 +1501,8 @@ TEST_F(IncrementalMarkingTest, WeakHashMapHeapCompaction) {
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   persistent->insert(MakeGarbageCollected<Object>());
   driver.FinishGC();
 
@@ -1516,8 +1517,8 @@ TEST_F(IncrementalMarkingTest, ConservativeGCWhileCompactionScheduled) {
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   ThreadState::Current()->CollectGarbageForTesting(
       BlinkGC::CollectionType::kMajor, BlinkGC::kHeapPointersOnStack,
       BlinkGC::kAtomicMarking, BlinkGC::kConcurrentAndLazySweeping,
@@ -1550,8 +1551,8 @@ TEST_F(IncrementalMarkingTest, WeakMember) {
   Persistent<ObjectWithWeakMember> persistent(
       MakeGarbageCollected<ObjectWithWeakMember>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   persistent->set_object(MakeGarbageCollected<Object>());
   driver.FinishGC();
   ConservativelyCollectGarbage();
@@ -1565,11 +1566,11 @@ TEST_F(IncrementalMarkingTest, MemberSwap) {
 
   Persistent<Object> object1(MakeGarbageCollected<Object>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   // The repro leverages the fact that initializing stores do not emit a barrier
   // (because they are still reachable from stack) to simulate the problematic
   // interleaving.
-  driver.FinishSteps();
+  driver.TriggerMarkingSteps();
   Object* object2 =
       MakeGarbageCollected<Object>(MakeGarbageCollected<Object>());
   object2->next_ref().Swap(object1->next_ref());
@@ -1603,7 +1604,7 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
   using Holder = ObjectHolder<O>;
   Persistent<Holder> holder(MakeGarbageCollected<Holder>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   MakeGarbageCollected<O>(
       base::BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder, O* thiz) {
@@ -1611,7 +1612,8 @@ TEST_F(IncrementalMarkingTest, StepDuringObjectConstruction) {
             // barrier for the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->FinishSteps(BlinkGC::StackState::kHeapPointersOnStack);
+            driver->TriggerMarkingSteps(
+                BlinkGC::StackState::kHeapPointersOnStack);
           },
           &driver, holder.Get()),
       MakeGarbageCollected<Object>());
@@ -1628,7 +1630,7 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
   using Holder = ObjectHolder<Mixin>;
   Persistent<Holder> holder(MakeGarbageCollected<Holder>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   MakeGarbageCollected<Parent>(
       base::BindOnce(
           [](IncrementalMarkingTestDriver* driver, Holder* holder,
@@ -1638,7 +1640,8 @@ TEST_F(IncrementalMarkingTest, StepDuringMixinObjectConstruction) {
             // the object.
             holder->set_value(thiz);
             // Finish call incremental steps.
-            driver->FinishSteps(BlinkGC::StackState::kHeapPointersOnStack);
+            driver->TriggerMarkingSteps(
+                BlinkGC::StackState::kHeapPointersOnStack);
           },
           &driver, holder.Get()),
       MakeGarbageCollected<Object>());
@@ -1659,8 +1662,8 @@ TEST_F(IncrementalMarkingTest, IncrementalMarkingShrinkingBackingCompaction) {
   }
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   // Reduce size of the outer backing store.
   for (int i = 0; i < 16; i++) {
     holder->pop_back();
@@ -1682,7 +1685,7 @@ TEST_F(IncrementalMarkingTest,
   // barrier during incremental marking.
   Nested* nested = MakeGarbageCollected<Nested>();
   nested->ReserveCapacity(32);
-  driver.Start();
+  driver.StartGC();
   // Initialize the inner vector, triggering tracing and slots registration.
   // This could be an object using DISALLOW_NEW() but HeapVector is easier to
   // test.
@@ -1690,7 +1693,7 @@ TEST_F(IncrementalMarkingTest,
   // Use the inner vector as otherwise the slot would not be registered due to
   // not having a backing store itself.
   nested->at(0).emplace_back(MakeGarbageCollected<Object>());
-  driver.FinishSteps();
+  driver.TriggerMarkingSteps();
   // GCs here are without stack. This is just to show that we don't want this
   // object marked.
   CHECK(!HeapObjectHeader::FromPayload(nested)
@@ -1723,8 +1726,8 @@ TEST_F(IncrementalMarkingTest, AdjustMarkedBytesOnMarkedBackingStore) {
     holder->ShrinkToFit();
   }
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   // The object is marked at this point.
   CHECK(HeapObjectHeader::FromPayload(holder.Get())
             ->IsMarked<HeapObjectHeader::AccessMode::kAtomic>());
@@ -1751,7 +1754,7 @@ TEST_F(IncrementalMarkingTest, HeapCompactWithStaleSlotInNestedContainer) {
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
+  driver.StartGC();
   Nested* outer = MakeGarbageCollected<Nested>();
   outer->push_back(HeapVector<Member<Object>>());
   outer->at(0).push_back(MakeGarbageCollected<Object>());
@@ -1760,7 +1763,7 @@ TEST_F(IncrementalMarkingTest, HeapCompactWithStaleSlotInNestedContainer) {
   // first and its page is freed, then referring to the slot when the inner
   // backing store is moved may crash.
   outer = nullptr;
-  driver.FinishSteps();
+  driver.TriggerMarkingSteps();
   driver.FinishGC();
 }
 
@@ -1809,8 +1812,8 @@ TEST_F(IncrementalMarkingTest, LinkedHashSetMovingCallback) {
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
 
   // Destroy the link between original HeapLinkedHashSet object and its backing
   // store.
@@ -1855,8 +1858,8 @@ TEST_F(IncrementalMarkingTest, ConservativeGCOfWeakContainer) {
     size_t value = it->value;
     DestructedAndTraced::n_traced = 0;
     IncrementalMarkingTestDriver driver(ThreadState::Current());
-    driver.Start();
-    driver.FinishSteps();
+    driver.StartGC();
+    driver.TriggerMarkingSteps();
     // map should now be marked, but has not been traced since it's weak.
     EXPECT_EQ(0u, DestructedAndTraced::n_traced);
     ConservativelyCollectGarbage();

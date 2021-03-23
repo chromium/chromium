@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_stats_collector.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/impl/marking_visitor.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -1669,7 +1670,7 @@ TEST_F(HeapTest, BasicFunctionality) {
         DynamicallySizedObject::Create(size));
     slack += 4;
     // The allocations in the loop may trigger GC with lazy sweeping.
-    CompleteSweepingIfNeeded();
+    CompleteGarbageCollectionIfNeeded();
     CheckWithSlack(base_level + total, heap.ObjectPayloadSizeForTesting(),
                    slack);
     if (test_pages_allocated) {

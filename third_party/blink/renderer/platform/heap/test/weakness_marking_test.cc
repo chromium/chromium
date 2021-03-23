@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <atomic>
-#include <iostream>
-#include <memory>
-
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 
 namespace blink {
 
@@ -212,8 +207,8 @@ TEST_F(WeaknessMarkingTest, SwapIntoAlreadyProcessedWeakSet) {
   Persistent<WeakLinkedSet> holder4(MakeGarbageCollected<WeakLinkedSet>());
   holder3->insert(MakeGarbageCollected<IntegerObject>(1));
   IncrementalMarkingTestDriver driver2(ThreadState::Current());
-  driver2.Start();
-  driver2.FinishSteps();
+  driver2.StartGC();
+  driver2.TriggerMarkingSteps();
   holder3->Swap(*holder4.Get());
   driver2.FinishGC();
 }
@@ -237,8 +232,8 @@ TEST_F(WeaknessMarkingTest, ClearWeakHashTableAfterMarking) {
   Persistent<Set> holder(MakeGarbageCollected<Set>());
   holder->insert(MakeGarbageCollected<IntegerObject>(1));
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
-  driver.FinishSteps();
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
   holder->clear();
   driver.FinishGC();
 }

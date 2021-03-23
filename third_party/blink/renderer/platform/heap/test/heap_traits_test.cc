@@ -14,8 +14,6 @@
 
 namespace blink {
 
-class Visitor;
-
 namespace {
 
 struct Empty {};

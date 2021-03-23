@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -56,27 +57,26 @@ struct MethodAdapter : public MethodAdapterBase<T> {};
 template <typename C>
 void AddToCollection() {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectionWrapper<C>> persistent =
       MakeGarbageCollected<CollectionWrapper<C>>();
   C* collection = persistent->GetCollection();
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < kIterations; ++i) {
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     for (int j = 0; j < kIterations; ++j) {
       int num = kIterations * i + j;
       MethodAdapter<C>::insert(*collection,
                                MakeGarbageCollected<IntegerObject>(num));
     }
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 
 template <typename C, typename GetLocation>
 void RemoveFromCollectionAtLocation(GetLocation location) {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectionWrapper<C>> persistent =
       MakeGarbageCollected<CollectionWrapper<C>>();
   C* collection = persistent->GetCollection();
@@ -84,14 +84,13 @@ void RemoveFromCollectionAtLocation(GetLocation location) {
     MethodAdapter<C>::insert(*collection,
                              MakeGarbageCollected<IntegerObject>(i));
   }
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < kIterations; ++i) {
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     for (int j = 0; j < kIterations; ++j) {
       MethodAdapter<C>::erase(*collection, location(collection));
     }
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 
@@ -124,41 +123,39 @@ void RemoveFromEndOfCollection() {
 template <typename C>
 void ClearCollection() {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectionWrapper<C>> persistent =
       MakeGarbageCollected<CollectionWrapper<C>>();
   C* collection = persistent->GetCollection();
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < kIterations; ++i) {
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     for (int j = 0; j < kIterations; ++j) {
       MethodAdapter<C>::insert(*collection,
                                MakeGarbageCollected<IntegerObject>(i));
     }
     collection->clear();
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 
 template <typename C>
 void SwapCollections() {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectionWrapper<C>> persistent =
       MakeGarbageCollected<CollectionWrapper<C>>();
   C* collection = persistent->GetCollection();
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < (kIterations * kIterations); ++i) {
     C* new_collection = MakeGarbageCollected<C>();
     for (int j = 0; j < kIterations * i; ++j) {
       MethodAdapter<C>::insert(*new_collection,
                                MakeGarbageCollected<IntegerObject>(j));
     }
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     MethodAdapter<C>::Swap(*collection, *new_collection);
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 
@@ -297,21 +294,20 @@ TEST_F(ConcurrentMarkingTest, SwapHashCountedSet) {
 template <typename V>
 void PopFromCollection() {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectionWrapper<V>> persistent =
       MakeGarbageCollected<CollectionWrapper<V>>();
   V* vector = persistent->GetCollection();
   for (int i = 0; i < (kIterations * kIterations); ++i) {
     MethodAdapter<V>::insert(*vector, MakeGarbageCollected<IntegerObject>(i));
   }
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < kIterations; ++i) {
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     for (int j = 0; j < kIterations; ++j) {
       vector->pop_back();
     }
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 
@@ -500,16 +496,15 @@ class GCedWithRegisteredMixin
 
 TEST_F(ConcurrentMarkingTest, MarkingInConstructionMixin) {
   constexpr int kIterations = 10;
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  ConcurrentMarkingTestDriver driver(ThreadState::Current());
   Persistent<CollectsMixins> collector = MakeGarbageCollected<CollectsMixins>();
-  driver.Start();
+  driver.StartGC();
   for (int i = 0; i < kIterations; ++i) {
-    driver.SingleConcurrentStep();
+    driver.TriggerMarkingSteps();
     for (int j = 0; j < kIterations; ++j) {
       MakeGarbageCollected<GCedWithRegisteredMixin>(collector.Get());
     }
   }
-  driver.FinishSteps();
   driver.FinishGC();
 }
 

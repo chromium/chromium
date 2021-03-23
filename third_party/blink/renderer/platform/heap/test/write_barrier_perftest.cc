@@ -63,9 +63,9 @@ TEST_F(WriteBarrierPerfTest, MemberWritePerformance) {
 
   // During GC.
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  driver.Start();
+  driver.StartGC();
   base::TimeDelta during_gc_duration = TimedRun(benchmark);
-  driver.FinishSteps();
+  driver.TriggerMarkingSteps();
   PreciselyCollectGarbage();
 
   // Outside GC.
