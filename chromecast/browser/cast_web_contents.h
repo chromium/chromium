@@ -162,7 +162,6 @@ class CastWebContents {
     virtual void MainFrameResized(const gfx::Rect& bounds) {}
     virtual void UpdateTitle(const std::u16string& title) {}
     virtual void UpdateFaviconURL(GURL icon_url) {}
-    virtual void DidFinishBlockedNavigation(GURL url) {}
     virtual void DidFirstVisuallyNonEmptyPaint() {}
 
     // Notifies that a resource for the main frame failed to load.

@@ -635,18 +635,6 @@ void CastWebContentsImpl::DidFinishNavigation(
   if (!navigation_handle->HasCommitted()) {
     LOG(WARNING) << "Navigation did not commit: url="
                  << navigation_handle->GetURL();
-
-    // Detect if there was a blocked navigation. Some pages may disallow
-    // navigation, such as with a web-based window manager. In this case, the
-    // page can handle the navigation by opening a new tab or simply ignoring
-    // the request.
-    if (navigation_handle->HasUserGesture() &&
-        (error_code == net::ERR_ABORTED)) {
-      for (Observer& observer : observer_list_) {
-        observer.DidFinishBlockedNavigation(navigation_handle->GetURL());
-      }
-    }
-
     return;
   }
 
