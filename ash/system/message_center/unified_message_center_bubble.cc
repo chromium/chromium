@@ -103,8 +103,10 @@ void UnifiedMessageCenterBubble::ShowBubble() {
 
   bubble_view_->InitializeAndShowBubble();
 
-  // Check if the message center bubble should be collapsed or expanded
-  // when it is initially opened.
+  UpdateBubbleState();
+}
+
+void UnifiedMessageCenterBubble::UpdateBubbleState() {
   if (CalculateAvailableHeight() < kMessageCenterCollapseThreshold &&
       message_center_view_->GetPreferredSize().height()) {
     if (tray_->IsQuickSettingsExplicitlyExpanded()) {
@@ -113,6 +115,8 @@ void UnifiedMessageCenterBubble::ShowBubble() {
       message_center_view_->SetExpanded();
       tray_->EnsureQuickSettingsCollapsed(false /*animate*/);
     }
+  } else if (message_center_view_->collapsed()) {
+    message_center_view_->SetExpanded();
   }
 
   UpdatePosition();
@@ -254,6 +258,10 @@ void UnifiedMessageCenterBubble::OnWidgetActivationChanged(
     bool active) {
   if (active)
     tray_->bubble()->OnMessageCenterActivated();
+}
+
+void UnifiedMessageCenterBubble::OnDisplayConfigurationChanged() {
+  UpdateBubbleState();
 }
 
 void UnifiedMessageCenterBubble::RecordTimeToClick() {
