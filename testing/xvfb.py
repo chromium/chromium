@@ -36,17 +36,6 @@ def kill(proc, name, timeout_in_seconds=10):
   if not proc:
     return
 
-  # TODO(crbug.com/1189400): Either remove this special cased logic or make
-  # it a general thing once it's determined whether explicitly terminating
-  # child processes has an effect on stability.
-  child_processes = []
-  if name == 'weston':
-    try:
-      parent = psutil.Process(proc.pid)
-      child_processes = parent.children(recursive=True)
-    except psutil.NoSuchProcess:
-      pass
-
   proc.terminate()
   thread = threading.Thread(target=proc.wait)
   thread.start()
@@ -61,11 +50,16 @@ def kill(proc, name, timeout_in_seconds=10):
     print('%s running after SIGTERM and SIGKILL; good luck!\n' % name,
           file=sys.stderr)
 
-  for child in child_processes:
+  # TODO(crbug.com/1189400): Remove this once it is determined if stale lock
+  # files are hanging around.
+  if name == 'weston':
     try:
-      child.terminate()
-    except psutil.NoSuchProcess:
-      pass
+      directory = '/run/user/1000'
+      for f in os.listdir(directory):
+        if f.startswith('wayland'):
+          print('Found potential lockfile %s' % os.path.join(directory, f))
+    except OSError as e:
+      print(e)
 
 
 def launch_dbus(env):
@@ -257,6 +251,14 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
 
 # TODO(https://crbug.com/1060466): Write tests.
 def _run_with_weston(cmd, env, stdoutfile):
+  try:
+    directory = '/run/user/1000'
+    for f in os.listdir(directory):
+      if f.startswith('wayland'):
+        print('Found potential lockfile %s' % os.path.join(directory, f))
+  except OSError as e:
+    print(e)
+
   weston_proc = None
 
   try:
