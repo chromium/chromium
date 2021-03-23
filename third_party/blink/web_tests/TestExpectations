@@ -4648,9 +4648,6 @@ crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Failure ]
 
 # Sheriff 2019-08-01
-crbug.com/989860 [ Mac10.13 ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
-crbug.com/989860 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
-crbug.com/989860 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 crbug.com/989717 [ Fuchsia ] http/tests/preload/avoid_delaying_onload_link_preload.html [ Pass Failure ]
 
 # Expected failures for forced colors mode tests when the corresponding flags
@@ -5721,3 +5718,7 @@ crbug.com/1191068 [ Mac ] external/wpt/resource-timing/iframe-failed-commit.html
 crbug.com/1191068 [ Win ] external/wpt/resource-timing/iframe-failed-commit.html [ Pass Failure ]
 
 crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Pass Failure ]
+
+crbug.com/1190905 [ Mac ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
+crbug.com/1190905 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
+crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
