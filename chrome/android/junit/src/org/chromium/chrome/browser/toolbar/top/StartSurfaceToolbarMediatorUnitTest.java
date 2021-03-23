@@ -107,6 +107,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private ButtonDataImpl mDisabledButtonData;
     private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
     private ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier;
+    private ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier;
 
     @Before
     public void setUp() {
@@ -124,6 +125,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mIdentityDiscStateSupplier = new ObservableSupplierImpl<>();
         mStartSurfaceAsHomepageSupplier = new ObservableSupplierImpl<>();
         mStartSurfaceAsHomepageSupplier.set(true);
+        mHomepageEnabledSupplier = new ObservableSupplierImpl<>();
+        mHomepageEnabledSupplier.set(true);
+
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
                 .getForStartSurface(StartSurfaceState.SHOWN_HOMEPAGE);
@@ -742,6 +746,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
         // Change homepage to customized.
         mStartSurfaceAsHomepageSupplier.set(false);
         assertFalse(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
+
+        // Disable homepage.
+        mHomepageEnabledSupplier.set(false);
+        assertFalse(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE));
     }
 
     @Test
@@ -785,7 +793,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting()),
-                new ObservableSupplierImpl<>(), mStartSurfaceAsHomepageSupplier,
+                mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage,
                 isTabGroupsAndroidContinuationEnabled);
 
