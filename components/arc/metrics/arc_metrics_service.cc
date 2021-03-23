@@ -341,17 +341,19 @@ void ArcMetricsService::OnArcStartTimeForPriAbiMigration(
 void ArcMetricsService::ReportArcCorePriAbiMigBootTime(
     base::TimeDelta duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  const base::TimeTicks durationTicks = duration + base::TimeTicks();
 
-  // For VM builds, do not call into session_manager since we don't use it
-  // for the builds. Currently the VM does not report ABI migration boot time.
-  // TODO(vraheja): once ABI migration is reported for VM, we can return the
-  // duration directly from the guest.
+  // For VM builds, we are directly reporting the boot time duration from
+  // ARC Metrics code.
   if (IsArcVmEnabled()) {
-    LOG(WARNING) << "Unexpected mojo call";
+    base::UmaHistogramCustomTimes("Arc.AbiMigration.BootTime", duration,
+                                  kUmaMinTime, kUmaMaxTime, kUmaNumBuckets);
     return;
   }
 
+  // For container builds, we report the time of boot_progress_enable_screen
+  // event, and boot time duration is calculated by subtracting the ARC start
+  // time, which is fetched from session manager.
+  const base::TimeTicks durationTicks = duration + base::TimeTicks();
   // Retrieve ARC full container's start time from session manager.
   chromeos::SessionManagerClient::Get()->GetArcStartTime(
       base::BindOnce(&ArcMetricsService::OnArcStartTimeForPriAbiMigration,
