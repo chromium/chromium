@@ -262,8 +262,8 @@ CORE_EXPORT bool IsEditablePosition(const Position&);
 bool IsEditablePosition(const PositionInFlatTree&);
 bool IsRichlyEditablePosition(const Position&);
 
-PositionWithAffinity PositionRespectingEditingBoundary(const Position&,
-                                                       const HitTestResult&);
+CORE_EXPORT PositionWithAffinity
+PositionRespectingEditingBoundary(const Position&, const HitTestResult&);
 
 // Move specified position to start/end of non-editable region.
 // If it can be found, we prefer a visually equivalent position that is
