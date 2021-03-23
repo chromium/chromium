@@ -78,6 +78,10 @@ struct AnalysisSettings {
   // The DM token to be used for scanning. May be empty, for example if this
   // scan is initiated by APP.
   std::string dm_token = "";
+
+  // Indicates if the scan is made at the profile level, or at the browser level
+  // if false.
+  bool per_profile = false;
 };
 
 struct ReportingSettings {

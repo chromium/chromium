@@ -143,6 +143,9 @@ class BinaryUploadService : public KeyedService {
     void set_tab_url(const GURL& tab_url);
     const GURL& tab_url() const;
 
+    void set_per_profile_request(bool per_profile_request);
+    bool per_profile_request() const;
+
     // Methods for modifying the ContentAnalysisRequest.
     void set_analysis_connector(
         enterprise_connectors::AnalysisConnector connector);
@@ -182,6 +185,9 @@ class BinaryUploadService : public KeyedService {
 
     // The URL of the page that initially triggered the scan.
     GURL tab_url_;
+
+    // Indicates if the request was triggered by a profile-level policy or not.
+    bool per_profile_request_ = false;
   };
 
   // Upload the given file contents for deep scanning if the browser is

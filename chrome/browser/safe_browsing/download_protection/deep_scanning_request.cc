@@ -233,8 +233,10 @@ void DeepScanningRequest::Start() {
 void DeepScanningRequest::PrepareRequest(
     std::unique_ptr<FileAnalysisRequest> request,
     Profile* profile) {
-  if (trigger_ == DeepScanTrigger::TRIGGER_POLICY)
+  if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
     request->set_device_token(analysis_settings_.dm_token);
+    request->set_per_profile_request(analysis_settings_.per_profile);
+  }
 
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);
   request->set_email(GetProfileEmail(profile));

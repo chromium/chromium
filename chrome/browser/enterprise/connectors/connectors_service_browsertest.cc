@@ -247,12 +247,14 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
   } else {
     ASSERT_TRUE(settings.has_value());
     ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+    ASSERT_FALSE(settings.value().per_profile);
   }
 #else
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      ASSERT_TRUE(settings.value().per_profile);
       break;
     case ManagementStatus::UNAFFILIATED:
       EXPECT_FALSE(settings.has_value());
@@ -260,6 +262,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest, Test) {
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+      ASSERT_TRUE(settings.value().per_profile);
       break;
   }
 #endif
@@ -364,6 +367,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
     } else {
       ASSERT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
+      ASSERT_FALSE(settings.value().per_profile);
     }
 #else
     EXPECT_FALSE(settings.has_value());

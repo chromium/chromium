@@ -531,6 +531,7 @@ void ContentAnalysisDelegate::PrepareRequest(
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
+  request->set_per_profile_request(data_.settings.per_profile);
   for (const std::string& tag : data_.settings.tags)
     request->add_tag(tag);
 }

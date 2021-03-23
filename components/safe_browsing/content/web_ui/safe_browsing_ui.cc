@@ -259,6 +259,7 @@ void WebUIInfoSingleton::ClearReportingEvents() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void WebUIInfoSingleton::AddToDeepScanRequests(
     const GURL& tab_url,
+    bool per_profile_request,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   if (!HasListener())
     return;
@@ -271,6 +272,8 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
   }
 
   deep_scan_requests_[request.request_token()].tab_url = tab_url;
+  deep_scan_requests_[request.request_token()].per_profile_request =
+      per_profile_request;
   deep_scan_requests_[request.request_token()].request = request;
 
   for (auto* webui_listener : webui_instances_)
@@ -1383,10 +1386,12 @@ base::Value SerializeReportingEvent(const base::Value& event) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 std::string SerializeContentAnalysisRequest(
     const GURL& tab_url,
+    bool per_profile_request,
     const enterprise_connectors::ContentAnalysisRequest& request) {
   base::DictionaryValue request_dict;
 
-  request_dict.SetKey("device_token", base::Value(request.device_token()));
+  request_dict.SetKey(per_profile_request ? "profile_token" : "device_token",
+                      base::Value(request.device_token()));
   request_dict.SetKey("fcm_notification_token",
                       base::Value(request.fcm_notification_token()));
   switch (request.analysis_connector()) {
@@ -1501,7 +1506,8 @@ base::Value SerializeDeepScanDebugData(const std::string& token,
 
   if (data.request.has_value()) {
     value.SetStringKey("request", SerializeContentAnalysisRequest(
-                                      data.tab_url, data.request.value()));
+                                      data.tab_url, data.per_profile_request,
+                                      data.request.value()));
   }
 
   if (!data.response_time.is_null()) {

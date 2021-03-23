@@ -177,6 +177,8 @@ base::Optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     return base::nullopt;
 
   settings.value().dm_token = dm_token.value().value;
+  settings.value().per_profile =
+      dm_token.value().scope == policy::POLICY_SCOPE_USER;
 
   return settings;
 }
