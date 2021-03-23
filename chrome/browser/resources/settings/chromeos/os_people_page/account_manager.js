@@ -402,6 +402,14 @@ Polymer({
     }
   },
 
+  /** @private */
+  onManagedIconClick_() {
+    if (this.isChildUser_) {
+      parental_controls.ParentalControlsBrowserProxyImpl.getInstance()
+          .launchFamilyLinkSettings();
+    }
+  },
+
   /**
    * @private
    */

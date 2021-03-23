@@ -6,7 +6,7 @@
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
-// #import {Router, routes, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {Router, routes, AccountManagerBrowserProxyImpl, ParentalControlsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -127,6 +127,26 @@ cr.define('settings_people_page_account_manager', function() {
           },
         ]);
       });
+    }
+  }
+
+  /** @implements {parental_controls.ParentalControlsBrowserProxy} */
+  class TestParentalControlsBrowserProxy extends TestBrowserProxy {
+    constructor() {
+      super([
+        'showAddSupervisionDialog',
+        'launchFamilyLinkSettings',
+      ]);
+    }
+
+    /** @override */
+    launchFamilyLinkSettings() {
+      this.methodCalled('launchFamilyLinkSettings');
+    }
+
+    /** @override */
+    showAddSupervisionDialog() {
+      this.methodCalled('showAddSupervisionDialog');
     }
   }
 
@@ -416,6 +436,49 @@ cr.define('settings_people_page_account_manager', function() {
                 'accountManagerSecondaryAccountsDisabledChildText'),
             accountManager.$$('#user-message-text').textContent.trim());
       }
+    });
+  });
+
+  suite('AccountManagerAccountChildAccountTests', function() {
+    let parentalControlsBrowserProxy = null;
+    let accountManager = null;
+
+    suiteSetup(function() {
+      loadTimeData.overrideValues(
+          {isChild: true, isDeviceAccountManaged: true});
+    });
+
+    setup(function() {
+      parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
+      parental_controls.ParentalControlsBrowserProxyImpl.instance_ =
+          parentalControlsBrowserProxy;
+      PolymerTest.clearBody();
+
+      accountManager = document.createElement('settings-account-manager');
+      document.body.appendChild(accountManager);
+
+      settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
+      Polymer.dom.flush();
+    });
+
+    teardown(function() {
+      accountManager.remove();
+    });
+
+    test('FamilyLinkIcon', function() {
+      if (!accountManager.isAccountManagementFlowsV2Enabled_) {
+        return;
+      }
+
+      const icon = accountManager.$$('.managed-message cr-icon-button');
+      assertTrue(!!icon, 'Could not find the managed icon');
+
+      assertEquals('cr20:kite', icon.ironIcon);
+
+      icon.click();
+      assertEquals(
+          parentalControlsBrowserProxy.getCallCount('launchFamilyLinkSettings'),
+          1);
     });
   });
 
