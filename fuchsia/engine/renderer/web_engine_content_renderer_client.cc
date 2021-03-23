@@ -135,15 +135,17 @@ void WebEngineContentRendererClient::OnRenderFrameDeleted(int render_frame_id) {
 }
 
 void WebEngineContentRendererClient::RenderThreadStarted() {
-  if (base::FeatureList::IsEnabled(features::kHandleMemoryPressureInRenderer) &&
-      // Behavior of browser tests should not depend on things outside of their
-      // control (like the amount of memory on the system running the tests).
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kBrowserTest)) {
-    memory_pressure_monitor_ =
-        std::make_unique<util::MultiSourceMemoryPressureMonitor>();
-    memory_pressure_monitor_->Start();
-  }
+  // Behavior of browser tests should not depend on things outside of their
+  // control (like the amount of memory on the system running the tests).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBrowserTest))
+    return;
+
+  if (!base::FeatureList::IsEnabled(features::kHandleMemoryPressureInRenderer))
+    return;
+
+  memory_pressure_monitor_ =
+      std::make_unique<util::MultiSourceMemoryPressureMonitor>();
+  memory_pressure_monitor_->Start();
 }
 
 void WebEngineContentRendererClient::RenderFrameCreated(
