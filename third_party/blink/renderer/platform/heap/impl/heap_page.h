@@ -547,6 +547,7 @@ class BasePage {
   PageType page_type_;
 
   friend class BaseArena;
+  friend class HeapObjectHeader;
   friend class ThreadHeap;
 };
 
@@ -1213,6 +1214,7 @@ template <HeapObjectHeader::AccessMode mode>
 inline HeapObjectHeader* HeapObjectHeader::FromInnerAddress(
     const void* address) {
   BasePage* const page = PageFromObject(address);
+  page->SynchronizedLoad();
   return page->IsLargeObjectPage()
              ? static_cast<LargeObjectPage*>(page)->ObjectHeader()
              : static_cast<NormalPage*>(page)->FindHeaderFromAddress<mode>(

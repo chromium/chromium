@@ -530,6 +530,7 @@ bool ThreadHeap::AdvanceConcurrentMarking(
     finished = DrainWorklist<kDefaultConcurrentDeadlineCheckInterval>(
         previously_not_fully_constructed_worklist_.get(),
         [visitor](NotFullyConstructedItem& item) {
+          PageFromObject(item)->SynchronizedLoad();
           visitor->DynamicallyMarkAddress(reinterpret_cast<ConstAddress>(item));
         },
         should_yield_callback, visitor->task_id());
