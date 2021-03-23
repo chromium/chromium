@@ -220,6 +220,10 @@ HRESULT GetIdFromSid(const wchar_t* sid, base::string16* id);
 // Get the email ID associated with the user with |sid|.
 std::string GetUserEmailFromSid(const base::string16& sid);
 
+// Get children at a reg path.
+void GetChildrenAtPath(const wchar_t* path,
+                       std::vector<base::string16>& children);
+
 // Gets a specific account picture registry key in HKEY_LOCAL_MACHINE
 HRESULT GetAccountPictureRegString(const base::string16& user_sid,
                                    int image_size,
@@ -237,6 +241,11 @@ HRESULT GetMachineGuid(base::string16* machine_guid);
 
 // Sets  HKLM\SOFTWARE\Microsoft\Cryptography\MachineGuid registry for testing.
 HRESULT SetMachineGuidForTesting(const base::string16& machine_guid);
+
+// Sets String value at registry path key_name/name.
+HRESULT SetMachineRegString(const base::string16& key_name,
+                            const base::string16& name,
+                            const base::string16& value);
 
 // Set corresponding registry entry that would make GCPW as the default
 // credential provider.
