@@ -1199,10 +1199,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           frame_tree_, frame_tree_->render_widget_delegate(),
           agent_scheduling_group_, widget_routing_id, /*hidden=*/true,
           /*renderer_initiated_creation=*/false);
-#if defined(OS_ANDROID)
-      owned_render_widget_host_->SetForceEnableZoom(
-          delegate_->GetOrCreateWebPreferences().force_enable_zoom);
-#endif  // defined(OS_ANDROID)
     }
 
     if (is_main_frame())
@@ -2516,6 +2512,10 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   if (GetLocalRenderWidgetHost()) {
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
+#if defined(OS_ANDROID)
+    GetLocalRenderWidgetHost()->SetForceEnableZoom(
+        delegate_->GetOrCreateWebPreferences().force_enable_zoom);
+#endif  // defined(OS_ANDROID)
     GetLocalRenderWidgetHost()->RendererWidgetCreated(
         /*for_frame_widget=*/true);
   }

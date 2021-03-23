@@ -13956,6 +13956,31 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
 
   SetBrowserClientForTesting(old_client);
 }
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
+                       CheckForceEnableZoomValue) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
+  EXPECT_FALSE(GetTouchActionForceEnableZoom(
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget()));
+
+  EnableForceZoomContentClient new_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&new_client);
+  new_client.set_old_client(old_client);
+
+  web_contents()->OnWebPreferencesChanged();
+
+  EXPECT_TRUE(GetTouchActionForceEnableZoom(
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget()));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("bar.com", "/title2.html")));
+
+  EXPECT_TRUE(GetTouchActionForceEnableZoom(
+      web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget()));
+  SetBrowserClientForTesting(old_client);
+}
+
 #endif  // defined(OS_ANDROID)
 
 // Flaky on every platform, failing most of the time on Android.
