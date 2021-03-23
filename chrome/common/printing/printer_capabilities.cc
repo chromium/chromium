@@ -77,14 +77,14 @@ void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
   auto& l10n_map = CapabilityLocalizationMap();
   for (AdvancedCapability& capability : *advanced_capabilities) {
-    auto it = l10n_map.find(capability.name);
-    if (it != l10n_map.end())
-      capability.display_name = l10n_util::GetStringUTF8(it->second);
+    auto capability_it = l10n_map.find(capability.name);
+    if (capability_it != l10n_map.end())
+      capability.display_name = l10n_util::GetStringUTF8(capability_it->second);
 
     for (AdvancedCapabilityValue& value : capability.values) {
-      auto it = l10n_map.find(capability.name + "/" + value.name);
-      if (it != l10n_map.end())
-        value.display_name = l10n_util::GetStringUTF8(it->second);
+      auto value_it = l10n_map.find(capability.name + "/" + value.name);
+      if (value_it != l10n_map.end())
+        value.display_name = l10n_util::GetStringUTF8(value_it->second);
     }
   }
 }
