@@ -45,6 +45,8 @@ class OnDeviceSpeechRecognizer
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
   void OnSpeechRecognitionError() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
  private:
   void OnRecognizerBound(bool success);

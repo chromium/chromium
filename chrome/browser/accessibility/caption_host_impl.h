@@ -9,6 +9,7 @@
 
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
@@ -42,6 +43,8 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   void OnTranscription(
       chrome::mojom::TranscriptionResultPtr transcription_result,
       OnTranscriptionCallback reply) override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
   void OnError() override;
 
   // Returns the WebContents if it exists. If it does not exist, sets the

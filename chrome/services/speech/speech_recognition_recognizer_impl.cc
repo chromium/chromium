@@ -69,6 +69,21 @@ void OnSodaResponse(const char* serialized_proto,
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
     // TODO(crbug.com/1175357): Use the langid event to prompt users to switch
     // languages.
+    soda::chrome::SodaLangIdEvent event = response.langid_event();
+
+    if (event.confidence_level() >
+            static_cast<int>(media::mojom::ConfidenceLevel::kHighlyConfident) ||
+        event.confidence_level() <
+            static_cast<int>(media::mojom::ConfidenceLevel::kUnknown)) {
+      LOG(ERROR) << "Invalid confidence level returned by SODA.";
+      return;
+    }
+
+    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
+        ->language_identification_event_callback()
+        .Run(std::string(event.language()),
+             static_cast<media::mojom::ConfidenceLevel>(
+                 event.confidence_level()));
   }
 }
 
@@ -107,6 +122,14 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
       media::mojom::SpeechRecognitionResult::New(result, is_final));
 }
 
+void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
+    const std::string& language,
+    const media::mojom::ConfidenceLevel confidence_level) {
+  client_remote_->OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEvent::New(language,
+                                                     confidence_level));
+}
+
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
@@ -116,6 +139,10 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   recognition_event_callback_ = media::BindToCurrentLoop(
       base::BindRepeating(&SpeechRecognitionRecognizerImpl::OnRecognitionEvent,
                           weak_factory_.GetWeakPtr()));
+  language_identification_event_callback_ =
+      media::BindToCurrentLoop(base::BindRepeating(
+          &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
+          weak_factory_.GetWeakPtr()));
   enable_soda_ = base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
   if (enable_soda_) {
     // On Chrome OS, soda_client_ is not used, so don't try to create it here

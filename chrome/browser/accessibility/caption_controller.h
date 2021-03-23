@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
 
 class Browser;
@@ -55,6 +56,9 @@ class CaptionController : public BrowserListObserver,
   bool DispatchTranscription(
       CaptionHostImpl* caption_host_impl,
       const chrome::mojom::TranscriptionResultPtr& transcription_result);
+
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event);
 
   // Alerts the CaptionBubbleController that belongs to the appropriate browser
   // that there is an error in the speech recognition service.

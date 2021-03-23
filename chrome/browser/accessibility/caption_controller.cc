@@ -272,6 +272,11 @@ void CaptionController::OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) {
   caption_bubble_controllers_[browser]->OnAudioStreamEnd(caption_host_impl);
 }
 
+void CaptionController::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  // TODO(crbug.com/1175357): Implement the UI for language identification.
+}
+
 CaptionBubbleController*
 CaptionController::GetCaptionBubbleControllerForBrowser(Browser* browser) {
   if (!browser || !caption_bubble_controllers_.count(browser))

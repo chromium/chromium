@@ -4,6 +4,8 @@
 
 module chrome.mojom;
 
+import "media/mojo/mojom/speech_recognition_service.mojom";
+
 // Browser process interface exposed to the renderer for communication about
 // the Live Caption feature.
 interface CaptionHost {
@@ -15,6 +17,9 @@ interface CaptionHost {
   // Called when there is an error in the speech recognition service. Informs
   // the UI that it should show an error message to the user.
   OnError();
+
+  // Triggered by speech recognition process on a language identification event.
+  OnLanguageIdentificationEvent(media.mojom.LanguageIdentificationEvent event);
 };
 
 // A transcription result created by the speech recognition client in the

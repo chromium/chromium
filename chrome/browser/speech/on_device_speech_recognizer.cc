@@ -89,6 +89,11 @@ void OnDeviceSpeechRecognizer::OnSpeechRecognitionError() {
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_ERROR);
 }
 
+void OnDeviceSpeechRecognizer::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  // Do nothing.
+}
+
 void OnDeviceSpeechRecognizer::OnRecognizerBound(bool success) {
   if (success)
     UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY);

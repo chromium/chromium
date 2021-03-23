@@ -113,6 +113,11 @@ void ChromeSpeechRecognitionClient::OnSpeechRecognitionError() {
   caption_host_->OnError();
 }
 
+void ChromeSpeechRecognitionClient::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  caption_host_->OnLanguageIdentificationEvent(std::move(event));
+}
+
 void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
   if (is_speech_recognition_available) {

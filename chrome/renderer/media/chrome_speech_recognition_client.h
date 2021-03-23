@@ -57,6 +57,8 @@ class ChromeSpeechRecognitionClient
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
   void OnSpeechRecognitionError() override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   // media::mojom::SpeechRecognitionAvailabilityObserver
   void SpeechRecognitionAvailabilityChanged(

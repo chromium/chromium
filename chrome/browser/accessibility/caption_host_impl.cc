@@ -50,6 +50,15 @@ void CaptionHostImpl::OnTranscription(
       caption_controller->DispatchTranscription(this, transcription_result));
 }
 
+void CaptionHostImpl::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  CaptionController* caption_controller = GetCaptionController();
+  if (!caption_controller)
+    return;
+
+  caption_controller->OnLanguageIdentificationEvent(std::move(event));
+}
+
 void CaptionHostImpl::OnError() {
   CaptionController* caption_controller = GetCaptionController();
   if (caption_controller)

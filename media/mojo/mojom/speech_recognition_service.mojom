@@ -10,6 +10,15 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
+// Corresponds to the LangIdEvent.ConfidenceInterval defined in
+// http://google3/speech/soda/public/soda_event.proto.
+enum ConfidenceLevel {
+  kUnknown,
+  kNotConfident,
+  kConfident,
+  kHighlyConfident,
+};
+
 // The main interface a client uses to interact with a speech recognition
 // service process. In Live Caption, every renderer can own one or more
 // Remote<SpeechRecognitionContext>, with the receiver bound through the
@@ -103,6 +112,9 @@ interface SpeechRecognitionRecognizerClient {
 
   // Triggered by an error within the speech recognition service.
   OnSpeechRecognitionError();
+
+  // Triggered by speech recognition process on a language identification event.
+  OnLanguageIdentificationEvent(LanguageIdentificationEvent event);
 };
 
 // A speech recognition result created by the speech service and passed to the
@@ -114,6 +126,16 @@ struct SpeechRecognitionResult {
   // locked in and the next result returned will not overlap with the previous
   // final result.
   bool is_final;
+};
+
+// A language identification event created by the speech recognition service
+// and passed to the browser and renderer.
+struct LanguageIdentificationEvent {
+  // The locale of the language with the highest confidence.
+  string language;
+
+  // The confidence interval.
+  ConfidenceLevel confidence_level;
 };
 
 // The interface used to notify the speech recognition client of events
