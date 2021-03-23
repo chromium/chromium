@@ -8,6 +8,7 @@ message ExoMessage {
   oneof payload {
     SignalingRequest request = 1;
     SignalingResponse response = 2;
+    SignalingAction action = 3;
   }
 }
 
@@ -17,4 +18,13 @@ message SignalingRequest {
 
 message SignalingResponse {
   bytes data = 1;
+}
+
+message SignalingAction {
+  ActionType action_type = 1;
+}
+
+enum ActionType {
+  ACTION_UNKNOWN = 0;
+  ACTION_TEAR_DOWN = 1;
 }

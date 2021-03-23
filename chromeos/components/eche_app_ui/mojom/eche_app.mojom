@@ -15,6 +15,8 @@ interface SignalingMessageExchanger {
   // Sets the listener for replies sent from the browser process to the SWA.
   SetSignalingMessageObserver(
       pending_remote<SignalingMessageObserver> observer);
+  // Called when we no longer need the signal channel.
+  TearDownSignaling();
 };
 
 // Interface for dispatching response signaling messages as they are received.

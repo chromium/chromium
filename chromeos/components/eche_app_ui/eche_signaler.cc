@@ -35,6 +35,15 @@ void EcheSignaler::SetSignalingMessageObserver(
   observer_.Bind(std::move(observer));
 }
 
+void EcheSignaler::TearDownSignaling() {
+  proto::SignalingAction action;
+  action.set_action_type(proto::ActionType::ACTION_TEAR_DOWN);
+  proto::ExoMessage message;
+  *message.mutable_action() = std::move(action);
+  eche_connector_->SendMessage(message.SerializeAsString());
+  eche_connector_->Disconnect();
+}
+
 void EcheSignaler::Bind(
     mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver) {
   exchanger_.reset();

@@ -31,6 +31,7 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
   void SendSignalingMessage(const std::vector<uint8_t>& signal) override;
   void SetSignalingMessageObserver(
       mojo::PendingRemote<mojom::SignalingMessageObserver> observer) override;
+  void TearDownSignaling() override;
 
   void Bind(mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
 

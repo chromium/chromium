@@ -24,6 +24,10 @@ const EcheApiBindingImpl = new class {
   sendWebRtcSignal(signaling) {
     signalMessageExchanger.sendSignalingMessage(signaling);
   }
+
+  tearDownSignal() {
+    signalMessageExchanger.tearDownSignaling();
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -31,6 +35,8 @@ const echeapi = {};
 echeapi.webrtc = {};
 echeapi.webrtc.sendSignal =
     EcheApiBindingImpl.sendWebRtcSignal.bind(EcheApiBindingImpl);
+echeapi.webrtc.tearDownSignal =
+    EcheApiBindingImpl.tearDownSignal.bind(EcheApiBindingImpl);
 echeapi.webrtc.registerSignalReceiver =
     EcheApiBindingImpl.onWebRtcSignalReceived.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
