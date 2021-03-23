@@ -65,6 +65,7 @@
       probes: [
         "CharacterDataModified",
         "DidCommitLoad",
+        'DidRestoreFromBackForwardCache',
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
         "DidModifyDOMAttr",

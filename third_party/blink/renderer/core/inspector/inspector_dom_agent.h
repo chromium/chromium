@@ -257,6 +257,7 @@ class CORE_EXPORT InspectorDOMAgent final
   // Methods called from the InspectorInstrumentation.
   void DomContentLoadedEventFired(LocalFrame*);
   void DidCommitLoad(LocalFrame*, DocumentLoader*);
+  void DidRestoreFromBackForwardCache(LocalFrame*);
   void DidInsertDOMNode(Node*);
   void WillRemoveDOMNode(Node*);
   void WillModifyDOMAttr(Element*,

@@ -772,7 +772,8 @@
   },
   {
     "prefix": "bfcache",
-    "bases": [ "http/tests/inspector-protocol/bfcache" ],
+    "bases": [ "http/tests/inspector-protocol/bfcache",
+               "http/tests/devtools/bfcache" ],
     "args": [ "--enable-features=BackForwardCache" ]
   },
   {

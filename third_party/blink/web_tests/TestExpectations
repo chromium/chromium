@@ -240,7 +240,9 @@ crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
 # These tests require BFCache, which is currently disabled by default on Desktop.
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1171298 http/tests/inspector-protocol/bfcache/* [ Skip ]
+crbug.com/1171298 http/tests/devtools/bfcache/* [ Skip ]
 crbug.com/1171298 virtual/bfcache/http/tests/inspector-protocol/bfcache/* [ Pass ]
+crbug.com/1171298 virtual/bfcache/http/tests/devtools/bfcache/* [ Pass ]
 
 # Ref test with very minor differences. We need fuzzy matching for our ref tests,
 # or upstream this to WPT.

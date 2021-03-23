@@ -1936,6 +1936,19 @@ void InspectorDOMAgent::DidCommitLoad(LocalFrame*, DocumentLoader* loader) {
   SetDocument(inspected_frame->GetDocument());
 }
 
+void InspectorDOMAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
+  if (!enabled_.Get())
+    return;
+  DCHECK_EQ(frame, inspected_frames_->Root());
+  Document* document = frame->GetDocument();
+  DCHECK_EQ(document_, document);
+  // We don't load a new document for BFCache navigations, so |document_|
+  // doesn't actually update (the agent is initialized with the restored main
+  // document), but the frontend doesn't know this yet, and we need to notify
+  // it.
+  GetFrontend()->documentUpdated();
+}
+
 void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
   if (IsWhitespace(node))
     return;
