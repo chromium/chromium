@@ -1853,7 +1853,7 @@
   {
     "name": "enable-immersive-fullscreen-toolbar",
     "owners": [ "lgrey" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-incognito-authentication-ios",
