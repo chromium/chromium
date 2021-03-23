@@ -135,8 +135,6 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
       plugin_prefs_(PluginPrefs::GetForProfile(profile)) {
   allow_outdated_plugins_.Init(prefs::kPluginsAllowOutdated,
                                profile->GetPrefs());
-  run_all_flash_in_allow_mode_.Init(prefs::kRunAllFlashInAllowMode,
-                                    profile->GetPrefs());
 }
 
 PluginInfoHostImpl::Context::~Context() {}
@@ -144,7 +142,6 @@ PluginInfoHostImpl::Context::~Context() {}
 void PluginInfoHostImpl::Context::ShutdownOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   allow_outdated_plugins_.Destroy();
-  run_all_flash_in_allow_mode_.Destroy();
 }
 
 PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
@@ -166,7 +163,6 @@ void PluginInfoHostImpl::ShutdownOnUIThread() {
 void PluginInfoHostImpl::RegisterUserPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kPluginsAllowOutdated, false);
-  registry->RegisterBooleanPref(prefs::kRunAllFlashInAllowMode, false);
 }
 
 PluginInfoHostImpl::~PluginInfoHostImpl() {}
@@ -285,8 +281,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (plugin_setting == CONTENT_SETTING_ASK ||
-      (plugin_setting == CONTENT_SETTING_ALLOW &&
-       !run_all_flash_in_allow_mode_.GetValue())) {
+      plugin_setting == CONTENT_SETTING_ALLOW) {
     *status = chrome::mojom::PluginStatus::kPlayImportantContent;
   } else if (plugin_setting == CONTENT_SETTING_BLOCK) {
     *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy

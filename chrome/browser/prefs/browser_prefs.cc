@@ -555,6 +555,11 @@ const char kPinnedExtensionsMigrationComplete[] =
     "extensions.pinned_extension_migration";
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+// Deprecated 03/2021
+const char kRunAllFlashInAllowMode[] = "plugins.run_all_flash_in_allow_mode";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -666,6 +671,10 @@ void RegisterProfilePrefsForMigration(
       enterprise_connectors::kDeviceTrustPrivateKeyPref, std::string());
   registry->RegisterStringPref(enterprise_connectors::kDeviceTrustPublicKeyPref,
                                std::string());
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  registry->RegisterBooleanPref(kRunAllFlashInAllowMode, false);
 #endif
 }
 
@@ -1355,6 +1364,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 03/2021
   profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPrivateKeyPref);
   profile_prefs->ClearPref(enterprise_connectors::kDeviceTrustPublicKeyPref);
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // Added 03/2021
+  profile_prefs->ClearPref(kRunAllFlashInAllowMode);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

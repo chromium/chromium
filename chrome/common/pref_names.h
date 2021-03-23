@@ -382,7 +382,6 @@ extern const char kPluginsAlwaysOpenPdfExternally[];
 extern const char kPluginsShowDetails[];
 #endif
 extern const char kPluginsAllowOutdated[];
-extern const char kRunAllFlashInAllowMode[];
 #if BUILDFLAG(ENABLE_PLUGINS)
 extern const char kPluginsMetadata[];
 extern const char kPluginsResourceCacheUpdate[];

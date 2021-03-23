@@ -2636,13 +2636,7 @@
   },
 
   "RunAllFlashInAllowMode": {
-    "os": ["win", "linux", "mac", "chromeos"],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {"RunAllFlashInAllowMode": true},
-        "prefs": { "plugins.run_all_flash_in_allow_mode": {}}
-      }
-    ]
+    "note": "This policy has been removed since Chrome 88."
   },
 
   "BookmarkBarEnabled": {

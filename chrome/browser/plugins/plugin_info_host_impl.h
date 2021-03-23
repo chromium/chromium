@@ -89,7 +89,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
     scoped_refptr<PluginPrefs> plugin_prefs_;
 
     BooleanPrefMember allow_outdated_plugins_;
-    BooleanPrefMember run_all_flash_in_allow_mode_;
   };
 
   PluginInfoHostImpl(int render_process_id, Profile* profile);

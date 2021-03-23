@@ -7963,16 +7963,19 @@
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
+      'supported_on': ['chrome.*:63-88', 'chrome_os:63-88'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
       },
       'example_value': True,
       'id': 391,
-      'caption': '''Extend Flash content setting to all content''',
+      'caption': '''Extend Flash content setting to all content (deprecated)''',
       'tags': ['system-security'],
-      'desc': '''Setting the policy to True runs all <ph name="FLASH_PLUGIN_NAME">Flash</ph> content embedded on websites that allow <ph name="FLASH_PLUGIN_NAME">Flash</ph>, including content from other origins or small content.
+      'desc': '''This policy has been removed since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 89 because <ph name="FLASH_PLUGIN_NAME">Flash</ph> has been deprecated.
+
+      Setting the policy to True runs all <ph name="FLASH_PLUGIN_NAME">Flash</ph> content embedded on websites that allow <ph name="FLASH_PLUGIN_NAME">Flash</ph>, including content from other origins or small content.
 
       Setting the policy to False or leaving it unset might block <ph name="FLASH_PLUGIN_NAME">Flash</ph> content from other origins or small content.
 

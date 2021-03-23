@@ -1148,11 +1148,6 @@ const char kPluginsShowDetails[] = "plugins.show_details";
 // Boolean that indicates whether outdated plugins are allowed or not.
 const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
 
-// Boolean that indicates whether all Flash content (including cross-origin and
-// small content) is allowed to run when it is explicitly allowed via content
-// settings.
-const char kRunAllFlashInAllowMode[] = "plugins.run_all_flash_in_allow_mode";
-
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Dictionary holding plugins metadata.
 const char kPluginsMetadata[] = "plugins.metadata";
