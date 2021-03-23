@@ -71,10 +71,6 @@ const char kCdmSupportedEncryptionSchemesName[] =
 // The following strings are used to specify supported codecs in the
 // parameter |kCdmCodecsListName|.
 const char kCdmSupportedCodecVp8[] = "vp8";
-// Legacy VP9, which is equivalent to VP9 profile 0.
-// TODO(xhwang): Newer CDMs should support "vp09" below. Remove this after older
-// CDMs are obsolete.
-const char kCdmSupportedCodecLegacyVp9[] = "vp9.0";
 // Supports at least VP9 profile 0 and profile 2.
 const char kCdmSupportedCodecVp9[] = "vp09";
 const char kCdmSupportedCodecAv1[] = "av01";
@@ -123,12 +119,10 @@ bool CheckForCompatibleVersion(const base::Value& manifest,
 }
 
 // Returns true and updates |video_codecs| if the appropriate manifest entry is
-// valid. When VP9 is supported, sets |supports_vp9_profile2| if profile 2 is
-// supported. Older CDMs may only support profile 0. Returns false and does not
-// modify |video_codecs| if the manifest entry is incorrectly formatted.
+// valid. Returns false and does not modify |video_codecs| if the manifest entry
+// is incorrectly formatted.
 bool GetCodecs(const base::Value& manifest,
-               std::vector<media::VideoCodec>* video_codecs,
-               bool* supports_vp9_profile2) {
+               std::vector<media::VideoCodec>* video_codecs) {
   DCHECK(manifest.is_dict());
   DCHECK(video_codecs);
 
@@ -155,18 +149,11 @@ bool GetCodecs(const base::Value& manifest,
       base::SplitStringPiece(codecs, kCdmValueDelimiter, base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 
-  // Assuming VP9 profile 2 is not supported by default. Will only be set when
-  // kCdmSupportedCodecVp9 is available below.
-  *supports_vp9_profile2 = false;
-
   for (const auto& codec : supported_codecs) {
     if (codec == kCdmSupportedCodecVp8) {
       result.push_back(media::VideoCodec::kCodecVP8);
-    } else if (codec == kCdmSupportedCodecLegacyVp9) {
-      result.push_back(media::VideoCodec::kCodecVP9);
     } else if (codec == kCdmSupportedCodecVp9) {
       result.push_back(media::VideoCodec::kCodecVP9);
-      *supports_vp9_profile2 = true;
     } else if (codec == kCdmSupportedCodecAv1) {
       result.push_back(media::VideoCodec::kCodecAV1);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -294,8 +281,7 @@ bool ParseCdmManifest(const base::Value& manifest,
                       content::CdmCapability* capability) {
   DCHECK(manifest.is_dict());
 
-  return GetCodecs(manifest, &capability->video_codecs,
-                   &capability->supports_vp9_profile2) &&
+  return GetCodecs(manifest, &capability->video_codecs) &&
          GetEncryptionSchemes(manifest, &capability->encryption_schemes) &&
          GetSessionTypes(manifest, &capability->session_types);
 }
