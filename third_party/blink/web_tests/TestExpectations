@@ -5637,6 +5637,8 @@ crbug.com/1181886 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.h
 
 # Temporarily disabled to unblock a WebRTC roll
 crbug.com/webrtc/12499 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/968203 external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Pass Failure ]
+crbug.com/968203 external/wpt/webrtc-stats/getStats-remote-candidate-address.html [ Pass Failure ]
 
 # Sheriff 2021-02-25
 crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Timeout ]
