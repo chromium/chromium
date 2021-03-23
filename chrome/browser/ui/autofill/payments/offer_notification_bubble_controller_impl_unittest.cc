@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -35,6 +36,18 @@ class TestOfferNotificationBubbleControllerImpl
     content::MockNavigationHandle navigation_handle(GURL(url), rfh);
     navigation_handle.set_has_committed(true);
     DidFinishNavigation(&navigation_handle);
+  }
+
+ private:
+  // Overrides to bypass the IsWebContentsActive check.
+  void DoShowBubble() override {
+    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+    set_bubble_view(
+        browser->window()
+            ->GetAutofillBubbleHandler()
+            ->ShowOfferNotificationBubble(web_contents(), this,
+                                          /*is_user_gesture=*/false));
+    DCHECK(bubble_view());
   }
 };
 

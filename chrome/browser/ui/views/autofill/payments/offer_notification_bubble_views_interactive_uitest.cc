@@ -80,6 +80,61 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 };
 
+// Flaky on Linux. crbug.com/1182526
+#if defined(OS_LINUX)
+#define MAYBE_Navigation DISABLED_Navigation
+#else
+#define MAYBE_Navigation Navigation
+#endif
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
+                       MAYBE_Navigation) {
+  static const struct {
+    std::string url_navigated_to;
+    bool bubble_should_be_visible;
+  } test_cases[] = {
+      // Different page on same domain keeps bubble.
+      {"https://www.example.com/second/", true},
+      // Different domain not in offer's list dismisses bubble.
+      {"https://www.about.com/", false},
+      // Subdomain not in offer's list dismisses bubble.
+      {"https://support.example.com/first/", false},
+      // http vs. https mismatch dismisses bubble.
+      {"http://www.example.com/first/", false},
+      // Different domain in the offer's list keeps bubble.
+      {"https://www.test.com/first/", true},
+  };
+
+  // Set the initial origin that the bubble will be displayed on.
+  SetUpOfferDataWithDomains(
+      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+
+  for (const auto& test_case : test_cases) {
+    NavigateTo(chrome::kChromeUINewTabURL);
+
+    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+    NavigateTo("https://www.example.com/first");
+    WaitForObservedEvent();
+
+    // Bubble should be visible.
+    ASSERT_TRUE(IsIconVisible());
+    ASSERT_TRUE(GetOfferNotificationBubbleViews());
+
+    // Navigate to a different url, and verify bubble/icon visibility.
+    if (test_case.bubble_should_be_visible) {
+      NavigateTo(test_case.url_navigated_to);
+    } else {
+      views::test::WidgetDestroyedWaiter destroyed_waiter(
+          GetOfferNotificationBubbleViews()->GetWidget());
+      NavigateTo(test_case.url_navigated_to);
+      destroyed_waiter.Wait();
+    }
+
+    EXPECT_EQ(test_case.bubble_should_be_visible, IsIconVisible());
+    EXPECT_EQ(test_case.bubble_should_be_visible,
+              !!GetOfferNotificationBubbleViews());
+  }
+}
+
 // Tests that bubble behaves correctly after user dismisses it.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
                        DismissBubble) {

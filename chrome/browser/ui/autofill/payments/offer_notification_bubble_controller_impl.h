@@ -70,8 +70,8 @@ class OfferNotificationBubbleControllerImpl
       OfferNotificationBubbleControllerImpl>;
   friend class OfferNotificationBubbleViewsTestBase;
 
-  // Updates the visibility of the icon as per IsIconVisible().
-  void UpdateOfferIcon();
+  // Returns whether the web content associated with this controller is active.
+  bool IsWebContentsActive();
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {
