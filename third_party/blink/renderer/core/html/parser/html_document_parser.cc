@@ -1601,6 +1601,8 @@ void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
   TRACE_EVENT2("blink", "HTMLDocumentParser::appendBytes", "size",
                (unsigned)length, "parser", (void*)this);
 
+  V8RecordReplayAssert("HTMLDocumentParser::AppendBytes %lu %u", length, data[0]);
+
   DCHECK(Thread::MainThread()->IsCurrentThread());
 
   if (!length || IsStopped())

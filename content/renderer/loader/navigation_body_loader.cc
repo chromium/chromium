@@ -15,6 +15,8 @@
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace content {
 
 // static
@@ -279,6 +281,8 @@ void NavigationBodyLoader::ReadFromDataPipe() {
     uint32_t available = 0;
     MojoResult result =
         handle_->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
+    V8RecordReplayAssert("NavigationBodyLoader::ReadFromDataPipe %u %u",
+                         available, available ? ((const char*)buffer)[0] : 0);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_.ArmOrNotify();
       return;

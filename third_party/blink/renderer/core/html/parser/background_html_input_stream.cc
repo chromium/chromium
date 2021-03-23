@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/html/parser/background_html_input_stream.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 
 BackgroundHTMLInputStream::BackgroundHTMLInputStream()
@@ -33,6 +35,8 @@ BackgroundHTMLInputStream::BackgroundHTMLInputStream()
       total_checkpoint_token_count_(0) {}
 
 void BackgroundHTMLInputStream::Append(const String& input) {
+  V8RecordReplayAssert("BackgroundHTMLInputStream::Append %u %u", input.length(), input[0]);
+
   current_.Append(SegmentedString(input));
   segments_.push_back(input);
 }
@@ -115,6 +119,8 @@ void BackgroundHTMLInputStream::RewindTo(HTMLInputCheckpoint checkpoint_index,
   first_valid_segment_index_ = 0;
 
   UpdateTotalCheckpointTokenCount();
+
+  V8RecordReplayAssert("BackgroundHTMLInputStream::RewindTo %u", current_.length());
 }
 
 void BackgroundHTMLInputStream::UpdateTotalCheckpointTokenCount() {

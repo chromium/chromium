@@ -22,6 +22,12 @@
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/c/system/data_pipe.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayBytes(const char* why, void* data, size_t nbytes);
+#else
+static void V8RecordReplayBytes(const char* why, void* data, size_t nbytes) {}
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -167,10 +173,16 @@ MojoResult DataPipeConsumerDispatcher::ReadData(
     uint32_t tail_bytes_to_copy =
         std::min(options_.capacity_num_bytes - read_offset_, bytes_to_read);
     uint32_t head_bytes_to_copy = bytes_to_read - tail_bytes_to_copy;
-    if (tail_bytes_to_copy > 0)
+    if (tail_bytes_to_copy > 0) {
+      V8RecordReplayBytes("DataPipeConsumerDispatcher::ReadData",
+                          (uint8_t*)data + read_offset_, tail_bytes_to_copy);
       memcpy(destination, data + read_offset_, tail_bytes_to_copy);
-    if (head_bytes_to_copy > 0)
+    }
+    if (head_bytes_to_copy > 0) {
+      V8RecordReplayBytes("DataPipeConsumerDispatcher::ReadData",
+                          (uint8_t*)data, head_bytes_to_copy);
       memcpy(destination + tail_bytes_to_copy, data, head_bytes_to_copy);
+    }
   }
   *num_bytes = bytes_to_read;
 
@@ -222,6 +234,9 @@ MojoResult DataPipeConsumerDispatcher::BeginReadData(
   *buffer = data + read_offset_;
   *buffer_num_bytes = bytes_to_read;
   two_phase_max_bytes_read_ = bytes_to_read;
+
+  V8RecordReplayBytes("DataPipeConsumerDispatcher::BeginReadData",
+                      (void*)*buffer, *buffer_num_bytes);
 
   if (had_new_data)
     watchers_.NotifyState(GetHandleSignalsStateNoLock());

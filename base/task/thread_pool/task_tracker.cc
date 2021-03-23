@@ -32,6 +32,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace base {
 namespace internal {
 
@@ -405,6 +411,8 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
     RegisteredTaskSource task_source) {
   DCHECK(task_source);
 
+  V8RecordReplayAssert("TaskTracker::RunAndPopNextTask Start");
+
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
 
   // Run the next task in |task_source|.
@@ -425,6 +433,8 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
     AfterRunTask(task_source->shutdown_behavior());
   const bool task_source_must_be_queued = task_source.DidProcessTask();
   // |task_source| should be reenqueued iff requested by DidProcessTask().
+  V8RecordReplayAssert("TaskTracker::RunAndPopNextTask Done %d",
+                       task_source_must_be_queued);
   if (task_source_must_be_queued)
     return task_source;
   return nullptr;

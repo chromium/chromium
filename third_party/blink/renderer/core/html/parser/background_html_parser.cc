@@ -128,7 +128,8 @@ void BackgroundHTMLParser::Flush() {
 }
 
 void BackgroundHTMLParser::UpdateDocument(const String& decoded_data) {
-  V8RecordReplayAssert("BackgroundHTMLParser::UpdateDocument Start");
+  V8RecordReplayAssert("BackgroundHTMLParser::UpdateDocument Start %u %u",
+                       decoded_data.length(), decoded_data[0]);
 
   DocumentEncodingData encoding_data(*decoder_.get());
   if (encoding_data != last_seen_encoding_data_) {
@@ -197,7 +198,8 @@ void BackgroundHTMLParser::PumpTokenizer() {
   HTMLTreeBuilderSimulator::SimulatedToken simulated_token =
       HTMLTreeBuilderSimulator::kOtherToken;
 
-  V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer Start");
+  V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer Start %u",
+                       input_.Current().length());
 
   // No need to start speculating until the main thread has almost caught up.
   if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit) {

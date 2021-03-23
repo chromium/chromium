@@ -130,7 +130,8 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
-  V8RecordReplayAssert("HTMLTokenizer::NextToken Start");
+  V8RecordReplayAssert("HTMLTokenizer::NextToken Start %u %u",
+                       source.length(), source.CurrentChar());
 
   // If we have a token in progress, then we're supposed to be called back
   // with the same token so we can finish it.
