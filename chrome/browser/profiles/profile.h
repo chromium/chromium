@@ -168,8 +168,6 @@ class Profile : public content::BrowserContext {
     // message.
     const std::string& ToString() const;
 
-    static int first_unused_index_;
-
     const std::string profile_id_;
   };
 

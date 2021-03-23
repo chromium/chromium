@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -101,13 +102,11 @@ const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
 }
 
 // static
-int Profile::OTRProfileID::first_unused_index_ = 0;
-
-// static
 Profile::OTRProfileID Profile::OTRProfileID::CreateUnique(
     const std::string& profile_id_prefix) {
-  return OTRProfileID(base::StringPrintf("%s-%i", profile_id_prefix.c_str(),
-                                         first_unused_index_++));
+  return OTRProfileID(base::StringPrintf(
+      "%s-%s", profile_id_prefix.c_str(),
+      base::GUID::GenerateRandomV4().AsLowercaseString().c_str()));
 }
 
 // static
