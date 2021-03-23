@@ -2319,6 +2319,8 @@ component("base") {
 
     if (is_android) {
       sources += [
+        "trace_event/application_state_proto_android.cc",
+        "trace_event/application_state_proto_android.h",
         "trace_event/cpufreq_monitor_android.cc",
         "trace_event/cpufreq_monitor_android.h",
         "trace_event/java_heap_dump_provider_android.cc",

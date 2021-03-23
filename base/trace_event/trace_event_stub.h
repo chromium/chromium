@@ -50,6 +50,9 @@ struct IgnoredValue {
 #define INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMPS(...) \
   INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 
+// Defined in application_state_proto_android.h
+#define TRACE_APPLICATION_STATE(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
+
 #define TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION \
   trace_event_internal::IgnoredValue
 

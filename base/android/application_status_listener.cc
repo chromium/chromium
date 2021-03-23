@@ -13,7 +13,7 @@
 #include "base/trace_event/base_tracing.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_application_state_info.pbzero.h"
+#include "base/trace_event/application_state_proto_android.h"  // no-presubmit-check
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
@@ -85,38 +85,7 @@ std::unique_ptr<ApplicationStatusListener> ApplicationStatusListener::New(
 // static
 void ApplicationStatusListener::NotifyApplicationStateChange(
     ApplicationState state) {
-  TRACE_EVENT("browser", "ApplicationState", [&](perfetto::EventContext ctx) {
-    using perfetto::protos::pbzero::ChromeApplicationStateInfo;
-    ChromeApplicationStateInfo* app_state_info =
-        ctx.event()->set_chrome_application_state_info();
-    switch (state) {
-      case APPLICATION_STATE_UNKNOWN:
-        app_state_info->set_application_state(
-            ChromeApplicationStateInfo::APPLICATION_STATE_UNKNOWN);
-        break;
-      case APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
-        app_state_info->set_application_state(
-            ChromeApplicationStateInfo::
-                APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES);
-        break;
-      case APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
-        app_state_info->set_application_state(
-            ChromeApplicationStateInfo::
-                APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
-        break;
-      case APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
-        app_state_info->set_application_state(
-            ChromeApplicationStateInfo::
-                APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
-        break;
-      case APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
-        app_state_info->set_application_state(
-            ChromeApplicationStateInfo::
-                APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-        break;
-    }
-  });
-
+  TRACE_APPLICATION_STATE(state);
   switch (state) {
     case APPLICATION_STATE_UNKNOWN:
     case APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:

@@ -62,7 +62,9 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pbzero.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/application_status_listener.h"
 #include "base/android/build_info.h"
+#include "base/trace_event/application_state_proto_android.h"
 #endif
 
 using TraceLog = base::trace_event::TraceLog;
@@ -97,6 +99,15 @@ ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
     return ChromeProcessDescriptor::PROCESS_PPAPI_BROKER;
   }
   return ChromeProcessDescriptor::PROCESS_UNSPECIFIED;
+}
+
+void EmitRecurringUpdates(ChromeProcessDescriptor::ProcessType process_type) {
+#if defined(OS_ANDROID)
+  if (process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
+    auto state = base::android::ApplicationStatusListener::GetState();
+    TRACE_APPLICATION_STATE(state);
+  }
+#endif
 }
 
 static_assert(
@@ -1331,6 +1342,9 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   // TODO(eseckler): Set other fields on |chrome_process|.
 
   trace_packet = TracePacketHandle();
+
+  EmitRecurringUpdates(process_type);
+
   writer->Flush();
 }
 
