@@ -255,7 +255,6 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP8);
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
   capability.video_codecs.push_back(media::VideoCodec::kCodecAV1);
-  capability.supports_vp9_profile2 = true;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   capability.video_codecs.push_back(media::VideoCodec::kCodecH264);
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

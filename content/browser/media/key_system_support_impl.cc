@@ -177,8 +177,6 @@ void KeySystemSupportImpl::IsKeySystemSupported(
   // Supported codecs and encryption schemes.
   auto capability = media::mojom::KeySystemCapability::New();
   capability->video_codecs = cdm_info->capability.video_codecs;
-  capability->supports_vp9_profile2 =
-      cdm_info->capability.supports_vp9_profile2;
   capability->encryption_schemes =
       SetToVector(cdm_info->capability.encryption_schemes);
 

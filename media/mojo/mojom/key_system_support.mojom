@@ -13,7 +13,6 @@ import "media/mojo/mojom/media_types.mojom";
 struct KeySystemCapability {
   // Software secure codecs and encryption schemes supported by the CDM.
   array<VideoCodec> video_codecs;
-  bool supports_vp9_profile2;
   array<EncryptionScheme> encryption_schemes;
 
   // Hardware secure codecs and encryption schemes supported by the CDM.
