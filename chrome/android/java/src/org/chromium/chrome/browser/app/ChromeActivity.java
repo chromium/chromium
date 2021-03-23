@@ -466,7 +466,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this::getActivityTabStartupMetricsTracker,
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
-                        getBrowserControlsManager())
+                        getBrowserControlsManager(), this::getSavedInstanceState)
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
                         getTabModelSelectorSupplier(), getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
@@ -479,7 +479,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this::getActivityTabStartupMetricsTracker,
                         /* CompositorViewHolder.Initializer */ this,
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
-                        getBrowserControlsManager());
+                        getBrowserControlsManager(), this::getSavedInstanceState);
 
         return createComponent(commonsModule);
     }

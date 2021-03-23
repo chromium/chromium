@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.HintlessActivityTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
@@ -66,6 +69,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.Lazy;
 
@@ -107,6 +111,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     private final ReparentingTaskProvider mReparentingTaskProvider;
     private final Lazy<CustomTabIncognitoManager> mCustomTabIncognitoManager;
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
+    private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
     @Nullable
     private final CustomTabsSessionToken mSession;
@@ -133,7 +138,8 @@ public class CustomTabActivityTabController implements InflationObserver {
             CustomTabActivityTabProvider tabProvider, StartupTabPreloader startupTabPreloader,
             ReparentingTaskProvider reparentingTaskProvider,
             Lazy<CustomTabIncognitoManager> customTabIncognitoManager,
-            Lazy<AsyncTabParamsManager> asyncTabParamsManager) {
+            Lazy<AsyncTabParamsManager> asyncTabParamsManager,
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
         mConnection = connection;
@@ -152,6 +158,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         mReparentingTaskProvider = reparentingTaskProvider;
         mCustomTabIncognitoManager = customTabIncognitoManager;
         mAsyncTabParamsManager = asyncTabParamsManager;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();
@@ -215,7 +222,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         // This must be requested before adding content.
         mActivity.supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
-        if (mActivity.getSavedInstanceState() == null && mConnection.hasWarmUpBeenFinished()) {
+        if (mSavedInstanceStateSupplier.get() == null && mConnection.hasWarmUpBeenFinished()) {
             mTabFactory.initializeTabModels();
             Tab tab = getHiddenTab();
             if (tab == null) {
@@ -362,7 +369,7 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     @Nullable
     private Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
-        if (mActivity.getSavedInstanceState() == null) return null;
+        if (mSavedInstanceStateSupplier.get() == null) return null;
         tabModelOrchestrator.loadState(true);
         tabModelOrchestrator.restoreTabs(true);
         Tab tab = tabModelOrchestrator.getTabModelSelector().getCurrentTab();

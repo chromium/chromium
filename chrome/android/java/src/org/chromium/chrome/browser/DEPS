@@ -70,9 +70,6 @@ specific_include_rules = {
   "DigitalGoodsFactoryImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "ClientPackageNameProvider\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "OverlayPanel\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
@@ -103,13 +100,7 @@ specific_include_rules = {
   "BaseCustomTabRootUiCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "CustomTabActivityLifecycleUmaTracker\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "CustomTabDelegateFactory\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "CustomTabTabPersistencePolicy\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "CustomTabActivityTabController\.java": [
@@ -254,9 +245,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ArCompositorDelegateImpl\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "WebApkActivityLifecycleUmaTracker\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
 }

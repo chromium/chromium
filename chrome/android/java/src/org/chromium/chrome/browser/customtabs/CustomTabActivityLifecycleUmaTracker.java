@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
+
+import android.os.Bundle;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,6 +22,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Handles recording User Metrics for Custom Tab Activity.
@@ -27,8 +32,8 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
         NativeInitObserver {
 
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final ChromeActivity<?> mActivity;
     private final CustomTabsConnection mConnection;
+    private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
     private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
@@ -63,18 +68,19 @@ public class CustomTabActivityLifecycleUmaTracker implements PauseResumeWithNati
 
     @Inject
     public CustomTabActivityLifecycleUmaTracker(ActivityLifecycleDispatcher lifecycleDispatcher,
-            ChromeActivity<?> activity, BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabsConnection customTabsConnection) {
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabsConnection customTabsConnection,
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mIntentDataProvider = intentDataProvider;
-        mActivity = activity;
         mConnection = customTabsConnection;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
         lifecycleDispatcher.register(this);
     }
 
     @Override
     public void onResumeWithNative() {
-        if (mActivity.getSavedInstanceState() != null || !mIsInitialResume) {
+        if (mSavedInstanceStateSupplier.get() != null || !mIsInitialResume) {
             if (mIntentDataProvider.isOpenedByChrome()) {
                 RecordUserAction.record("ChromeGeneratedCustomTab.StartedReopened");
             } else {

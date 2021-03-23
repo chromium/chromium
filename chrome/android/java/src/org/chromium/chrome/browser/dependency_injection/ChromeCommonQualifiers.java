@@ -16,4 +16,5 @@ public interface ChromeCommonQualifiers {
 
     String DECOR_VIEW = "DECOR_VIEW";
     String IS_PROMOTABLE_TO_TAB_BOOLEAN = "IS_PROMOTABLE_TO_TAB_BOOLEAN";
+    String SAVED_INSTANCE_SUPPLIER = "SAVED_INSTANCE_SUPPLIER";
 }

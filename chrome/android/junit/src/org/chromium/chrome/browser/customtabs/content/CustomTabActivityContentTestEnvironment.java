@@ -161,7 +161,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 () -> compositorViewHolder, lifecycleDispatcher, warmupManager,
                 tabPersistencePolicy, tabFactory, () -> customTabObserver, webContentsFactory,
                 navigationEventObserver, tabProvider, startupTabPreloader, reparentingTaskProvider,
-                () -> customTabIncognitoManager, () -> realAsyncTabParamsManager);
+                () -> customTabIncognitoManager, () -> realAsyncTabParamsManager,
+                () -> activity.getSavedInstanceState());
     }
     // clang-format on
 

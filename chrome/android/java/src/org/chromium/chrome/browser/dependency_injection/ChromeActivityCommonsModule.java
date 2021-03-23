@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.dependency_injection;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
+import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -77,6 +79,7 @@ public class ChromeActivityCommonsModule {
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final Supplier<Bundle> mSavedInstanceStateSupplier;
 
     /** See {@link ModuleFactoryOverrides} */
     public interface Factory {
@@ -102,7 +105,8 @@ public class ChromeActivityCommonsModule {
                 CompositorViewHolder.Initializer compositorViewHolderInitializer,
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
-                BrowserControlsStateProvider browserControlsStateProvider);
+                BrowserControlsStateProvider browserControlsStateProvider,
+                Supplier<Bundle> savedInstanceStateSupplier);
     }
 
     public ChromeActivityCommonsModule(ChromeActivity activity,
@@ -127,7 +131,8 @@ public class ChromeActivityCommonsModule {
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -154,6 +159,7 @@ public class ChromeActivityCommonsModule {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
     }
 
     @Provides
@@ -324,5 +330,11 @@ public class ChromeActivityCommonsModule {
     @Provides
     public BrowserControlsStateProvider provideBrowserControlsStateProvider() {
         return mBrowserControlsStateProvider;
+    }
+
+    @Provides
+    @Named(SAVED_INSTANCE_SUPPLIER)
+    public Supplier<Bundle> savedInstanceStateSupplier() {
+        return mSavedInstanceStateSupplier;
     }
 }
