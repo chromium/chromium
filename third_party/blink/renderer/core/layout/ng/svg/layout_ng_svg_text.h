@@ -24,6 +24,9 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   // LayoutObject override:
   const char* GetName() const override;
   bool IsOfType(LayoutObjectType type) const override;
+  bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
+  void AddChild(LayoutObject* child, LayoutObject* before_child) override;
+  void RemoveChild(LayoutObject* child) override;
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;

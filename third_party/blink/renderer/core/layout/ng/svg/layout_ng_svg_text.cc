@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 
 namespace blink {
@@ -29,6 +30,26 @@ bool LayoutNGSVGText::IsOfType(LayoutObjectType type) const {
 bool LayoutNGSVGText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   return true;
+}
+
+bool LayoutNGSVGText::IsChildAllowed(LayoutObject* child,
+                                     const ComputedStyle&) const {
+  NOT_DESTROYED();
+  return child->IsSVGInline() ||
+         (child->IsText() && SVGLayoutSupport::IsLayoutableTextNode(child));
+}
+
+void LayoutNGSVGText::AddChild(LayoutObject* child,
+                               LayoutObject* before_child) {
+  NOT_DESTROYED();
+  LayoutSVGBlock::AddChild(child, before_child);
+  SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
+}
+
+void LayoutNGSVGText::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
+  SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
+  LayoutSVGBlock::RemoveChild(child);
 }
 
 void LayoutNGSVGText::SubtreeStructureChanged(
