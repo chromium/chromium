@@ -9,17 +9,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
-
-#if defined(OS_WIN)
-#include <memory>
-#include "ui/gfx/win/singleton_hwnd_observer.h"
-#endif
 
 namespace content {
 
@@ -43,11 +37,11 @@ struct FocusedNodeDetails;
 // improvement over reading defaults preference values (which has no callback
 // mechanism).
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
-    : public base::RefCountedThreadSafe<BrowserAccessibilityStateImpl>,
-      public BrowserAccessibilityState,
+    : public BrowserAccessibilityState,
       public ui::AXModeObserver {
  public:
   BrowserAccessibilityStateImpl();
+  ~BrowserAccessibilityStateImpl() override;
 
   static BrowserAccessibilityStateImpl* GetInstance();
 
@@ -94,26 +88,17 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
- private:
-  friend class base::RefCountedThreadSafe<BrowserAccessibilityStateImpl>;
-  friend struct base::DefaultSingletonTraits<BrowserAccessibilityStateImpl>;
-
-  // Resets accessibility_mode_ to the default value.
-  void ResetAccessibilityModeValue();
-
+ protected:
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
   // Two variants - one for things that must be run on the UI thread, and
   // another that can be run on another thread.
-  void UpdateHistogramsOnUIThread();
-  void UpdateHistogramsOnOtherThread();
+  virtual void UpdateHistogramsOnUIThread();
+  virtual void UpdateHistogramsOnOtherThread();
 
-  // Leaky singleton, destructor generally won't be called.
-  ~BrowserAccessibilityStateImpl() override;
-
-  void PlatformInitialize();
-  void UpdatePlatformSpecificHistogramsOnUIThread();
-  void UpdatePlatformSpecificHistogramsOnOtherThread();
+ private:
+  // Resets accessibility_mode_ to the default value.
+  void ResetAccessibilityModeValue();
 
   ui::AXMode accessibility_mode_;
 
@@ -125,11 +110,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.
   bool caret_browsing_enabled_ = false;
-
-#if defined(OS_WIN)
-  // Only used on Windows
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
-#endif
 
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
