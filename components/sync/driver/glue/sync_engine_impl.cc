@@ -454,15 +454,16 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     UpdateLastSyncedTime();
   }
 
-  host_->OnEngineInitialized(js_backend, debug_info_listener, /*success=*/true,
-                             is_first_time_sync_configure);
+  host_->OnEngineInitialized(initial_types, js_backend, debug_info_listener,
+                             /*success=*/true, is_first_time_sync_configure);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(
-      WeakHandle<JsBackend>(), WeakHandle<DataTypeDebugInfoListener>(),
-      /*success=*/false, /*is_first_time_sync_configure=*/false);
+  host_->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+                             WeakHandle<DataTypeDebugInfoListener>(),
+                             /*success=*/false,
+                             /*is_first_time_sync_configure=*/false);
 }
 
 void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(

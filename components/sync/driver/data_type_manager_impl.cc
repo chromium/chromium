@@ -53,6 +53,7 @@ DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo(
 DataTypeManagerImpl::AssociationTypesInfo::~AssociationTypesInfo() = default;
 
 DataTypeManagerImpl::DataTypeManagerImpl(
+    ModelTypeSet initial_types,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     const DataTypeController::TypeMap* controllers,
     const DataTypeEncryptionHandler* encryption_handler,
@@ -60,6 +61,7 @@ DataTypeManagerImpl::DataTypeManagerImpl(
     DataTypeManagerObserver* observer)
     : configurer_(configurer),
       controllers_(controllers),
+      downloaded_types_(initial_types),
       debug_info_listener_(debug_info_listener),
       model_load_manager_(controllers, this),
       observer_(observer),

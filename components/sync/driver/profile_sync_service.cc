@@ -760,6 +760,7 @@ void ProfileSyncService::UpdateEngineInitUMA(bool success) const {
 }
 
 void ProfileSyncService::OnEngineInitialized(
+    ModelTypeSet initial_types,
     const WeakHandle<JsBackend>& js_backend,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     bool success,
@@ -793,8 +794,8 @@ void ProfileSyncService::OnEngineInitialized(
 
   data_type_manager_ =
       sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
-          debug_info_listener, &data_type_controllers_, &crypto_, engine_.get(),
-          this);
+          initial_types, debug_info_listener, &data_type_controllers_, &crypto_,
+          engine_.get(), this);
 
   crypto_.SetSyncEngine(GetAuthenticatedAccountInfo(), engine_.get());
 
