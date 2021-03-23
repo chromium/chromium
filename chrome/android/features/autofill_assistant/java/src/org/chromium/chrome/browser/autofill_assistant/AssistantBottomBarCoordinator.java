@@ -483,6 +483,10 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mInsetSupplier.set(resizing);
     }
 
+    /**
+     * Freeze the bottom sheet animation before expanding/collapsing it, in order to prevent crash
+     * (see b/179131022).
+     */
     private void freezeBottomSheetAnimation() {
         Callback<Integer> offsetController = mContent.getOffsetController();
         if (offsetController == null) {

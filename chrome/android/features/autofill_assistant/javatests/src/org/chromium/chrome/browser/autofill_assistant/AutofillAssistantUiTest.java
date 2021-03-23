@@ -40,7 +40,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
@@ -290,42 +289,5 @@ public class AutofillAssistantUiTest {
         onView(withText(testBubbleMessage))
                 .inRoot(withDecorView(not(getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
-    }
-
-    /**
-     * With animation on, hides the bottom sheet, and then immediately shows it, and then
-     * immediately hides it. Tests that this doesn't cause a crash (see b/179131022).
-     */
-    @Test
-    @MediumTest
-    @DisabledTest(message = "crbug/1180011")
-    public void testBottomSheetHideExpandWithAnimationDoesNotCrash() throws Exception {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        BottomSheetController bottomSheetController =
-                TestThreadUtils.runOnUiThreadBlocking(this::initializeBottomSheet);
-        AssistantCoordinator assistantCoordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
-                    bottomSheetController, getActivity().getTabObscuringHandler(),
-                    /* overlayCoordinator= */ null,
-                    /* keyboardCoordinatorDelegate= */ null);
-            coordinator.show();
-            return coordinator;
-        });
-
-        // BottomSheet is shown when creating the AssistantCoordinator.
-        View contentView = AutofillAssistantUiTestUtil.getBottomSheetController(getActivity())
-                                   .getCurrentSheetContent()
-                                   .getContentView();
-        ViewGroup bottomSheetContent = contentView.findViewById(R.id.autofill_assistant);
-        Assert.assertNotNull(bottomSheetContent);
-
-        // Immediately expand and hide the bottom sheet.
-        AssistantBottomBarCoordinator bottomBarCoordinator =
-                assistantCoordinator.getBottomBarCoordinator();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomBarCoordinator.hide();
-            bottomBarCoordinator.showContent(/* shouldExpand = */ true, /* animate = */ true);
-            bottomBarCoordinator.hide();
-        });
     }
 }
