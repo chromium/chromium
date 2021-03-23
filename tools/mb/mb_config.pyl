@@ -1090,6 +1090,7 @@
     'tryserver.chromium.perf': {
       'Android Compile Perf': 'official_goma_minimal_symbols_android',
       'Android arm64 Compile Perf': 'official_goma_minimal_symbols_android_arm64',
+      'Chromeos Amd64 Generic Lacros Builder Perf': 'chromeos_amd64-generic_lacros_official',
       'Fuchsia Builder Perf': 'official_goma_fuchsia_arm64_perf',
       'Linux Builder Perf': 'official_goma_linux_perf',
       'Mac Builder Perf': 'official_goma_mac_perf',
