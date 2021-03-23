@@ -39,7 +39,11 @@ enum class LoginDetectionType {
   // Successful popup based OAuth login flow was detected.
   kOauthPopUpFirstTimeLoginFlow,
 
-  kMaxValue = kOauthPopUpFirstTimeLoginFlow
+  // Treated as logged-in since the site was detected as commonly logged-in from
+  // optimization guide hints.
+  kOptimizationGuideDetected,
+
+  kMaxValue = kOptimizationGuideDetected
 };
 }  // namespace login_detection
 

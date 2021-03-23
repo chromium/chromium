@@ -55,6 +55,8 @@ std::string GetStringNameForOptimizationType(
       return "LinkPerformance";
     case proto::OptimizationType::SHOPPING_PAGE_PREDICTOR:
       return "ShoppingPagePredictor";
+    case proto::OptimizationType::LOGIN_DETECTION:
+      return "LoginDetection";
   }
   NOTREACHED();
   return std::string();
