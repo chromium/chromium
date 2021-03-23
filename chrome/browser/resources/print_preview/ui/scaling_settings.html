@@ -8,10 +8,12 @@
       <option value="[[ScalingValue.DEFAULT]]">
         $i18n{optionDefaultScaling}
       </option>
-      <option value="[[ScalingValue.FIT_TO_PAGE]]" hidden$="[[!isPdf]]">
+      <option value="[[ScalingValue.FIT_TO_PAGE]]" hidden$="[[!isPdf]]"
+          disabled$="[[!isPdf]]">
         $i18n{optionFitToPage}
       </option>
-      <option value="[[ScalingValue.FIT_TO_PAPER]]" hidden$="[[!isPdf]]">
+      <option value="[[ScalingValue.FIT_TO_PAPER]]" hidden$="[[!isPdf]]"
+          disabled$="[[!isPdf]]">
         $i18n{optionFitToPaper}
       </option>
       <option value="[[ScalingValue.CUSTOM]]">
