@@ -1291,6 +1291,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "impl": "3"
+                    },
                     "enable_features": [
                         "CertDualVerificationTrial"
                     ]
@@ -1306,6 +1309,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "cachesize": "512",
+                        "impl": "3"
+                    },
                     "enable_features": [
                         "CertVerifierBuiltin"
                     ]
