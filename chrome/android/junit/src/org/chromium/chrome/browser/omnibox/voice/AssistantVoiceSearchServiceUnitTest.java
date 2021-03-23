@@ -130,6 +130,13 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    @Features.DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+    public void canRequestAssistantVoiceSearch_featureDisabled() {
+        Assert.assertFalse(mAssistantVoiceSearchService.canRequestAssistantVoiceSearch());
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch() {
         Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
         List<Integer> reasons = new ArrayList<>();
