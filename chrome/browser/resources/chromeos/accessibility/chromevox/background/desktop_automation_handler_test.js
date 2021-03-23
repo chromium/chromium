@@ -13,8 +13,6 @@ ChromeVoxDesktopAutomationHandlerTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
     super.setUp();
-    window.EventType = chrome.automation.EventType;
-    window.RoleType = chrome.automation.RoleType;
 
     const runTest = this.deferRunTest(WhenTestDone.EXPECT);
     chrome.automation.getDesktop(desktop => {
