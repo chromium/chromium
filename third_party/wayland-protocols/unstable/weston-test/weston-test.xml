@@ -63,13 +63,13 @@
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
     </request>
+    <request name="send_button">
       <description summary="sends a pointer button using the current location of the pointer">
         Sends a pointer button using the current location of the pointer. If
         the caller wants to send a pointer button event to a specific surface,
         they must first move the pointer using the "move_pointer" API to a
         desired location.
       </description>
-    <request name="send_button">
       <arg name="tv_sec_hi" type="uint"/>
       <arg name="tv_sec_lo" type="uint"/>
       <arg name="tv_nsec" type="uint"/>
@@ -88,18 +88,18 @@
       <arg name="axis" type="uint"/>
       <arg name="value" type="fixed"/>
     </request>
+    <request name="activate_surface">
       <description summary="activates the specified surface">
         Activates and raises the surface a client requested.
       </description>
-    <request name="activate_surface">
       <arg name="surface" type="object" interface="wl_surface" allow-null="true"/>
     </request>
+    <request name="send_key">
       <description summary="send a keyboard key">
         Sends a keyboard key to the currently active window. In order to send a
         key to a desired surface, the client must first call activate_surface
         before sending a key.
       </description>
-    <request name="send_key">
       <arg name="tv_sec_hi" type="uint"/>
       <arg name="tv_sec_lo" type="uint"/>
       <arg name="tv_nsec" type="uint"/>
@@ -112,11 +112,11 @@
     <request name="device_add">
       <arg name="device" type="string"/>
     </request>
+    <event name="pointer_position">
       <description summary="a callback event that is called upon move_pointer request">
         Signals that the event has been sent. The x and y are the same values
         sent via the move_pointer request.
       </description>
-    <event name="pointer_position">
       <arg name="x" type="fixed"/>
       <arg name="y" type="fixed"/>
     </event>
