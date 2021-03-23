@@ -125,15 +125,6 @@ Polymer({
     },
   },
 
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
-
-  /** @override */
-  created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
-  },
-
   /** @override */
   attached() {
     this.listen(this, 'keydown', 'onKeydown_');
@@ -156,7 +147,7 @@ Polymer({
   },
 
   /** @private */
-  setSubtitle_() {
+  async setSubtitle_() {
     const mojom = chromeos.networkConfig.mojom;
 
     if (this.item.hasOwnProperty('customItemSubtitle') &&
@@ -167,28 +158,35 @@ Polymer({
       return;
     }
 
-    if (!this.networkState) {
+    if (!this.isUpdatedCellularUiEnabled_) {
       return;
     }
 
-    if (this.networkState.type !== mojom.NetworkType.kCellular ||
-        !this.isUpdatedCellularUiEnabled_) {
+    // Show service provider subtext only when networkState is an eSIM cellular
+    // network.
+    if (!this.networkState ||
+        this.networkState.type !== mojom.NetworkType.kCellular ||
+        !this.networkState.typeState.cellular.eid ||
+        !this.networkState.typeState.cellular.iccid) {
       return;
     }
 
-    this.networkConfig_.getManagedProperties(this.networkState.guid)
-        .then(response => {
-          if (!response || !response.result ||
-              !response.result.typeProperties.cellular.eid) {
-            return;
-          }
-          const managedProperty = response.result;
+    const eSimProfileRemote = await cellular_setup.getESimProfile(
+        this.networkState.typeState.cellular.iccid);
+    if (!eSimProfileRemote) {
+      return;
+    }
 
-          if (managedProperty.typeProperties.cellular.homeProvider) {
-            this.subtitle_ =
-                managedProperty.typeProperties.cellular.homeProvider.name;
-          }
-        });
+    const propertiesResponse = await eSimProfileRemote.getProperties();
+    if (!propertiesResponse || !propertiesResponse.properties) {
+      return;
+    }
+
+    // Service provider from mojo API is a string16 value represented as an
+    // array of characters. Convert to string for display.
+    this.subtitle_ = propertiesResponse.properties.serviceProvider.data
+                         .map((charCode) => String.fromCharCode(charCode))
+                         .join('');
   },
 
   /** @private */

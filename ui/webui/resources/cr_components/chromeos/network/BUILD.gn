@@ -25,7 +25,6 @@ js_type_check("closure_compile") {
     ":network_icon",
     ":network_ip_config",
     ":network_list",
-    ":network_list_item",
     ":network_list_types",
     ":network_listener_behavior",
     ":network_nameservers",
