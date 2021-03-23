@@ -2064,6 +2064,17 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
     PropagateWritingModeAndDirectionToHTMLRoot();
 }
 
+void StyleEngine::RecalcStyle() {
+  Element& root_element = style_recalc_root_.RootElement();
+
+  auto style_recalc_context =
+      RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
+          ? StyleRecalcContext::FromAncestors(root_element)
+          : StyleRecalcContext();
+
+  RecalcStyle({}, style_recalc_context);
+}
+
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
   Node* current = &root;
   while (current) {
