@@ -143,10 +143,9 @@ void WaylandCursorFactory::ReloadThemeCursors() {
   if (!base::ThreadPoolInstance::Get())
     return;
 
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(LoadCursorTheme, name_, size_, scale_,
                      connection_->shm()->get()),
       base::BindOnce(&WaylandCursorFactory::OnThemeLoaded,

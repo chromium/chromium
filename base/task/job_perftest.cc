@@ -14,6 +14,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_job.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -158,11 +159,11 @@ RepeatingCallback<void(size_t)> BusyWaitCallback(TimeDelta delta) {
 // Posts |task_count| no-op tasks every |delay|.
 void DisruptivePostTasks(size_t task_count, TimeDelta delay) {
   for (size_t i = 0; i < task_count; ++i) {
-    PostTask(FROM_HERE, {ThreadPool(), TaskPriority::USER_BLOCKING},
-             DoNothing());
+    ThreadPool::PostTask(FROM_HERE, {TaskPriority::USER_BLOCKING}, DoNothing());
   }
-  PostDelayedTask(FROM_HERE, {ThreadPool(), TaskPriority::USER_BLOCKING},
-                  BindOnce(&DisruptivePostTasks, task_count, delay), delay);
+  ThreadPool::PostDelayedTask(FROM_HERE, {TaskPriority::USER_BLOCKING},
+                              BindOnce(&DisruptivePostTasks, task_count, delay),
+                              delay);
 }
 
 class JobPerfTest : public testing::Test {

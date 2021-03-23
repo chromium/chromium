@@ -306,7 +306,7 @@ bool ParkableImage::MaybePark() {
   // The writing is done on a background thread. We pass a TaskRunner from the
   // current thread for when we have finished writing.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&ParkableImage::WriteToDiskInBackground,
                           scoped_refptr<ParkableImage>(this),
                           Thread::Current()->GetTaskRunner()));

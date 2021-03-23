@@ -27,6 +27,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/task/task_observer.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -294,8 +295,8 @@ class ProcessCpuTimeTaskObserver
   }
 
   ProcessCpuTimeTaskObserver()
-      : task_runner_(base::CreateSequencedTaskRunner(
-            {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT,
              // TODO(eseckler): Consider hooking into process shutdown on
              // desktop to reduce metric data loss.
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
