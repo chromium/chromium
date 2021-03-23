@@ -8,6 +8,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
+import("//build/config/locales.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -431,6 +432,7 @@ component("base") {
   ]
 
   deps = [
+    ":locales_list",
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
@@ -1234,4 +1236,26 @@ fuzzer_test("file_info_fuzzer") {
     "//base",
     "//ui/base/clipboard:file_info",
   ]
+}
+
+# Same as locales, but includes "en" on Apple platforms.
+# Apple platforms use "en" instead of "en-US" (see the definition of
+# |locales_as_mac_outputs| in locales.gni). However, we still want to keep
+# "en-US" in the list as the |ResourceBundle::GetLocaleFilePath| implementations
+# in ui/base/resource/resource_bundle_{mac,ios}.mm return a valid path for
+# "en-US" (as they internally rewrite it as "en" instead).
+locales_for_platform_list = locales
+if (is_apple) {
+  locales_for_platform_list += [ "en" ]
+}
+
+action("locales_list_gen") {
+  script = "//tools/l10n/generate_locales_list.py"
+  outputs = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
+  args = rebase_path(outputs, root_build_dir) + locales_for_platform_list
+}
+
+source_set("locales_list") {
+  deps = [ ":locales_list_gen" ]
+  sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
 }

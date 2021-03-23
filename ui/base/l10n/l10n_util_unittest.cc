@@ -4,8 +4,10 @@
 
 #include <stddef.h>
 
+#include <cstring>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
@@ -583,7 +585,7 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   // Verify that base::TimeDurationFormat() works for all available locales:
   // http://crbug.com/707515
   base::TimeDelta kDelta = base::TimeDelta::FromMinutes(15 * 60 + 42);
-  for (const std::string& locale : l10n_util::GetAvailableLocales()) {
+  for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
     base::i18n::SetICUDefaultLocale(locale);
     base::string16 str;
     const bool result =
@@ -591,5 +593,52 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
     EXPECT_TRUE(result) << "Failed to format duration for " << locale;
     if (result)
       EXPECT_FALSE(str.empty()) << "Got empty string for " << locale;
+  }
+}
+
+TEST_F(L10nUtilTest, GetLocalesWithStrings) {
+  // Convert the vector to a set for easy lookup.
+  const base::flat_set<std::string> locales =
+      l10n_util::GetLocalesWithStrings();
+
+  // Common locales which should be available on all platforms.
+  EXPECT_TRUE(locales.contains("en") || locales.contains("en-US"));
+  EXPECT_TRUE(locales.contains("en-GB"));
+  EXPECT_TRUE(locales.contains("es") || locales.contains("es-ES"));
+  EXPECT_TRUE(locales.contains("fr") || locales.contains("fr-FR"));
+
+  // Locales that we should have valid fallbacks for.
+  EXPECT_TRUE(locales.contains("en-CA"));
+  EXPECT_TRUE(locales.contains("es-AR"));
+  EXPECT_TRUE(locales.contains("fr-CA"));
+
+  // Locales that should not be included:
+  // English (Germany). A valid locale and in ICU's list of locales, but not in
+  // our list of Accept-Language locales.
+  EXPECT_FALSE(locales.contains("en-DE"));
+  // Esperanto. Unlikely to be localised and historically included in
+  // GetAvailableICULocales.
+  EXPECT_FALSE(locales.contains("eo"));
+}
+
+TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
+  const char* const* locales = l10n_util::GetPlatformLocalesForTesting();
+  const size_t locales_size = l10n_util::GetPlatformLocalesSizeForTesting();
+
+  // Check adjacent pairs and ensure they are in sorted order without
+  // duplicates.
+
+  // All 0-length and 1-length lists are sorted.
+  if (locales_size <= 1) {
+    return;
+  }
+
+  const char* last_locale = locales[0];
+  for (size_t i = 1; i < locales_size; i++) {
+    const char* cur_locale = locales[i];
+    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
+        << "Incorrect ordering in kPlatformLocales: " << last_locale
+        << " >= " << cur_locale;
+    last_locale = cur_locale;
   }
 }

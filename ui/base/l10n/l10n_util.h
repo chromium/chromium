@@ -29,6 +29,15 @@ COMPONENT_EXPORT(UI_BASE) std::string GetLanguage(const std::string& locale);
 
 // This method translates a generic locale name to one of the locally defined
 // ones. This method returns true if it succeeds.
+// If |perform_io| is false, this will not perform any I/O but may return false
+// positives on Android and iOS. See the |kPlatformLocales| documentation in
+// l10n_util.cc for more information.
+COMPONENT_EXPORT(UI_BASE)
+bool CheckAndResolveLocale(const std::string& locale,
+                           std::string* resolved_locale,
+                           const bool perform_io);
+
+// Convenience wrapper for the above (with |perform_io| set to true).
 COMPONENT_EXPORT(UI_BASE)
 bool CheckAndResolveLocale(const std::string& locale,
                            std::string* resolved_locale);
@@ -217,9 +226,17 @@ COMPONENT_EXPORT(UI_BASE)
 void SortStrings16(const std::string& locale,
                    std::vector<base::string16>* strings);
 
-// Returns a vector of available locale codes. E.g., a vector containing
-// en-US, es, fr, fi, pt-PT, pt-BR, etc.
-COMPONENT_EXPORT(UI_BASE) const std::vector<std::string>& GetAvailableLocales();
+// Returns a vector of available locale codes from ICU. E.g., a vector
+// containing en-US, es, fr, fi, pt-PT, pt-BR, etc.
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<std::string>& GetAvailableICULocales();
+
+// Returns a vector of locale codes for which we have translation strings for,
+// including locales which have valid fallbacks.
+// E.g., a vector containing en-US, en-CA, en-GB, es, fr, pt-PT, pt-BR, etc.
+// This is a strict subset of the vector returned from GetAcceptLanguages.
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<std::string>& GetLocalesWithStrings();
 
 // Returns a vector of locale codes usable for accept-languages.
 COMPONENT_EXPORT(UI_BASE)
@@ -244,6 +261,10 @@ int GetLocalizedContentsWidthInPixels(int pixel_resource_id);
 COMPONENT_EXPORT(UI_BASE) const char* const* GetAcceptLanguageListForTesting();
 
 COMPONENT_EXPORT(UI_BASE) size_t GetAcceptLanguageListSizeForTesting();
+
+COMPONENT_EXPORT(UI_BASE) const char* const* GetPlatformLocalesForTesting();
+
+COMPONENT_EXPORT(UI_BASE) size_t GetPlatformLocalesSizeForTesting();
 
 }  // namespace l10n_util
 

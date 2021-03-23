@@ -403,7 +403,7 @@ std::string CurrentLocaleOrDefault() {
 
 void GetAllLocales(std::set<std::string>* all_locales) {
   const std::vector<std::string>& available_locales =
-      l10n_util::GetAvailableLocales();
+      l10n_util::GetAvailableICULocales();
   // Add all parents of the current locale to the available locales set.
   // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
   for (size_t i = 0; i < available_locales.size(); ++i) {
