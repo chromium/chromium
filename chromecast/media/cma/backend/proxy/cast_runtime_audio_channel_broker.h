@@ -122,6 +122,7 @@ class CastRuntimeAudioChannelBroker {
   virtual void StopAsync() = 0;
   virtual void PauseAsync() = 0;
   virtual void ResumeAsync(TimestampInfo timestamp_info) = 0;
+  virtual void UpdateTimestampAsync(TimestampInfo timestamp_info) = 0;
 };
 
 }  // namespace media

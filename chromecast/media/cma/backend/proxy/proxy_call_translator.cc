@@ -186,7 +186,7 @@ CastRuntimeAudioChannelBroker::Handler::PushBufferRequest ToGrpcTypes(
 }
 
 CastRuntimeAudioChannelBroker::TimestampInfo ToGrpcTypes(
-    const CmaProxyHandler::TargetBufferInfo& target_buffer) {
+    const BufferIdManager::TargetBufferInfo& target_buffer) {
   CastRuntimeAudioChannelBroker::TimestampInfo ts_info;
   ts_info.set_buffer_id(target_buffer.buffer_id);
   *ts_info.mutable_system_timestamp() =
@@ -231,8 +231,9 @@ void ProxyCallTranslator::Initialize(
   decoder_channel_->InitializeAsync(cast_session_id, ToGrpcTypes(decoder_mode));
 }
 
-void ProxyCallTranslator::Start(int64_t start_pts,
-                                const TargetBufferInfo& target_buffer) {
+void ProxyCallTranslator::Start(
+    int64_t start_pts,
+    const BufferIdManager::TargetBufferInfo& target_buffer) {
   decoder_channel_->StartAsync(start_pts, ToGrpcTypes(target_buffer));
 }
 
@@ -244,7 +245,8 @@ void ProxyCallTranslator::Pause() {
   decoder_channel_->PauseAsync();
 }
 
-void ProxyCallTranslator::Resume(const TargetBufferInfo& target_buffer) {
+void ProxyCallTranslator::Resume(
+    const BufferIdManager::TargetBufferInfo& target_buffer) {
   decoder_channel_->ResumeAsync(ToGrpcTypes(target_buffer));
 }
 
@@ -258,6 +260,11 @@ void ProxyCallTranslator::SetVolume(float multiplier) {
 
 bool ProxyCallTranslator::SetConfig(const AudioConfig& config) {
   return push_buffer_queue_.PushBuffer(ToGrpcTypes(config));
+}
+
+void ProxyCallTranslator::UpdateTimestamp(
+    const BufferIdManager::TargetBufferInfo& target_buffer) {
+  decoder_channel_->UpdateTimestampAsync(ToGrpcTypes(target_buffer));
 }
 
 bool ProxyCallTranslator::PushBuffer(scoped_refptr<DecoderBufferBase> buffer,

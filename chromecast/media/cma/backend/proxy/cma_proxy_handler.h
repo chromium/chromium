@@ -39,16 +39,6 @@ class CmaProxyHandler {
     kPaused = 3,
   };
 
-  // Timing information about a buffer to be targeted for playback changes.
-  struct TargetBufferInfo {
-    // The ID associated with the target buffer.
-    BufferIdManager::BufferId buffer_id;
-
-    // The timestamp at which the target buffer is expected to play in
-    // microseconds, as returned by MonotonicClock::Now().
-    int64_t timestamp_micros;
-  };
-
   // Observer for changes on the remote client.
   class Client {
    public:
@@ -78,13 +68,17 @@ class CmaProxyHandler {
   // any thread.
   virtual void Initialize(const std::string& cast_session_id,
                           AudioDecoderOperationMode decoder_mode) = 0;
-  virtual void Start(int64_t start_pts,
-                     const TargetBufferInfo& target_buffer) = 0;
+  virtual void Start(
+      int64_t start_pts,
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
   virtual void Stop() = 0;
   virtual void Pause() = 0;
-  virtual void Resume(const TargetBufferInfo& target_buffer) = 0;
+  virtual void Resume(
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void SetVolume(float multiplier) = 0;
+  virtual void UpdateTimestamp(
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
 
   // Push the provided data or config to a queue, for processing at a later
   // point when resources are available. Returns true if the data was

@@ -40,12 +40,15 @@ class ProxyCallTranslator : public CmaProxyHandler,
   void Initialize(
       const std::string& cast_session_id,
       CmaProxyHandler::AudioDecoderOperationMode decoder_mode) override;
-  void Start(int64_t start_pts, const TargetBufferInfo& target_buffer) override;
+  void Start(int64_t start_pts,
+             const BufferIdManager::TargetBufferInfo& target_buffer) override;
   void Stop() override;
   void Pause() override;
-  void Resume(const TargetBufferInfo& target_buffer) override;
+  void Resume(const BufferIdManager::TargetBufferInfo& target_buffer) override;
   void SetPlaybackRate(float rate) override;
   void SetVolume(float multiplier) override;
+  void UpdateTimestamp(
+      const BufferIdManager::TargetBufferInfo& target_buffer) override;
   bool SetConfig(const AudioConfig& config) override;
   bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
                   BufferIdManager::BufferId buffer_id) override;

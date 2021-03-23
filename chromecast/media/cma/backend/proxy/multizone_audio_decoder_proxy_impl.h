@@ -19,12 +19,12 @@ namespace media {
 
 struct AudioConfig;
 struct MediaPipelineDeviceParams;
-class MonotonicClock;
 
 // This class is used to proxy audio data to an external
 // CmaBackend::AudioDecoder over gRPC.
 class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
-                                       public CmaProxyHandler::Client {
+                                       public CmaProxyHandler::Client,
+                                       public BufferIdManager::Client {
  public:
   // Creates a new MultizoneAudioDecoderProxy, such that in the event of an
   // unrecoverable error, |fatal_error_callback| will be called. Fallowing this
@@ -35,6 +35,7 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   MultizoneAudioDecoderProxyImpl(
       const MediaPipelineDeviceParams& params,
       std::unique_ptr<AudioDecoderPipelineNode> downstream_decoder);
+
   ~MultizoneAudioDecoderProxyImpl() override;
 
   // MultizoneAudioDecoderProxy implementation:
@@ -49,23 +50,24 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   void Stop() override;
   void Pause() override;
   void Resume() override;
-  int64_t GetCurrentPts() const override;
   void SetPlaybackRate(float rate) override;
   void LogicalPause() override;
   void LogicalResume() override;
+  int64_t GetCurrentPts() const override;
+  bool SetConfig(const AudioConfig& config) override;
   CmaBackend::Decoder::BufferStatus PushBuffer(
       scoped_refptr<DecoderBufferBase> buffer) override;
-  bool SetConfig(const AudioConfig& config) override;
   void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
 
  private:
-  // Helper for creating TargetBufferInfo types.
-  CmaProxyHandler::TargetBufferInfo CreateTargetBufferInfo();
-
   // CmaProxyHandler::Client overrides:
   void OnError() override;
   void OnPipelineStateChange(CmaProxyHandler::PipelineState state) override;
   void OnBytesDecoded(int64_t decoded_byte_count) override;
+
+  // BufferIdManager::Client overrides:
+  void OnTimestampUpdateNeeded(
+      BufferIdManager::TargetBufferInfo buffer) override;
 
   // The PTS offset as determined by the receiver of the gRPC endpoint wrapped
   // by this class. This value is updated as new PTS values are received over
@@ -83,9 +85,6 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   // public method calls should call into this instance to proxy the call to
   // the remote backend.
   std::unique_ptr<CmaProxyHandler> proxy_handler_;
-
-  // Clock used for timing information.
-  std::unique_ptr<MonotonicClock> clock_;
 
   BufferIdManager buffer_id_manager_;
 };

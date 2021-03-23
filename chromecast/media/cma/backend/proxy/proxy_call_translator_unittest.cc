@@ -59,6 +59,8 @@ class MockDecoderChannel : public CastRuntimeAudioChannelBroker {
   MOCK_METHOD0(StopAsync, void());
   MOCK_METHOD0(PauseAsync, void());
   MOCK_METHOD1(ResumeAsync, void(CastRuntimeAudioChannelBroker::TimestampInfo));
+  MOCK_METHOD1(UpdateTimestampAsync,
+               void(CastRuntimeAudioChannelBroker::TimestampInfo));
 };
 
 }  // namespace
@@ -123,12 +125,13 @@ TEST_F(ProxyCallTranslatorTest, TestExternalInitialize) {
 
 TEST_F(ProxyCallTranslatorTest, TestExternalStart) {
   constexpr int64_t start_pts = 42;
-  ProxyCallTranslator::TargetBufferInfo target_buffer_info;
+  BufferIdManager::TargetBufferInfo target_buffer_info;
   static constexpr int64_t timestamp = 112358;
   static constexpr BufferIdManager::BufferId buffer_id = 12481516;
   target_buffer_info.buffer_id = buffer_id;
   target_buffer_info.timestamp_micros = timestamp;
 
+  // TODO(rwkeane): Validate the duration in the StartAsync call.
   EXPECT_CALL(*decoder_channel_, StartAsync(start_pts, testing::_))
       .WillOnce(
           testing::WithArgs<1>(CompareTimestampInfos(buffer_id, timestamp)));
@@ -146,16 +149,30 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPause) {
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalResume) {
-  ProxyCallTranslator::TargetBufferInfo target_buffer_info;
+  BufferIdManager::TargetBufferInfo target_buffer_info;
   static constexpr int64_t timestamp = 112358;
   static constexpr BufferIdManager::BufferId buffer_id = 12481516;
   target_buffer_info.buffer_id = buffer_id;
   target_buffer_info.timestamp_micros = timestamp;
 
+  // TODO(rwkeane): Validate the duration in the ResumeAsync call.
   EXPECT_CALL(*decoder_channel_, ResumeAsync(testing::_))
       .WillOnce(
           testing::WithArgs<0>(CompareTimestampInfos(buffer_id, timestamp)));
   translator_.Resume(target_buffer_info);
+}
+
+TEST_F(ProxyCallTranslatorTest, TestExternalUpdateTimestamp) {
+  BufferIdManager::TargetBufferInfo target_buffer_info;
+  static constexpr int timestamp = 112358;
+  static constexpr int buffer_id = 12481516;
+  target_buffer_info.buffer_id = buffer_id;
+  target_buffer_info.timestamp_micros = timestamp;
+
+  EXPECT_CALL(*decoder_channel_, UpdateTimestampAsync(testing::_))
+      .WillOnce(
+          testing::WithArgs<0>(CompareTimestampInfos(buffer_id, timestamp)));
+  translator_.UpdateTimestamp(target_buffer_info);
 }
 
 TEST_F(ProxyCallTranslatorTest, TestExternalSetPlaybackRate) {
