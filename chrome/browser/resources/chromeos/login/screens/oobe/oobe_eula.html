@@ -2,6 +2,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
@@ -9,7 +11,6 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
@@ -83,9 +84,7 @@
     <oobe-adaptive-dialog id="eulaLoadingDialog" for-step="loading"
         role="dialog"
         aria-label$="[[i18nDynamic(locale, 'termsOfServiceLoading')]]">
-      <hd-iron-icon slot="icon"
-        icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'termsOfServiceLoading')]]
       </h1>
@@ -95,9 +94,7 @@
     <oobe-adaptive-dialog id="eulaDialog" for-step="eula" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'oobeEulaSectionTitle')]]"
         aria-describedby="crosEulaFrame" no-lazy>
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oobeEulaSectionTitle')]]
       </h1>
@@ -147,9 +144,7 @@
     <oobe-adaptive-dialog id="securitySettingsDialog" role="dialog"
       for-step="security"
       aria-label$="[[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'eulaSystemSecuritySettings')]]
       </h1>

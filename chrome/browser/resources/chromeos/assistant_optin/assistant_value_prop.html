@@ -2,10 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
@@ -16,10 +18,9 @@
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_value_prop.css">
     <oobe-adaptive-dialog id="value-prop-dialog" role="dialog">
-      <hd-iron-icon slot="icon"
-          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+      <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-      </hd-iron-icon>
+      </iron-icon>
       <h1 slot="title" id="title-text"></h1>
       <div slot="subtitle" id="animation-container-horizontal-mode"
           class="animation-container">

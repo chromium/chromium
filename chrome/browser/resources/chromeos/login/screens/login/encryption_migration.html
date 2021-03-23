@@ -2,11 +2,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://oobe/custom_elements.html">
 
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
@@ -45,9 +47,7 @@
     <oobe-adaptive-dialog for-step="initial"></oobe-adaptive-dialog>
     <oobe-adaptive-dialog id="ready-dialog" role="dialog" for-step="ready"
         aria-label$="[[i18nDynamic(locale, 'migrationReadyTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'migrationReadyTitle')]]
       </h1>
@@ -89,9 +89,7 @@
     <oobe-adaptive-dialog id="migrating-dialog" role="dialog"
         for-step="migrating"
         aria-label$="[[i18nDynamic(locale, 'migrationMigratingTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'migrationMigratingTitle')]]
       </h1>
@@ -113,9 +111,7 @@
     <oobe-adaptive-dialog id="error-dialog" role="dialog"
         for-step="migration-failed"
         aria-label$="[[i18nDynamic(locale, 'migrationFailedTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'migrationFailedTitle')]]
       </h1>
@@ -138,9 +134,7 @@
     <oobe-adaptive-dialog id="insufficient-space-dialog" role="dialog"
         for-step="not-enough-space"
         aria-label$="[[i18nDynamic(locale, 'migrationReadyTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'migrationReadyTitle')]]
       </h1>

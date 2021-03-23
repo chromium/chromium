@@ -2,10 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
@@ -19,9 +21,7 @@
     <oobe-adaptive-dialog id="enableAdbSideloadDialog" role="dialog"
         for-step="setup" footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]
       </h1>
@@ -53,9 +53,7 @@
     <oobe-adaptive-dialog id="enableAdbSideloadErrorDialog" role="dialog"
         for-step="error" footer-shrinkable
         aria-label$="[[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableAdbSideloadingErrorTitle')]]
       </h1>

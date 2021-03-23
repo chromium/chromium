@@ -2,13 +2,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
@@ -41,9 +42,7 @@
     <oobe-adaptive-dialog id="resetDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'resetScreenAccessibleTitle')]]"
         footer-shrinkable>
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'resetWarningTitle')]]
       </h1>

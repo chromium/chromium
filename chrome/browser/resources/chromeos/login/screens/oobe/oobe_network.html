@@ -1,9 +1,10 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
@@ -19,10 +20,8 @@
     <oobe-adaptive-dialog id="networkDialog" role="dialog"
         on-show-dialog="onShown_"
         aria-label$="[[i18nDynamic(locale, 'networkSectionTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-network-32:dialog-icon-wifi"
-          icon2x="oobe-network-64:dialog-icon-wifi">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:wifi">
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'networkSectionTitle')]]
       </h1>

@@ -2,6 +2,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
@@ -77,9 +79,7 @@
     <oobe-adaptive-dialog id="arcTosErrorDialog" for-step="error"
         role="dialog"
         aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'arcTermsOfServiceErrorTitle')]]
       </h1>

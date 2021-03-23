@@ -2,11 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
@@ -20,10 +21,9 @@
     <oobe-adaptive-dialog id="voiceMatchIntroDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]"
         hide-shadow for-step="intro">
-      <hd-iron-icon slot="icon"
-          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+      <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-      </hd-iron-icon>
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
       </h1>
@@ -51,10 +51,9 @@
     <oobe-adaptive-dialog id="voiceMatchRecordingDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]"
         hide-shadow for-step="recording, completed">
-      <hd-iron-icon slot="icon"
-          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+      <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-      </hd-iron-icon>
+      </iron-icon>
       <h1 slot="title" for-step="recording">
         [[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]
       </h1>
@@ -104,10 +103,9 @@
         aria-label$=
             "[[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]"
         hide-shadow for-step="already-setup">
-      <hd-iron-icon slot="icon"
-          icon1x="assistant-32:assistant" icon2x="assistant-64:assistant"
+      <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-      </hd-iron-icon>
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
       </h1>

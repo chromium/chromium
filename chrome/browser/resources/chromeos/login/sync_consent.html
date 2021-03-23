@@ -2,6 +2,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <if expr="_google_chrome">
@@ -27,9 +29,7 @@
     <oobe-adaptive-dialog id="syncConsentOverviewDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
         for-step="no-split">
-      <hd-iron-icon slot="icon" icon1x="sync-consent-32:googleg"
-                                icon2x="sync-consent-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="sync-consent-32:googleg"></iron-icon>
       <h1 slot="title" consent-description>
         [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
       </h1>
@@ -48,9 +48,9 @@
           </div>
         </div>
         <div class="overview-list-item flex layout horizontal center">
-          <hd-iron-icon class="overview-list-item-icon" icon1x="sync-consent-32:googleg"
-            icon2x="sync-consent-64:googleg">
-          </hd-iron-icon>
+          <iron-icon icon="sync-consent-32:googleg"
+              class="overview-list-item-icon">
+          </iron-icon>
           <div class="flex layout vertical center-justified">
             <div role="heading" aria-level="2" class="overview-list-item-title" consent-description>
               [[i18nDynamic(locale,
@@ -87,9 +87,7 @@
     <oobe-adaptive-dialog id="splitSettingsSyncConsentDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'syncConsentScreenTitle')]]"
         for-step="split">
-      <hd-iron-icon slot="icon" icon1x="sync-consent-32:googleg"
-                                icon2x="sync-consent-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title" consent-description>
         [[i18nDynamic(locale, 'syncConsentScreenTitle')]]
       </h1>
@@ -129,9 +127,9 @@
 
         <!-- Personalize Google services -->
         <div class="overview-list-item layout horizontal center">
-          <hd-iron-icon class="overview-list-item-icon" icon1x="sync-consent-32:googleg"
-            icon2x="sync-consent-64:googleg">
-          </hd-iron-icon>
+          <iron-icon icon="sync-consent-32:googleg"
+              class="overview-list-item-icon">
+          </iron-icon>
           <div class="flex layout vertical center-justified">
             <div role="heading" aria-level="2" class="overview-list-item-title" consent-description>
               [[i18nDynamic(locale,

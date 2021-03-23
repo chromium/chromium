@@ -2,8 +2,11 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
@@ -13,9 +16,7 @@
   <template>
     <style include="oobe-dialog-host"></style>
     <oobe-adaptive-dialog role="dialog">
-      <hd-iron-icon slot="icon" class="warning"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'wrongHWIDScreenHeader')]]
       </h1>

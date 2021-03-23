@@ -1,9 +1,10 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
@@ -31,16 +32,6 @@
   </svg>
 </iron-iconset-svg>
 
-<iron-iconset-svg name="oobe-hid-detection-32" size="32">
-  <svg>
-    <defs>
-      <g id="connect-devices">
-        <path fill="#fff" d="M0 0h32v32H0z"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M3 0h24c1.65 0 3 1.35 3 3v7.418a9.898 9.898 0 00-3-1.313V3H3v15h12.016v3H3c-1.65 0-3-1.35-3-3L.015 3C.015 1.35 1.35 0 3 0zm12.902 13.5a7.384 7.384 0 00-.87 3H9v-3h6.902zM21 9.332a9.636 9.636 0 00-3 1.648V9h3v.332zM13.5 4.5h3v3h-3v-3zm3 4.5h-3v3h3V9zM9 4.5h3v3H9v-3zM12 9H9v3h3V9zM4.5 9h3v3h-3V9zm3-4.5h-3v3h3v-3zm10.5 0h3v3h-3v-3zm4.5 0h3v3h-3v-3z" fill="#1A73E8"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M24.5 11c-4.146 0-7.5 3.13-7.5 7v6c0 3.87 3.354 7 7.5 7s7.5-3.13 7.5-7v-6c0-3.87-3.354-7-7.5-7zm5 6.875v.625h-3.75v-5c2.5 0 3.75 2.5 3.75 4.375zM23.25 13.5v5H19.5V18c0-2 1.25-4.5 3.75-4.5zm1.25 15c-2.957 0-5-1.74-5-4.5v-3h10v3c0 2.76-2.043 4.5-5 4.5z" fill="#1A73E8"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
 <iron-iconset-svg name="oobe-hid-detection-40" size="40">
   <svg>
     <defs>
@@ -58,17 +49,6 @@
         </path>
         <path d="M0 0h40v40H0V0zm0 0h40v40H0V0z" fill="#D8D8D8">
         </path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
-<iron-iconset-svg name="oobe-hid-detection-64" size="64">
-  <svg>
-    <defs>
-      <g id="connect-devices">
-        <g clip-path="url(#clip0)">
-          <path fill="#fff" d="M.5 0h64v64H.5z"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.5 0h48c3.3 0 6 2.7 6 6v14.837a19.795 19.795 0 00-6-2.626V6h-48v30h24.031v6H6.5c-3.3 0-6-2.7-6-6L.53 6c0-3.3 2.67-6 5.97-6zm25.803 27a14.77 14.77 0 00-1.738 6H18.5v-6h13.803zM42.5 18.664a19.271 19.271 0 00-6 3.296V18h6v.664zM27.5 9h6v6h-6V9zm6 9h-6v6h6v-6zm-15-9h6v6h-6V9zm6 9h-6v6h6v-6zm-15 0h6v6h-6v-6zm6-9h-6v6h6V9zm21 0h6v6h-6V9zm9 0h6v6h-6V9z" fill="#1A73E8"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M49.5 22c-8.293 0-15 6.26-15 14v12c0 7.74 6.707 14 15 14s15-6.26 15-14V36c0-7.74-6.707-14-15-14zm10 13.75V37H52V27c5 0 7.5 5 7.5 8.75zM47 27v10h-7.5v-1c0-4 2.5-9 7.5-9zm2.5 30c-5.914 0-10-3.48-10-9v-6h20v6c0 5.52-4.086 9-10 9z" fill="#1A73E8"></path></g><defs><clipPath id="clip0"><path fill="#fff" transform="translate(.5)" d="M0 0h64v64H0z"></path></clipPath></defs>
       </g>
     </defs>
   </svg>
@@ -123,10 +103,8 @@
       }
     </style>
     <oobe-adaptive-dialog>
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-hid-detection-32:connect-devices"
-          icon2x="oobe-hid-detection-64:connect-devices">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:connect-devices">
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'hidDetectionInvitation')]]
       </h1>
@@ -138,10 +116,9 @@
             class="layout vertical justified hid-selection-entry"
             hidden="[[!touchscreenDetected_]]">
           <div id="hid-touchscreen-row" class="flex layout horizontal center">
-            <hd-iron-icon id="touchscreen-icon" alt=""
-                icon1x="oobe-hid-detection-20:touchscreen"
-                icon2x="oobe-hid-detection-40:touchscreen">
-            </hd-iron-icon>
+            <iron-icon id="touchscreen-icon" alt=""
+                icon="oobe-hid-detection-20:touchscreen">
+            </iron-icon>
             <img id="touchscreen-tick" alt=""
                 src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
             <div id="touchscreen-label" aria-live="polite">
@@ -151,10 +128,9 @@
         </div>
         <div class="layout vertical hid-selection-entry">
           <div id="hid-mouse-row" class="flex layout horizontal center">
-            <hd-iron-icon id="mouse-icon" alt=""
-                icon1x="oobe-hid-detection-20:mouse"
-                icon2x="oobe-hid-detection-40:mouse">
-            </hd-iron-icon>
+            <iron-icon id="mouse-icon" alt=""
+                icon="oobe-hid-detection-20:mouse">
+            </iron-icon>
             <img id="mouse-tick" alt=""
                 hidden="[[!tickIsVisible_(mouseState_)]]"
                 src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
@@ -169,10 +145,9 @@
         <div class="layout vertical hid-selection-entry">
           <div id="hid-keyboard-row" class="flex layout horizontal center"
               on-click="openPinDialog_">
-            <hd-iron-icon id="keyboard-icon" alt=""
-                icon1x="oobe-hid-detection-20:keyboard"
-                icon2x="oobe-hid-detection-40:keyboard">
-            </hd-iron-icon>
+            <iron-icon id="keyboard-icon" alt=""
+                icon="oobe-hid-detection-20:keyboard">
+            </iron-icon>
             <img id="keyboard-tick" alt=""
                 hidden="[[!tickIsVisible_(keyboardState_)]]"
                 src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">

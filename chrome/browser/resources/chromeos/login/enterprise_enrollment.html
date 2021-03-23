@@ -2,13 +2,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
@@ -63,9 +64,7 @@
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
     <oobe-adaptive-dialog id="step-working" for-step="working">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
       </h1>
@@ -100,9 +99,7 @@
     -->
     <oobe-adaptive-dialog id="step-error" role="alert"
         for-step="error, attribute-prompt-error, active-directory-join-error">
-      <hd-iron-icon slot="icon"
-                    icon1x="oobe-32:warning"
-                    icon2x="oobe-64:warning"></hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
       <div slot="content"
@@ -160,9 +157,7 @@
     <!-- SUCCESS DIALOG -->
     <oobe-adaptive-dialog id="step-success" for-step="success" role="alert"
         footer-shrinkable>
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
       </h1>
@@ -197,9 +192,7 @@
     <!-- ATTRIBUTE PROMPT DIALOG -->
     <oobe-adaptive-dialog id="step-attribute-prompt"
         for-step="attribute-prompt">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
       </h1>

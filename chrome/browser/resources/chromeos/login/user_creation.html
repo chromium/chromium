@@ -2,10 +2,12 @@
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
@@ -148,9 +150,7 @@ found in the LICENSE file. -->
     </style>
     <oobe-adaptive-dialog id="userCreationDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, titleKey_)]]" for-step="create">
-      <hd-iron-icon icon1x="oobe-32:googleg" icon2x="oobe-64:googleg"
-        slot="icon">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, titleKey_)]]
       </h1>
@@ -205,9 +205,7 @@ found in the LICENSE file. -->
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog id="childSignInDialog" role="dialog" for-step="child"
         aria-label$="[[i18nDynamic(locale, 'childSignInTitle')]]">
-      <hd-iron-icon icon1x="oobe-32:family" icon2x="oobe-64:family"
-        slot="icon">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:family"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'childSignInTitle')]]
       </h1>

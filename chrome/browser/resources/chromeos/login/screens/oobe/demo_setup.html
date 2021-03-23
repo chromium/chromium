@@ -1,5 +1,8 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/progress_list_item.html">
@@ -13,9 +16,7 @@
     <oobe-adaptive-dialog id="demoSetupProgressDialog" role="dialog"
       aria-label$="[[i18nDynamic(locale, 'demoSetupProgressScreenTitle')]]"
       for-step="progress">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:computer" icon2x="oobe-64:computer">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:computer"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoSetupProgressScreenTitle')]]
       </h1>
@@ -42,9 +43,7 @@
     <oobe-adaptive-dialog id="demoSetupErrorDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]"
         for-step="error">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:warning" icon2x="oobe-64:warning">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoSetupErrorScreenTitle')]]
       </h1>

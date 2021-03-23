@@ -2,10 +2,12 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
@@ -26,8 +28,7 @@
         for-step="remove-protection"
         aria-label$="[[i18nDynamic(locale,
                      'enableDebuggingScreenAccessibleTitle')]]">
-      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
       </h1>
@@ -52,8 +53,7 @@
     <oobe-adaptive-dialog id="setupDialog" for-step="setup" role="dialog"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
       </h1>
@@ -96,8 +96,7 @@
     <oobe-adaptive-dialog id="doneDialog" role="dialog" for-step="done"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
       </h1>
@@ -118,8 +117,7 @@
     <oobe-adaptive-dialog id="errorDialog" role="dialog" for-step="error"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <hd-iron-icon slot="icon" icon1x="oobe-32:warning"
-          icon2x="oobe-64:warning"></hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'enableDebuggingErrorTitle')]]
       </h1>

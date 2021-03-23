@@ -2,12 +2,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_carousel.html">
 <link rel="import" href="/components/oobe_slide.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
@@ -52,9 +53,7 @@
     <oobe-adaptive-dialog for-step="cellular" tabindex="0"
         aria-live="polite" footer-shrinkable
         id="cellular-permission-dialog">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
                         'productName')]]
@@ -78,9 +77,7 @@
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog footer-shrinkable id="checking-for-updates-dialog"
         for-step="checking" aria-live="polite">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'checkingForUpdates')]]
       </h1>
@@ -94,9 +91,7 @@
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog footer-shrinkable id="update-in-progress-dialog"
         for-step="update" aria-live="polite">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'updateStatusTitle')]]
       </h1>
@@ -179,9 +174,7 @@
     </oobe-loading-dialog>
     <oobe-adaptive-dialog footer-shrinkable id="better-update-complete-dialog"
         for-step="reboot" aria-live="polite">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'updateCompeletedMsg')]]
       </h1>

@@ -3,12 +3,13 @@
      found in the LICENSE file. -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
@@ -108,9 +109,7 @@
     </style>
     <oobe-adaptive-dialog id="unlockStep" for-step="unlock" role="dialog"
         aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
-      <hd-iron-icon slot="icon"
-          icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'adUnlockTitle')]]
       </h1>
@@ -135,9 +134,9 @@
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog id="credsStep" for-step="creds" role="dialog"
         aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
-      <hd-iron-icon slot="icon" hidden="[[!isDomainJoin]]"
-          icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:enterprise"
+          hidden="[[!isDomainJoin]]">
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, adWelcomeMessageKey)]]
       </h1>

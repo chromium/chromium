@@ -2,36 +2,17 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
-
-<iron-iconset-svg name="marketing-opt-in-32" size="32">
-    <svg>
-        <defs>
-          <g id="accessibility" fill-rule="evenodd">
-            <path d="M16 2.667c1.467 0 2.667 1.184 2.667 2.633 0 1.448-1.2 2.632-2.667 2.632-1.467 0-2.667-1.184-2.667-2.632 0-1.45 1.2-2.633 2.667-2.633zm4 9.215v16.785h-3v-7.9h-2v7.9h-3V11.882H4V8.92h24v2.962h-8z"></path>
-          </g>
-        </defs>
-      </svg>
-</iron-iconset-svg>
-
-<iron-iconset-svg name="marketing-opt-in-64" size="64">
-    <svg>
-        <defs>
-          <g id="accessibility" fill-rule="evenodd">
-            <path d="M32 5.333c2.933 0 5.333 2.415 5.333 5.367 0 2.95-2.4 5.366-5.333 5.366-2.933 0-5.333-2.415-5.333-5.366 0-2.952 2.4-5.367 5.333-5.367zM40 24v35h-5V43h-6v16.006h-5V24H8v-4.915h48V24H40z"></path>
-          </g>
-        </defs>
-      </svg>
-</iron-iconset-svg>
 
 <dom-module id="marketing-opt-in-element">
   <template>
@@ -58,12 +39,12 @@
         hidden="[[isAccessibilitySettingsShown_]]"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
-      <hd-iron-icon slot="icon" hidden="[[newLayoutEnabled_]]"
-          icon1x="oobe-32:checkmark" icon2x="oobe-32:checkmark">
-      </hd-iron-icon>
-      <hd-iron-icon slot="icon" hidden="[[!newLayoutEnabled_]]"
-           icon1x="oobe-32:checkmarkv2" icon2x="oobe-32:checkmarkv2">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:checkmark"
+                 hidden="[[newLayoutEnabled_]]">
+      </iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:checkmarkv2"
+                 hidden="[[!newLayoutEnabled_]]">
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
       </h1>
@@ -97,8 +78,7 @@
         <div class="marketing-option layout horizontal center"
             hidden="[[!marketingOptInVisible_]]"
             id="marketing-opt-in-toggle">
-          <hd-iron-icon icon1x="oobe-32:chromebook" icon2x="oobe-64:chromebook">
-          </hd-iron-icon>
+          <iron-icon icon="oobe-32:chromebook"></iron-icon>
           <div id="chromebookUpdatesOptionLabel" class="flex" aria-hidden="true">
             [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
           </div>
@@ -139,8 +119,8 @@
           hidden="[[!isA11ySettingsButtonVisible_]]"
           id="marketing-opt-in-accessibility-button"
           on-click="onToggleAccessibilityPage_"
-          icon1x="marketing-opt-in-32:accessibility"
-          icon2x="marketing-opt-in-64:accessibility"
+          icon1x="oobe-32:accessibility"
+          icon2x="oobe-32:accessibility"
           text-key="marketingOptInA11yButtonLabel">
       </oobe-welcome-secondary-button>
       <oobe-text-button slot="bottom-buttons"
@@ -153,10 +133,8 @@
     <oobe-adaptive-dialog id="finalAccessibilityPage" role="dialog"
         hidden="[[!isAccessibilitySettingsShown_]]"
         aria-label$="[[i18nDynamic(locale, 'finalA11yPageTitle')]]">
-      <hd-iron-icon slot="icon"
-          icon1x="marketing-opt-in-32:accessibility"
-          icon2x="marketing-opt-in-64:accessibility">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:accessibility">
+      </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'finalA11yPageTitle')]]
       </h1>

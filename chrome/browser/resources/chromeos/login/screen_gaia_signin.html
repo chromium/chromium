@@ -2,11 +2,13 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_loading_dialog.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
@@ -60,9 +62,7 @@
     </security-token-pin>
     <oobe-adaptive-dialog id="saml-interstitial" role="dialog" has-buttons
         for-step="saml-interstitial">
-      <hd-iron-icon slot="icon" icon1x="oobe-32:googleg"
-          icon2x="oobe-64:googleg">
-      </hd-iron-icon>
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'loginWelcomeMessage')]]
       </h1>

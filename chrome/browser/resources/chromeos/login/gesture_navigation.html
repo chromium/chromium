@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
@@ -28,10 +29,10 @@
       }
 
       .gesture-list-item-icon {
+        --iron-icon-height: 24px;
+        --iron-icon-width: 24px;
         align-self: flex-start;
-        height: 24px;
         margin: auto;
-        width: 24px;
       }
 
       .gesture-list-item-text {
@@ -43,26 +44,30 @@
     <oobe-adaptive-dialog id="gestureIntro" for-step="gestureIntro"
         role="dialog"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]">
-      <img slot="icon" src="images/gestures.svg" width="32" height="32">
+      <iron-icon slot="icon" icon="oobe-32:gestures"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'gestureNavigationIntroTitle')]]
       </h1>
       <div slot="content" class="landscape-header-aligned
           portrait-horizontal-centered">
         <div class="gesture-list-item">
-          <img class="gesture-list-item-icon" src="images/home.svg">
+          <iron-icon class="gesture-list-item-icon" icon="oobe-32:gesture-home">
+          </iron-icon>
           <div class="gesture-list-item-text">
             [[i18nDynamic(locale, 'gestureNavigationIntroGoHomeItem')]]
           </div>
         </div>
         <div class="gesture-list-item">
-          <img class="gesture-list-item-icon" src="images/overview.svg">
+          <iron-icon class="gesture-list-item-icon"
+              icon="oobe-32:gesture-overview">
+          </iron-icon>
           <div class="gesture-list-item-text">
             [[i18nDynamic(locale, 'gestureNavigationIntroSwitchAppItem')]]
           </div>
         </div>
         <div class="gesture-list-item">
-          <img class="gesture-list-item-icon" src="images/back.svg">
+          <iron-icon class="gesture-list-item-icon" icon="oobe-32:gesture-back">
+          </iron-icon>
           <div class="gesture-list-item-text">
               [[i18nDynamic(locale, 'gestureNavigationIntroGoBackItem')]]
           </div>
@@ -78,7 +83,7 @@
 
     <oobe-adaptive-dialog id="gestureHome" for-step="gestureHome" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationHomeTitle')]]">
-      <img slot="icon" src="images/home.svg" width="32" height="32">
+      <iron-icon slot="icon" icon="oobe-32:gesture-home"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'gestureNavigationHomeTitle')]]
       </h1>
@@ -105,7 +110,7 @@
     <oobe-adaptive-dialog id="gestureOverview" for-step="gestureOverview"
         role="dialog"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationOverviewTitle')]]">
-      <img slot="icon" src="images/overview.svg" width="32" height="32">
+      <iron-icon slot="icon" icon="oobe-32:gesture-overview"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'gestureNavigationOverviewTitle')]]
       </h1>
@@ -131,7 +136,7 @@
 
     <oobe-adaptive-dialog id="gestureBack" for-step="gestureBack" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'gestureNavigationBackTitle')]]">
-      <img slot="icon" src="images/back.svg" width="32" height="32">
+      <iron-icon slot="icon" icon="oobe-32:gesture-back"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'gestureNavigationBackTitle')]]
       </h1>
