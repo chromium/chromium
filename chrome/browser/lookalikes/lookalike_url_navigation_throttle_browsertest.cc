@@ -1639,6 +1639,7 @@ class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
                               const char* target_hostname,
                               const std::string& target_manifest,
                               const char* expected_suggested_hostname,
+                              bool is_target_embedding,
                               SlowLoad slow_load = SlowLoad::kNone) {
     const GURL kNavigatedUrl = MakeURL(lookalike_hostname);
     const std::vector<TestSite> sites{
@@ -1646,18 +1647,19 @@ class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
          slow_load == SlowLoad::kLookalike},
         {target_hostname, target_manifest, slow_load == SlowLoad::kTarget},
     };
+    NavigationSuggestionEvent expected_event =
+        is_target_embedding ? NavigationSuggestionEvent::kMatchTargetEmbedding
+                            : NavigationSuggestionEvent::kMatchSkeletonTop500;
     SetUpManifests(sites);
     TestMetricsRecordedAndInterstitialShown(
         browser(), histograms, kNavigatedUrl,
-        MakeURL(expected_suggested_hostname),
-        NavigationSuggestionEvent::kMatchSkeletonTop500);
+        MakeURL(expected_suggested_hostname), expected_event);
     CheckUkm({kNavigatedUrl}, "MatchType",
-             LookalikeUrlMatchType::kSkeletonMatchTop500);
+             is_target_embedding ? LookalikeUrlMatchType::kTargetEmbedding
+                                 : LookalikeUrlMatchType::kSkeletonMatchTop500);
     // Ensure that there was indeed a lookalike match.
     histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
-    histograms.ExpectBucketCount(
-        lookalikes::kHistogramName,
-        NavigationSuggestionEvent::kMatchSkeletonTop500, 1);
+    histograms.ExpectBucketCount(lookalikes::kHistogramName, expected_event, 1);
   }
 
   // Sets up the site |lookalike_hostname| to serve a manifest with contents
@@ -1768,7 +1770,8 @@ IN_PROC_BROWSER_TEST_P(
   base::HistogramTester histograms;
   TestExpectInterstitial(histograms, "googlé.com", std::string(), "google.com",
                          std::string(),
-                         /*expected_suggested_hostname=*/"google.com");
+                         /*expected_suggested_hostname=*/"google.com",
+                         /*is_target_embedding=*/false);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1826,10 +1829,11 @@ IN_PROC_BROWSER_TEST_P(
     ValidAssetLinks_LookalikeTimeout_ShowInterstitial) {
   base::HistogramTester histograms;
 
-  TestExpectInterstitial(
-      histograms, "googlé.com", MakeManifestWithTarget("google.com"),
-      "google.com", MakeManifestWithTarget("googlé.com"),
-      /*expected_suggested_hostname=*/"google.com", SlowLoad::kLookalike);
+  TestExpectInterstitial(histograms, "googlé.com",
+                         MakeManifestWithTarget("google.com"), "google.com",
+                         MakeManifestWithTarget("googlé.com"),
+                         /*expected_suggested_hostname=*/"google.com",
+                         /*is_target_embedding=*/false, SlowLoad::kLookalike);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1848,10 +1852,11 @@ IN_PROC_BROWSER_TEST_P(
     ValidAssetLinks_TargetTimeout_ShowInterstitial) {
   base::HistogramTester histograms;
 
-  TestExpectInterstitial(
-      histograms, "googlé.com", MakeManifestWithTarget("google.com"),
-      "google.com", MakeManifestWithTarget("googlé.com"),
-      /*expected_suggested_hostname=*/"google.com", SlowLoad::kTarget);
+  TestExpectInterstitial(histograms, "googlé.com",
+                         MakeManifestWithTarget("google.com"), "google.com",
+                         MakeManifestWithTarget("googlé.com"),
+                         /*expected_suggested_hostname=*/"google.com",
+                         /*is_target_embedding=*/false, SlowLoad::kTarget);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1873,7 +1878,8 @@ IN_PROC_BROWSER_TEST_P(
   TestExpectInterstitial(histograms, "góógle.com",
                          MakeManifestWithTarget("google.com"), "google.com",
                          MakeManifestWithTarget("site.test"),
-                         /*expected_suggested_hostname=*/"google.com");
+                         /*expected_suggested_hostname=*/"google.com",
+                         /*is_target_embedding=*/false);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1895,7 +1901,8 @@ IN_PROC_BROWSER_TEST_P(
   TestExpectInterstitial(histograms, "góógle.com",
                          MakeManifestWithTarget("google.com"), "google.com",
                          MakeManifestWithTarget("góógle.com", /*invalid=*/true),
-                         /*expected_suggested_hostname=*/"google.com");
+                         /*expected_suggested_hostname=*/"google.com",
+                         /*is_target_embedding=*/false);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1918,7 +1925,8 @@ IN_PROC_BROWSER_TEST_P(
   TestExpectInterstitial(
       histograms, "docs.góógle.com", MakeManifestWithTarget("docs.google.com"),
       "docs.google.com", MakeManifestWithTarget("docs.góógle.com"),
-      /*expected_suggested_hostname=*/"google.com");
+      /*expected_suggested_hostname=*/"google.com",
+      /*is_target_embedding=*/false);
 
   histograms.ExpectTotalCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
@@ -1949,4 +1957,70 @@ IN_PROC_BROWSER_TEST_P(
   histograms.ExpectBucketCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName,
       DigitalAssetLinkCrossValidator::Event::kValidationSucceeded, 1);
+}
+
+// Similar to ValidSubdomainAssetLinks_IgnoreInterstitial with a few
+// differences:
+// - Lookalike is a subdomain but target is an eTLD+1 and lookalike's manifest
+//   points to this eTLD+1.
+// - This time, the target's manifest points to the eTLD+1 of the lookalike
+//   instead of its fully qualified domain name.
+// Validation is still successful despite the fact that the target manifest
+// doesn't list the FQDN of the lookalike.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidSubdomainAssetLinks_TargetDoesntListLookalikeFQDN_IgnoreInterstitial) {
+  base::HistogramTester histograms;
+  TestNoInterstitial(
+      histograms,
+      /*lookalike_hostname=*/"docs.góógle.com",
+      /*lookalike_manifest=*/MakeManifestWithTarget("google.com"),
+      /*target_hostname=*/"google.com",
+      /*target_manifest=*/MakeManifestWithTarget("góógle.com"));
+
+  histograms.ExpectTotalCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kStarted, 1);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kValidationSucceeded, 1);
+}
+
+// Similar to ValidSubdomainAssetLinks_NoMatch_ShowInterstitial but the target
+// is a subdomain. In some cases the target embedding heuristic can suggest
+// subdomains instead of eTLD+1s. This doesn't show an interstitial.
+// TODO(crbug.com/1174862): This currently isn't testing the right thing because
+// Chrome suggests targetembedding.com instead of test.targetembedding.com.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidSubdomainAssetLinks_TargetIsSubdomain_ShowInterstitial) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+
+  const char* kSuggestedSite = "targetembedding.com";
+  SetEngagementScore(browser(), GetURLWithoutPath(kSuggestedSite),
+                     kHighEngagement);
+
+  base::HistogramTester histograms;
+  TestExpectInterstitial(
+      histograms,
+      /*lookalike_hostname=*/"test-targetembedding-com.com",
+      /*lookalike_manifest=*/MakeManifestWithTarget("test.targetembedding.com"),
+      /*target_hostname=*/"test.targetembedding.com",
+      /*target_manifest=*/
+      MakeManifestWithTarget("test-targetembedding-com.com"),
+      /*expected_suggested_hostname=*/kSuggestedSite,
+      /*is_target_embedding=*/true);
+
+  histograms.ExpectTotalCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kStarted, 1);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kLookalikeManifestFailed, 1);
 }

@@ -6,6 +6,7 @@
 #define COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 #include "base/callback.h"
@@ -76,12 +77,19 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
       const std::string& manifest_url,
       RelationshipCheckResultCallback callback);
 
-  // Generic DAL verifier.
+  // Generic DAL verifier. Checks whether the given |relationship| has been
+  // declared by the target |web_domain| using the values in |target_values|.
+  // We require a match for every entry in the |target_values| map, but within
+  // the entry, we require a match only for one value in the set.
+  // For example, |target_values| may contain an entry with key="site" and
+  // values={"https://example1.com", "https://example2.com"}. In order to
+  // validate, the manifest must have an entry with key="site" with one or more
+  // of the URLs as the value.
   bool CheckDigitalAssetLinkRelationship(
       const std::string& web_domain,
       const std::string& relationship,
       const base::Optional<std::string>& fingerprint,
-      const std::map<std::string, std::string>& target_values,
+      const std::map<std::string, std::set<std::string>>& target_values,
       RelationshipCheckResultCallback callback);
 
   // The amount of time to wait before giving up on a given network request and
@@ -90,16 +98,18 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
   void SetTimeoutDuration(base::TimeDelta timeout_duration);
 
  private:
-  void OnURLLoadComplete(std::string relationship,
-                         base::Optional<std::string> fingerprint,
-                         std::map<std::string, std::string> target_values,
-                         std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(
+      std::string relationship,
+      base::Optional<std::string> fingerprint,
+      std::map<std::string, std::set<std::string>> target_values,
+      std::unique_ptr<std::string> response_body);
 
   // Callback for the DataDecoder.
-  void OnJSONParseResult(std::string relationship,
-                         base::Optional<std::string> fingerprint,
-                         std::map<std::string, std::string> target_values,
-                         data_decoder::DataDecoder::ValueOrError result);
+  void OnJSONParseResult(
+      std::string relationship,
+      base::Optional<std::string> fingerprint,
+      std::map<std::string, std::set<std::string>> target_values,
+      data_decoder::DataDecoder::ValueOrError result);
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
 
 namespace {
 const char* kDigitalAssetLinkRecordType = "lookalikes/allowlist";
@@ -15,7 +16,24 @@ void RecordUMA(DigitalAssetLinkCrossValidator::Event event) {
   base::UmaHistogramEnumeration(
       DigitalAssetLinkCrossValidator::kEventHistogramName, event);
 }
+
+// Returns the set of lookalike origins to check for when validating the target
+// site's manifest. This is to support the scenario where the lookalike is not
+// an eTLD+1 AND the target site allowlists the eTLD+1 of the lookalike.
+// E.g. subdomain.lookalike.com serves a manifest pointing to targetsite.com and
+// targetsite.com serves a manifest pointing to lookalike.com (instead of
+// subdomain.lookalike.com).
+std::set<std::string> GetLookalikeOrigins(const url::Origin& lookalike_origin) {
+  std::string etld_plus_one = GetETLDPlusOne(lookalike_origin.host());
+  if (etld_plus_one == lookalike_origin.host()) {
+    return {lookalike_origin.Serialize()};
+  }
+  url::Origin alternative_origin = url::Origin::CreateFromNormalizedTuple(
+      lookalike_origin.scheme(), etld_plus_one, lookalike_origin.port());
+  return {lookalike_origin.Serialize(), alternative_origin.Serialize()};
 }
+
+}  // namespace
 
 // static
 const char DigitalAssetLinkCrossValidator::kEventHistogramName[] =
@@ -46,7 +64,7 @@ void DigitalAssetLinkCrossValidator::Start() {
   asset_link_handler_->SetTimeoutDuration(timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
       lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
-      {{"namespace", "web"}, {"site", target_domain_.Serialize()}},
+      {{"namespace", {"web"}}, {"site", {target_domain_.Serialize()}}},
       base::BindOnce(
           &DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete,
           base::Unretained(this)));
@@ -75,12 +93,16 @@ void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
   }
 
   // Swap current and target domains and validate the new manifest.
+  // |lookalike_domain_| may or may not be an ETLD+1, so this looks for both the
+  // fully qualified domain name and the eTLD+1 of the lookalike origin in the
+  // target site's manifest (via GetLookalikeOrigins()).
   start_time_ = now;
   target_manifest_timeout_ = timeout_ - elapsed;
   asset_link_handler_->SetTimeoutDuration(target_manifest_timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
       target_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
-      {{"namespace", "web"}, {"site", lookalike_domain_.Serialize()}},
+      {{"namespace", {"web"}},
+       {"site", GetLookalikeOrigins(lookalike_domain_)}},
       base::BindOnce(
           &DigitalAssetLinkCrossValidator::OnFetchTargetManifestComplete,
           base::Unretained(this)));

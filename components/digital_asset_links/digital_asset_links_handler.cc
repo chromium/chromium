@@ -71,13 +71,15 @@ bool StatementHasMatchingRelationship(const base::Value& statement,
   return false;
 }
 
-bool StatementHasMatchingTargetValue(const base::Value& statement,
-                                     const std::string& target_key,
-                                     const std::string& target_value) {
+bool StatementHasMatchingTargetValue(
+    const base::Value& statement,
+    const std::string& target_key,
+    const std::set<std::string>& target_value) {
   const base::Value* package = statement.FindPathOfType(
       {"target", target_key}, base::Value::Type::STRING);
 
-  return package && package->GetString() == target_value;
+  return package &&
+         target_value.find(package->GetString()) != target_value.end();
 }
 
 bool StatementHasMatchingFingerprint(const base::Value& statement,
@@ -128,7 +130,7 @@ DigitalAssetLinksHandler::~DigitalAssetLinksHandler() = default;
 void DigitalAssetLinksHandler::OnURLLoadComplete(
     std::string relationship,
     base::Optional<std::string> fingerprint,
-    std::map<std::string, std::string> target_values,
+    std::map<std::string, std::set<std::string>> target_values,
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
@@ -165,7 +167,7 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
 void DigitalAssetLinksHandler::OnJSONParseResult(
     std::string relationship,
     base::Optional<std::string> fingerprint,
-    std::map<std::string, std::string> target_values,
+    std::map<std::string, std::set<std::string>> target_values,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     AddMessageToConsole(
@@ -234,7 +236,7 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationshipForAndroidApp(
     RelationshipCheckResultCallback callback) {
   // TODO(rayankans): Should we also check the namespace here?
   return CheckDigitalAssetLinkRelationship(
-      web_domain, relationship, fingerprint, {{"package_name", package}},
+      web_domain, relationship, fingerprint, {{"package_name", {package}}},
       std::move(callback));
 }
 
@@ -244,14 +246,14 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationshipForWebApk(
     RelationshipCheckResultCallback callback) {
   return CheckDigitalAssetLinkRelationship(
       web_domain, "delegate_permission/common.query_webapk", base::nullopt,
-      {{"namespace", "web"}, {"site", manifest_url}}, std::move(callback));
+      {{"namespace", {"web"}}, {"site", {manifest_url}}}, std::move(callback));
 }
 
 bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
     const std::string& web_domain,
     const std::string& relationship,
     const base::Optional<std::string>& fingerprint,
-    const std::map<std::string, std::string>& target_values,
+    const std::map<std::string, std::set<std::string>>& target_values,
     RelationshipCheckResultCallback callback) {
   // TODO(peconn): Propagate the use of url::Origin backwards to clients.
   GURL request_url = GetUrlForAssetLinks(url::Origin::Create(GURL(web_domain)));
