@@ -136,6 +136,12 @@ struct NavigationEventList {
     return navigation_events_;
   }
 
+  const base::flat_map<content::NavigationHandle*,
+                       std::unique_ptr<NavigationEvent>>&
+  pending_navigation_events() {
+    return pending_navigation_events_;
+  }
+
  private:
   base::circular_deque<std::unique_ptr<NavigationEvent>> navigation_events_;
   // A map of pending navigation events. They are added when the navigation
@@ -197,15 +203,29 @@ class SafeBrowsingNavigationObserverManager
   // addresses that are older than kNavigationFootprintTTLInSecond.
   void CleanUpStaleNavigationFootprints();
 
-  // Based on the |target_url| and |target_tab_id|, traces back the observed
+  // Based on the |event_url| and |event_tab_id|, traces back the observed
   // NavigationEvents in navigation_event_list_ to identify the sequence of
   // navigations leading to the target, with the coverage limited to
   // |user_gesture_count_limit| number of user gestures. Then converts these
-  // identified NavigationEvents into ReferrerChainEntrys and append them to
+  // identified NavigationEvents into ReferrerChainEntrys and appends them to
   // |out_referrer_chain|.
   AttributionResult IdentifyReferrerChainByEventURL(
       const GURL& event_url,
       SessionID event_tab_id,  // Invalid if tab id is unknown or not available.
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain) override;
+
+  // Based on the |event_url|, traces back the observed PendingNavigationEvents
+  // and NavigationEvents in navigation_event_list_ to identify the sequence of
+  // navigations leading to the |event_url|, with the coverage limited to
+  // |user_gesture_count_limit| number of user gestures. Then converts these
+  // identified NavigationEvents into ReferrerChainEntrys and appends them to
+  // |out_referrer_chain|.
+  // Note that the first entry of the ReferrerChainEntrys is matched against the
+  // PendingNavigationEvents, and the remaining entries are matched against the
+  // NavigationEvents.
+  AttributionResult IdentifyReferrerChainByPendingEventURL(
+      const GURL& event_url,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
@@ -214,7 +234,7 @@ class SafeBrowsingNavigationObserverManager
   // sequence of navigations leading to the event hosting page, with the
   // coverage limited to |user_gesture_count_limit| number of user gestures.
   // Then converts these identified NavigationEvents into ReferrerChainEntrys
-  // and append them to |out_referrer_chain|.
+  // and appends them to |out_referrer_chain|.
   AttributionResult IdentifyReferrerChainByWebContents(
       content::WebContents* web_contents,
       int user_gesture_count_limit,

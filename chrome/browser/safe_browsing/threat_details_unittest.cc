@@ -192,6 +192,10 @@ class MockReferrerChainProvider : public ReferrerChainProvider {
                                  SessionID event_tab_id,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
+  MOCK_METHOD3(IdentifyReferrerChainByPendingEventURL,
+               AttributionResult(const GURL& event_url,
+                                 int user_gesture_count_limit,
+                                 ReferrerChain* out_referrer_chain));
 };
 
 }  // namespace

@@ -324,6 +324,43 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  // Same functionality as |ClickTestLink|, but doesn't wait for the navigation
+  // to complete.
+  void ClickTestLinkPending(const char* element_id,
+                            int number_of_navigations,
+                            const GURL& page_url,
+                            int subframe_index = -1) {
+    TabStripModel* tab_strip = browser()->tab_strip_model();
+    content::WebContents* current_web_contents =
+        tab_strip->GetActiveWebContents();
+    ASSERT_TRUE(content::WaitForLoadStop(current_web_contents));
+    // Execute test.
+    {
+      std::string script = base::StringPrintf("clickLink('%s');", element_id);
+      content::RenderFrameHost* script_executing_frame =
+          current_web_contents->GetMainFrame();
+      if (subframe_index != -1) {
+        script_executing_frame =
+            ChildFrameAt(script_executing_frame, subframe_index);
+      }
+      ASSERT_TRUE(content::ExecuteScript(script_executing_frame, script));
+    }
+
+    // Since this test uses javascript to mimic clicking on a link (no actual
+    // user gesture), and DidGetUserInteraction() does not respond to
+    // ExecuteScript(), navigation_transition field in resulting
+    // NavigationEvents will always be RENDERER_INITIATED_WITHOUT_USER_GESTURE.
+    // Therefore, we need to make some adjustment to relevant
+    // PendingNavigationEvent.
+    for (auto& it : navigation_event_list()->pending_navigation_events()) {
+      if (it.second->source_url == page_url) {
+        it.second->navigation_initiation =
+            ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+        return;
+      }
+    }
+  }
+
   void TriggerDownloadViaHtml5FileApi() {
     std::vector<DownloadItem*> items;
     content::DownloadManager* manager =
@@ -2754,6 +2791,135 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(3));
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       IdentifyReferrerChainByPendingEventURL_TwoUserGestures) {
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  GURL page_before_landing_referrer_url =
+      embedded_test_server()->GetURL(kPageBeforeLandingReferrerURL);
+  GURL landing_referrer_url =
+      embedded_test_server()->GetURL(kLandingReferrerURL);
+  GURL landing_url = embedded_test_server()->GetURL(kLandingURL);
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  ClickTestLink("attribution_within_two_user_gestures", 1, initial_url);
+
+  ClickTestLink("link_to_landing_referrer", 1,
+                page_before_landing_referrer_url);
+
+  // Navigate to landing_url. Keep the navigation in pending state so we can
+  // test on the pending event API.
+  content::TestNavigationManager navigation_manager(
+      browser()->tab_strip_model()->GetActiveWebContents(), landing_url);
+  ClickTestLinkPending("link_to_landing", 1, landing_referrer_url);
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+
+  auto* nav_list = navigation_event_list();
+  ASSERT_TRUE(nav_list);
+  ASSERT_EQ(3U, nav_list->Size());
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+
+  ReferrerChain referrer_chain;
+  auto result = observer_manager_->IdentifyReferrerChainByPendingEventURL(
+      landing_url,
+      /*user_gesture_count_limit=*/2, &referrer_chain);
+  ASSERT_EQ(SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER,
+            result);
+  EXPECT_EQ(3, referrer_chain.size());
+  VerifyReferrerChainEntry(
+      landing_url,                    // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      landing_referrer_url,           // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      true,                           // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(0));
+  VerifyReferrerChainEntry(
+      landing_referrer_url,              // url
+      GURL(),                            // main_frame_url
+      ReferrerChainEntry::LANDING_PAGE,  // type
+      test_server_ip,                    // ip_address
+      page_before_landing_referrer_url,  // referrer_url
+      GURL(),                            // referrer_main_frame_url
+      false,                             // is_retargeting
+      std::vector<GURL>(),               // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(1));
+  VerifyReferrerChainEntry(
+      page_before_landing_referrer_url,      // url
+      GURL(),                                // main_frame_url
+      ReferrerChainEntry::LANDING_REFERRER,  // type
+      test_server_ip,                        // ip_address
+      GURL(),                                // referrer_url
+      GURL(),                                // referrer_main_frame_url
+      false,                                 // is_retargeting
+      std::vector<GURL>(),                   // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+      referrer_chain.Get(2));
+
+  navigation_manager.ResumeNavigation();
+  navigation_manager.WaitForNavigationFinished();
+  ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       IdentifyReferrerChainByPendingEventURL_ServerRedirect) {
+  GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
+  GURL landing_url = embedded_test_server()->GetURL(kLandingURL);
+  GURL request_url =
+      embedded_test_server()->GetURL("/server-redirect?" + landing_url.spec());
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  content::TestNavigationManager navigation_manager(
+      browser()->tab_strip_model()->GetActiveWebContents(), request_url);
+
+  // Navigate to request_url. Keep the navigation in pending state so we can
+  // test on the pending event API.
+  browser()->tab_strip_model()->GetActiveWebContents()->GetController().LoadURL(
+      request_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+      std::string());
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+
+  auto* nav_list = navigation_event_list();
+  ASSERT_TRUE(nav_list);
+  ASSERT_EQ(1U, nav_list->PendingNavigationEventsSize());
+
+  ReferrerChain referrer_chain;
+  auto result = observer_manager_->IdentifyReferrerChainByPendingEventURL(
+      request_url,
+      /*user_gesture_count_limit=*/2, &referrer_chain);
+  // The navigation event is not found because the destination URL has already
+  // changed to landing_url.
+  ASSERT_EQ(SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND,
+            result);
+
+  result = observer_manager_->IdentifyReferrerChainByPendingEventURL(
+      landing_url,
+      /*user_gesture_count_limit=*/2, &referrer_chain);
+  ASSERT_EQ(SafeBrowsingNavigationObserverManager::SUCCESS, result);
+  EXPECT_EQ(1, referrer_chain.size());
+  VerifyReferrerChainEntry(landing_url,                    // url
+                           GURL(),                         // main_frame_url
+                           ReferrerChainEntry::EVENT_URL,  // type
+                           test_server_ip,                 // ip_address
+                           GURL(),                         // referrer_url
+                           GURL(),  // referrer_main_frame_url
+                           true,    // is_retargeting
+                           {request_url, landing_url},  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(0));
+
+  navigation_manager.ResumeNavigation();
+  navigation_manager.WaitForNavigationFinished();
+  ASSERT_EQ(0U, nav_list->PendingNavigationEventsSize());
 }
 
 class SBNavigationObserverPortalBrowserTest

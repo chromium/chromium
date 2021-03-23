@@ -43,6 +43,11 @@ class ReferrerChainProvider {
       SessionID event_tab_id,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) = 0;
+
+  virtual AttributionResult IdentifyReferrerChainByPendingEventURL(
+      const GURL& event_url,
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain) = 0;
 };
 }  // namespace safe_browsing
 

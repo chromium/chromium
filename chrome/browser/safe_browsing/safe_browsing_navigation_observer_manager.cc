@@ -464,6 +464,30 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult
+SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
+    const GURL& event_url,
+    int user_gesture_count_limit,
+    ReferrerChain* out_referrer_chain) {
+  if (!event_url.is_valid())
+    return INVALID_URL;
+
+  NavigationEvent* nav_event =
+      navigation_event_list_.FindPendingNavigationEvent(ClearURLRef(event_url));
+  if (!nav_event) {
+    // We cannot find a single navigation event related to this event.
+    return NAVIGATION_EVENT_NOT_FOUND;
+  }
+  AttributionResult result = SUCCESS;
+  AddToReferrerChain(out_referrer_chain, nav_event, GURL(),
+                     ReferrerChainEntry::EVENT_URL);
+  int user_gesture_count = 0;
+  GetRemainingReferrerChain(nav_event, user_gesture_count,
+                            user_gesture_count_limit, out_referrer_chain,
+                            &result);
+  return result;
+}
+
+SafeBrowsingNavigationObserverManager::AttributionResult
 SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByWebContents(
     content::WebContents* web_contents,
     int user_gesture_count_limit,
