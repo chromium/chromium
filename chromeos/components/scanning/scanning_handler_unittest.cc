@@ -7,8 +7,12 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -124,9 +128,21 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
     return base::FilePath(kTestFilePath);
   }
 
+  void OpenFilesInMediaApp(
+      const std::vector<base::FilePath>& file_paths) override {
+    DCHECK(!file_paths.empty());
+    file_paths_ = file_paths;
+  }
+
   bool ShowFileInFilesApp(const base::FilePath& path_to_file) override {
     return kTestFilePath == path_to_file.value();
   }
+
+  // Returns the file paths saved in OpenFilesInMediaApp().
+  const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
+
+ private:
+  std::vector<base::FilePath> file_paths_;
 };
 
 class ScanningHandlerTest : public testing::Test {
@@ -138,13 +154,17 @@ class ScanningHandlerTest : public testing::Test {
   ~ScanningHandlerTest() override = default;
 
   void SetUp() override {
-    scanning_handler_ = std::make_unique<ScanningHandler>(
-        std::make_unique<chromeos::FakeScanningAppDelegate>());
+    auto delegate = std::make_unique<chromeos::FakeScanningAppDelegate>();
+    fake_scanning_app_delegate_ = delegate.get();
+    scanning_handler_ = std::make_unique<ScanningHandler>(std::move(delegate));
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
+
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kScanAppMediaLink}, {});
   }
 
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
@@ -169,6 +189,8 @@ class ScanningHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestWebUI web_ui_;
   std::unique_ptr<ScanningHandler> scanning_handler_;
+  chromeos::FakeScanningAppDelegate* fake_scanning_app_delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Validates that invoking the requestScanToLocation Web UI event opens the
@@ -240,6 +262,24 @@ TEST_F(ScanningHandlerTest, GetMyFilesPath) {
       GetCallData(call_data_count_before_call);
   EXPECT_EQ(base::FilePath(kTestFilePath).value(),
             call_data.arg3()->GetString());
+}
+
+// Validates that invoking the openFilesInMediaApp Web UI event calls
+// ChromeScanningAppDelegate.OpenFilesInMediaApp().
+TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
+  const std::string file1 = "path/to/file/file1.jpg";
+  const std::string file2 = "path/to/file/file2.jpg";
+  base::Value file_paths_value(base::Value::Type::LIST);
+  file_paths_value.Append(base::Value(file1));
+  file_paths_value.Append(base::Value(file2));
+
+  base::ListValue args;
+  args.Append(std::move(file_paths_value));
+  web_ui_.HandleReceivedMessage("openFilesInMediaApp", &args);
+
+  const std::vector<base::FilePath> expected_file_paths(
+      {base::FilePath(file1), base::FilePath(file2)});
+  EXPECT_EQ(expected_file_paths, fake_scanning_app_delegate_->file_paths());
 }
 
 }  // namespace chromeos.

@@ -4,16 +4,27 @@
 
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 
+#include <utility>
+
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace chromeos {
@@ -77,6 +88,25 @@ std::string ChromeScanningAppDelegate::GetBaseNameFromPath(
 
 base::FilePath ChromeScanningAppDelegate::GetMyFilesPath() {
   return my_files_path_;
+}
+
+void ChromeScanningAppDelegate::OpenFilesInMediaApp(
+    const std::vector<base::FilePath>& file_paths) {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
+    return;
+
+  DCHECK(!file_paths.empty());
+
+  apps::mojom::FilePathsPtr files = apps::mojom::FilePaths::New(file_paths);
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+  proxy->LaunchAppWithFiles(
+      web_app::kMediaAppId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /* preferred_container=*/false),
+      apps::mojom::LaunchSource::kFromOtherApp, std::move(files));
 }
 
 bool ChromeScanningAppDelegate::ShowFileInFilesApp(

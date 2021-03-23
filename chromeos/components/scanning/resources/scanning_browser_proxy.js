@@ -66,6 +66,12 @@ export class ScanningBrowserProxy {
    * @return {!Promise<string>}
    */
   getMyFilesPath() {}
+
+  /**
+   * Opens the Media app with the files specified in |filePaths|.
+   * @param {!Array<string>} filePaths
+   */
+  openFilesInMediaApp(filePaths) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -98,6 +104,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   getMyFilesPath() {
     return sendWithPromise('getMyFilesPath');
+  }
+
+  /** @override */
+  openFilesInMediaApp(filePaths) {
+    chrome.send('openFilesInMediaApp', [filePaths]);
   }
 }
 

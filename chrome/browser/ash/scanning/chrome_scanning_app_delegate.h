@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "chromeos/components/scanning/scanning_app_delegate.h"
@@ -34,6 +35,8 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
   std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy() override;
   std::string GetBaseNameFromPath(const base::FilePath& path) override;
   base::FilePath GetMyFilesPath() override;
+  void OpenFilesInMediaApp(
+      const std::vector<base::FilePath>& file_paths) override;
   bool ShowFileInFilesApp(const base::FilePath& path_to_file) override;
 
   // Sets |google_drive_path_| for tests.

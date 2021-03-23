@@ -4,6 +4,10 @@
 
 #include "chromeos/components/scanning/scanning_handler.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -51,6 +55,11 @@ void ScanningHandler::RegisterMessages() {
       "getMyFilesPath",
       base::BindRepeating(&ScanningHandler::HandleGetMyFilesPath,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "openFilesInMediaApp",
+      base::BindRepeating(&ScanningHandler::HandleOpenFilesInMediaApp,
+                          base::Unretained(this)));
 }
 
 void ScanningHandler::FileSelected(const base::FilePath& path,
@@ -92,6 +101,26 @@ void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
 void ScanningHandler::HandleInitialize(const base::ListValue* args) {
   DCHECK(args && args->empty());
   AllowJavascript();
+}
+
+void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
+    return;
+
+  CHECK_EQ(1U, args->GetSize());
+  DCHECK(args->GetList()[0].is_list());
+  const base::Value::ConstListView& value_list = args->GetList()[0].GetList();
+  DCHECK(!value_list.empty());
+
+  std::vector<base::FilePath> file_paths;
+  file_paths.reserve(value_list.size());
+  for (const base::Value& file_path_value : value_list)
+    file_paths.push_back(base::FilePath(file_path_value.GetString()));
+
+  scanning_app_delegate_->OpenFilesInMediaApp(file_paths);
 }
 
 void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {

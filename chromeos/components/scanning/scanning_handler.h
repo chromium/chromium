@@ -64,6 +64,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // completed scans.
   void HandleRequestScanToLocation(const base::ListValue* args);
 
+  // Opens the Media app with the completed scan files.
+  void HandleOpenFilesInMediaApp(const base::ListValue* args);
+
   // Opens the Files app to the show the saved scan file.
   void HandleShowFileInLocation(const base::ListValue* args);
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 
@@ -33,6 +34,10 @@ class ScanningAppDelegate {
 
   // Gets the MyFiles path for the current user.
   virtual base::FilePath GetMyFilesPath() = 0;
+
+  // Opens the Media app with the files specified in |file_paths|.
+  virtual void OpenFilesInMediaApp(
+      const std::vector<base::FilePath>& file_paths) = 0;
 
   // Opens the Files app with |path_to_file| highlighted. Returns false if
   // |path_to_file| is not found in the filesystem.
