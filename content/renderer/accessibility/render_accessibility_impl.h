@@ -267,11 +267,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   PluginAXTreeSource* plugin_tree_source_;
   blink::WebAXObject plugin_host_node_;
 
-  // The most recently observed scroll offset of the root document element.
-  // TODO(dmazzoni): remove once https://bugs.webkit.org/show_bug.cgi?id=73460
-  // is fixed.
-  gfx::Size last_scroll_offset_;
-
   // Current event scheduling status
   EventScheduleStatus event_schedule_status_;
 

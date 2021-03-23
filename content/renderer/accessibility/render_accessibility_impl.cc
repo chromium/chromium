@@ -102,7 +102,6 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
       tree_source_(std::make_unique<BlinkAXTreeSource>(render_frame, mode)),
       serializer_(std::make_unique<BlinkAXTreeSerializer>(tree_source_.get())),
       plugin_tree_source_(nullptr),
-      last_scroll_offset_(gfx::Size()),
       event_schedule_status_(EventScheduleStatus::kNotWaiting),
       reset_token_(0),
       ukm_timer_(std::make_unique<base::ElapsedTimer>()),
