@@ -61,6 +61,21 @@ void FakeSemanticTree::RunUntilNodeCountAtLeast(size_t count) {
   run_loop.Run();
 }
 
+void FakeSemanticTree::RunUntilNodeWithLabelIsInTree(base::StringPiece label) {
+  DCHECK(!on_commit_updates_);
+  if (GetNodeFromLabel(label))
+    return;
+
+  base::RunLoop run_loop;
+  base::AutoReset<base::RepeatingClosure> auto_reset(
+      &on_commit_updates_,
+      base::BindLambdaForTesting([this, label, &run_loop]() {
+        if (GetNodeFromLabel(label))
+          run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 void FakeSemanticTree::RunUntilCommitCountIs(size_t count) {
   DCHECK(!on_commit_updates_);
   if (count == num_commit_calls_)
