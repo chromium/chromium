@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"

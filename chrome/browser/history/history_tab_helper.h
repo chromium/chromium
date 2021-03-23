@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

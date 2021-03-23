@@ -4,10 +4,9 @@
 
 #include "chrome/browser/history/history_tab_helper.h"
 
-#include <algorithm>
-#include <utility>
+#include <string>
 
-#include "base/stl_util.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -22,8 +21,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(OS_ANDROID)
