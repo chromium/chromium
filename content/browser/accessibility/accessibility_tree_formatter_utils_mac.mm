@@ -55,23 +55,20 @@ LineIndexer::LineIndexer(const gfx::NativeViewAccessible node) {
 
 LineIndexer::~LineIndexer() {}
 
-constexpr bool LineIndexer::NodeComparator::operator()(
-    const gfx::NativeViewAccessible& lhs,
-    const gfx::NativeViewAccessible& rhs) const {
-  if (IsAXUIElement(lhs)) {
-    DCHECK(IsAXUIElement(rhs));
-    return CFHash(lhs) < CFHash(rhs);
-  }
-  DCHECK(IsBrowserAccessibilityCocoa(lhs));
-  DCHECK(IsBrowserAccessibilityCocoa(rhs));
-  return lhs < rhs;
-}
-
 std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
   std::string line_index = ":unknown";
-  auto iter = map.find(node);
-  if (iter != map.end()) {
-    line_index = iter->second.line_index;
+  if (IsBrowserAccessibilityCocoa(node)) {
+    auto iter = map.find(node);
+    if (iter != map.end()) {
+      line_index = iter->second.line_index;
+    }
+  } else if (IsAXUIElement(node)) {
+    for (auto& iter : map) {
+      if (CFEqual(iter.first, node)) {
+        line_index = iter.second.line_index;
+        break;
+      }
+    }
   }
   return line_index;
 }
