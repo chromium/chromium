@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/platform_util.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -459,17 +458,10 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 }
 
 void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
-  if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP) {
-    OpenHelpCenterFromSafetyTip(web_contents());
-  } else {
-    web_contents()->OpenURL(content::OpenURLParams(
-        GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
-        ui::DispositionFromEventFlags(
-            event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-        ui::PAGE_TRANSITION_LINK, false));
-    presenter_->RecordPageInfoAction(
-        PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);
-  }
+  if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP)
+    presenter_->OpenSafetyTipHelpCenterPage();
+  else
+    presenter_->OpenConnectionHelpCenterPage(event);
 }
 
 void PageInfoBubbleView::ResetDecisionsClicked() {
@@ -561,6 +553,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   // before PageInfo updates trigger child layouts.
   SetSize(GetPreferredSize());
 
+  ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents), web_contents,
       url);
@@ -635,9 +628,6 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     PageInfo::PermissionInfo info;
     info.type = ContentSettingsType::COOKIES;
     info.setting = CONTENT_SETTING_ALLOW;
-    info.is_incognito =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-            ->IsOffTheRecord();
     const gfx::ImageSkia icon =
         PageInfoUI::GetPermissionIcon(info, GetRelatedTextColor());
 
@@ -710,11 +700,8 @@ void PageInfoBubbleView::SetPermissionInfo(
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
     std::unique_ptr<PermissionSelectorRow> selector =
-        std::make_unique<PermissionSelectorRow>(
-            profile_,
-            web_contents() ? web_contents()->GetVisibleURL()
-                           : GURL::EmptyGURL(),
-            permission, layout);
+        std::make_unique<PermissionSelectorRow>(ui_delegate_.get(), permission,
+                                                layout);
     selector->AddObserver(this);
     min_height_for_permission_rows = std::max(
         min_height_for_permission_rows, selector->MinHeightForPermissionRow());
@@ -853,15 +840,13 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
                 SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE,
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
-              view->presenter_->OnChangePasswordButtonPressed(
-                  view->web_contents());
+              view->presenter_->OnChangePasswordButtonPressed();
             },
             this),
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
               view->GetWidget()->Close();
-              view->presenter_->OnWhitelistPasswordReuseButtonPressed(
-                  view->web_contents());
+              view->presenter_->OnWhitelistPasswordReuseButtonPressed();
             },
             this));
   }
@@ -912,6 +897,16 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   Layout();
   SizeToContents();
 #endif
+}
+
+PageInfoUI::SecurityDescriptionType
+PageInfoBubbleView::GetSecurityDescriptionType() const {
+  return security_description_type_;
+}
+
+void PageInfoBubbleView::SetSecurityDescriptionType(
+    const PageInfoUI::SecurityDescriptionType& type) {
+  security_description_type_ = type;
 }
 
 void PageInfoBubbleView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
@@ -1008,30 +1003,17 @@ void PageInfoBubbleView::HandleMoreInfoRequest(views::View* source) {
 }
 
 void PageInfoBubbleView::HandleMoreInfoRequestAsync(int view_id) {
-  // All switch cases require accessing web_contents(), so we check it here.
-  if (web_contents() == nullptr || web_contents()->IsBeingDestroyed()) {
-    return;
-  }
   switch (view_id) {
     case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS:
       presenter_->OpenSiteSettingsView();
       break;
     case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG:
-      // Count how often the Collected Cookies dialog is opened.
-      presenter_->RecordPageInfoAction(
-          PageInfo::PAGE_INFO_COOKIES_DIALOG_OPENED);
-      CollectedCookiesViews::CreateAndShowForWebContents(web_contents());
+      presenter_->OpenCookiesDialog();
       break;
     case PageInfoBubbleView::
-        VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER: {
-      gfx::NativeWindow top_window = web_contents()->GetTopLevelNativeWindow();
-      if (certificate_ && top_window) {
-        presenter_->RecordPageInfoAction(
-            PageInfo::PAGE_INFO_CERTIFICATE_DIALOG_OPENED);
-        ShowCertificateViewer(web_contents(), top_window, certificate_.get());
-      }
+        VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER:
+      presenter_->OpenCertificateDialog(certificate_.get());
       break;
-    }
     default:
       NOTREACHED();
   }
@@ -1056,3 +1038,15 @@ void ShowPageInfoDialogImpl(Browser* browser,
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
 }
+
+DEFINE_ENUM_CONVERTERS(
+    PageInfoUI::SecurityDescriptionType,
+    {PageInfoUI::SecurityDescriptionType::CONNECTION, u"CONNECTION"},
+    {PageInfoUI::SecurityDescriptionType::INTERNAL, u"INTERNAL"},
+    {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING, u"SAFE_BROWSING"},
+    {PageInfoUI::SecurityDescriptionType::SAFETY_TIP, u"SAFETY_TIP"})
+
+BEGIN_METADATA(PageInfoBubbleView, PageInfoBubbleViewBase)
+ADD_PROPERTY_METADATA(PageInfoUI::SecurityDescriptionType,
+                      SecurityDescriptionType)
+END_METADATA

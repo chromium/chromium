@@ -260,7 +260,6 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
                 ->Get(info.type)
                 ->GetInitialDefaultSetting();
         info.source = content_settings::SettingSource::SETTING_SOURCE_USER;
-        info.is_incognito = false;
         permissions_list.push_back(info);
       }
 
@@ -346,7 +345,6 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
     permission.setting = ContentSetting::CONTENT_SETTING_BLOCK;
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
     permission.source = content_settings::SettingSource::SETTING_SOURCE_USER;
-    permission.is_incognito = false;
     page_info_bubble_view->OnPermissionChanged(permission);
   }
 

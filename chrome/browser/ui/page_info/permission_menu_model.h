@@ -12,9 +12,6 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
-class HostContentSettingsMap;
-class Profile;
-
 class PermissionMenuModel : public ui::SimpleMenuModel,
                             public ui::SimpleMenuModel::Delegate {
  public:
@@ -22,8 +19,7 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
       ChangeCallback;
 
   // Create a new menu model for permission settings.
-  PermissionMenuModel(Profile* profile,
-                      const GURL& url,
+  PermissionMenuModel(PageInfoUiDelegate* delegate,
                       const PageInfo::PermissionInfo& info,
                       ChangeCallback callback);
   ~PermissionMenuModel() override;
@@ -34,11 +30,6 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int encoded_command_id, int event_flags) override;
 
  private:
-  bool ShouldShowAllow(const GURL& url);
-  bool ShouldShowAsk(const GURL& url);
-
-  HostContentSettingsMap* host_content_settings_map_;
-
   // The permission info represented by the menu model.
   PageInfo::PermissionInfo permission_;
 

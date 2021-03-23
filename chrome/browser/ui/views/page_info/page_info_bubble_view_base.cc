@@ -65,16 +65,6 @@ void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {
   g_page_info_bubble = nullptr;
 }
 
-PageInfoUI::SecurityDescriptionType
-PageInfoBubbleViewBase::GetSecurityDescriptionType() const {
-  return security_description_type_;
-}
-
-void PageInfoBubbleViewBase::SetSecurityDescriptionType(
-    const PageInfoUI::SecurityDescriptionType& type) {
-  security_description_type_ = type;
-}
-
 void PageInfoBubbleViewBase::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (render_frame_host == web_contents()->GetMainFrame()) {
@@ -99,14 +89,5 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   GetWidget()->Close();
 }
 
-DEFINE_ENUM_CONVERTERS(
-    PageInfoUI::SecurityDescriptionType,
-    {PageInfoUI::SecurityDescriptionType::CONNECTION, u"CONNECTION"},
-    {PageInfoUI::SecurityDescriptionType::INTERNAL, u"INTERNAL"},
-    {PageInfoUI::SecurityDescriptionType::SAFE_BROWSING, u"SAFE_BROWSING"},
-    {PageInfoUI::SecurityDescriptionType::SAFETY_TIP, u"SAFETY_TIP"})
-
 BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
-ADD_PROPERTY_METADATA(PageInfoUI::SecurityDescriptionType,
-                      SecurityDescriptionType)
 END_METADATA

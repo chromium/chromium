@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -350,7 +351,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     }
 
     OpenPageInfoBubble(browser);
-    auto* page_info = static_cast<PageInfoBubbleViewBase*>(
+    ASSERT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
+              PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO);
+    auto* page_info = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
     ASSERT_TRUE(page_info);
 
@@ -391,8 +394,12 @@ class SafetyTipPageInfoBubbleViewBrowserTest
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_NOT_SECURE_SUMMARY) ||
         page_info->GetWindowTitle() ==
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_INTERNAL_PAGE));
-    EXPECT_NE(page_info->GetSecurityDescriptionType(),
-              PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
+    if (PageInfoBubbleViewBase::GetShownBubbleType() ==
+        PageInfoBubbleViewBase::BubbleType::BUBBLE_PAGE_INFO) {
+      EXPECT_NE(static_cast<PageInfoBubbleView*>(page_info)
+                    ->GetSecurityDescriptionType(),
+                PageInfoUI::SecurityDescriptionType::SAFETY_TIP);
+    }
   }
 
   // Checks that a certain amount of safety tip heuristics UKM events have been

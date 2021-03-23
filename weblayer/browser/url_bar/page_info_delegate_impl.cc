@@ -44,7 +44,6 @@ PageInfoDelegateImpl::GetPasswordProtectionService() const {
 }
 
 void PageInfoDelegateImpl::OnUserActionOnPasswordUi(
-    content::WebContents* web_contents,
     safe_browsing::WarningAction action) {
   NOTREACHED();
 }
@@ -73,6 +72,28 @@ void PageInfoDelegateImpl::ShowSiteSettings(const GURL& site_url) {
   // TODO(crbug.com/1052375): Implement once site settings code has been
   // componentized.
   NOTREACHED();
+}
+
+void PageInfoDelegateImpl::OpenCookiesDialog() {
+  // TODO(crbug.com/1189159): Add support for cookies dialog.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenCertificateDialog(
+    net::X509Certificate* certificate) {
+  // TODO(crbug.com/1189159): Add support for certificate dialog.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenConnectionHelpCenterPage(
+    const ui::Event& event) {
+  // TODO(crbug.com/1189159): Add support for help pages.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenSafetyTipHelpCenterPage() {
+  // TODO(crbug.com/1189159): Add support for help pages.
+  NOTIMPLEMENTED();
 }
 #endif
 

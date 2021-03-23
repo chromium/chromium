@@ -43,8 +43,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
-  void OnUserActionOnPasswordUi(content::WebContents* web_contents,
-                                safe_browsing::WarningAction action) override;
+  void OnUserActionOnPasswordUi(safe_browsing::WarningAction action) override;
   std::u16string GetWarningDetailText() override;
 #endif
   permissions::PermissionResult GetPermissionStatus(
@@ -54,6 +53,10 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #if !defined(OS_ANDROID)
   bool CreateInfoBarDelegate() override;
   void ShowSiteSettings(const GURL& site_url) override;
+  void OpenCookiesDialog() override;
+  void OpenCertificateDialog(net::X509Certificate* certificate) override;
+  void OpenConnectionHelpCenterPage(const ui::Event& event) override;
+  void OpenSafetyTipHelpCenterPage() override;
 #endif
 
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()

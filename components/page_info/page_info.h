@@ -169,8 +169,6 @@ class PageInfo : public content::WebContentsObserver {
     // The settings source e.g. user, extensions, policy, ... .
     content_settings::SettingSource source =
         content_settings::SETTING_SOURCE_NONE;
-    // Whether we're in incognito mode.
-    bool is_incognito = false;
     bool is_one_time = false;
   };
 
@@ -188,7 +186,8 @@ class PageInfo : public content::WebContentsObserver {
   //     default setting set by the user).
   //   - The setting is a wildcard setting applying to all origins (which can
   //     only be set from the default provider).
-  static bool IsPermissionFactoryDefault(const PermissionInfo& info);
+  static bool IsPermissionFactoryDefault(const PermissionInfo& info,
+                                         bool is_incognito);
 
   // Returns whether this page info is for an internal page.
   static bool IsFileOrInternalPage(const GURL& url);
@@ -230,12 +229,23 @@ class PageInfo : public content::WebContentsObserver {
   // Handles opening the link to show more site settings and records the event.
   void OpenSiteSettingsView();
 
+  // Handles opening the cookies dialog and records the event.
+  void OpenCookiesDialog();
+
+  // Handles opening the certificate dialog and records the event.
+  void OpenCertificateDialog(net::X509Certificate* certificate);
+
+  // Handles opening the safery tip help center page.
+  void OpenSafetyTipHelpCenterPage();
+
+  // Handles opening the connection help center page and records the event.
+  void OpenConnectionHelpCenterPage(const ui::Event& event);
+
   // This method is called when the user pressed "Change password" button.
-  void OnChangePasswordButtonPressed(content::WebContents* web_contents);
+  void OnChangePasswordButtonPressed();
 
   // This method is called when the user pressed "Mark as legitimate" button.
-  void OnWhitelistPasswordReuseButtonPressed(
-      content::WebContents* web_contents);
+  void OnWhitelistPasswordReuseButtonPressed();
 
   // Return a pointer to the ChooserContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings

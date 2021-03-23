@@ -251,7 +251,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
   list.back().source = content_settings::SETTING_SOURCE_USER;
-  list.back().is_incognito = false;
 
   list.back().setting = CONTENT_SETTING_ALLOW;
   api_->SetPermissionInfo(list);
@@ -292,7 +291,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::GEOLOCATION;
   list.back().source = content_settings::SETTING_SOURCE_USER;
-  list.back().is_incognito = false;
   list.back().setting = CONTENT_SETTING_BLOCK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -527,7 +525,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::USB_GUARD;
   list.back().source = content_settings::SETTING_SOURCE_USER;
-  list.back().is_incognito = false;
   list.back().setting = CONTENT_SETTING_ASK;
 
   // Initially, no permissions are shown because they are all set to default.

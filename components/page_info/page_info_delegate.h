@@ -44,7 +44,6 @@ class PageInfoDelegate {
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
   virtual void OnUserActionOnPasswordUi(
-      content::WebContents* web_contents,
       safe_browsing::WarningAction action) = 0;
   virtual std::u16string GetWarningDetailText() = 0;
 #endif
@@ -59,6 +58,10 @@ class PageInfoDelegate {
   virtual bool CreateInfoBarDelegate() = 0;
 
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
+  virtual void OpenCookiesDialog() = 0;
+  virtual void OpenCertificateDialog(net::X509Certificate* certificate) = 0;
+  virtual void OpenConnectionHelpCenterPage(const ui::Event& event) = 0;
+  virtual void OpenSafetyTipHelpCenterPage() = 0;
 #endif
   virtual permissions::PermissionDecisionAutoBlocker*
   GetPermissionDecisionAutoblocker() = 0;

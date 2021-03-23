@@ -155,11 +155,9 @@ void PermissionCombobox::PermissionChanged() {
 ///////////////////////////////////////////////////////////////////////////////
 
 PermissionSelectorRow::PermissionSelectorRow(
-    Profile* profile,
-    const GURL& url,
+    PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission,
-    views::GridLayout* layout)
-    : profile_(profile) {
+    views::GridLayout* layout) {
   const int list_item_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_CONTROL_LIST_VERTICAL) /
                                 2;
@@ -175,7 +173,7 @@ PermissionSelectorRow::PermissionSelectorRow(
   label_ = layout->AddView(std::move(label));
   // Create the menu model.
   menu_model_ = std::make_unique<PermissionMenuModel>(
-      profile, url, permission,
+      delegate, permission,
       base::BindRepeating(&PermissionSelectorRow::PermissionChanged,
                           base::Unretained(this)));
 
@@ -183,9 +181,8 @@ PermissionSelectorRow::PermissionSelectorRow(
   InitializeComboboxView(layout, permission);
 
   // Show the permission decision reason, if it was not the user.
-  auto delegate = ChromePageInfoUiDelegate(profile);
-  std::u16string reason = PageInfoUI::PermissionDecisionReasonToUIString(
-      &delegate, permission, url);
+  std::u16string reason =
+      PageInfoUI::PermissionDecisionReasonToUIString(delegate, permission);
   if (!reason.empty()) {
     layout->StartRow(1.0, PageInfoBubbleView::kPermissionColumnSetId);
     layout->SkipColumns(1);

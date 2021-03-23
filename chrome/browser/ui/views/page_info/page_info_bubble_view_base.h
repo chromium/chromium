@@ -57,10 +57,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  PageInfoUI::SecurityDescriptionType GetSecurityDescriptionType() const;
-  void SetSecurityDescriptionType(
-      const PageInfoUI::SecurityDescriptionType& type);
-
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;
 
@@ -69,9 +65,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
-
-  PageInfoUI::SecurityDescriptionType security_description_type_ =
-      PageInfoUI::SecurityDescriptionType::CONNECTION;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewBase);
 };

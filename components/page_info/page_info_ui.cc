@@ -468,8 +468,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
 // static
 std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
     PageInfoUiDelegate* delegate,
-    const PageInfo::PermissionInfo& permission,
-    const GURL& url) {
+    const PageInfo::PermissionInfo& permission) {
   ContentSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
   int message_id = kInvalidResourceID;
@@ -489,7 +488,7 @@ std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionUtil::IsPermission(permission.type)) {
     permissions::PermissionResult permission_result =
-        delegate->GetPermissionStatus(permission.type, url);
+        delegate->GetPermissionStatus(permission.type);
     switch (permission_result.source) {
       case permissions::PermissionStatusSource::MULTIPLE_DISMISSALS:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;

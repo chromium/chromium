@@ -21,7 +21,6 @@
 #include "ui/gfx/image/image_skia.h"
 #endif
 
-class GURL;
 class PageInfo;
 class PageInfoUiDelegate;
 
@@ -173,8 +172,7 @@ class PageInfoUI {
   // extension, enterprise policy, or embargo.
   static std::u16string PermissionDecisionReasonToUIString(
       PageInfoUiDelegate* delegate,
-      const PageInfo::PermissionInfo& permission,
-      const GURL& url);
+      const PageInfo::PermissionInfo& permission);
 
   // Returns the color to use for the permission decision reason strings.
   static SkColor GetSecondaryTextColor();
