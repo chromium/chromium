@@ -229,9 +229,6 @@ FYI_BUILDERS = {
                 '--experimental-tbmv3-metrics',
                 '--device=custom',
                 '--custom-device-target=internal.astro_target',
-                # TODO(rohpavone): Remove this to enable other stories once
-                # script has stabilized.
-                '--story-filter=load:chrome:blank',
             ],
             'type':
             TEST_TYPES.TELEMETRY,

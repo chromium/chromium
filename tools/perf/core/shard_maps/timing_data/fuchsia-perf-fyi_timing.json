@@ -1,1 +1,6 @@
-[]
+[
+    {
+        "duration": "27.0",
+        "name": "system_health.memory_desktop/load:chrome:blank"
+    }
+]

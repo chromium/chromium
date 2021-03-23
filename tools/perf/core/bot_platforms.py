@@ -625,7 +625,7 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
 FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 '',
                                 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
-                                1,
+                                7,
                                 'fuchsia',
                                 is_fyi=True)
 
