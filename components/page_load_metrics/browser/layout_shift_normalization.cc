@@ -74,6 +74,7 @@ void LayoutShiftNormalization::AddNewLayoutShifts(
 void LayoutShiftNormalization::ClearAllLayoutShifts() {
   normalized_cls_data_ = NormalizedCLSData();
   recent_layout_shifts_.clear();
+  recent_input_timestamps_.clear();
   sliding_300ms_.clear();
   sliding_1000ms_.clear();
   session_gap1000ms_max5000ms_ = SessionWindow();

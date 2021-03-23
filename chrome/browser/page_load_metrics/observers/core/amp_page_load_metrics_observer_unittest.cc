@@ -445,8 +445,9 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   base::TimeTicks current_time = base::TimeTicks::Now();
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(0.65, 0.65, 0, 0,
-                                                              0, 0, {}, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(
+      0.65, 0.65, 0, 0, 0, 0, {},
+      {current_time - base::TimeDelta::FromMilliseconds(2500)});
 
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
@@ -463,6 +464,7 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
           current_time - base::TimeDelta::FromMilliseconds(100), 0.15));
+
   tester()->SimulateRenderDataUpdate(render_data, subframe);
 
   // Navigate the main frame to trigger metrics recording.
@@ -504,6 +506,12 @@ TEST_F(AMPPageLoadMetricsObserverTest,
       entry.get(),
       "SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow."
       "Duration300ms",
+      25);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(),
+      "SubFrame.LayoutInstability.MaxCumulativeShiftScore."
+      "SessionWindowByInputs."
+      "Gap1000ms.Max5000ms",
       25);
 }
 
