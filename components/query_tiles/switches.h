@@ -38,6 +38,9 @@ extern const base::Feature kQueryTilesLocalOrdering;
 // some time of inactivity.
 extern const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity;
 
+// Whether segmentation rules are applied to query tiles.
+extern const base::Feature kQueryTilesSegmentation;
+
 // Helper function to determine whether query tiles should be shown on omnibox.
 bool IsEnabledQueryTilesInOmnibox();
 

@@ -298,6 +298,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesInOmnibox,
     &query_tiles::features::kQueryTilesEnableQueryEditing,
     &query_tiles::features::kQueryTilesLocalOrdering,
+    &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
     &safe_browsing::kEnhancedProtection,
     &safe_browsing::kSafeBrowsingSectionUIAndroid,
