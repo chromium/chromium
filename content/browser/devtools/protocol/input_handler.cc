@@ -408,9 +408,13 @@ class InputHandler::InputInjector
       for (const std::string& command : *commands.fromJust())
         edit_commands.push_back(blink::mojom::EditCommand::New(command, ""));
     }
-
+    // This may close the target, for example, if pressing Ctrl+W.
+    base::WeakPtr<InputHandler::InputInjector> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     widget_host_->ForwardKeyboardEventWithCommands(keyboard_event, latency,
                                                    std::move(edit_commands));
+    if (!weak_this)
+      return;
     if (!input_queued_) {
       pending_key_callbacks_.back()->sendSuccess();
       pending_key_callbacks_.pop_back();
@@ -485,6 +489,7 @@ class InputHandler::InputInjector
       pending_key_callbacks_;
   base::circular_deque<std::unique_ptr<DispatchMouseEventCallback>>
       pending_mouse_callbacks_;
+  base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputInjector);
 };
