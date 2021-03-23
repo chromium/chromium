@@ -157,6 +157,7 @@ class WaylandWindow : public PlatformWindow,
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
+  bool ShouldUseLayerForShapedWindow() const override;
 
   // PlatformEventDispatcher
   bool CanDispatchEvent(const PlatformEvent& event) override;

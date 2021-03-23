@@ -145,6 +145,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // Returns a unique ID for the window. The interpretation of the ID is
   // platform specific. Overriding this method is optional.
   virtual std::string GetWindowUniqueId() const;
+
+  // Returns true if window shape should be updated in layer,
+  // otherwise false when platform window updates the window shape.
+  virtual bool ShouldUseLayerForShapedWindow() const;
 };
 
 }  // namespace ui

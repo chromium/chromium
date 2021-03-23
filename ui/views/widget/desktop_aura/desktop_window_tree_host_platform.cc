@@ -584,9 +584,7 @@ bool DesktopWindowTreeHostPlatform::ShouldUseNativeFrame() const {
 
 bool DesktopWindowTreeHostPlatform::ShouldWindowContentsBeTransparent() const {
   return platform_window()->ShouldWindowContentsBeTransparent() ||
-         !const_cast<DesktopWindowTreeHostPlatform*>(this)
-              ->GetWindowMaskForWindowShapeInPixels()
-              .isEmpty();
+         ShouldUseLayerForShapedWindow();
 }
 
 void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
@@ -831,7 +829,7 @@ void DesktopWindowTreeHostPlatform::AddAdditionalInitProperties(
     ui::PlatformWindowInitProperties* properties) {}
 
 bool DesktopWindowTreeHostPlatform::ShouldUseLayerForShapedWindow() const {
-  return true;
+  return platform_window()->ShouldUseLayerForShapedWindow();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
