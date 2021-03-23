@@ -110,7 +110,7 @@ class WaylandWindow : public PlatformWindow,
   // However, if all the outputs the window is located at have the same scale
   // factor, the very first entered output is chosen as there is no way to
   // figure out what output the window occupies the most.
-  uint32_t GetPreferredEnteredOutputId() const;
+  uint32_t GetPreferredEnteredOutputId();
   const std::vector<WaylandOutput*>& entered_outputs() const {
     return entered_outputs_;
   }

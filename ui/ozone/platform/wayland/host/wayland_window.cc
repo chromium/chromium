@@ -93,16 +93,12 @@ void WaylandWindow::UpdateBufferScale(bool update_bounds) {
   if (!screen)
     return;
 
-  const auto widget = GetWidget();
-
   int32_t new_scale = 0;
   if (parent_window_) {
     new_scale = parent_window_->buffer_scale();
     ui_scale_ = parent_window_->ui_scale_;
   } else {
-    const auto display = (widget == gfx::kNullAcceleratedWidget)
-                             ? screen->GetPrimaryDisplay()
-                             : screen->GetDisplayForAcceleratedWidget(widget);
+    const auto display = screen->GetDisplayForAcceleratedWidget(GetWidget());
     new_scale = connection_->wayland_output_manager()
                     ->GetOutput(display.id())
                     ->scale_factor();
@@ -123,12 +119,19 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }
 
-uint32_t WaylandWindow::GetPreferredEnteredOutputId() const {
-  // It can be either a window that hasn't entered any outputs yet or a child
-  // window that doesn't store entered outputs. Instead, WaylandScreen takes the
-  // window's parent window and uses its preferred output.
+uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
+  // Child windows don't store entered outputs. Instead, take the window's
+  // root parent window and use its preferred output.
+  if (parent_window_)
+    return GetRootParentWindow()->GetPreferredEnteredOutputId();
+
+  // It can be either a toplevel window that hasn't entered any outputs yet, or
+  // still a non toplevel window that doesn't have a parent (for example, a
+  // wl_surface that is being dragged).
   if (entered_outputs_.empty())
     return 0;
+
+  DCHECK_EQ(PlatformWindowType::kWindow, type());
 
   // A window can be located on two or more displays. Thus, return the id of the
   // output that has the biggest scale factor. Otherwise, use the very first one

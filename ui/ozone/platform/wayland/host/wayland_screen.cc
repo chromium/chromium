@@ -163,7 +163,6 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   if (!window)
     return GetPrimaryDisplay();
 
-  const auto* parent_window = window->parent_window();
   const auto entered_output_id = window->GetPreferredEnteredOutputId();
   // Although spec says a surface receives enter/leave surface events on
   // create/move/resize actions, this might be called right after a window is
@@ -172,14 +171,9 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   // switches between displays in a single output mode - Wayland may not send
   // enter events immediately, which can result in empty container of entered
   // ids (check comments in WaylandWindow::RemoveEnteredOutputId). In this
-  // case, it's also safe to return the primary display. A child window will
-  // most probably enter the same display than its parent so we return the
-  // parent's display if there is a parent.
-  if (entered_output_id == 0) {
-    if (parent_window)
-      return GetDisplayForAcceleratedWidget(parent_window->GetWidget());
+  // case, it's also safe to return the primary display.
+  if (entered_output_id == 0)
     return GetPrimaryDisplay();
-  }
 
   DCHECK(!display_list_.displays().empty());
   for (const auto& display : display_list_.displays()) {

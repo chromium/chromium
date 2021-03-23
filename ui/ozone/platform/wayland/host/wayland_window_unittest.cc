@@ -1794,6 +1794,94 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
             window_->GetPreferredEnteredOutputId());
 }
 
+TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
+  VerifyAndClearExpectations();
+
+  // Buffer scale must be 1 when no output has been entered by the window.
+  EXPECT_EQ(1, window_->buffer_scale());
+
+  MockPlatformWindowDelegate menu_window_delegate;
+  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, window_->GetWidget(),
+      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
+
+  menu_window->Show(false);
+
+  Sync();
+
+  // Creating an output with scale 1.
+  wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
+  output1->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+  Sync();
+
+  auto entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(0u, entered_outputs.size());
+
+  auto menu_entered_outputs = menu_window->entered_outputs();
+  EXPECT_EQ(0u, menu_entered_outputs.size());
+
+  // Enter |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  Sync();
+
+  // The window entered the output.
+  entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(1u, entered_outputs.size());
+
+  // The menu also things it entered the same output.
+  menu_entered_outputs = menu_window->entered_outputs();
+  EXPECT_EQ(0u, menu_entered_outputs.size());
+
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+
+  // Pretend Wayland sends that menu entered output2, while the toplevel is on
+  // output1. Output1 must still be preferred by the menu.
+  wl::MockSurface* menu_surface = server_.GetObject<wl::MockSurface>(
+      menu_window->root_surface()->GetSurfaceId());
+  wl_surface_send_enter(menu_surface->resource(), output1->resource());
+  Sync();
+
+  // Nothing should have been changed here.
+  EXPECT_EQ(1u, window_->entered_outputs().size());
+  EXPECT_EQ(0u, menu_window->entered_outputs().size());
+
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+
+  // Pretend Wayland sends that toplevel entered output2.
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  Sync();
+
+  EXPECT_EQ(2u, window_->entered_outputs().size());
+  EXPECT_EQ(0u, menu_window->entered_outputs().size());
+
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+
+  // Now, the output2 changes its scale factor to 2.
+  output2->SetScale(2);
+  output2->Flush();
+  Sync();
+
+  // It must be the very the second output now.
+  entered_outputs = window_->entered_outputs();
+  auto* expected_entered_output = *(++entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  EXPECT_EQ(window_->GetPreferredEnteredOutputId(),
+            menu_window->GetPreferredEnteredOutputId());
+}
+
 // Tests WaylandWindow repositions menu windows to be relative to parent window
 // in a right way.
 TEST_P(WaylandWindowTest, AdjustPopupBounds) {
