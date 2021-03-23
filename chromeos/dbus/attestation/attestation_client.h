@@ -164,6 +164,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) AttestationClient {
     virtual void set_sign_enterprise_challenge_delay(
         const base::TimeDelta& delay) = 0;
 
+    // Sets the allowed ACA type for the legacy attestation flow. The enroll
+    // request can be created/finished only if the ACA type matches the set ACA
+    // type. By default, it is default ACA.
+    virtual void set_aca_type_for_legacy_flow(
+        ::attestation::ACAType aca_type) = 0;
+
     // Sets the status code returned by `CreateEnrollRequestRequest()`.
     virtual void set_enroll_request_status(
         ::attestation::AttestationStatus status) = 0;

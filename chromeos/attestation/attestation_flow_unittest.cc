@@ -301,6 +301,90 @@ TEST_F(AttestationFlowTest, GetCertificate_Ecc) {
                 ->certificate());
 }
 
+// This is pretty much identical to `GetCertificate` while the fake attestation
+// client only accepts the requests with test ACA type specified.
+TEST_F(AttestationFlowTest, GetCertificate_TestACA) {
+  // Verify the order of calls in a sequence.
+  Sequence flow_order;
+
+  // Set the enrollment status as `false` so the full enrollment flow is
+  // triggered.
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->ConfigureEnrollmentPreparations(true);
+
+  // Set the ACA type to test ACA so we can make sure the enroll request and the
+  // certificate request has the right ACA type.
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->set_aca_type_for_legacy_flow(::attestation::TEST_ACA);
+
+  // Use StrictMock when we want to verify invocation frequency.
+  std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
+  proxy->DeferToFake(true);
+  proxy->fake()->set_enroll_response(
+      AttestationClient::Get()->GetTestInterface()->GetFakePcaEnrollResponse());
+  // Set the PCA type returned by `ServerProxy` so it can meet the expectation
+  // by `FakeAttestationClient`.
+  EXPECT_CALL(*proxy, GetType()).WillRepeatedly(Return(TEST_PCA));
+  EXPECT_CALL(*proxy, SendEnrollRequest(AttestationClient::Get()
+                                            ->GetTestInterface()
+                                            ->GetFakePcaEnrollRequest(),
+                                        _))
+      .Times(1)
+      .InSequence(flow_order);
+
+  const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
+
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistLegacyCreateCertificateRequest(
+          kFakeUserEmail, "fake_origin",
+          ::attestation::ENTERPRISE_USER_CERTIFICATE,
+          ::attestation::KEY_TYPE_RSA);
+
+  proxy->fake()->set_cert_response(
+      AttestationClient::Get()->GetTestInterface()->GetFakePcaCertResponse());
+  EXPECT_CALL(
+      *proxy,
+      SendCertificateRequest(
+          AttestationClient::Get()->GetTestInterface()->GetFakePcaCertRequest(),
+          _))
+      .Times(1)
+      .InSequence(flow_order);
+
+  StrictMock<MockObserver> observer;
+  EXPECT_CALL(
+      observer,
+      MockCertificateCallback(
+          ATTESTATION_SUCCESS,
+          AttestationClient::Get()->GetTestInterface()->GetFakeCertificate()))
+      .Times(1)
+      .InSequence(flow_order);
+  AttestationFlow::CertificateCallback mock_callback = base::BindOnce(
+      &MockObserver::MockCertificateCallback, base::Unretained(&observer));
+
+  std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
+  AttestationFlow flow(std::move(proxy_interface));
+  flow.GetCertificate(PROFILE_ENTERPRISE_USER_CERTIFICATE, account_id,
+                      "fake_origin", true, std::string() /* key_name */,
+                      std::move(mock_callback));
+  RunUntilIdle();
+
+  EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(
+                    kFakeUserEmail,
+                    GetKeyNameForProfile(PROFILE_ENTERPRISE_USER_CERTIFICATE,
+                                         "fake_origin"))
+                ->certificate());
+}
+
 TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Prepared) {
   // Verify the order of calls in a sequence.
   Sequence flow_order;
