@@ -22,6 +22,12 @@
 #include "base/message_loop/message_pump_android.h"
 #endif
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -254,12 +260,6 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
   main_thread_only().run_level_tracker.OnIdle();
 }
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {

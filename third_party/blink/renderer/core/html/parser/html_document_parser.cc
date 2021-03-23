@@ -68,6 +68,12 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace blink {
 
 static size_t g_discarded_token_count_for_testing = 0;
@@ -629,11 +635,15 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
   DCHECK(!RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled());
   TRACE_EVENT0("blink", "HTMLDocumentParser::EnqueueTokenizedChunk");
 
+  V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk Start");
+
   DCHECK(chunk);
   DCHECK(GetDocument());
 
-  if (!IsParsing())
+  if (!IsParsing()) {
+    V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk #1");
     return;
+  }
 
   // ApplicationCache needs to be initialized before issuing preloads. We
   // suspend preload until HTMLHTMLElement is inserted and ApplicationCache is
@@ -673,6 +683,8 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
     // Delay sending some requests if meta tag based CSP is present or
     // if AppCache was used to fetch the HTML but was not yet initialized for
     // this document.
+    V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk #2 %d",
+                         !!pending_csp_meta_token_);
     if (pending_csp_meta_token_ ||
         ((!base::FeatureList::IsEnabled(
               blink::features::kVerifyHTMLFetchedFromAppCacheBeforeDelay) ||
@@ -701,6 +713,8 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
 
   if (!IsPaused() && !IsScheduledForUnpause())
     parser_scheduler_->ScheduleForUnpause();
+
+  V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk Done");
 }
 
 void HTMLDocumentParser::DidReceiveEncodingDataFromBackgroundParser(

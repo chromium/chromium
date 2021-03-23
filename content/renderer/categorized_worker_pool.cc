@@ -169,7 +169,8 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
 };
 
 CategorizedWorkerPool::CategorizedWorkerPool()
-    : namespace_token_(GenerateNamespaceToken()),
+    : lock_("CategorizedWorkerPool.lock_"),
+      namespace_token_(GenerateNamespaceToken()),
       has_task_for_normal_priority_thread_cv_(&lock_),
       has_task_for_background_priority_thread_cv_(&lock_),
       has_namespaces_with_finished_running_tasks_cv_(&lock_),

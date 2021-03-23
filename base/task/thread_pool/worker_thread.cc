@@ -22,6 +22,8 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace base {
 namespace internal {
 
@@ -292,6 +294,8 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
 #endif  // defined(OS_WIN)
 
 void WorkerThread::RunWorker() {
+  V8RecordReplayAssert("WorkerThread::RunWorker Start");
+
   DCHECK_EQ(self_, this);
   TRACE_EVENT_INSTANT0("base", "WorkerThread born", TRACE_EVENT_SCOPE_THREAD);
   TRACE_EVENT_BEGIN0("base", "WorkerThread active");
@@ -299,7 +303,11 @@ void WorkerThread::RunWorker() {
   if (worker_thread_observer_)
     worker_thread_observer_->OnWorkerThreadMainEntry();
 
+  V8RecordReplayAssert("WorkerThread::RunWorker #1");
+
   delegate_->OnMainEntry(this);
+
+  V8RecordReplayAssert("WorkerThread::RunWorker #2");
 
   // Background threads can take an arbitrary amount of time to complete, do not
   // watch them for hangs. Ignore priority boosting for now.
@@ -316,9 +324,11 @@ void WorkerThread::RunWorker() {
 
   // A WorkerThread starts out waiting for work.
   {
+    V8RecordReplayAssert("WorkerThread::RunWorker #3");
     TRACE_EVENT_END0("base", "WorkerThread active");
     delegate_->WaitForWork(&wake_up_event_);
     TRACE_EVENT_BEGIN0("base", "WorkerThread active");
+    V8RecordReplayAssert("WorkerThread::RunWorker #4");
   }
 
   while (!ShouldExit()) {
@@ -341,7 +351,9 @@ void WorkerThread::RunWorker() {
 
       TRACE_EVENT_END0("base", "WorkerThread active");
       hang_watch_scope.reset();
+      V8RecordReplayAssert("WorkerThread::RunWorker #5");
       delegate_->WaitForWork(&wake_up_event_);
+      V8RecordReplayAssert("WorkerThread::RunWorker #6");
       TRACE_EVENT_BEGIN0("base", "WorkerThread active");
       continue;
     }

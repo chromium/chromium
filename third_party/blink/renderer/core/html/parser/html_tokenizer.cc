@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 
 static inline UChar ToLowerCase(UChar cc) {
@@ -128,6 +130,8 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
+  V8RecordReplayAssert("HTMLTokenizer::NextToken Start");
+
   // If we have a token in progress, then we're supposed to be called back
   // with the same token so we can finish it.
   DCHECK(!token_ || token_ == &token ||
@@ -143,13 +147,18 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     temporary_buffer_.clear();
     if (state_ == HTMLTokenizer::kDataState) {
       // We're back in the data state, so we must be done with the tag.
+      V8RecordReplayAssert("HTMLTokenizer::NextToken #1");
       return true;
     }
   }
 
-  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source))
+  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) {
+    V8RecordReplayAssert("HTMLTokenizer::NextToken #2");
     return HaveBufferedCharacterToken();
+  }
   UChar cc = input_stream_preprocessor_.NextInputCharacter();
+
+  V8RecordReplayAssert("HTMLTokenizer::NextToken #3 %d", state_);
 
   // Source: http://www.whatwg.org/specs/web-apps/current-work/#tokenisation0
   switch (state_) {

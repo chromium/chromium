@@ -22,6 +22,12 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace base {
 namespace sequence_manager {
 
@@ -120,7 +126,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
                              ? sequence_manager->associated_thread()
                              : AssociatedThreadId::CreateBound()),
       task_poster_(MakeRefCounted<GuardedTaskPoster>(this)),
-      any_thread_lock_(/* ordered */ "TaskQueueImpl::any_thread_lock_"),
+      any_thread_lock_("TaskQueueImpl.any_thread_lock_"),
       any_thread_(time_domain),
       main_thread_only_(this, time_domain),
       empty_queues_to_reload_handle_(
@@ -292,6 +298,10 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // risk breaking the assumption that sequence numbers increase monotonically
     // within a queue.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
+
+    V8RecordReplayAssert("TaskQueueImpl::PostImmediateTaskImpl %lu",
+                        (size_t)sequence_number);
+
     bool was_immediate_incoming_queue_empty =
         any_thread_.immediate_incoming_queue.empty();
     // Delayed run time is null for an immediate task.
@@ -363,6 +373,9 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
     // Lock-free fast path for delayed tasks posted from the main thread.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
+    V8RecordReplayAssert("TaskQueueImpl::PostDelayedTaskImpl #1 %lu",
+                        (size_t)sequence_number);
+
     TimeTicks time_domain_now = main_thread_only().time_domain->Now();
     TimeTicks time_domain_delayed_run_time = time_domain_now + task.delay;
     if (sequence_manager_->GetAddQueueTimeToTasks())
@@ -378,6 +391,9 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
     // because it causes two main thread tasks to be run.  Should this
     // assumption prove to be false in future, we may need to revisit this.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
+
+    V8RecordReplayAssert("TaskQueueImpl::PostDelayedTaskImpl #2 %lu",
+                        (size_t)sequence_number);
 
     TimeTicks time_domain_now;
     {
@@ -455,12 +471,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   }
   TraceQueueSize();
 }
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
   V8RecordReplayAssert("TaskQueueImpl::ReloadEmptyImmediateWorkQueue");
@@ -604,6 +614,9 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
     DCHECK(!task->enqueue_order_set());
     task->set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
 
+    V8RecordReplayAssert("TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue %lu",
+                         task->enqueue_order());
+
     delayed_work_queue_task_pusher.Push(task);
     main_thread_only().delayed_incoming_queue.pop();
   }
@@ -666,6 +679,9 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
     main_thread_only()
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
         sequence_manager_->GetNextSequenceNumber();
+
+    V8RecordReplayAssert("TaskQueueImpl::SetQueuePriority %lu",
+                         main_thread_only().enqueue_order_at_which_we_became_unblocked_with_normal_priority);
   }
 }
 
@@ -816,6 +832,9 @@ void TaskQueueImpl::InsertFence(TaskQueue::InsertFencePosition position) {
   EnqueueOrder current_fence = position == TaskQueue::InsertFencePosition::kNow
                                    ? sequence_manager_->GetNextSequenceNumber()
                                    : EnqueueOrder::blocking_fence();
+
+  V8RecordReplayAssert("TaskQueueImpl::InsertFence %d %lu",
+                       position, (size_t)current_fence);
 
   // Tasks posted after this point will have a strictly higher enqueue order
   // and will be blocked from running.
@@ -1373,6 +1392,9 @@ void TaskQueueImpl::OnQueueUnblocked() {
 
   main_thread_only().enqueue_order_at_which_we_became_unblocked =
       sequence_manager_->GetNextSequenceNumber();
+
+  V8RecordReplayAssert("TaskQueueImpl::OnQueueUnblocked %d %lu",
+                       main_thread_only().enqueue_order_at_which_we_became_unblocked);
 
   static_assert(TaskQueue::QueuePriority::kLowPriority >
                     TaskQueue::QueuePriority::kNormalPriority,

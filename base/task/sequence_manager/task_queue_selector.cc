@@ -14,6 +14,14 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+extern "C" size_t V8RecordReplayPointerId(void* ptr);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
+#endif
+
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -171,9 +179,13 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
     SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
+  V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService Start");
+
   auto highest_priority = GetHighestPendingPriority(option);
-  if (!highest_priority.has_value())
+  if (!highest_priority.has_value()) {
+    V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #1");
     return nullptr;
+  }
 
   // Select the priority from which we will select a task. Usually this is
   // the highest priority for which we have work, unless we are starving a lower
@@ -193,6 +205,8 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
             :
 #endif
             ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
+    V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #2 %lu",
+                         V8RecordReplayPointerId(queue));
     return queue;
   }
 
@@ -211,6 +225,9 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   } else {
     immediate_starvation_count_ = 0;
   }
+
+  V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #3 %lu",
+                       V8RecordReplayPointerId(queue));
   return queue;
 }
 
@@ -224,12 +241,6 @@ Value TaskQueueSelector::AsValue() const {
 void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
     SelectTaskOption option) const {

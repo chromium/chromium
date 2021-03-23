@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 
 // On a network with high latency and high bandwidth, using a device with a fast
@@ -126,16 +128,21 @@ void BackgroundHTMLParser::Flush() {
 }
 
 void BackgroundHTMLParser::UpdateDocument(const String& decoded_data) {
+  V8RecordReplayAssert("BackgroundHTMLParser::UpdateDocument Start");
+
   DocumentEncodingData encoding_data(*decoder_.get());
   if (encoding_data != last_seen_encoding_data_) {
     last_seen_encoding_data_ = encoding_data;
     if (parser_)
       parser_->DidReceiveEncodingDataFromBackgroundParser(encoding_data);
   }
-  if (decoded_data.IsEmpty())
+  if (decoded_data.IsEmpty()) {
+    V8RecordReplayAssert("BackgroundHTMLParser::UpdateDocument #1");
     return;
+  }
 
   AppendDecodedBytes(decoded_data);
+  V8RecordReplayAssert("BackgroundHTMLParser::UpdateDocument Done");
 }
 
 void BackgroundHTMLParser::ResumeFrom(std::unique_ptr<Checkpoint> checkpoint) {
@@ -190,11 +197,17 @@ void BackgroundHTMLParser::PumpTokenizer() {
   HTMLTreeBuilderSimulator::SimulatedToken simulated_token =
       HTMLTreeBuilderSimulator::kOtherToken;
 
+  V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer Start");
+
   // No need to start speculating until the main thread has almost caught up.
-  if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit)
+  if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit) {
+    V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #1");
     return;
+  }
 
   while (tokenizer_->NextToken(input_.Current(), *token_)) {
+    V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #2");
+
     {
       TextPosition position = TextPosition(input_.Current().CurrentLine(),
                                            input_.Current().CurrentColumn());
@@ -211,6 +224,7 @@ void BackgroundHTMLParser::PumpTokenizer() {
       // starting a script so the main parser can decide if it should yield
       // before processing the chunk.
       if (simulated_token == HTMLTreeBuilderSimulator::kValidScriptStart) {
+        V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #3");
         EnqueueTokenizedChunk();
         starting_script_ = true;
       }
@@ -228,16 +242,21 @@ void BackgroundHTMLParser::PumpTokenizer() {
         simulated_token == HTMLTreeBuilderSimulator::kLink ||
         simulated_token == HTMLTreeBuilderSimulator::kCustomElementBegin ||
         pending_tokens_.size() >= kPendingTokenLimit) {
+      V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #4");
       EnqueueTokenizedChunk();
 
       // If we're far ahead of the main thread, yield for a bit to avoid
       // consuming too much memory.
-      if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit)
+      if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit) {
+        V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #4.1");
         break;
+      }
     }
   }
 
+  V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer #5");
   EnqueueTokenizedChunk();
+  V8RecordReplayAssert("BackgroundHTMLParser::PumpTokenizer Done");
 }
 
 void BackgroundHTMLParser::EnqueueTokenizedChunk() {

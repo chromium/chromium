@@ -34,8 +34,10 @@
 
 #ifdef OS_MAC
 extern "C" void V8RecordReplayAssert(const char* format, ...);
+extern "C" void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes);
 #else
 static void V8RecordReplayAssert(const char* format, ...) {}
+static inline void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes) {}
 #endif
 
 namespace base {
@@ -631,12 +633,16 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
         AsValueWithSelectorResultForTracing(work_queue,
                                             /* force_verbose */ false));
 
-    if (!work_queue)
+    if (!work_queue) {
+      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #4");
       return nullptr;
+    }
 
     // If the head task was canceled, remove it and run the selector again.
-    if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront()))
+    if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront())) {
+      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #5");
       continue;
+    }
 
     if (UNLIKELY(work_queue->GetFrontTask()->nestable ==
                      Nestable::kNonNestable &&
@@ -645,6 +651,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
       // the additional delay should not be a problem.
       // Note because we don't delete queues while nested, it's perfectly OK to
       // store the raw pointer for |queue| here.
+      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #6");
       internal::TaskQueueImpl::DeferredNonNestableTask deferred_task{
           work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),
           work_queue->queue_type()};
@@ -655,6 +662,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
 
     if (UNLIKELY(!ShouldRunTaskOfPriority(
             work_queue->task_queue()->GetQueuePriority()))) {
+      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #7");
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                    "SequenceManager.YieldToNative");
       return nullptr;
@@ -663,6 +671,8 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
 #if DCHECK_IS_ON() && !defined(OS_NACL)
     LogTaskDebugInfo(work_queue);
 #endif  // DCHECK_IS_ON() && !defined(OS_NACL)
+
+    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #8");
 
     main_thread_only().task_execution_stack.emplace_back(
         work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),
@@ -959,7 +969,19 @@ bool SequenceManagerImpl::GetAndClearSystemIsQuiescentBit() {
 }
 
 EnqueueOrder SequenceManagerImpl::GetNextSequenceNumber() {
-  return enqueue_order_generator_.GenerateNext();
+  EnqueueOrder rv = enqueue_order_generator_.GenerateNext();
+
+  // EnqueueOrders need to be the same when replaying as when recording,
+  // because they affect the order in which tasks will run. We could use
+  // an ordered lock here, but it's more efficient to just record/replay
+  // the EnqueueOrders which were created when recording.
+  //
+  // This would be better off in EnqueueOrderGenerator itself, but trying
+  // to call record/replay APIs from that function doesn't seem to work for
+  // some reason.
+  V8RecordReplayBytes("GetNextSequenceNumber", &rv, sizeof rv);
+
+  return rv;
 }
 
 std::unique_ptr<trace_event::ConvertableToTraceFormat>

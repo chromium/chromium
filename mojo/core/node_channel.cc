@@ -18,6 +18,12 @@
 #include "mojo/core/core.h"
 #include "mojo/core/request_context.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -395,6 +401,7 @@ void NodeChannel::AcceptBrokerClient(const ports::NodeName& broker_name,
 
 void NodeChannel::RequestPortMerge(const ports::PortName& connector_port_name,
                                    const std::string& token) {
+  V8RecordReplayAssert("NodeChannel::RequestPortMerge Start");
   RequestPortMergeData* data;
   Channel::MessagePtr message =
       CreateMessage(MessageType::REQUEST_PORT_MERGE,
@@ -402,6 +409,7 @@ void NodeChannel::RequestPortMerge(const ports::PortName& connector_port_name,
   data->connector_port_name = connector_port_name;
   memcpy(data + 1, token.data(), token.size());
   WriteChannelMessage(std::move(message));
+  V8RecordReplayAssert("NodeChannel::RequestPortMerge Done");
 }
 
 void NodeChannel::RequestIntroduction(const ports::NodeName& name) {
@@ -426,7 +434,9 @@ void NodeChannel::Introduce(const ports::NodeName& name,
 }
 
 void NodeChannel::SendChannelMessage(Channel::MessagePtr message) {
+  V8RecordReplayAssert("NodeChannel::SendChannelMessage Done");
   WriteChannelMessage(std::move(message));
+  V8RecordReplayAssert("NodeChannel::SendChannelMessage Done");
 }
 
 void NodeChannel::Broadcast(Channel::MessagePtr message) {
