@@ -433,6 +433,27 @@ QuicTestPacketMaker::MakeRstAckAndDataPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicTestPacketMaker::MakeAckDataAndRst(uint64_t num,
+                                       bool include_version,
+                                       quic::QuicStreamId stream_id,
+                                       quic::QuicRstStreamErrorCode error_code,
+                                       uint64_t largest_received,
+                                       uint64_t smallest_received,
+                                       quic::QuicStreamId data_id,
+                                       bool fin,
+                                       absl::string_view data) {
+  InitializeHeader(num, include_version);
+
+  AddQuicAckFrame(largest_received, smallest_received);
+  AddQuicStreamFrame(data_id, fin, data);
+
+  AddQuicStopSendingFrame(stream_id, error_code);
+  AddQuicRstStreamFrame(stream_id, error_code);
+
+  return BuildPacket();
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicTestPacketMaker::MakeAckRstAndDataPacket(
     uint64_t num,
     bool include_version,

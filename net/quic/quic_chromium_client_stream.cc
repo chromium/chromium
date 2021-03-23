@@ -498,38 +498,33 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
   // Handle informational response. If the response is an Early Hints response,
   // deliver the response to the owner of the handle. Otherwise ignore the
   // response.
-  // TODO(crbug.com/1096414): Fix tests and treat an empty list as an error.
-  // Some tests fail when we treat an empty header list as error. All valid
-  // responses must have the ":status" field.
-  if (!header_list.empty()) {
-    int response_code;
-    if (!ParseHeaderStatusCode(header_block, &response_code)) {
-      DLOG(ERROR) << "Received invalid response code: '"
-                  << header_block[":status"].as_string() << "' on stream "
-                  << id();
-      Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
-      return;
-    }
+  int response_code;
+  if (!ParseHeaderStatusCode(header_block, &response_code)) {
+    DLOG(ERROR) << "Received invalid response code: '"
+                << header_block[":status"].as_string() << "' on stream "
+                << id();
+    Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
+    return;
+  }
 
-    if (response_code == HTTP_SWITCHING_PROTOCOLS) {
-      DLOG(ERROR) << "Received forbidden 101 response code on stream " << id();
-      Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
-      return;
-    }
+  if (response_code == HTTP_SWITCHING_PROTOCOLS) {
+    DLOG(ERROR) << "Received forbidden 101 response code on stream " << id();
+    Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
+    return;
+  }
 
-    if (response_code >= 100 && response_code < 200) {
-      set_headers_decompressed(false);
-      ConsumeHeaderList();
-      if (response_code == HTTP_EARLY_HINTS) {
-        early_hints_.emplace_back(std::move(header_block), frame_len);
-        if (handle_)
-          handle_->OnEarlyHintsAvailable();
-      } else {
-        DVLOG(1) << "Ignore informational response " << response_code
-                 << " on stream" << id();
-      }
-      return;
+  if (response_code >= 100 && response_code < 200) {
+    set_headers_decompressed(false);
+    ConsumeHeaderList();
+    if (response_code == HTTP_EARLY_HINTS) {
+      early_hints_.emplace_back(std::move(header_block), frame_len);
+      if (handle_)
+        handle_->OnEarlyHintsAvailable();
+    } else {
+      DVLOG(1) << "Ignore informational response " << response_code
+               << " on stream" << id();
     }
+    return;
   }
 
   ConsumeHeaderList();

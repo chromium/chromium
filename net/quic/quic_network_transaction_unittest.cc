@@ -542,6 +542,21 @@ class QuicNetworkTransactionTest
                                                smallest_received, fin, data);
   }
 
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructClientAckDataAndRst(
+      uint64_t packet_number,
+      bool include_version,
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicStreamId data_id,
+      bool fin,
+      absl::string_view data) {
+    return client_maker_->MakeAckDataAndRst(
+        packet_number, include_version, stream_id, error_code, largest_received,
+        smallest_received, data_id, fin, data);
+  }
+
   std::unique_ptr<quic::QuicEncryptedPacket>
   ConstructClientRequestHeadersPacket(uint64_t packet_number,
                                       quic::QuicStreamId stream_id,
@@ -1243,6 +1258,7 @@ TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
     return;
   }
 
+  context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
@@ -1268,10 +1284,11 @@ TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
 
   mock_quic_data.AddWrite(
-      ASYNC,
-      ConstructClientAckAndDataPacket(
-          write_packet_num++, true, GetQpackDecoderStreamId(), 1, 1, false,
-          StreamCancellationQpackDecoderInstruction(request_stream_id)));
+      ASYNC, ConstructClientAckDataAndRst(
+                 write_packet_num++, true, request_stream_id,
+                 quic::QUIC_STREAM_GENERAL_PROTOCOL_ERROR, 1, 1,
+                 GetQpackDecoderStreamId(), false,
+                 StreamCancellationQpackDecoderInstruction(request_stream_id)));
 
   mock_quic_data.AddSocketDataToFactory(&socket_factory_);
 
@@ -1281,7 +1298,10 @@ TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_.bound());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_INVALID_RESPONSE));
+  EXPECT_THAT(callback.WaitForResult(), IsError(net::ERR_QUIC_PROTOCOL_ERROR));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
 }
 
 TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {

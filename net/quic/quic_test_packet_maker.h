@@ -171,6 +171,17 @@ class QuicTestPacketMaker {
       bool fin,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicStreamId data_id,
+      bool fin,
+      absl::string_view data);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRstAndDataPacket(
       uint64_t num,
       bool include_version,

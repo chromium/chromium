@@ -2173,6 +2173,10 @@ TEST_P(QuicChromiumClientSessionTest, ResetOnEmptyResponseHeaders) {
   if (VersionUsesHttp3(version_.transport_version)) {
     quic_data.AddWrite(ASYNC,
                        client_maker_.MakeInitialSettingsPacket(packet_num++));
+    quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
+                                  packet_num++, true,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  quic::QUIC_STREAM_GENERAL_PROTOCOL_ERROR));
   } else {
     // In case of Google QUIC, QuicSpdyStream resets the stream.
     quic_data.AddWrite(ASYNC, client_maker_.MakeRstPacket(
@@ -2216,7 +2220,7 @@ TEST_P(QuicChromiumClientSessionTest, ResetOnEmptyResponseHeaders) {
     spdy::Http2HeaderBlock header_block;
     int rv = stream_handle->ReadInitialHeaders(&header_block,
                                                CompletionOnceCallback());
-    EXPECT_THAT(rv, IsError(ERR_INVALID_RESPONSE));
+    EXPECT_THAT(rv, IsError(net::ERR_QUIC_PROTOCOL_ERROR));
   }
 
   base::RunLoop().RunUntilIdle();
