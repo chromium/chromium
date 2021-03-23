@@ -159,8 +159,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.DeviceRegistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M88">
-  <owner>alexchau@chromium.org</owner>
+    enum="SharingDeviceRegistrationResult" expires_after="M97">
+  <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Result of Sharing device registration. Logged after Sharing registration is
@@ -169,8 +169,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.DeviceUnregistrationResult"
-    enum="SharingDeviceRegistrationResult" expires_after="M88">
-  <owner>alexchau@chromium.org</owner>
+    enum="SharingDeviceRegistrationResult" expires_after="M97">
+  <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Result of Sharing device un-registration. Logged after Sharing
@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MessageAckTime" units="ms" expires_after="M88">
+<histogram name="Sharing.MessageAckTime" units="ms" expires_after="M97">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 
@@ -205,11 +205,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M88">
+<histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M97">
 <!-- Name completed by histogram_suffix name="SharingMessage" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>himanshujaju@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     The time from receiving a SharingMessage in SharingFCMHandler until an ack
     is sent back. Recorded when SendAckMessage callback is run in
@@ -371,11 +371,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
-    expires_after="M88">
+    expires_after="M97">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 
-  <owner>alexchau@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Result of sending an ack for a SharingMessage by the Sharing service. Logged
@@ -384,11 +384,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="M88">
+    expires_after="M97">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
-  <owner>alexchau@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Result of sending a SharingMessage by the Sharing service. Logged after the
@@ -521,8 +521,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.WebRtc.IceConfigFetched" units="ice_servers"
-    expires_after="M88">
-  <owner>himanshujaju@chromium.org</owner>
+    expires_after="M97">
+  <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Number of ice servers fetched by network traversal API call. Logged after

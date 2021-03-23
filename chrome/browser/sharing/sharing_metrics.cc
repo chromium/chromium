@@ -174,7 +174,7 @@ void LogSharingRegistrationResult(SharingDeviceRegistrationResult result) {
   base::UmaHistogramEnumeration("Sharing.DeviceRegistrationResult", result);
 }
 
-void LogSharingUnegistrationResult(SharingDeviceRegistrationResult result) {
+void LogSharingUnregistrationResult(SharingDeviceRegistrationResult result) {
   base::UmaHistogramEnumeration("Sharing.DeviceUnregistrationResult", result);
 }
 

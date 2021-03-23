@@ -58,7 +58,7 @@ void LogSharingRegistrationResult(SharingDeviceRegistrationResult result);
 
 // Logs the |result| to UMA. This should be called after attempting un-register
 // Sharing.
-void LogSharingUnegistrationResult(SharingDeviceRegistrationResult result);
+void LogSharingUnregistrationResult(SharingDeviceRegistrationResult result);
 
 // Logs the number of available devices that are about to be shown in a UI for
 // picking a device to start a sharing functionality. The |histogram_suffix|

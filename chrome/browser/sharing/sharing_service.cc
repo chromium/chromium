@@ -225,7 +225,7 @@ void SharingService::OnDeviceRegistered(
 
 void SharingService::OnDeviceUnregistered(
     SharingDeviceRegistrationResult result) {
-  LogSharingUnegistrationResult(result);
+  LogSharingUnregistrationResult(result);
   if (IsSyncEnabledForSharing(sync_service_)) {
     // In case sync is enabled during un-registration, register it.
     state_ = State::REGISTERING;
