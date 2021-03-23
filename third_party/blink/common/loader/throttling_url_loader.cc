@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -67,6 +68,22 @@ void CheckThrottleWillNotCauseCorsPreflight(
   }
 }
 #endif
+
+void RecordHistogram(const std::string& stage,
+                     base::Time start,
+                     const std::string& metric_type) {
+  base::TimeDelta delta = base::Time::Now() - start;
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.URLLoaderThrottle", metric_type, ".", stage}), delta);
+}
+
+void RecordDeferTimeHistogram(const std::string& stage, base::Time start) {
+  RecordHistogram(stage, start, "DeferTime");
+}
+
+void RecordExecutionTimeHistogram(const std::string& stage, base::Time start) {
+  RecordHistogram(stage, start, "ExecutionTime");
+}
 
 }  // namespace
 
@@ -438,7 +455,10 @@ void ThrottlingURLLoader::Start(
       }
 #endif
 
+      base::Time start = base::Time::Now();
       throttle->WillStartRequest(url_request, &throttle_deferred);
+      RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_START),
+                                   start);
 
 #if DCHECK_IS_ON()
       if (cors_exempt_header_list) {
@@ -575,16 +595,21 @@ bool ThrottlingURLLoader::HandleThrottleResult(URLLoaderThrottle* throttle,
     return false;
   *should_defer |= throttle_deferred;
   if (throttle_deferred)
-    deferring_throttles_.insert(throttle);
+    deferring_throttles_.insert({throttle, base::Time::Now()});
   return true;
 }
 
 void ThrottlingURLLoader::StopDeferringForThrottle(
     URLLoaderThrottle* throttle) {
-  if (deferring_throttles_.find(throttle) == deferring_throttles_.end())
+  auto iter = deferring_throttles_.find(throttle);
+  if (iter == deferring_throttles_.end())
     return;
 
-  deferring_throttles_.erase(throttle);
+  if (deferred_stage_ != DEFERRED_NONE) {
+    RecordDeferTimeHistogram(GetStageNameForHistogram(deferred_stage_),
+                             iter->second);
+  }
+  deferring_throttles_.erase(iter);
   if (deferring_throttles_.empty() && !loader_completed_)
     Resume();
 }
@@ -633,8 +658,11 @@ void ThrottlingURLLoader::OnReceiveResponse(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
+      base::Time start = base::Time::Now();
       throttle->BeforeWillProcessResponse(response_url_, *response_head,
                                           &throttle_deferred);
+      RecordExecutionTimeHistogram(
+          GetStageNameForHistogram(DEFERRED_BEFORE_RESPONSE), start);
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
         return;
     }
@@ -657,8 +685,11 @@ void ThrottlingURLLoader::OnReceiveResponse(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
+      base::Time start = base::Time::Now();
       throttle->WillProcessResponse(response_url_, response_head.get(),
                                     &throttle_deferred);
+      RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_RESPONSE),
+                                   start);
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
         return;
     }
@@ -691,6 +722,7 @@ void ThrottlingURLLoader::OnReceiveRedirect(
       net::HttpRequestHeaders modified_headers;
       net::HttpRequestHeaders modified_cors_exempt_headers;
       net::RedirectInfo redirect_info_copy = redirect_info;
+      base::Time start = base::Time::Now();
       throttle->WillRedirectRequest(
           &redirect_info_copy, *response_head, &throttle_deferred,
           &removed_headers, &modified_headers, &modified_cors_exempt_headers);
@@ -698,6 +730,8 @@ void ThrottlingURLLoader::OnReceiveRedirect(
       if (!weak_ptr)
         return;
 
+      RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_REDIRECT),
+                                   start);
 #if DCHECK_IS_ON()
       if (start_info_->cors_exempt_header_list) {
         CheckThrottleWillNotCauseCorsPreflight(
@@ -799,7 +833,10 @@ void ThrottlingURLLoader::OnComplete(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       bool throttle_deferred = false;
+      base::Time start = base::Time::Now();
       throttle->WillOnCompleteWithError(status, &throttle_deferred);
+      RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_COMPLETE),
+                                   start);
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
         return;
     }
@@ -985,6 +1022,24 @@ void ThrottlingURLLoader::DisconnectClient(base::StringPiece custom_reason) {
   }
 
   loader_completed_ = true;
+}
+
+const char* ThrottlingURLLoader::GetStageNameForHistogram(DeferredStage stage) {
+  switch (stage) {
+    case DEFERRED_START:
+      return "WillStartRequest";
+    case DEFERRED_REDIRECT:
+      return "WillRedirectRequest";
+    case DEFERRED_BEFORE_RESPONSE:
+      return "BeforeWillProcessResponse";
+    case DEFERRED_RESPONSE:
+      return "WillProcessResponse";
+    case DEFERRED_COMPLETE:
+      return "WillOnCompleteWithError";
+    default:
+      NOTREACHED();
+  }
+  return "";
 }
 
 ThrottlingURLLoader::ThrottleEntry::ThrottleEntry(

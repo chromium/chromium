@@ -194,6 +194,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     DEFERRED_RESPONSE,
     DEFERRED_COMPLETE
   };
+  const char* GetStageNameForHistogram(DeferredStage stage);
+
   DeferredStage deferred_stage_ = DEFERRED_NONE;
   bool loader_completed_ = false;
   bool did_receive_response_ = false;
@@ -214,7 +216,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   };
 
   std::vector<ThrottleEntry> throttles_;
-  std::set<URLLoaderThrottle*> deferring_throttles_;
+  std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
   // nullptr is used when this loader is directly requested to pause reading
   // body from net by calling PauseReadingBodyFromNet().
   std::set<URLLoaderThrottle*> pausing_reading_body_from_net_throttles_;
