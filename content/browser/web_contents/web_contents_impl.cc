@@ -2394,6 +2394,9 @@ void WebContentsImpl::DidChangeVisibleSecurityState() {
                         "WebContentsImpl::DidChangeVisibleSecurityState");
   if (delegate_)
     delegate_->VisibleSecurityStateChanged(this);
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "WebContentsObserver.DidChangeVisibleSecurityState");
   observers_.NotifyObservers(
       &WebContentsObserver::DidChangeVisibleSecurityState);
 }
@@ -4767,6 +4770,7 @@ void WebContentsImpl::SetVisibilityAndNotifyObservers(Visibility visibility) {
   // for the first time.
   if (visibility != previous_visibility ||
       (visibility == Visibility::VISIBLE && !did_first_set_visible_)) {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.OnVisibilityChanged");
     observers_.NotifyObservers(&WebContentsObserver::OnVisibilityChanged,
                                visibility);
   }
@@ -5120,8 +5124,11 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInMainFrame())
     favicon_urls_.clear();
 
-  observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
-                             navigation_handle);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartNavigation");
+    observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
+                               navigation_handle);
+  }
   if (navigation_handle->IsInMainFrame()) {
     // When the browser is started with about:blank as the startup URL, focus
     // the location bar (which will also select its contents) so people can
@@ -5145,8 +5152,11 @@ void WebContentsImpl::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidRedirectNavigation",
                "navigation_handle", static_cast<void*>(navigation_handle));
-  observers_.NotifyObservers(&WebContentsObserver::DidRedirectNavigation,
-                             navigation_handle);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidRedirectNavigation");
+    observers_.NotifyObservers(&WebContentsObserver::DidRedirectNavigation,
+                               navigation_handle);
+  }
   // Notify accessibility if this is a reload. This has to called on the
   // BrowserAccessibilityManager associated with the old RFHI.
   if (navigation_handle->GetReloadType() != ReloadType::NONE) {
@@ -5221,8 +5231,11 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidFinishNavigation",
                "navigation_handle", static_cast<void*>(navigation_handle));
 
-  observers_.NotifyObservers(&WebContentsObserver::DidFinishNavigation,
-                             navigation_handle);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidFinishNavigation");
+    observers_.NotifyObservers(&WebContentsObserver::DidFinishNavigation,
+                               navigation_handle);
+  }
   if (display_cutout_host_impl_)
     display_cutout_host_impl_->DidFinishNavigation(navigation_handle);
 
@@ -5463,6 +5476,8 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
 void WebContentsImpl::DocumentAvailableInMainFrame() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DocumentAvailableInMainFrame");
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "WebContentsObserver.DocumentAvailableInMainFrame");
   observers_.NotifyObservers(
       &WebContentsObserver::DocumentAvailableInMainFrame);
 }
@@ -5688,6 +5703,7 @@ void WebContentsImpl::DOMContentLoaded(RenderFrameHost* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DOMContentLoaded",
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host));
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DOMContentLoaded");
   observers_.NotifyObservers(&WebContentsObserver::DOMContentLoaded,
                              render_frame_host);
 }
@@ -5701,8 +5717,11 @@ void WebContentsImpl::OnDidFinishLoad(RenderFrameHost* render_frame_host,
   GURL validated_url(url);
   render_frame_host->GetProcess()->FilterURL(false, &validated_url);
 
-  observers_.NotifyObservers(&WebContentsObserver::DidFinishLoad,
-                             render_frame_host, validated_url);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidFinishLoad");
+    observers_.NotifyObservers(&WebContentsObserver::DidFinishLoad,
+                               render_frame_host, validated_url);
+  }
   size_t tree_size = frame_tree_.root()->GetFrameTreeSize();
   if (max_loaded_frame_count_ < tree_size)
     max_loaded_frame_count_ = tree_size;
@@ -6040,8 +6059,12 @@ void WebContentsImpl::DidFirstVisuallyNonEmptyPaint(
                         "render_view_host", static_cast<void*>(source));
   // TODO(nick): When this is ported to FrameHostMsg_, we should only listen if
   // |source| is the main frame.
-  observers_.NotifyObservers(
-      &WebContentsObserver::DidFirstVisuallyNonEmptyPaint);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "WebContentsObserver.DidFirstVisuallyNonEmptyPaint");
+    observers_.NotifyObservers(
+        &WebContentsObserver::DidFirstVisuallyNonEmptyPaint);
+  }
   if (source->theme_color() != last_sent_theme_color_) {
     // Theme color should have updated by now if there was one.
     observers_.NotifyObservers(&WebContentsObserver::DidChangeThemeColor);
@@ -6109,7 +6132,10 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
   // Lastly, set the title for the view.
   view_->SetPageTitle(final_title);
 
-  observers_.NotifyObservers(&WebContentsObserver::TitleWasSet, entry);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.TitleWasSet");
+    observers_.NotifyObservers(&WebContentsObserver::TitleWasSet, entry);
+  }
   if (entry == GetController().GetEntryAtOffset(0))
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
 }
@@ -6118,6 +6144,8 @@ void WebContentsImpl::SendChangeLoadProgress() {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SendChangeLoadProgress",
                         "load_progress", frame_tree_.load_progress());
   loading_last_progress_update_ = base::TimeTicks::Now();
+
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.LoadProgressChanged");
   observers_.NotifyObservers(&WebContentsObserver::LoadProgressChanged,
                              frame_tree_.load_progress());
 }
@@ -6161,10 +6189,12 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
         "browser,navigation", "WebContentsImpl Loading", this, "URL", url,
         "Main FrameTreeNode id", GetFrameTree()->root()->frame_tree_node_id());
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
     observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_END1(
         "browser,navigation", "WebContentsImpl Loading", this, "URL", url);
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStopLoading");
     observers_.NotifyObservers(&WebContentsObserver::DidStopLoading);
   }
 
@@ -6226,6 +6256,7 @@ void WebContentsImpl::NotifyNavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::NotifyNavigationEntryCommitted");
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.NavigationEntryCommitted");
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntryCommitted,
                              load_details);
 }
@@ -6234,6 +6265,7 @@ void WebContentsImpl::NotifyNavigationEntryChanged(
     const EntryChangedDetails& change_details) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::NotifyNavigationEntryChanged");
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.NavigationEntryChanged");
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntryChanged,
                              change_details);
 }
@@ -6249,6 +6281,7 @@ void WebContentsImpl::NotifyNavigationListPruned(
 void WebContentsImpl::NotifyNavigationEntriesDeleted() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::NotifyNavigationEntriesDeleted");
+  SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.NavigationEntryDeleted");
   observers_.NotifyObservers(&WebContentsObserver::NavigationEntriesDeleted);
 }
 
@@ -6328,8 +6361,11 @@ void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
     }
   }
 
-  observers_.NotifyObservers(&WebContentsObserver::RenderFrameCreated,
-                             render_frame_host);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.RenderFrameCreated");
+    observers_.NotifyObservers(&WebContentsObserver::RenderFrameCreated,
+                               render_frame_host);
+  }
   UpdateAccessibilityModeOnFrame(render_frame_host);
 
   if (display_cutout_host_impl_)
@@ -6353,8 +6389,11 @@ void WebContentsImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
     RecordMaxFrameCountUMA(max_loaded_frame_count_);
   }
 
-  observers_.NotifyObservers(&WebContentsObserver::RenderFrameDeleted,
-                             render_frame_host);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.RenderFrameDeleted");
+    observers_.NotifyObservers(&WebContentsObserver::RenderFrameDeleted,
+                               render_frame_host);
+  }
 #if BUILDFLAG(ENABLE_PLUGINS)
   pepper_playback_observer_->RenderFrameDeleted(render_frame_host);
 #endif
@@ -6804,7 +6843,10 @@ void WebContentsImpl::RenderViewReady(RenderViewHost* rvh) {
 
   notify_disconnection_ = true;
 
-  observers_.NotifyObservers(&WebContentsObserver::RenderViewReady);
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.RenderViewReady");
+    observers_.NotifyObservers(&WebContentsObserver::RenderViewReady);
+  }
   view_->RenderViewReady();
 }
 

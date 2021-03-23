@@ -38,6 +38,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="System" summary="System voice transcription."/>
 </variants>
 
+<variants name="WebContentsObserverMethods">
+  <variant name="DidChangeVisibleSecurityState"/>
+  <variant name="DidFinishLoad"/>
+  <variant name="DidFinishNavigation"/>
+  <variant name="DidFirstVisuallyNonEmptyPaint"/>
+  <variant name="DidRedirectNavigation"/>
+  <variant name="DidStartLoading"/>
+  <variant name="DidStartNavigation"/>
+  <variant name="DidStopLoading"/>
+  <variant name="DocumentAvailableInMainFrame"/>
+  <variant name="DOMContentLoaded"/>
+  <variant name="LoadProgressChanged"/>
+  <variant name="NavigationEntryChanged"/>
+  <variant name="NavigationEntryCommitted"/>
+  <variant name="NavigationEntryDeleted"/>
+  <variant name="OnVisibilityChanged"/>
+  <variant name="RenderFrameCreated"/>
+  <variant name="RenderFrameDeleted"/>
+  <variant name="RenderViewReady"/>
+  <variant name="TitleWasSet"/>
+</variants>
+
 <histogram name="AccountManager.AccountAdditionResultStatus"
     enum="AccountManagerAccountAdditionResultStatus" expires_after="2022-02-01">
   <owner>sinhak@chromium.org</owner>
@@ -17753,6 +17775,17 @@ regressions. -->
   <owner>ortuno@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>
+</histogram>
+
+<histogram name="WebContentsObserver.{Method}" units="ms"
+    expires_after="2021-09-15">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the time it takes to call all observers of the WebContents observer
+    method {Method}. Logged every time the method is called.
+  </summary>
+  <token key="Method" variants="WebContentsObserverMethods"/>
 </histogram>
 
 <histogram name="WebContextFetcher.Time.RunJavaScript" units="ms"
