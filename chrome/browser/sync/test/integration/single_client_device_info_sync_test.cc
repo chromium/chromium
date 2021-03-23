@@ -118,6 +118,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
 
+// CommitLocalDevice_TransportOnly and DownloadRemoteDevices_TransportOnly are
+// flaky on Android.
+#if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
@@ -170,6 +173,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
+#endif  // !defined(OS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {
