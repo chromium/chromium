@@ -106,11 +106,11 @@ Sid Sid::FromNamedCapability(const wchar_t* capability_name) {
 }
 
 Sid Sid::FromSddlString(const wchar_t* sddl_sid) {
-  PSID converted_sid;
-  if (!::ConvertStringSidToSid(sddl_sid, &converted_sid))
+  PSID psid = nullptr;
+  if (!::ConvertStringSidToSid(sddl_sid, &psid))
     return Sid();
-
-  return Sid(converted_sid);
+  std::unique_ptr<void, sandbox::LocalFreeDeleter> converted_sid(psid);
+  return Sid(converted_sid.get());
 }
 
 Sid Sid::FromSubAuthorities(PSID_IDENTIFIER_AUTHORITY identifier_authority,
