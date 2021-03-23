@@ -172,7 +172,7 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
 #endif
     {ContentSettingsType::BLUETOOTH_GUARD, IDS_PAGE_INFO_TYPE_BLUETOOTH},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-     IDS_PAGE_INFO_TYPE_NATIVE_FILE_SYSTEM_WRITE},
+     IDS_PAGE_INFO_TYPE_FILE_SYSTEM_ACCESS_WRITE},
     {ContentSettingsType::BLUETOOTH_SCANNING,
      IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING},
     {ContentSettingsType::NFC, IDS_PAGE_INFO_TYPE_NFC},
