@@ -365,6 +365,15 @@ crbug.com/910537 external/wpt/svg/painting/marker-005.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-001.svg [ Failure ]
 crbug.com/367737 external/wpt/svg/painting/reftests/paint-context-002.svg [ Failure ]
 
+# Unprefixed 'mask' ('mask-image', 'mask-border') support not yet implemented.
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-clip-exclude.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-local-mask.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-image.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
+# Fails, at a minimum, due to lack of support for CSS mask property in html elements
+crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Skip ]
+
 # ==== Regressions introduced by BlinkGenPropertyTrees =====
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
@@ -422,9 +431,6 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 crbug.com/935057 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
 crbug.com/935057 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
-
-# Fails, at a minimum, due to lack of support for CSS mask property in html elements
-crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Skip ]
 
 # Bug accidentally masked by using square mask geometry.
 crbug.com/1155161 svg/masking/mask-of-root.html [ Failure ]
@@ -2526,7 +2532,6 @@ crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-001.h
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start-rtl.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-image-clip-exclude.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-ruby/ruby-text-collapse.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/extended-payload-length.html?wpt_flags=h2 [ Timeout ]
@@ -3063,10 +3068,6 @@ crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-rendering.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-tall.html [ Failure ]
 crbug.com/626703 external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html [ Timeout ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-local-mask.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-image.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-mask.html [ Failure ]
-crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/float-nowrap-9.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/float-nowrap-8.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/float-nowrap-7.html [ Failure ]
