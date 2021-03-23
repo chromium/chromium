@@ -22,19 +22,21 @@ namespace KeyEventHandled = extensions::api::input_ime::KeyEventHandled;
 namespace SetComposition = extensions::api::input_ime::SetComposition;
 namespace CommitText = extensions::api::input_ime::CommitText;
 namespace SendKeyEvents = extensions::api::input_ime::SendKeyEvents;
-using chromeos::InputMethodEngineBase;
 
 namespace {
 const char kErrorRouterNotAvailable[] = "The router is not available.";
 const char kErrorSetKeyEventsFail[] = "Could not send key events.";
 
-InputMethodEngineBase* GetEngineIfActive(Profile* profile,
-                                         const std::string& extension_id,
-                                         std::string* error) {
+using chromeos::InputMethodEngine;
+using chromeos::InputMethodEngineBase;
+
+InputMethodEngine* GetEngineIfActive(Profile* profile,
+                                     const std::string& extension_id,
+                                     std::string* error) {
   extensions::InputImeEventRouter* event_router =
       extensions::GetInputImeEventRouter(profile);
   DCHECK(event_router) << kErrorRouterNotAvailable;
-  InputMethodEngineBase* engine =
+  InputMethodEngine* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
 }
@@ -201,7 +203,7 @@ void ImeObserver::OnKeyEvent(
   }
 
   std::string error;
-  InputMethodEngineBase* engine =
+  InputMethodEngine* engine =
       GetEngineIfActive(profile_, extension_id_, &error);
   if (!engine)
     return;
@@ -436,7 +438,7 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   std::unique_ptr<KeyEventHandled::Params> params(
       KeyEventHandled::Params::Create(*args_));
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -447,7 +449,7 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -493,7 +495,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -514,7 +516,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
 
 ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   std::string error;
-  InputMethodEngineBase* engine = GetEngineIfActive(
+  InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));

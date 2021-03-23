@@ -631,7 +631,7 @@ InputMethodEngine* InputImeEventRouter::GetEngine(
   }
 }
 
-InputMethodEngineBase* InputImeEventRouter::GetEngineIfActive(
+InputMethodEngine* InputImeEventRouter::GetEngineIfActive(
     const std::string& extension_id,
     std::string* error) {
   auto it = engine_map_.find(extension_id);
@@ -1033,7 +1033,7 @@ void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
       // can receive the onActivate event to recover itself upon the
       // unexpected unload.
       std::string error;
-      InputMethodEngineBase* engine =
+      InputMethodEngine* engine =
           event_router->GetEngineIfActive(extension->id(), &error);
       DCHECK(engine) << error;
       // When extension is unloaded unexpectedly and reloaded, OS doesn't pass
