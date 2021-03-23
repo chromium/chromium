@@ -90,8 +90,8 @@ void OnSodaResponse(const char* serialized_proto,
 }  // namespace
 
 SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
-  soda_client_.reset();
   RecordDuration();
+  soda_client_.reset();
 }
 
 void SpeechRecognitionRecognizerImpl::Create(
