@@ -42430,6 +42430,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Disabled by Feature Flag"/>
   <int value="12" label="AGSA Version Not Supported"/>
   <int value="13" label="Disabled on Incognito"/>
+  <int value="14" label="Disabled on Tablet"/>
 </enum>
 
 <enum name="LevelDBCorruptionRestoreValue">

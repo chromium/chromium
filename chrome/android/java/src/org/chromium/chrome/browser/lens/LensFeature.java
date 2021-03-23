@@ -9,7 +9,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 
 /**
- * A class contains cached Lens feature flags and params.
+ * A helper class contains cached Lens feature flags and params.
  */
 public class LensFeature {
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
@@ -40,4 +40,11 @@ public class LensFeature {
                     new BooleanCachedFieldTrialParameter(
                             ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
                             SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH_PARAM_NAME, false);
+
+    private static final String ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET_PARAM_NAME =
+            "enableCameraAssistedSearchOnTablet";
+    public static final BooleanCachedFieldTrialParameter
+            ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET = new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
+                    ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET_PARAM_NAME, false);
 }

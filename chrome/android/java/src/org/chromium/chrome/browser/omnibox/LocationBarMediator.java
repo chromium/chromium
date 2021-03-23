@@ -1375,7 +1375,8 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Override
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
         return mLensController.isLensEnabled(
-                new LensQueryParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
+                new LensQueryParams
+                        .Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito(), mIsTablet)
                         .build());
     }
 

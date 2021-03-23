@@ -194,11 +194,13 @@ class SearchBoxMediator
      * Check whether the Lens is enabled for an entry point.
      * @param lensEntryPoint A {@link LensEntryPoint}.
      * @param isIncognito Whether the request is from a Incognito tab.
+     * @param isTablet Whether the request is from a tablet.
      * @return Whether the Lens is currently enabled.
      */
-    boolean isLensEnabled(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
+    boolean isLensEnabled(
+            @LensEntryPoint int lensEntryPoint, boolean isIncognito, boolean isTablet) {
         return LensController.getInstance().isLensEnabled(
-                new LensQueryParams.Builder(lensEntryPoint, isIncognito).build());
+                new LensQueryParams.Builder(lensEntryPoint, isIncognito, isTablet).build());
     }
 
     private Drawable getRoundedDrawable(Bitmap bitmap) {
