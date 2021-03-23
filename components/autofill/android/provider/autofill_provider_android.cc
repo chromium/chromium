@@ -369,8 +369,8 @@ void AutofillProviderAndroid::OnServerPredictionsAvailable(
   if (handler != handler_.get() || !form_.get())
     return;
 
-  if (auto* form_structure = handler_->FindCachedFormByRendererId(
-          form_->form().unique_renderer_id)) {
+  if (auto* form_structure =
+          handler_->FindCachedFormByRendererId(form_->form().global_id())) {
     form_->UpdateFieldTypes(*form_structure);
 
     JNIEnv* env = AttachCurrentThread();
@@ -388,8 +388,8 @@ void AutofillProviderAndroid::OnServerQueryRequestError(
   if (!IsCurrentlyLinkedHandler(handler) || !form_.get())
     return;
 
-  if (auto* form_structure = handler_->FindCachedFormByRendererId(
-          form_->form().unique_renderer_id)) {
+  if (auto* form_structure =
+          handler_->FindCachedFormByRendererId(form_->form().global_id())) {
     if (form_structure->form_signature() != form_signature)
       return;
 

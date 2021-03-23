@@ -170,8 +170,8 @@ class AutofillHandler
                              AutofillField** autofill_field) WARN_UNUSED_RESULT;
 
   // Returns nullptr if no cached form structure is found with a matching
-  // |renderer_id|. Runs in logarithmic time.
-  FormStructure* FindCachedFormByRendererId(FormRendererId renderer_id) const;
+  // |form_id|. Runs in logarithmic time.
+  FormStructure* FindCachedFormByRendererId(FormGlobalId form_id) const;
 
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
@@ -181,7 +181,7 @@ class AutofillHandler
   }
 
   // Returns the present form structures seen by Autofill handler.
-  const std::map<FormRendererId, std::unique_ptr<FormStructure>>&
+  const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
   form_structures() const {
     return form_structures_;
   }
@@ -214,7 +214,7 @@ class AutofillHandler
 #ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
-  std::map<FormRendererId, std::unique_ptr<FormStructure>>*
+  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures_for_test() {
     return mutable_form_structures();
   }
@@ -298,7 +298,7 @@ class AutofillHandler
 
   bool value_from_dynamic_change_form_ = false;
 
-  std::map<FormRendererId, std::unique_ptr<FormStructure>>*
+  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
   mutable_form_structures() {
     return &form_structures_;
   }
@@ -350,7 +350,7 @@ class AutofillHandler
       translate_observation_{this};
 
   // Our copy of the form data.
-  std::map<FormRendererId, std::unique_ptr<FormStructure>> form_structures_;
+  std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures_;
 
   // Handles queries and uploads to Autofill servers. Will be nullptr if
   // the download manager functionality is disabled.

@@ -392,9 +392,11 @@ class AutofillManager : public AutofillHandler,
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     // TODO(crbug/896689): Remove |filled_field_unique_name|.
-    const FieldRendererId filled_field_renderer_id;
+    const FieldGlobalId filled_field_id;
     const FieldSignature filled_field_signature;
     const std::u16string filled_field_unique_name;
+    // The security origin from which the field was filled.
+    url::Origin filled_origin;
     // The time at which the initial fill occurred.
     const base::TimeTicks original_fill_time;
     // The timer used to trigger a refill.
@@ -702,8 +704,8 @@ class AutofillManager : public AutofillHandler,
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.
   // TODO(crbug/896689): Remove code duplication once experiment is finished.
-  std::map<FormRendererId, std::unique_ptr<FillingContext>>
-      filling_context_by_renderer_id_;
+  std::map<FormGlobalId, std::unique_ptr<FillingContext>>
+      filling_context_by_global_id_;
   std::map<std::u16string, std::unique_ptr<FillingContext>>
       filling_context_by_unique_name_;
 

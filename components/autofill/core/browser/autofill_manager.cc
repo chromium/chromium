@@ -417,7 +417,7 @@ AutofillManager::FillingContext::FillingContext(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     const std::u16string* optional_cvc)
-    : filled_field_renderer_id(field.unique_renderer_id),
+    : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_field_unique_name(field.unique_name()),
       original_fill_time(AutofillTickClock::NowTicks()) {
@@ -1215,8 +1215,7 @@ void AutofillManager::OnDidFillAutofillFormData(const FormData& form,
   // Find the FormStructure that corresponds to |form|. Use default form type if
   // form is not present in our cache, which will happen rarely.
 
-  FormStructure* form_structure =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
   DenseSet<FormType> form_types;
   if (form_structure) {
     form_types = form_structure->GetFormTypes();
@@ -1410,8 +1409,7 @@ void AutofillManager::SetDataList(const std::vector<std::u16string>& values,
 void AutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
   // Look for a cached version of the form. It will be a null pointer if none is
   // found, which is fine.
-  FormStructure* cached_form =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+  FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
 
   FormStructure* form_structure = ParseForm(form, cached_form);
   if (!form_structure)
@@ -1569,7 +1567,7 @@ void AutofillManager::Reset() {
   credit_card_action_ = AutofillDriver::FORM_DATA_ACTION_PREVIEW;
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
-  filling_context_by_renderer_id_.clear();
+  filling_context_by_global_id_.clear();
   filling_context_by_unique_name_.clear();
 }
 
@@ -1829,7 +1827,7 @@ std::unique_ptr<FormStructure> AutofillManager::ValidateSubmittedForm(
   // Ignore forms not present in our cache.  These are typically forms with
   // wonky JavaScript that also makes them not auto-fillable.
   FormStructure* cached_submitted_form =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+      FindCachedFormByRendererId(form.global_id());
   if (!cached_submitted_form || !ShouldUploadForm(*cached_submitted_form)) {
     return nullptr;
   }
@@ -2355,8 +2353,7 @@ void AutofillManager::SetFillingContext(
     const FormStructure& form,
     std::unique_ptr<FillingContext> context) {
   if (base::FeatureList::IsEnabled(features::kAutofillRefillWithRendererIds)) {
-    filling_context_by_renderer_id_[form.unique_renderer_id()] =
-        std::move(context);
+    filling_context_by_global_id_[form.global_id()] = std::move(context);
   } else {
     filling_context_by_unique_name_[form.GetIdentifierForRefill()] =
         std::move(context);
@@ -2367,9 +2364,9 @@ void AutofillManager::SetFillingContext(
 AutofillManager::FillingContext* AutofillManager::GetFillingContext(
     const FormStructure& form) {
   if (base::FeatureList::IsEnabled(features::kAutofillRefillWithRendererIds)) {
-    auto it = filling_context_by_renderer_id_.find(form.unique_renderer_id());
-    return it != filling_context_by_renderer_id_.end() ? it->second.get()
-                                                       : nullptr;
+    auto it = filling_context_by_global_id_.find(form.global_id());
+    return it != filling_context_by_global_id_.end() ? it->second.get()
+                                                     : nullptr;
   } else {
     auto it =
         filling_context_by_unique_name_.find(form.GetIdentifierForRefill());
@@ -2379,7 +2376,7 @@ AutofillManager::FillingContext* AutofillManager::GetFillingContext(
 }
 
 bool AutofillManager::ShouldTriggerRefill(const FormStructure& form_structure) {
-  // Should not refill if a form with the same FormRendererId has not been
+  // Should not refill if a form with the same FormGlobalId has not been
   // filled before.
   FillingContext* filling_context = GetFillingContext(form_structure);
   if (filling_context == nullptr)
@@ -2402,8 +2399,7 @@ bool AutofillManager::ShouldTriggerRefill(const FormStructure& form_structure) {
 }
 
 void AutofillManager::TriggerRefill(const FormData& form) {
-  FormStructure* form_structure =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
   if (!form_structure)
     return;
 
@@ -2429,19 +2425,18 @@ void AutofillManager::TriggerRefill(const FormData& form) {
   filling_context->attempted_refill = true;
 
   // Try to find the field from which the original field originated.
-  // Precedence is given to look up by |filled_field_renderer_id|.
+  // Precedence is given to look up by |filled_field_id|.
   // If that is unsuccessful, look up is done by |filled_field_signature|.
   // TODO(crbug/896689): Clean up after feature launch.
   AutofillField* autofill_field = nullptr;
   for (const std::unique_ptr<AutofillField>& field : *form_structure) {
     // TODO(crbug/896689): Clean up once experiment is over.
-    if ((base::FeatureList::IsEnabled(
-             features::kAutofillRefillWithRendererIds) &&
-         field->unique_renderer_id ==
-             filling_context->filled_field_renderer_id) ||
-        (!base::FeatureList::IsEnabled(
-             features::kAutofillRefillWithRendererIds) &&
-         field->unique_name() == filling_context->filled_field_unique_name)) {
+    if (((base::FeatureList::IsEnabled(
+              features::kAutofillRefillWithRendererIds) &&
+          field->global_id() == filling_context->filled_field_id) ||
+         (!base::FeatureList::IsEnabled(
+              features::kAutofillRefillWithRendererIds) &&
+          field->unique_name() == filling_context->filled_field_unique_name))) {
       autofill_field = field.get();
       break;
     }

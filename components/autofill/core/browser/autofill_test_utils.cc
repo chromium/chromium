@@ -71,24 +71,31 @@ std::string GetRandomCardNumber() {
   return value;
 }
 
-// Creates a non-empty LocalFrameToken (no variation among different calls).
+}  // namespace
+
 LocalFrameToken GetLocalFrameToken() {
   return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
 }
 
-// Creates new, pairwise distinct FormRendererIds.
 FormRendererId MakeFormRendererId() {
   static uint32_t counter = 10;
   return FormRendererId(counter++);
 }
 
-// Creates new, pairwise distinct FieldRendererIds.
 FieldRendererId MakeFieldRendererId() {
   static uint32_t counter = 10;
   return FieldRendererId(counter++);
 }
 
-}  // namespace
+// Creates new, pairwise distinct FormGlobalIds.
+FormGlobalId MakeFormGlobalId() {
+  return {GetLocalFrameToken(), MakeFormRendererId()};
+}
+
+// Creates new, pairwise distinct FieldGlobalIds.
+FieldGlobalId MakeFieldGlobalId() {
+  return {GetLocalFrameToken(), MakeFieldRendererId()};
+}
 
 void SetFormGroupValues(FormGroup& form_group,
                         const std::vector<FormGroupValue>& values) {

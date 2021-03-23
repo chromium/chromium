@@ -94,9 +94,9 @@ std::vector<base::FilePath> GetTestFiles() {
 }
 
 std::string FormStructuresToString(
-    const std::map<FormRendererId, std::unique_ptr<FormStructure>>& forms) {
+    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
   std::string forms_string;
-  // The forms are sorted by renderer ID, which should make the order
+  // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& kv : forms) {
     const auto* form = kv.second.get();

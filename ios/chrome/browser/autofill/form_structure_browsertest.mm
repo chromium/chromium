@@ -114,7 +114,7 @@ class FormStructureBrowserTest
 
   // Serializes the given |forms| into a string.
   std::string FormStructuresToString(
-      const std::map<FormRendererId, std::unique_ptr<FormStructure>>& forms);
+      const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms);
 
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
@@ -214,9 +214,9 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
 }
 
 std::string FormStructureBrowserTest::FormStructuresToString(
-    const std::map<FormRendererId, std::unique_ptr<FormStructure>>& forms) {
+    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
   std::string forms_string;
-  // The forms are sorted by renderer ID, which should make the order
+  // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& form_kv : forms) {
     const auto* form = form_kv.second.get();

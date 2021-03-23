@@ -871,7 +871,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Different form structure.
   FormData form2;
-  form2.unique_renderer_id.value() = 2;
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
@@ -903,7 +904,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormData form2;
   FormFieldData field;
   test::CreateTestFormField("Querty", "qwerty", "", "text", &field);
-  form2.unique_renderer_id.value() = 2;
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"NonQueryable";
   form2.url = form1.url;
   form2.action = GURL("https://myform.com/submit.html");
@@ -5113,7 +5115,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
-  form.unique_renderer_id.value() = 1;
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
@@ -5137,7 +5140,8 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
 
   // Second form on the page.
   FormData form2;
-  form2.unique_renderer_id.value() = 2;
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm2";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
@@ -8467,7 +8471,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   autofill_manager_->OnFormsSeen({form});
   FormStructure* parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+      autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_TRUE(parsed_form);
   ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
@@ -8475,8 +8479,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
   autofill_manager_->OnFormsSeen({form});
-  parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+  parsed_form = autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }
@@ -8491,7 +8494,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
 
   autofill_manager_->OnFormsSeen({form});
   FormStructure* parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+      autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_TRUE(parsed_form);
   ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
@@ -8502,8 +8505,7 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
-  parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+  parsed_form = autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }

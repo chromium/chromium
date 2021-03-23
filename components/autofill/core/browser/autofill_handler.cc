@@ -207,7 +207,7 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
   for (const FormData& form : forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
-        FindCachedFormByRendererId(form.unique_renderer_id);
+        FindCachedFormByRendererId(form.global_id());
 
     // Not updating signatures of credit card forms is legacy behaviour. We
     // believe that the signatures are kept stable for voting purposes.
@@ -248,7 +248,7 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
   DenseSet<FormType> form_types;
   for (const FormData* form : forms) {
     FormStructure* form_structure =
-        FindCachedFormByRendererId(form->unique_renderer_id);
+        FindCachedFormByRendererId(form->global_id());
     if (!form_structure) {
       NOTREACHED();
       continue;
@@ -363,8 +363,7 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
                                             FormStructure** form_structure,
                                             AutofillField** autofill_field) {
   // Maybe find an existing FormStructure that corresponds to |form|.
-  FormStructure* cached_form =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+  FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
   if (cached_form) {
     DCHECK(cached_form);
     if (!CachedFormNeedsUpdate(form, *cached_form)) {
@@ -421,8 +420,8 @@ size_t AutofillHandler::FindCachedFormsBySignature(
 }
 
 FormStructure* AutofillHandler::FindCachedFormByRendererId(
-    FormRendererId form_renderer_id) const {
-  auto it = form_structures_.find(form_renderer_id);
+    FormGlobalId form_id) const {
+  auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
 
@@ -468,7 +467,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   //
   // Note that this insert/update takes ownership of the new form structure
   // and also destroys the previously cached form structure.
-  form_structures_[parsed_form_structure->unique_renderer_id()] =
+  form_structures_[parsed_form_structure->global_id()] =
       std::move(form_structure);
 
   return parsed_form_structure;

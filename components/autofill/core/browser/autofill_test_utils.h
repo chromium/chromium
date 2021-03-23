@@ -68,6 +68,21 @@ struct FormGroupValue {
 // Convenience declaration for multiple FormGroup values.
 using FormGroupValues = std::vector<FormGroupValue>;
 
+// Creates a non-empty LocalFrameToken (no variation among different calls).
+LocalFrameToken GetLocalFrameToken();
+
+// Creates new, pairwise distinct FormRendererIds.
+FormRendererId MakeFormRendererId();
+
+// Creates new, pairwise distinct FieldRendererIds.
+FieldRendererId MakeFieldRendererId();
+
+// Creates new, pairwise distinct FormGlobalIds.
+FormGlobalId MakeFormGlobalId();
+
+// Creates new, pairwise distinct FieldGlobalIds.
+FieldGlobalId MakeFieldGlobalId();
+
 // Helper function to set values and verification statuses to a form group.
 void SetFormGroupValues(FormGroup& form_group,
                         const std::vector<FormGroupValue>& values);
