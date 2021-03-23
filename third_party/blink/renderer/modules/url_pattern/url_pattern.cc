@@ -834,17 +834,42 @@ URLPattern::URLPattern(Component* protocol,
       search_(search),
       hash_(hash) {}
 
-bool URLPattern::test(const USVStringOrURLPatternInit& input,
+bool URLPattern::test(URLPatternInit* input,
                       ExceptionState& exception_state) const {
-  return Match(input, /*result=*/nullptr, exception_state);
+  return MatchInit(input, /*result=*/nullptr, exception_state);
 }
 
-URLPatternResult* URLPattern::exec(const USVStringOrURLPatternInit& input,
+bool URLPattern::test(const String& input,
+                      const String& base_url,
+                      ExceptionState& exception_state) const {
+  return MatchString(input, base_url, /*result=*/nullptr, exception_state);
+}
+
+bool URLPattern::test(const String& input,
+                      ExceptionState& exception_state) const {
+  return test(input, /*base_url=*/String(), exception_state);
+}
+
+URLPatternResult* URLPattern::exec(URLPatternInit* input,
                                    ExceptionState& exception_state) const {
   URLPatternResult* result = URLPatternResult::Create();
-  if (!Match(input, result, exception_state))
+  if (!MatchInit(input, result, exception_state))
     return nullptr;
   return result;
+}
+
+URLPatternResult* URLPattern::exec(const String& input,
+                                   const String& base_url,
+                                   ExceptionState& exception_state) const {
+  URLPatternResult* result = URLPatternResult::Create();
+  if (!MatchString(input, base_url, result, exception_state))
+    return nullptr;
+  return result;
+}
+
+URLPatternResult* URLPattern::exec(const String& input,
+                                   ExceptionState& exception_state) const {
+  return exec(input, /*base_url=*/String(), exception_state);
 }
 
 String URLPattern::protocol() const {
@@ -970,9 +995,9 @@ URLPattern::Component* URLPattern::CompilePattern(
       std::move(wtf_name_list));
 }
 
-bool URLPattern::Match(const USVStringOrURLPatternInit& input,
-                       URLPatternResult* result,
-                       ExceptionState& exception_state) const {
+bool URLPattern::MatchInit(URLPatternInit* input,
+                           URLPatternResult* result,
+                           ExceptionState& exception_state) const {
   // By default each URL component value starts with an empty string.  The
   // given input is then layered on top of these defaults.
   String protocol(g_empty_string);
@@ -984,47 +1009,95 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
   String search(g_empty_string);
   String hash(g_empty_string);
 
-  if (input.IsURLPatternInit()) {
-    // Layer the URLPatternInit values on top of the default empty strings.
-    ApplyInit(input.GetAsURLPatternInit(), ValueType::kURL, protocol, username,
-              password, hostname, port, pathname, search, hash,
-              exception_state);
-    if (exception_state.HadException()) {
-      // Treat exceptions simply as a failure to match.
-      exception_state.ClearException();
-      return false;
-    }
-  } else {
-    DCHECK(input.IsUSVString());
-
-    // The compile the input string as a fully resolved URL.
-    KURL url(input.GetAsUSVString());
-    if (!url.IsValid() || url.IsEmpty()) {
-      // Treat as failure to match, but don't throw an exception.
-      return false;
-    }
-
-    // TODO: Support relative URLs here by taking a string in a second argument.
-
-    // Apply the parsed URL components on top of our defaults.
-    if (url.Protocol())
-      protocol = url.Protocol();
-    if (url.User())
-      username = url.User();
-    if (url.Pass())
-      password = url.Pass();
-    if (url.Host())
-      hostname = url.Host();
-    if (url.Port() > 0)
-      port = String::Number(url.Port());
-    if (url.GetPath())
-      pathname = url.GetPath();
-    if (url.Query())
-      search = url.Query();
-    if (url.FragmentIdentifier())
-      hash = url.FragmentIdentifier();
+  // Layer the URLPatternInit values on top of the default empty strings.
+  ApplyInit(input, ValueType::kURL, protocol, username, password, hostname,
+            port, pathname, search, hash, exception_state);
+  if (exception_state.HadException()) {
+    // Treat exceptions simply as a failure to match.
+    exception_state.ClearException();
+    return false;
   }
 
+  bool success = MatchInternal(protocol, username, password, hostname, port,
+                               pathname, search, hash, result, exception_state);
+
+  if (success && result)
+    result->setInput(USVStringOrURLPatternInit::FromURLPatternInit(input));
+
+  return success;
+}
+
+bool URLPattern::MatchString(const String& input,
+                             const String& base_url,
+                             URLPatternResult* result,
+                             ExceptionState& exception_state) const {
+  // By default each URL component value starts with an empty string.  The
+  // given input is then layered on top of these defaults.
+  String protocol(g_empty_string);
+  String username(g_empty_string);
+  String password(g_empty_string);
+  String hostname(g_empty_string);
+  String port(g_empty_string);
+  String pathname(g_empty_string);
+  String search(g_empty_string);
+  String hash(g_empty_string);
+
+  KURL parsed_base_url(base_url);
+  if (base_url && !parsed_base_url.IsValid()) {
+    // Treat as failure to match, but don't throw an exception.
+    return false;
+  }
+
+  // The compile the input string as a fully resolved URL.
+  KURL url(parsed_base_url, input);
+  if (!url.IsValid() || url.IsEmpty()) {
+    // Treat as failure to match, but don't throw an exception.
+    return false;
+  }
+
+  // Apply the parsed URL components on top of our defaults.
+  if (url.Protocol())
+    protocol = url.Protocol();
+  if (url.User())
+    username = url.User();
+  if (url.Pass())
+    password = url.Pass();
+  if (url.Host())
+    hostname = url.Host();
+  if (url.Port() > 0)
+    port = String::Number(url.Port());
+  if (url.GetPath())
+    pathname = url.GetPath();
+  if (url.Query())
+    search = url.Query();
+  if (url.FragmentIdentifier())
+    hash = url.FragmentIdentifier();
+
+  bool success = MatchInternal(protocol, username, password, hostname, port,
+                               pathname, search, hash, result, exception_state);
+
+  if (success && result) {
+    // If there is a base_url provided we expose the resulting fully resolved
+    // input in the result.  This is a bit weird since otherwise you get a
+    // non-canonicalized `result.input`, but it seems less weird than exposing
+    // an array or secondary property for the baseURL value.
+    result->setInput(USVStringOrURLPatternInit::FromUSVString(
+        base_url ? url.GetString() : input));
+  }
+
+  return success;
+}
+
+bool URLPattern::MatchInternal(const String& protocol,
+                               const String& username,
+                               const String& password,
+                               const String& hostname,
+                               const String& port,
+                               const String& pathname,
+                               const String& search,
+                               const String& hash,
+                               URLPatternResult* result,
+                               ExceptionState& exception_state) const {
   Vector<String> protocol_group_list;
   Vector<String> username_group_list;
   Vector<String> password_group_list;
@@ -1060,11 +1133,6 @@ bool URLPattern::Match(const USVStringOrURLPatternInit& input,
 
   if (!matched || !result)
     return matched;
-
-  // TODO: The result.input contains the data before canonicalization, but the
-  //       component results will contain inputs after canonicalization.  Is
-  //       this what we want?  See: https://github.com/WICG/urlpattern/issues/34
-  result->setInput(input);
 
   result->setProtocol(
       MakeComponentResult(protocol_, protocol, protocol_group_list));

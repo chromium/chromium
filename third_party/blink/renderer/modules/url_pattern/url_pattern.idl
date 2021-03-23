@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-typedef (USVString or URLPatternInit) URLPatternInput;
-
 // https://wicg.github.io/urlpattern/
 [
   SecureContext,
@@ -11,8 +9,13 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
   [RaisesException] constructor(URLPatternInit init);
-  [RaisesException] boolean test(URLPatternInput input);
-  [RaisesException] URLPatternResult exec(URLPatternInput input);
+
+  [RaisesException] boolean test(URLPatternInit input);
+  [RaisesException] boolean test(USVString input, optional USVString baseURL);
+
+  [RaisesException] URLPatternResult exec(URLPatternInit input);
+  [RaisesException] URLPatternResult exec(USVString input,
+                                          optional USVString baseURL);
 
   readonly attribute USVString protocol;
   readonly attribute USVString username;

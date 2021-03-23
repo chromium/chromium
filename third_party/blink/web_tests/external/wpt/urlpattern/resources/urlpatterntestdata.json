@@ -1453,5 +1453,23 @@
       "input": { "pathname": "var x = 1;" },
       "pathname": { "input": "var%20x%20=%201;", "groups": {}}
     }
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": "./foo/bar",
+    "inputBaseURL": "https://example.com",
+    "expected_match": {
+      "input": "https://example.com/foo/bar",
+      "hostname": { "input": "example.com", "groups": { "0": "example.com" } },
+      "pathname": { "input": "/foo/bar", "groups": {} },
+      "protocol": { "input": "https", "groups": { "0": "https" } }
+    }
+  },
+  {
+    "pattern": { "pathname": "/foo/bar" },
+    "input": { "pathname": "/foo/bar" },
+    "inputBaseURL": "https://example.com",
+    "expected_match": null,
+    "comment": "Fails to match because input object is coerced to a string."
   }
 ]
