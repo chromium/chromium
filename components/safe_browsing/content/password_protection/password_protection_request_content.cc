@@ -120,12 +120,10 @@ void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
 void PasswordProtectionRequestContent::MaybeAddPingToWebUI() {
   web_ui_token_ =
       WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
-  DCHECK(web_ui_token_);
 }
 
 void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
     const LoginReputationClientResponse& response) {
-  DCHECK(web_ui_token_);
   WebUIInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_, response);
 }
 
