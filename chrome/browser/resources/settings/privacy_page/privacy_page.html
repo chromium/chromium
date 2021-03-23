@@ -119,8 +119,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-                <h2>$i18n{siteSettingsAutomaticDownloadsDescription}</h2>
+            <div class="content-settings-header secondary">
+                $i18n{siteSettingsAutomaticDownloadsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
@@ -161,8 +161,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsBackgroundSyncDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsBackgroundSyncDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
@@ -204,8 +204,8 @@
           <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
           </media-picker>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsCameraDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsCameraDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.CAMERA]]"
@@ -267,8 +267,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsImagesDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsImagesDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.IMAGES]]"
@@ -335,8 +335,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsLocationDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsLocationDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.GEOLOCATION]]"
@@ -382,8 +382,8 @@
       <template is="dom-if" route-path="/content/zoomLevels" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsZoomLevelsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsZoomLevelsDescription}
             </div>
           </template>
           <zoom-levels></zoom-levels>
@@ -428,8 +428,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsJavascriptDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsJavascriptDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.JAVASCRIPT]]"
@@ -465,8 +465,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsSoundDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsSoundDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SOUND]]"
@@ -518,8 +518,8 @@
           <media-picker label="$i18n{siteSettingsMicrophoneLabel}" type="mic">
           </media-picker>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMicDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMicDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.MIC]]"
@@ -558,8 +558,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMotionSensorsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMotionSensorsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SENSORS]]"
@@ -598,7 +598,9 @@
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
             <div id="notificationRadioGroup" class="radio-group">
-              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <div class="secondary">
+                $i18n{siteSettingsNotificationsDescription}
+              </div>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div id="notificationSubHeading"
                 class="secondary radio-sub-heading">
@@ -678,8 +680,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsPopupsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsPopupsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.POPUPS]]"
@@ -717,8 +719,8 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <div class="content-settings-header">
-                <h2>$i18n{siteSettingsAdsDescription}</h2>
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsAdsDescription}
               </div>
               <settings-category-default-radio-group
                   category="[[ContentSettingsTypes.ADS]]"
@@ -757,8 +759,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMidiDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMidiDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.MIDI_DEVICES]]"
@@ -794,8 +796,8 @@
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsUsbDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsUsbDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.USB_DEVICES]]"
@@ -822,8 +824,8 @@
       <template is="dom-if" route-path="/content/serialPorts" no-search>
         <settings-subpage page-title="$i18n{siteSettingsSerialPorts}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsSerialPortsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsSerialPortsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SERIAL_PORTS]]"
@@ -852,8 +854,8 @@
         <template is="dom-if" route-path="/content/bluetoothDevices" no-search>
           <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <div class="content-settings-header">
-                <h2>$i18n{siteSettingsBluetoothDevicesDescription}</h2>
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsBluetoothDevicesDescription}
               </div>
               <settings-category-default-radio-group
                     category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
@@ -884,8 +886,8 @@
         <settings-subpage
             page-title="$i18n{siteSettingsFileSystemWrite}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsFileSystemWriteDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsFileSystemWriteDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
@@ -924,8 +926,8 @@
       <template is="dom-if" route-path="/content/hidDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsHidDevicesDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsHidDevicesDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.HID_DEVICES]]"
@@ -980,7 +982,9 @@
 </if>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
             <div class="radio-group">
-              <h2>$i18n{siteSettingsProtectedContentDescription}</h2>
+              <div class="secondary">
+                $i18n{siteSettingsProtectedContentDescription}
+              </div>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
@@ -1016,7 +1020,9 @@
 <if expr="chromeos or is_win">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
              <div class="radio-group">
-              <h2>$i18n{siteSettingsProtectedContentDescription}</h2>
+              <div class="secondary">
+                $i18n{siteSettingsProtectedContentDescription}
+              </div>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
@@ -1083,8 +1089,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsClipboardDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsClipboardDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.CLIPBOARD]]"
@@ -1121,8 +1127,8 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <div class="content-settings-header">
-                <h2>$i18n{siteSettingsPaymentHandlersDescription}</h2>
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsPaymentHandlersDescription}
               </div>
               <settings-category-default-radio-group
                   category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
@@ -1184,8 +1190,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsVrDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsVrDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.VR]]"
@@ -1224,8 +1230,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsArDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsArDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.AR]]"

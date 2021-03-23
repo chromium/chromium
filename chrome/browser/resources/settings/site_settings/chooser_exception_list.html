@@ -1,9 +1,13 @@
     <style include="cr-shared-style settings-shared">
+      #empty-list-message {
+        padding: 0 var(--cr-section-padding);
+        padding-top: 30px;
+      }
     </style>
 
-    <div class="list-frame" id="empty-list-message"
+    <div id="empty-list-message"
         hidden$="[[hasExceptions_(chooserExceptions.*)]]">
-      <div class="list-item secondary">[[emptyListMessage_]]</div>
+      <div class="secondary">[[emptyListMessage_]]</div>
     </div>
 
     <template is="dom-repeat" items="[[chooserExceptions]]">
