@@ -142,12 +142,12 @@ SpdySessionPool::~SpdySessionPool() {
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
-base::WeakPtr<SpdySession>
-SpdySessionPool::CreateAvailableSessionFromSocketHandle(
+int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const SpdySessionKey& key,
     bool is_trusted_proxy,
     std::unique_ptr<ClientSocketHandle> client_socket_handle,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    base::WeakPtr<SpdySession>* session) {
   TRACE_EVENT0(NetTracingCategory(),
                "SpdySessionPool::CreateAvailableSessionFromSocketHandle");
 
@@ -158,8 +158,16 @@ SpdySessionPool::CreateAvailableSessionFromSocketHandle(
 
   new_session->InitializeWithSocketHandle(std::move(client_socket_handle),
                                           this);
-  return InsertSession(key, std::move(new_session), net_log,
-                       std::move(dns_aliases));
+  *session = InsertSession(key, std::move(new_session), net_log,
+                           std::move(dns_aliases));
+
+  if (!(*session)->HasAcceptableTransportSecurity()) {
+    (*session)->CloseSessionOnError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY,
+                                    "");
+    return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
+  }
+
+  return OK;
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(

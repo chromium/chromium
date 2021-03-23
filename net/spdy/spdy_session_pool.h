@@ -161,15 +161,19 @@ class NET_EXPORT SpdySessionPool
   // Create a new SPDY session from an existing socket.  There must
   // not already be a session for the given key.
   //
-  // Returns the new SpdySession. Note that the SpdySession begins reading from
-  // |client_socket_handle| on a subsequent event loop iteration, so it may be
-  // closed immediately afterwards if the first read of |client_socket_handle|
-  // fails.
-  base::WeakPtr<SpdySession> CreateAvailableSessionFromSocketHandle(
+  // Returns OK on success and sets |*session| to point to the new SpdySession.
+  // Returns a net error code on failure, in which case the value of |*session|
+  // is undefined.
+  //
+  // Note that the SpdySession begins reading from |client_socket_handle| on a
+  // subsequent event loop iteration, so it may be closed immediately afterwards
+  // if the first read of |client_socket_handle| fails.
+  int CreateAvailableSessionFromSocketHandle(
       const SpdySessionKey& key,
       bool is_trusted_proxy,
       std::unique_ptr<ClientSocketHandle> client_socket_handle,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& net_log,
+      base::WeakPtr<SpdySession>* session);
 
   // Just like the above method, except it takes a SocketStream instead of a
   // ClientSocketHandle, and separate connect timing information. When this

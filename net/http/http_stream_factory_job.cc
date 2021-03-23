@@ -1152,15 +1152,14 @@ int HttpStreamFactory::Job::DoCreateStream() {
   bool is_trusted_proxy =
       !spdy_session_direct_ && proxy_info_.proxy_server().is_trusted_proxy();
 
-  base::WeakPtr<SpdySession> spdy_session =
+  base::WeakPtr<SpdySession> spdy_session;
+  int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          spdy_session_key_, is_trusted_proxy, std::move(connection_),
-          net_log_);
+          spdy_session_key_, is_trusted_proxy, std::move(connection_), net_log_,
+          &spdy_session);
 
-  if (!spdy_session->HasAcceptableTransportSecurity()) {
-    spdy_session->CloseSessionOnError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY,
-                                      "");
-    return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
+  if (rv != OK) {
+    return rv;
   }
 
   url::SchemeHostPort scheme_host_port(
