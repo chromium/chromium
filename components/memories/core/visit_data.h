@@ -61,6 +61,17 @@ struct VisitContextSignals {
 };
 
 struct MemoriesVisit {
+  MemoriesVisit(int64_t navigation_id, GURL url)
+      : navigation_id(navigation_id), url(url) {}
+
+  // This field is used to uniquely identify visits during initial logging, but
+  // should NOT be persisted.
+  int64_t navigation_id;
+
+  // This is used to track if the page-end metrics for this visit have been
+  // recorded already. This should also NOT be persisted.
+  bool page_end_metrics_recorded = false;
+
   // The GURL of the visited page.
   GURL url;
 

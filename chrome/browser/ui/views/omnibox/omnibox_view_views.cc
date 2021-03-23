@@ -24,6 +24,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/url_elision_policy.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
@@ -48,8 +49,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -2368,13 +2367,9 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
     if (location_bar_view_) {
       auto* web_contents = location_bar_view_->GetWebContents();
       if (web_contents) {
-        auto* metrics =
-            page_load_metrics::MetricsWebContentsObserver::FromWebContents(
-                web_contents);
-        if (metrics) {
-          metrics->BroadcastEventToObservers(
-              page_load_metrics::PageLoadMetricsEvent::
-                  OMNIBOX_URL_COPIED_TO_CLIPBOARD);
+        if (auto* clusters_helper =
+                HistoryClustersTabHelper::FromWebContents(web_contents)) {
+          clusters_helper->LogUrlCopied();
         }
       }
     }

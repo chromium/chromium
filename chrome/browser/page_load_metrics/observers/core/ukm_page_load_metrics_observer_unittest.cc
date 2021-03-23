@@ -15,6 +15,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/history/history_tab_helper.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -26,6 +29,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/memories/core/memories_service.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -116,6 +120,12 @@ class UkmPageLoadMetricsObserverTest
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    HistoryTabHelper::CreateForWebContents(web_contents());
+    HistoryTabHelper::FromWebContents(web_contents())
+        ->SetForceEligibleTabForTesting(true);
+
+    HistoryClustersTabHelper::CreateForWebContents(web_contents());
   }
 
   MockNetworkQualityProvider& mock_network_quality_provider() {
@@ -2021,18 +2031,30 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
 #endif  // !defined(OS_ANDROID)
 
 TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
+  // TODO(tommycli): Should we move this test to either MemoriesService or
+  // HistoryClustersTabHelper? On the one hand, the logic resides there.
+  // On the other hand this serves as a good integration test with UKM.
   GURL url(kTestUrl1);
 
   NavigateAndCommit(url);
 
   // Fake that we visited this site 45 days ago.
-  base::TimeDelta timestamp =
-      observer()->committed_history_timestamp_.ToDeltaSinceWindowsEpoch();
+  HistoryClustersTabHelper* helper =
+      HistoryClustersTabHelper::FromWebContents(web_contents());
+  ASSERT_EQ(1u, helper->visits_.size());
+  const memories::MemoriesVisit& visit = helper->visits_[0];
+  base::TimeDelta timestamp = visit.visit_time.ToDeltaSinceWindowsEpoch();
+
   base::Time fake_last_visit_time = base::Time::FromDeltaSinceWindowsEpoch(
       timestamp - base::TimeDelta::FromDays(45));
+  const int64_t expected_duration_since_last_visit =
+      base::TimeDelta::FromDays(30).InSeconds();
 
   // Fake a HistoryService response.
-  observer()->OnURLLastVisitResult({true, fake_last_visit_time});
+  helper->PreviousVisitToUrlCallback(visit.navigation_id,
+                                     {true, fake_last_visit_time});
+  EXPECT_EQ(expected_duration_since_last_visit,
+            visit.context_signals.duration_since_last_visit_seconds);
 
   DeleteContents();
 
@@ -2045,7 +2067,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kDurationSinceLastVisitSecondsName,
-      base::TimeDelta::FromDays(30).InSeconds());
+      expected_duration_since_last_visit);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,

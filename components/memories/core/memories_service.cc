@@ -21,16 +21,9 @@ MemoriesService::~MemoriesService() = default;
 
 void MemoriesService::Shutdown() {}
 
-void MemoriesService::AddVisit(const GURL& url,
-                               const base::Time& time,
-                               const VisitContextSignals& context_signals) {
-  if (!base::FeatureList::IsEnabled(kMemories))
+void MemoriesService::AddVisit(const MemoriesVisit& visit) {
+  if (!base::FeatureList::IsEnabled(memories::kMemories))
     return;
-
-  MemoriesVisit visit;
-  visit.url = url;
-  visit.visit_time = time;
-  visit.context_signals = context_signals;
 
   // TODO(tommycli/manukh): It sure seems like we need to get the History
   // visit_id. Probably we need to plumb the navigation ID from the caller of

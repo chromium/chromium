@@ -14,31 +14,25 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "build/build_config.h"
 #include "cc/metrics/ukm_smoothness_data.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history_clusters/memories_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/memories/core/memories_service.h"
+#include "components/memories/core/visit_data.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
@@ -61,16 +55,6 @@
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
-
-#if !defined(OS_ANDROID)
-#include "base/containers/contains.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/ntp_tiles/custom_links_store.h"
-#else  // defined(OS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
-#endif  // defined(OS_ANDROID)
 
 namespace {
 
@@ -154,37 +138,6 @@ int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
   return bucketed * unit + offset;
 }
 
-bool IsPageInTabGroup(content::WebContents* contents) {
-  DCHECK(contents);
-
-#if !defined(OS_ANDROID)
-  if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
-    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
-    if (tab_index != TabStripModel::kNoTab &&
-        browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {
-      return true;
-    }
-  }
-#else   // defined(OS_ANDROID)
-  TabAndroid* const tab = TabAndroid::FromWebContents(contents);
-  if (!tab)
-    return false;
-  return TabModelJniBridge::HasOtherRelatedTabs(tab);
-#endif  // defined(OS_ANDROID)
-  return false;
-}
-
-// Pass in a separate |url| parameter to ensure that we check the same URL that
-// is being logged in History.
-bool IsPageBookmarked(content::WebContents* contents, const GURL& url) {
-  DCHECK(contents);
-  DCHECK(contents->GetBrowserContext());
-
-  bookmarks::BookmarkModel* model =
-      BookmarkModelFactory::GetForBrowserContext(contents->GetBrowserContext());
-  return model && model->IsBookmarked(url);
-}
-
 }  // namespace
 
 // static
@@ -209,8 +162,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  navigation_start_for_history_ = base::Time::Now();
-
+  navigation_id_ = navigation_handle->GetNavigationId();
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   is_portal_ = web_contents->IsPortal();
 
@@ -301,39 +253,6 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                    ->GetSiteInstance()
                                    ->GetLastProcessAssignmentOutcome();
 
-  // Save these at commit time to align with what's recorded in History.
-  committed_url_ = web_contents->GetLastCommittedURL();
-  committed_history_timestamp_ =
-      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp();
-
-  memories_signals_.is_existing_part_of_tab_group =
-      IsPageInTabGroup(web_contents);
-  memories_signals_.is_existing_bookmark =
-      IsPageBookmarked(web_contents, committed_url_);
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfileIfExists(
-          profile, ServiceAccessType::IMPLICIT_ACCESS);
-  if (history_service) {
-    // Set the |end_time| parameter to |navigation_start_for_history_|, because
-    // we want to get the timestamp of the previous visit, and never
-    // accidentally get the timestamp of the current visit.
-    // |navigation_start_for_history_| is before the commit time of the current
-    // visit, so it should exclude the current visit.
-    //
-    // Moreover, there's a race in which this object can be destroyed before
-    // HistoryService returns, in which case we should record -1 for this UKM.
-    //
-    // PrefetchProxyPageLoadMetricsObserver has the same approach in both cases.
-    history_service->GetLastVisitToURL(
-        committed_url_, navigation_start_for_history_ /* end_time */,
-        base::BindOnce(&UkmPageLoadMetricsObserver::OnURLLastVisitResult,
-                       weak_factory_.GetWeakPtr()),
-        &task_tracker_);
-  }
-
   return CONTINUE_OBSERVING;
 }
 
@@ -422,8 +341,6 @@ void UkmPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (is_portal_)
     return;
-
-  task_tracker_.TryCancelAll();
 
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (!was_hidden_) {
@@ -1097,29 +1014,21 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
 }
 
 void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
-    ukm::builders::PageLoad& builder) {
-  // Compute page-end Memories signals.
+    ukm::builders::PageLoad& builder,
+    const page_load_metrics::PageEndReason page_end_reason) {
   content::WebContents* web_contents = GetDelegate().GetWebContents();
-  memories_signals_.is_placed_in_tab_group =
-      !memories_signals_.is_existing_part_of_tab_group &&
-      IsPageInTabGroup(web_contents);
-  memories_signals_.is_new_bookmark =
-      !memories_signals_.is_existing_bookmark &&
-      IsPageBookmarked(web_contents, committed_url_);
-
-// Android does not have NTP Custom Links.
-#if !defined(OS_ANDROID)
-  {
-    // This queries the prefs directly if |committed_url_| is stored as an NTP
-    // custom link, bypassing the CustomLinksManager.
-    PrefService* pref_service =
-        Profile::FromBrowserContext(browser_context_)->GetPrefs();
-    ntp_tiles::CustomLinksStore custom_link_store(pref_service);
-    memories_signals_.is_ntp_custom_link =
-        base::Contains(custom_link_store.RetrieveLinks(), committed_url_,
-                       [](const auto& link) { return link.url; });
-  }
-#endif  // !defined(OS_ANDROID)
+  DCHECK(web_contents);
+  HistoryClustersTabHelper* clusters_helper =
+      HistoryClustersTabHelper::FromWebContents(web_contents);
+  if (!clusters_helper)
+    return;
+  base::Optional<memories::MemoriesVisit> visit =
+      clusters_helper->UpdatePageEndReasonAndGetVisitForUkm(navigation_id_,
+                                                            page_end_reason);
+  if (!visit)
+    return;
+  const memories::VisitContextSignals& memories_signals =
+      visit->context_signals;
 
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
@@ -1127,22 +1036,15 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   //
   // Please note: We don't record everything in |memories_signals_| into UKM,
   // because some of these signals are already recorded elsewhere.
-  builder.SetOmniboxUrlCopied(memories_signals_.omnibox_url_copied);
+  builder.SetOmniboxUrlCopied(memories_signals.omnibox_url_copied);
   builder.SetIsExistingPartOfTabGroup(
-      memories_signals_.is_existing_part_of_tab_group);
-  builder.SetIsPlacedInTabGroup(memories_signals_.is_placed_in_tab_group);
-  builder.SetIsExistingBookmark(memories_signals_.is_existing_bookmark);
-  builder.SetIsNewBookmark(memories_signals_.is_new_bookmark);
-  builder.SetIsNTPCustomLink(memories_signals_.is_ntp_custom_link);
+      memories_signals.is_existing_part_of_tab_group);
+  builder.SetIsPlacedInTabGroup(memories_signals.is_placed_in_tab_group);
+  builder.SetIsExistingBookmark(memories_signals.is_existing_bookmark);
+  builder.SetIsNewBookmark(memories_signals.is_new_bookmark);
+  builder.SetIsNTPCustomLink(memories_signals.is_ntp_custom_link);
   builder.SetDurationSinceLastVisitSeconds(
-      memories_signals_.duration_since_last_visit_seconds);
-
-  // Forward the finished structure to the MemoriesService for local recording.
-  memories::MemoriesService* service =
-      MemoriesServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  service->AddVisit(committed_url_, committed_history_timestamp_,
-                    memories_signals_);
+      memories_signals.duration_since_last_visit_seconds);
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
@@ -1256,14 +1158,13 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
 
   // GetDelegate().GetPageEndReason() fits in a uint32_t, so we can safely cast
   // to int64_t.
-  memories_signals_.page_end_reason = GetDelegate().GetPageEndReason();
-  if (memories_signals_.page_end_reason ==
-          page_load_metrics::PageEndReason::END_NONE &&
+  auto page_end_reason = GetDelegate().GetPageEndReason();
+  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
       app_entered_background) {
-    memories_signals_.page_end_reason =
+    page_end_reason =
         page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
   }
-  builder.SetNavigation_PageEndReason3(memories_signals_.page_end_reason);
+  builder.SetNavigation_PageEndReason3(page_end_reason);
   bool is_user_initiated_navigation =
       // All browser initiated page loads are user-initiated.
       GetDelegate().GetUserInitiatedInfo().browser_initiated ||
@@ -1275,7 +1176,7 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   if (timing)
     RecordAbortMetrics(*timing, page_end_time, &builder);
 
-  RecordMemoriesMetrics(builder);
+  RecordMemoriesMetrics(builder, page_end_reason);
 
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1385,14 +1286,6 @@ void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(
     total_foreground_cpu_time_ += timing.task_time;
 }
 
-void UkmPageLoadMetricsObserver::OnEventOccurred(
-    page_load_metrics::PageLoadMetricsEvent event) {
-  if (event == page_load_metrics::PageLoadMetricsEvent::
-                   OMNIBOX_URL_COPIED_TO_CLIPBOARD) {
-    memories_signals_.omnibox_url_copied = true;
-  }
-}
-
 void UkmPageLoadMetricsObserver::DidActivatePortal(
     base::TimeTicks activation_time) {
   is_portal_ = false;
@@ -1484,22 +1377,4 @@ void UkmPageLoadMetricsObserver::OnLoadingBehaviorObserved(
                           kLoadingBehaviorCompetingLowPriorityRequestsDelayed) {
     delay_competing_low_priority_requests_seen_ = true;
   }
-}
-
-void UkmPageLoadMetricsObserver::OnURLLastVisitResult(
-    history::HistoryLastVisitResult result) {
-  if (!result.success || result.last_visit.is_null())
-    return;
-
-  base::TimeDelta since_last_visit =
-      committed_history_timestamp_ - result.last_visit;
-
-  // Clamp to 30 days maximum to match the UKM retention period.
-  const base::TimeDelta kMaxDurationClamp = base::TimeDelta::FromDays(30);
-  if (since_last_visit > kMaxDurationClamp) {
-    since_last_visit = kMaxDurationClamp;
-  }
-
-  memories_signals_.duration_since_last_visit_seconds =
-      since_last_visit.InSeconds();
 }

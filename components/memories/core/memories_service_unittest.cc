@@ -65,8 +65,8 @@ TEST_F(MemoriesServiceTest, GetMemories) {
       memories::kMemories,
       {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(
@@ -101,8 +101,8 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyEndpoint) {
   feature_list.InitAndEnableFeatureWithParameters(
       memories::kMemories, {{memories::kMemoriesRemoteModelEndpointParam, ""}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   memories_service_->GetMemories(
       base::BindLambdaForTesting([&](memories::Memories memories) {
@@ -125,8 +125,8 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyResponse) {
       memories::kMemories,
       {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(
@@ -154,8 +154,8 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithInvalidJsonResponse) {
       memories::kMemories,
       {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(
@@ -183,8 +183,8 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithBadResponse) {
       memories::kMemories,
       {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(
@@ -212,8 +212,8 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithPendingRequest) {
       memories::kMemories,
       {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
 
-  memories_service_->AddVisit(GURL{"google.com"}, {}, {});
-  memories_service_->AddVisit(GURL{"github.com"}, {}, {});
+  memories_service_->AddVisit(memories::MemoriesVisit(0, GURL{"google.com"}));
+  memories_service_->AddVisit(memories::MemoriesVisit(1, GURL{"github.com"}));
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(

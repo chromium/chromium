@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/memories/core/memories_remote_model_helper.h"
@@ -33,9 +34,7 @@ class MemoriesService : public KeyedService {
 
   // Adds a visit to the memories service for processing into History and
   // memory generation.
-  void AddVisit(const GURL& url,
-                const base::Time& time,
-                const VisitContextSignals& context_signals);
+  void AddVisit(const MemoriesVisit& visit);
 
   // Asks |remote_model_helper_| to construct memories from |visits_|.
   void GetMemories(MemoriesCallback callback);

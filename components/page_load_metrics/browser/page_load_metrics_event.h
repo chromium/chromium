@@ -13,7 +13,6 @@ namespace page_load_metrics {
 enum class PageLoadMetricsEvent {
   PREVIEWS_OPT_OUT,
   PREFETCH_LIKELY,
-  OMNIBOX_URL_COPIED_TO_CLIPBOARD,
 };
 
 }  // namespace page_load_metrics

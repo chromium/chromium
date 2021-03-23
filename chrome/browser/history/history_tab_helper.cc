@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -172,31 +173,13 @@ void HistoryTabHelper::DidFinishNavigation(
       web_contents()->GetLastCommittedURL(), last_committed->GetTimestamp(),
       last_committed->GetUniqueID(), navigation_handle);
 
-#if defined(OS_ANDROID)
-  auto* background_tab_manager = BackgroundTabManager::GetInstance();
-  if (background_tab_manager->IsBackgroundTab(web_contents())) {
-    // No history insertion is done for now since this is a tab that speculates
-    // future navigations. Just caching and returning for now.
-    background_tab_manager->CacheHistory(add_page_args);
+  if (!IsEligibleTab(add_page_args))
     return;
-  }
-#else
-  // Don't update history if this web contents isn't associated with a tab.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!browser)
-    return;
-#endif
-
-  HistoryClustersTabHelper* clusters_tab_helper =
-      HistoryClustersTabHelper::FromWebContents(web_contents());
-  if (clusters_tab_helper) {
-    clusters_tab_helper->WillUpdateHistoryForNavigation(navigation_handle,
-                                                        add_page_args);
-  }
 
   UpdateHistoryForNavigation(add_page_args);
 
-  if (clusters_tab_helper) {
+  if (HistoryClustersTabHelper* clusters_tab_helper =
+          HistoryClustersTabHelper::FromWebContents(web_contents())) {
     clusters_tab_helper->DidUpdateHistoryForNavigation(navigation_handle,
                                                        add_page_args);
   }
@@ -293,6 +276,26 @@ void HistoryTabHelper::WebContentsDestroyed() {
     }
     hs->ClearCachedDataForContextID(context_id);
   }
+}
+
+bool HistoryTabHelper::IsEligibleTab(
+    const history::HistoryAddPageArgs& add_page_args) const {
+  if (force_eligibile_tab_for_testing_)
+    return true;
+
+#if defined(OS_ANDROID)
+  auto* background_tab_manager = BackgroundTabManager::GetInstance();
+  if (background_tab_manager->IsBackgroundTab(web_contents())) {
+    // No history insertion is done for now since this is a tab that speculates
+    // future navigations. Just caching and returning for now.
+    background_tab_manager->CacheHistory(add_page_args);
+    return false;
+  }
+  return true;
+#else
+  // Don't update history if this web contents isn't associated with a tab.
+  return chrome::FindBrowserWithWebContents(web_contents()) != nullptr;
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper)
