@@ -57,7 +57,7 @@ template("cipd_package_definition") {
   _yaml_contents = [
     "package: ${invoker.package}",
     "description: ${invoker.description}",
-    "root: \${outdir}/" + rebase_path(_package_staging_dir, root_build_dir),
+    "root: " + rebase_path(_package_staging_dir),
     "install_mode: ${_install_mode}",
     "data:",
   ]
