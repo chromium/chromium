@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -667,18 +668,9 @@ bool NativeViewGLSurfaceGLX::Initialize(GLSurfaceFormat format) {
     presentation_helper_ =
         std::make_unique<GLSurfacePresentationHelper>(vsync_provider_.get());
   } else {
-    // Assume a refresh rate of 59.9 Hz, which will cause us to skip
-    // 1 frame every 10 seconds on a 60Hz monitor, but will prevent us
-    // from blocking the GPU service due to back pressure. This would still
-    // encounter backpressure on a <60Hz monitor, but hopefully that is
-    // not common.
-    const base::TimeTicks kDefaultTimebase;
-    const base::TimeDelta kDefaultInterval =
-        base::TimeDelta::FromSeconds(1) / 59.9;
-    vsync_provider_ = std::make_unique<gfx::FixedVSyncProvider>(
-        kDefaultTimebase, kDefaultInterval);
+    vsync_provider_ = std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>();
     presentation_helper_ = std::make_unique<GLSurfacePresentationHelper>(
-        kDefaultTimebase, kDefaultInterval);
+        base::TimeTicks(), ui::GetPrimaryDisplayRefreshIntervalFromXrandr());
   }
 
   return true;
