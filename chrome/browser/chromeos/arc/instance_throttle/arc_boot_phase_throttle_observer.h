@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_INSTANCE_THROTTLE_ARC_BOOT_PHASE_THROTTLE_OBSERVER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/chromeos/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"

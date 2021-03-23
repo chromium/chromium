@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "chrome/browser/extensions/api/messaging/native_message_built_in_host.h"

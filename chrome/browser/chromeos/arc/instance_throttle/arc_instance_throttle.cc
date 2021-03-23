@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/chromeos/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/chromeos/arc/instance_throttle/arc_active_window_throttle_observer.h"
 #include "chrome/browser/chromeos/arc/instance_throttle/arc_app_launch_throttle_observer.h"
 #include "chrome/browser/chromeos/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
