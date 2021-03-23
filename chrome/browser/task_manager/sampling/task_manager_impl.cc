@@ -259,11 +259,11 @@ void TaskManagerImpl::GetTerminationStatus(TaskId task_id,
 }
 
 int64_t TaskManagerImpl::GetNetworkUsage(TaskId task_id) const {
-  return GetTaskByTaskId(task_id)->network_usage_rate();
+  return GetTaskByTaskId(task_id)->GetNetworkUsageRate();
 }
 
 int64_t TaskManagerImpl::GetCumulativeNetworkUsage(TaskId task_id) const {
-  return GetTaskByTaskId(task_id)->cumulative_network_usage();
+  return GetTaskByTaskId(task_id)->GetCumulativeNetworkUsage();
 }
 
 int64_t TaskManagerImpl::GetProcessTotalNetworkUsage(TaskId task_id) const {

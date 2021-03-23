@@ -63,8 +63,7 @@ std::u16string Task::GetProfileNameFromProfile(Profile* profile) {
   return entry ? entry->GetName() : std::u16string();
 }
 
-void Task::Activate() {
-}
+void Task::Activate() {}
 
 bool Task::IsKillable() {
   // Protects from trying to kill a task that doesn't have an accurate process
@@ -184,6 +183,14 @@ int Task::GetKeepaliveCount() const {
 
 bool Task::IsRunningInVM() const {
   return false;
+}
+
+int64_t Task::GetNetworkUsageRate() const {
+  return network_sent_rate_ + network_read_rate_;
+}
+
+int64_t Task::GetCumulativeNetworkUsage() const {
+  return cumulative_bytes_sent_ + cumulative_bytes_read_;
 }
 
 // static

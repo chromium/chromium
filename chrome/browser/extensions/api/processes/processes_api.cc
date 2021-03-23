@@ -110,6 +110,9 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
+    // TODO(crbug.com/1186464): Do not expose lacros tasks for now. Defer
+    // the decision until further discussion is made.
+    case task_manager::Task::LACROS:
       return api::processes::PROCESS_TYPE_OTHER;
   }
 

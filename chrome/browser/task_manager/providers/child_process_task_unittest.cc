@@ -141,7 +141,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   task->OnNetworkBytesRead(bytes_read);
   task->Refresh(base::TimeDelta::FromSeconds(1), REFRESH_TYPE_NETWORK_USAGE);
 
-  EXPECT_EQ(bytes_read, task->network_usage_rate());
+  EXPECT_EQ(bytes_read, task->GetNetworkUsageRate());
 
   // Clearing the observer won't notify us of any tasks removals even though
   // tasks will be actually deleted.

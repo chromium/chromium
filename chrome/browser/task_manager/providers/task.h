@@ -56,6 +56,9 @@ class Task {
     DEDICATED_WORKER, /* A dedicated worker running on the renderer process. */
     SHARED_WORKER,    /* A shared worker running on the renderer process. */
     SERVICE_WORKER,   /* A service worker running on the renderer process. */
+
+    /* Lacros task. */
+    LACROS, /* A task from lacros-chrome */
   };
 
   // Create a task with the given |title| and the given favicon |icon|. This
@@ -155,22 +158,17 @@ class Task {
   // Returns true if the task is running inside a VM.
   virtual bool IsRunningInVM() const;
 
-  int64_t task_id() const { return task_id_; }
-
   // Returns the instantaneous rate, in bytes per second, of network usage
   // (sent and received), as measured over the last refresh cycle.
-  int64_t network_usage_rate() const {
-    return network_sent_rate_ + network_read_rate_;
-  }
+  virtual int64_t GetNetworkUsageRate() const;
 
   // Returns the cumulative number of bytes of network use (sent and received)
   // over the tasks lifetime. It is calculated independently of refreshes and
   // is based on the current |cumulative_bytes_read_| and
   // |cumulative_bytes_sent_|.
-  int64_t cumulative_network_usage() const {
-    return cumulative_bytes_sent_ + cumulative_bytes_read_;
-  }
+  virtual int64_t GetCumulativeNetworkUsage() const;
 
+  int64_t task_id() const { return task_id_; }
   const std::u16string& title() const { return title_; }
   const gfx::ImageSkia& icon() const { return icon_; }
   const base::ProcessHandle& process_handle() const { return process_handle_; }
