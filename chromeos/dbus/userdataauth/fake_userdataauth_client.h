@@ -49,6 +49,18 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                       MassRemoveKeysCallback callback) override;
   void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
                   MigrateKeyCallback callback) override;
+  void StartFingerprintAuthSession(
+      const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
+      StartFingerprintAuthSessionCallback callback) override;
+  void EndFingerprintAuthSession(
+      const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
+      EndFingerprintAuthSessionCallback callback) override;
+  void StartAuthSession(
+      const ::user_data_auth::StartAuthSessionRequest& request,
+      StartAuthSessionCallback callback) override;
+  void AuthenticateAuthSession(
+      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+      AuthenticateAuthSessionCallback callback) override;
 };
 
 }  // namespace chromeos

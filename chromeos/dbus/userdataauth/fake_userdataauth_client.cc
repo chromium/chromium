@@ -76,6 +76,27 @@ void FakeUserDataAuthClient::MigrateKey(
     MigrateKeyCallback callback) {
   NOTIMPLEMENTED();
 }
+void FakeUserDataAuthClient::StartFingerprintAuthSession(
+    const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
+    StartFingerprintAuthSessionCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::EndFingerprintAuthSession(
+    const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
+    EndFingerprintAuthSessionCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::StartAuthSession(
+    const ::user_data_auth::StartAuthSessionRequest& request,
+    StartAuthSessionCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::AuthenticateAuthSession(
+    const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+    AuthenticateAuthSessionCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   NOTIMPLEMENTED();

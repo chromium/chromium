@@ -52,6 +52,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::MassRemoveKeysReply>;
   using MigrateKeyCallback =
       DBusMethodCallback<::user_data_auth::MigrateKeyReply>;
+  using StartFingerprintAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::StartFingerprintAuthSessionReply>;
+  using EndFingerprintAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::EndFingerprintAuthSessionReply>;
+  using StartAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::StartAuthSessionReply>;
+  using AuthenticateAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::AuthenticateAuthSessionReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -129,6 +137,26 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Change the user vault's key's authentication.
   virtual void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
                           MigrateKeyCallback callback) = 0;
+
+  // Starts a fingerprint auth session.
+  virtual void StartFingerprintAuthSession(
+      const ::user_data_auth::StartFingerprintAuthSessionRequest& request,
+      StartFingerprintAuthSessionCallback callback) = 0;
+
+  // Ends a fingerprint auth session.
+  virtual void EndFingerprintAuthSession(
+      const ::user_data_auth::EndFingerprintAuthSessionRequest& request,
+      EndFingerprintAuthSessionCallback callback) = 0;
+
+  // Starts an auth session.
+  virtual void StartAuthSession(
+      const ::user_data_auth::StartAuthSessionRequest& request,
+      StartAuthSessionCallback callback) = 0;
+
+  // Attempts to authenticate with the given auth session.
+  virtual void AuthenticateAuthSession(
+      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+      AuthenticateAuthSessionCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
