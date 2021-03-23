@@ -108,11 +108,7 @@ void SpeechRecognitionRecognizerImpl::Create(
 }
 
 bool SpeechRecognitionRecognizerImpl::IsMultichannelSupported() {
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    return true;
-  } else {
-    return false;
-  }
+  return false;
 }
 
 void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
