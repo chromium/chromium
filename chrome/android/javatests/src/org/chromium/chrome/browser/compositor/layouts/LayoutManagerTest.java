@@ -184,7 +184,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount,
             int standardIndexSelected, int incognitoIndexSelected, boolean incognitoSelected) {
-        Context context = new MockContextForLayout(InstrumentationRegistry.getContext());
+        Context context = InstrumentationRegistry.getContext();
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
