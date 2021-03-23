@@ -175,157 +175,17 @@ class LacrosChromeServiceNeverBlockingState
         receiver_.BindNewPipeAndPassRemote());
   }
 
-  // These methods pass the receiver end of a mojo message pipe to ash-chrome.
-  // This effectively allows ash-chrome to receive messages sent on these
-  // message pipes.
-  void BindMessageCenterReceiver(
-      mojo::PendingReceiver<crosapi::mojom::MessageCenter> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindMessageCenter(std::move(pending_receiver));
-  }
-
-  void BindSelectFileReceiver(
-      mojo::PendingReceiver<crosapi::mojom::SelectFile> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindSelectFile(std::move(pending_receiver));
-  }
-
-  void BindHidManagerReceiver(
-      mojo::PendingReceiver<device::mojom::HidManager> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindHidManager(std::move(pending_receiver));
-  }
-
-  void BindScreenManagerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindScreenManager(std::move(pending_receiver));
-  }
-
-  void BindIdleServiceReceiver(
-      mojo::PendingReceiver<crosapi::mojom::IdleService> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindIdleService(std::move(pending_receiver));
-  }
-
-  void BindKeystoreServiceReceiver(
-      mojo::PendingReceiver<crosapi::mojom::KeystoreService> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindKeystoreService(std::move(pending_receiver));
-  }
-
-  void BindFeedbackReceiver(
-      mojo::PendingReceiver<crosapi::mojom::Feedback> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindFeedback(std::move(pending_receiver));
-  }
-
-  void BindAutomationReceiver(
-      mojo::PendingReceiver<crosapi::mojom::Automation> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindAutomation(std::move(pending_receiver));
-  }
-
-  void BindCertDbReceiver(
-      mojo::PendingReceiver<crosapi::mojom::CertDatabase> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindCertDatabase(std::move(pending_receiver));
-  }
-
-  void BindDeviceAttributesReceiver(
-      mojo::PendingReceiver<crosapi::mojom::DeviceAttributes>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindDeviceAttributes(std::move(pending_receiver));
-  }
-
   void OnBrowserStartup(crosapi::mojom::BrowserInfoPtr browser_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     crosapi_->OnBrowserStartup(std::move(browser_info));
   }
 
-  void BindAccountManagerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
+  // Calls the indicated Bind* function on the crosapi interface with the given
+  // receiver.
+  template <typename ReceiverType, void (Crosapi::*bind_func)(ReceiverType)>
+  void BindCrosapiFeatureReceiver(ReceiverType receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DVLOG(1) << "Binding AccountManager";
-    crosapi_->BindAccountManager(std::move(pending_receiver));
-  }
-
-  void BindFileManagerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::FileManager> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindFileManager(std::move(pending_receiver));
-  }
-
-  void BindClipboardReceiver(
-      mojo::PendingReceiver<crosapi::mojom::Clipboard> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindClipboard(std::move(pending_receiver));
-  }
-
-  void BindMediaSessionAudioFocusReceiver(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManager>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindMediaSessionAudioFocus(std::move(pending_receiver));
-  }
-
-  void BindMediaSessionAudioFocusDebugReceiver(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindMediaSessionAudioFocusDebug(std::move(pending_receiver));
-  }
-
-  void BindMediaSessionControllerReceiver(
-      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindMediaSessionController(std::move(pending_receiver));
-  }
-
-  void BindMetricsReportingReceiver(
-      mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindMetricsReporting(std::move(receiver));
-  }
-
-  void BindSensorHalClientRemote(
-      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>
-          pending_remote) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindSensorHalClient(std::move(pending_remote));
-  }
-
-  void BindPrefsReceiver(
-      mojo::PendingReceiver<crosapi::mojom::Prefs> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindPrefs(std::move(pending_receiver));
-  }
-
-  void BindTaskManagerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::TaskManager> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindTaskManager(std::move(pending_receiver));
-  }
-
-  void BindTestControllerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindTestController(std::move(pending_receiver));
-  }
-
-  void BindUrlHandlerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::UrlHandler> pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindUrlHandler(std::move(pending_receiver));
-  }
-
-  void BindVideoCaptureDeviceFactoryReceiver(
-      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->BindVideoCaptureDeviceFactory(std::move(pending_receiver));
+    (crosapi_.get()->*bind_func)(std::move(receiver));
   }
 
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
@@ -364,6 +224,44 @@ class LacrosChromeServiceNeverBlockingState
   base::WeakPtrFactory<LacrosChromeServiceNeverBlockingState> weak_factory_{
       this};
 };
+
+namespace {
+
+// This function binds a pending receiver by posting the corresponding task to
+// the never blocking sequence.
+template <typename PendingReceiverOrRemote,
+          void (Crosapi::*bind_func)(PendingReceiverOrRemote)>
+void BindPendingReceiverOrRemote(
+    PendingReceiverOrRemote pending_receiver_or_remote,
+    scoped_refptr<base::SequencedTaskRunner> sequence,
+    base::WeakPtr<LacrosChromeServiceNeverBlockingState> weak_sequenced_state) {
+  sequence->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindCrosapiFeatureReceiver<
+              PendingReceiverOrRemote, bind_func>,
+          weak_sequenced_state, std::move(pending_receiver_or_remote)));
+}
+
+// This function initializes a remote for a given CrosapiFeature.
+// It performs the following operations:
+//   1) Calls BindNewPipeAndPassReceiver() on the remote.
+//   2) Posts a callback to |sequence| with the resulting PendingReceiver.
+//   3) Calls the appropriate Bind* function on the crosapi interface with the
+//      PendingReceiver.
+template <typename CrosapiFeature,
+          void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiFeature>)>
+void InitializeAndBindRemote(
+    mojo::Remote<CrosapiFeature>* remote,
+    scoped_refptr<base::SequencedTaskRunner> sequence,
+    base::WeakPtr<LacrosChromeServiceNeverBlockingState> weak_sequenced_state) {
+  mojo::PendingReceiver<CrosapiFeature> pending_receiver =
+      remote->BindNewPipeAndPassReceiver();
+  BindPendingReceiverOrRemote<mojo::PendingReceiver<CrosapiFeature>, bind_func>(
+      std::move(pending_receiver), sequence, weak_sequenced_state);
+}
+
+}  // namespace
 
 // static
 LacrosChromeServiceImpl* LacrosChromeServiceImpl::Get() {
@@ -505,104 +403,69 @@ void LacrosChromeServiceImpl::BindReceiver(
   did_bind_receiver_ = true;
 
   if (IsAutomationAvailable()) {
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindAutomationReceiver,
-            weak_sequenced_state_,
-            automation_remote_.BindNewPipeAndPassReceiver()));
+    InitializeAndBindRemote<crosapi::mojom::Automation,
+                            &crosapi::mojom::Crosapi::BindAutomation>(
+        &automation_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsCertDbAvailable()) {
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindCertDbReceiver,
-            weak_sequenced_state_,
-            cert_database_remote_.BindNewPipeAndPassReceiver()));
+    InitializeAndBindRemote<crosapi::mojom::CertDatabase,
+                            &crosapi::mojom::Crosapi::BindCertDatabase>(
+        &cert_database_remote_, never_blocking_sequence_,
+        weak_sequenced_state_);
   }
 
   if (IsClipboardAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::Clipboard> pending_receiver =
-        clipboard_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindClipboardReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::Clipboard,
+                            &crosapi::mojom::Crosapi::BindClipboard>(
+        &clipboard_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsDeviceAttributesAvailable()) {
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                           BindDeviceAttributesReceiver,
-                       weak_sequenced_state_,
-                       device_attributes_remote_.BindNewPipeAndPassReceiver()));
+    InitializeAndBindRemote<crosapi::mojom::DeviceAttributes,
+                            &crosapi::mojom::Crosapi::BindDeviceAttributes>(
+        &device_attributes_remote_, never_blocking_sequence_,
+        weak_sequenced_state_);
   }
 
   if (IsFeedbackAvailable()) {
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindFeedbackReceiver,
-            weak_sequenced_state_,
-            feedback_remote_.BindNewPipeAndPassReceiver()));
+    InitializeAndBindRemote<crosapi::mojom::Feedback,
+                            &crosapi::mojom::Crosapi::BindFeedback>(
+        &feedback_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsFileManagerAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::FileManager> pending_receiver =
-        file_manager_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindFileManagerReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::FileManager,
+                            &crosapi::mojom::Crosapi::BindFileManager>(
+        &file_manager_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsHidManagerAvailable()) {
-    mojo::PendingReceiver<device::mojom::HidManager>
-        hid_manager_pending_receiver =
-            hid_manager_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindHidManagerReceiver,
-            weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
+    InitializeAndBindRemote<device::mojom::HidManager,
+                            &crosapi::mojom::Crosapi::BindHidManager>(
+        &hid_manager_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsIdleServiceAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::IdleService>
-        idle_service_pending_receiver =
-            idle_service_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindIdleServiceReceiver,
-            weak_sequenced_state_, std::move(idle_service_pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::IdleService,
+                            &crosapi::mojom::Crosapi::BindIdleService>(
+        &idle_service_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsKeystoreServiceAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::KeystoreService>
-        keystore_service_pending_receiver =
-            keystore_service_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindKeystoreServiceReceiver,
-            weak_sequenced_state_,
-            std::move(keystore_service_pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::KeystoreService,
+                            &crosapi::mojom::Crosapi::BindKeystoreService>(
+        &keystore_service_remote_, never_blocking_sequence_,
+        weak_sequenced_state_);
   }
 
   // Bind the remote for MessageCenter on the current thread, and then pass the
   // receiver to the never_blocking_sequence_.
   if (IsMessageCenterAvailable()) {
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindMessageCenterReceiver,
-            weak_sequenced_state_,
-            message_center_remote_.BindNewPipeAndPassReceiver()));
+    InitializeAndBindRemote<crosapi::mojom::MessageCenter,
+                            &crosapi::mojom::Crosapi::BindMessageCenter>(
+        &message_center_remote_, never_blocking_sequence_,
+        weak_sequenced_state_);
   }
 
   if (IsOnBrowserStartupAvailable()) {
@@ -614,56 +477,36 @@ void LacrosChromeServiceImpl::BindReceiver(
   }
 
   if (IsPrefsAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::Prefs> pending_receiver =
-        prefs_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindPrefsReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::Prefs,
+                            &crosapi::mojom::Crosapi::BindPrefs>(
+        &prefs_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   // Bind the remote for SelectFile on the current thread, and then pass the
   // receiver to the never_blocking_sequence_.
   if (IsSelectFileAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::SelectFile>
-        select_file_pending_receiver =
-            select_file_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindSelectFileReceiver,
-            weak_sequenced_state_, std::move(select_file_pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::SelectFile,
+                            &crosapi::mojom::Crosapi::BindSelectFile>(
+        &select_file_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsTaskManagerAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::TaskManager> pending_receiver =
-        task_manager_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindTaskManagerReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::TaskManager,
+                            &crosapi::mojom::Crosapi::BindTaskManager>(
+        &task_manager_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 
   if (IsTestControllerAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver =
-        test_controller_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindTestControllerReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::TestController,
+                            &crosapi::mojom::Crosapi::BindTestController>(
+        &test_controller_remote_, never_blocking_sequence_,
+        weak_sequenced_state_);
   }
 
   if (IsUrlHandlerAvailable()) {
-    mojo::PendingReceiver<crosapi::mojom::UrlHandler> pending_receiver =
-        url_handler_remote_.BindNewPipeAndPassReceiver();
-    never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindUrlHandlerReceiver,
-            weak_sequenced_state_, std::move(pending_receiver)));
+    InitializeAndBindRemote<crosapi::mojom::UrlHandler,
+                            &crosapi::mojom::Crosapi::BindUrlHandler>(
+        &url_handler_remote_, never_blocking_sequence_, weak_sequenced_state_);
   }
 }
 
@@ -824,21 +667,21 @@ bool LacrosChromeServiceImpl::IsUrlHandlerAvailable() const {
 void LacrosChromeServiceImpl::BindAccountManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::AccountManager> pending_receiver) {
   DCHECK(IsAccountManagerAvailable());
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindAccountManagerReceiver,
-          weak_sequenced_state_, std::move(pending_receiver)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::AccountManager>,
+      &crosapi::mojom::Crosapi::BindAccountManager>(std::move(pending_receiver),
+                                                    never_blocking_sequence_,
+                                                    weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindAudioFocusManager(
     mojo::PendingReceiver<media_session::mojom::AudioFocusManager> remote) {
   DCHECK(IsMediaSessionAudioFocusAvailable());
 
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionAudioFocusReceiver,
-                                weak_sequenced_state_, std::move(remote)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManager>,
+      &crosapi::mojom::Crosapi::BindMediaSessionAudioFocus>(
+      std::move(remote), never_blocking_sequence_, weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindAudioFocusManagerDebug(
@@ -846,10 +689,10 @@ void LacrosChromeServiceImpl::BindAudioFocusManagerDebug(
         remote) {
   DCHECK(IsMediaSessionAudioFocusAvailable());
 
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionAudioFocusDebugReceiver,
-                                weak_sequenced_state_, std::move(remote)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>,
+      &crosapi::mojom::Crosapi::BindMediaSessionAudioFocusDebug>(
+      std::move(remote), never_blocking_sequence_, weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindMediaControllerManager(
@@ -857,41 +700,38 @@ void LacrosChromeServiceImpl::BindMediaControllerManager(
         remote) {
   DCHECK(IsMediaSessionAudioFocusAvailable());
 
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionControllerReceiver,
-                                weak_sequenced_state_, std::move(remote)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>,
+      &crosapi::mojom::Crosapi::BindMediaSessionController>(
+      std::move(remote), never_blocking_sequence_, weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindMetricsReporting(
     mojo::PendingReceiver<crosapi::mojom::MetricsReporting> receiver) {
   DCHECK(IsMetricsReportingAvailable());
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindMetricsReportingReceiver,
-          weak_sequenced_state_, std::move(receiver)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::MetricsReporting>,
+      &crosapi::mojom::Crosapi::BindMetricsReporting>(
+      std::move(receiver), never_blocking_sequence_, weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(
     mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
   DCHECK(IsScreenManagerAvailable());
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindScreenManagerReceiver,
-          weak_sequenced_state_, std::move(pending_receiver)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::ScreenManager>,
+      &crosapi::mojom::Crosapi::BindScreenManager>(std::move(pending_receiver),
+                                                   never_blocking_sequence_,
+                                                   weak_sequenced_state_);
 }
 
 void LacrosChromeServiceImpl::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   DCHECK(IsSensorHalClientAvailable());
-
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindSensorHalClientRemote,
-          weak_sequenced_state_, std::move(remote)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>,
+      &crosapi::mojom::Crosapi::BindSensorHalClient>(
+      std::move(remote), never_blocking_sequence_, weak_sequenced_state_);
 }
 
 bool LacrosChromeServiceImpl::IsOnBrowserStartupAvailable() const {
@@ -904,12 +744,11 @@ void LacrosChromeServiceImpl::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
         pending_receiver) {
   DCHECK(IsVideoCaptureDeviceFactoryAvailable());
-
-  never_blocking_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                         BindVideoCaptureDeviceFactoryReceiver,
-                     weak_sequenced_state_, std::move(pending_receiver)));
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>,
+      &crosapi::mojom::Crosapi::BindVideoCaptureDeviceFactory>(
+      std::move(pending_receiver), never_blocking_sequence_,
+      weak_sequenced_state_);
 }
 
 bool LacrosChromeServiceImpl::IsVideoCaptureDeviceFactoryAvailable() const {
