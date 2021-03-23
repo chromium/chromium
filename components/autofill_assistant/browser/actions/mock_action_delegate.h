@@ -202,7 +202,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(Restart, void());
   MOCK_CONST_METHOD0(GetUserData, UserData*());
   MOCK_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
-  MOCK_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
   MOCK_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());

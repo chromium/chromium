@@ -291,7 +291,7 @@ class ActionDelegate {
   virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
 
   // Get current login fetcher.
-  virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;
+  virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
 
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() = 0;

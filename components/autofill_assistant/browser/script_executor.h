@@ -211,7 +211,7 @@ class ScriptExecutor : public ActionDelegate,
   void Shutdown(bool show_feedback_chip) override;
   void Close() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
-  WebsiteLoginManager* GetWebsiteLoginManager() override;
+  WebsiteLoginManager* GetWebsiteLoginManager() const override;
   content::WebContents* GetWebContents() override;
   ElementStore* GetElementStore() const override;
   WebController* GetWebController() const override;

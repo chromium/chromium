@@ -5,11 +5,15 @@
 #include "components/autofill_assistant/browser/user_data_util.h"
 
 #include <numeric>
+#include "base/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/url_utils.h"
+#include "components/autofill_assistant/browser/website_login_manager.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -191,6 +195,18 @@ ClientStatus ExtractProfileAndFormatAutofillValue(
 
   out_value->assign(*value);
   return OkClientStatus();
+}
+
+void OnGetStoredPassword(
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback,
+    bool success,
+    std::string password) {
+  if (!success) {
+    std::move(callback).Run(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE),
+                            std::string());
+    return;
+  }
+  std::move(callback).Run(OkClientStatus(), password);
 }
 
 }  // namespace
@@ -417,6 +433,42 @@ ClientStatus GetFormattedAutofillValue(
   return ExtractProfileAndFormatAutofillValue<AutofillValueRegexp::Profile>(
       autofill_value.profile(), autofill_value.value_expression().re2(),
       user_data, /* quote_meta= */ true, out_value);
+}
+
+void GetPasswordManagerValue(
+    const PasswordManagerValue& password_manager_value,
+    const ElementFinder::Result& target_element,
+    const UserData* user_data,
+    WebsiteLoginManager* website_login_manager,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)>
+        callback) {
+  if (!user_data->selected_login_) {
+    std::move(callback).Run(ClientStatus(PRECONDITION_FAILED), std::string());
+    return;
+  }
+  if (!target_element.container_frame_host ||
+      !url_utils::IsSamePublicSuffixDomain(
+          target_element.container_frame_host->GetLastCommittedURL(),
+          user_data->selected_login_->origin)) {
+    std::move(callback).Run(ClientStatus(PASSWORD_ORIGIN_MISMATCH),
+                            std::string());
+    return;
+  }
+
+  switch (password_manager_value.credential_type()) {
+    case PasswordManagerValue::PASSWORD:
+      website_login_manager->GetPasswordForLogin(
+          *user_data->selected_login_,
+          base::BindOnce(&OnGetStoredPassword, std::move(callback)));
+      return;
+    case PasswordManagerValue::USERNAME:
+      std::move(callback).Run(OkClientStatus(),
+                              user_data->selected_login_->username);
+      return;
+    case PasswordManagerValue::NOT_SET:
+      std::move(callback).Run(ClientStatus(INVALID_ACTION), std::string());
+      return;
+  }
 }
 
 }  // namespace autofill_assistant

@@ -697,7 +697,7 @@ autofill::PersonalDataManager* ScriptExecutor::GetPersonalDataManager() {
   return delegate_->GetPersonalDataManager();
 }
 
-WebsiteLoginManager* ScriptExecutor::GetWebsiteLoginManager() {
+WebsiteLoginManager* ScriptExecutor::GetWebsiteLoginManager() const {
   return delegate_->GetWebsiteLoginManager();
 }
 

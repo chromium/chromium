@@ -153,6 +153,22 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                                        delegate->GetWeakPtr(), click_type));
 }
 
+void OnGetPasswordManagerValue(
+    base::OnceCallback<void(const std::string&,
+                            const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> done,
+    const ClientStatus& status,
+    const std::string& value) {
+  if (!status.ok()) {
+    std::move(done).Run(status);
+    return;
+  }
+  std::move(perform).Run(value, element, std::move(done));
+}
+
 }  // namespace
 
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
@@ -186,6 +202,14 @@ void PerformWithTextValue(
         return;
       }
       break;
+    }
+    case TextValue::kPasswordManagerValue: {
+      GetPasswordManagerValue(
+          text_value.password_manager_value(), element, delegate->GetUserData(),
+          delegate->GetWebsiteLoginManager(),
+          base::BindOnce(&OnGetPasswordManagerValue, std::move(perform),
+                         element, std::move(done)));
+      return;
     }
     case TextValue::VALUE_NOT_SET:
       std::move(done).Run(ClientStatus(INVALID_ACTION));
