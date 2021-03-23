@@ -8,7 +8,7 @@
 #include <bluetooth/l2cap.h>
 #include <bluetooth/rfcomm.h>
 #include <fcntl.h>
-#include <stddef.h>
+#include <stdint.h>
 #include <sys/socket.h>
 
 #include <iomanip>
@@ -23,6 +23,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -247,8 +248,13 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Example of identifier: /org/bluez/hci0/dev_E0_CF_65_8C_86_1A/service001a
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
-int ConvertGattIdentifierToId(const std::string identifier) {
-  return std::stoi(identifier.substr(identifier.size() - 4), nullptr, 16);
+base::Optional<uint16_t> ConvertGattIdentifierToId(
+    const std::string identifier) {
+  uint32_t result;
+  if (identifier.size() < 4 ||
+      !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
+    return base::nullopt;
+  return result;
 }
 
 // Create GattDBElement and fill in common data for
@@ -257,13 +263,17 @@ template <class RemoteGattAttribute>
 arc::mojom::BluetoothGattDBElementPtr CreateGattDBElement(
     const arc::mojom::BluetoothGattDBAttributeType type,
     const RemoteGattAttribute* attribute) {
+  base::Optional<int16_t> id =
+      ConvertGattIdentifierToId(attribute->GetIdentifier());
+  if (!id)
+    return nullptr;
+
   arc::mojom::BluetoothGattDBElementPtr element =
       arc::mojom::BluetoothGattDBElement::New();
   element->type = type;
   element->uuid = attribute->GetUUID();
   element->id = element->attribute_handle = element->start_handle =
-      element->end_handle =
-          ConvertGattIdentifierToId(attribute->GetIdentifier());
+      element->end_handle = *id;
   element->properties = 0;
   return element;
 }
@@ -341,9 +351,13 @@ bool IsGattOffsetValid(int offset) {
 
 // This is needed because Android only support UUID 16 bits in service data
 // section in advertising data
-uint16_t GetUUID16(const BluetoothUUID& uuid) {
+base::Optional<uint16_t> GetUUID16(const BluetoothUUID& uuid) {
   // Convert xxxxyyyy-xxxx-xxxx-xxxx-xxxxxxxxxxxx to int16 yyyy
-  return std::stoi(uuid.canonical_value().substr(4, 4), nullptr, 16);
+  uint32_t result;
+  if (uuid.canonical_value().size() < 8 ||
+      !base::HexStringToUInt(uuid.canonical_value().substr(4, 4), &result))
+    return base::nullopt;
+  return result;
 }
 
 arc::mojom::BluetoothPropertyPtr GetDiscoveryTimeoutProperty(uint32_t timeout) {
@@ -820,7 +834,17 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
   if (!btle_instance)
     return;
 
+  const base::Optional<int16_t> char_inst_id =
+      ConvertGattIdentifierToId(characteristic->GetIdentifier());
+  if (!char_inst_id)
+    return;
+
   BluetoothRemoteGattService* service = characteristic->GetService();
+  const base::Optional<int16_t> service_inst_id =
+      ConvertGattIdentifierToId(service->GetIdentifier());
+  if (!service_inst_id)
+    return;
+
   BluetoothDevice* device = service->GetDevice();
   mojom::BluetoothAddressPtr address =
       mojom::BluetoothAddress::From(device->GetAddress());
@@ -828,11 +852,11 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
       mojom::BluetoothGattServiceID::New();
   service_id->is_primary = service->IsPrimary();
   service_id->id = mojom::BluetoothGattID::New();
-  service_id->id->inst_id = ConvertGattIdentifierToId(service->GetIdentifier());
+  service_id->id->inst_id = *service_inst_id;
   service_id->id->uuid = service->GetUUID();
 
   mojom::BluetoothGattIDPtr char_id = mojom::BluetoothGattID::New();
-  char_id->inst_id = ConvertGattIdentifierToId(characteristic->GetIdentifier());
+  char_id->inst_id = *char_inst_id;
   char_id->uuid = characteristic->GetUUID();
 
   btle_instance->OnGattNotify(std::move(address), std::move(service_id),
@@ -1589,15 +1613,25 @@ void ArcBluetoothBridge::GetGattDB(mojom::BluetoothAddressPtr remote_addr) {
             ? mojom::BluetoothGattDBAttributeType::BTGATT_DB_PRIMARY_SERVICE
             : mojom::BluetoothGattDBAttributeType::BTGATT_DB_SECONDARY_SERVICE,
         service);
+    if (!service_element)
+      continue;
 
     const auto& characteristics = service->GetCharacteristics();
     if (characteristics.size() > 0) {
       const auto& descriptors = characteristics.back()->GetDescriptors();
-      service_element->start_handle =
+      const base::Optional<int16_t> start_handle =
           ConvertGattIdentifierToId(characteristics.front()->GetIdentifier());
-      service_element->end_handle = ConvertGattIdentifierToId(
+      if (!start_handle)
+        continue;
+
+      const base::Optional<int16_t> end_handle = ConvertGattIdentifierToId(
           descriptors.size() > 0 ? descriptors.back()->GetIdentifier()
                                  : characteristics.back()->GetIdentifier());
+      if (!end_handle)
+        continue;
+
+      service_element->start_handle = *start_handle;
+      service_element->end_handle = *end_handle;
     }
     db.push_back(std::move(service_element));
 
@@ -1606,13 +1640,21 @@ void ArcBluetoothBridge::GetGattDB(mojom::BluetoothAddressPtr remote_addr) {
           CreateGattDBElement(
               mojom::BluetoothGattDBAttributeType::BTGATT_DB_CHARACTERISTIC,
               characteristic);
+      if (!characteristic_element)
+        continue;
+
       characteristic_element->properties = characteristic->GetProperties();
       db.push_back(std::move(characteristic_element));
 
       for (auto* descriptor : characteristic->GetDescriptors()) {
-        db.push_back(CreateGattDBElement(
-            mojom::BluetoothGattDBAttributeType::BTGATT_DB_DESCRIPTOR,
-            descriptor));
+        mojom::BluetoothGattDBElementPtr descriptor_element =
+            CreateGattDBElement(
+                mojom::BluetoothGattDBAttributeType::BTGATT_DB_DESCRIPTOR,
+                descriptor);
+        if (!descriptor_element)
+          continue;
+
+        db.push_back(std::move(descriptor_element));
       }
     }
   }
@@ -2810,13 +2852,17 @@ ArcBluetoothBridge::GetAdvertisingData(const BluetoothDevice* device) const {
 
   // Service Data
   for (const BluetoothUUID& uuid : device->GetServiceDataUUIDs()) {
+    base::Optional<uint16_t> uuid16 = GetUUID16(uuid);
+    if (!uuid16)
+      continue;
+
     mojom::BluetoothAdvertisingDataPtr service_data_element =
         mojom::BluetoothAdvertisingData::New();
     mojom::BluetoothServiceDataPtr service_data =
         mojom::BluetoothServiceData::New();
 
     // Android only supports UUID 16 bit here.
-    service_data->uuid_16bit = GetUUID16(uuid);
+    service_data->uuid_16bit = *uuid16;
 
     const std::vector<uint8_t>* data = device->GetServiceDataForUUID(uuid);
     DCHECK(data != nullptr);
