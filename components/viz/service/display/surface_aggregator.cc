@@ -1950,7 +1950,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
 void SurfaceAggregator::RecordStatHistograms() {
   UMA_HISTOGRAM_COUNTS_100(
-      "Compositing.SurfaceAggregator.PrewalkedSurfaceCounted",
+      "Compositing.SurfaceAggregator.PrewalkedSurfaceCount",
       stats_->prewalked_surface_count);
   UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
                            stats_->copied_surface_count);
