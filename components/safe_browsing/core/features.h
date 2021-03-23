@@ -52,9 +52,6 @@ extern const base::Feature kEnhancedProtection;
 // limits the number of entries stored in each Safe Browsing list.
 extern const base::Feature kLimitedListSizeForIOS;
 
-// Enable password protection for non-Google accounts.
-extern const base::Feature kPasswordProtectionForSavedPasswords;
-
 // Include referring app info in password protection requests on Android.
 extern const base::Feature kPasswordProtectionReferringAppEnabledAndroid;
 

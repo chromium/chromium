@@ -390,9 +390,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
          password_type.account_type() ==
              ReusedPasswordAccountType::NON_GAIA_ENTERPRISE ||
          (password_type.account_type() ==
-              ReusedPasswordAccountType::SAVED_PASSWORD &&
-          base::FeatureList::IsEnabled(
-              safe_browsing::kPasswordProtectionForSavedPasswords)));
+          ReusedPasswordAccountType::SAVED_PASSWORD));
   PasswordProtectionRequestContent* request_content =
       static_cast<PasswordProtectionRequestContent*>(request);
   content::WebContents* web_contents = request_content->web_contents();
@@ -1084,9 +1082,7 @@ std::u16string ChromePasswordProtectionService::GetWarningDetailText(
          password_type.account_type() ==
              ReusedPasswordAccountType::NON_GAIA_ENTERPRISE ||
          (password_type.account_type() ==
-              ReusedPasswordAccountType::SAVED_PASSWORD &&
-          base::FeatureList::IsEnabled(
-              safe_browsing::kPasswordProtectionForSavedPasswords)));
+          ReusedPasswordAccountType::SAVED_PASSWORD));
   if (password_type.account_type() ==
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
     return l10n_util::GetStringUTF16(
@@ -1094,9 +1090,7 @@ std::u16string ChromePasswordProtectionService::GetWarningDetailText(
   }
 
   if (password_type.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSavedPasswords)) {
+      ReusedPasswordAccountType::SAVED_PASSWORD) {
     return GetWarningDetailTextForSavedPasswords(placeholder_offsets);
   }
 
@@ -1695,9 +1689,7 @@ ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
     ReusedPasswordAccountType password_type) const {
   if (password_type.account_type() == ReusedPasswordAccountType::GMAIL ||
       (password_type.account_type() ==
-           ReusedPasswordAccountType::SAVED_PASSWORD &&
-       base::FeatureList::IsEnabled(
-           safe_browsing::kPasswordProtectionForSavedPasswords)))
+       ReusedPasswordAccountType::SAVED_PASSWORD))
     return PHISHING_REUSE;
 
   bool is_policy_managed = profile_->GetPrefs()->HasPrefPath(

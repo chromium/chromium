@@ -286,10 +286,7 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
 PasswordProtectionTrigger
 ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
     ReusedPasswordAccountType password_type) const {
-  if (password_type.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSavedPasswords))
+  if (password_type.account_type() == ReusedPasswordAccountType::SAVED_PASSWORD)
     return safe_browsing::PHISHING_REUSE;
 
   bool is_policy_managed =
@@ -556,8 +553,6 @@ std::u16string ChromePasswordProtectionService::GetWarningDetailText(
     std::vector<size_t>* placeholder_offsets) const {
   DCHECK(password_type.account_type() ==
          ReusedPasswordAccountType::SAVED_PASSWORD);
-  DCHECK(base::FeatureList::IsEnabled(
-      safe_browsing::kPasswordProtectionForSavedPasswords));
   return GetWarningDetailTextForSavedPasswords(placeholder_offsets);
 }
 std::u16string

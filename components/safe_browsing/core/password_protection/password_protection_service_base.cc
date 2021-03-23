@@ -369,10 +369,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForPinging(
 
 bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
     ReusedPasswordAccountType password_type) const {
-  if (password_type.account_type() ==
-          ReusedPasswordAccountType::SAVED_PASSWORD &&
-      base::FeatureList::IsEnabled(
-          safe_browsing::kPasswordProtectionForSavedPasswords))
+  if (password_type.account_type() == ReusedPasswordAccountType::SAVED_PASSWORD)
     return true;
 
 // Currently password reuse warnings are only supported for saved passwords on

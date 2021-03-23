@@ -61,10 +61,6 @@ const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
 const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionForSavedPasswords{
-    "SafeBrowsingPasswordProtectionForSavedPasswords",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPasswordProtectionReferringAppEnabledAndroid{
     "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid",
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -143,7 +139,6 @@ constexpr struct {
     {&kDownloadRequestWithToken, true},
     {&kEnhancedProtection, true},
     {&kLimitedListSizeForIOS, true},
-    {&kPasswordProtectionForSavedPasswords, true},
     {&kPasswordProtectionReferringAppEnabledAndroid, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kRealTimeUrlLookupEnabled, true},
