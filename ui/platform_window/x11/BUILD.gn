@@ -16,6 +16,7 @@ component("x11") {
     "//build:chromeos_buildflags",
     "//skia",
     "//ui/base",
+    "//ui/base/dragdrop:types",
     "//ui/base/x",
     "//ui/events",
     "//ui/events/devices",

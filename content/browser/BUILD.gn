@@ -229,6 +229,7 @@ source_set("browser") {
     "//ui/base/clipboard",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type",
+    "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/idle",
     "//ui/base/ime/init",

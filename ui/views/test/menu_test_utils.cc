@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/controls/menu/menu_controller.h"
 

@@ -12,7 +12,7 @@
 
 namespace ui {
 
-class COMPONENT_EXPORT(UI_BASE) DragDropTypes {
+class COMPONENT_EXPORT(UI_BASE_DRAGDROP_TYPES) DragDropTypes {
  public:
   // These constants match their equivalents in NSDragOperation and
   // should not be renumbered.

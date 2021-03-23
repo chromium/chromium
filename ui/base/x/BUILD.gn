@@ -60,21 +60,9 @@ component("x") {
     "x11_xrandr_interval_only_vsync_provider.h",
   ]
 
-  if (is_linux || is_chromeos) {
-    sources += [
-      "selection_owner.cc",
-      "selection_owner.h",
-      "x11_drag_context.cc",
-      "x11_drag_context.h",
-      "x11_drag_drop_client.cc",
-      "x11_drag_drop_client.h",
-      "x11_os_exchange_data_provider.cc",
-      "x11_os_exchange_data_provider.h",
-    ]
-  }
-
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
+  public_deps = []
   deps = [
     "//base",
     "//base:i18n",
@@ -101,6 +89,20 @@ component("x") {
     "//ui/gfx/x",
     "//ui/platform_window/common",
   ]
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "selection_owner.cc",
+      "selection_owner.h",
+      "x11_drag_context.cc",
+      "x11_drag_context.h",
+      "x11_drag_drop_client.cc",
+      "x11_drag_drop_client.h",
+      "x11_os_exchange_data_provider.cc",
+      "x11_os_exchange_data_provider.h",
+    ]
+    public_deps += [ "//ui/base/dragdrop:types" ]
+  }
 }
 
 source_set("gl") {

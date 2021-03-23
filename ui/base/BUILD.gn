@@ -92,8 +92,6 @@ component("base") {
     "default_style.h",
     "device_form_factor.h",
     "device_form_factor_desktop.cc",
-    "dragdrop/drag_drop_types.cc",
-    "dragdrop/drag_drop_types.h",
     "dragdrop/drop_target_event.cc",
     "dragdrop/drop_target_event.h",
     "dragdrop/os_exchange_data.cc",
@@ -193,7 +191,6 @@ component("base") {
 
   if (is_win) {
     sources += [
-      "dragdrop/drag_drop_types_win.cc",
       "dragdrop/drag_source_win.cc",
       "dragdrop/drag_source_win.h",
       "dragdrop/drop_target_win.cc",
@@ -307,7 +304,6 @@ component("base") {
       "cocoa/weak_ptr_nsobject.mm",
       "cocoa/window_size_constants.h",
       "cocoa/window_size_constants.mm",
-      "dragdrop/drag_drop_types_mac.mm",
       "dragdrop/os_exchange_data_provider_builder_mac.h",
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
@@ -566,8 +562,6 @@ component("base") {
 
   if (!toolkit_views && !use_aura) {
     sources -= [
-      "dragdrop/drag_drop_types.cc",
-      "dragdrop/drag_drop_types.h",
       "dragdrop/drop_target_event.cc",
       "dragdrop/drop_target_event.h",
       "dragdrop/os_exchange_data.cc",

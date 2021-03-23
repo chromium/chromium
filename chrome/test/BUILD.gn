@@ -2403,6 +2403,7 @@ if (!is_android) {
         sources += [ "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc" ]
       }
       deps += [
+        "//ui/base/dragdrop:types",
         "//ui/views",
         "//url",
       ]
@@ -6113,6 +6114,7 @@ test("unit_tests") {
       "//components/media_router/browser:test_support",
       "//components/web_modal:test_support",
       "//content/test:test_support",
+      "//ui/base/dragdrop:types",
       "//ui/views",
       "//ui/views:test_support",
       "//ui/web_dialogs:test_support",
@@ -6726,7 +6728,10 @@ if (!is_android) {
 
     if (use_aura) {
       sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
-      deps += [ "//ui/aura:aura_interactive_ui_tests" ]
+      deps += [
+        "//ui/aura:aura_interactive_ui_tests",
+        "//ui/base/dragdrop:types",
+      ]
     } else {
       sources -= [
         "base/interactive_test_utils_aura.cc",
@@ -6779,6 +6784,7 @@ if (!is_android) {
         "../browser/ui/views/user_education/feature_promo_snooze_interactive_uitest.cc",
       ]
       deps += [
+        "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/views",
         "//ui/views:test_support",

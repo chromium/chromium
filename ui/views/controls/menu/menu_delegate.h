@@ -9,7 +9,6 @@
 #include <string>
 
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_types.h"

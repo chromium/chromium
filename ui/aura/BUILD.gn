@@ -134,6 +134,7 @@ component("aura") {
 
   public_deps = [
     "//ui/base/cursor:cursor_base",
+    "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
     "//ui/compositor",

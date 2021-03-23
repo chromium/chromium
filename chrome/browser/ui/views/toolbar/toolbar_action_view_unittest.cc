@@ -18,6 +18,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/menu_button.h"
 

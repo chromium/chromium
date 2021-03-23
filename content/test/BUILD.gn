@@ -1683,6 +1683,7 @@ test("content_browsertests") {
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
+      "//ui/base/dragdrop:types",
       "//ui/touch_selection:test_support",
       "//ui/touch_selection:touch_selection",
     ]
@@ -2554,6 +2555,7 @@ test("content_unittests") {
     deps += [
       "//ui/aura:test_support",
       "//ui/aura_extra",
+      "//ui/base/dragdrop:types",
       "//ui/wm",
     ]
   } else {

@@ -18,6 +18,7 @@ component("wm") {
 
   defines = [ "IS_WM_IMPL" ]
 
+  public_deps = [ "//ui/base/dragdrop:types" ]
   deps = [
     "//ui/base",
     "//ui/platform_window",

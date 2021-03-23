@@ -27,6 +27,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"

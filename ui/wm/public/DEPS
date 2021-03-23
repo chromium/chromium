@@ -1,9 +1,0 @@
-include_rules = [
-  "+ui/base/dragdrop/drag_drop_types.h",
-]
-
-specific_include_rules = {
-  "drag_drop_client.h": [
-    "+ui/base/dragdrop/drag_drop_types.h",
-  ],
-}

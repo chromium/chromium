@@ -5421,6 +5421,7 @@ static_library("browser") {
     ]
     deps += [
       "//ui/aura",
+      "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom:mojom_shared",
       "//ui/compositor",
       "//ui/snapshot",

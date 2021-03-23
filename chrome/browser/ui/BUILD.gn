@@ -1625,6 +1625,7 @@ static_library("ui") {
       "//third_party/blink/public/common:headers",
       "//third_party/libaddressinput",
       "//third_party/libaddressinput:strings",
+      "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
       "//ui/events",
     ]
@@ -4346,6 +4347,7 @@ static_library("ui") {
       "//components/ui_devtools/views",
       "//device/vr/buildflags:buildflags",
       "//services/media_session/public/mojom",
+      "//ui/base/dragdrop:types",
       "//ui/gfx/geometry",
       "//ui/views:buildflags",
     ]

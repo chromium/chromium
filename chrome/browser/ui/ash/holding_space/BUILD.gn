@@ -29,6 +29,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//ui/aura",
     "//ui/base",
+    "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/events:test_support",
     "//ui/gfx:test_support",
