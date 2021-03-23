@@ -14,6 +14,7 @@ import argparse
 import csv
 import os.path
 import platform
+import shutil
 import subprocess
 import sys
 import urllib.request as request
@@ -49,6 +50,10 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
                 version),
                   file=sys.stderr)
             return None
+
+    # The symbol storage uses "arm64" rather than "aarch64".
+    if arch == 'aarch64':
+        arch = 'arm64'
 
     extracted_dir = _download_and_extract(version, channel, arch, dest_dir)
     if not extracted_dir:
@@ -108,8 +113,10 @@ def _download_and_extract(version, channel, arch, dest_dir):
     path to the extracted symbol files on success, None on error.
     """
     url, dest_dir = _get_url_and_dest(version, channel, arch, dest_dir)
+    remove_on_failure = False
     if not os.path.isdir(dest_dir):
         os.mkdir(dest_dir)
+        remove_on_failure = True
 
     try:
         with request.urlopen(url) as symbol_request:
@@ -120,6 +127,9 @@ def _download_and_extract(version, channel, arch, dest_dir):
                 return dest_dir
     except:
         pass
+
+    if remove_on_failure:
+        shutil.rmtree(dest_dir)
     return None
 
 
@@ -133,7 +143,6 @@ def _extract_symbols_to(symbol_request, dest_dir):
 
     Returns: True on successful download and extraction, False on error.
     """
-
     proc = subprocess.Popen(['tar', 'xjf', '-'],
                             cwd=dest_dir,
                             stdin=subprocess.PIPE,

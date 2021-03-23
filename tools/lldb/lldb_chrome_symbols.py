@@ -60,7 +60,7 @@ def get_chrome_symbols(debugger, command, result, internal_dict):
                 os.path.dirname(os.path.dirname(framework_parent_dir)))))
 
     chrome_arch = chrome_framework.GetTriple().split('-')[0]
-    chrome_channel = _get_channel(outer_bundle)
+    chrome_channel = _get_channel(outer_bundle, chrome_version)
 
     if os.path.exists(SYMBOL_STORE):
         dsym_dir = download_symbols.get_symbol_directory(
@@ -81,20 +81,30 @@ def get_chrome_symbols(debugger, command, result, internal_dict):
         _add_symbols(debugger, dsym_dir)
 
 
-def _get_channel(outer_bundle):
-    """Looks up the Chrome release channel by reading the Info.plist key."""
+def _get_channel(outer_bundle, version):
+    """Looks up the Chrome release channel by reading the Info.plist key. The
+    target's Chrome `version` will be checked against the `outer_bundle`'s."""
     info_plist = os.path.join(outer_bundle, 'Contents', 'Info.plist')
-    with open(info_plist, 'rb') as f:
-        plist = plistlib.load(f)
-        kschannel = plist['KSChannelID']
+    # Reading the Info.plist may fail if this is a core or minidump, but
+    # there is no way to test in the lldb API if the target is one.
+    try:
+        with open(info_plist, 'rb') as f:
+            plist = plistlib.load(f)
+            if plist['KSVersion'] != version:
+                # The on-disk bundle version does not match the target version,
+                # so guess the channel.
+                return None
+            kschannel = plist['KSChannelID']
 
-    if kschannel == '':
-        return 'stable'
+        if kschannel == '':
+            return 'stable'
 
-    channels = ('extended', 'stable', 'beta', 'dev', 'canary')
-    for channel in channels:
-        if channel in kschannel:
-            return channel
+        channels = ('extended', 'stable', 'beta', 'dev', 'canary')
+        for channel in channels:
+            if channel in kschannel:
+                return channel
+    except:
+        pass
     return None
 
 
