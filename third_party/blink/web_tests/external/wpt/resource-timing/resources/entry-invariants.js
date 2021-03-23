@@ -111,6 +111,11 @@ const invariants = {
       "fetchStart",
       "responseEnd",
     ]);
+
+    assert_ordered_(entry, [
+      "fetchStart",
+      "responseEnd",
+    ]);
   }
 };
 

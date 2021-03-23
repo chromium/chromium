@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>This test validates the values in resource timing for cross-origin
+redirects.</title>
+<link rel="author" title="Intel" href="http://www.intel.com/" />
+<link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/resource-loaders.js"></script>
+<script src="resources/entry-invariants.js"></script>
+</head>
+<body>
+<script>
+const {REMOTE_ORIGIN} = get_host_info();
+const blank_page = `/resource-timing/resources/blank_page_green.htm`;
+const destUrl = `/common/redirect.py?location=${REMOTE_ORIGIN}/${blank_page}`;
+
+attribute_test(
+  () => load.iframe(destUrl),
+  invariants.assert_cross_origin_redirected_resource,
+  "Verify that cross origin resources' timings aren't exposed when even as " +
+  "targets of HTTP redirects.");
+</script>
+</body>
+</html>
