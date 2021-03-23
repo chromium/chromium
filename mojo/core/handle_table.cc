@@ -40,7 +40,7 @@ const char* GetNameForDispatcherType(Dispatcher::Type type) {
 
 }  // namespace
 
-HandleTable::HandleTable() = default;
+HandleTable::HandleTable() : lock_("HandleTable.lock_") {}
 
 HandleTable::~HandleTable() = default;
 

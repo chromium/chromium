@@ -499,6 +499,10 @@ MojoResult Core::CreateMessagePipe(const MojoCreateMessagePipeOptions* options,
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
 
+  V8RecordReplayAssert("Core::CreateMessagePipe %lu %lu %lu %lu",
+                       port0.name().v1, port0.name().v2,
+                       port1.name().v1, port1.name().v2);
+
   DCHECK(message_pipe_handle0);
   DCHECK(message_pipe_handle1);
 

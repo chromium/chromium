@@ -53,7 +53,7 @@ constexpr size_t kRandomNameCacheSize = 256;
 // to collisions between independently generated names in different processes.
 class RandomNameGenerator {
  public:
-  RandomNameGenerator() = default;
+  RandomNameGenerator() : lock_("RandomNameGenerator.lock_") {}
   ~RandomNameGenerator() = default;
 
   PortName GenerateRandomPortName() {
@@ -104,6 +104,7 @@ bool CanAcceptMoreMessages(const Port* port) {
 
 void GenerateRandomPortName(PortName* name) {
   *name = g_name_generator.Get().GenerateRandomPortName();
+  V8RecordReplayAssert("GenerateRandomPortName %lu %lu", name->v1, name->v2);
 }
 
 }  // namespace
@@ -211,6 +212,8 @@ int Node::InitializePort(const PortRef& port_ref,
 
 int Node::CreatePortPair(PortRef* port0_ref, PortRef* port1_ref) {
   int rv;
+
+  V8RecordReplayAssert("Node::CreatePortPair %lu %lu", name_.v1, name_.v2);
 
   rv = CreateUninitializedPort(port0_ref);
   if (rv != OK)

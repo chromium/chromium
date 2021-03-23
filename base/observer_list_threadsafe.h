@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/deterministic_containers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -94,9 +95,9 @@ class BASE_EXPORT ObserverListThreadSafeBase
 template <class ObserverType>
 class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
  public:
-  ObserverListThreadSafe() = default;
+  ObserverListThreadSafe() : lock_("ObserverListThreadSafe.lock_") {}
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
-      : policy_(policy) {}
+      : policy_(policy), lock_("ObserverListThreadSafe.lock_") {}
   ObserverListThreadSafe(const ObserverListThreadSafe&) = delete;
   ObserverListThreadSafe& operator=(const ObserverListThreadSafe&) = delete;
 
@@ -261,7 +262,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   // Keys are observers. Values are the SequencedTaskRunners on which they must
   // be notified.
-  std::unordered_map<ObserverType*, scoped_refptr<SequencedTaskRunner>>
+  deterministic_unordered_map<ObserverType*, scoped_refptr<SequencedTaskRunner>>
       observers_ GUARDED_BY(lock_);
 };
 

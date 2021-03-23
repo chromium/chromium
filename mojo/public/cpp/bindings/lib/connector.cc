@@ -35,6 +35,12 @@
 #include "mojo/public/cpp/bindings/message_dumper.h"
 #endif
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace mojo {
 
 namespace {
@@ -219,6 +225,8 @@ ScopedMessagePipeHandle Connector::PassMessagePipe() {
 }
 
 void Connector::RaiseError() {
+  V8RecordReplayAssert("Connector::RaiseError");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   HandleError(true, true);
@@ -233,6 +241,8 @@ void Connector::SetConnectionGroup(ConnectionGroup::Ref ref) {
 }
 
 bool Connector::WaitForIncomingMessage() {
+  V8RecordReplayAssert("Connector::WaitForIncomingMessage Start");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error_)
@@ -387,6 +397,8 @@ void Connector::OnSyncHandleWatcherHandleReady(MojoResult result) {
 }
 
 void Connector::OnHandleReadyInternal(MojoResult result) {
+  V8RecordReplayAssert("Connector::OnHandleReadyInternal Start");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
@@ -473,6 +485,8 @@ MojoResult Connector::ReadMessage(Message* message) {
 }
 
 bool Connector::DispatchMessage(Message message) {
+  V8RecordReplayAssert("Connector::DispatchMessage Start");
+
   DCHECK(!paused_);
 
   base::WeakPtr<Connector> weak_self = weak_self_;
@@ -551,6 +565,8 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 }
 
 void Connector::ReadAllAvailableMessages() {
+  V8RecordReplayAssert("Connector::ReadAllAvailableMessages Start");
+
   if (paused_ || error_)
     return;
 
@@ -602,8 +618,12 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
-  if (error_ || !message_pipe_.is_valid())
+  V8RecordReplayAssert("Connector::HandleError Start");
+
+  if (error_ || !message_pipe_.is_valid()) {
+    V8RecordReplayAssert("Connector::HandleError #1");
     return;
+  }
 
   if (paused_) {
     // Enforce calling the error handler asynchronously if the user has paused
@@ -616,14 +636,19 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     force_pipe_reset = true;
 
   if (force_pipe_reset) {
+    V8RecordReplayAssert("Connector::HandleError #2");
     CancelWait();
+    V8RecordReplayAssert("Connector::HandleError #3");
     internal::MayAutoLock locker(&lock_);
     message_pipe_.reset();
     MessagePipe dummy_pipe;
     message_pipe_ = std::move(dummy_pipe.handle0);
   } else {
+    V8RecordReplayAssert("Connector::HandleError #4");
     CancelWait();
   }
+
+  V8RecordReplayAssert("Connector::HandleError #5");
 
   if (force_async_handler) {
     if (!paused_)
@@ -633,6 +658,8 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     if (connection_error_handler_)
       std::move(connection_error_handler_).Run();
   }
+
+  V8RecordReplayAssert("Connector::HandleError Done");
 }
 
 void Connector::EnsureSyncWatcherExists() {

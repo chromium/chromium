@@ -17,6 +17,12 @@
 #include "mojo/public/c/system/trap.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace mojo {
 
 // Thread-safe Context object used to schedule trap events from arbitrary
@@ -193,6 +199,8 @@ void SimpleWatcher::Cancel() {
 
 MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
                               HandleSignalsState* ready_state) {
+  V8RecordReplayAssert("SimpleWatcher::Arm Start");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t num_blocking_events = 1;
   MojoTrapEvent blocking_event = {sizeof(blocking_event)};
@@ -211,6 +219,7 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
     }
   }
 
+  V8RecordReplayAssert("SimpleWatcher::Arm Done");
   return rv;
 }
 
