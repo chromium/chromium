@@ -23,6 +23,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,12 +43,6 @@
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
 #endif  // defined(OS_WIN)
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace base {
 namespace internal {
@@ -583,7 +578,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
 
 RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     WorkerThread* worker) {
-  V8RecordReplayAssert("WorkerThreadDelegateImpl::GetWork Start");
+  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Start");
 
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(!worker_only().is_running_task);
@@ -594,7 +589,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   DCHECK(ContainsWorker(outer_->workers_, worker));
 
   if (!CanGetWorkLockRequired(&executor, worker)) {
-    V8RecordReplayAssert("WorkerThreadDelegateImpl::GetWork #1");
+    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1");
     return nullptr;
   }
 
@@ -625,7 +620,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   }
   if (!task_source) {
     OnWorkerBecomesIdleLockRequired(worker);
-    V8RecordReplayAssert("WorkerThreadDelegateImpl::GetWork #2");
+    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #2");
     return nullptr;
   }
 
@@ -641,7 +636,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     outer_->EnsureEnoughWorkersLockRequired(&executor);
   }
 
-  V8RecordReplayAssert("WorkerThreadDelegateImpl::GetWork Done");
+  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Done");
   return task_source;
 }
 
