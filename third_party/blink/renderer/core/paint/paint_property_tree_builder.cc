@@ -845,6 +845,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
             CompositingReasonsForTransformProperty();
         state.flags.flattens_inherited_transform =
             context_.current.should_flatten_inherited_transform;
+        state.flags.is_for_svg_child = true;
         state.compositor_element_id = GetCompositorElementId(
             CompositorElementIdNamespace::kPrimaryTransform);
       }

@@ -265,7 +265,9 @@ TEST_P(CompositingTest, WillChangeTransformHintInSVG) {
   UpdateAllLifecyclePhases();
   auto* layer = CcLayerByDOMElementId("willChange");
   auto* transform_node = GetTransformNode(layer);
-  EXPECT_TRUE(transform_node->will_change_transform);
+  // For now will-change:transform triggers compositing for SVG, but we don't
+  // pass the flag to cc to ensure raster quality.
+  EXPECT_FALSE(transform_node->will_change_transform);
 }
 
 TEST_P(CompositingTest, Compositing3DTransformOnSVGModelObject) {
