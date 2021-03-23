@@ -229,6 +229,7 @@ source_set("unit_tests") {
     "tpm_manager/tpm_manager_client_unittest.cc",
     "update_engine_client_unittest.cc",
     "userdataauth/cryptohome_misc_client_unittest.cc",
+    "userdataauth/cryptohome_pkcs11_client_unittest.cc",
     "userdataauth/install_attributes_client_unittest.cc",
     "userdataauth/userdataauth_client_unittest.cc",
     "util/version_loader_unittest.cc",
