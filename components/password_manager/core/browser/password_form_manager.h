@@ -69,16 +69,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // form.
   static constexpr int kMaxTimesAutofill = 5;
 
-  // Compares |observed_form()| with |form| and returns true if they are the
-  // same and if |driver| is the same as |driver_|.
-  bool DoesManage(const autofill::FormData& form,
-                  const PasswordManagerDriver* driver) const;
-
   // Returns whether the form identified by |form_renderer_id| and |driver|
-  // is managed by this password form manager. Don't call this on iOS.
-  bool DoesManageAccordingToRendererId(
-      autofill::FormRendererId form_renderer_id,
-      const PasswordManagerDriver* driver) const;
+  // is managed by this password form manager.
+  bool DoesManage(autofill::FormRendererId form_renderer_id,
+                  const PasswordManagerDriver* driver) const;
 
   // Check that |submitted_form_| is equal to |form| from the user point of
   // view. It is used for detecting that a form is reappeared after navigation

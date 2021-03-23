@@ -493,18 +493,23 @@ class PasswordFormManagerTest : public testing::Test,
 };
 
 TEST_P(PasswordFormManagerTest, DoesManage) {
-  EXPECT_TRUE(form_manager_->DoesManage(observed_form_, &driver_));
+  EXPECT_TRUE(
+      form_manager_->DoesManage(observed_form_.unique_renderer_id, &driver_));
   // Forms on other drivers are not considered managed.
   MockPasswordManagerDriver another_driver;
-  EXPECT_FALSE(form_manager_->DoesManage(observed_form_, &another_driver));
+  EXPECT_FALSE(form_manager_->DoesManage(observed_form_.unique_renderer_id,
+                                         &another_driver));
   FormData another_form = observed_form_;
   another_form.is_form_tag = false;
-  EXPECT_FALSE(form_manager_->DoesManage(another_form, &driver_));
+  another_form.unique_renderer_id = FormRendererId();
+  EXPECT_FALSE(
+      form_manager_->DoesManage(another_form.unique_renderer_id, &driver_));
 
   // Unique_renderer_id is the form identifier.
   another_form = observed_form_;
   another_form.unique_renderer_id.value() += 1;
-  EXPECT_FALSE(form_manager_->DoesManage(another_form, &driver_));
+  EXPECT_FALSE(
+      form_manager_->DoesManage(another_form.unique_renderer_id, &driver_));
 }
 
 TEST_P(PasswordFormManagerTest, DoesManageNoFormTag) {
@@ -514,9 +519,11 @@ TEST_P(PasswordFormManagerTest, DoesManageNoFormTag) {
   FormData another_form = observed_form_;
   // Simulate that new input was added by JavaScript.
   another_form.fields.emplace_back();
-  EXPECT_TRUE(form_manager_->DoesManage(another_form, &driver_));
+  EXPECT_TRUE(
+      form_manager_->DoesManage(another_form.unique_renderer_id, &driver_));
   // Forms on other drivers are not considered managed.
-  EXPECT_FALSE(form_manager_->DoesManage(another_form, nullptr));
+  EXPECT_FALSE(
+      form_manager_->DoesManage(another_form.unique_renderer_id, nullptr));
 }
 
 TEST_P(PasswordFormManagerTest, Autofill) {
@@ -1302,7 +1309,8 @@ TEST_P(PasswordFormManagerTest, Clone) {
 
   std::unique_ptr<PasswordFormManager> cloned_manager = form_manager_->Clone();
 
-  EXPECT_TRUE(cloned_manager->DoesManage(observed_form_, nullptr));
+  EXPECT_TRUE(
+      cloned_manager->DoesManage(observed_form_.unique_renderer_id, nullptr));
   EXPECT_TRUE(cloned_manager->GetFormFetcher());
   // Check that |form_fetcher| was cloned.
   EXPECT_NE(form_manager_->GetFormFetcher(), cloned_manager->GetFormFetcher());

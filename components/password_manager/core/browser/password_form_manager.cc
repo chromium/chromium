@@ -184,20 +184,6 @@ PasswordFormManager::~PasswordFormManager() {
 }
 
 bool PasswordFormManager::DoesManage(
-    const FormData& form,
-    const PasswordManagerDriver* driver) const {
-  if (driver != driver_.get())
-    return false;
-
-  if (observed_form()->is_form_tag != form.is_form_tag)
-    return false;
-  // All unowned input elements are considered as one synthetic form.
-  if (!observed_form()->is_form_tag && !form.is_form_tag)
-    return true;
-  return observed_form()->unique_renderer_id == form.unique_renderer_id;
-}
-
-bool PasswordFormManager::DoesManageAccordingToRendererId(
     autofill::FormRendererId form_renderer_id,
     const PasswordManagerDriver* driver) const {
   if (driver != driver_.get())
@@ -712,7 +698,7 @@ bool PasswordFormManager::ProvisionallySave(
     const FormData& submitted_form,
     const PasswordManagerDriver* driver,
     const PossibleUsernameData* possible_username) {
-  DCHECK(DoesManage(submitted_form, driver));
+  DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
   std::unique_ptr<PasswordForm> parsed_submitted_form =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,

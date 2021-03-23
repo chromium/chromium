@@ -2688,7 +2688,8 @@ TEST_P(PasswordManagerTest, CreatingFormManagers) {
   manager()->OnPasswordFormsParsed(&driver_, observed);
   // Check that the form manager is created.
   EXPECT_EQ(1u, manager()->form_managers().size());
-  EXPECT_TRUE(manager()->form_managers()[0]->DoesManage(form_data, &driver_));
+  EXPECT_TRUE(manager()->form_managers()[0]->DoesManage(
+      form_data.unique_renderer_id, &driver_));
 
   // Check that receiving the same form the second time does not lead to
   // creating new form manager.

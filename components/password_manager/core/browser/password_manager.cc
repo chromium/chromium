@@ -126,7 +126,7 @@ PasswordFormManager* FindMatchedManagerByRendererId(
     const std::vector<std::unique_ptr<PasswordFormManager>>& form_managers,
     const PasswordManagerDriver* driver) {
   for (const auto& form_manager : form_managers) {
-    if (form_manager->DoesManageAccordingToRendererId(form_renderer_id, driver))
+    if (form_manager->DoesManage(form_renderer_id, driver))
       return form_manager.get();
   }
   return nullptr;
@@ -785,7 +785,7 @@ void PasswordManager::OnPasswordFormRemoved(
     if (driver && !manager->GetDriver())
       manager->SetDriver(driver->AsWeakPtr());
     // Find a form with corresponding renderer id.
-    if (manager->DoesManageAccordingToRendererId(form_id, driver)) {
+    if (manager->DoesManage(form_id, driver)) {
       DetectPotentialSubmission(manager.get(), field_data_manager, driver);
       return;
     }
@@ -1193,7 +1193,7 @@ PasswordFormManager* PasswordManager::GetMatchedManager(
     if (driver && !form_manager->GetDriver())
       form_manager->SetDriver(driver->AsWeakPtr());
 #endif
-    if (form_manager->DoesManageAccordingToRendererId(form_id, driver))
+    if (form_manager->DoesManage(form_id, driver))
       return form_manager.get();
   }
   return nullptr;
