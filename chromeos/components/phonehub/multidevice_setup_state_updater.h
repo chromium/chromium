@@ -43,6 +43,7 @@ class MultideviceSetupStateUpdater
   // NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
 
+  bool IsWaitingForAccessToInitiallyEnableNotifications() const;
   void EnablePhoneHubIfAwaitingVerifiedHost();
   void UpdateIsAwaitingVerifiedHost();
 

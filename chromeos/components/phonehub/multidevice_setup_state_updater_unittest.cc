@@ -6,6 +6,7 @@
 
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,7 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     MultideviceSetupStateUpdater::RegisterPrefs(pref_service_.registry());
+    multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
 
     // Set the host status and feature state to realistic default values used
     // during start-up.
@@ -45,7 +47,7 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
 
   void DestroyUpdater() { updater_.reset(); }
 
-  void SetNotififcationAccess(bool enabled) {
+  void SetNotificationAccess(bool enabled) {
     fake_notification_access_manager_.SetAccessStatusInternal(
         enabled
             ? NotificationAccessManager::AccessStatus::kAccessGranted
@@ -216,17 +218,50 @@ TEST_F(
       /*success=*/true);
 }
 
-TEST_F(MultideviceSetupStateUpdaterTest, DisablePhoneHubNotifications) {
+TEST_F(MultideviceSetupStateUpdaterTest, RevokePhoneHubNotificationsAccess) {
+  SetNotificationAccess(true);
   CreateUpdater();
-  SetNotififcationAccess(true);
 
   // Test that there is a call to disable kPhoneHubNotifications when
   // notification access has been revoked.
-  SetNotififcationAccess(false);
+  SetNotificationAccess(false);
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kPhoneHubNotifications,
       /*expected_enabled=*/false, /*expected_auth_token=*/base::nullopt,
       /*success=*/true);
+}
+
+TEST_F(MultideviceSetupStateUpdaterTest, InitiallyEnablePhoneHubNotifications) {
+  SetNotificationAccess(false);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+  CreateUpdater();
+
+  // If the notifications feature has not been explicitly set yet, enable it
+  // when Phone Hub is enabled and access has been granted.
+  SetNotificationAccess(true);
+  fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
+      /*expected_feature=*/Feature::kPhoneHubNotifications,
+      /*expected_enabled=*/true, /*expected_auth_token=*/base::nullopt,
+      /*success=*/true);
+}
+
+TEST_F(MultideviceSetupStateUpdaterTest,
+       InitiallyEnablePhoneHubNotifications_OnlyEnableFromDefaultState) {
+  SetNotificationAccess(false);
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kEnabledByUser);
+
+  // Explicitly disable Phone Hub notifications.
+  SetFeatureState(Feature::kPhoneHub, FeatureState::kDisabledByUser);
+
+  CreateUpdater();
+
+  // We take no action after access is granted because the Phone Hub
+  // notifications feature state was already explicitly set; we respect the
+  // user's choice.
+  SetNotificationAccess(true);
+  EXPECT_EQ(
+      0u,
+      fake_multidevice_setup_client()->NumPendingSetFeatureEnabledStateCalls());
 }
 
 }  // namespace phonehub
