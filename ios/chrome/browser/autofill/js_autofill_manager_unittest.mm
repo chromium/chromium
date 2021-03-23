@@ -534,6 +534,11 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
             "</form></body></html>");
   RunFormsSearch();
 
+  // Simulate interacting with the field that should be force filled.
+  ExecuteJavaScript(@"var field = document.getElementById('firstname');"
+                     "field.focus();"
+                     "field.value = 'to_be_erased';");
+
   auto autofillData = std::make_unique<base::DictionaryValue>();
   autofillData->SetKey("formName", base::Value("testform"));
   autofillData->SetKey("formRendererID", base::Value(1));

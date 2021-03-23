@@ -268,7 +268,7 @@ __gCrWeb.autofill['fillForm'] = function(
     // c) The "value" or "placeholder" attributes match the value, if any; or
     // d) The value has not been set by the user.
     const shouldBeForceFilled = useRendererIDs ?
-        fieldRendererID === forceFillFieldNumericID :
+        fieldRendererID === forceFillFieldNumericID.toString() :
         fieldIdentifier === forceFillFieldStringID;
     if (element.value && __gCrWeb.form.fieldWasEditedByUser(element) &&
         !__gCrWeb.autofill.sanitizedFieldIsEmpty(element.value) &&
