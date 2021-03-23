@@ -425,7 +425,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const oneFrameWithImportTextureApi = (timestamp) => {
     const elapsed = timestamp - lastTimestamp;
     if (elapsed < frameTime30Fps) {
-      window.requestAnimationFrame(oneFrame);
+      window.requestAnimationFrame(oneFrameWithImportTextureApi);
       return;
     }
     lastTimestamp = timestamp;
