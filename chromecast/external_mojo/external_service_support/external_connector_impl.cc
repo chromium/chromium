@@ -184,7 +184,7 @@ base::CallbackListSubscription
 ExternalConnectorImpl::AddConnectionErrorCallback(
     base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return error_callbacks_.Add(std::move(callback));
+  return error_closures_.Add(std::move(callback));
 }
 
 void ExternalConnectorImpl::RegisterService(const std::string& service_name,
@@ -294,7 +294,7 @@ void ExternalConnectorImpl::OnMojoDisconnect() {
     Connect();
     BindConnectorIfNecessary();
   }
-  error_callbacks_.Notify();
+  error_closures_.Notify();
 }
 
 void ExternalConnectorImpl::BindConnectorIfNecessary() {
