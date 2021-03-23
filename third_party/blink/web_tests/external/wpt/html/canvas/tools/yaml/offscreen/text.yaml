@@ -1438,4 +1438,44 @@
     @assert ctx.textRendering === "GeometricPrecision";
     t.done();
 
+- name: 2d.text.drawing.style.measure.rtl.text
+  desc: Measurement should follow canvas direction instead text direction
+  testing:
+  - 2d.text.drawing.style.textRendering
+  code: |
+    metrics = ctx.measureText('اَلْعَرَبِيَّةُ');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+    t.done();
+
+- name: 2d.text.drawing.style.measure.textAlign
+  desc: Measurement should be related to textAlignment
+  testing:
+  - 2d.text.drawing.style.measure.textAlign
+  code: |
+    ctx.textAlign = "right";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft > metrics.actualBoundingBoxRight;
+
+    ctx.textAlign = "left"
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+    t.done();
+
+- name: 2d.text.drawing.style.measure.direction
+  desc: Measurement should follow text direction
+  testing:
+  - 2d.text.drawing.style.measure.direction
+  code: |
+    ctx.direction = "ltr";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+    ctx.direction = "rtl";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft > metrics.actualBoundingBoxRight;
+    t.done();
+
 # TODO: shadows, alpha, composite, clip

@@ -476,3 +476,41 @@
         }), 500);
     });
 
+- name: 2d.text.measure.rtl.text
+  desc: Measurement should follow canvas direction instead text direction
+  testing:
+  - 2d.text.measure.rtl.text
+  fonts:
+  - CanvasTest
+  code: |
+    metrics = ctx.measureText('اَلْعَرَبِيَّةُ');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+- name: 2d.text.measure.boundingBox.textAlign
+  desc: Measurement should be related to textAlignment
+  testing:
+  - 2d.text.measure.boundingBox.textAlign
+  code: |
+    ctx.textAlign = "right";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft > metrics.actualBoundingBoxRight;
+
+    ctx.textAlign = "left"
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+- name: 2d.text.measure.boundingBox.direction
+  desc: Measurement should follow text direction
+  testing:
+  - 2d.text.measure.boundingBox.direction
+  code: |
+    ctx.direction = "ltr";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft < metrics.actualBoundingBoxRight;
+
+    ctx.direction = "rtl";
+    metrics = ctx.measureText('hello');
+    @assert metrics.actualBoundingBoxLeft > metrics.actualBoundingBoxRight;

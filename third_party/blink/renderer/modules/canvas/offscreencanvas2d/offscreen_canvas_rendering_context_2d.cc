@@ -724,12 +724,7 @@ TextMetrics* OffscreenCanvasRenderingContext2D::measureText(
     const String& text) {
   const Font& font = AccessFont();
 
-  TextDirection direction;
-  if (GetState().GetDirection() ==
-      CanvasRenderingContext2DState::kDirectionInherit)
-    direction = DetermineDirectionality(text);
-  else
-    direction = ToTextDirection(GetState().GetDirection());
+  TextDirection direction = ToTextDirection(GetState().GetDirection());
 
   return MakeGarbageCollected<TextMetrics>(font, direction,
                                            GetState().GetTextBaseline(),
