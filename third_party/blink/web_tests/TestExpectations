@@ -3859,6 +3859,8 @@ crbug.com/718155 fullscreen/full-screen-restrictions.html [ Failure Timeout ]
 
 crbug.com/852645 gamepad/full-screen-gamepad.html [ Timeout ]
 
+crbug.com/1191123 gamepad/gamepad-polling-access.html [ Failure Pass ]
+
 # Feature Policy changes same-origin allowpaymentrequest behaviour, tests need updating
 crbug.com/718155 payments/payment-request-in-iframe.html [ Failure ]
 crbug.com/718155 payments/payment-request-in-iframe-nested-not-allowed.html [ Failure ]
