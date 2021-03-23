@@ -277,8 +277,7 @@ public class CardEditor
 
         Supplier<TabModelSelector> tabModelSelectorSupplier =
                 TabModelSelectorSupplier.from(windowAndroid);
-        assert tabModelSelectorSupplier != null;
-        if (!tabModelSelectorSupplier.hasValue()) return false;
+        if (tabModelSelectorSupplier == null || !tabModelSelectorSupplier.hasValue()) return false;
 
         return tabModelSelectorSupplier.get().isIncognitoSelected();
     }
