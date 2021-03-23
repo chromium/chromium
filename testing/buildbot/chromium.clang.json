@@ -13390,9 +13390,6 @@
     ]
   },
   "ToTFuchsiaOfficial": {
-    "additional_compile_targets": [
-      "all"
-    ],
     "gtest_tests": [
       {
         "merge": {

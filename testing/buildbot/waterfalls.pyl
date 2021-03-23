@@ -1886,9 +1886,6 @@
         },
       },
       'ToTFuchsiaOfficial': {
-        'additional_compile_targets': [
-          'all',
-        ],
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
