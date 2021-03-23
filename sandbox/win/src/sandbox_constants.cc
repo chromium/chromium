@@ -6,6 +6,9 @@
 
 namespace sandbox {
 // Strings used as keys in base::Value snapshots of Policies for WebUI.
+extern const char kAppContainerCapabilities[] = "appContainerCapabilities";
+extern const char kAppContainerInitialCapabilities[] =
+    "appContainerInitialCapabilities";
 extern const char kAppContainerSid[] = "appContainerSid";
 extern const char kDesiredIntegrityLevel[] = "desiredIntegrityLevel";
 extern const char kDesiredMitigations[] = "desiredMitigations";

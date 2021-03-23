@@ -41,7 +41,13 @@ class PolicyDiagnostic final : public PolicyInfo {
   JobLevel job_level_ = JOB_NONE;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
+  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
   std::unique_ptr<Sid> app_container_sid_ = nullptr;
+  // Only populated if |app_container_sid_| is present.
+  std::vector<Sid> capabilities_;
+  // Only populated if |app_container_sid_| is present.
+  std::vector<Sid> initial_capabilities_;
+  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
   std::unique_ptr<Sid> lowbox_sid_ = nullptr;
   std::unique_ptr<PolicyGlobal> policy_rules_ = nullptr;
 

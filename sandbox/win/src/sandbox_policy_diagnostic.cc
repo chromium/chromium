@@ -364,9 +364,17 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
 
   desired_mitigations_ = policy->mitigations_ | policy->delayed_mitigations_;
 
-  if (policy->app_container_profile_)
+  if (policy->app_container_profile_) {
     app_container_sid_ =
         std::make_unique<Sid>(policy->app_container_profile_->GetPackageSid());
+    for (const auto& sid : policy->app_container_profile_->GetCapabilities()) {
+      capabilities_.push_back(sid);
+    }
+    for (const auto& sid :
+         policy->app_container_profile_->GetImpersonationCapabilities()) {
+      initial_capabilities_.push_back(sid);
+    }
+  }
   if (policy->lowbox_sid_)
     lowbox_sid_ = std::make_unique<Sid>(policy->lowbox_sid_);
 
@@ -409,10 +417,28 @@ const char* PolicyDiagnostic::JsonString() {
   value.SetKey(kPlatformMitigations,
                base::Value(GetPlatformMitigationsAsHex(desired_mitigations_)));
 
-  if (app_container_sid_)
+  if (app_container_sid_) {
     value.SetStringKey(
         kAppContainerSid,
         base::AsStringPiece16(GetSidAsString(app_container_sid_.get())));
+    std::vector<base::Value> caps;
+    for (auto sid : capabilities_) {
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(&sid)));
+      caps.push_back(std::move(sid_value));
+    }
+    if (!caps.empty()) {
+      value.SetKey(kAppContainerCapabilities, base::Value(std::move(caps)));
+    }
+    std::vector<base::Value> imp_caps;
+    for (auto sid : initial_capabilities_) {
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(&sid)));
+      imp_caps.push_back(std::move(sid_value));
+    }
+    if (!imp_caps.empty()) {
+      value.SetKey(kAppContainerInitialCapabilities,
+                   base::Value(std::move(imp_caps)));
+    }
+  }
 
   if (lowbox_sid_) {
     value.SetStringKey(
