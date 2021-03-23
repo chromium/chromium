@@ -91,6 +91,8 @@ const struct {
      GLImplementationParts(ANGLEImplementation::kDefault)},
     {kGLImplementationANGLEName, kANGLEImplementationSwiftShaderName,
      GLImplementationParts(ANGLEImplementation::kSwiftShader)},
+    {kGLImplementationANGLEName, kANGLEImplementationNullName,
+     GLImplementationParts(ANGLEImplementation::kNull)},
     {kGLImplementationMockName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationMockGL)},
     {kGLImplementationStubName, kANGLEImplementationNoneName,
