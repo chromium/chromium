@@ -5846,15 +5846,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSectionUIAndroid)},
 #endif
 
-    {"safe-browsing-enhanced-protection-message-in-interstitials",
-     flag_descriptions::
-         kSafeBrowsingEnhancedProtectionMessageInInterstitialsName,
-     flag_descriptions::
-         kSafeBrowsingEnhancedProtectionMessageInInterstitialsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         safe_browsing::kEnhancedProtectionMessageInInterstitials)},
-
     {"safe-browsing-real-time-url-lookup-enterprise-ga-endpoint",
      flag_descriptions::kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName,
      flag_descriptions::

@@ -90,8 +90,8 @@ SBErrorOptions TriggerManager::GetSBErrorDisplayOptions(
                         IsEnhancedProtectionEnabled(pref_service),
                         /*is_proceed_anyway_disabled=*/false,
                         /*should_open_links_in_new_tab=*/false,
-                        /*show_back_to_safety_button=*/true,
-                        IsEnhancedProtectionMessageInInterstitialsEnabled(),
+                        /*always_show_back_to_safety=*/true,
+                        /*is_enhanced_protection_message_enabled=*/true,
                         IsSafeBrowsingPolicyManaged(pref_service),
                         /*help_center_article_link=*/std::string());
 }

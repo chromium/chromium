@@ -423,7 +423,7 @@ class TestSafeBrowsingBlockingPageFactory
         IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
         true,  // should_open_links_in_new_tab
         always_show_back_to_safety_,
-        IsEnhancedProtectionMessageInInterstitialsEnabled(),
+        /*is_enhanced_protection_message_enabled=*/true,
         IsSafeBrowsingPolicyManaged(*prefs),
         "cpn_safe_browsing" /* help_center_article_link */);
     return new TestSafeBrowsingBlockingPage(
@@ -2799,8 +2799,6 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
   SafeBrowsingBlockingPageEnhancedProtectionMessageTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kEnhancedProtectionMessageInInterstitials);
     InProcessBrowserTest::SetUp();
   }
 

@@ -1206,10 +1206,6 @@ extern const char kPrinterStatusDescription[];
 extern const char kPrinterStatusDialogName[];
 extern const char kPrinterStatusDialogDescription[];
 
-extern const char kSafeBrowsingEnhancedProtectionMessageInInterstitialsName[];
-extern const char
-    kSafeBrowsingEnhancedProtectionMessageInInterstitialsDescription[];
-
 extern const char kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName[];
 extern const char
     kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointDescription[];

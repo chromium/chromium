@@ -2054,14 +2054,6 @@ const char kPrinterStatusDialogDescription[] =
     "Enables printer status icons and labels for saved printers on the Print "
     "Preview destination dialog";
 
-const char kSafeBrowsingEnhancedProtectionMessageInInterstitialsName[] =
-    "Show enhanced protection message in security interstitials.";
-
-const char kSafeBrowsingEnhancedProtectionMessageInInterstitialsDescription[] =
-    "If enabled, the Safe Browsing interstitials and the SSL interstitials "
-    "will include an enhanced protection message when users are not in "
-    "enhanced protection mode.";
-
 const char kSafeBrowsingRealTimeUrlLookupEnterpriseGaEndpointName[] =
     "Use the new GA endpoint to perform enterprise real time URL check.";
 

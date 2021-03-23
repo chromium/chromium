@@ -4455,15 +4455,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "safe-browsing-enhanced-protection-message-in-interstitials",
-    "owners": [
-      "vakh",
-      "xinghuilu",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "safe-browsing-enhanced-protection-promo-android",
     "owners": [ "bdea", "chrome-safebrowsing-core@google.com" ],
     "expiry_milestone": 90

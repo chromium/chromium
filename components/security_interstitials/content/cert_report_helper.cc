@@ -202,7 +202,6 @@ bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
 bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
   // Only show the enhanced protection message if all the following are true:
   // |can_show_enhanced_protection_message_| is set to true AND
-  // user is in the relevant Finch group AND
   // the window is not incognito AND
   // Safe Browsing is not managed by policy AND
   // the user is not already in enhanced protection mode.
@@ -217,8 +216,6 @@ bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
       safe_browsing::IsEnhancedProtectionEnabled(*pref_service);
   bool is_safe_browsing_managed =
       safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service);
-  bool is_enhanced_protection_message_enabled =
-      safe_browsing::IsEnhancedProtectionMessageInInterstitialsEnabled();
 
   if (in_incognito) {
     return false;
@@ -227,9 +224,6 @@ bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
     return false;
   }
   if (is_safe_browsing_managed) {
-    return false;
-  }
-  if (!is_enhanced_protection_message_enabled) {
     return false;
   }
   return true;

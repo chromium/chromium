@@ -58,10 +58,6 @@ const base::Feature kDownloadRequestWithToken{
 const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnhancedProtectionMessageInInterstitials{
-    "SafeBrowsingEnhancedProtectionMessageInInterstitials",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -153,7 +149,6 @@ constexpr struct {
     {&kDelayedWarnings, true},
     {&kDownloadRequestWithToken, true},
     {&kEnhancedProtection, true},
-    {&kEnhancedProtectionMessageInInterstitials, true},
     {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionForSavedPasswords, true},
     {&kPasswordProtectionReferringAppEnabledAndroid, true},
