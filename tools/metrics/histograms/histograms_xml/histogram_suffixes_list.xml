@@ -12148,6 +12148,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="LoadingPredictor"
       label="Provides information about subresources predicted to be on the
              page"/>
+  <suffix name="LoginDetection"
+      label="Provides information about hosts that are identified as commonly
+             logged-in"/>
   <suffix name="None" label="No optimization type"/>
   <suffix name="NoScript"
       label="Disables the fetching and execution of JavaScript">

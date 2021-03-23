@@ -6,6 +6,7 @@
 
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,7 @@ LoginDetectionKeyedServiceFactory::LoginDetectionKeyedServiceFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 LoginDetectionKeyedServiceFactory::~LoginDetectionKeyedServiceFactory() =
