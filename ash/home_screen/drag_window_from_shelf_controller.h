@@ -45,6 +45,11 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   // when swiping up from the shelf. Can happen anytime during dragging.
   static constexpr float kVelocityToHomeScreenThreshold = 1000.f;
 
+  // When swiping up from the shelf, the user can continue dragging and end with
+  // a downward fling. This is the downward velocity threshold required to
+  // restore the original window bounds.
+  static constexpr float kVelocityToRestoreBoundsThreshold = 1000.f;
+
   // The upward velocity threshold to fling the window into overview when split
   // view is active during dragging.
   static constexpr float kVelocityToOverviewThreshold = 1000.f;
@@ -125,9 +130,10 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   // Returns true if the dragged window should restore to its original bounds
   // after drag ends. Happens when the bottom of the dragged window is
-  // within the GetReturnToMaximizedThreshold() threshold.
-  bool ShouldRestoreToOriginalBounds(
-      const gfx::PointF& location_in_screen) const;
+  // within the GetReturnToMaximizedThreshold() threshold, or when the downward
+  // vertical velocity is larger than kVelocityToRestoreBoundsThreshold.
+  bool ShouldRestoreToOriginalBounds(const gfx::PointF& location_in_screen,
+                                     base::Optional<float> velocity_y) const;
 
   // Returns true if we should go to home screen after drag ends. Happens when
   // the upward vertical velocity is larger than kVelocityToHomeScreenThreshold

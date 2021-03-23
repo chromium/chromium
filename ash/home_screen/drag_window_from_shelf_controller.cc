@@ -258,7 +258,7 @@ base::Optional<ShelfWindowDragResult> DragWindowFromShelfController::EndDrag(
     if (in_overview)
       overview_controller->EndOverview(OverviewEnterExitType::kFadeOutExit);
     window_drag_result_ = ShelfWindowDragResult::kGoToHomeScreen;
-  } else if (ShouldRestoreToOriginalBounds(location_in_screen)) {
+  } else if (ShouldRestoreToOriginalBounds(location_in_screen, velocity_y)) {
     window_drag_result_ = ShelfWindowDragResult::kRestoreToOriginalBounds;
   } else if (!in_overview) {
     // if overview is not active during the entire drag process, scale down the
@@ -510,7 +510,7 @@ DragWindowFromShelfController::GetSnapPosition(
   // if |location_in_screen| is close to the bottom of the screen and is
   // inside of GetReturnToMaximizedThreshold() threshold, we should not try to
   // snap the window.
-  if (ShouldRestoreToOriginalBounds(location_in_screen))
+  if (ShouldRestoreToOriginalBounds(location_in_screen, base::nullopt))
     return SplitViewController::NONE;
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -536,7 +536,8 @@ DragWindowFromShelfController::GetSnapPosition(
 }
 
 bool DragWindowFromShelfController::ShouldRestoreToOriginalBounds(
-    const gfx::PointF& location_in_screen) const {
+    const gfx::PointF& location_in_screen,
+    base::Optional<float> velocity_y) const {
   const gfx::Rect display_bounds =
       display::Screen::GetScreen()
           ->GetDisplayNearestPoint(gfx::ToRoundedPoint(location_in_screen))
@@ -544,8 +545,21 @@ bool DragWindowFromShelfController::ShouldRestoreToOriginalBounds(
   gfx::RectF transformed_window_bounds =
       window_util::GetTransformedBounds(window_, /*top_inset=*/0);
 
-  return transformed_window_bounds.bottom() >
-         display_bounds.bottom() - GetReturnToMaximizedThreshold();
+  // If overview is invisible when the drag ends with downward velocity, we
+  // should restore to original bounds.
+  if (Shell::Get()->overview_controller()->InOverviewSession() &&
+      !show_overview_windows_ && velocity_y.has_value() &&
+      velocity_y.value() > 0) {
+    return true;
+  }
+
+  // Otherwise restore the bounds if the downward vertical velocity exceeds the
+  // threshold, or if the bottom of the dragged window is within the
+  // GetReturnToMaximizedThreshold() threshold.
+  return (velocity_y.has_value() &&
+          velocity_y.value() >= kVelocityToRestoreBoundsThreshold) ||
+         transformed_window_bounds.bottom() >
+             display_bounds.bottom() - GetReturnToMaximizedThreshold();
 }
 
 bool DragWindowFromShelfController::ShouldGoToHomeScreen(
@@ -565,16 +579,17 @@ bool DragWindowFromShelfController::ShouldGoToHomeScreen(
     return false;
   }
 
-  // If overview is invisible when the drag ends, no matter what the velocity
-  // is, we should go to home screen.
+  // If overview is invisible when the drag ends with upward velocity or no
+  // velocity, we should go to home screen.
   if (Shell::Get()->overview_controller()->InOverviewSession() &&
-      !show_overview_windows_) {
+      !show_overview_windows_ &&
+      (!velocity_y.has_value() || velocity_y.value() <= 0)) {
     return true;
   }
 
-  // Otherwise go home if the velocity is large enough.
-  return velocity_y.has_value() && *velocity_y < 0 &&
-         std::abs(*velocity_y) >= kVelocityToHomeScreenThreshold;
+  // Otherwise go home if the upward vertical velocity exceeds the threshold.
+  return velocity_y.has_value() &&
+         velocity_y.value() <= -kVelocityToHomeScreenThreshold;
 }
 
 SplitViewController::SnapPosition
@@ -588,7 +603,7 @@ DragWindowFromShelfController::GetSnapPositionOnDragEnd(
 
   // When dragging ends but restore to original bounds, we should restore
   // window's initial snap position
-  if (ShouldRestoreToOriginalBounds(location_in_screen))
+  if (ShouldRestoreToOriginalBounds(location_in_screen, velocity_y))
     return initial_snap_position_;
 
   return GetSnapPosition(location_in_screen);
@@ -606,16 +621,17 @@ bool DragWindowFromShelfController::ShouldDropWindowInOverview(
   const bool in_splitview =
       SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->InSplitViewMode();
-  if (!in_splitview && ShouldRestoreToOriginalBounds(location_in_screen)) {
+  if (!in_splitview &&
+      ShouldRestoreToOriginalBounds(location_in_screen, velocity_y)) {
     return false;
   }
 
   if (in_splitview) {
-    if (velocity_y.has_value() && *velocity_y < 0 &&
-        std::abs(*velocity_y) >= kVelocityToOverviewThreshold) {
+    if (velocity_y.has_value() &&
+        velocity_y.value() <= -kVelocityToOverviewThreshold) {
       return true;
     }
-    if (ShouldRestoreToOriginalBounds(location_in_screen))
+    if (ShouldRestoreToOriginalBounds(location_in_screen, velocity_y))
       return false;
   }
 
