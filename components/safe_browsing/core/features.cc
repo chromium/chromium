@@ -98,7 +98,7 @@ const base::Feature kRealTimeUrlLookupEnabledForEnterprise{
 
 const base::Feature kRealTimeUrlLookupEnterpriseGaEndpoint{
     "SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRealTimeUrlLookupEnabledWithToken{
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken",

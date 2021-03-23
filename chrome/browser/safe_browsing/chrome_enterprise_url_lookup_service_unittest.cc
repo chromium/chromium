@@ -32,7 +32,8 @@ namespace safe_browsing {
 
 namespace {
 constexpr char kRealTimeLookupUrl[] =
-    "https://safebrowsing.google.com/safebrowsing/clientreport/realtime";
+    "https://enterprise-safebrowsing.googleapis.com/safebrowsing/clientreport/"
+    "realtime";
 }  // namespace
 
 class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
