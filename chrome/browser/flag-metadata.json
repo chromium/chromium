@@ -2019,7 +2019,7 @@
   },
   {
     "name": "enable-navigation-predictor",
-    "owners": [ "tbansal", "ryansturm", "instant-nav" ],
+    "owners": [ "tbansal", "ryansturm", "instant-nav@google.com" ],
     "expiry_milestone": 90
   },
   {
@@ -2163,7 +2163,7 @@
   },
   {
     "name": "enable-preconnect-to-search",
-    "owners": [ "tbansal", "ryansturm", "instant-nav" ],
+    "owners": [ "tbansal", "ryansturm", "instant-nav@google.com" ],
     "expiry_milestone": 90
   },
   {
