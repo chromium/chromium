@@ -20,20 +20,18 @@ class PLATFORM_EXPORT BackForwardCacheLoaderHelper
   // Evict the page from BackForwardCache. Should be called when handling an
   // event which can't proceed if the page is in BackForwardCache and can't be
   // easily deferred to handle later, for example network redirect handling.
-  virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason reason) {
-  }
+  virtual void EvictFromBackForwardCache(
+      mojom::RendererEvictionReason reason) = 0;
 
   // Called when a network request buffered an additional `num_bytes` while the
   // in back-forward cache. May be called multiple times.
-  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
+  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
 
   // Returns true if we can still continue buffering data from in-flight network
   // requests while in back-forward cache.
-  virtual bool CanContinueBufferingWhileInBackForwardCache() const {
-    return false;
-  }
+  virtual bool CanContinueBufferingWhileInBackForwardCache() const = 0;
 
-  virtual void Detach() {}
+  virtual void Detach() = 0;
 
   virtual void Trace(Visitor*) const {}
 };

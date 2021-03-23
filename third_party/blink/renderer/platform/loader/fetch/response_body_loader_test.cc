@@ -27,6 +27,13 @@ class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
  public:
   TestBackForwardCacheLoaderHelper() = default;
 
+  void EvictFromBackForwardCache(
+      mojom::RendererEvictionReason reason) override {}
+
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
+
+  void Detach() override {}
+
   bool CanContinueBufferingWhileInBackForwardCache() const override {
     return true;
   }
