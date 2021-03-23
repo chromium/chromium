@@ -169,7 +169,7 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
   BoxCreateUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& folder_id,
                                     const size_t file_size,
-                                    const std::string& file_name);
+                                    const base::FilePath& file_name);
   ~BoxCreateUploadSessionApiCallFlow() override;
 
  protected:
@@ -189,7 +189,7 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
   TaskCallback callback_;
   const std::string folder_id_;
   const size_t file_size_;
-  const std::string file_name_;
+  const base::FilePath file_name_;
   base::WeakPtrFactory<BoxCreateUploadSessionApiCallFlow> factory_{this};
 };
 
@@ -244,6 +244,7 @@ class BoxPartFileUploadApiCallFlow : public BoxApiCallFlow {
 // successfully.
 class BoxCommitUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
+  using TaskCallback = base::OnceCallback<void(bool, int, base::TimeDelta)>;
   BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& commit_endpoint,
                                     const base::Value& parts,
@@ -264,9 +265,10 @@ class BoxCommitUploadSessionApiCallFlow : public BoxApiCallFlow {
 
  private:
   TaskCallback callback_;
-  const std::string commit_endpoint_;
+  const GURL commit_endpoint_;
   const base::Value upload_session_parts_;
   const std::string sha_digest_;
+  base::TimeDelta retry_after_;
   base::WeakPtrFactory<BoxCommitUploadSessionApiCallFlow> factory_{this};
 };
 

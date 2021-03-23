@@ -513,7 +513,8 @@ class BoxCreateUploadSessionApiCallFlowTest
         base::BindOnce(&BoxCreateUploadSessionApiCallFlowTest::OnResponse,
                        factory_.GetWeakPtr()),
         /*folder_id = */ "13579", /*file_size = */ 60 * 1024 * 1024,
-        /*file_name = */ "box_chunked_file_upload_test.txt");
+        /*file_name = */
+        base::FilePath{FILE_PATH_LITERAL("box_chunked_upload_test.txt")});
   }
 
   void OnResponse(bool success,
@@ -554,6 +555,13 @@ TEST_F(BoxCreateUploadSessionApiCallFlowTest, IsExpectedSuccessCode) {
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(403));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
   ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
+}
+
+TEST_F(BoxCreateUploadSessionApiCallFlowTest, CreateApiCallBody) {
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(R"({"file_name":"box_chunked_upload_test.txt")");
+  expected_body += R"(,"file_size":62914560,"folder_id":"13579"})";
+  ASSERT_EQ(body, expected_body);
 }
 
 TEST_F(BoxCreateUploadSessionApiCallFlowTest, ProcessApiCallSuccess) {
@@ -822,15 +830,19 @@ class BoxCommitUploadSessionApiCallFlowTest
         kFileSystemBoxChunkedUploadSha);
   }
 
-  void OnResponse(bool success, int response_code) {
+  void OnResponse(bool success,
+                  int response_code,
+                  base::TimeDelta retry_after) {
     processed_success_ = success;
     response_code_ = response_code;
+    retry_after_ = retry_after;
     if (quit_closure_)
       std::move(quit_closure_).Run();
   }
 
   base::Value upload_session_parts_;
   std::string expected_body_;
+  base::TimeDelta retry_after_;
 
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
@@ -868,22 +880,26 @@ TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallFailure) {
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
+  ASSERT_EQ(retry_after_, base::TimeDelta());
 }
 
-class ProcessApiCallSuccessTest
-    : public BoxCommitUploadSessionApiCallFlowTest,
-      public testing::WithParamInterface<net::HttpStatusCode> {};
-
-TEST_P(ProcessApiCallSuccessTest, SuccessCodes) {
-  auto http_head = network::CreateURLResponseHead(GetParam());
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Retry) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_ACCEPTED);
+  http_head->headers->AddHeader("Retry-After", "120");
   flow_->ProcessApiCallSuccess(http_head.get(), {});
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
-  ASSERT_EQ(response_code_, GetParam());
+  ASSERT_EQ(response_code_, net::HTTP_ACCEPTED);
+  ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(120));
 }
 
-INSTANTIATE_TEST_CASE_P(BoxCommitUploadSessionApiCallFlow,
-                        ProcessApiCallSuccessTest,
-                        testing::Values(net::HTTP_CREATED, net::HTTP_ACCEPTED));
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallSuccess_Created) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
+  flow_->ProcessApiCallSuccess(http_head.get(), {});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_CREATED);
+  ASSERT_EQ(retry_after_, base::TimeDelta::FromSeconds(0));
+}
 
 }  // namespace enterprise_connectors

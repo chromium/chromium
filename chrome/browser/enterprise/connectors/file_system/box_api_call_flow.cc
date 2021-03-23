@@ -17,6 +17,7 @@
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -447,7 +448,7 @@ BoxCreateUploadSessionApiCallFlow::BoxCreateUploadSessionApiCallFlow(
     TaskCallback callback,
     const std::string& folder_id,
     const size_t file_size,
-    const std::string& file_name)
+    const base::FilePath& file_name)
     : callback_(std::move(callback)),
       folder_id_(folder_id),
       file_size_(file_size),
@@ -464,10 +465,10 @@ std::string BoxCreateUploadSessionApiCallFlow::CreateApiCallBody() {
   base::Value val(base::Value::Type::DICTIONARY);
   val.SetStringKey("folder_id", folder_id_);
   val.SetIntKey("file_size", file_size_);  // TODO(https://crbug.com/1187152)
-  val.SetStringKey("file_name", file_name_);
+  val.SetStringKey("file_name", file_name_.MaybeAsASCII());
 
   bool file_big_enough = file_size_ > kChunkFileUploadMinSize;
-  CHECK_EQ(file_big_enough, true);
+  CHECK(file_big_enough) << file_size_;
 
   std::string body;
   base::JSONWriter::Write(val, &body);
@@ -650,13 +651,15 @@ BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
     : callback_(std::move(callback)),
       commit_endpoint_(commit_endpoint),
       upload_session_parts_(parts.Clone()),
-      sha_digest_(digest) {}
+      sha_digest_(digest) {
+  DCHECK(commit_endpoint_.is_valid());
+}
 
 BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
     default;
 
 GURL BoxCommitUploadSessionApiCallFlow::CreateApiCallUrl() {
-  return GURL(commit_endpoint_);
+  return commit_endpoint_;
 }
 
 net::HttpRequestHeaders
@@ -681,7 +684,18 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   auto response_code = head->headers->response_code();
-  std::move(callback_).Run(true, response_code);
+  bool success = true;
+  base::TimeDelta retry_after;
+  if (response_code == net::HTTP_ACCEPTED) {
+    std::string retry_string;
+    success &=
+        head->headers->EnumerateHeader(nullptr, "Retry-After", &retry_string);
+    success &= net::HttpUtil::ParseRetryAfterHeader(
+        retry_string, base::Time::Now(), &retry_after);
+    DCHECK(success) << "Unable to find Retry-After header. Headers: "
+                    << head->headers->raw_headers();
+  }
+  std::move(callback_).Run(success, response_code, retry_after);
 }
 
 void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
@@ -691,7 +705,7 @@ void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
   auto response_code = head->headers->response_code();
   LOG(ERROR) << "[BoxApiCallFlow] CommitUploadSession failed. Error code "
              << response_code;
-  std::move(callback_).Run(false, response_code);
+  std::move(callback_).Run(false, response_code, base::TimeDelta());
 }
 
 }  // namespace enterprise_connectors
