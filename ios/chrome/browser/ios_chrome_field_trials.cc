@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/ios_chrome_field_trials.h"
 
+#include "base/check.h"
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
 #include "ios/chrome/browser/application_context.h"
@@ -20,11 +21,13 @@ void IOSChromeFieldTrials::SetupFieldTrials() {
 
 void IOSChromeFieldTrials::SetupFeatureControllingFieldTrials(
     bool has_seed,
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
   // Add code here to enable field trials that are active at first run.
   // See http://crrev/c/1128269 for an example.
+  // Note: On iOS, the |low_entropy_provider| is guaranteed to be non-null.
+  DCHECK(low_entropy_provider);
   location_permissions_field_trial::Create(
-      low_entropy_provider, feature_list,
+      *low_entropy_provider, feature_list,
       GetApplicationContext()->GetLocalState());
 }

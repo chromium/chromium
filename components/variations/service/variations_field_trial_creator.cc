@@ -164,7 +164,7 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list,
     SafeSeedManager* safe_seed_manager) {
   TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
@@ -524,12 +524,12 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
   bool used_seed = false;
   if (!used_testing_config) {
-    used_seed = CreateTrialsFromSeed(*low_entropy_provider, feature_list.get(),
-                                     safe_seed_manager);
+    used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
+                                     feature_list.get(), safe_seed_manager);
   }
 
   platform_field_trials->SetupFeatureControllingFieldTrials(
-      used_seed, *low_entropy_provider, feature_list.get());
+      used_seed, low_entropy_provider.get(), feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
 
