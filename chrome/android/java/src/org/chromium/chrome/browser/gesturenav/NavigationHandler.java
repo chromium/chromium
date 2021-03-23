@@ -198,7 +198,7 @@ class NavigationHandler implements TouchEventObserver {
     boolean triggerUi(boolean forward, float x, float y) {
         // Triggering requests may come after the tab is nulled out
         // when the activity is being destroyed. Ignore it.
-        if (mTab == null) return false;
+        if (mTab == null || mTab.isDestroyed()) return false;
         mModel.set(DIRECTION, forward);
         boolean navigable = canNavigate(forward);
         if (navigable) {
@@ -226,7 +226,7 @@ class NavigationHandler implements TouchEventObserver {
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     void navigate(boolean forward) {
-        if (mTab == null) return;
+        if (mTab == null || mTab.isDestroyed()) return;
         if (forward) {
             mTab.goForward();
         } else {
