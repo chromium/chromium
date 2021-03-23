@@ -40,24 +40,34 @@ class ServiceConnectionTest : public testing::Test {
 
  protected:
   static void SetUpTestCase() {
+    task_environment_ = new base::test::TaskEnvironment();
     static base::Thread ipc_thread("ipc");
     ipc_thread.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     static mojo::core::ScopedIPCSupport ipc_support(
         ipc_thread.task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+    ServiceConnection::GetInstance()->Initialize();
+  }
+
+  static void TearDownTestCase() {
+    if (task_environment_) {
+      delete task_environment_;
+      task_environment_ = nullptr;
+    }
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  static base::test::TaskEnvironment* task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceConnectionTest);
 };
 
+base::test::TaskEnvironment* ServiceConnectionTest::task_environment_;
+
 // Tests that LoadBuiltinModel runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadBuiltinModel) {
-  ServiceConnection::GetInstance()->Initialize();
   mojo::Remote<mojom::Model> model;
 
   mojo::Remote<mojom::MachineLearningService> ml_service;
@@ -82,8 +92,6 @@ TEST_F(ServiceConnectionTest, LoadBuiltinModel) {
 // Tests that LoadFlatBufferModel runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadFlatBufferModel) {
-  ServiceConnection::GetInstance()->Initialize();
-
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
@@ -104,8 +112,6 @@ TEST_F(ServiceConnectionTest, LoadFlatBufferModel) {
 // Tests that LoadTextClassifier runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadTextClassifier) {
-  ServiceConnection::GetInstance()->Initialize();
-
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
@@ -125,8 +131,6 @@ TEST_F(ServiceConnectionTest, LoadTextClassifier) {
 // Tests that LoadHandwritingModelWithSpec runs OK (no crash) in a basic Mojo
 // environment.
 TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
-  ServiceConnection::GetInstance()->Initialize();
-
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
@@ -148,8 +152,6 @@ TEST_F(ServiceConnectionTest, LoadHandwritingModelWithSpec) {
 
 // Tests that LoadGrammarChecker runs OK (no crash) in a basic Mojo environment.
 TEST_F(ServiceConnectionTest, LoadGrammarModel) {
-  ServiceConnection::GetInstance()->Initialize();
-
   mojo::Remote<mojom::MachineLearningService> ml_service;
   ServiceConnection::GetInstance()->BindMachineLearningService(
       ml_service.BindNewPipeAndPassReceiver());
