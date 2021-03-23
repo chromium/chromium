@@ -605,8 +605,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", base::ASCIIToUTF16("username1")},
-      {"http://2.example.test", base::ASCIIToUTF16("username2")}};
+      {"http://example.test", u"username1"},
+      {"http://2.example.test", u"username2"}};
 
   EXPECT_CALL(*password_store_,
               RemoveInsecureCredentialsImpl(
@@ -1574,9 +1574,9 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", base::ASCIIToUTF16("username1"),
+      {"http://example.test", u"username1",
        password_manager::PasswordForm::Store::kAccountStore},
-      {"http://2.example.test", base::ASCIIToUTF16("username2"),
+      {"http://2.example.test", u"username2",
        password_manager::PasswordForm::Store::kAccountStore}};
 
   EXPECT_CALL(*account_password_store_,

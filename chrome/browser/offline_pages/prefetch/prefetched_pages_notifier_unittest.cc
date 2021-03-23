@@ -26,7 +26,7 @@ const std::u16string kExampleHost3 = u"www.example3.com";
 OfflinePageItem ItemCreatedOn(std::u16string host, base::Time creation_time) {
   static int offline_id = 0;
 
-  std::u16string scheme = base::ASCIIToUTF16("https://");
+  std::u16string scheme = u"https://";
   GURL url(scheme + host);
 
   OfflinePageItem item(url, ++offline_id, kClientId, kFilePath, 0);

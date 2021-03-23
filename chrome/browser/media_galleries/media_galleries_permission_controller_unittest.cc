@@ -260,11 +260,11 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
 #endif
   EXPECT_EQ(galleryName, GalleryName(gallery));
 
-  gallery.display_name = base::ASCIIToUTF16("override");
+  gallery.display_name = u"override";
   EXPECT_EQ("override", GalleryName(gallery));
 
   gallery.display_name = std::u16string();
-  gallery.volume_label = base::ASCIIToUTF16("label");
+  gallery.volume_label = u"label";
   EXPECT_EQ(galleryName, GalleryName(gallery));
 
   gallery.path = base::FilePath(FILE_PATH_LITERAL("sub/gallery2"));
@@ -282,12 +282,12 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
   gallery.device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_WITH_DCIM,
       "/path/to/dcim");
-  gallery.display_name = base::ASCIIToUTF16("override");
+  gallery.display_name = u"override";
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.volume_label = base::ASCIIToUTF16("volume");
-  gallery.vendor_name = base::ASCIIToUTF16("vendor");
-  gallery.model_name = base::ASCIIToUTF16("model");
+  gallery.volume_label = u"volume";
+  gallery.vendor_name = u"vendor";
+  gallery.model_name = u"model";
   EXPECT_EQ("override", GalleryName(gallery));
 
   gallery.display_name = std::u16string();

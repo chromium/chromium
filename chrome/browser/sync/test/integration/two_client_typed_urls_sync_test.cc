@@ -113,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(Add)) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddExpired) {
-  const std::u16string kHistoryUrl(
-      ASCIIToUTF16("http://www.add-one-history.google.com/"));
+  const std::u16string kHistoryUrl(u"http://www.add-one-history.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Populate one client with a URL, should sync to the other.
@@ -149,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddExpired) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddExpiredThenUpdate) {
-  const std::u16string kHistoryUrl(
-      ASCIIToUTF16("http://www.add-one-history.google.com/"));
+  const std::u16string kHistoryUrl(u"http://www.add-one-history.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Populate one client with a URL, should sync to the other.
@@ -400,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(AddThenDelete)) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        AddMultipleVisitsThenDeleteAllTypedVisits) {
-  const std::u16string kHistoryUrl(ASCIIToUTF16("http://history1.google.com/"));
+  const std::u16string kHistoryUrl(u"http://history1.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   base::Time now = base::Time::Now();
@@ -434,8 +432,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        DisableEnableSync) {
   ResetSyncForPrimaryAccount();
-  const std::u16string kUrl1(ASCIIToUTF16("http://history1.google.com/"));
-  const std::u16string kUrl2(ASCIIToUTF16("http://history2.google.com/"));
+  const std::u16string kUrl1(u"http://history1.google.com/");
+  const std::u16string kUrl2(u"http://history2.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Disable history sync for one client, leave it active for the other.
@@ -465,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddOneDeleteOther) {
   const std::u16string kHistoryUrl(
-      ASCIIToUTF16("http://www.add-one-delete-history.google.com/"));
+      u"http://www.add-one-delete-history.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Populate one client with a URL, should sync to the other.
@@ -489,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddOneDeleteOther) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddOneDeleteOtherAddAgain) {
   const std::u16string kHistoryUrl(
-      ASCIIToUTF16("http://www.add-delete-add-history.google.com/"));
+      u"http://www.add-delete-add-history.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Populate one client with a URL, should sync to the other.
@@ -592,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 // has never seen that URL before (so no merge is necessary).
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, UpdateToNonTypedURL) {
   const std::u16string kHistoryUrl(
-      ASCIIToUTF16("http://www.add-delete-add-history.google.com/"));
+      u"http://www.add-delete-add-history.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Populate one client with a non-typed URL, should not be synced.
@@ -663,9 +661,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        E2E_ENABLED(SyncTypedRedirects)) {
   ResetSyncForPrimaryAccount();
-  const std::u16string kHistoryUrl(ASCIIToUTF16("http://typed.google.com/"));
-  const std::u16string kRedirectedHistoryUrl(
-      ASCIIToUTF16("http://www.typed.google.com/"));
+  const std::u16string kHistoryUrl(u"http://typed.google.com/");
+  const std::u16string kRedirectedHistoryUrl(u"http://www.typed.google.com/");
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Simulate a typed address that gets redirected by the server to a different

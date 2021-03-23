@@ -105,8 +105,7 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
     DCHECK(permissions.size() > 0);
     std::vector<std::u16string> hostnames =
         permissions.GetAllPermissionParameters();
-    std::u16string hosts_string =
-        base::JoinString(hostnames, base::ASCIIToUTF16(" "));
+    std::u16string hosts_string = base::JoinString(hostnames, u" ");
     return PermissionMessage(
         l10n_util::GetStringFUTF16(hostnames.size() == 1
                                        ? message_id_for_one_host_

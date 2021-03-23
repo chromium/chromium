@@ -459,14 +459,13 @@ std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
       if (updated_apps.empty())
         updated_apps = app_name;
       else
-        updated_apps += base::ASCIIToUTF16(", ") + app_name;
+        updated_apps += u", " + app_name;
     } else {  // UpdateStatus::kFailed
       ++failed;
       if (failed_apps.empty()) {
-        failed_apps = app_name + base::ASCIIToUTF16(": ") + update.error;
+        failed_apps = app_name + u": " + update.error;
       } else {
-        failed_apps += base::ASCIIToUTF16("\n") + app_name +
-                       base::ASCIIToUTF16(": ") + update.error;
+        failed_apps += u"\n" + app_name + u": " + update.error;
       }
     }
   }
@@ -477,15 +476,15 @@ std::u16string KioskExternalUpdater::GetUpdateReportMessage() const {
   if (updated) {
     std::u16string success_app_msg = l10n_util::GetStringFUTF16(
         IDS_KIOSK_EXTERNAL_UPDATE_SUCCESSFUL_UPDATED_APPS, updated_apps);
-    message += base::ASCIIToUTF16("\n") + success_app_msg;
+    message += u"\n" + success_app_msg;
   }
 
   if (failed) {
     std::u16string failed_app_msg =
         ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
             IDS_KIOSK_EXTERNAL_UPDATE_FAILED_UPDATED_APPS) +
-        base::ASCIIToUTF16("\n") + failed_apps;
-    message += base::ASCIIToUTF16("\n") + failed_app_msg;
+        u"\n" + failed_apps;
+    message += u"\n" + failed_app_msg;
   }
   return message;
 }

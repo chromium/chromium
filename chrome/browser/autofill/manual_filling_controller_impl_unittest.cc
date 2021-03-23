@@ -57,12 +57,10 @@ AccessorySheetData empty_passwords_sheet() {
 }
 
 AccessorySheetData filled_passwords_sheet() {
-  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
-                                     ASCIIToUTF16("Pwds"))
+  return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
       .AddUserInfo("example.com", autofill::UserInfo::IsPslMatch(false))
-      .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false, true)
-      .AppendField(ASCIIToUTF16("S3cur3"), ASCIIToUTF16("Ben's PW"), true,
-                   false)
+      .AppendField(u"Ben", u"Ben", false, true)
+      .AppendField(u"S3cur3", u"Ben's PW", true, false)
       .Build();
 }
 

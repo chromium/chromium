@@ -2686,7 +2686,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(page_info);
   EXPECT_EQ(page_info->GetWindowTitle(),
             l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
-                                       base::ASCIIToUTF16("google.com")));
+                                       u"google.com"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

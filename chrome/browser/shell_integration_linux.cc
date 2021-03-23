@@ -704,7 +704,7 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
 }
 
 std::u16string GetApplicationNameForProtocol(const GURL& url) {
-  return base::ASCIIToUTF16("xdg-open");
+  return u"xdg-open";
 }
 
 DefaultWebClientState GetDefaultBrowser() {

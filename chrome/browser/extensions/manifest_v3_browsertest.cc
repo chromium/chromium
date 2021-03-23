@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
       browser(), embedded_test_server()->GetURL("example.com", "/simple.html"));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  EXPECT_EQ(base::ASCIIToUTF16("My New Title"),
+  EXPECT_EQ(u"My New Title",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 

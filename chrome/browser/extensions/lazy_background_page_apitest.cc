@@ -549,8 +549,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     const BookmarkNode* parent = bookmark_model->bookmark_bar_node();
-    bookmark_model->AddURL(
-        parent, 0, base::ASCIIToUTF16("Title"), GURL("about:blank"));
+    bookmark_model->AddURL(parent, 0, u"Title", GURL("about:blank"));
     page_complete.Wait();
     page2_complete.Wait();
 

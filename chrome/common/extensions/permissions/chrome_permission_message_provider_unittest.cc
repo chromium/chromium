@@ -169,10 +169,9 @@ TEST_F(ChromePermissionMessageProviderUnittest,
                                               Manifest::TYPE_EXTENSION));
 
   ASSERT_EQ(1U, messages.size());
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_EXTENSION_PROMPT_WARNING_2_HOSTS,
-                base::ASCIIToUTF16("all xn--oogle-qmc.com sites"),
-                base::ASCIIToUTF16("xn--oogle-qmc.com")),
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_WARNING_2_HOSTS,
+                                       u"all xn--oogle-qmc.com sites",
+                                       u"xn--oogle-qmc.com"),
             messages.front().message());
 }
 

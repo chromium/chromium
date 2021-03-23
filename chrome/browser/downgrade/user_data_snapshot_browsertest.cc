@@ -271,16 +271,14 @@ class BookmarksSnapshotTest : public UserDataSnapshotBrowserTestBase {
   const GURL that_other_url_{"https://www.thatotherul.com"};
   const GURL mobile_url_{"https://www.mobile.com"};
 
-  const std::u16string folder_title_ = base::ASCIIToUTF16("Folder");
-  const std::u16string sub_folder_title_ = base::ASCIIToUTF16("Sub Folder");
-  const std::u16string sub_folder_url_title_ =
-      base::ASCIIToUTF16("Sub Folder URL");
-  const std::u16string that_url_title_ = base::ASCIIToUTF16("That URL");
-  const std::u16string folder_url_title_ = base::ASCIIToUTF16("Folder URL");
-  const std::u16string other_url_title_ = base::ASCIIToUTF16("Other URL");
-  const std::u16string that_other_url_title_ =
-      base::ASCIIToUTF16("That Other URL");
-  const std::u16string mobile_url_title_ = base::ASCIIToUTF16("Mobile URL");
+  const std::u16string folder_title_ = u"Folder";
+  const std::u16string sub_folder_title_ = u"Sub Folder";
+  const std::u16string sub_folder_url_title_ = u"Sub Folder URL";
+  const std::u16string that_url_title_ = u"That URL";
+  const std::u16string folder_url_title_ = u"Folder URL";
+  const std::u16string other_url_title_ = u"Other URL";
+  const std::u16string that_other_url_title_ = u"That Other URL";
+  const std::u16string mobile_url_title_ = u"Mobile URL";
 };
 
 IN_PROC_BROWSER_TEST_F(BookmarksSnapshotTest, PRE_PRE_PRE_Test) {}

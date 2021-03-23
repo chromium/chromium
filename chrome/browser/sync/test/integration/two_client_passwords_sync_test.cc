@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {
   AddLogin(GetPasswordStore(0), form0);
 
   PasswordForm form1 = form0;
-  form1.password_value = base::ASCIIToUTF16("new_password");
+  form1.password_value = u"new_password";
   AddLogin(GetPasswordStore(1), form1);
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTestWithVerifier, Update) {
   // Wait for client 0 to commit and client 1 to receive the update.
   ASSERT_TRUE(SamePasswordFormsAsVerifierChecker(1).Wait());
 
-  form.password_value = base::ASCIIToUTF16("new_password");
+  form.password_value = u"new_password";
   UpdateLogin(GetVerifierPasswordStore(), form);
   UpdateLogin(GetPasswordStore(1), form);
   ASSERT_EQ(1, GetVerifierPasswordCount());
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, AddTwice) {
   ASSERT_EQ(1, GetPasswordCount(1));
 
   // Update the password and add it again to client 0.
-  form.password_value = base::ASCIIToUTF16("new_password");
+  form.password_value = u"new_password";
   AddLogin(GetPasswordStore(0), form);
   ASSERT_EQ(1, GetPasswordCount(0));
 

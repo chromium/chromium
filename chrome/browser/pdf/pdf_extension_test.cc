@@ -1307,8 +1307,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithNoTitle) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
-  EXPECT_EQ(base::ASCIIToUTF16("test.pdf"), guest_contents->GetTitle());
-  EXPECT_EQ(base::ASCIIToUTF16("test.pdf"), GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"test.pdf", guest_contents->GetTitle());
+  EXPECT_EQ(u"test.pdf", GetActiveWebContents()->GetTitle());
 }
 
 // This test ensures that titles are set properly for PDFs with /Title.
@@ -1316,9 +1316,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithTitle) {
   GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-title.pdf"));
   WebContents* guest_contents = LoadPdfGetGuestContents(test_pdf_url);
   ASSERT_TRUE(guest_contents);
-  EXPECT_EQ(base::ASCIIToUTF16("PDF title test"), guest_contents->GetTitle());
-  EXPECT_EQ(base::ASCIIToUTF16("PDF title test"),
-            GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"PDF title test", guest_contents->GetTitle());
+  EXPECT_EQ(u"PDF title test", GetActiveWebContents()->GetTitle());
 }
 
 // This test ensures that titles are set properly for embedded PDFs with /Title.
@@ -1332,8 +1331,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
       url +
       "\"></body></html>";
   ASSERT_TRUE(LoadPdf(GURL(data_url)));
-  EXPECT_EQ(base::ASCIIToUTF16("TabTitleWithEmbeddedPdf"),
-            GetActiveWebContents()->GetTitle());
+  EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
 }
 
 // Flaky, http://crbug.com/767427

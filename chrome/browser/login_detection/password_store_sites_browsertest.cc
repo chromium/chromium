@@ -40,8 +40,8 @@ class LoginDetectionPasswordStoreSitesBrowserTest
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     form.url = url;
     form.signon_realm = "https://www.chrome.com";
-    form.username_value = base::ASCIIToUTF16("my_username");
-    form.password_value = base::ASCIIToUTF16("my_password");
+    form.username_value = u"my_username";
+    form.password_value = u"my_password";
     form.blocked_by_user = false;
     passwords_helper::AddLogin(password_store, form);
     base::RunLoop().RunUntilIdle();

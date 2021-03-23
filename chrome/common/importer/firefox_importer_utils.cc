@@ -36,8 +36,7 @@ base::FilePath GetProfilePath(const base::DictionaryValue& root,
     return base::FilePath();
 
 #if defined(OS_WIN)
-  base::ReplaceSubstringsAfterOffset(
-      &path16, 0, base::ASCIIToUTF16("/"), base::ASCIIToUTF16("\\"));
+  base::ReplaceSubstringsAfterOffset(&path16, 0, u"/", u"\\");
 #endif
   base::FilePath path = base::FilePath::FromUTF16Unsafe(path16);
 
@@ -84,8 +83,7 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
     std::u16string name;
     root.GetString(current_profile + ".Name", &name);
     // Make the profile name more presentable by replacing dashes with spaces.
-    base::ReplaceChars(name, base::ASCIIToUTF16("-"), base::ASCIIToUTF16(" "),
-                       &name);
+    base::ReplaceChars(name, u"-", u" ", &name);
     details.name = name;
     profile_details.push_back(details);
   }

@@ -14,10 +14,8 @@ PluginMetadata::SecurityStatus GetSecurityStatus(
     PluginMetadata* plugin_metadata,
     const char* version) {
   content::WebPluginInfo plugin(
-      base::ASCIIToUTF16("Foo plugin"),
-      base::FilePath(FILE_PATH_LITERAL("/tmp/plugin.so")),
-      base::ASCIIToUTF16(version),
-      base::ASCIIToUTF16("Foo plugin."));
+      u"Foo plugin", base::FilePath(FILE_PATH_LITERAL("/tmp/plugin.so")),
+      base::ASCIIToUTF16(version), u"Foo plugin.");
   return plugin_metadata->GetSecurityStatus(plugin);
 }
 
@@ -31,10 +29,9 @@ TEST(PluginMetadataTest, SecurityStatus) {
   const PluginMetadata::SecurityStatus kRequiresAuthorization =
       PluginMetadata::SECURITY_STATUS_REQUIRES_AUTHORIZATION;
 
-  PluginMetadata plugin_metadata(
-      "claybrick-writer", base::ASCIIToUTF16("ClayBrick Writer"), true, GURL(),
-      GURL(), base::ASCIIToUTF16("ClayBrick"), std::string(),
-      false /* plugin_is_deprecated */);
+  PluginMetadata plugin_metadata("claybrick-writer", u"ClayBrick Writer", true,
+                                 GURL(), GURL(), u"ClayBrick", std::string(),
+                                 false /* plugin_is_deprecated */);
 
   EXPECT_EQ(kRequiresAuthorization,
             GetSecurityStatus(&plugin_metadata, "1.2.3"));
@@ -60,10 +57,9 @@ TEST(PluginMetadataTest, SecurityStatus) {
 }
 
 TEST(PluginMetadataTest, DeprecatedSecurityStatus) {
-  PluginMetadata plugin_metadata(
-      "claybrick-writer", base::ASCIIToUTF16("ClayBrick Writer"), true, GURL(),
-      GURL(), base::ASCIIToUTF16("ClayBrick"), std::string(),
-      true /* plugin_is_deprecated */);
+  PluginMetadata plugin_metadata("claybrick-writer", u"ClayBrick Writer", true,
+                                 GURL(), GURL(), u"ClayBrick", std::string(),
+                                 true /* plugin_is_deprecated */);
 
   // It doesn't really matter what's in the versions field of a deprecated
   // plugin. But canonically, we would expect exactly one version:

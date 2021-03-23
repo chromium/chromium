@@ -82,11 +82,9 @@ class SigninManagerAndroidTest : public ::testing::Test {
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
-                           base::ASCIIToUTF16("Example 1"),
+    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Example 1",
                            GURL("https://example.org/1"));
-    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 1,
-                           base::ASCIIToUTF16("Example 2"),
+    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 1, u"Example 2",
                            GURL("https://example.com/2"));
 
     return bookmark_model;

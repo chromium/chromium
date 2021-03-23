@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   WaitForNumberOfCards(1, pdm);
 
   // Make sure the data is in the DB.
-  EXPECT_EQ(ASCIIToUTF16("0002"), pdm->GetCreditCards()[0]->LastFourDigits());
+  EXPECT_EQ(u"0002", pdm->GetCreditCards()[0]->LastFourDigits());
   ASSERT_EQ(1uL, pdm->GetServerProfiles().size());
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   EXPECT_EQ(123, cards[0]->instrument_id());
   // When no nickname is returned from Sync server, credit card's nickname is
   // empty.
@@ -695,9 +695,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // Make sure only the new data is present.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0002"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0002", cards[0]->LastFourDigits());
   EXPECT_EQ(321, cards[0]->instrument_id());
-  EXPECT_EQ(ASCIIToUTF16("Grocery Card"), cards[0]->nickname());
+  EXPECT_EQ(u"Grocery Card", cards[0]->nickname());
   profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-2", TruncateUTF8(base::UTF16ToUTF8(
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   std::vector<AutofillProfile*> profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   // Make sure the same data is present on the client.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
   // Make sure the data is present on the client.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
@@ -864,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
   // Make sure the data is present on the client.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("Grocery Card"), cards[0]->nickname());
+  EXPECT_EQ(u"Grocery Card", cards[0]->nickname());
   profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
   EXPECT_EQ("Company-1", TruncateUTF8(base::UTF16ToUTF8(
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_NE(nullptr, pdm);
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, cards[0]->record_type());
 
   // Unmask the card (the full card number has to start with "34" to match the
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // Make sure the data is present on the client.
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
-  EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
   EXPECT_EQ(CreditCard::FULL_SERVER_CARD, cards[0]->record_type());
   EXPECT_EQ("different", pdm->GetPaymentsCustomerData()->customer_id);
 }
@@ -1015,7 +1015,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 
   // Add a server profile on the client.
   AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "a123");
-  profile.SetRawInfo(autofill::COMPANY_NAME, ASCIIToUTF16("JustATest"));
+  profile.SetRawInfo(autofill::COMPANY_NAME, u"JustATest");
   std::vector<AutofillProfile> client_profiles = {profile};
   wallet_helper::SetServerProfiles(0, client_profiles);
 
@@ -1087,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 
   // Add a server profile on the client.
   AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "a123");
-  profile.SetRawInfo(autofill::COMPANY_NAME, ASCIIToUTF16("JustATest"));
+  profile.SetRawInfo(autofill::COMPANY_NAME, u"JustATest");
   std::vector<AutofillProfile> client_profiles = {profile};
   wallet_helper::SetServerProfiles(0, client_profiles);
 

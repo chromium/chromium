@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
   ui_test_utils::NavigateToURL(browser(), initial_url);
   // We make sure the title doesn't match the title from the file, because the
   // nav should not have taken place.
-  EXPECT_NE(base::ASCIIToUTF16("File!"),
+  EXPECT_NE(u"File!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest,
 
   // Check to make sure the navigation did in fact take place and we are
   // at the expected page.
-  EXPECT_EQ(base::ASCIIToUTF16("Title Of Awesomeness"),
+  EXPECT_EQ(u"Title Of Awesomeness",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   bool final_navigation_not_redirect = true;

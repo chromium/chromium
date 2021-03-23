@@ -1384,7 +1384,7 @@ TEST_F(PasswordAutofillAgentTest,
   // the matching autofill from the dropdown.
   SimulateUsernameTyping("a");
   // Since the username element has focus, blur event will be not triggered.
-  base::Erase(event_checkers, ASCIIToUTF16("username_blur_event"));
+  base::Erase(event_checkers, u"username_blur_event");
   SimulateSuggestionChoice(username_element_);
 
   // The username and password should now have been autocompleted.
@@ -1897,7 +1897,7 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
   // (see FillIntoFocusedFieldOnlyIntoPasswordFields).
 
   password_autofill_agent_->FillIntoFocusedField(
-      /*is_password=*/false, ASCIIToUTF16("TextToFill"));
+      /*is_password=*/false, u"TextToFill");
   CheckTextFieldsDOMState(std::string(), false, "TextToFill", true);
 }
 
@@ -2246,11 +2246,10 @@ TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
   SaveAndSubmitForm();
 
   std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("random_field")] =
-      FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  expected_properties_masks[u"random_field"] = FieldPropertiesFlags::kHadFocus;
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSubmitted, expected_properties_masks,
@@ -2290,9 +2289,9 @@ TEST_F(PasswordAutofillAgentTest, FixEmptyFieldPropertiesOnSubmit) {
   SaveAndSubmitForm(form_element);
 
   std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("new_username")] =
+  expected_properties_masks[u"new_username"] =
       FieldPropertiesFlags::kAutofilledOnPageLoad;
-  expected_properties_masks[ASCIIToUTF16("new_password")] =
+  expected_properties_masks[u"new_password"] =
       FieldPropertiesFlags::kAutofilledOnPageLoad;
 
   ExpectFieldPropertiesMasks(PasswordFormSubmitted, expected_properties_masks,
@@ -2317,9 +2316,9 @@ TEST_F(PasswordAutofillAgentTest,
   FireAjaxSucceeded();
 
   std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSameDocumentNavigation,
@@ -2347,9 +2346,9 @@ TEST_F(PasswordAutofillAgentTest,
   base::RunLoop().RunUntilIdle();
 
   std::map<std::u16string, FieldPropertiesMask> expected_properties_masks;
-  expected_properties_masks[ASCIIToUTF16("username")] =
+  expected_properties_masks[u"username"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
-  expected_properties_masks[ASCIIToUTF16("password")] =
+  expected_properties_masks[u"password"] =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
 
   ExpectFieldPropertiesMasks(PasswordFormSameDocumentNavigation,
@@ -2601,7 +2600,7 @@ TEST_F(PasswordAutofillAgentTest,
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   SimulateElementClick(kPasswordName);
 
-  std::u16string password = ASCIIToUTF16("NewPass22");
+  std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -2621,7 +2620,7 @@ TEST_F(PasswordAutofillAgentTest,
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
   SimulateElementClick(kPasswordName);
-  std::u16string password = ASCIIToUTF16("NewPass22");
+  std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -2677,7 +2676,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   // show UI when the password field is focused.
   fill_data_.wait_for_username = true;
   fill_data_.username_field = FormFieldData();
-  fill_data_.password_field.name = ASCIIToUTF16("new_password");
+  fill_data_.password_field.name = u"new_password";
   UpdateUrlForHTML(kSignupFormHTML);
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3431,8 +3430,8 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
 TEST_F(PasswordAutofillAgentTest, SuggestWhenJavaScriptUpdatesFieldNames) {
   // Simulate that JavaScript updated field names.
   auto fill_data = fill_data_;
-  fill_data.username_field.name += ASCIIToUTF16("1");
-  fill_data.password_field.name += ASCIIToUTF16("1");
+  fill_data.username_field.name += u"1";
+  fill_data.password_field.name += u"1";
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data);
 
@@ -3654,7 +3653,7 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   // Change fill data
-  fill_data_.password_field.value = ASCIIToUTF16("a-changed-password");
+  fill_data_.password_field.value = u"a-changed-password";
   // Supply changed fill data
   password_autofill_agent_->FillPasswordForm(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, "a-changed-password",
@@ -3668,7 +3667,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   base::RunLoop().RunUntilIdle();
 
   // Change fill data
-  fill_data_.username_field.value = ASCIIToUTF16("a-changed-username");
+  fill_data_.username_field.value = u"a-changed-username";
 
   password_autofill_agent_->FillPasswordForm(fill_data_);
   SimulateElementClick(kPasswordName);
@@ -3694,10 +3693,10 @@ TEST_F(PasswordAutofillAgentTest, PSLMatchedPasswordIsNotAutofill) {
 
   // Add PSL matched credentials with username equal to prefilled one.
   PasswordAndMetadata psl_credentials;
-  psl_credentials.password = ASCIIToUTF16("pslpassword");
+  psl_credentials.password = u"pslpassword";
   // Non-empty realm means PSL matched credentials.
   psl_credentials.realm = "example.com";
-  psl_credentials.username = ASCIIToUTF16("prefilledusername");
+  psl_credentials.username = u"prefilledusername";
   fill_data_.additional_logins.push_back(std::move(psl_credentials));
 
   // Simulate the browser sending back the login info, it triggers the
@@ -3721,9 +3720,9 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadWith) {
 // attributes were changed between from load and filling.
 TEST_F(PasswordAutofillAgentTest, FillOnLoadFormChanged) {
   // Simulate JavaScript changed field names and form name.
-  fill_data_.name += ASCIIToUTF16("1");
-  fill_data_.username_field.name += ASCIIToUTF16("1");
-  fill_data_.password_field.name += ASCIIToUTF16("1");
+  fill_data_.name += u"1";
+  fill_data_.username_field.name += u"1";
+  fill_data_.password_field.name += u"1";
 
   SimulateOnFillPasswordForm(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);

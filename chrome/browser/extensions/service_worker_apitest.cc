@@ -374,9 +374,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, NonRootDirectory) {
   const ErrorList& error_list =
       error_console->GetErrorsForExtension(extension->id());
   ASSERT_EQ(kErrorsExpected, error_list.size());
-  ASSERT_EQ(
-      error_list[0]->message(),
-      std::u16string(base::ASCIIToUTF16("Service worker registration failed")));
+  ASSERT_EQ(error_list[0]->message(),
+            std::u16string(u"Service worker registration failed"));
 }
 
 // Tests chrome.runtime.onInstalled fires for extension service workers.

@@ -390,7 +390,7 @@ TEST_F(RenderViewContextMenuExtensionsTest,
       CreateContextMenu(web_contents.get(), registry_.get()));
 
   const ui::MenuModel& model = menu->menu_model();
-  std::u16string expected_title = base::ASCIIToUTF16("Added by an extension");
+  std::u16string expected_title = u"Added by an extension";
   int num_items_found = 0;
   for (int i = 0; i < model.GetItemCount(); ++i) {
     if (expected_title == model.GetLabelAt(i))
@@ -518,7 +518,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
 // Verify that the suggested file name is propagated to web contents when save a
 // media file in context menu.
 TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
-  const std::u16string kTestSuggestedFileName = base::ASCIIToUTF16("test_file");
+  const std::u16string kTestSuggestedFileName = u"test_file";
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(

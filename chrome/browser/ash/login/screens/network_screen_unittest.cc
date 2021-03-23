@@ -94,13 +94,13 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   // Connect to network "net0".
   EXPECT_CALL(*mock_network_state_helper_, GetCurrentNetworkName())
       .Times(AnyNumber())
-      .WillRepeatedly(Return(base::ASCIIToUTF16("net0")));
+      .WillRepeatedly(Return(u"net0"));
   EXPECT_CALL(*mock_network_state_helper_, IsConnected())
       .Times(AnyNumber())
       .WillRepeatedly(Return(true));
 
   // Stop waiting for net0.
-  network_screen_->StopWaitingForConnection(base::ASCIIToUTF16("net0"));
+  network_screen_->StopWaitingForConnection(u"net0");
 
   // Check that we have continued exactly once.
   ASSERT_EQ(1, network_screen_->continue_attempts_);
@@ -109,7 +109,7 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
 
   // Stop waiting for another network, net1.
-  network_screen_->StopWaitingForConnection(base::ASCIIToUTF16("net1"));
+  network_screen_->StopWaitingForConnection(u"net1");
 
   // Check that we have still continued only once.
   EXPECT_EQ(1, network_screen_->continue_attempts_);

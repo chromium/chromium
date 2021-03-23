@@ -180,8 +180,8 @@ password_manager::PasswordForm CreateSampleForm() {
   password_manager::PasswordForm form;
   form.signon_realm = "http://abc1.com";
   form.url = GURL("http://abc1.com");
-  form.username_value = base::ASCIIToUTF16("test@gmail.com");
-  form.password_value = base::ASCIIToUTF16("test");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"test";
   return form;
 }
 
@@ -365,9 +365,8 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   int sample_form_id = delegate.GetPasswordIdGeneratorForTesting().GenerateId(
       password_manager::CreateSortKey(sample_form));
 
-  EXPECT_TRUE(delegate.ChangeSavedPassword({sample_form_id},
-                                           base::ASCIIToUTF16("new_user"),
-                                           base::ASCIIToUTF16("new_pass")));
+  EXPECT_TRUE(
+      delegate.ChangeSavedPassword({sample_form_id}, u"new_user", u"new_pass"));
 
   // Spin the loop to allow PasswordStore tasks posted when changing the
   // password to be completed.
@@ -503,7 +502,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
       .WillOnce(Return(true));
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(base::ASCIIToUTF16("test"))));
+  EXPECT_CALL(password_callback, Run(Eq(u"test")));
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_VIEW, password_callback.Get(),
       nullptr);

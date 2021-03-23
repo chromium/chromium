@@ -999,7 +999,7 @@ TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
 
   auto group = tab_groups::TabGroupId::GenerateNew();
   auto group_visual_data = tab_groups::TabGroupVisualData(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kBlue);
+      u"Foo", tab_groups::TabGroupColorId::kBlue);
   AddWindowWithOneTabToSessionService(false, group, group_visual_data);
 
   SessionServiceFactory::GetForProfile(profile())

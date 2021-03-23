@@ -214,8 +214,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
 
   // Check notification is shown for offline devices with the warning time.
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Update Chrome device within 10 days");
+  std::u16string expected_title = u"Update Chrome device within 10 days";
   std::u16string expected_message = base::ASCIIToUTF16(
       "managed.com requires you to download an update before the deadline. The "
       "update will download automatically when you connect to the internet.");
@@ -225,8 +224,7 @@ TEST_F(UpdateRequiredNotificationTest, NoNetworkNotifications) {
   const base::TimeDelta warning =
       base::TimeDelta::FromDays(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
-  std::u16string expected_title_last_day =
-      base::ASCIIToUTF16("Last day to update Chrome device");
+  std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day = base::ASCIIToUTF16(
       "managed.com requires you to download an update today. The "
       "update will download automatically when you connect to the internet.");
@@ -261,8 +259,7 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
   // Check notification is shown for metered network with the warning time.
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Update Chrome device within 10 days");
+  std::u16string expected_title = u"Update Chrome device within 10 days";
   std::u16string expected_message = base::ASCIIToUTF16(
       "managed.com requires you to connect to Wi-Fi and download an update "
       "before the deadline. Or, download from a metered connection (charges "
@@ -273,8 +270,7 @@ TEST_F(UpdateRequiredNotificationTest, MeteredNetworkNotifications) {
   const base::TimeDelta warning =
       base::TimeDelta::FromDays(kLongWarningInDays - 1);
   task_environment_.FastForwardBy(warning);
-  std::u16string expected_title_last_day =
-      base::ASCIIToUTF16("Last day to update Chrome device");
+  std::u16string expected_title_last_day = u"Last day to update Chrome device";
   std::u16string expected_message_last_day = base::ASCIIToUTF16(
       "managed.com requires you to connect to Wi-Fi today to download an "
       "update. Or, download from a metered connection (charges may apply).");
@@ -301,8 +297,7 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
   // Check notification is shown for end of life with the warning time.
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Return Chrome device within 10 days");
+  std::u16string expected_title = u"Return Chrome device within 10 days";
   std::u16string expected_message = base::ASCIIToUTF16(
       "managed.com requires you to back up your data and return this Chrome "
       "device before the deadline.");
@@ -313,14 +308,13 @@ TEST_F(UpdateRequiredNotificationTest, EolNotifications) {
       base::TimeDelta::FromDays(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
   std::u16string expected_title_one_week =
-      base::ASCIIToUTF16("Return Chrome device within 1 week");
+      u"Return Chrome device within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 
   // Expire the notification timer to show new notification on the last day.
   const base::TimeDelta warning_last_day = base::TimeDelta::FromDays(6);
   task_environment_.FastForwardBy(warning_last_day);
-  std::u16string expected_title_last_day =
-      base::ASCIIToUTF16("Immediate return required");
+  std::u16string expected_title_last_day = u"Immediate return required";
   std::u16string expected_message_last_day = base::ASCIIToUTF16(
       "managed.com requires you to back up your data and return this Chrome "
       "device today.");
@@ -356,8 +350,7 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
-  std::u16string expected_title_last_day =
-      base::ASCIIToUTF16("Immediate return required");
+  std::u16string expected_title_last_day = u"Immediate return required";
   std::u16string expected_message_last_day = base::ASCIIToUTF16(
       "managed.com requires you to back up your data and return this Chrome "
       "device today.");
@@ -387,8 +380,7 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
 
   // Check Chromebox notification is shown for end of life with the warning
   // time.
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Return Chromebox within 10 days");
+  std::u16string expected_title = u"Return Chromebox within 10 days";
   std::u16string expected_message = base::ASCIIToUTF16(
       "managed.com requires you to back up your data and return this Chromebox "
       "before the deadline.");
@@ -398,8 +390,7 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
   const base::TimeDelta warning =
       base::TimeDelta::FromDays(kLongWarningInDays - 7);
   task_environment_.FastForwardBy(warning);
-  std::u16string expected_title_one_week =
-      base::ASCIIToUTF16("Return Chromebox within 1 week");
+  std::u16string expected_title_one_week = u"Return Chromebox within 1 week";
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 }
 

@@ -297,7 +297,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
             cross_site_subframe->GetProcess());
     spell_check_host->Wait();
 
-    EXPECT_EQ(base::ASCIIToUTF16("zz."), spell_check_host->text());
+    EXPECT_EQ(u"zz.", spell_check_host->text());
   }
 
   // Tests that after disabling spellchecking, spelling in new out-of-process

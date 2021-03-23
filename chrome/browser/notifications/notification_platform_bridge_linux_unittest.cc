@@ -636,7 +636,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationAttribution) {
   notification_bridge_linux_->Display(
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
       NotificationBuilder("")
-          .SetMessage(base::ASCIIToUTF16("Body text"))
+          .SetMessage(u"Body text")
           .SetOriginUrl(GURL("https://google.com/search?q=test&ie=UTF8"))
           .GetResult(),
       nullptr);
@@ -657,7 +657,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationAttributionKde) {
   notification_bridge_linux_->Display(
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
       NotificationBuilder("")
-          .SetMessage(base::ASCIIToUTF16("Body text"))
+          .SetMessage(u"Body text")
           .SetOriginUrl(GURL("https://google.com/search?q=test&ie=UTF8"))
           .GetResult(),
       nullptr);
@@ -693,8 +693,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, EscapeHtml) {
   notification_bridge_linux_->Display(
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
       NotificationBuilder("")
-          .SetMessage(
-              base::ASCIIToUTF16("<span id='1' class=\"2\">&#39;</span>"))
+          .SetMessage(u"<span id='1' class=\"2\">&#39;</span>")
           .GetResult(),
       nullptr);
 }
@@ -902,8 +901,8 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
       NotificationBuilder("1")
           .SetOriginUrl(GURL("https://google.com"))
-          .AddButton(ButtonInfo(base::ASCIIToUTF16("button0")))
-          .AddButton(ButtonInfo(base::ASCIIToUTF16("button1")))
+          .AddButton(ButtonInfo(u"button0"))
+          .AddButton(ButtonInfo(u"button1"))
           .GetResult(),
       nullptr);
 
@@ -947,8 +946,8 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
   CreateNotificationBridgeLinux(TestParams().SetCapabilities(
       std::vector<std::string>{"actions", "body", "inline-reply"}));
 
-  ButtonInfo replyButton(base::ASCIIToUTF16("button0"));
-  replyButton.placeholder = base::ASCIIToUTF16("Reply...");
+  ButtonInfo replyButton(u"button0");
+  replyButton.placeholder = u"Reply...";
 
   notification_bridge_linux_->Display(
       NotificationHandler::Type::WEB_PERSISTENT, profile(),
@@ -960,5 +959,5 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
 
   EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
   EXPECT_EQ(false, last_action_index_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16("Hello"), last_reply_);
+  EXPECT_EQ(u"Hello", last_reply_);
 }

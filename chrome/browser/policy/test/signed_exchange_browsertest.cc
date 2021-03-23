@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeEnabled) {
                         "content/test/data/sxg/fallback.html");
 
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
-  std::u16string title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURL(browser(), url);

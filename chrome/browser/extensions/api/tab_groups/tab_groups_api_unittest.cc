@@ -173,18 +173,15 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
   const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
 
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
-  tab_groups::TabGroupVisualData visual_data1(
-      base::ASCIIToUTF16("Sample title"), color);
+  tab_groups::TabGroupVisualData visual_data1(u"Sample title", color);
   tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
 
   tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
-  tab_groups::TabGroupVisualData visual_data2(
-      base::ASCIIToUTF16("Sample title suffixed"), color);
+  tab_groups::TabGroupVisualData visual_data2(u"Sample title suffixed", color);
   tab_group_model->GetTabGroup(group2)->SetVisualData(visual_data2);
 
   tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
-  tab_groups::TabGroupVisualData visual_data3(
-      base::ASCIIToUTF16("Prefixed Sample title"), color);
+  tab_groups::TabGroupVisualData visual_data3(u"Prefixed Sample title", color);
   tab_group_model->GetTabGroup(group3)->SetVisualData(visual_data3);
 
   // Query by title and verify results.
@@ -248,7 +245,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsGetSuccess) {
   // Create a group.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Title"), tab_groups::TabGroupColorId::kBlue);
+      u"Title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
   int group_id = tab_groups_util::GetGroupId(group);
 
@@ -291,7 +288,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSuccess) {
   // Create a group.
   tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({0, 1, 2});
   tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Initial title"), tab_groups::TabGroupColorId::kBlue);
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
   int group_id = tab_groups_util::GetGroupId(group);
 
@@ -307,7 +304,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSuccess) {
   // Verify the new group metadata.
   const tab_groups::TabGroupVisualData* new_visual_data =
       tab_group_model->GetTabGroup(group)->visual_data();
-  EXPECT_EQ(new_visual_data->title(), base::ASCIIToUTF16("New title"));
+  EXPECT_EQ(new_visual_data->title(), u"New title");
   EXPECT_EQ(new_visual_data->color(), tab_groups::TabGroupColorId::kRed);
 }
 
@@ -508,7 +505,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsOnUpdated) {
 
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
-  tab_groups::TabGroupVisualData visual_data(base::ASCIIToUTF16("Title"),
+  tab_groups::TabGroupVisualData visual_data(u"Title",
                                              tab_groups::TabGroupColorId::kRed);
   tab_strip_model->group_model()->GetTabGroup(group)->SetVisualData(
       visual_data);

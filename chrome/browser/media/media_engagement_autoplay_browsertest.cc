@@ -47,9 +47,9 @@ const base::FilePath kTestDataPath = base::FilePath(
 
 const char kMediaEngagementTestDataPath[] = "chrome/test/data/media/engagement";
 
-const std::u16string kAllowedTitle = base::ASCIIToUTF16("Allowed");
+const std::u16string kAllowedTitle = u"Allowed";
 
-const std::u16string kDeniedTitle = base::ASCIIToUTF16("Denied");
+const std::u16string kDeniedTitle = u"Denied";
 
 const base::FilePath kEmptyDataPath = kTestDataPath.AppendASCII("empty.pb");
 

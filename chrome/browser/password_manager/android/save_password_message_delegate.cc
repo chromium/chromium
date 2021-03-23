@@ -97,7 +97,7 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
         base::UTF8ToUTF16(account_info.value().email));
   } else {
     description.append(pending_credentials.username_value)
-        .append(base::ASCIIToUTF16(" "))
+        .append(u" ")
         .append(masked_password);
   }
 

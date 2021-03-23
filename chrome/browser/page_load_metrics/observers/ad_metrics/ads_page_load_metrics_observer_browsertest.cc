@@ -1364,8 +1364,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html"));
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("createAdFrame('frame_factory.html', '');"),
-      base::NullCallback());
+      u"createAdFrame('frame_factory.html', '');", base::NullCallback());
   // Two pages subresources should have been reported as ad. The iframe resource
   // and its three subresources should also be reported as ads.
   waiter->AddMinimumAdResourceExpectation(6);
@@ -1385,8 +1384,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
       browser(), embedded_test_server()->GetURL(
                      "foo.com", "/ad_tagging/frame_factory.html"));
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("createAdFrame('frame_factory.html', 'test');"),
-      base::NullCallback());
+      u"createAdFrame('frame_factory.html', 'test');", base::NullCallback());
   waiter->AddMinimumAdResourceExpectation(6);
   waiter->Wait();
   NavigateIframeToURL(web_contents(), "test",
@@ -1940,8 +1938,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                                             "/ad_tagging/frame_factory.html");
   ui_test_utils::NavigateToURL(browser(), url);
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("createAdFrame('multiple_mimes.html', 'test');"),
-      base::NullCallback());
+      u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback());
   waiter->AddMinimumAdResourceExpectation(8);
   waiter->Wait();
 

@@ -120,8 +120,8 @@ class SettingsResetPromptModelTest
     ASSERT_TRUE(template_url_service);
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("TestEngine"));
-    data.SetKeyword(base::ASCIIToUTF16("TestEngine"));
+    data.SetShortName(u"TestEngine");
+    data.SetKeyword(u"TestEngine");
     data.SetURL(default_search);
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));

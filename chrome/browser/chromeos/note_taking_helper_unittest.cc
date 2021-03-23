@@ -349,8 +349,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
     return profile_manager()->CreateTestingProfile(
-        kTestProfileName, std::move(prefs), base::ASCIIToUTF16("Test profile"),
-        1 /*avatar_id*/, std::string() /*supervised_user_id*/,
+        kTestProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+        std::string() /*supervised_user_id*/,
         TestingProfile::TestingFactories());
   }
 
@@ -834,8 +834,8 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   RegisterUserProfilePrefs(prefs->registry());
   prefs->SetBoolean(arc::prefs::kArcEnabled, true);
   profile_manager()->CreateTestingProfile(
-      kSecondProfileName, std::move(prefs), base::ASCIIToUTF16("Second User"),
-      1 /* avatar_id */, std::string() /* supervised_user_id */,
+      kSecondProfileName, std::move(prefs), u"Second User", 1 /* avatar_id */,
+      std::string() /* supervised_user_id */,
       TestingProfile::TestingFactories());
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_FALSE(helper()->android_apps_received());
@@ -1440,9 +1440,8 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
   sync_preferences::TestingPrefServiceSyncable* profile_prefs = prefs.get();
   const std::string kSecondProfileName = "second-profile";
   TestingProfile* second_profile = profile_manager()->CreateTestingProfile(
-      kSecondProfileName, std::move(prefs), base::ASCIIToUTF16("Test profile"),
-      1 /*avatar_id*/, std::string() /*supervised_user_id*/,
-      TestingProfile::TestingFactories());
+      kSecondProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+      std::string() /*supervised_user_id*/, TestingProfile::TestingFactories());
   InitExtensionService(second_profile);
 
   // Add test apps to secondary profile.

@@ -40,7 +40,7 @@ MediaFeedsWebUIBrowserTest.prototype = {
     GEN('  GURL("https://example.com/icon.png"));');
     GEN('auto items = std::vector<media_feeds::mojom::MediaFeedItemPtr>();');
     GEN('auto item = media_feeds::mojom::MediaFeedItem::New();');
-    GEN('item->name = base::ASCIIToUTF16("The Movie");');
+    GEN('item->name = u"The Movie";');
     GEN('item->type = media_feeds::mojom::MediaFeedItemType::kMovie;');
     GEN('item->date_published = base::Time::FromDeltaSinceWindowsEpoch(');
     GEN('  base::TimeDelta::FromMinutes(10));');

@@ -171,11 +171,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   WindowedAuthSuppliedObserver auth_supplied(&portal_controller);
   LoginHandler* login_handler = login_observer.handlers().front();
   EXPECT_EQ(login_handler->auth_info().realm, "Aperture");
-  login_handler->SetAuth(base::ASCIIToUTF16("basicuser"),
-                         base::ASCIIToUTF16("secret"));
+  login_handler->SetAuth(u"basicuser", u"secret");
   auth_supplied.Wait();
 
-  std::u16string expected_title = base::ASCIIToUTF16("basicuser/secret");
+  std::u16string expected_title = u"basicuser/secret";
   content::TitleWatcher title_watcher(portal_contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -201,13 +200,12 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const std::u16string expected_tab_title_before_activation =
-      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                 base::ASCIIToUTF16("activate.html"));
+      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, u"activate.html");
   const std::u16string expected_tab_title_after_activation =
       l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                 base::ASCIIToUTF16("activate-portal.html"));
+                                 u"activate-portal.html");
   const std::u16string expected_portal_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_PORTAL_PREFIX, base::ASCIIToUTF16("http://127.0.0.1/"));
+      IDS_TASK_MANAGER_PORTAL_PREFIX, u"http://127.0.0.1/");
 
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/portal/activate.html"));
@@ -247,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
   const unsigned kPortalsPerTab = 2;
 
   const std::u16string expected_tab_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_TAB_PREFIX, base::ASCIIToUTF16("Title Of Awesomeness"));
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of Awesomeness");
   const std::u16string expected_portal_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_PORTAL_PREFIX, base::ASCIIToUTF16("http://127.0.0.1/"));
+      IDS_TASK_MANAGER_PORTAL_PREFIX, u"http://127.0.0.1/");
   std::vector<std::u16string> expected_titles;
   for (unsigned i = 0; i < kNumTabs; i++) {
     expected_titles.push_back(expected_tab_title);

@@ -1513,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreLocalhostCertErrors,
   // We should see that the script tag in the page loaded and ran (and
   // wasn't blocked by the certificate error).
   std::u16string title;
-  std::u16string expected_title = base::ASCIIToUTF16("This script has loaded");
+  std::u16string expected_title = u"This script has loaded";
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(title, expected_title);
 }
@@ -1872,8 +1872,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
 
   // Setup page title observer.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Create GURLs to test pages.
   std::string wss_close_url_path = base::StringPrintf(
@@ -1916,8 +1916,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCert) {
 
   // Setup page title observer.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Visit bad HTTPS page.
   GURL::Replacements replacements;
@@ -2018,8 +2018,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, TestWSSClientCert) {
 
   // Setup page title observer.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Add an entry into AutoSelectCertificateForUrls policy for automatic client
   // cert selection.
@@ -3524,8 +3524,8 @@ class SSLUIWorkerFetchTest
                               strict_mixed_content_checking,
                               strictly_block_blockable_mixed_content);
 
-    const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
-    const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
+    const std::u16string loaded_title = u"LOADED";
+    const std::u16string failed_title = u"FAILED";
 
     {
       // First load.
@@ -3627,8 +3627,8 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
-  const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
-  const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
+  const std::u16string loaded_title = u"LOADED";
+  const std::u16string failed_title = u"FAILED";
   content::TitleWatcher watcher(tab, loaded_title);
   watcher.AlsoWaitForTitle(failed_title);
 
@@ -3690,8 +3690,8 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
   EXPECT_FALSE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_FALSE(visible_security_state->displayed_content_with_cert_errors);
 
-  const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
-  const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
+  const std::u16string loaded_title = u"LOADED";
+  const std::u16string failed_title = u"FAILED";
   content::TitleWatcher watcher(tab, loaded_title);
   watcher.AlsoWaitForTitle(failed_title);
 
@@ -4071,8 +4071,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, TestWSS) {
 
   // Setup page title observer.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Visit bad HTTPS page.
   GURL::Replacements replacements;
@@ -4106,8 +4106,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIWSS,
 
   // Setup page title observer.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  content::TitleWatcher watcher(tab, base::ASCIIToUTF16("PASS"));
-  watcher.AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+  content::TitleWatcher watcher(tab, u"PASS");
+  watcher.AlsoWaitForTitle(u"FAIL");
 
   // Visit bad HTTPS page.
   GURL::Replacements replacements;
@@ -4142,7 +4142,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIHTTPS, TestHTTPS) {
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
-  EXPECT_EQ(title, base::ASCIIToUTF16("This script has loaded"));
+  EXPECT_EQ(title, u"This script has loaded");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

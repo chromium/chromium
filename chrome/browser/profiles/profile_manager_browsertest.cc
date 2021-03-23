@@ -693,8 +693,8 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_DeletePasswords) {
   form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = base::ASCIIToUTF16("my_username");
-  form.password_value = base::ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
 
   scoped_refptr<password_manager::PasswordStore> password_store =

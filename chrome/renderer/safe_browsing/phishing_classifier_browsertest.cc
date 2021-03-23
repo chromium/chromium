@@ -53,7 +53,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
         page_link_domain_phishing_(features::kPageLinkDomain +
                                    std::string("phishing.com")),
         page_term_login_(features::kPageTerm + std::string("login")),
-        page_text_(base::ASCIIToUTF16("login")),
+        page_text_(u"login"),
         phishy_score_(PhishingClassifier::kInvalidScore) {}
 
   void SetUp() override {

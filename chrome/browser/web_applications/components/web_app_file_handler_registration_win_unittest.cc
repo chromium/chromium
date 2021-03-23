@@ -218,7 +218,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(profile2->GetPath());
   ASSERT_NE(entry, nullptr);
-  entry->SetGAIAName(base::ASCIIToUTF16("gaia user"));
+  entry->SetGAIAName(u"gaia user");
   AddAndVerifyFileAssociations(profile2, kAppName, " (Profile 2)");
 }
 

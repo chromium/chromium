@@ -106,10 +106,10 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, Basic) {
   EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
-  omnibox_view->SetUserText(base::ASCIIToUTF16("chrome"));
+  omnibox_view->SetUserText(u"chrome");
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
-  EXPECT_EQ(base::ASCIIToUTF16("chrome"), omnibox_view->GetText());
+  EXPECT_EQ(u"chrome", omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
   omnibox_view->RevertAll();
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, Basic) {
   EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), omnibox_view->GetText());
   EXPECT_FALSE(omnibox_view->IsSelectAll());
 
-  omnibox_view->SetUserText(base::ASCIIToUTF16("chrome"));
+  omnibox_view->SetUserText(u"chrome");
   location_bar->Revert();
 
   EXPECT_FALSE(location_bar->GetDestinationURL().is_valid());
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, MAYBE_Autocomplete) {
   {
     omnibox_view->model()->SetInputInProgress(true);
     AutocompleteInput input(
-        base::ASCIIToUTF16("chrome"), metrics::OmniboxEventProto::NTP,
+        u"chrome", metrics::OmniboxEventProto::NTP,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_prevent_inline_autocomplete(true);
     input.set_want_asynchronous_matches(false);
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AutocompleteBrowserTest, FocusSearch) {
   std::u16string default_search_keyword =
       template_url_service->GetDefaultSearchProvider()->keyword();
 
-  std::u16string query_text = base::ASCIIToUTF16("foo");
+  std::u16string query_text = u"foo";
 
   size_t selection_start, selection_end;
 

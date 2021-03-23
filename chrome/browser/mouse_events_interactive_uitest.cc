@@ -157,10 +157,10 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
                                                  base::NullCallback());
-  const std::u16string success_title = base::ASCIIToUTF16("without mouseleave");
-  const std::u16string failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = u"without mouseleave";
+  const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());
@@ -195,10 +195,10 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
                                                  base::NullCallback());
-  const std::u16string success_title = base::ASCIIToUTF16("without mouseleave");
-  const std::u16string failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = u"without mouseleave";
+  const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());

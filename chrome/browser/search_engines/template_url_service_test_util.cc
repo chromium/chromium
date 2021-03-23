@@ -77,7 +77,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
          "for clarity.";
 
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("unittest"));
+  data.SetShortName(u"unittest");
   data.SetKeyword(keyword);
   data.SetURL(url);
   data.favicon_url = GURL("http://favicon.url");

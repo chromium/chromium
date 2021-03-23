@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_storage->AddProfile(
-      profile_path, base::ASCIIToUTF16("name_1"), "12345", std::u16string(),
+      profile_path, u"name_1", "12345", std::u16string(),
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id*/ std::string(), EmptyAccountId());
 
@@ -860,10 +860,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   [ac mainMenuCreated];
 
   // Constants for bookmarks that we will create later.
-  const std::u16string title1(base::ASCIIToUTF16("Dinosaur Comics"));
+  const std::u16string title1(u"Dinosaur Comics");
   const GURL url1("http://qwantz.com//");
 
-  const std::u16string title2(base::ASCIIToUTF16("XKCD"));
+  const std::u16string title2(u"XKCD");
   const GURL url2("https://www.xkcd.com/");
 
   // Use the existing profile as profile 1.

@@ -148,7 +148,7 @@ TEST_F(ContentElementSceneTest, WebInputFocus) {
   EXPECT_FALSE(AdvanceFrame());
 
   // Updates from the browser should update keyboard state.
-  TextInputInfo info(base::ASCIIToUTF16("asdfg"));
+  TextInputInfo info(u"asdfg");
   static_cast<TestContentInputDelegate*>(content_input_delegate_)
       ->SetTextInputInfo(info);
   info.selection_start = 1;
@@ -186,7 +186,7 @@ TEST_F(ContentElementSceneTest, ClearWebInputInfoModel) {
       static_cast<ContentElement*>(scene_->GetUiElementByName(kContentQuad));
   // Initial state.
   EditedText info = model_->web_input_text_field_info;
-  info.current = TextInputInfo(base::ASCIIToUTF16("asdfg"));
+  info.current = TextInputInfo(u"asdfg");
   model_->set_web_input_text_field_info(info);
   EXPECT_TRUE(AdvanceFrame());
 

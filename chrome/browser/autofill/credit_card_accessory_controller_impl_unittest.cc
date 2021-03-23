@@ -27,7 +27,7 @@ using testing::SaveArg;
 using testing::SaveArgPointee;
 
 constexpr char kExampleSite[] = "https://example.com";
-const std::u16string kFirstTwelveDigits = base::ASCIIToUTF16("411111111111");
+const std::u16string kFirstTwelveDigits = u"411111111111";
 
 namespace autofill {
 namespace {

@@ -54,7 +54,7 @@ namespace {
 
 const char* kMediaEngagementTestDataPath = "chrome/test/data/media/engagement";
 
-const std::u16string kReadyTitle = base::ASCIIToUTF16("Ready");
+const std::u16string kReadyTitle = u"Ready";
 
 // Watches WasRecentlyAudible changes on a WebContents, blocking until the
 // tab is audible. The audio stream monitor runs at 15Hz so we need have

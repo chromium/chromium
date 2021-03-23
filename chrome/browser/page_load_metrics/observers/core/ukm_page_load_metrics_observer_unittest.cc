@@ -2004,7 +2004,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
 
   ntp_tiles::CustomLinksStore custom_link_store(profile()->GetPrefs());
   custom_link_store.StoreLinks({
-      {url, base::ASCIIToUTF16("Test Title")},
+      {url, u"Test Title"},
   });
 
   // Simulate closing the tab.

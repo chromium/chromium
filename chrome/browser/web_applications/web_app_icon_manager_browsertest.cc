@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
         std::make_unique<WebApplicationInfo>();
     web_application_info->start_url = start_url;
     web_application_info->scope = start_url.GetWithoutFilename();
-    web_application_info->title = base::ASCIIToUTF16("App Name");
+    web_application_info->title = u"App Name";
     web_application_info->open_as_window = true;
 
     {

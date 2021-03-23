@@ -98,25 +98,25 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicy) {
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicyPolicy404s) {
   SetStatus(net::HTTP_NOT_FOUND);
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicyPolicy301s) {
   SetStatus(net::HTTP_MOVED_PERMANENTLY);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ApplyPolicy) {
-  EXPECT_EQ(base::ASCIIToUTF16("Page With Policy"),
+  EXPECT_EQ(u"Page With Policy",
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 

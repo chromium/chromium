@@ -238,18 +238,15 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
   // Check rule evaluation on add/remove bookmark.
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0,
-                             base::ASCIIToUTF16("title"),
-                             GURL("http://test1/"));
+  const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
+      bookmark_model->other_node(), 0, u"title", GURL("http://test1/"));
   EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
   bookmark_model->Remove(node);
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on navigate to bookmarked and non-bookmarked URL.
-  bookmark_model->AddURL(bookmark_model->other_node(), 0,
-                         base::ASCIIToUTF16("title"),
+  bookmark_model->AddURL(bookmark_model->other_node(), 0, u"title",
                          GURL("http://test2/"));
 
   NavigateInRenderer(tab, GURL("http://test2/"));
@@ -1021,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       extension->id(),
       UNINSTALL_REASON_FOR_TESTING,
       &error));
-  ASSERT_EQ(base::ASCIIToUTF16(""), error);
+  ASSERT_EQ(u"", error);
 
   // Reload the extension, then add and remove a rule.
   extension = LoadExtension(ext_dir_.UnpackedPath());

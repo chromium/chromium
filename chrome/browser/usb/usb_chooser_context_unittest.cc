@@ -399,7 +399,7 @@ TEST_F(UsbChooserContextTest, GetObjectDisplayNameForNamelessDevice) {
   auto objects = store->GetAllGrantedObjects();
   ASSERT_EQ(objects.size(), 1u);
   EXPECT_EQ(store->GetObjectDisplayName(objects[0]->value),
-            base::ASCIIToUTF16("Unknown product 0x162E from Google Inc."));
+            u"Unknown product 0x162E from Google Inc.");
 }
 
 TEST_F(UsbChooserContextTest, PolicyGuardPermission) {

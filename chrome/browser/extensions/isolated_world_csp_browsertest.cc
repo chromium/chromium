@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
   console_observer.Wait();
 
   // Also ensure the page title wasn't changed.
-  EXPECT_EQ(base::ASCIIToUTF16("Page With CSP"), web_contents->GetTitle());
+  EXPECT_EQ(u"Page With CSP", web_contents->GetTitle());
 }
 
 // Test that a Manifest V2 content script can execute a remote script even if

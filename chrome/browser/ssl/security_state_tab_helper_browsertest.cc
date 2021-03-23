@@ -2146,7 +2146,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
   const GURL prefetch_html_url = embedded_test_server()->GetURL(
       std::string("/sxg/prefetch.html#") + sxg_url.spec());
   {
-    std::u16string expected_title = base::ASCIIToUTF16("OK");
+    std::u16string expected_title = u"OK";
     content::TitleWatcher title_watcher(contents, expected_title);
     ui_test_utils::NavigateToURL(browser(), prefetch_html_url);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

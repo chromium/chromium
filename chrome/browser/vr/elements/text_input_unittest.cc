@@ -44,7 +44,7 @@ class TextInputSceneTest : public UiTest {
     // Make test text input.
     text_input_delegate_ =
         std::make_unique<StrictMock<MockTextInputDelegate>>();
-    edited_text_ = std::make_unique<EditedText>(base::ASCIIToUTF16("asdfg"));
+    edited_text_ = std::make_unique<EditedText>(u"asdfg");
     auto text_input = CreateTextInput(1, model_, edited_text_.get(),
                                       text_input_delegate_.get());
     text_input_ = text_input.get();
@@ -142,7 +142,7 @@ TEST_F(TextInputSceneTest, InputFieldEdit) {
 
   // Edits from the keyboard update the underlying text input  model.
   EXPECT_CALL(*text_input_delegate_, UpdateInput(_)).InSequence(in_sequence_);
-  EditedText info(base::ASCIIToUTF16("asdfgh"));
+  EditedText info(u"asdfgh");
   text_input_->OnInputEdited(info);
   EXPECT_TRUE(AdvanceFrame());
   EXPECT_EQ(info, *edited_text_);

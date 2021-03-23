@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       "/favicon/page_change_favicon_type_to_touch_icon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ChangeTouchIconViaJavascript) {
       "/favicon/page_change_touch_icon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
       "/favicon/page_change_favicon_type_to_favicon_via_js.html");
 
   PendingTaskWaiter waiter(web_contents());
-  waiter.AlsoRequireTitle(base::ASCIIToUTF16("OK"));
+  waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NONE);

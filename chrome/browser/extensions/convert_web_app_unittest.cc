@@ -150,9 +150,8 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp) {
   //   },
   // }
   GURL scope_url = GURL("http://aaronboodman.com/gearpad/");
-  manifest.SetDictionary(keys::kUrlHandlers,
-                         CreateURLHandlersForBookmarkApp(
-                             scope_url, base::ASCIIToUTF16("Test App")));
+  manifest.SetDictionary(keys::kUrlHandlers, CreateURLHandlersForBookmarkApp(
+                                                 scope_url, u"Test App"));
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
@@ -237,8 +236,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_ExtraURLHandler) {
   // }
   GURL scope_url = GURL("http://aaronboodman.com/gearpad/");
   std::unique_ptr<base::DictionaryValue> url_handlers =
-      CreateURLHandlersForBookmarkApp(scope_url,
-                                      base::ASCIIToUTF16("Test App"));
+      CreateURLHandlersForBookmarkApp(scope_url, u"Test App");
 
   auto test_matches = std::make_unique<base::ListValue>();
   test_matches->AppendString("http://*.aaronboodman.com/");
@@ -277,9 +275,8 @@ TEST_F(ExtensionFromWebApp, GenerateVersion) {
 TEST_F(ExtensionFromWebApp, Basic) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.description =
-      base::ASCIIToUTF16("The best text editor in the universe!");
+  web_app.title = u"Gearpad";
+  web_app.description = u"The best text editor in the universe!";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gearpad/");
 
@@ -350,7 +347,7 @@ TEST_F(ExtensionFromWebApp, Basic) {
 TEST_F(ExtensionFromWebApp, Minimal) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
@@ -389,7 +386,7 @@ TEST_F(ExtensionFromWebApp, Minimal) {
 TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
@@ -412,7 +409,7 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
 TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
+  web_app.title = u"Gearpad";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
@@ -434,9 +431,8 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
 TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Gearpad");
-  web_app.description =
-      base::ASCIIToUTF16("The best text editor in the universe!");
+  web_app.title = u"Gearpad";
+  web_app.description = u"The best text editor in the universe!";
   web_app.start_url = GURL("http://aaronboodman.com/gearpad/");
   web_app.scope = GURL("http://aaronboodman.com/gear");
 
@@ -452,26 +448,23 @@ TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
 TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Graphr");
-  web_app.description = base::ASCIIToUTF16("A magical graphy thing");
+  web_app.title = u"Graphr";
+  web_app.description = u"A magical graphy thing";
   web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n/");
 
   {
     blink::Manifest::FileHandler graph;
     graph.action = GURL("https://graphr.n/open-graph/");
-    graph.name = base::ASCIIToUTF16("Graph");
-    graph.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(""));
-    graph.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(".svg"));
+    graph.name = u"Graph";
+    graph.accept[u"text/svg+xml"].push_back(u"");
+    graph.accept[u"text/svg+xml"].push_back(u".svg");
     web_app.file_handlers.push_back(graph);
 
     blink::Manifest::FileHandler raw;
     raw.action = GURL("https://graphr.n/open-raw/");
-    raw.name = base::ASCIIToUTF16("Raw");
-    raw.accept[base::ASCIIToUTF16("text/csv")].push_back(
-        base::ASCIIToUTF16(".csv"));
+    raw.name = u"Raw";
+    raw.accept[u"text/csv"].push_back(u".csv");
     web_app.file_handlers.push_back(raw);
   }
 
@@ -514,27 +507,24 @@ TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
 TEST_F(ExtensionFromWebApp, WebAppFileHandlersAreCorrectlyConverted) {
   StartExtensionService();
   WebApplicationInfo web_app;
-  web_app.title = base::ASCIIToUTF16("Graphr");
-  web_app.description = base::ASCIIToUTF16("A magical graphy thing.");
+  web_app.title = u"Graphr";
+  web_app.description = u"A magical graphy thing.";
   web_app.start_url = GURL("https://graphr.n/");
   web_app.scope = GURL("https://graphr.n");
 
   {
     blink::Manifest::FileHandler file_handler;
     file_handler.action = GURL("https://graphr.n/open-graph/");
-    file_handler.name = base::ASCIIToUTF16("Graph");
-    file_handler.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(""));
-    file_handler.accept[base::ASCIIToUTF16("text/svg+xml")].push_back(
-        base::ASCIIToUTF16(".svg"));
+    file_handler.name = u"Graph";
+    file_handler.accept[u"text/svg+xml"].push_back(u"");
+    file_handler.accept[u"text/svg+xml"].push_back(u".svg");
     web_app.file_handlers.push_back(file_handler);
   }
   {
     blink::Manifest::FileHandler file_handler;
     file_handler.action = GURL("https://graphr.n/open-raw/");
-    file_handler.name = base::ASCIIToUTF16("Raw");
-    file_handler.accept[base::ASCIIToUTF16("text/csv")].push_back(
-        base::ASCIIToUTF16(".csv"));
+    file_handler.name = u"Raw";
+    file_handler.accept[u"text/csv"].push_back(u".csv");
     web_app.file_handlers.push_back(file_handler);
   }
 
@@ -576,12 +566,12 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   StartExtensionService();
   WebApplicationInfo web_app;
   WebApplicationShortcutsMenuItemInfo shortcut_item;
-  web_app.title = base::ASCIIToUTF16("Shortcut App");
-  web_app.description = base::ASCIIToUTF16("We have shortcuts.");
+  web_app.title = u"Shortcut App";
+  web_app.description = u"We have shortcuts.";
   web_app.start_url = GURL("https://shortcut-app.io/");
   web_app.scope = GURL("https://shortcut-app.io");
 
-  shortcut_item.name = base::ASCIIToUTF16("Shortcut 1");
+  shortcut_item.name = u"Shortcut 1";
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut1");
   {
     IconBitmaps shortcut_icon_bitmaps;
@@ -599,7 +589,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   }
   web_app.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
 
-  shortcut_item.name = base::ASCIIToUTF16("Shortcut 2");
+  shortcut_item.name = u"Shortcut 2";
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut2");
   {
     IconBitmaps shortcut_icon_bitmaps;

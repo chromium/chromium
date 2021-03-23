@@ -135,7 +135,7 @@ class TabDesktopMediaListTest : public testing::Test {
       entry = contents->GetController().GetLastCommittedEntry();
     }
 
-    contents->UpdateTitleForEntry(entry, base::ASCIIToUTF16("Test tab"));
+    contents->UpdateTitleForEntry(entry, u"Test tab");
 
     content::FaviconStatus favicon_info;
     favicon_info.image =
@@ -327,7 +327,7 @@ TEST_F(TabDesktopMediaListTest, UpdateTitle) {
   ASSERT_TRUE(contents);
   content::NavigationController& controller = contents->GetController();
   contents->UpdateTitleForEntry(controller.GetLastCommittedEntry(),
-                                base::ASCIIToUTF16("New test tab"));
+                                u"New test tab");
 
   EXPECT_CALL(observer_, OnSourceNameChanged(list_.get(), 0))
       .WillOnce(QuitMessageLoop());

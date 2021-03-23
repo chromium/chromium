@@ -153,9 +153,9 @@ void VerifyReceivedRendererMessages(
   // The tuple also includes a timestamp, which is ignored.
   const FormData& submitted_form = *(fake_driver.form_submitted());
   ASSERT_LE(2U, submitted_form.fields.size());
-  EXPECT_EQ(base::ASCIIToUTF16("fname"), submitted_form.fields[0].name);
+  EXPECT_EQ(u"fname", submitted_form.fields[0].name);
   EXPECT_EQ(base::UTF8ToUTF16(fname), submitted_form.fields[0].value);
-  EXPECT_EQ(base::ASCIIToUTF16("lname"), submitted_form.fields[1].name);
+  EXPECT_EQ(u"lname", submitted_form.fields[1].name);
   EXPECT_EQ(expect_known_success, fake_driver.known_success());
   EXPECT_EQ(expect_submission_source,
             mojo::ConvertTo<SubmissionSource>(fake_driver.submission_source()));
@@ -171,7 +171,7 @@ void VerifyReceivedAddressRendererMessages(
   // The tuple also includes a timestamp, which is ignored.
   const FormData& submitted_form = *(fake_driver.form_submitted());
   ASSERT_LE(1U, submitted_form.fields.size());
-  EXPECT_EQ(base::ASCIIToUTF16("address"), submitted_form.fields[0].name);
+  EXPECT_EQ(u"address", submitted_form.fields[0].name);
   EXPECT_EQ(base::UTF8ToUTF16(address), submitted_form.fields[0].value);
   EXPECT_EQ(expect_known_success, fake_driver.known_success());
   EXPECT_EQ(expect_submission_source,
@@ -191,7 +191,7 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
                         blink::WebLocalFrame* main_frame) {
   FormData data;
   data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
-  data.name = base::ASCIIToUTF16("name");
+  data.name = u"name";
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
   data.is_form_tag = true;  // Default value.
@@ -206,8 +206,8 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
           .To<WebFormControlElement>();
 
   FormFieldData field_data;
-  field_data.name = base::ASCIIToUTF16("fname");
-  field_data.value = base::ASCIIToUTF16("John");
+  field_data.name = u"fname";
+  field_data.value = u"John";
   field_data.is_autofilled = true;
   field_data.host_frame = LocalFrameToken(
       fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
@@ -215,8 +215,8 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
 
-  field_data.name = base::ASCIIToUTF16("lname");
-  field_data.value = base::ASCIIToUTF16("Smith");
+  field_data.name = u"lname";
+  field_data.value = u"Smith";
   field_data.is_autofilled = true;
   if (!lname_element.IsNull()) {
     field_data.host_frame = LocalFrameToken(
@@ -255,14 +255,14 @@ void SimulateOnFillFormWithNonFillableFields(
 
   FormData data;
   data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
-  data.name = base::ASCIIToUTF16("name");
+  data.name = u"name";
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
   data.is_form_tag = true;  // Default value.
 
   FormFieldData field_data;
-  field_data.name = base::ASCIIToUTF16("fname");
-  field_data.value = base::ASCIIToUTF16("John");
+  field_data.name = u"fname";
+  field_data.value = u"John";
   field_data.is_autofilled = true;
   field_data.host_frame = LocalFrameToken(
       fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
@@ -270,8 +270,8 @@ void SimulateOnFillFormWithNonFillableFields(
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
 
-  field_data.name = base::ASCIIToUTF16("lname");
-  field_data.value = base::ASCIIToUTF16("Smith");
+  field_data.name = u"lname";
+  field_data.value = u"Smith";
   field_data.is_autofilled = true;
   field_data.host_frame = LocalFrameToken(
       lname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
@@ -280,8 +280,8 @@ void SimulateOnFillFormWithNonFillableFields(
   data.fields.push_back(field_data);
 
   // Additional non-autofillable field.
-  field_data.name = base::ASCIIToUTF16("mname");
-  field_data.value = base::ASCIIToUTF16("James");
+  field_data.name = u"mname";
+  field_data.value = u"James";
   field_data.is_autofilled = false;
   field_data.host_frame = LocalFrameToken(
       mname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
@@ -755,10 +755,10 @@ TEST_F(FormAutocompleteTest, CollectFormlessElements) {
   // Asserting size 4 also ensures that 'excluded' field inside <form> is not
   // collected.
   ASSERT_EQ(4U, result.fields.size());
-  EXPECT_EQ(base::ASCIIToUTF16("text_input"), result.fields[0].name);
-  EXPECT_EQ(base::ASCIIToUTF16("check_input"), result.fields[1].name);
-  EXPECT_EQ(base::ASCIIToUTF16("number_input"), result.fields[2].name);
-  EXPECT_EQ(base::ASCIIToUTF16("select_input"), result.fields[3].name);
+  EXPECT_EQ(u"text_input", result.fields[0].name);
+  EXPECT_EQ(u"check_input", result.fields[1].name);
+  EXPECT_EQ(u"number_input", result.fields[2].name);
+  EXPECT_EQ(u"select_input", result.fields[3].name);
 }
 
 // Unit test for AutofillAgent::AcceptDataListSuggestion.
@@ -779,8 +779,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
   WebDocument document = GetMainFrame()->GetDocument();
 
   // Each case tests a different field value with the same suggestion.
-  const std::u16string kSuggestion =
-      base::ASCIIToUTF16("suggestion@example.com");
+  const std::u16string kSuggestion = u"suggestion@example.com";
   struct TestCase {
     std::string id;
     std::string expected;
@@ -1110,8 +1109,8 @@ TEST_F(FormAutocompleteTest, SelectControlChanged) {
 
   const FormFieldData* field = fake_driver_.select_control_changed();
   ASSERT_TRUE(field);
-  EXPECT_EQ(base::ASCIIToUTF16("color"), field->name);
-  EXPECT_EQ(base::ASCIIToUTF16("blue"), field->value);
+  EXPECT_EQ(u"color", field->name);
+  EXPECT_EQ(u"blue", field->value);
 }
 
 }  // namespace autofill

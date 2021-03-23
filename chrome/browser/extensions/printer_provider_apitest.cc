@@ -134,7 +134,7 @@ class PrinterProviderApiTest : public ExtensionApiTest {
       PrinterProviderAPI::PrintCallback callback) {
     PrinterProviderPrintJob job;
     job.printer_id = extension_id + ":printer_id";
-    job.job_title = base::ASCIIToUTF16("Print job");
+    job.job_title = u"Print job";
     job.ticket = base::Value(base::Value::Type::DICTIONARY);
     job.content_type = "application/pdf";
     const unsigned char kDocumentBytes[] = {'b', 'y', 't', 'e', 's'};

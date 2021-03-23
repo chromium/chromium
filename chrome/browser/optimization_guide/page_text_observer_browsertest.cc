@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("hello")),
+              u"hello"),
       }));
 }
 
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
                     ->GetController()
                     .GetVisibleEntry()
                     ->GetUniqueID(),
-                base::ASCIIToUTF16("hello")),
+                u"hello"),
             MakeFrameDump(
                 mojom::TextDumpEvent::kFinishedLoad,
                 web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
                     ->GetController()
                     .GetVisibleEntry()
                     ->GetUniqueID(),
-                base::ASCIIToUTF16("hello\n\nworld")),
+                u"hello\n\nworld"),
         }));
 
     EXPECT_EQ(first_layout_consumer.result(), on_load_consumer.result());
@@ -321,12 +321,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("mainframe")),
+              u"mainframe"),
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad, amp_frame_id,
               /*amp_frame=*/true,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("AMP")),
+              u"AMP"),
       }));
 }
 
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("mainframe")),
+              u"mainframe"),
       }));
 }
 
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("mainframe\n\nhello")),
+              u"mainframe\n\nhello"),
       }));
 }
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("mainframe")),
+              u"mainframe"),
       }));
 }
 

@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, InvalidCardNumber) {
   AddAutofillProfile(address);
   autofill::CreditCard card = CreatCreditCardForProfile(address);
   card.SetRawInfo(autofill::ServerFieldType::CREDIT_CARD_NUMBER,
-                  base::ASCIIToUTF16("1111111111111111"));
+                  u"1111111111111111");
   AddCreditCard(card);
 
   ExpectHasEnrolledInstrumentIs(false);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, NoEmailAddress) {
 IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, InvalidEmailAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                     base::ASCIIToUTF16("this-is-not-a-valid-email-address"));
+                     u"this-is-not-a-valid-email-address");
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 

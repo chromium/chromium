@@ -242,7 +242,7 @@ void ExecuteScriptWaitForTitle(content::WebContents* web_contents,
                                const char* script,
                                const char* title) {
   std::u16string expected_title(base::ASCIIToUTF16(title));
-  std::u16string error_title(base::ASCIIToUTF16("error"));
+  std::u16string error_title(u"error");
 
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(error_title);
@@ -4412,8 +4412,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
   EXPECT_NE(unattached_guest, attached_guest);
   auto* find_helper =
       find_in_page::FindTabHelper::FromWebContents(embedder_web_contents);
-  find_helper->StartFinding(base::ASCIIToUTF16("doesn't matter"), true, true,
-                            false);
+  find_helper->StartFinding(u"doesn't matter", true, true, false);
   auto pending =
       content::GetRenderFrameHostsWithPendingFindResults(embedder_web_contents);
   // Request for main frame of the tab.

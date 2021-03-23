@@ -84,8 +84,7 @@ class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
 
     void SimulateInstallFailed() {
       CrxInstallError error(CrxInstallErrorType::DECLINED,
-                            CrxInstallErrorDetail::INSTALL_NOT_ENABLED,
-                            base::ASCIIToUTF16(""));
+                            CrxInstallErrorDetail::INSTALL_NOT_ENABLED, u"");
       NotifyCrxInstallComplete(error);
     }
     FakeCrxInstaller(const FakeCrxInstaller&) = delete;

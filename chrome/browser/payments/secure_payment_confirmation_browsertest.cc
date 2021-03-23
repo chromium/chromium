@@ -162,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
       ServiceAccessType::EXPLICIT_ACCESS)
       ->AddSecurePaymentConfirmationInstrument(
           std::make_unique<SecurePaymentConfirmationInstrument>(
-              std::move(credential_id), "relying-party.example",
-              base::ASCIIToUTF16("Stub label"), std::move(icon)),
+              std::move(credential_id), "relying-party.example", u"Stub label",
+              std::move(icon)),
           /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),

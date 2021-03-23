@@ -108,11 +108,11 @@ TEST_F(ProfileListDesktopTest, InitialCreation) {
 
   const AvatarMenu::Item& item1 = menu->GetItemAt(0);
   EXPECT_EQ(0U, item1.menu_index);
-  EXPECT_EQ(ASCIIToUTF16("Test 1"), item1.name);
+  EXPECT_EQ(u"Test 1", item1.name);
 
   const AvatarMenu::Item& item2 = menu->GetItemAt(1);
   EXPECT_EQ(1U, item2.menu_index);
-  EXPECT_EQ(ASCIIToUTF16("Test 2"), item2.name);
+  EXPECT_EQ(u"Test 2", item2.name);
 }
 
 TEST_F(ProfileListDesktopTest, NoOmittedProfiles) {
@@ -256,15 +256,15 @@ TEST_F(ProfileListDesktopTest, ChangeOnNotify) {
 
   const AvatarMenu::Item& item1 = menu->GetItemAt(0u);
   EXPECT_EQ(0u, item1.menu_index);
-  EXPECT_EQ(ASCIIToUTF16("Test 1"), item1.name);
+  EXPECT_EQ(u"Test 1", item1.name);
 
   const AvatarMenu::Item& item2 = menu->GetItemAt(1u);
   EXPECT_EQ(1u, item2.menu_index);
-  EXPECT_EQ(ASCIIToUTF16("Test 2"), item2.name);
+  EXPECT_EQ(u"Test 2", item2.name);
 
   const AvatarMenu::Item& item3 = menu->GetItemAt(2u);
   EXPECT_EQ(2u, item3.menu_index);
-  EXPECT_EQ(ASCIIToUTF16("Test 3"), item3.name);
+  EXPECT_EQ(u"Test 3", item3.name);
 }
 
 }  // namespace

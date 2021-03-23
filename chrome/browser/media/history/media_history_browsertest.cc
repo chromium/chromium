@@ -224,9 +224,9 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
   media_session::MediaMetadata GetExpectedMetadata() {
     media_session::MediaMetadata expected_metadata =
         GetExpectedDefaultMetadata();
-    expected_metadata.title = base::ASCIIToUTF16("Big Buck Bunny");
-    expected_metadata.artist = base::ASCIIToUTF16("Test Footage");
-    expected_metadata.album = base::ASCIIToUTF16("The Chrome Collection");
+    expected_metadata.title = u"Big Buck Bunny";
+    expected_metadata.artist = u"Test Footage";
+    expected_metadata.album = u"The Chrome Collection";
     return expected_metadata;
   }
 
@@ -237,7 +237,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
       media_session::MediaImage image;
       image.src = embedded_test_server()->GetURL("/artwork-96.png");
       image.sizes.push_back(gfx::Size(96, 96));
-      image.type = base::ASCIIToUTF16("image/png");
+      image.type = u"image/png";
       images.push_back(image);
     }
 
@@ -245,7 +245,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
       media_session::MediaImage image;
       image.src = embedded_test_server()->GetURL("/artwork-128.png");
       image.sizes.push_back(gfx::Size(128, 128));
-      image.type = base::ASCIIToUTF16("image/png");
+      image.type = u"image/png";
       images.push_back(image);
     }
 
@@ -254,7 +254,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
       image.src = embedded_test_server()->GetURL("/artwork-big.jpg");
       image.sizes.push_back(gfx::Size(192, 192));
       image.sizes.push_back(gfx::Size(256, 256));
-      image.type = base::ASCIIToUTF16("image/jpg");
+      image.type = u"image/jpg";
       images.push_back(image);
     }
 
@@ -262,7 +262,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
       media_session::MediaImage image;
       image.src = embedded_test_server()->GetURL("/artwork-any.jpg");
       image.sizes.push_back(gfx::Size(0, 0));
-      image.type = base::ASCIIToUTF16("image/jpg");
+      image.type = u"image/jpg";
       images.push_back(image);
     }
 
@@ -276,7 +276,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
     {
       media_session::MediaImage image;
       image.src = embedded_test_server()->GetURL("/artwork-nosize.jpg");
-      image.type = base::ASCIIToUTF16("image/jpg");
+      image.type = u"image/jpg";
       images.push_back(image);
     }
 
@@ -285,7 +285,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
 
   media_session::MediaMetadata GetExpectedDefaultMetadata() {
     media_session::MediaMetadata expected_metadata;
-    expected_metadata.title = base::ASCIIToUTF16("Media History");
+    expected_metadata.title = u"Media History";
     expected_metadata.source_title = base::ASCIIToUTF16(base::StringPrintf(
         "%s:%u", embedded_test_server()->GetIPLiteralString().c_str(),
         embedded_test_server()->port()));
@@ -353,7 +353,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
     {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = base::ASCIIToUTF16("The Video");
+      item->name = u"The Video";
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(20));
       item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
     media_session::MediaImage image;
     image.src = embedded_test_server()->GetURL("/artwork-96.png");
     image.sizes.push_back(gfx::Size(96, 96));
-    image.type = base::ASCIIToUTF16("image/png");
+    image.type = u"image/png";
     expected_alt_artwork.push_back(image);
   }
 
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
     media_session::MediaImage image;
     image.src = embedded_test_server()->GetURL("/artwork-alt.png");
     image.sizes.push_back(gfx::Size(128, 128));
-    image.type = base::ASCIIToUTF16("image/png");
+    image.type = u"image/png";
     expected_alt_artwork.push_back(image);
   }
 

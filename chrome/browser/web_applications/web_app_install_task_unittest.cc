@@ -211,7 +211,7 @@ class WebAppInstallTaskTest : public WebAppTest {
 
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = url;
-    manifest->short_name = base::ASCIIToUTF16("Manifest Name");
+    manifest->short_name = u"Manifest Name";
     data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
 
     data_retriever_->SetIcons(IconsMap{});
@@ -455,7 +455,7 @@ TEST_F(WebAppInstallTaskTest, ForceReinstall) {
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = url;
     manifest->scope = url;
-    manifest->short_name = base::ASCIIToUTF16("Manifest Name2");
+    manifest->short_name = u"Manifest Name2";
 
     data_retriever().SetManifest(std::move(manifest), /*is_installable=*/true);
   }
@@ -552,7 +552,7 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
 
   {
     auto manifest = std::make_unique<blink::Manifest>();
-    manifest->short_name = base::ASCIIToUTF16("Short Name from Manifest");
+    manifest->short_name = u"Short Name from Manifest";
     manifest->name = base::ASCIIToUTF16(manifest_name);
     manifest->start_url = manifest_start_url;
     manifest->scope = manifest_scope;
@@ -837,7 +837,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_Success) {
 
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = url;
-  manifest->short_name = base::ASCIIToUTF16("Server Name");
+  manifest->short_name = u"Server Name";
 
   data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
 
@@ -866,7 +866,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_Success) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = url;
   web_app_info->open_as_window = true;
-  web_app_info->title = base::ASCIIToUTF16("App Name");
+  web_app_info->title = u"App Name";
 
   base::RunLoop run_loop;
 
@@ -894,7 +894,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromInfo_GenerateIcons) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = GURL("https://example.com/path");
   web_app_info->open_as_window = false;
-  web_app_info->title = base::ASCIIToUTF16("App Name");
+  web_app_info->title = u"App Name";
 
   // Add square yellow icon.
   AddGeneratedIcon(&web_app_info->icon_bitmaps.any, icon_size::k256,
@@ -980,8 +980,8 @@ TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
     manifest->start_url = url;
     manifest->scope = scope;
     blink::Manifest::RelatedApplication related_app;
-    related_app.platform = base::ASCIIToUTF16("chromeos_play");
-    related_app.id = base::ASCIIToUTF16("com.app.id");
+    related_app.platform = u"chromeos_play";
+    related_app.id = u"com.app.id";
     manifest->related_applications.push_back(std::move(related_app));
 
     data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
@@ -1345,7 +1345,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = start_url;
     manifest->theme_color = theme_color;
-    manifest->name = base::ASCIIToUTF16("Manifest Name");
+    manifest->name = u"Manifest Name";
 
     // Add shortcuts to manifest.
     blink::Manifest::ShortcutItem shortcut_item;
@@ -1416,7 +1416,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     web_app_info->start_url = url;
     web_app_info->open_as_window = true;
     web_app_info->theme_color = theme_color;
-    web_app_info->title = base::ASCIIToUTF16("App Name");
+    web_app_info->title = u"App Name";
 
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     WebApplicationShortcutsMenuItemInfo::Icon icon;

@@ -248,13 +248,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     share_target.method = blink::mojom::ManifestShareTarget_Method::kPost;
     share_target.enctype =
         blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData;
-    share_target.params.title = base::ASCIIToUTF16("kTitle");
-    share_target.params.text = base::ASCIIToUTF16("kText");
+    share_target.params.title = u"kTitle";
+    share_target.params.text = u"kText";
 
     blink::Manifest::FileFilter file_filter;
-    file_filter.name = base::ASCIIToUTF16("kImages");
-    file_filter.accept.push_back(base::ASCIIToUTF16(".png"));
-    file_filter.accept.push_back(base::ASCIIToUTF16("image/png"));
+    file_filter.name = u"kImages";
+    file_filter.accept.push_back(u".png");
+    file_filter.accept.push_back(u"image/png");
     share_target.params.files.push_back(std::move(file_filter));
 
     manifest.share_target = std::move(share_target);
@@ -285,8 +285,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     share_target.method = blink::mojom::ManifestShareTarget_Method::kGet;
     share_target.enctype =
         blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
-    share_target.params.text = base::ASCIIToUTF16("kText");
-    share_target.params.url = base::ASCIIToUTF16("kUrl");
+    share_target.params.text = u"kText";
+    share_target.params.url = u"kUrl";
 
     manifest.share_target = std::move(share_target);
   }
@@ -623,7 +623,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
 // is correctly populated.
 TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingNoWebAppIconData) {
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
 
   IconsMap icons_map;
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
@@ -646,7 +646,7 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
 
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
   WebApplicationIconInfo info;
   // Icon at URL 1 has both ANY and MASKABLE purpose.
   info.url = IconUrl1();
@@ -680,7 +680,7 @@ TEST(WebAppInstallUtils,
 
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
   WebApplicationIconInfo info;
   info.url = IconUrl1();
   info.purpose = Purpose::MASKABLE;
@@ -709,7 +709,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_InvalidManifestUrl) {
 TEST_F(WebAppInstallUtilsWithShortcutsMenu,
        FilterAndResizeIconsGenerateMissingNoWebAppIconData) {
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
 
   IconsMap icons_map;
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
@@ -737,7 +737,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   // Construct |info| to add to |web_app_info.icon_infos|.
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::ASCIIToUTF16("App Name");
+  web_app_info.title = u"App Name";
 
   WebApplicationIconInfo info;
   info.url = IconUrl1();

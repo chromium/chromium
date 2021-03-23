@@ -367,7 +367,7 @@ class MediaFeedsServiceTest : public ChromeRenderViewHostTestHarness {
       int id_start = 0) {
     auto item = media_feeds::mojom::MediaFeedItem::New();
     item->id = ++id_start;
-    item->name = base::ASCIIToUTF16("The Movie");
+    item->name = u"The Movie";
     item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
     item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
         base::TimeDelta::FromMinutes(10));
@@ -393,7 +393,7 @@ class MediaFeedsServiceTest : public ChromeRenderViewHostTestHarness {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The TV Series");
+      item->name = u"The TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kActive;
       item->action = media_feeds::mojom::Action::New();
@@ -407,7 +407,7 @@ class MediaFeedsServiceTest : public ChromeRenderViewHostTestHarness {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The Live TV Series");
+      item->name = u"The Live TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kPotential;
       item->action = media_feeds::mojom::Action::New();

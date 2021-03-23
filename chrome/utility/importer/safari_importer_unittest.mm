@@ -64,24 +64,21 @@ TEST_F(SafariImporterTest, BookmarkImport) {
     std::u16string path;
     std::u16string title;
   } kImportedBookmarksData[] = {
-      {true, GURL("http://www.apple.com/"), ASCIIToUTF16("Toolbar/"),
-       ASCIIToUTF16("Apple")},
-      {true, GURL("http://www.yahoo.com/"), ASCIIToUTF16("Toolbar/"),
-       ASCIIToUTF16("Yahoo!")},
-      {true, GURL("http://www.cnn.com/"), ASCIIToUTF16("Toolbar/News"),
-       ASCIIToUTF16("CNN")},
-      {true, GURL("http://www.nytimes.com/"), ASCIIToUTF16("Toolbar/News"),
-       ASCIIToUTF16("The New York Times")},
+      {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
+      {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
+      {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
+      {true, GURL("http://www.nytimes.com/"), u"Toolbar/News",
+       u"The New York Times"},
       {false, GURL("http://www.reddit.com/"), std::u16string(),
-       ASCIIToUTF16("reddit.com: what's new online!")},
-      {false, GURL(), std::u16string(), ASCIIToUTF16("Empty Folder")},
+       u"reddit.com: what's new online!"},
+      {false, GURL(), std::u16string(), u"Empty Folder"},
       {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
-       ASCIIToUTF16("Surfin' Safari - The WebKit Blog")},
+       u"Surfin' Safari - The WebKit Blog"},
   };
 
   scoped_refptr<SafariImporter> importer(GetSafariImporter());
   std::vector<ImportedBookmarkEntry> bookmarks;
-  importer->ParseBookmarks(ASCIIToUTF16("Toolbar"), &bookmarks);
+  importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
   ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
 
@@ -91,7 +88,7 @@ TEST_F(SafariImporterTest, BookmarkImport) {
     EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(kImportedBookmarksData[i].path, ASCIIToUTF16("/"),
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
@@ -111,22 +108,19 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
     std::u16string path;
     std::u16string title;
   } kImportedBookmarksData[] = {
-      {true, GURL("http://www.apple.com/"), ASCIIToUTF16("Toolbar/"),
-       ASCIIToUTF16("Apple")},
-      {true, GURL("http://www.yahoo.com/"), ASCIIToUTF16("Toolbar/"),
-       ASCIIToUTF16("Yahoo!")},
-      {true, GURL("http://www.cnn.com/"), ASCIIToUTF16("Toolbar/News"),
-       ASCIIToUTF16("CNN")},
-      {true, GURL("http://www.nytimes.com/"), ASCIIToUTF16("Toolbar/News"),
-       ASCIIToUTF16("The New York Times")},
+      {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
+      {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
+      {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
+      {true, GURL("http://www.nytimes.com/"), u"Toolbar/News",
+       u"The New York Times"},
       {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
-       ASCIIToUTF16("Surfin' Safari - The WebKit Blog")},
+       u"Surfin' Safari - The WebKit Blog"},
   };
 
   scoped_refptr<SafariImporter> importer(
       GetSafariImporterWithPathSuffix("empty_bookmarks_menu"));
   std::vector<ImportedBookmarkEntry> bookmarks;
-  importer->ParseBookmarks(ASCIIToUTF16("Toolbar"), &bookmarks);
+  importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
   ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
 
@@ -136,7 +130,7 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
     EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
     std::vector<std::u16string> path =
-        base::SplitString(kImportedBookmarksData[i].path, ASCIIToUTF16("/"),
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {

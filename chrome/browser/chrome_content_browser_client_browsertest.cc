@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("news:something"));
 
-  std::u16string expected_title = base::ASCIIToUTF16("abc.xyz");
+  std::u16string expected_title = u"abc.xyz";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
 
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
-  EXPECT_EQ(base::ASCIIToUTF16("about:blank"), tab_title);
+  EXPECT_EQ(u"about:blank", tab_title);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   // tab being opened.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   // Make sure the protocol handler redirected the navigation.
-  std::u16string expected_title = base::ASCIIToUTF16("mail.google.com");
+  std::u16string expected_title = u"mail.google.com";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

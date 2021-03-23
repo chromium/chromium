@@ -103,8 +103,7 @@ TEST_F(RequestSystemProxyCredentialsViewTest, GetProxyServer) {
 
 TEST_F(RequestSystemProxyCredentialsViewTest, GetWindowTitle) {
   CreateDialog(/*show_error=*/false);
-  EXPECT_EQ(system_proxy_dialog_->GetWindowTitle(),
-            base::ASCIIToUTF16("Sign in"));
+  EXPECT_EQ(system_proxy_dialog_->GetWindowTitle(), u"Sign in");
 }
 
 TEST_F(RequestSystemProxyCredentialsViewTest, ErrorLabelHidden) {

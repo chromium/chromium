@@ -367,8 +367,8 @@ void ApplyDefaultSuggestionForExtensionKeyword(
   if (!suggestion || suggestion->description.empty())
     return;  // fall back to the universal default
 
-  const std::u16string kPlaceholderText(base::ASCIIToUTF16("%s"));
-  const std::u16string kReplacementText(base::ASCIIToUTF16("<input>"));
+  const std::u16string kPlaceholderText(u"%s");
+  const std::u16string kReplacementText(u"<input>");
 
   std::u16string description = base::UTF8ToUTF16(suggestion->description);
   ACMatchClassifications& description_styles = match->contents_class;

@@ -117,8 +117,8 @@ TEST_F(NotificationTemplateBuilderTest, Buttons) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
-  buttons.emplace_back(base::ASCIIToUTF16("Button2"));
+  buttons.emplace_back(u"Button1");
+  buttons.emplace_back(u"Button2");
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
@@ -145,10 +145,10 @@ TEST_F(NotificationTemplateBuilderTest, InlineReplies) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button1(base::ASCIIToUTF16("Button1"));
-  button1.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button1(u"Button1");
+  button1.placeholder = u"Reply here";
   buttons.emplace_back(button1);
-  buttons.emplace_back(base::ASCIIToUTF16("Button2"));
+  buttons.emplace_back(u"Button2");
   notification.set_buttons(buttons);
 
   const wchar_t kExpectedXml[] =
@@ -176,11 +176,11 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesDoubleInput) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button1(base::ASCIIToUTF16("Button1"));
-  button1.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button1(u"Button1");
+  button1.placeholder = u"Reply here";
   buttons.emplace_back(button1);
-  message_center::ButtonInfo button2(base::ASCIIToUTF16("Button2"));
-  button2.placeholder = base::ASCIIToUTF16("Should not appear");
+  message_center::ButtonInfo button2(u"Button2");
+  button2.placeholder = u"Should not appear";
   buttons.emplace_back(button2);
   notification.set_buttons(buttons);
 
@@ -209,9 +209,9 @@ TEST_F(NotificationTemplateBuilderTest, InlineRepliesTextTypeNotFirst) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
-  message_center::ButtonInfo button2(base::ASCIIToUTF16("Button2"));
-  button2.placeholder = base::ASCIIToUTF16("Reply here");
+  buttons.emplace_back(u"Button1");
+  message_center::ButtonInfo button2(u"Button2");
+  button2.placeholder = u"Reply here";
   buttons.emplace_back(button2);
   notification.set_buttons(buttons);
 
@@ -263,7 +263,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteraction) {
   message_center::Notification notification = BuildNotification();
 
   std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(base::ASCIIToUTF16("Button1"));
+  buttons.emplace_back(u"Button1");
   notification.set_buttons(buttons);
   notification.set_never_timeout(true);
 
@@ -374,8 +374,8 @@ TEST_F(NotificationTemplateBuilderTest, Images) {
   notification.set_image(gfx::Image::CreateFrom1xBitmap(icon));
 
   std::vector<message_center::ButtonInfo> buttons;
-  message_center::ButtonInfo button(base::ASCIIToUTF16("Button1"));
-  button.placeholder = base::ASCIIToUTF16("Reply here");
+  message_center::ButtonInfo button(u"Button1");
+  button.placeholder = u"Reply here";
   button.icon = gfx::Image::CreateFrom1xBitmap(icon);
   buttons.emplace_back(button);
   notification.set_buttons(buttons);

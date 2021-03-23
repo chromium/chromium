@@ -270,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   // Expect to commit 'Á '.
   ASSERT_EQ(text_input_client.composition_history().size(), 2U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text,
-            base::ASCIIToUTF16("A"));
+  EXPECT_EQ(text_input_client.composition_history()[0].text, u"A");
   EXPECT_EQ(text_input_client.composition_history()[1].text,
             base::UTF8ToUTF16(u8"\u00c1"));
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
@@ -296,11 +295,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, VietnameseTelex_Reset) {
 
   // Expect to commit 's'.
   ASSERT_EQ(text_input_client.composition_history().size(), 1U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text,
-            base::ASCIIToUTF16("a"));
+  EXPECT_EQ(text_input_client.composition_history()[0].text, u"a");
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0],
-            base::ASCIIToUTF16("s"));
+  EXPECT_EQ(text_input_client.insert_text_history()[0], u"s");
 
   SetFocus(nullptr);
 }

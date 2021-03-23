@@ -169,7 +169,7 @@ void TemplateURLFetcherTest::WaitForDownloadToFinish() {
 }
 
 TEST_F(TemplateURLFetcherTest, BasicAutodetectedTest) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
 
   test_util()->ChangeModelToLoadState();
   ASSERT_FALSE(test_util()->model()->GetTemplateURLForKeyword(keyword));
@@ -184,10 +184,10 @@ TEST_F(TemplateURLFetcherTest, BasicAutodetectedTest) {
   const TemplateURL* t_url = test_util()->model()->GetTemplateURLForKeyword(
       keyword);
   ASSERT_TRUE(t_url);
-  EXPECT_EQ(ASCIIToUTF16("http://example.com/%s/other_stuff"),
-            t_url->url_ref().DisplayURL(
-                test_util()->model()->search_terms_data()));
-  EXPECT_EQ(ASCIIToUTF16("Simple Search"), t_url->short_name());
+  EXPECT_EQ(
+      u"http://example.com/%s/other_stuff",
+      t_url->url_ref().DisplayURL(test_util()->model()->search_terms_data()));
+  EXPECT_EQ(u"Simple Search", t_url->short_name());
   EXPECT_TRUE(t_url->safe_for_autoreplace());
 }
 
@@ -195,7 +195,7 @@ TEST_F(TemplateURLFetcherTest, BasicAutodetectedTest) {
 // provided doesn't include a short name for the search engine.  We should
 // fall back to the hostname.
 TEST_F(TemplateURLFetcherTest, InvalidShortName) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
 
   test_util()->ChangeModelToLoadState();
   ASSERT_FALSE(test_util()->model()->GetTemplateURLForKeyword(keyword));
@@ -207,11 +207,11 @@ TEST_F(TemplateURLFetcherTest, InvalidShortName) {
   const TemplateURL* t_url =
       test_util()->model()->GetTemplateURLForKeyword(keyword);
   ASSERT_TRUE(t_url);
-  EXPECT_EQ(ASCIIToUTF16("example.com"), t_url->short_name());
+  EXPECT_EQ(u"example.com", t_url->short_name());
 }
 
 TEST_F(TemplateURLFetcherTest, DuplicatesThrownAway) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
 
   test_util()->ChangeModelToLoadState();
   ASSERT_FALSE(test_util()->model()->GetTemplateURLForKeyword(keyword));
@@ -226,7 +226,7 @@ TEST_F(TemplateURLFetcherTest, DuplicatesThrownAway) {
     std::u16string keyword;
   } test_cases[] = {
       {"Duplicate osdd url with autodetected provider.", osdd_file_name,
-       keyword + ASCIIToUTF16("1")},
+       keyword + u"1"},
       {"Duplicate keyword with autodetected provider.", osdd_file_name + "1",
        keyword},
   };
@@ -242,7 +242,7 @@ TEST_F(TemplateURLFetcherTest, DuplicatesThrownAway) {
 }
 
 TEST_F(TemplateURLFetcherTest, AutodetectedBeforeLoadTest) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
   EXPECT_FALSE(test_util()->model()->GetTemplateURLForKeyword(keyword));
 
   // This should bail because the model isn't loaded yet.
@@ -253,7 +253,7 @@ TEST_F(TemplateURLFetcherTest, AutodetectedBeforeLoadTest) {
 }
 
 TEST_F(TemplateURLFetcherTest, DuplicateKeywordsTest) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
   TemplateURLData data;
   data.SetShortName(keyword);
   data.SetKeyword(keyword);
@@ -273,7 +273,7 @@ TEST_F(TemplateURLFetcherTest, DuplicateKeywordsTest) {
 TEST_F(TemplateURLFetcherTest, DuplicateDownloadTest) {
   test_util()->ChangeModelToLoadState();
 
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
   std::string osdd_file_name("simple_open_search.xml");
   StartDownload(keyword, osdd_file_name, true);
   EXPECT_EQ(1, template_url_fetcher()->requests_count());
@@ -289,7 +289,7 @@ TEST_F(TemplateURLFetcherTest, DuplicateDownloadTest) {
 }
 
 TEST_F(TemplateURLFetcherTest, UnicodeTest) {
-  std::u16string keyword(ASCIIToUTF16("test"));
+  std::u16string keyword(u"test");
 
   test_util()->ChangeModelToLoadState();
   ASSERT_FALSE(test_util()->model()->GetTemplateURLForKeyword(keyword));

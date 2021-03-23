@@ -69,7 +69,7 @@ void PasswordManagerSigninInterceptTestHelper::StoreGaiaCredentials(
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = GaiaUrls::GetInstance()->gaia_url().spec();
   signin_form.username_value = base::ASCIIToUTF16(kGaiaUsername);
-  signin_form.password_value = base::ASCIIToUTF16("pw");
+  signin_form.password_value = u"pw";
   password_store->AddLogin(signin_form);
 }
 

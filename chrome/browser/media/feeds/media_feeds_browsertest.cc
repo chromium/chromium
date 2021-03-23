@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 3;
-    expected_item->name = base::ASCIIToUTF16("Chrome Releases");
+    expected_item->name = u"Chrome Releases";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2019-11-10", &expected_item->date_published));
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 4;
-    expected_item->name = base::ASCIIToUTF16("Chrome University");
+    expected_item->name = u"Chrome University";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2020-01-01", &expected_item->date_published));
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 5;
-    expected_item->name = base::ASCIIToUTF16("JAM stack");
+    expected_item->name = u"JAM stack";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2020-01-22", &expected_item->date_published));
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 6;
-    expected_item->name = base::ASCIIToUTF16("Ask Chrome");
+    expected_item->name = u"Ask Chrome";
     expected_item->type = mojom::MediaFeedItemType::kVideo;
     expected_item->author = mojom::Author::New();
     expected_item->author->name = "Google Chrome Developers";
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 7;
-    expected_item->name = base::ASCIIToUTF16("Big Buck Bunny");
+    expected_item->name = u"Big Buck Bunny";
     expected_item->type = mojom::MediaFeedItemType::kMovie;
     ASSERT_TRUE(
         base::Time::FromString("2008-01-01", &expected_item->date_published));
@@ -732,8 +732,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 1;
-    expected_item->name =
-        base::ASCIIToUTF16("Anatomy of a Web Media Experience");
+    expected_item->name = u"Anatomy of a Web Media Experience";
     expected_item->type = mojom::MediaFeedItemType::kVideo;
     expected_item->author = mojom::Author::New();
     expected_item->author->name = "Google Chrome Developers";
@@ -766,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 2;
-    expected_item->name = base::ASCIIToUTF16("Chrome Releases");
+    expected_item->name = u"Chrome Releases";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2019-11-10", &expected_item->date_published));
@@ -808,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 3;
-    expected_item->name = base::ASCIIToUTF16("Big Buck Bunny");
+    expected_item->name = u"Big Buck Bunny";
     expected_item->type = mojom::MediaFeedItemType::kMovie;
     ASSERT_TRUE(
         base::Time::FromString("2008-01-01", &expected_item->date_published));

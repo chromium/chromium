@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Ensure that the userChoice promise resolves.
-  const std::u16string title = base::ASCIIToUTF16("Got userChoice: accepted");
+  const std::u16string title = u"Got userChoice: accepted";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 
@@ -146,8 +146,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Ensure that the appinstalled event fires.
-  const std::u16string title =
-      base::ASCIIToUTF16("Got appinstalled: listener, attr");
+  const std::u16string title = u"Got appinstalled: listener, attr";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
@@ -391,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Ensure that the userChoice promise resolves.
-  const std::u16string title = base::ASCIIToUTF16("Got userChoice: accepted");
+  const std::u16string title = u"Got userChoice: accepted";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 

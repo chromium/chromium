@@ -79,8 +79,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("random");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random";
   password_store->AddLogin(signin_form);
 
   // Load the page to have the saved credentials autofilled.
@@ -187,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("random");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random";
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/password_form.html");
@@ -334,8 +334,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/cleared_change_password_forms.html");
@@ -378,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   for (bool all_fields_cleared : {false, true}) {
@@ -437,8 +437,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   for (bool relevant_fields_cleared : {false, true}) {

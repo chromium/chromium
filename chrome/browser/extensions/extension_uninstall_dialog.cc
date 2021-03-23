@@ -267,7 +267,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
     case CLOSE_ACTION_CANCELED:
       base::RecordAction(
           base::UserMetricsAction("Extensions.UninstallDialogCancelClick"));
-      error = base::ASCIIToUTF16("User canceled uninstall dialog");
+      error = u"User canceled uninstall dialog";
       break;
     case CLOSE_ACTION_LAST:
       NOTREACHED();

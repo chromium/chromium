@@ -71,7 +71,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
     ui_test_utils::GetCurrentTabTitle(browser, &title);
     return tab->GetController().GetLastCommittedEntry()->GetPageType() ==
                content::PAGE_TYPE_ERROR &&
-           title == base::ASCIIToUTF16("Site blocked");
+           title == u"Site blocked";
   }
 
   void SendAccessRequest(WebContents* tab) {
@@ -84,8 +84,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
 
   void GoBack(WebContents* tab) {
     tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("supervisedUserErrorPageController.goBack()"),
-        base::NullCallback());
+        u"supervisedUserErrorPageController.goBack()", base::NullCallback());
     return;
   }
 

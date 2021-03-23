@@ -127,7 +127,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     result.signon_realm = origin;
     result.url = GURL(origin);
     result.username_value = base::ASCIIToUTF16(username);
-    result.password_value = base::ASCIIToUTF16("hunter2");
+    result.password_value = u"hunter2";
     result.blocked_by_user = blocked_by_user;
     result.date_created = time_;
     result.times_used = times_used_;

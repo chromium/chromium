@@ -34,9 +34,8 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
 
-    const bookmarks::BookmarkNode* node =
-        model_->AddURL(model_->other_node(), 0, base::ASCIIToUTF16("Goog"),
-                       GURL("https://www.google.com"));
+    const bookmarks::BookmarkNode* node = model_->AddURL(
+        model_->other_node(), 0, u"Goog", GURL("https://www.google.com"));
     // Store node->id() as we will delete |node| in RunOnDeletedNode().
     node_id_ = base::NumberToString(node->id());
   }

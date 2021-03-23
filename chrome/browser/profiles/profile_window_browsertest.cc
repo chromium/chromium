@@ -280,8 +280,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->profile();
 
-  std::u16string fip_text =
-      base::ASCIIToUTF16("first guest session search text");
+  std::u16string fip_text = u"first guest session search text";
   FindBarStateFactory::GetForBrowserContext(guest_profile)
       ->SetLastSearchText(fip_text);
 

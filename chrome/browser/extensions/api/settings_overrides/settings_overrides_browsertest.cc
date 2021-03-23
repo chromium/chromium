@@ -42,8 +42,8 @@ const int kTestExtensionPrepopulatedId = 3;
 // chrome/test/data/extensions/settings_override/manifest.json
 std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(PrefService* prefs) {
   auto result = std::make_unique<TemplateURLData>();
-  result->SetShortName(base::ASCIIToUTF16("name.de"));
-  result->SetKeyword(base::ASCIIToUTF16("keyword.de"));
+  result->SetShortName(u"name.de");
+  result->SetKeyword(u"keyword.de");
   result->SetURL("http://www.foo.de/s?q={searchTerms}&id=10");
   result->favicon_url = GURL("http://www.foo.de/favicon.ico?id=10");
   result->suggestions_url = "http://www.foo.de/suggest?q={searchTerms}&id=10";
@@ -152,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PRE_OverridenDSEPersists) {
   // Check that default provider is normal before extension is
   // installed and loaded.
   EXPECT_EQ(TemplateURL::NORMAL, default_provider->type());
-  EXPECT_NE(base::ASCIIToUTF16("name.de"), default_provider->short_name());
-  EXPECT_NE(base::ASCIIToUTF16("keyword.de"), default_provider->keyword());
+  EXPECT_NE(u"name.de", default_provider->short_name());
+  EXPECT_NE(u"keyword.de", default_provider->keyword());
 
   // Install extension that overrides DSE.
   const extensions::Extension* extension = LoadExtension(

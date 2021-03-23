@@ -31,11 +31,9 @@ class SubresourceFilterWorkerFetchBrowserTest
  protected:
   void RunTest(const std::string& document_path,
                const std::string& filter_path) {
-    const std::u16string fetch_succeeded_title =
-        base::ASCIIToUTF16("FetchSucceeded");
-    const std::u16string fetch_failed_title = base::ASCIIToUTF16("FetchFailed");
-    const std::u16string fetch_partially_failed_title =
-        base::ASCIIToUTF16("FetchPartiallyFailed");
+    const std::u16string fetch_succeeded_title = u"FetchSucceeded";
+    const std::u16string fetch_failed_title = u"FetchFailed";
+    const std::u16string fetch_partially_failed_title = u"FetchPartiallyFailed";
 
     GURL url(GetTestUrl(document_path));
     ConfigureAsPhishingURL(url);

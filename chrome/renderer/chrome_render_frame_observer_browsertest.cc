@@ -257,7 +257,7 @@ TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), consumer.text());
+  EXPECT_EQ(u"foo", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
 
@@ -323,7 +323,7 @@ TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest, OptGuideGetsText) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), consumer.text());
+  EXPECT_EQ(u"foo", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
 

@@ -131,8 +131,8 @@ class DemoSessionTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        "test-profile", std::move(prefs), base::ASCIIToUTF16("Test profile"),
-        1 /* avatar_id */, std::string() /* supervised_user_id */,
+        "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
+        std::string() /* supervised_user_id */,
         TestingProfile::TestingFactories());
     chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                       profile);

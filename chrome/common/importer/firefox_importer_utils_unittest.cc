@@ -156,12 +156,12 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   no_default.SetString("Profile1.IsRelative", "0");
   std::vector<FirefoxDetail> no_default_details =
       GetFirefoxDetailsFromDictionary(no_default, std::string());
-  EXPECT_THAT(no_default_details,
-              UnorderedElementsAre(
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                ASCIIToUTF16("namey")},
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
-                                ASCIIToUTF16("namey name")}));
+  EXPECT_THAT(
+      no_default_details,
+      UnorderedElementsAre(
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")), u"namey"},
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
+                        u"namey name"}));
 
   base::DictionaryValue default_first;
   default_first.SetString("Profile0.Path", "first");
@@ -173,12 +173,12 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   default_first.SetString("Profile1.IsRelative", "0");
   std::vector<FirefoxDetail> default_first_details =
       GetFirefoxDetailsFromDictionary(default_first, std::string());
-  EXPECT_THAT(default_first_details,
-              UnorderedElementsAre(
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                ASCIIToUTF16("namey")},
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
-                                ASCIIToUTF16("namey name")}));
+  EXPECT_THAT(
+      default_first_details,
+      UnorderedElementsAre(
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")), u"namey"},
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
+                        u"namey name"}));
 
   base::DictionaryValue default_second;
   default_second.SetString("Profile0.Path", "first");
@@ -190,12 +190,12 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   default_second.SetString("Profile1.Default", "1");
   std::vector<FirefoxDetail> default_second_details =
       GetFirefoxDetailsFromDictionary(default_second, std::string());
-  EXPECT_THAT(default_second_details,
-              UnorderedElementsAre(
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                ASCIIToUTF16("namey")},
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
-                                ASCIIToUTF16("namey name")}));
+  EXPECT_THAT(
+      default_second_details,
+      UnorderedElementsAre(
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")), u"namey"},
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
+                        u"namey name"}));
 
   // Firefox format from version 67
   base::DictionaryValue default_single_install;
@@ -256,11 +256,11 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   std::vector<FirefoxDetail> one_of_profiles_is_not_ascii_named_details =
       GetFirefoxDetailsFromDictionary(one_of_profiles_is_not_ascii_named,
                                       std::string());
-  EXPECT_THAT(one_of_profiles_is_not_ascii_named_details,
-              UnorderedElementsAre(
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                ASCIIToUTF16("namey")},
-                  FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second."
-                                                                 "профиль")),
-                                u"профиль"}));
+  EXPECT_THAT(
+      one_of_profiles_is_not_ascii_named_details,
+      UnorderedElementsAre(
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")), u"namey"},
+          FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second."
+                                                         "профиль")),
+                        u"профиль"}));
 }

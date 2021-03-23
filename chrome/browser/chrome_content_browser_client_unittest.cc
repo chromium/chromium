@@ -376,7 +376,7 @@ class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
 
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("foo.com"));
+    data.SetShortName(u"foo.com");
     data.SetURL("http://foo.com/url?bar={searchTerms}");
     data.new_tab_url = new_tab_page_url.spec();
     TemplateURL* template_url =

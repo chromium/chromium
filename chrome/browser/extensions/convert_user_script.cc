@@ -42,18 +42,18 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   std::string content;
   if (!base::ReadFileToString(user_script_path, &content)) {
-    *error = base::ASCIIToUTF16("Could not read source file.");
+    *error = u"Could not read source file.";
     return nullptr;
   }
 
   if (!base::IsStringUTF8(content)) {
-    *error = base::ASCIIToUTF16("User script must be UTF8 encoded.");
+    *error = u"User script must be UTF8 encoded.";
     return nullptr;
   }
 
   UserScript script;
   if (!UserScriptLoader::ParseMetadataHeader(content, &script)) {
-    *error = base::ASCIIToUTF16("Invalid script header.");
+    *error = u"Invalid script header.";
     return nullptr;
   }
 
@@ -67,7 +67,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDirUnderPath(install_temp_dir)) {
-    *error = base::ASCIIToUTF16("Could not create temporary directory.");
+    *error = u"Could not create temporary directory.";
     return nullptr;
   }
 
@@ -156,14 +156,14 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   base::FilePath manifest_path = temp_dir.GetPath().Append(kManifestFilename);
   JSONFileValueSerializer serializer(manifest_path);
   if (!serializer.Serialize(*root)) {
-    *error = base::ASCIIToUTF16("Could not write JSON.");
+    *error = u"Could not write JSON.";
     return nullptr;
   }
 
   // Write the script file.
   if (!base::CopyFile(user_script_path,
                       temp_dir.GetPath().AppendASCII("script.js"))) {
-    *error = base::ASCIIToUTF16("Could not copy script file.");
+    *error = u"Could not copy script file.";
     return nullptr;
   }
 

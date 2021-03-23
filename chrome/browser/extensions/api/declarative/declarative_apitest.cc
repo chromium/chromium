@@ -157,7 +157,7 @@ class DeclarativeApiTestWithOriginPolicy : public DeclarativeApiTest {
 IN_PROC_BROWSER_TEST_F(DeclarativeApiTestWithOriginPolicy,
                        OriginPolicyEnabled) {
   // Navigate to a page with an origin policy. It should load correctly.
-  EXPECT_EQ(base::ASCIIToUTF16("Page With Policy"),
+  EXPECT_EQ(u"Page With Policy",
             NavigateToAndReturnTitle("/page-with-policy.html"));
 
   // Load an extension that has the |declarativeWebRequest| permission.
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTestWithOriginPolicy,
 
   // Future navigations to the page with the origin policy should still work,
   // and not throw an interstitial.
-  EXPECT_EQ(base::ASCIIToUTF16("Page With Policy"),
+  EXPECT_EQ(u"Page With Policy",
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 

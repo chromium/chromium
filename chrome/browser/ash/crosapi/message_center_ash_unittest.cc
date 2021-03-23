@@ -39,8 +39,8 @@ namespace {
 std::unique_ptr<message_center::Notification> CreateNotificationWithId(
     const std::string& id) {
   return std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, ASCIIToUTF16("title"),
-      ASCIIToUTF16("message"), /*icon=*/gfx::Image(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
+      /*icon=*/gfx::Image(),
       /*display_source=*/std::u16string(), GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
@@ -105,16 +105,16 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   auto mojo_notification = mojom::Notification::New();
   mojo_notification->type = mojom::NotificationType::kSimple;
   mojo_notification->id = "test_id";
-  mojo_notification->title = ASCIIToUTF16("title");
-  mojo_notification->message = ASCIIToUTF16("message");
-  mojo_notification->display_source = ASCIIToUTF16("source");
+  mojo_notification->title = u"title";
+  mojo_notification->message = u"message";
+  mojo_notification->display_source = u"source";
   mojo_notification->origin_url = GURL("http://example.com/");
   mojo_notification->priority = 2;
   mojo_notification->require_interaction = true;
   base::Time now = base::Time::Now();
   mojo_notification->timestamp = now;
   mojo_notification->renotify = true;
-  mojo_notification->accessible_name = ASCIIToUTF16("accessible_name");
+  mojo_notification->accessible_name = u"accessible_name";
   mojo_notification->fullscreen_visibility =
       mojom::FullscreenVisibility::kOverUser;
 
@@ -124,10 +124,10 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   mojo_notification->icon = gfx::ImageSkia::CreateFrom1xBitmap(test_icon);
 
   auto button1 = mojom::ButtonInfo::New();
-  button1->title = ASCIIToUTF16("button1");
+  button1->title = u"button1";
   mojo_notification->buttons.push_back(std::move(button1));
   auto button2 = mojom::ButtonInfo::New();
-  button2->title = ASCIIToUTF16("button2");
+  button2->title = u"button2";
   mojo_notification->buttons.push_back(std::move(button2));
 
   // Display the notification.
@@ -143,16 +143,15 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
       message_center->FindVisibleNotificationById("test_id");
   ASSERT_TRUE(ui_notification);
   EXPECT_EQ("test_id", ui_notification->id());
-  EXPECT_EQ(ASCIIToUTF16("title"), ui_notification->title());
-  EXPECT_EQ(ASCIIToUTF16("message"), ui_notification->message());
-  EXPECT_EQ(ASCIIToUTF16("source"), ui_notification->display_source());
+  EXPECT_EQ(u"title", ui_notification->title());
+  EXPECT_EQ(u"message", ui_notification->message());
+  EXPECT_EQ(u"source", ui_notification->display_source());
   EXPECT_EQ("http://example.com/", ui_notification->origin_url().spec());
   EXPECT_EQ(2, ui_notification->priority());
   EXPECT_TRUE(ui_notification->never_timeout());
   EXPECT_EQ(now, ui_notification->timestamp());
   EXPECT_TRUE(ui_notification->renotify());
-  EXPECT_EQ(ASCIIToUTF16("accessible_name"),
-            ui_notification->accessible_name());
+  EXPECT_EQ(u"accessible_name", ui_notification->accessible_name());
   EXPECT_EQ(message_center::FullscreenVisibility::OVER_USER,
             ui_notification->fullscreen_visibility());
 
@@ -161,8 +160,8 @@ TEST_F(MessageCenterAshTest, SerializationSimple) {
   EXPECT_TRUE(AreBitmapsEqual(test_icon, ui_notification->icon().AsBitmap()));
 
   ASSERT_EQ(2u, ui_notification->buttons().size());
-  EXPECT_EQ(ASCIIToUTF16("button1"), ui_notification->buttons()[0].title);
-  EXPECT_EQ(ASCIIToUTF16("button2"), ui_notification->buttons()[1].title);
+  EXPECT_EQ(u"button1", ui_notification->buttons()[0].title);
+  EXPECT_EQ(u"button2", ui_notification->buttons()[1].title);
 }
 
 TEST_F(MessageCenterAshTest, SerializationImage) {
@@ -224,12 +223,12 @@ TEST_F(MessageCenterAshTest, SerializationList) {
   mojo_notification->id = "test_id";
 
   auto item1 = mojom::NotificationItem::New();
-  item1->title = ASCIIToUTF16("title1");
-  item1->message = ASCIIToUTF16("message1");
+  item1->title = u"title1";
+  item1->message = u"message1";
   mojo_notification->items.push_back(std::move(item1));
   auto item2 = mojom::NotificationItem::New();
-  item2->title = ASCIIToUTF16("title2");
-  item2->message = ASCIIToUTF16("message2");
+  item2->title = u"title2";
+  item2->message = u"message2";
   mojo_notification->items.push_back(std::move(item2));
 
   // Display the notification.
@@ -245,10 +244,10 @@ TEST_F(MessageCenterAshTest, SerializationList) {
       message_center->FindVisibleNotificationById("test_id");
   ASSERT_TRUE(ui_notification);
   ASSERT_EQ(2u, ui_notification->items().size());
-  EXPECT_EQ(ASCIIToUTF16("title1"), ui_notification->items()[0].title);
-  EXPECT_EQ(ASCIIToUTF16("message1"), ui_notification->items()[0].message);
-  EXPECT_EQ(ASCIIToUTF16("title2"), ui_notification->items()[1].title);
-  EXPECT_EQ(ASCIIToUTF16("message2"), ui_notification->items()[1].message);
+  EXPECT_EQ(u"title1", ui_notification->items()[0].title);
+  EXPECT_EQ(u"message1", ui_notification->items()[0].message);
+  EXPECT_EQ(u"title2", ui_notification->items()[1].title);
+  EXPECT_EQ(u"message2", ui_notification->items()[1].message);
 }
 
 TEST_F(MessageCenterAshTest, SerializationProgress) {
@@ -257,7 +256,7 @@ TEST_F(MessageCenterAshTest, SerializationProgress) {
   mojo_notification->type = mojom::NotificationType::kProgress;
   mojo_notification->id = "test_id";
   mojo_notification->progress = 55;
-  mojo_notification->progress_status = ASCIIToUTF16("status");
+  mojo_notification->progress_status = u"status";
 
   // Display the notification.
   MojoDelegate mojo_delegate1;
@@ -272,14 +271,14 @@ TEST_F(MessageCenterAshTest, SerializationProgress) {
       message_center->FindVisibleNotificationById("test_id");
   ASSERT_TRUE(ui_notification);
   EXPECT_EQ(55, ui_notification->progress());
-  EXPECT_EQ(ASCIIToUTF16("status"), ui_notification->progress_status());
+  EXPECT_EQ(u"status", ui_notification->progress_status());
 
   // Update progress past 100% by creating a new notification with the same ID.
   mojo_notification = mojom::Notification::New();
   mojo_notification->type = mojom::NotificationType::kProgress;
   mojo_notification->id = "test_id";
   mojo_notification->progress = 101;
-  mojo_notification->progress_status = ASCIIToUTF16("complete");
+  mojo_notification->progress_status = u"complete";
 
   MojoDelegate mojo_delegate2;
   message_center_remote_->DisplayNotification(
@@ -292,7 +291,7 @@ TEST_F(MessageCenterAshTest, SerializationProgress) {
   // Progress was clamped to 100.
   EXPECT_EQ(100, ui_notification->progress());
   // Status was updated.
-  EXPECT_EQ(ASCIIToUTF16("complete"), ui_notification->progress_status());
+  EXPECT_EQ(u"complete", ui_notification->progress_status());
 }
 
 TEST_F(MessageCenterAshTest, UserActions) {

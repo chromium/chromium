@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(false /* is_persistent */);
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_EQ(base::ASCIIToUTF16("Title1"), notifications[0].title());
+  EXPECT_EQ(u"Title1", notifications[0].title());
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      0 /* action_index */, base::ASCIIToUTF16("hello"));
+      0 /* action_index */, u"hello");
 
   ASSERT_TRUE(RunScript("GetMessageFromWorker()", &script_result));
   EXPECT_EQ("action_button_click actionId1 hello", script_result);

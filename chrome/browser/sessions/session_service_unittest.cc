@@ -1206,9 +1206,9 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
       tab_groups::TabGroupId::GenerateNew(),
       tab_groups::TabGroupId::GenerateNew()};
   const std::array<tab_groups::TabGroupVisualData, kNumGroups> visual_data = {
-      tab_groups::TabGroupVisualData(base::ASCIIToUTF16("Foo"),
+      tab_groups::TabGroupVisualData(u"Foo",
                                      tab_groups::TabGroupColorId::kBlue),
-      tab_groups::TabGroupVisualData(base::ASCIIToUTF16("Bar"),
+      tab_groups::TabGroupVisualData(u"Bar",
                                      tab_groups::TabGroupColorId::kGreen)};
 
   // Create |kNumGroups| tab groups, each with one tab.

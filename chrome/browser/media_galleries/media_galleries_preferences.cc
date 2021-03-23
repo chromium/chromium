@@ -355,9 +355,7 @@ std::u16string GetDisplayNameForSubFolder(const std::u16string& device_name,
                                           const base::FilePath& sub_folder) {
   if (sub_folder.empty())
     return device_name;
-  return (sub_folder.BaseName().LossyDisplayName() +
-          base::ASCIIToUTF16(" - ") +
-          device_name);
+  return (sub_folder.BaseName().LossyDisplayName() + u" - " + device_name);
 }
 
 }  // namespace

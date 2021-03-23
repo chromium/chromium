@@ -262,7 +262,7 @@ class ExtensionPolicyTest : public PolicyTest {
 
   const extensions::Extension* InstallBookmarkApp() {
     WebApplicationInfo web_app;
-    web_app.title = base::ASCIIToUTF16("Bookmark App");
+    web_app.title = u"Bookmark App";
     web_app.start_url = GURL("http://www.google.com");
 
     scoped_refptr<extensions::CrxInstaller> installer =
@@ -280,7 +280,7 @@ class ExtensionPolicyTest : public PolicyTest {
   const web_app::AppId InstallWebApp() {
     std::unique_ptr<WebApplicationInfo> web_application =
         std::make_unique<WebApplicationInfo>();
-    web_application->title = base::ASCIIToUTF16("Web App");
+    web_application->title = u"Web App";
     web_application->start_url = GURL("http://www.google.com");
     base::RunLoop loop;
     web_app::AppId return_app_id;
@@ -302,7 +302,7 @@ class ExtensionPolicyTest : public PolicyTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const extensions::Extension* InstallOSSettings() {
     WebApplicationInfo web_app;
-    web_app.title = base::ASCIIToUTF16("Settings");
+    web_app.title = u"Settings";
     web_app.start_url = GURL("chrome://os-settings/");
 
     scoped_refptr<extensions::CrxInstaller> installer =

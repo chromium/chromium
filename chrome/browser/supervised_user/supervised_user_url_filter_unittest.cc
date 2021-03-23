@@ -537,8 +537,8 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsPatterns) {
 
   const std::string id1 = "ID1";
   const std::string id2 = "ID2";
-  const std::u16string title1 = base::ASCIIToUTF16("Title 1");
-  const std::u16string title2 = base::ASCIIToUTF16("Title 2");
+  const std::u16string title1 = u"Title 1";
+  const std::u16string title2 = u"Title 2";
   const std::vector<std::string> hostname_hashes;
   const GURL entry_point("https://entry.com");
 
@@ -594,9 +594,9 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsHostnameHashes) {
   const std::string id1 = "ID1";
   const std::string id2 = "ID2";
   const std::string id3 = "ID3";
-  const std::u16string title1 = base::ASCIIToUTF16("Title 1");
-  const std::u16string title2 = base::ASCIIToUTF16("Title 2");
-  const std::u16string title3 = base::ASCIIToUTF16("Title 3");
+  const std::u16string title1 = u"Title 1";
+  const std::u16string title2 = u"Title 2";
+  const std::u16string title3 = u"Title 3";
   const GURL entry_point("https://entry.com");
 
   scoped_refptr<SupervisedUserSiteList> site_list1 = base::WrapRefCounted(

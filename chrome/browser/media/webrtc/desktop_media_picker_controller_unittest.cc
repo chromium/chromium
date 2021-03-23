@@ -117,7 +117,7 @@ TEST_F(DesktopMediaPickerControllerTest, ShowSingleScreen) {
 
   DesktopMediaList::Source source;
   source.id = media_id_;
-  source.name = base::ASCIIToUTF16("fake name");
+  source.name = u"fake name";
 
   EXPECT_CALL(factory_, CreatePicker(nullptr)).Times(0);
   EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr));

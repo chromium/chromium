@@ -1473,8 +1473,7 @@ TEST_F(ExtensionServiceTest, InstallUserScript) {
   EXPECT_FALSE(was_update_) << path.value();
   ASSERT_EQ(1u, loaded_.size()) << "Nothing was loaded.";
   EXPECT_EQ(0u, errors.size())
-      << "There were errors: "
-      << base::JoinString(errors, base::ASCIIToUTF16(","));
+      << "There were errors: " << base::JoinString(errors, u",");
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(loaded_[0]->id()))
       << path.value();
 

@@ -100,8 +100,7 @@ TEST_F(EolNotificationTest, TestFirstWarningNotification) {
   auto notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
 
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Updates end December 2019");
+  std::u16string expected_title = u"Updates end December 2019";
   std::u16string expected_message = base::ASCIIToUTF16(
       "You'll still be able to use this Chrome device after that time, but it "
       "will no longer get automatic software and security updates");
@@ -124,8 +123,7 @@ TEST_F(EolNotificationTest, TestSecondWarningNotification) {
   auto notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
 
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Updates end December 2019");
+  std::u16string expected_title = u"Updates end December 2019";
   std::u16string expected_message = base::ASCIIToUTF16(
       "You'll still be able to use this Chrome device after that time, but it "
       "will no longer get automatic software and security updates");
@@ -153,7 +151,7 @@ TEST_F(EolNotificationTest, TestFinalEolNotification) {
   auto notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
 
-  std::u16string expected_title = base::ASCIIToUTF16("Final software update");
+  std::u16string expected_title = u"Final software update";
   std::u16string expected_message = base::ASCIIToUTF16(
       "This is the last automatic software and security update for this Chrome "
       "device. To get future updates, upgrade to a newer model.");
@@ -255,8 +253,7 @@ TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   auto notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
 
-  std::u16string expected_title =
-      base::ASCIIToUTF16("Updates end December 2019");
+  std::u16string expected_title = u"Updates end December 2019";
   std::u16string expected_message = base::ASCIIToUTF16(
       "You'll still be able to use this Chrome device after that time, but it "
       "will no longer get automatic software and security updates");
@@ -268,7 +265,7 @@ TEST_F(EolNotificationTest, TestNotificationUpdatesProperlyWithoutDismissal) {
   CheckEolInfo();
   notification = tester_->GetNotification("chrome://product_eol");
   ASSERT_TRUE(notification);
-  expected_title = base::ASCIIToUTF16("Final software update");
+  expected_title = u"Final software update";
   expected_message = base::ASCIIToUTF16(
       "This is the last automatic software and security update for this Chrome "
       "device. To get future updates, upgrade to a newer model.");

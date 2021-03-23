@@ -411,8 +411,8 @@ TEST_F(ProfileResetterTest, ResetDefaultSearchEngineNonOrganic) {
       TemplateURLServiceFactory::GetForProfile(profile());
   const TemplateURL* default_engine = model->GetDefaultSearchProvider();
   ASSERT_NE(static_cast<TemplateURL*>(NULL), default_engine);
-  EXPECT_EQ(base::ASCIIToUTF16("first"), default_engine->short_name());
-  EXPECT_EQ(base::ASCIIToUTF16("firstkey"), default_engine->keyword());
+  EXPECT_EQ(u"first", default_engine->short_name());
+  EXPECT_EQ(u"firstkey", default_engine->keyword());
   EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", default_engine->url());
 }
 
@@ -534,42 +534,37 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
   test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> theme = CreateExtension(
-      base::ASCIIToUTF16("example1"), temp_dir.GetPath(),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_THEME, false);
+      u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
+      extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(theme.get());
   waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 
   scoped_refptr<Extension> ext2 = CreateExtension(
-      base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
   // Component extensions and policy-managed extensions shouldn't be disabled.
-  scoped_refptr<Extension> ext3 =
-      CreateExtension(base::ASCIIToUTF16("example3"),
-                      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
-                      ManifestLocation::kComponent,
-                      extensions::Manifest::TYPE_EXTENSION, false);
+  scoped_refptr<Extension> ext3 = CreateExtension(
+      u"example3", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+      ManifestLocation::kComponent, extensions::Manifest::TYPE_EXTENSION,
+      false);
   service_->AddExtension(ext3.get());
-  scoped_refptr<Extension> ext4 =
-      CreateExtension(base::ASCIIToUTF16("example4"),
-                      base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
-                      ManifestLocation::kExternalPolicyDownload,
-                      extensions::Manifest::TYPE_EXTENSION, false);
+  scoped_refptr<Extension> ext4 = CreateExtension(
+      u"example4", base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
+      ManifestLocation::kExternalPolicyDownload,
+      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext4.get());
-  scoped_refptr<Extension> ext5 =
-      CreateExtension(base::ASCIIToUTF16("example5"),
-                      base::FilePath(FILE_PATH_LITERAL("//nonexistent4")),
-                      ManifestLocation::kExternalComponent,
-                      extensions::Manifest::TYPE_EXTENSION, false);
+  scoped_refptr<Extension> ext5 = CreateExtension(
+      u"example5", base::FilePath(FILE_PATH_LITERAL("//nonexistent4")),
+      ManifestLocation::kExternalComponent,
+      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext5.get());
-  scoped_refptr<Extension> ext6 =
-      CreateExtension(base::ASCIIToUTF16("example6"),
-                      base::FilePath(FILE_PATH_LITERAL("//nonexistent5")),
-                      ManifestLocation::kExternalPolicy,
-                      extensions::Manifest::TYPE_EXTENSION, false);
+  scoped_refptr<Extension> ext6 = CreateExtension(
+      u"example6", base::FilePath(FILE_PATH_LITERAL("//nonexistent5")),
+      ManifestLocation::kExternalPolicy, extensions::Manifest::TYPE_EXTENSION,
+      false);
   service_->AddExtension(ext6.get());
   EXPECT_EQ(6u, registry()->enabled_extensions().size());
 
@@ -586,14 +581,12 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 
 TEST_F(ProfileResetterTest, ResetExtensionsByDisablingNonOrganic) {
   scoped_refptr<Extension> ext2 = CreateExtension(
-      base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
   // Components and external policy extensions shouldn't be deleted.
   scoped_refptr<Extension> ext3 = CreateExtension(
-      base::ASCIIToUTF16("example3"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+      u"example3", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext3.get());
   EXPECT_EQ(2u, registry()->enabled_extensions().size());
@@ -617,22 +610,20 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
   test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> ext1 = CreateExtension(
-      base::ASCIIToUTF16("example1"), temp_dir.GetPath(),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_THEME, false);
+      u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
+      extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(ext1.get());
   waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 
   scoped_refptr<Extension> ext2 = CreateExtension(
-      base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+      u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
 
   scoped_refptr<Extension> ext3 = CreateExtension(
-      base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
+      u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_HOSTED_APP, true);
   service_->AddExtension(ext3.get());
   EXPECT_EQ(3u, registry()->enabled_extensions().size());
@@ -652,11 +643,10 @@ TEST_F(ProfileResetterTest, ResetExtensionsByReenablingExternalComponents) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  scoped_refptr<Extension> ext =
-      CreateExtension(base::ASCIIToUTF16("example"),
-                      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-                      ManifestLocation::kExternalComponent,
-                      extensions::Manifest::TYPE_EXTENSION, false);
+  scoped_refptr<Extension> ext = CreateExtension(
+      u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kExternalComponent,
+      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext.get());
 
   service_->DisableExtension(ext->id(),
@@ -820,8 +810,7 @@ TEST_F(ProfileResetterTest, CheckSnapshots) {
   EXPECT_EQ(0, empty_snap.FindDifferentFields(empty_snap));
 
   scoped_refptr<Extension> ext = CreateExtension(
-      base::ASCIIToUTF16("example"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
@@ -905,8 +894,7 @@ TEST_F(ProfileResetterTest, FeedbackSerializationAsProtoTest) {
                kDistributionConfig);
 
   scoped_refptr<Extension> ext = CreateExtension(
-      base::ASCIIToUTF16("example"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
@@ -1016,9 +1004,7 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
     } else if (value == "Shortcut targets") {
       std::u16string targets;
       EXPECT_TRUE(dict->GetString("value", &targets));
-      EXPECT_NE(std::u16string::npos,
-                targets.find(base::ASCIIToUTF16("foo.com")))
-          << targets;
+      EXPECT_NE(std::u16string::npos, targets.find(u"foo.com")) << targets;
       checked_shortcuts = true;
     }
   }

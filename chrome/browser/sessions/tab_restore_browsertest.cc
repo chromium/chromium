@@ -737,10 +737,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
   EnsureTabFinishedRestoring(tab);
 
   // See if content is as expected.
-  EXPECT_GT(
-      ui_test_utils::FindInPage(tab, base::ASCIIToUTF16("webkit"), true, false,
-                                NULL, NULL),
-      0);
+  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
+            0);
 }
 
 // https://crbug.com/667932: Flakiness on linux_chromium_asan_rel_ng bot.
@@ -781,10 +779,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
 
   // Go back, and see if content is as expected.
   GoBack(browser());
-  EXPECT_GT(
-      ui_test_utils::FindInPage(tab, base::ASCIIToUTF16("webkit"), true, false,
-                                NULL, NULL),
-      0);
+  EXPECT_GT(ui_test_utils::FindInPage(tab, u"webkit", true, false, NULL, NULL),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_RestoreOnStartup) {
@@ -962,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo", tab_groups::TabGroupColorId::kCyan);
 
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
@@ -994,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan, true);
+      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
 
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
@@ -1033,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
   const tab_groups::TabGroupVisualData visual_data(
-      base::ASCIIToUTF16("Foo"), tab_groups::TabGroupColorId::kCyan, true);
+      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
   group->SetVisualData(visual_data);
@@ -1068,9 +1064,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
   const tab_groups::TabGroupVisualData visual_data_1(
-      base::ASCIIToUTF16("Foo1"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo1", tab_groups::TabGroupColorId::kCyan);
   const tab_groups::TabGroupVisualData visual_data_2(
-      base::ASCIIToUTF16("Foo2"), tab_groups::TabGroupColorId::kCyan);
+      u"Foo2", tab_groups::TabGroupColorId::kCyan);
   TabGroup* group =
       browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
 
@@ -1126,14 +1122,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
   tab_groups::TabGroupId group1 = browser()->tab_strip_model()->AddToNewGroup(
       {tab_count - 3, tab_count - 2});
-  tab_groups::TabGroupVisualData group1_data(base::ASCIIToUTF16("Foo"),
+  tab_groups::TabGroupVisualData group1_data(u"Foo",
                                              tab_groups::TabGroupColorId::kRed);
   group_model->GetTabGroup(group1)->SetVisualData(group1_data);
 
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({tab_count - 1});
   tab_groups::TabGroupVisualData group2_data(
-      base::ASCIIToUTF16("Bar"), tab_groups::TabGroupColorId::kBlue);
+      u"Bar", tab_groups::TabGroupColorId::kBlue);
   group_model->GetTabGroup(group2)->SetVisualData(group2_data);
 
   CloseBrowserSynchronously(browser());

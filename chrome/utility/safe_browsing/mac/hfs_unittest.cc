@@ -45,12 +45,12 @@ class HFSIteratorTest : public testing::Test {
       ".Trashes",
     };
 
-    const std::u16string dmg_name = base::ASCIIToUTF16("SafeBrowsingDMG/");
+    const std::u16string dmg_name = u"SafeBrowsingDMG/";
 
     for (size_t i = 0; i < base::size(kBaseFiles); ++i)
       files->insert(dmg_name + base::ASCIIToUTF16(kBaseFiles[i]));
 
-    files->insert(dmg_name + base::ASCIIToUTF16("first/second/") +
+    files->insert(dmg_name + u"first/second/" +
                   base::UTF8ToUTF16("Te\xCC\x86st\xCC\x88 \xF0\x9F\x90\x90 "));
 
     dirs->insert(dmg_name.substr(0, dmg_name.size() - 1));
@@ -72,8 +72,7 @@ class HFSIteratorTest : public testing::Test {
     while (hfs_reader->Next()) {
       std::u16string path = hfs_reader->GetPath();
       // Skip over .fseventsd files.
-      if (path.find(base::ASCIIToUTF16("SafeBrowsingDMG/.fseventsd")) !=
-          std::u16string::npos) {
+      if (path.find(u"SafeBrowsingDMG/.fseventsd") != std::u16string::npos) {
         continue;
       }
       if (hfs_reader->IsDirectory())

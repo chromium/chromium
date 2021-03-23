@@ -78,7 +78,7 @@ class SearchTest : public BrowserWithTestWindowTest {
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
     TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16("foo.com"));
+    data.SetShortName(u"foo.com");
     data.SetURL("http://foo.com/url?bar={searchTerms}");
     if (set_ntp_url) {
       data.new_tab_url = (insecure_ntp_url ? "http" : "https") +
@@ -415,7 +415,7 @@ TEST_F(SearchTest, SearchProviderWithPort) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("localhost"));
+  data.SetShortName(u"localhost");
   data.SetURL("https://[::1]:1993/url?bar={searchTerms}");
   data.new_tab_url = "https://[::1]:1993/newtab";
   data.alternate_urls.push_back("https://[::1]:1993/alt#quux={searchTerms}");

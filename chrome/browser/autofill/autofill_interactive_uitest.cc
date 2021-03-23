@@ -1996,14 +1996,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
 // list, and commit to the profile to populate the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ComparePhoneNumbers) {
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 H St."));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1-408-555-4567"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 H St.");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1-408-555-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL("/autofill/form_phones.html");
@@ -2049,15 +2049,15 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
   std::string company_name("Company X");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("bsmith@gmail.com"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16(addr_line1));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
   profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16(company_name));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"408-871-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url =
@@ -2108,15 +2108,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForReadOnlyFields) {
   std::string addr_line1("1234 H St.");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
-  profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("bsmith@gmail.com"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(EMAIL_ADDRESS, u"bsmith@gmail.com");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16(addr_line1));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, ASCIIToUTF16("San Jose"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, ASCIIToUTF16("95110"));
-  profile.SetRawInfo(COMPANY_NAME, ASCIIToUTF16("Company X"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("408-871-4567"));
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"San Jose");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"95110");
+  profile.SetRawInfo(COMPANY_NAME, u"Company X");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"408-871-4567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url =
@@ -2187,10 +2187,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   std::string email("bsmith@gmail.com");
 
   AutofillProfile profile;
-  profile.SetRawInfo(NAME_FIRST, ASCIIToUTF16("Bob"));
-  profile.SetRawInfo(NAME_LAST, ASCIIToUTF16("Smith"));
+  profile.SetRawInfo(NAME_FIRST, u"Bob");
+  profile.SetRawInfo(NAME_LAST, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16(email));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("4088714567"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"4088714567");
   SetTestProfile(browser()->profile(), profile);
 
   GURL url = embedded_test_server()->GetURL(
@@ -2226,7 +2226,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   for (int i = 0; i < kNumProfiles; i++) {
     AutofillProfile profile;
     std::u16string name(base::NumberToString16(i));
-    std::u16string email(name + ASCIIToUTF16("@example.com"));
+    std::u16string email(name + u"@example.com");
     std::u16string street =
         ASCIIToUTF16(base::NumberToString(base::RandInt(0, 10000)) + " " +
                      streets[base::RandInt(0, streets.size() - 1)]);
@@ -2237,9 +2237,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
     profile.SetRawInfo(EMAIL_ADDRESS, email);
     profile.SetRawInfo(ADDRESS_HOME_LINE1, street);
     profile.SetRawInfo(ADDRESS_HOME_CITY, city);
-    profile.SetRawInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"));
+    profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
     profile.SetRawInfo(ADDRESS_HOME_ZIP, zip);
-    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("US"));
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
     profiles.push_back(profile);
   }
   SetTestProfiles(browser()->profile(), &profiles);

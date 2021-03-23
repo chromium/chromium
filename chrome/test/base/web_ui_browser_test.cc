@@ -500,7 +500,7 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
   if (!libraries_preloaded_) {
     BuildJavascriptLibraries(&libraries);
     if (!preload_frame) {
-      content = base::JoinString(libraries, base::ASCIIToUTF16("\n"));
+      content = base::JoinString(libraries, u"\n");
       libraries.clear();
     }
   }

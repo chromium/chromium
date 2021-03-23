@@ -1508,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
                               std::string() /* component_id */));
 
   // Now enter auth data
-  login_handler->SetAuth(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar"));
+  login_handler->SetAuth(u"foo", u"bar");
   WaitForGaiaPageLoad();
 
   base::RunLoop run_loop;

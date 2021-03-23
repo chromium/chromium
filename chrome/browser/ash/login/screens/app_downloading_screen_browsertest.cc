@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
 
     test::OobeJS().ExpectElementText(
         l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                  base::ASCIIToUTF16("0")),
+                                  u"0"),
         kTitlePlural);
   }
 
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
 
     test::OobeJS().ExpectElementText(
         l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                  base::ASCIIToUTF16("2")),
+                                  u"2"),
         kTitlePlural);
   }
 

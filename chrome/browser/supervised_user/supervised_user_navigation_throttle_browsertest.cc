@@ -186,7 +186,7 @@ bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
   ui_test_utils::GetCurrentTabTitle(browser, &title);
   return tab->GetController().GetLastCommittedEntry()->GetPageType() ==
              content::PAGE_TYPE_ERROR &&
-         title == base::ASCIIToUTF16("Site blocked");
+         title == u"Site blocked";
 }
 
 void SupervisedUserNavigationThrottleTest::SetUp() {

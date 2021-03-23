@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
   // another when the document redirects using http-equiv="refresh".
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             first_url, 2);
-  EXPECT_EQ(base::ASCIIToUTF16("Redirected!"),
+  EXPECT_EQ(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   base::ListValue blacklist;
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
   ui_test_utils::NavigateToURL(browser(), first_url);
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(base::ASCIIToUTF16("Redirected!"),
+  EXPECT_NE(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
   ui_test_utils::NavigateToURL(browser(), first_url);
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ(base::ASCIIToUTF16("Redirected!"),
+  EXPECT_EQ(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   base::ListValue blacklist;
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
   ui_test_utils::NavigateToURL(browser(), first_url);
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_NE(base::ASCIIToUTF16("Redirected!"),
+  EXPECT_NE(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 

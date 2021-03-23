@@ -1669,7 +1669,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
     return;
 
   base::ReplaceChars(params_.selection_text, AutocompleteMatch::kInvalidChars,
-                     base::ASCIIToUTF16(" "), &params_.selection_text);
+                     u" ", &params_.selection_text);
 
   AutocompleteMatch match;
   AutocompleteClassifierFactory::GetForProfile(GetProfile())
@@ -2613,8 +2613,7 @@ std::u16string RenderViewContextMenu::PrintableSelectionText() {
 }
 
 void RenderViewContextMenu::EscapeAmpersands(std::u16string* text) {
-  base::ReplaceChars(*text, base::ASCIIToUTF16("&"), base::ASCIIToUTF16("&&"),
-                     text);
+  base::ReplaceChars(*text, u"&", u"&&", text);
 }
 
 // Controller functions --------------------------------------------------------

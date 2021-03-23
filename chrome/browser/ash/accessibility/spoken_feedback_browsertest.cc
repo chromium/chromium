@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(ShelfNotificationBadgeSpokenFeedbackTest,
   // Create and add a test app to the shelf model.
   ShelfItem item;
   item.id = ShelfID("TestApp");
-  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
   ShelfModel::Get()->Add(item);
 
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   // Create and add a test app to the shelf model.
   ShelfItem item;
   item.id = ShelfID(app_id);
-  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
   item.app_status = AppStatus::kPaused;
   ShelfModel::Get()->Add(item);
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   // Create and add a test app to the shelf model.
   ShelfItem item;
   item.id = ShelfID(app_id);
-  item.title = base::ASCIIToUTF16("TestAppTitle");
+  item.title = u"TestAppTitle";
   item.type = ShelfItemType::TYPE_APP;
   item.app_status = AppStatus::kBlocked;
   ShelfModel::Get()->Add(item);

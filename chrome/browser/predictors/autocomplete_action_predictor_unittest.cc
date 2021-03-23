@@ -53,55 +53,44 @@ struct TestUrlInfo {
 
 const std::vector<TestUrlInfo>& TestUrlDb() {
   static base::NoDestructor<std::vector<TestUrlInfo>> db{
-      {{GURL("http://www.testsite.com/a.html"),
-        ASCIIToUTF16("Test - site - just a test"), 1, ASCIIToUTF16("j"), 5, 0,
-        AutocompleteActionPredictor::ACTION_PRERENDER},
-       {GURL("http://www.testsite.com/b.html"),
-        ASCIIToUTF16("Test - site - just a test"), 1, ASCIIToUTF16("ju"), 3, 0,
-        AutocompleteActionPredictor::ACTION_PRERENDER},
-       {GURL("http://www.testsite.com/c.html"),
-        ASCIIToUTF16("Test - site - just a test"), 5, ASCIIToUTF16("just"), 3,
-        1, AutocompleteActionPredictor::ACTION_PRECONNECT},
-       {GURL("http://www.testsite.com/d.html"),
-        ASCIIToUTF16("Test - site - just a test"), 5, ASCIIToUTF16("just"), 3,
-        0, AutocompleteActionPredictor::ACTION_PRERENDER},
-       {GURL("http://www.testsite.com/e.html"),
-        ASCIIToUTF16("Test - site - just a test"), 8, ASCIIToUTF16("just"), 3,
-        1, AutocompleteActionPredictor::ACTION_PRECONNECT},
-       {GURL("http://www.testsite.com/f.html"),
-        ASCIIToUTF16("Test - site - just a test"), 8, ASCIIToUTF16("just"), 3,
-        0, AutocompleteActionPredictor::ACTION_PRERENDER},
-       {GURL("http://www.testsite.com/g.html"),
-        ASCIIToUTF16("Test - site - just a test"), 12, std::u16string(), 5, 0,
-        AutocompleteActionPredictor::ACTION_NONE},
-       {GURL("http://www.testsite.com/h.html"),
-        ASCIIToUTF16("Test - site - just a test"), 21,
-        ASCIIToUTF16("just a test"), 2, 0,
-        AutocompleteActionPredictor::ACTION_NONE},
-       {GURL("http://www.testsite.com/i.html"),
-        ASCIIToUTF16("Test - site - just a test"), 28,
-        ASCIIToUTF16("just a test"), 2, 0,
-        AutocompleteActionPredictor::ACTION_NONE}}};
+      {{GURL("http://www.testsite.com/a.html"), u"Test - site - just a test", 1,
+        u"j", 5, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+       {GURL("http://www.testsite.com/b.html"), u"Test - site - just a test", 1,
+        u"ju", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+       {GURL("http://www.testsite.com/c.html"), u"Test - site - just a test", 5,
+        u"just", 3, 1, AutocompleteActionPredictor::ACTION_PRECONNECT},
+       {GURL("http://www.testsite.com/d.html"), u"Test - site - just a test", 5,
+        u"just", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+       {GURL("http://www.testsite.com/e.html"), u"Test - site - just a test", 8,
+        u"just", 3, 1, AutocompleteActionPredictor::ACTION_PRECONNECT},
+       {GURL("http://www.testsite.com/f.html"), u"Test - site - just a test", 8,
+        u"just", 3, 0, AutocompleteActionPredictor::ACTION_PRERENDER},
+       {GURL("http://www.testsite.com/g.html"), u"Test - site - just a test",
+        12, std::u16string(), 5, 0, AutocompleteActionPredictor::ACTION_NONE},
+       {GURL("http://www.testsite.com/h.html"), u"Test - site - just a test",
+        21, u"just a test", 2, 0, AutocompleteActionPredictor::ACTION_NONE},
+       {GURL("http://www.testsite.com/i.html"), u"Test - site - just a test",
+        28, u"just a test", 2, 0, AutocompleteActionPredictor::ACTION_NONE}}};
   return *db;
 }
 
 // List of urls sorted by the confidence score in ascending order.
 const std::vector<TestUrlInfo>& TestUrlConfidenceDb() {
   static base::NoDestructor<std::vector<TestUrlInfo>> db{{
-      {GURL("http://www.testsite.com/g.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 0, 2, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/f.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 1, 2, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/e.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 2, 2, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/d.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 3, 3, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/c.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 3, 2, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/b.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 3, 0, AutocompleteActionPredictor::ACTION_NONE},
-      {GURL("http://www.testsite.com/a.html"), ASCIIToUTF16("Test"), 1,
-       ASCIIToUTF16("test"), 5, 0, AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/g.html"), u"Test", 1, u"test", 0, 2,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/f.html"), u"Test", 1, u"test", 1, 2,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/e.html"), u"Test", 1, u"test", 2, 2,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/d.html"), u"Test", 1, u"test", 3, 3,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/c.html"), u"Test", 1, u"test", 3, 2,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/b.html"), u"Test", 1, u"test", 3, 0,
+       AutocompleteActionPredictor::ACTION_NONE},
+      {GURL("http://www.testsite.com/a.html"), u"Test", 1, u"test", 5, 0,
+       AutocompleteActionPredictor::ACTION_NONE},
   }};
   return *db;
 }
@@ -571,7 +560,7 @@ TEST_F(AutocompleteActionPredictorTest,
   }
   AutocompleteResult result;
   result.AppendMatches(AutocompleteInput(), matches);
-  std::u16string user_text = ASCIIToUTF16("google");
+  std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
   auto it = std::find(transitional_matches()->begin(),
                       transitional_matches()->end(), user_text);

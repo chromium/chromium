@@ -264,9 +264,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
         "Open Settings to connect %s to Linux", product_name));
   }
 
-  std::u16string expected_title() {
-    return base::ASCIIToUTF16("USB device detected");
-  }
+  std::u16string expected_title() { return u"USB device detected"; }
 
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;

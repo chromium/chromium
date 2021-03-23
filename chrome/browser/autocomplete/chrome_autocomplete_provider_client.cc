@@ -318,7 +318,7 @@ std::vector<std::u16string> ChromeAutocompleteProviderClient::GetBuiltinURLs() {
 
 #if !defined(OS_ANDROID)
   std::u16string settings(base::ASCIIToUTF16(chrome::kChromeUISettingsHost) +
-                          base::ASCIIToUTF16("/"));
+                          u"/");
   for (size_t i = 0; i < base::size(kChromeSettingsSubPages); i++) {
     builtins.push_back(settings +
                        base::ASCIIToUTF16(kChromeSettingsSubPages[i]));

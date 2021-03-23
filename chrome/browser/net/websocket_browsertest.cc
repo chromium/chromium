@@ -84,9 +84,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   // Prepare the title watcher.
   void SetUpOnMainThread() override {
     watcher_.reset(new content::TitleWatcher(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::ASCIIToUTF16("PASS")));
-    watcher_->AlsoWaitForTitle(base::ASCIIToUTF16("FAIL"));
+        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS"));
+    watcher_->AlsoWaitForTitle(u"FAIL");
   }
 
   void TearDownOnMainThread() override { watcher_.reset(); }
@@ -250,9 +249,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
     browser()->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
     ASSERT_EQ(raw_new_tab, browser()->tab_strip_model()->GetWebContentsAt(1));
 
-    content::TitleWatcher connected_title_watcher(
-        raw_new_tab, base::ASCIIToUTF16("CONNECTED"));
-    connected_title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("CLOSED"));
+    content::TitleWatcher connected_title_watcher(raw_new_tab, u"CONNECTED");
+    connected_title_watcher.AlsoWaitForTitle(u"CLOSED");
     NavigateToHTTP("connect_and_be_observed.html");
     const std::u16string result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
@@ -409,8 +407,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
 
   // Set HSTS on localhost.
   content::TitleWatcher title_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      base::ASCIIToUTF16("SET"));
+      browser()->tab_strip_model()->GetActiveWebContents(), u"SET");
   ui_test_utils::NavigateToURL(browser(),
                                https_server.GetURL("/websocket/set-hsts.html"));
   const std::u16string result = title_watcher.WaitAndGetTitle();

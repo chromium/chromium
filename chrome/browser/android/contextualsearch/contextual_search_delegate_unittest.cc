@@ -515,7 +515,7 @@ TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
-  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = 3;
   size_t start = 8;
   size_t end = 20;
@@ -523,11 +523,11 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
       delegate_->SampleSurroundingText(sample, limit_each_side, &start, &end);
   EXPECT_EQ(static_cast<size_t>(3), start);
   EXPECT_EQ(static_cast<size_t>(15), end);
-  EXPECT_EQ(base::ASCIIToUTF16("is Barack Obama in"), result);
+  EXPECT_EQ(u"is Barack Obama in", result);
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
-  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = -2;
   size_t start = 8;
   size_t end = 20;
@@ -535,11 +535,11 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
       delegate_->SampleSurroundingText(sample, limit_each_side, &start, &end);
   EXPECT_EQ(static_cast<size_t>(0), start);
   EXPECT_EQ(static_cast<size_t>(12), end);
-  EXPECT_EQ(base::ASCIIToUTF16("Barack Obama"), result);
+  EXPECT_EQ(u"Barack Obama", result);
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextSameStartEnd) {
-  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = 3;
   size_t start = 11;
   size_t end = 11;
@@ -550,7 +550,7 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextSameStartEnd) {
   VLOG(0) << "result " << result;
   EXPECT_EQ(static_cast<size_t>(3), start);
   EXPECT_EQ(static_cast<size_t>(3), end);
-  EXPECT_EQ(base::ASCIIToUTF16("Barack"), result);
+  EXPECT_EQ(u"Barack", result);
 }
 
 TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {

@@ -183,16 +183,14 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
   EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1),
-            ASCIIToUTF16("********"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1), u"********");
 
   // If the label is empty, use the additional label:
   EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(2),
-            ASCIIToUTF16("psl.origin.eg ********"));
+            u"psl.origin.eg ********");
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3),
-            ASCIIToUTF16("***"));
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3), u"***");
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {

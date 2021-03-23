@@ -798,12 +798,11 @@ class RemoveAutofillTester {
     autofill::AutofillProfile profile;
     profile.set_guid(base::GenerateGUID());
     profile.set_origin(kWebOrigin);
-    profile.SetRawInfo(autofill::NAME_FIRST, base::ASCIIToUTF16("Bob"));
-    profile.SetRawInfo(autofill::NAME_LAST, base::ASCIIToUTF16("Smith"));
-    profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, base::ASCIIToUTF16("94043"));
-    profile.SetRawInfo(autofill::EMAIL_ADDRESS,
-                       base::ASCIIToUTF16("sue@example.com"));
-    profile.SetRawInfo(autofill::COMPANY_NAME, base::ASCIIToUTF16("Company X"));
+    profile.SetRawInfo(autofill::NAME_FIRST, u"Bob");
+    profile.SetRawInfo(autofill::NAME_LAST, u"Smith");
+    profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, u"94043");
+    profile.SetRawInfo(autofill::EMAIL_ADDRESS, u"sue@example.com");
+    profile.SetRawInfo(autofill::COMPANY_NAME, u"Company X");
     profiles.push_back(profile);
 
     profile.set_guid(base::GenerateGUID());
@@ -818,8 +817,7 @@ class RemoveAutofillTester {
     autofill::CreditCard card;
     card.set_guid(base::GenerateGUID());
     card.set_origin(kWebOrigin);
-    card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
-                    base::ASCIIToUTF16("1234-5678-9012-3456"));
+    card.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"1234-5678-9012-3456");
     cards.push_back(card);
 
     card.set_guid(base::GenerateGUID());
@@ -1538,8 +1536,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ExpireBookmarkFavicons) {
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
-                         base::ASCIIToUTF16("a"), bookmarked_page);
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"a",
+                         bookmarked_page);
 
   RemoveFaviconTester favicon_tester;
   ASSERT_TRUE(favicon_tester.Init(GetProfile()));
@@ -1559,8 +1557,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteBookmarks) {
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
-                         base::ASCIIToUTF16("a"), bookmarked_page);
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"a",
+                         bookmarked_page);
   EXPECT_EQ(1u, bookmark_model->bookmark_bar_node()->children().size());
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_BOOKMARKS, false);
@@ -2421,9 +2419,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   http_auth_cache->Add(Origin1(), net::HttpAuth::AUTH_SERVER, kTestRealm,
                        net::HttpAuth::AUTH_SCHEME_BASIC,
                        net::NetworkIsolationKey(), "test challenge",
-                       net::AuthCredentials(base::ASCIIToUTF16("foo"),
-                                            base::ASCIIToUTF16("bar")),
-                       "/");
+                       net::AuthCredentials(u"foo", u"bar"), "/");
   CHECK(http_auth_cache->Lookup(Origin1(), net::HttpAuth::AUTH_SERVER,
                                 kTestRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
                                 net::NetworkIsolationKey()));

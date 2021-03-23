@@ -13,9 +13,8 @@
 FakeBluetoothChooserController::FakeBluetoothChooserController(
     std::vector<FakeDevice> devices)
     : ChooserController(nullptr, 0, 0), devices_(std::move(devices)) {
-  set_title_for_testing(
-      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
-                                 base::ASCIIToUTF16("example.com")));
+  set_title_for_testing(l10n_util::GetStringFUTF16(
+      IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN, u"example.com"));
 }
 
 FakeBluetoothChooserController::~FakeBluetoothChooserController() {}

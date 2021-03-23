@@ -408,14 +408,14 @@ TEST_F(AccessContextAuditServiceTest, HistoryDeletion) {
   // URL1 and URL3. This will fire a history deletion event where the shared
   // origin of URL1 & URL2 has a remaining history entry, but no entry for the
   // URL3 origin remains.
-  history_service()->AddPageWithDetails(kURL1, base::ASCIIToUTF16("Test 1"), 1,
-                                        1, base::Time::Now(), false,
+  history_service()->AddPageWithDetails(kURL1, u"Test 1", 1, 1,
+                                        base::Time::Now(), false,
                                         history::SOURCE_BROWSED);
-  history_service()->AddPageWithDetails(kURL2, base::ASCIIToUTF16("Test 2"), 1,
-                                        1, base::Time::Now(), false,
+  history_service()->AddPageWithDetails(kURL2, u"Test 2", 1, 1,
+                                        base::Time::Now(), false,
                                         history::SOURCE_BROWSED);
-  history_service()->AddPageWithDetails(kURL3, base::ASCIIToUTF16("Test 3"), 1,
-                                        1, base::Time::Now(), false,
+  history_service()->AddPageWithDetails(kURL3, u"Test 3", 1, 1,
+                                        base::Time::Now(), false,
                                         history::SOURCE_BROWSED);
   history_service()->DeleteURLs({kURL1, kURL3});
   base::RunLoop run_loop;
@@ -440,9 +440,9 @@ TEST_F(AccessContextAuditServiceTest, AllHistoryDeletion) {
   const url::Origin kHistoryEntryOrigin = url::Origin::Create(kHistoryEntryURL);
   const url::Origin kNoHistoryEntryOrigin =
       url::Origin::Create(GURL("https://no-history-entry.com/"));
-  history_service()->AddPageWithDetails(
-      kHistoryEntryURL, base::ASCIIToUTF16("Test"), 1, 1, base::Time::Now(),
-      false, history::SOURCE_BROWSED);
+  history_service()->AddPageWithDetails(kHistoryEntryURL, u"Test", 1, 1,
+                                        base::Time::Now(), false,
+                                        history::SOURCE_BROWSED);
 
   // Record two sets of unrelated accesses to cookies and storage APIs, one for
   // the origin with a history entry, and one for the origin without.
@@ -509,15 +509,12 @@ TEST_F(AccessContextAuditServiceTest, TimeRangeHistoryDeletion) {
   const base::Time kOutsideTimeRange =
       clock()->Now() + base::TimeDelta::FromHours(3);
 
-  history_service()->AddPageWithDetails(kURL1, base::ASCIIToUTF16("Test1"), 1,
-                                        1, kInsideTimeRange, false,
-                                        history::SOURCE_BROWSED);
-  history_service()->AddPageWithDetails(kURL2, base::ASCIIToUTF16("Test2"), 1,
-                                        1, kInsideTimeRange, false,
-                                        history::SOURCE_BROWSED);
-  history_service()->AddPageWithDetails(kURL1, base::ASCIIToUTF16("Test3"), 1,
-                                        1, kOutsideTimeRange, false,
-                                        history::SOURCE_BROWSED);
+  history_service()->AddPageWithDetails(kURL1, u"Test1", 1, 1, kInsideTimeRange,
+                                        false, history::SOURCE_BROWSED);
+  history_service()->AddPageWithDetails(kURL2, u"Test2", 1, 1, kInsideTimeRange,
+                                        false, history::SOURCE_BROWSED);
+  history_service()->AddPageWithDetails(
+      kURL1, u"Test3", 1, 1, kOutsideTimeRange, false, history::SOURCE_BROWSED);
 
   // Record accesses to cookies both inside and outside the deletion range.
   auto cookie_accessed_in_range = net::CanonicalCookie::Create(

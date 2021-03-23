@@ -296,9 +296,9 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
   // The AutofillManager will update the user's profile.
   EXPECT_EQ(1u, personal_data_manager()->GetProfiles().size());
 
-  EXPECT_EQ(ASCIIToUTF16("Bob"),
+  EXPECT_EQ(u"Bob",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(ASCIIToUTF16("Smith"),
+  EXPECT_EQ(u"Smith",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_LAST));
 }
 
@@ -389,18 +389,17 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
     FillFormAndSubmit("autofill_test_form.html", profiles[i]);
 
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
-  int us_address_index =
-      personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("123 Cherry Ave")
-          ? 0
-          : 1;
+  int us_address_index = personal_data_manager()->GetProfiles()[0]->GetRawInfo(
+                             ADDRESS_HOME_LINE1) == u"123 Cherry Ave"
+                             ? 0
+                             : 1;
 
   EXPECT_EQ(
-      ASCIIToUTF16("408-871-4567"),
+      u"408-871-4567",
       personal_data_manager()->GetProfiles()[us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
   ASSERT_EQ(
-      ASCIIToUTF16("+49 40-80-81-79-000"),
+      u"+49 40-80-81-79-000",
       personal_data_manager()->GetProfiles()[1 - us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }
@@ -426,17 +425,16 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
   int second_address_index =
       personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("4321 H St.")
+          ADDRESS_HOME_LINE1) == u"4321 H St."
           ? 0
           : 1;
 
-  EXPECT_EQ(ASCIIToUTF16("+49 8450 777777"),
-            personal_data_manager()
-                ->GetProfiles()[1 - second_address_index]
-                ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+49 8450 777777", personal_data_manager()
+                                    ->GetProfiles()[1 - second_address_index]
+                                    ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_EQ(
-      ASCIIToUTF16("08450 777777"),
+      u"08450 777777",
       personal_data_manager()->GetProfiles()[second_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }

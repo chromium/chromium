@@ -229,8 +229,8 @@ std::u16string DownloadUIModel::GetTooltipText() const {
   std::u16string tooltip = GetFileNameToReportUser().LossyDisplayName();
   if (GetState() == DownloadItem::INTERRUPTED &&
       GetLastFailState() != FailState::USER_CANCELED) {
-    tooltip += base::ASCIIToUTF16("\n") +
-               OfflineItemUtils::GetFailStateMessage(GetLastFailState());
+    tooltip +=
+        u"\n" + OfflineItemUtils::GetFailStateMessage(GetLastFailState());
   }
   return tooltip;
 }

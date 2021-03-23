@@ -362,10 +362,8 @@ TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromUrl) {
 
 TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromAppName) {
   // ASCII Encoding
-  EXPECT_EQ('T',
-            GenerateIconLetterFromAppName(base::ASCIIToUTF16("test app name")));
-  EXPECT_EQ('T',
-            GenerateIconLetterFromAppName(base::ASCIIToUTF16("Test app name")));
+  EXPECT_EQ('T', GenerateIconLetterFromAppName(u"test app name"));
+  EXPECT_EQ('T', GenerateIconLetterFromAppName(u"Test app name"));
   // UTF16 encoding:
   const char16_t russian_name[] = {0x0438, 0x043c, 0x044f, 0x0};
   EXPECT_EQ(0x0418, GenerateIconLetterFromAppName(russian_name));

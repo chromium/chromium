@@ -126,8 +126,8 @@ class SavePasswordInfoBarDelegateTest : public ChromeRenderViewHostTestHarness {
 
 SavePasswordInfoBarDelegateTest::SavePasswordInfoBarDelegateTest() {
   test_form_.url = GURL("https://example.com");
-  test_form_.username_value = base::ASCIIToUTF16("username");
-  test_form_.password_value = base::ASCIIToUTF16("12345");
+  test_form_.username_value = u"username";
+  test_form_.password_value = u"12345";
 
   // Create a simple sign-in form.
   observed_form_.url = test_form_.url;

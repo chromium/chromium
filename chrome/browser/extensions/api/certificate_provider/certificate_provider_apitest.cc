@@ -385,7 +385,7 @@ class CertificateProviderApiMockedExtensionTest
     {
       base::RunLoop run_loop;
       GetExtensionMainFrame()->ExecuteJavaScriptForTests(
-          base::ASCIIToUTF16("signatureRequestData;"),
+          u"signatureRequestData;",
           base::BindOnce(&StoreDigest, &request_data, run_loop.QuitClosure()));
       run_loop.Run();
     }

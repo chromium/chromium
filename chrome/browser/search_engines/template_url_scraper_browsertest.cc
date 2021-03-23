@@ -102,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
 
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
-  ASSERT_EQ(base::ASCIIToUTF16("Submit handler TemplateURL scraping test"),
-            title);
+  ASSERT_EQ(u"Submit handler TemplateURL scraping test", title);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

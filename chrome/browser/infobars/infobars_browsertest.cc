@@ -212,14 +212,13 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   switch (infobar_identifier) {
     case IBD::HUNG_PLUGIN_INFOBAR_DELEGATE:
       HungPluginInfoBarDelegate::Create(GetInfoBarService(), nullptr, 0,
-                                        base::ASCIIToUTF16("Test Plugin"));
+                                        u"Test Plugin");
       break;
 
     case IBD::DEV_TOOLS_INFOBAR_DELEGATE:
       DevToolsInfoBarDelegate::Create(
           l10n_util::GetStringFUTF16(
-              IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
-              base::ASCIIToUTF16("file_path")),
+              IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE, u"file_path"),
           base::DoNothing());
       break;
 
@@ -233,8 +232,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           GetInfoBarService(),
           l10n_util::GetStringFUTF16(
               IDS_EXTENSION_PROMPT_EXTENSION_CONNECT_FROM_INCOGNITO,
-              base::ASCIIToUTF16("http://example.com"),
-              base::ASCIIToUTF16("Test Extension")),
+              u"http://example.com", u"Test Extension"),
           base::DoNothing());
       break;
     }
@@ -259,21 +257,21 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
       OutdatedPluginInfoBarDelegate::Create(
           GetInfoBarService(), nullptr,
-          std::make_unique<PluginMetadata>(
-              "test-plugin", base::ASCIIToUTF16("Test Plugin"), true, GURL(),
-              GURL(), base::ASCIIToUTF16("Test"), std::string(), false));
+          std::make_unique<PluginMetadata>("test-plugin", u"Test Plugin", true,
+                                           GURL(), GURL(), u"Test",
+                                           std::string(), false));
       break;
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:
       ReloadPluginInfoBarDelegate::Create(
           GetInfoBarService(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                     base::ASCIIToUTF16("Test Plugin")));
+                                     u"Test Plugin"));
       break;
 
     case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(
-          GetInfoBarService(), base::ASCIIToUTF16("Test Plugin"));
+      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarService(),
+                                                  u"Test Plugin");
       break;
 
     case IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE:
@@ -358,9 +356,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
-      TabSharingInfoBarDelegate::Create(
-          GetInfoBarService(), base::ASCIIToUTF16("example.com"),
-          base::ASCIIToUTF16("application.com"), false, true, nullptr);
+      TabSharingInfoBarDelegate::Create(GetInfoBarService(), u"example.com",
+                                        u"application.com", false, true,
+                                        nullptr);
       break;
 
     case IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE:

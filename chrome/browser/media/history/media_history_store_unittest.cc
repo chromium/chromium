@@ -751,7 +751,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
     {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
-      item->name = base::ASCIIToUTF16("The Movie");
+      item->name = u"The Movie";
       item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(10));
@@ -846,7 +846,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The TV Series");
+      item->name = u"The TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kActive;
       item->action = media_feeds::mojom::Action::New();
@@ -861,7 +861,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The Live TV Series");
+      item->name = u"The Live TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kPotential;
       item->live = media_feeds::mojom::LiveDetails::New();
@@ -882,7 +882,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = base::ASCIIToUTF16("The Video");
+      item->name = u"The Video";
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(20));
       item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
@@ -1570,7 +1570,7 @@ TEST_P(MediaHistoryStoreFeedsTest, StoreMediaFeedFetchResult_CheckImageMax) {
   const int feed_id = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[0]->id;
 
   auto item = media_feeds::mojom::MediaFeedItem::New();
-  item->name = base::ASCIIToUTF16("The Movie");
+  item->name = u"The Movie";
   item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
   item->safe_search_result = media_feeds::mojom::SafeSearchResult::kUnknown;
 
@@ -1651,7 +1651,7 @@ TEST_P(MediaHistoryStoreFeedsTest,
   const int feed_id = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[0]->id;
 
   auto item = media_feeds::mojom::MediaFeedItem::New();
-  item->name = base::ASCIIToUTF16("The Movie");
+  item->name = u"The Movie";
   item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
 
   std::vector<media_feeds::mojom::MediaFeedItemPtr> items;

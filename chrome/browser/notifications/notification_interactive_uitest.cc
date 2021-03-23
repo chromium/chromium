@@ -153,10 +153,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("My Title"),
-            (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("My Body"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"My Title", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
@@ -517,9 +515,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationReplacement) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("Title2"), (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("Body2"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"Title2", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"Body2", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest,
@@ -800,8 +797,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_EQ(base::ASCIIToUTF16("My Title"), (*notifications.begin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("My Body"), (*notifications.begin())->message());
+  EXPECT_EQ(u"My Title", (*notifications.begin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.begin())->message());
 
   // Open a new tab to a diffent origin from the one that shows notifications.
   chrome::NewTab(browser());
@@ -855,8 +852,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(3u, notifications.size());
   for (const auto* notification : notifications) {
-    EXPECT_EQ(base::ASCIIToUTF16("My Title"), notification->title());
-    EXPECT_EQ(base::ASCIIToUTF16("My Body"), notification->message());
+    EXPECT_EQ(u"My Title", notification->title());
+    EXPECT_EQ(u"My Body", notification->message());
   }
 }
 #endif  // !defined(OS_ANDROID)

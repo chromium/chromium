@@ -452,7 +452,7 @@ class ContentAnalysisDialogCustomMessageAppearanceBrowserTest
                      IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count)
                : l10n_util::GetStringFUTF16(
                      IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                     base::ASCIIToUTF16("Custom message"));
+                     u"Custom message");
   }
 };
 

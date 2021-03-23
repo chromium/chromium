@@ -121,7 +121,7 @@ void MemoryDetails::CollectProcessData(
   ProcessData current_browser =
       GetProcessDataMemoryInformation(GetAllChildren(process_map, getpid()));
   current_browser.name = l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
-  current_browser.process_name = base::ASCIIToUTF16("chrome");
+  current_browser.process_name = u"chrome";
 
   for (auto i = current_browser.processes.begin();
        i != current_browser.processes.end(); ++i) {

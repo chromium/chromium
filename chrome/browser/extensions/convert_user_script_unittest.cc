@@ -151,7 +151,7 @@ TEST_F(ExtensionFromUserScript, NotUTF8) {
       extensions_dir.GetPath(), &error));
 
   ASSERT_FALSE(extension.get());
-  EXPECT_EQ(base::ASCIIToUTF16("User script must be UTF8 encoded."), error);
+  EXPECT_EQ(u"User script must be UTF8 encoded.", error);
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {

@@ -4555,7 +4555,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
   std::u16string failed_title(u"Loaded as main frame");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(failed_title);
-  render_frame_host->ExecuteJavaScriptForTests(base::ASCIIToUTF16("runTest();"),
+  render_frame_host->ExecuteJavaScriptForTests(u"runTest();",
                                                base::NullCallback());
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 

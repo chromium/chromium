@@ -41,12 +41,10 @@ void InstallPromptPermissions::AddPermissionMessages(
     if (!msg.submessages().empty()) {
       std::vector<std::u16string> detail_lines_with_bullets;
       for (const auto& detail_line : msg.submessages()) {
-        detail_lines_with_bullets.push_back(base::ASCIIToUTF16("- ") +
-                                            detail_line);
+        detail_lines_with_bullets.push_back(u"- " + detail_line);
       }
 
-      details_str =
-          base::JoinString(detail_lines_with_bullets, base::ASCIIToUTF16("\n"));
+      details_str = base::JoinString(detail_lines_with_bullets, u"\n");
     }
     details.push_back(details_str);
     is_showing_details.push_back(false);

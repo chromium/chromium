@@ -243,13 +243,13 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("misspelled"), item.title);
+  EXPECT_EQ(u"misspelled", item.title);
   // Second suggestion.
   menu()->GetMenuItem(2, &item);
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 1, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("misspelling"), item.title);
+  EXPECT_EQ(u"misspelling", item.title);
   // Second separator.
   menu()->GetMenuItem(3, &item);
   EXPECT_EQ(-1, item.command_id);
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("misspelled"), item.title);
+  EXPECT_EQ(u"misspelled", item.title);
   // Second separator.
   menu()->GetMenuItem(2, &item);
   EXPECT_EQ(-1, item.command_id);
@@ -337,19 +337,19 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("tree"), item.title);
+  EXPECT_EQ(u"tree", item.title);
   // Second suggestion.
   menu()->GetMenuItem(2, &item);
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 1, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("wee"), item.title);
+  EXPECT_EQ(u"wee", item.title);
   // Third suggestion.
   menu()->GetMenuItem(3, &item);
   EXPECT_EQ(IDC_SPELLCHECK_SUGGESTION_0 + 2, item.command_id);
   EXPECT_TRUE(item.enabled);
   EXPECT_FALSE(item.hidden);
-  EXPECT_EQ(base::ASCIIToUTF16("were"), item.title);
+  EXPECT_EQ(u"were", item.title);
   // Second separator.
   menu()->GetMenuItem(4, &item);
   EXPECT_EQ(-1, item.command_id);

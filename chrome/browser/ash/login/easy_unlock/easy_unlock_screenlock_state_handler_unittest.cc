@@ -548,7 +548,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
        AuthenticatedStateClearsPreviousAuthValue) {
   state_handler_->ChangeState(ScreenlockState::INACTIVE);
 
-  lock_handler_->SetAuthValue(base::ASCIIToUTF16("xxx"));
+  lock_handler_->SetAuthValue(u"xxx");
 
   state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
 
@@ -563,16 +563,16 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
 
 TEST_F(EasyUnlockScreenlockStateHandlerTest,
        ChangingStateDoesNotAffectAuthValueIfAuthTypeDoesNotChange) {
-  lock_handler_->SetAuthValue(base::ASCIIToUTF16("xxx"));
+  lock_handler_->SetAuthValue(u"xxx");
 
   state_handler_->ChangeState(ScreenlockState::NO_PHONE);
-  EXPECT_EQ(base::ASCIIToUTF16("xxx"), lock_handler_->GetAuthValue());
+  EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
 
   state_handler_->ChangeState(ScreenlockState::PHONE_NOT_AUTHENTICATED);
-  EXPECT_EQ(base::ASCIIToUTF16("xxx"), lock_handler_->GetAuthValue());
+  EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
 
   state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
-  EXPECT_EQ(base::ASCIIToUTF16("xxx"), lock_handler_->GetAuthValue());
+  EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kSpinnerIconId, lock_handler_->GetCustomIconId());
 }

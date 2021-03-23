@@ -116,8 +116,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   std::vector<api::passwords_private::ExceptionEntry>
       last_deleted_exceptions_batch_;
 
-  base::Optional<std::u16string> plaintext_password_ =
-      base::ASCIIToUTF16("plaintext");
+  base::Optional<std::u16string> plaintext_password_ = u"plaintext";
 
   // List of insecure credentials.
   std::vector<api::passwords_private::InsecureCredential> insecure_credentials_;

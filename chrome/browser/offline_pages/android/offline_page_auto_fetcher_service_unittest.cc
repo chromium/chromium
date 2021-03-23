@@ -231,7 +231,7 @@ TEST_F(OfflinePageAutoFetcherServiceTest, NotifyOnAutoFetchCompleted) {
   OfflinePageItem returned_item(kTestRequest.url(), kOfflineId,
                                 kTestRequest.client_id(), base::FilePath(),
                                 2000);
-  returned_item.title = base::ASCIIToUTF16("Cows");
+  returned_item.title = u"Cows";
   EXPECT_CALL(offline_page_model_,
               GetPageByOfflineId_(kTestRequest.request_id()))
       .WillOnce(testing::Return(&returned_item));

@@ -103,7 +103,7 @@ void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   manifest->start_url = url;
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = base::ASCIIToUTF16("Manifest Name");
+  manifest->short_name = u"Manifest Name";
 
   SetManifest(std::move(manifest), /*is_installable=*/true);
 

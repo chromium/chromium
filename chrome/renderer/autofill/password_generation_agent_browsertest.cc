@@ -469,7 +469,7 @@ TEST_F(PasswordGenerationAgentTest, FillTest) {
   EXPECT_TRUE(first_password_element.Value().IsNull());
   EXPECT_TRUE(second_password_element.Value().IsNull());
 
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
 
   password_generation_->GeneratedPasswordAccepted(password);
@@ -510,7 +510,7 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   ASSERT_FALSE(element.IsNull());
   WebInputElement second_password_element = element.To<WebInputElement>();
 
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
 
   password_generation_->GeneratedPasswordAccepted(password);
@@ -565,7 +565,7 @@ TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
 
   // Generate password.
   ExpectAutomaticGenerationAvailable("first_password", kAvailable);
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
   fake_pw_client_.Flush();
@@ -697,7 +697,7 @@ TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {
   ExpectAutomaticGenerationAvailable("first_password", kAvailable);
 
   // Generate a new password.
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
 
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
@@ -852,7 +852,7 @@ TEST_F(PasswordGenerationAgentTest, ManualGenerationNoIds) {
   SelectGenerationFallbackAndExpect(true);
 
   // Simulate that the user accepts a generated password.
-  std::u16string password = ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -887,7 +887,7 @@ TEST_F(PasswordGenerationAgentTest, PresavingGeneratedPassword) {
     SimulateElementRightClick(test_case.generation_element);
     SelectGenerationFallbackAndExpect(true);
 
-    std::u16string password = base::ASCIIToUTF16("random_password");
+    std::u16string password = u"random_password";
     EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
     password_generation_->GeneratedPasswordAccepted(password);
     base::RunLoop().RunUntilIdle();
@@ -927,7 +927,7 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   SimulateElementRightClick("first_password");
   SelectGenerationFallbackAndExpect(true);
   EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)))
       .WillOnce(testing::InvokeWithoutArgs([this]() {
         // Make sure that generation event was propagated to the browser before
@@ -960,7 +960,7 @@ TEST_F(PasswordGenerationAgentTest, RevealPassword) {
   const char* kTextFieldId = "username";
 
   ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
-  std::u16string password = base::ASCIIToUTF16("long_pwd");
+  std::u16string password = u"long_pwd";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -997,7 +997,7 @@ TEST_F(PasswordGenerationAgentTest, JavascriptClearedTheField) {
 
   const char kGenerationElementId[] = "first_password";
   ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
-  std::u16string password = base::ASCIIToUTF16("long_pwd");
+  std::u16string password = u"long_pwd";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
 
@@ -1065,7 +1065,7 @@ TEST_F(PasswordGenerationAgentTest, PasswordUnmaskedUntilCompleteDeletion) {
 
   // Generate a new password.
   ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
   fake_pw_client_.Flush();
@@ -1117,7 +1117,7 @@ TEST_F(PasswordGenerationAgentTest, ShortPasswordMaskedAfterChangingFocus) {
 
   // Generate a new password.
   ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
-  std::u16string password = base::ASCIIToUTF16("random_password");
+  std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
   fake_pw_client_.Flush();

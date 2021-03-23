@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuSelection) {
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
-  params.selection_text = base::ASCIIToUTF16("Hello World");
+  params.selection_text = u"Hello World";
   std::unique_ptr<PlatformAppContextMenu> menu;
   menu.reset(new PlatformAppContextMenu(web_contents->GetMainFrame(), params));
   menu->Init();

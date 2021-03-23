@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
       prefs::kWebKitAllowRunningInsecureContent, true);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::u16string expected_title(base::ASCIIToUTF16("loaded"));
+  std::u16string expected_title(u"loaded");
   std::unique_ptr<content::TitleWatcher> title_watcher(
       new content::TitleWatcher(tab, expected_title));
 
@@ -651,12 +651,12 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
   EXPECT_EQ("Referrer is " + https_server_.GetURL("/").spec(), title);
 
   // Reload the iframe.
-  expected_title = base::ASCIIToUTF16("reset");
+  expected_title = u"reset";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
   EXPECT_TRUE(content::ExecuteScript(tab, "document.title = 'reset'"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
 
-  expected_title = base::ASCIIToUTF16("loaded");
+  expected_title = u"loaded";
   title_watcher = std::make_unique<content::TitleWatcher>(tab, expected_title);
   EXPECT_TRUE(content::ExecuteScript(frame, "location.reload()"));
   EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
@@ -884,7 +884,7 @@ class ReferrerOverrideTest
     lock.Release();
 
     // set by referrer-policy-subresource.html JS after the embedded image loads
-    std::u16string expected_title(base::ASCIIToUTF16("loaded"));
+    std::u16string expected_title(u"loaded");
     std::unique_ptr<content::TitleWatcher> title_watcher(
         new content::TitleWatcher(tab, expected_title));
     ui_test_utils::NavigateToURL(browser(), start_url);

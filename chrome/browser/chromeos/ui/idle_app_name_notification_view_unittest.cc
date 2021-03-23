@@ -106,7 +106,7 @@ TEST_F(IdleAppNameNotificationViewTest, CheckCorrectApp) {
       new chromeos::IdleAppNameNotificationView(10, 5, correct_extension()));
   std::u16string text = message->GetShownTextForTest();
   // Check that the string is the application name.
-  std::u16string name = base::ASCIIToUTF16("Test");
+  std::u16string name = u"Test";
   EXPECT_EQ(name, text.substr(0, name.length()));
 }
 

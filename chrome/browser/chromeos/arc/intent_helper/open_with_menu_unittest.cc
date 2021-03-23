@@ -73,15 +73,15 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   ASSERT_EQ(1U, result.first.size());
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   EXPECT_EQ(-1, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
 
   result = BuildHandlersMap(2);
   EXPECT_EQ(2U, result.first.size());
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   EXPECT_EQ(-1, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
 
   result = BuildHandlersMap(3);
   EXPECT_EQ(3U, result.first.size());
@@ -89,9 +89,9 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 2));
   EXPECT_EQ(-1, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
-  EXPECT_EQ(ASCIIToUTF16("App 2"), result.first[kFirstMainMenuId + 2].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 2", result.first[kFirstMainMenuId + 2].name);
 
   // Test if app names will overflow to the sub menu.
   result = BuildHandlersMap(4);
@@ -102,18 +102,18 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   EXPECT_EQ(kFirstMainMenuId + 3, result.second);
   ASSERT_EQ(1U, result.first.count(kFirstSubMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstSubMenuId + 1));
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
-  EXPECT_EQ(ASCIIToUTF16("App 2"), result.first[kFirstSubMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 3"), result.first[kFirstSubMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 2", result.first[kFirstSubMenuId].name);
+  EXPECT_EQ(u"App 3", result.first[kFirstSubMenuId + 1].name);
 
   result = BuildHandlersMap(11);
   EXPECT_EQ(11U, result.first.size());
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   EXPECT_EQ(kFirstMainMenuId + 3, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
   for (size_t i = 0; i < 9; ++i) {
     ASSERT_EQ(1U, result.first.count(kFirstSubMenuId + i)) << i;
   }
@@ -124,8 +124,8 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   EXPECT_EQ(kFirstMainMenuId + 3, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
   for (size_t i = 0; i < 10; ++i) {
     const int id = kFirstSubMenuId + i;
     ASSERT_EQ(1U, result.first.count(id)) << i;
@@ -139,8 +139,8 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   EXPECT_EQ(kFirstMainMenuId + 3, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
   for (size_t i = 0; i < 10; ++i) {  // still 10
     const int id = kFirstSubMenuId + i;
     ASSERT_EQ(1U, result.first.count(id)) << i;
@@ -154,8 +154,8 @@ TEST(OpenWithMenuTest, TestBuildHandlersMap) {
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId));
   ASSERT_EQ(1U, result.first.count(kFirstMainMenuId + 1));
   EXPECT_EQ(kFirstMainMenuId + 3, result.second);
-  EXPECT_EQ(ASCIIToUTF16("App 0"), result.first[kFirstMainMenuId].name);
-  EXPECT_EQ(ASCIIToUTF16("App 1"), result.first[kFirstMainMenuId + 1].name);
+  EXPECT_EQ(u"App 0", result.first[kFirstMainMenuId].name);
+  EXPECT_EQ(u"App 1", result.first[kFirstMainMenuId + 1].name);
   for (size_t i = 0; i < 10; ++i) {  // still 10
     const int id = kFirstSubMenuId + i;
     ASSERT_EQ(1U, result.first.count(id)) << i;

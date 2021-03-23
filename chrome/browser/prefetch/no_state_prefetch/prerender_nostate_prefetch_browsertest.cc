@@ -1441,7 +1441,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 // will intercepts a prefetch request.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
   // Register and launch a SW.
-  std::u16string expected_title = base::ASCIIToUTF16("SW READY");
+  std::u16string expected_title = u"SW READY";
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
   ui_test_utils::NavigateToURL(current_browser(),
                                src_server()->GetURL(kServiceWorkerLoader));

@@ -67,26 +67,25 @@ class BookmarkHTMLWriterTest : public testing::Test {
   // testing.
   std::u16string BookmarkEntryToString(const ImportedBookmarkEntry& entry) {
     std::u16string result;
-    result.append(base::ASCIIToUTF16("on_toolbar="));
+    result.append(u"on_toolbar=");
     if (entry.in_toolbar)
-      result.append(base::ASCIIToUTF16("true"));
+      result.append(u"true");
     else
-      result.append(base::ASCIIToUTF16("false"));
+      result.append(u"false");
 
-    result.append(base::ASCIIToUTF16(" url=") +
-        base::UTF8ToUTF16(entry.url.spec()));
+    result.append(u" url=" + base::UTF8ToUTF16(entry.url.spec()));
 
-    result.append(base::ASCIIToUTF16(" path="));
+    result.append(u" path=");
     for (size_t i = 0; i < entry.path.size(); ++i) {
       if (i != 0)
-        result.append(base::ASCIIToUTF16("/"));
+        result.append(u"/");
       result.append(entry.path[i]);
     }
 
-    result.append(base::ASCIIToUTF16(" title="));
+    result.append(u" title=");
     result.append(entry.title);
 
-    result.append(base::ASCIIToUTF16(" time="));
+    result.append(u" time=");
     result.append(base::TimeFormatFriendlyDateAndTime(entry.creation_time));
     return result;
   }
@@ -193,15 +192,15 @@ TEST_F(BookmarkHTMLWriterTest, Test) {
   // Mobile
   //   url1
   //   <bookmark without a title.>
-  std::u16string f1_title = base::ASCIIToUTF16("F\"&;<1\"");
-  std::u16string f2_title = base::ASCIIToUTF16("F2");
-  std::u16string f3_title = base::ASCIIToUTF16("F 3");
-  std::u16string f4_title = base::ASCIIToUTF16("F4");
-  std::u16string url1_title = base::ASCIIToUTF16("url 1");
-  std::u16string url2_title = base::ASCIIToUTF16("url&2");
-  std::u16string url3_title = base::ASCIIToUTF16("url\"3");
-  std::u16string url4_title = base::ASCIIToUTF16("url\"&;");
-  std::u16string unnamed_bookmark_title = base::ASCIIToUTF16("");
+  std::u16string f1_title = u"F\"&;<1\"";
+  std::u16string f2_title = u"F2";
+  std::u16string f3_title = u"F 3";
+  std::u16string f4_title = u"F4";
+  std::u16string url1_title = u"url 1";
+  std::u16string url2_title = u"url&2";
+  std::u16string url3_title = u"url\"3";
+  std::u16string url4_title = u"url\"&;";
+  std::u16string unnamed_bookmark_title = u"";
   GURL url1("http://url1");
   GURL url1_favicon("http://url1/icon.ico");
   GURL url2("http://url2");

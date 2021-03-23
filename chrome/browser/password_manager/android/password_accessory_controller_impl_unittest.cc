@@ -188,7 +188,7 @@ PasswordForm MakeSavedPassword() {
   form.url = GURL(kExampleSite);
   form.username_value = base::ASCIIToUTF16(kUsername);
   form.password_value = base::ASCIIToUTF16(kPassword);
-  form.username_element = base::ASCIIToUTF16("");
+  form.username_element = u"";
   form.in_store = PasswordForm::Store::kProfileStore;
   return form;
 }
@@ -282,10 +282,8 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -305,8 +303,8 @@ TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
               .AppendField(no_user_str(), no_user_str(), false, false)
-              .AppendField(ASCIIToUTF16("S3cur3"),
-                           password_for_str(no_user_str()), true, false)
+              .AppendField(u"S3cur3", password_for_str(no_user_str()), true,
+                           false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -335,22 +333,17 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
       result,
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Alf"), ASCIIToUTF16("Alf"), false, true)
-          .AppendField(ASCIIToUTF16("PWD"), password_for_str("Alf"), true,
-                       false)
+          .AppendField(u"Alf", u"Alf", false, true)
+          .AppendField(u"PWD", password_for_str("Alf"), true, false)
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false, true)
-          .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"), true,
-                       false)
+          .AppendField(u"Ben", u"Ben", false, true)
+          .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Cat"), ASCIIToUTF16("Cat"), false, true)
-          .AppendField(ASCIIToUTF16("M1@u"), password_for_str("Cat"), true,
-                       false)
+          .AppendField(u"Cat", u"Cat", false, true)
+          .AppendField(u"M1@u", password_for_str("Cat"), true, false)
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Zebra"), ASCIIToUTF16("Zebra"), false,
-                       true)
-          .AppendField(ASCIIToUTF16("M3h"), password_for_str("Zebra"), true,
-                       false)
+          .AppendField(u"Zebra", u"Zebra", false, true)
+          .AppendField(u"M3h", password_for_str("Zebra"), true, false)
           .Build());
 }
 
@@ -367,10 +360,8 @@ TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -405,10 +396,8 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -421,10 +410,8 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           false)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, true)
+              .AppendField(u"Ben", u"Ben", false, false)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, true)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillablePasswordField,
@@ -442,10 +429,8 @@ TEST_F(PasswordAccessoryControllerTest, CachesIsReplacedByNewPasswords) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -460,10 +445,8 @@ TEST_F(PasswordAccessoryControllerTest, CachesIsReplacedByNewPasswords) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Alf"), ASCIIToUTF16("Alf"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("M3lm4k"), password_for_str("Alf"),
-                           true, false)
+              .AppendField(u"Alf", u"Alf", false, true)
+              .AppendField(u"M3lm4k", password_for_str("Alf"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -494,9 +477,9 @@ TEST_F(PasswordAccessoryControllerTest, HidesEntriesForPSLMatchedOriginsInV1) {
       result,
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"),
+          .AppendField(u"Ben", u"Ben",
                        /*is_obfuscated=*/false, /*selectable=*/true)
-          .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
+          .AppendField(u"S3cur3", password_for_str("Ben"),
                        /*is_obfuscated=*/true, /*selectable=*/false)
           .Build());
 }
@@ -523,14 +506,14 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
           .AddUserInfo(kExampleSite, IsPslMatch(false))
-          .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"),
+          .AppendField(u"Ben", u"Ben",
                        /*is_obfuscated=*/false, /*selectable=*/true)
-          .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
+          .AppendField(u"S3cur3", password_for_str("Ben"),
                        /*is_obfuscated=*/true, /*selectable=*/false)
           .AddUserInfo(kExampleSiteMobile, IsPslMatch(true))
-          .AppendField(ASCIIToUTF16("Alf"), ASCIIToUTF16("Alf"),
+          .AppendField(u"Alf", u"Alf",
                        /*is_obfuscated=*/false, /*selectable=*/true)
-          .AppendField(ASCIIToUTF16("R4nd0m"), password_for_str("Alf"),
+          .AppendField(u"R4nd0m", password_for_str("Alf"),
                        /*is_obfuscated=*/true, /*selectable=*/false)
           .Build());
 }
@@ -548,10 +531,8 @@ TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,
@@ -581,10 +562,8 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
       RefreshSuggestions(
           PasswordAccessorySheetDataBuilder(passwords_title_str(kExampleDomain))
               .AddUserInfo(kExampleSite, IsPslMatch(false))
-              .AppendField(ASCIIToUTF16("Ben"), ASCIIToUTF16("Ben"), false,
-                           true)
-              .AppendField(ASCIIToUTF16("S3cur3"), password_for_str("Ben"),
-                           true, false)
+              .AppendField(u"Ben", u"Ben", false, true)
+              .AppendField(u"S3cur3", password_for_str("Ben"), true, false)
               .Build()));
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField,

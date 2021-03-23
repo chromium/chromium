@@ -912,7 +912,7 @@ TEST_F(UiTest, SpeechRecognitionUiVisibility) {
 
   // Mock received speech result.
   model_->speech.speech_recognition_state = SPEECH_RECOGNITION_END;
-  browser_ui->SetRecognitionResult(base::ASCIIToUTF16("test"));
+  browser_ui->SetRecognitionResult(u"test");
   browser_ui->SetSpeechRecognitionEnabled(false);
 
   EXPECT_TRUE(RunForMs(10));

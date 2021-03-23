@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                       password_manager::MockPasswordStore>))
               .get()));
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"https://example.test", base::ASCIIToUTF16("username1")}};
+      {"https://example.test", u"username1"}};
   service->set_saved_passwords_matching_reused_credentials({credentials});
 
   EXPECT_CALL(*password_store, RemoveInsecureCredentialsImpl(_, _, _)).Times(1);

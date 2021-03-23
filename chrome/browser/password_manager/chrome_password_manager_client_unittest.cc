@@ -800,7 +800,7 @@ TEST_F(ChromePasswordManagerClientTest,
       MaybeStartProtectedPasswordEntryRequest(_, _, "username", _, _, true))
       .Times(4);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"saved_domain.com", base::ASCIIToUTF16("username")}};
+      {"saved_domain.com", u"username"}};
 
   client->CheckProtectedPasswordEntry(
       password_manager::metrics_util::PasswordType::SAVED_PASSWORD, "username",
@@ -973,8 +973,8 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   auto origin = url::Origin::Create(GURL("https://example.com"));
   PasswordForm form;
   form.url = origin.GetURL();
-  form.username_value = base::ASCIIToUTF16("alice");
-  form.password_value = base::ASCIIToUTF16("S3cr3t");
+  form.username_value = u"alice";
+  form.password_value = u"S3cr3t";
   GetClient()
       ->GetCredentialCacheForTesting()
       ->SaveCredentialsAndBlocklistedForOrigin(

@@ -259,7 +259,7 @@ std::u16string MatchUtility(const std::u16string& title) {
 }
 
 std::u16string MatchAnyUtility() {
-  return MatchUtility(base::ASCIIToUTF16("*"));
+  return MatchUtility(u"*");
 }
 
 }  // namespace browsertest_util

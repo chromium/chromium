@@ -327,7 +327,7 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
 
   // Mimic app load.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
@@ -350,7 +350,7 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppLoadUnload) {
   // Mimic app load while suspended, e.g. from sync. This should enable and
   // resume background mode.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
@@ -371,7 +371,7 @@ TEST_F(BackgroundModeManagerTest, DISABLED_BackgroundAppInstallWhileDisabled) {
 
   // When a new client is installed, status tray icons will not be created,
   // launch on startup status will not be modified.
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   AssertBackgroundModeInactive(manager);
@@ -398,7 +398,7 @@ TEST_F(BackgroundModeManagerTest, BackgroundAppInstallUninstallWhileDisabled) {
 
   // When a new client is installed, status tray icons will not be created,
   // launch on startup status will not be modified.
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   AssertBackgroundModeInactive(manager);
@@ -422,7 +422,7 @@ TEST_F(BackgroundModeManagerTest, EnableAfterBackgroundAppInstall) {
 
   // Install app, should show status tray icon.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   // OnBackgroundClientInstalled does not actually add an app to the
   // BackgroundApplicationListModel which would result in another
   // call to CreateStatusTray.
@@ -462,14 +462,14 @@ TEST_F(BackgroundModeManagerTest, MultiProfile) {
 
   // Install app, should show status tray icon.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
   AssertBackgroundModeActive(manager);
 
   // Install app for other profile, should show other status tray icon.
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile2, 2);
   manager.OnApplicationListChanged(profile2);
   AssertBackgroundModeActive(manager);
@@ -524,13 +524,13 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorage) {
 
   // Install app, should show status tray icon.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
 
   // Install app for other profile.
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile2, 1);
   manager.OnApplicationListChanged(profile2);
 
@@ -562,7 +562,7 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
 
   // Install app, should show status tray icon.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
@@ -573,8 +573,7 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
       profile_->GetPath(),
       manager.GetBackgroundModeData(profile_)->name());
 
-  EXPECT_EQ(base::ASCIIToUTF16("p1"),
-            manager.GetBackgroundModeData(profile_)->name());
+  EXPECT_EQ(u"p1", manager.GetBackgroundModeData(profile_)->name());
 
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
@@ -582,8 +581,7 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
   EXPECT_EQ(2U, manager.NumberOfBackgroundModeData());
 
   manager.OnProfileAdded(profile2->GetPath());
-  EXPECT_EQ(base::ASCIIToUTF16("p2"),
-            manager.GetBackgroundModeData(profile2)->name());
+  EXPECT_EQ(u"p2", manager.GetBackgroundModeData(profile2)->name());
 
   manager.OnProfileWillBeRemoved(profile2->GetPath());
   // Should still be in background mode after deleting profile.
@@ -591,8 +589,7 @@ TEST_F(BackgroundModeManagerTest, ProfileAttributesStorageObserver) {
   EXPECT_EQ(1U, manager.NumberOfBackgroundModeData());
 
   // Check that the background mode data we think is in the map actually is.
-  EXPECT_EQ(base::ASCIIToUTF16("p1"),
-            manager.GetBackgroundModeData(profile_)->name());
+  EXPECT_EQ(u"p1", manager.GetBackgroundModeData(profile_)->name());
 }
 
 TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
@@ -605,7 +602,7 @@ TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
 
   // Install app, should show status tray icon.
   EXPECT_CALL(manager, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  manager.OnBackgroundClientInstalled(base::ASCIIToUTF16("name"));
+  manager.OnBackgroundClientInstalled(u"name");
   manager.SetBackgroundClientCountForProfile(profile_, 1);
   manager.OnApplicationListChanged(profile_);
   Mock::VerifyAndClearExpectations(&manager);
@@ -696,15 +693,13 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   BackgroundModeManager::BackgroundModeData* bmd =
       manager_->GetBackgroundModeData(profile_);
   bmd->BuildProfileMenu(submenu.get(), menu.get());
-  EXPECT_EQ(submenu->GetLabelAt(0), base::ASCIIToUTF16("Component Extension"));
+  EXPECT_EQ(submenu->GetLabelAt(0), u"Component Extension");
   EXPECT_FALSE(submenu->IsCommandIdEnabled(submenu->GetCommandIdAt(0)));
-  EXPECT_EQ(submenu->GetLabelAt(1),
-            base::ASCIIToUTF16("Component Extension with Options"));
+  EXPECT_EQ(submenu->GetLabelAt(1), u"Component Extension with Options");
   EXPECT_TRUE(submenu->IsCommandIdEnabled(submenu->GetCommandIdAt(1)));
-  EXPECT_EQ(submenu->GetLabelAt(2), base::ASCIIToUTF16("Regular Extension"));
+  EXPECT_EQ(submenu->GetLabelAt(2), u"Regular Extension");
   EXPECT_TRUE(submenu->IsCommandIdEnabled(submenu->GetCommandIdAt(2)));
-  EXPECT_EQ(submenu->GetLabelAt(3),
-            base::ASCIIToUTF16("Regular Extension with Options"));
+  EXPECT_EQ(submenu->GetLabelAt(3), u"Regular Extension with Options");
   EXPECT_TRUE(submenu->IsCommandIdEnabled(submenu->GetCommandIdAt(3)));
 }
 
@@ -774,12 +769,12 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   EXPECT_TRUE(context_menu);
 
   // Background Profile Enable Checks
-  EXPECT_EQ(context_menu->GetLabelAt(3), base::ASCIIToUTF16("p1"));
+  EXPECT_EQ(context_menu->GetLabelAt(3), u"p1");
   EXPECT_TRUE(
       context_menu->IsCommandIdEnabled(context_menu->GetCommandIdAt(3)));
   EXPECT_EQ(context_menu->GetCommandIdAt(3), 4);
 
-  EXPECT_EQ(context_menu->GetLabelAt(4), base::ASCIIToUTF16("p2"));
+  EXPECT_EQ(context_menu->GetLabelAt(4), u"p2");
   EXPECT_TRUE(
       context_menu->IsCommandIdEnabled(context_menu->GetCommandIdAt(4)));
   EXPECT_EQ(context_menu->GetCommandIdAt(4), 8);
@@ -787,26 +782,23 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   // Profile 1 Submenu Checks
   StatusIconMenuModel* profile1_submenu =
       static_cast<StatusIconMenuModel*>(context_menu->GetSubmenuModelAt(3));
-  EXPECT_EQ(profile1_submenu->GetLabelAt(0),
-            base::ASCIIToUTF16("Component Extension"));
+  EXPECT_EQ(profile1_submenu->GetLabelAt(0), u"Component Extension");
   EXPECT_FALSE(
       profile1_submenu->IsCommandIdEnabled(
           profile1_submenu->GetCommandIdAt(0)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(0), 0);
   EXPECT_EQ(profile1_submenu->GetLabelAt(1),
-            base::ASCIIToUTF16("Component Extension with Options"));
+            u"Component Extension with Options");
   EXPECT_TRUE(
       profile1_submenu->IsCommandIdEnabled(
           profile1_submenu->GetCommandIdAt(1)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(1), 1);
-  EXPECT_EQ(profile1_submenu->GetLabelAt(2),
-            base::ASCIIToUTF16("Regular Extension"));
+  EXPECT_EQ(profile1_submenu->GetLabelAt(2), u"Regular Extension");
   EXPECT_TRUE(
       profile1_submenu->IsCommandIdEnabled(
           profile1_submenu->GetCommandIdAt(2)));
   EXPECT_EQ(profile1_submenu->GetCommandIdAt(2), 2);
-  EXPECT_EQ(profile1_submenu->GetLabelAt(3),
-            base::ASCIIToUTF16("Regular Extension with Options"));
+  EXPECT_EQ(profile1_submenu->GetLabelAt(3), u"Regular Extension with Options");
   EXPECT_TRUE(
       profile1_submenu->IsCommandIdEnabled(
           profile1_submenu->GetCommandIdAt(3)));
@@ -815,20 +807,17 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   // Profile 2 Submenu Checks
   StatusIconMenuModel* profile2_submenu =
       static_cast<StatusIconMenuModel*>(context_menu->GetSubmenuModelAt(4));
-  EXPECT_EQ(profile2_submenu->GetLabelAt(0),
-            base::ASCIIToUTF16("Component Extension"));
+  EXPECT_EQ(profile2_submenu->GetLabelAt(0), u"Component Extension");
   EXPECT_FALSE(
       profile2_submenu->IsCommandIdEnabled(
           profile2_submenu->GetCommandIdAt(0)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(0), 5);
-  EXPECT_EQ(profile2_submenu->GetLabelAt(1),
-            base::ASCIIToUTF16("Regular Extension"));
+  EXPECT_EQ(profile2_submenu->GetLabelAt(1), u"Regular Extension");
   EXPECT_TRUE(
       profile2_submenu->IsCommandIdEnabled(
           profile2_submenu->GetCommandIdAt(1)));
   EXPECT_EQ(profile2_submenu->GetCommandIdAt(1), 6);
-  EXPECT_EQ(profile2_submenu->GetLabelAt(2),
-            base::ASCIIToUTF16("Regular Extension with Options"));
+  EXPECT_EQ(profile2_submenu->GetLabelAt(2), u"Regular Extension with Options");
   EXPECT_TRUE(
       profile2_submenu->IsCommandIdEnabled(
           profile2_submenu->GetCommandIdAt(2)));

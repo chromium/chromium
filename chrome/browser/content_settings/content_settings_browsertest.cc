@@ -1119,9 +1119,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  std::u16string expected_title(base::ASCIIToUTF16("Imported"));
+  std::u16string expected_title(u"Imported");
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Failed"));
+  title_watcher.AlsoWaitForTitle(u"Failed");
 
   ui_test_utils::NavigateToURL(browser(), http_url);
 
@@ -1172,9 +1172,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  std::u16string expected_title(base::ASCIIToUTF16("Failed"));
+  std::u16string expected_title(u"Failed");
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Imported"));
+  title_watcher.AlsoWaitForTitle(u"Imported");
 
   ui_test_utils::NavigateToURL(browser(), http_url);
 

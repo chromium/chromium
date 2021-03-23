@@ -181,7 +181,7 @@ class UiInputManagerContentTest : public UiTest {
 TEST_F(UiInputManagerTest, FocusedElement) {
   StrictMock<MockTextInput>* p_element1 = CreateAndAddMockInputElement(-5.f);
   StrictMock<MockTextInput>* p_element2 = CreateAndAddMockInputElement(-5.f);
-  EditedText edit(base::ASCIIToUTF16("asdfg"));
+  EditedText edit(u"asdfg");
 
   // Focus request triggers OnFocusChanged.
   testing::Sequence s;
