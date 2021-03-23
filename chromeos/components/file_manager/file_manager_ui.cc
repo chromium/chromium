@@ -68,6 +68,7 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+      "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
       "chrome://resources "
       "'self' ;");
 
