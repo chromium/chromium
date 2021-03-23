@@ -90,7 +90,6 @@ let MethodData;
    *     checking whether the proxy method was called with the expected
    *     arguments.
    * @return {*} If set the result registered via |setResult[Mapper]For|.
-   * @protected
    */
   methodCalled(methodName, ...args) {
     const methodData = this.resolverMap_.get(methodName);

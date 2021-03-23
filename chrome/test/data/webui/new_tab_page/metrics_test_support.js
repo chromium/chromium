@@ -44,7 +44,7 @@ export class MetricsTracker {
 /**
  * Installs interceptors to metrics logging calls and forwards them to the
  * returned |MetricsTracker| object.
- * @return {MetricsTracker}
+ * @return {!MetricsTracker}
  */
 export function fakeMetricsPrivate() {
   const metrics = new MetricsTracker();

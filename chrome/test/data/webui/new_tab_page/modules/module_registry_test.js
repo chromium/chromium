@@ -4,53 +4,58 @@
 
 import {ModuleDescriptor, ModuleRegistry, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {flushTasks} from '../../test_util.m.js';
+import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
+import {createMock} from '../test_support.js';
+
+/** @return {!TestBrowserProxy} */
+function installMockWindowProxy() {
+  const {mock, callTracker} = createMock(WindowProxy);
+  WindowProxy.setInstance(mock);
+  return callTracker;
+}
+
+/** @return {!TestBrowserProxy} */
+function installMockHandler() {
+  const {mock, callTracker} = createMock(newTabPage.mojom.PageHandlerRemote);
+  NewTabPageProxy.setInstance(mock, new newTabPage.mojom.PageCallbackRouter());
+  return callTracker;
+}
 
 suite('NewTabPageModulesModuleRegistryTest', () => {
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  /** @type {!newTabPage.mojom.PageRemote} */
   let callbackRouterRemote;
 
-  /** @type {MetricsTracker} */
+  /** @type {!MetricsTracker} */
   let metrics;
 
   setup(async () => {
-    PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      navigationStartTime: 0.0,
-    });
+    loadTimeData.overrideValues({navigationStartTime: 0.0});
     metrics = fakeMetricsPrivate();
-
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
-    WindowProxy.setInstance(windowProxy);
-
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-    NewTabPageProxy.setInstance(handler, callbackRouter);
-    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
+    windowProxy = installMockWindowProxy();
+    handler = installMockHandler();
+    callbackRouterRemote = NewTabPageProxy.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   test('instantiates modules', async () => {
     // Arrange.
-    const fooModule = document.createElement('div');
-    const bazModule = document.createElement('div');
+    const fooModule =
+        /** @type {!HTMLElement} */ (document.createElement('div'));
+    const bazModule =
+        /** @type {!HTMLElement} */ (document.createElement('div'));
     const bazModuleResolver = new PromiseResolver();
     ModuleRegistry.getInstance().registerModules([
       new ModuleDescriptor('foo', 'bli', 100, () => Promise.resolve(fooModule)),
-      new ModuleDescriptor('bar', 'blu', 200, () => null),
+      new ModuleDescriptor('bar', 'blu', 200, () => Promise.resolve(null)),
       new ModuleDescriptor('baz', 'bla', 300, () => bazModuleResolver.promise),
       new ModuleDescriptor('buz', 'blo', 400, () => Promise.resolve(fooModule)),
     ]);

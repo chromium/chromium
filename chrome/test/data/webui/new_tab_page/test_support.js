@@ -4,6 +4,8 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertNotEquals} from '../chai_assert.js';
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @type {string} */
 export const NONE_ANIMATION = 'none 0s ease 0s 1 normal none running';
@@ -44,6 +46,29 @@ export function assertNotStyle(element, name, not) {
  */
 export function assertFocus(element) {
   assertEquals(element, getDeepActiveElement());
+}
+
+/**
+ * @param {!typeof T} clazz
+ * @return {{mock: !T, callTracker: !TestBrowserProxy}}
+ * @template T
+ */
+export function createMock(clazz) {
+  const callTracker = new TestBrowserProxy(
+      Object.getOwnPropertyNames(clazz.prototype)
+          .filter(methodName => methodName !== 'constructor'));
+  const handler = {
+    get: function(target, prop, receiver) {
+      if (clazz.prototype[prop] instanceof Function) {
+        return (...args) => callTracker.methodCalled(prop, ...args);
+      }
+      if (Object.getOwnPropertyDescriptor(clazz.prototype, prop).get) {
+        return callTracker.methodCalled(prop);
+      }
+      return undefined;
+    }
+  };
+  return {mock: new Proxy({}, handler), callTracker};
 }
 
 /** @return {!newTabPage.mojom.Theme} */

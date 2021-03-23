@@ -6,11 +6,17 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"" ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
   deps = [
     ":img_test",
     ":metrics_utils_test",
+    ":test_support",
     "modules:module_header_test",
+    "modules:module_registry_test",
   ]
 }
 
@@ -27,5 +33,12 @@ js_library("metrics_utils_test") {
     ":metrics_test_support",
     "//chrome/browser/resources/new_tab_page",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("test_support") {
+  deps = [
+    "//chrome/browser/resources/new_tab_page",
+    "//chrome/test/data/webui:test_browser_proxy.m",
   ]
 }
