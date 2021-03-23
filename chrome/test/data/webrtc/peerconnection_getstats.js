@@ -535,6 +535,7 @@ let kRTCIceCandidateStats = new RTCStats(null, {
   isRemote: 'boolean',
   networkType: 'string',
   ip: 'string',
+  address: 'string',
   port: 'number',
   protocol: 'string',
   relayProtocol: 'string',
