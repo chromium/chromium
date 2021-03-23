@@ -5,6 +5,7 @@
 #include "components/variations/variations_layers.h"
 
 #include "base/metrics/field_trial.h"
+#include "build/build_config.h"
 
 namespace variations {
 
@@ -57,8 +58,12 @@ VariationsLayers::VariationsLayers(
     const base::FieldTrial::EntropyProvider& low_entropy_provider) {
   // TODO(crbug.com/1154033): Support a way to expire old/unused layers so they
   // no longer get processed by the clients.
+  // Disable VariationsLayers for Android WebView. This is known to put the app
+  // into a bad state from which it cannot recover.
+#if !defined(OS_ANDROID)
   for (const Layer& layer_proto : seed.layers())
     ConstructLayer(low_entropy_provider, layer_proto);
+#endif
 }
 
 VariationsLayers::VariationsLayers() = default;
