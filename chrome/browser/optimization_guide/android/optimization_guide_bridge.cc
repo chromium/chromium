@@ -35,21 +35,19 @@ namespace android {
 
 namespace {
 
-ScopedJavaLocalRef<jobject> ToJavaOptimizationMetadata(
+ScopedJavaLocalRef<jbyteArray> ToJavaSerializedAnyMetadata(
     JNIEnv* env,
     const optimization_guide::OptimizationMetadata optimization_metadata) {
   // We do not expect the following metadatas to be populated for optimization
   // types getting called from Java.
   DCHECK(!optimization_metadata.loading_predictor_metadata());
   DCHECK(!optimization_metadata.public_image_metadata());
+  DCHECK(!optimization_metadata.performance_hints_metadata());
 
-  if (optimization_metadata.performance_hints_metadata()) {
+  if (optimization_metadata.any_metadata()) {
     std::string serialized;
-    optimization_metadata.performance_hints_metadata()
-        .value()
-        .SerializeToString(&serialized);
-    return Java_OptimizationGuideBridge_createOptimizationMetadataWithPerformanceHintsMetadata(
-        env, ToJavaByteArray(env, serialized));
+    optimization_metadata.any_metadata().value().SerializeToString(&serialized);
+    return ToJavaByteArray(env, serialized);
   }
   return nullptr;
 }
@@ -61,7 +59,7 @@ void OnOptimizationGuideDecision(
   JNIEnv* env = AttachCurrentThread();
   Java_OptimizationGuideBridge_onOptimizationGuideDecision(
       env, java_callback, static_cast<int>(decision),
-      ToJavaOptimizationMetadata(env, metadata));
+      ToJavaSerializedAnyMetadata(env, metadata));
 }
 
 }  // namespace

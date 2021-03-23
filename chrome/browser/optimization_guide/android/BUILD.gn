@@ -12,7 +12,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridge.java",
     "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationGuideBridgeFactory.java",
-    "java/src/org/chromium/chrome/browser/optimization_guide/OptimizationMetadata.java",
   ]
 
   deps = [

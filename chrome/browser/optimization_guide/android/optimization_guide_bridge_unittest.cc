@@ -148,7 +148,7 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   hint->set_wildcard_pattern("test.com");
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
   optimization_guide::OptimizationMetadata metadata;
-  metadata.set_performance_hints_metadata(hints_metadata);
+  metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(
       *optimization_guide_hints_manager_,
       CanApplyOptimizationAsync(GURL("https://example.com/"), Eq(base::nullopt),
