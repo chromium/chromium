@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "crypto/sha2.h"
@@ -437,14 +439,32 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
               request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
-// Flaky on Linux. https://crbug.com/1165862
-#if defined(OS_LINUX)
-#define MAYBE_RecordsTimers DISABLED_RecordsTimers
-#else
-#define MAYBE_RecordsTimers RecordsTimers
-#endif
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_RecordsTimers) {
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
   base::HistogramTester histograms;
+
+  // |completion_waiter| adds a synchronization point so that we can
+  // safely fetch all of the relevant histograms from the network process.
+  //
+  // Without this, there's a race between the fetch() promises resolving and the
+  // NetErrorForTrustTokenOperation histogram being logged. This likely has no
+  // practical impact during normal operation, but it makes this test flake: see
+  // https://crbug.com/1165862.
+  //
+  // The URLLoaderInterceptor's completion callback receives its
+  // URLLoaderCompletionStatus from URLLoaderClient::OnComplete, which happens
+  // after CorsURLLoader::NotifyCompleted, which records the final histogram.
+  base::RunLoop run_loop;
+  content::URLLoaderInterceptor completion_waiter(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams*) {
+        return false;  // Don't intercept outbound requests.
+      }),
+      base::BindLambdaForTesting(
+          [&run_loop](const GURL& url,
+                      const network::URLLoaderCompletionStatus& status) {
+            if (url.spec().find("sign") != std::string::npos)
+              run_loop.Quit();
+          }),
+      /*ready_callback=*/base::NullCallback());
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
@@ -466,10 +486,12 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_RecordsTimers) {
       "Success",
       EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
 
+  run_loop.Run();
+  content::FetchHistogramsFromChildProcesses();
+
   // Just check that the timers were populated: since we can't mock a clock in
   // this browser test, it's hard to check the recorded values for
   // reasonableness.
-  content::FetchHistogramsFromChildProcesses();
   for (const std::string& op : {"Issuance", "Redemption", "Signing"}) {
     histograms.ExpectTotalCount(
         "Net.TrustTokens.OperationBeginTime.Success." + op, 1);
