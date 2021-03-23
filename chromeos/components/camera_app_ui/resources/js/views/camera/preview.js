@@ -103,6 +103,7 @@ export class Preview {
       state.addObserver(s, this.updateScanBarcode_.bind(this));
     });
 
+    // TODO(b/172881094): Remove experimental PTZ UI.
     this.initPTZOptions_();
   }
 
@@ -136,6 +137,7 @@ export class Preview {
             });
         return;
       }
+
       const initSlider = (capability, value, slider) => {
         if (capability === undefined) {
           slider.hidden = true;
@@ -154,6 +156,12 @@ export class Preview {
       initSlider(cap.pan, settings.pan, this.panSlider_);
       initSlider(cap.tilt, settings.tilt, this.tiltSlider_);
       initSlider(cap.zoom, settings.zoom, this.zoomSlider_);
+
+      // TODO(b/172881094): Only enable PTZ on external camera.
+      state.set(
+          state.State.HAS_PTZ_SUPPORT,
+          cap.pan !== undefined || cap.tilt !== undefined ||
+              cap.zoom !== undefined);
     };
     for (const s of ptzUIStates) {
       state.addObserver(s, onStateToggled);

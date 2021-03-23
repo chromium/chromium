@@ -18,6 +18,7 @@ in_app_images = [
   "camera_button_mic_on.svg",
   "camera_button_mirror_off.svg",
   "camera_button_mirror_on.svg",
+  "camera_button_ptz_panel.svg",
   "camera_button_settings.svg",
   "camera_button_switch_device.svg",
   "camera_button_switch_photo.svg",

@@ -27,6 +27,7 @@ export const State = {
   HAS_BACK_CAMERA: 'has-back-camera',
   HAS_EXTERNAL_SCREEN: 'has-external-screen',
   HAS_FRONT_CAMERA: 'has-front-camera',
+  HAS_PTZ_SUPPORT: 'has-ptz-support',
   INTENT: 'intent',
   MAX_WND: 'max-wnd',
   MIC: 'mic',

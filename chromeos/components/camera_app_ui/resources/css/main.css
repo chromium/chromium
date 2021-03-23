@@ -651,8 +651,18 @@ body.max-wnd #options-group {
   --switch-device-gap: 48px;
 }
 
-#options-group input {
+#options-group input,
+#options-group button {
   margin: var(--option-item-vpadding) 0;
+}
+
+body:not(.show-ptz-options) #open-ptz-panel,
+body:not(.has-ptz-support) #open-ptz-panel {
+  display: none;
+}
+
+#open-ptz-panel {
+  background-image: url(/images/camera_button_ptz_panel.svg);
 }
 
 body.timer-3s #toggle-timer:checked {
