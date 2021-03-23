@@ -139,6 +139,9 @@ class OmniboxPedal {
   // For navigation Pedals, returns the destination URL.
   const GURL& GetNavigationUrl() const;
 
+  // Sets the destination URL for the Pedal.
+  void SetNavigationUrl(const GURL& url);
+
   // Takes the action associated with this Pedal.  Non-navigation
   // Pedals must override the default, but Navigation Pedals don't need to.
   virtual void Execute(ExecutionContext& context) const;

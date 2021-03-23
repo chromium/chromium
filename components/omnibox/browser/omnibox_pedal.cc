@@ -147,6 +147,10 @@ const GURL& OmniboxPedal::GetNavigationUrl() const {
   return url_;
 }
 
+void OmniboxPedal::SetNavigationUrl(const GURL& url) {
+  url_ = url;
+}
+
 void OmniboxPedal::Execute(OmniboxPedal::ExecutionContext& context) const {
   DCHECK(IsNavigation());
   OpenURL(context, url_);

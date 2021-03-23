@@ -218,6 +218,10 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     if (ui_strings) {
       pedal->second->SetLabelStrings(*ui_strings);
     }
+    const std::string* url = pedal_value.FindStringKey("url");
+    if (!url->empty()) {
+      pedal->second->SetNavigationUrl(GURL(*url));
+    }
     for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
       pedal->second->AddSynonymGroup(LoadSynonymGroup(group_value));
     }

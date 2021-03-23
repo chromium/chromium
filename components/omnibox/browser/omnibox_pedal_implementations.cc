@@ -142,7 +142,7 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
-            GURL("chrome://settings/safetyCheck")) {}
+            GURL()) {}
 };
 
 // =============================================================================
@@ -157,7 +157,7 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS),
-            GURL("chrome://settings/security")) {}
+            GURL()) {}
 };
 
 // =============================================================================
@@ -171,7 +171,7 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES),
-                     GURL("chrome://settings/cookies")) {}
+                     GURL()) {}
 };
 
 // =============================================================================
@@ -185,7 +185,7 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES),
-                     GURL("chrome://settings/addresses")) {}
+                     GURL()) {}
 };
 
 // =============================================================================
@@ -199,7 +199,7 @@ class OmniboxPedalManageSync : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
-                     GURL("chrome://settings/syncSetup/advanced")) {}
+                     GURL()) {}
 };
 
 // =============================================================================
@@ -214,7 +214,7 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS),
-            GURL("chrome://settings/content")) {}
+            GURL()) {}
 };
 
 // =============================================================================
@@ -229,7 +229,7 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC),
-            GURL("https://doc.new")) {}
+            GURL()) {}
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
