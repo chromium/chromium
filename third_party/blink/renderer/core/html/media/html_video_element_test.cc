@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -200,6 +201,33 @@ TEST_F(HTMLVideoElementTest, AutoPIPExitPIPTest) {
   // and fail the DCHECK.
   EXPECT_NO_FATAL_FAILURE(video()->DidEnterFullscreen());
   test::RunPendingTasks();
+}
+
+// TODO(1190335): Remove this once we no longer support "default poster image"
+// Blink embedders (such as Webview) can set the default poster image for a
+// video using `blink::Settings`. In some cases we still need to distinguish
+// between a "real" poster image and the default poster image.
+TEST_F(HTMLVideoElementTest, DefaultPosterImage) {
+  String const kDefaultPosterImage = "http://www.example.com/foo.jpg";
+
+  // Override the default poster image
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(kDefaultPosterImage);
+
+  // Need to create a new video element, since
+  // `HTMLVideoElement::default_poster_url_` is set upon construction.
+  auto* video = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
+  GetDocument().body()->appendChild(video);
+
+  // Assert that video element (without an explicitly set poster image url) has
+  // the same poster image URL as what we just set.
+  EXPECT_TRUE(video->IsDefaultPosterImageURL());
+  EXPECT_EQ(kDefaultPosterImage, video->PosterImageURL());
+
+  // Set the poster image of the video to something
+  video->setAttribute(html_names::kPosterAttr,
+                      "http://www.example.com/bar.jpg");
+  EXPECT_FALSE(video->IsDefaultPosterImageURL());
+  EXPECT_NE(kDefaultPosterImage, video->PosterImageURL());
 }
 
 }  // namespace blink
