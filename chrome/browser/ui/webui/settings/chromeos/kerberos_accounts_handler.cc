@@ -110,6 +110,8 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_SECTION_NOT_SUPPORTED},
       {"kerberosConfigErrorKrb5FailedToParse",
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE},
+      {"kerberosConfigErrorTooManyNestedGroups",
+       IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS},
       {"addKerberosAccountRefreshButtonLabel",
        IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL},
       {"addKerberosAccount", IDS_SETTINGS_ADD_KERBEROS_ACCOUNT},

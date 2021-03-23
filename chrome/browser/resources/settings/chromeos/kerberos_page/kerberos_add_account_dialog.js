@@ -371,6 +371,8 @@ Polymer({
       case settings.KerberosConfigErrorCode.kKrb5FailedToParse:
         // Note: This error doesn't have an error line.
         return this.i18n('kerberosConfigErrorKrb5FailedToParse');
+      case settings.KerberosConfigErrorCode.kTooManyNestedGroups:
+        return this.i18n('kerberosConfigErrorTooManyNestedGroups', errorLine);
       default:
         assertNotReached();
     }

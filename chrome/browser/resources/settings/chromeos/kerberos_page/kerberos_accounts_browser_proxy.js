@@ -85,6 +85,7 @@ cr.define('settings', function() {
     kKeyNotSupported: 6,
     kSectionNotSupported: 7,
     kKrb5FailedToParse: 8,
+    kTooManyNestedGroups: 9,
   };
 
   /** @interface */

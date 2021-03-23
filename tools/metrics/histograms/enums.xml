@@ -41669,6 +41669,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Key not supported"/>
   <int value="7" label="Section not supported"/>
   <int value="8" label="Krb5 failed to parse"/>
+  <int value="9" label="Too many nested groups"/>
 </enum>
 
 <enum name="KerberosEncryptionTypes">

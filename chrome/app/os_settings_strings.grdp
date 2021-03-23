@@ -2843,6 +2843,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that cannot be parsed by the underlying Kerberos library for unknown reasons. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
     Failed to parse configuration
   </message>
+  <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains too many nested groups. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+    Too many nested groups: <ph name="ERROR_LINE">$1<ex>[appdefaults]</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL" desc="Label of the action button on the 'Refresh a Kerberos tickets' dialog.">
     Refresh
   </message>
