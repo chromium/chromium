@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // Called from OnScenicEvents() to handle input events.
   void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
 
-  // InputEventDispatcher::Delegate interface.
+  // InputEventSink implementation.
   void DispatchEvent(ui::Event* event) override;
 
   void UpdateSize();

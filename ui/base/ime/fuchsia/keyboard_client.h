@@ -20,7 +20,7 @@ class InputEventSink;
 class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
     : public fuchsia::ui::input3::KeyboardListener {
  public:
-  // |event_sink| must outlive |this|.
+  // |keyboard_service| and |event_sink| must outlive |this|.
   KeyboardClient(fuchsia::ui::input3::Keyboard* keyboard_service,
                  fuchsia::ui::views::ViewRef view_ref,
                  InputEventSink* event_sink);
@@ -28,6 +28,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
 
   KeyboardClient(const KeyboardClient&) = delete;
   KeyboardClient& operator=(const KeyboardClient&) = delete;
+
+  // fuchsia::ui::input3::KeyboardListener implementation.
+  void OnKeyEvent(
+      fuchsia::ui::input3::KeyEvent key_event,
+      fuchsia::ui::input3::KeyboardListener::OnKeyEventCallback callback) final;
 
  private:
   // Handles converting and propagating |key_event|. Returns false if critical
@@ -38,16 +43,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
   bool ProcessKeyEvent(const fuchsia::ui::input3::KeyEvent& key_event);
 
   // Update the value of modifiers such as shift.
-  void UpdateModifiers(const fuchsia::ui::input3::KeyEvent& key_event);
+  void UpdatedCachedModifiers(const fuchsia::ui::input3::KeyEvent& key_event);
 
-  // Computes the ui EventFlags value based on key modifiers and current keys
-  // that are held down.
-  int ComputeFlagValue(fuchsia::ui::input3::Modifiers modifiers);
-
-  // fuchsia::ui::input3::KeyboardListener implementation.
-  void OnKeyEvent(
-      fuchsia::ui::input3::KeyEvent key_event,
-      fuchsia::ui::input3::KeyboardListener::OnKeyEventCallback callback) final;
+  // Translate state of locally tracked modifier keys (e.g. shift, alt) into
+  // ui::Event flags.
+  int EventFlagsForCachedModifiers();
 
   fidl::Binding<fuchsia::ui::input3::KeyboardListener> binding_;
 

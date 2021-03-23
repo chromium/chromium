@@ -13,6 +13,29 @@
 
 namespace ui {
 
+namespace {
+
+// Converts the state of modifiers managed by Fuchsia (e.g. Caps and Num Lock)
+// into ui::Event flags.
+int ModifiersToEventFlags(const fuchsia::ui::input3::Modifiers& modifiers) {
+  int event_flags = 0;
+  if ((modifiers & fuchsia::ui::input3::Modifiers::CAPS_LOCK) ==
+      fuchsia::ui::input3::Modifiers::CAPS_LOCK) {
+    event_flags |= EF_CAPS_LOCK_ON;
+  }
+  if ((modifiers & fuchsia::ui::input3::Modifiers::NUM_LOCK) ==
+      fuchsia::ui::input3::Modifiers::NUM_LOCK) {
+    event_flags |= EF_NUM_LOCK_ON;
+  }
+  if ((modifiers & fuchsia::ui::input3::Modifiers::SCROLL_LOCK) ==
+      fuchsia::ui::input3::Modifiers::SCROLL_LOCK) {
+    event_flags |= EF_SCROLL_LOCK_ON;
+  }
+  return event_flags;
+}
+
+}  // namespace
+
 KeyboardClient::KeyboardClient(fuchsia::ui::input3::Keyboard* keyboard_service,
                                fuchsia::ui::views::ViewRef view_ref,
                                InputEventSink* event_sink)
@@ -50,6 +73,10 @@ bool KeyboardClient::ProcessKeyEvent(
     return false;
   }
 
+  // Update activation flags of modifier keys (SHIFT, ALT, etc). This needs to
+  // be done for all key event types.
+  UpdatedCachedModifiers(key_event);
+
   EventType event_type;
   switch (key_event.type()) {
     case fuchsia::ui::input3::KeyEventType::PRESSED:
@@ -60,36 +87,32 @@ bool KeyboardClient::ProcessKeyEvent(
       break;
     case fuchsia::ui::input3::KeyEventType::SYNC:
     case fuchsia::ui::input3::KeyEventType::CANCEL:
-      // TODO(http://fxbug.dev/69620): Add support for SYNC and CANCEL.
-      return false;
+      // SYNC and CANCEL should not generate ui::Events.
+      return true;
     default:
       NOTIMPLEMENTED() << "Unknown KeyEventType received: "
                        << static_cast<int>(event_type);
       return false;
   }
 
-  // Update activation flags of modifier keys (SHIFT, ALT, etc).
-  UpdateModifiers(key_event);
-
-  if (key_event.type() == fuchsia::ui::input3::KeyEventType::RELEASED)
-    return true;
-
   // Convert |key_event| to a ui::KeyEvent.
   DomCode dom_code =
       KeycodeConverter::UsbKeycodeToDomCode(static_cast<int>(key_event.key()));
-  DomKey dom_key;
-  KeyboardCode key_code;
-  int flags =
-      key_event.has_modifiers() ? ComputeFlagValue(key_event.modifiers()) : 0;
+  int event_flags = EventFlagsForCachedModifiers();
+  if (key_event.has_modifiers())
+    event_flags |= ModifiersToEventFlags(key_event.modifiers());
 
   // TODO(https://crbug.com/1187257): Use input3.KeyMeaning instead of US layout
   // as the default.
-  if (!DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code)) {
+  DomKey dom_key;
+  KeyboardCode key_code;
+  if (!DomCodeToUsLayoutDomKey(dom_code, event_flags, &dom_key, &key_code)) {
     LOG(ERROR) << "DomCodeToUsLayoutDomKey() failed for key: "
-               << static_cast<int>(key_event.key());
+               << static_cast<uint32_t>(key_event.key());
   }
 
-  ui::KeyEvent ui_key_event(event_type, key_code, dom_code, flags, dom_key,
+  ui::KeyEvent ui_key_event(event_type, key_code, dom_code, event_flags,
+                            dom_key,
                             base::TimeTicks::FromZxTime(key_event.timestamp()));
   event_sink_->DispatchEvent(&ui_key_event);
   return ui_key_event.handled();
@@ -97,59 +120,48 @@ bool KeyboardClient::ProcessKeyEvent(
 
 // TODO(https://crbug.com/850697): Add additional modifiers as they become
 // supported.
-void KeyboardClient::UpdateModifiers(
+void KeyboardClient::UpdatedCachedModifiers(
     const fuchsia::ui::input3::KeyEvent& key_event) {
-  if (key_event.type() == fuchsia::ui::input3::KeyEventType::PRESSED ||
-      key_event.type() == fuchsia::ui::input3::KeyEventType::RELEASED) {
-    bool modifier_active =
-        key_event.type() == fuchsia::ui::input3::KeyEventType::PRESSED;
-    switch (key_event.key()) {
-      case fuchsia::input::Key::LEFT_SHIFT:
-        left_shift_ = modifier_active;
-        break;
-      case fuchsia::input::Key::RIGHT_SHIFT:
-        right_shift_ = modifier_active;
-        break;
-      case fuchsia::input::Key::LEFT_ALT:
-        left_alt_ = modifier_active;
-        break;
-      case fuchsia::input::Key::RIGHT_ALT:
-        right_alt_ = modifier_active;
-        break;
-      case fuchsia::input::Key::LEFT_CTRL:
-        left_ctrl_ = modifier_active;
-        break;
-      case fuchsia::input::Key::RIGHT_CTRL:
-        right_ctrl_ = modifier_active;
-        break;
-      default:
-        break;
-    }
+  // A SYNC event indicates that the key was pressed while the view gained input
+  // focus. A CANCEL event indicates the key was held when the view lost input
+  // focus. In both cases, the state of locally tracked modifiers should be
+  // updated.
+  bool modifier_active =
+      key_event.type() == fuchsia::ui::input3::KeyEventType::PRESSED ||
+      key_event.type() == fuchsia::ui::input3::KeyEventType::SYNC;
+  switch (key_event.key()) {
+    case fuchsia::input::Key::LEFT_SHIFT:
+      left_shift_ = modifier_active;
+      break;
+    case fuchsia::input::Key::RIGHT_SHIFT:
+      right_shift_ = modifier_active;
+      break;
+    case fuchsia::input::Key::LEFT_ALT:
+      left_alt_ = modifier_active;
+      break;
+    case fuchsia::input::Key::RIGHT_ALT:
+      right_alt_ = modifier_active;
+      break;
+    case fuchsia::input::Key::LEFT_CTRL:
+      left_ctrl_ = modifier_active;
+      break;
+    case fuchsia::input::Key::RIGHT_CTRL:
+      right_ctrl_ = modifier_active;
+      break;
+    default:
+      break;
   }
 }
 
-int KeyboardClient::ComputeFlagValue(fuchsia::ui::input3::Modifiers modifiers) {
-  int flags = 0;
-  if ((modifiers & fuchsia::ui::input3::Modifiers::CAPS_LOCK) ==
-      fuchsia::ui::input3::Modifiers::CAPS_LOCK) {
-    flags |= EF_CAPS_LOCK_ON;
-  }
-  if ((modifiers & fuchsia::ui::input3::Modifiers::NUM_LOCK) ==
-      fuchsia::ui::input3::Modifiers::NUM_LOCK) {
-    flags |= EF_NUM_LOCK_ON;
-  }
-  if ((modifiers & fuchsia::ui::input3::Modifiers::SCROLL_LOCK) ==
-      fuchsia::ui::input3::Modifiers::SCROLL_LOCK) {
-    flags |= EF_SCROLL_LOCK_ON;
-  }
+int KeyboardClient::EventFlagsForCachedModifiers() {
+  int event_flags = 0;
   if (left_shift_ || right_shift_)
-    flags |= EF_SHIFT_DOWN;
+    event_flags |= EF_SHIFT_DOWN;
   if (left_alt_ || right_alt_)
-    flags |= EF_ALT_DOWN;
+    event_flags |= EF_ALT_DOWN;
   if (left_ctrl_ || right_ctrl_)
-    flags |= EF_CONTROL_DOWN;
-
-  return flags;
+    event_flags |= EF_CONTROL_DOWN;
+  return event_flags;
 }
 
 }  // namespace ui
