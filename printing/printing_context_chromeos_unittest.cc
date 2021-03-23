@@ -112,7 +112,7 @@ class PrintingContextTest : public testing::Test,
     EXPECT_CALL(*printer_, GetUri()).WillRepeatedly(Return(uri));
     EXPECT_CALL(*connection, GetPrinter(kPrinterName))
         .WillOnce(Return(ByMove(std::move(unique_printer))));
-    printing_context_ = std::make_unique<PrintingContextChromeos>(
+    printing_context_ = PrintingContextChromeos::CreateForTesting(
         this, std::move(unique_connection));
     auto settings = std::make_unique<PrintSettings>();
     settings->set_device_name(base::ASCIIToUTF16(kPrinterName));
@@ -189,10 +189,9 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_Resolution) {
 }
 
 TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
-  std::string uri = "ipps://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
-  SetDefaultSettings(true, uri);
+  SetDefaultSettings(/*send_user_info=*/true, "ipps://test-uri");
   std::string create_job_document_name;
   std::string create_job_username;
   std::string start_document_document_name;
@@ -213,12 +212,11 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
 }
 
 TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
-  std::string uri = "ipp://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
   std::string default_username = "chronos";
   std::string default_document_name = "-";
-  SetDefaultSettings(true, uri);
+  SetDefaultSettings(/*send_user_info=*/true, "ipp://test-uri");
   std::string create_job_document_name;
   std::string create_job_username;
   std::string start_document_document_name;
@@ -239,11 +237,9 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
 }
 
 TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
-  std::string uri = "ipps://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
   std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
-  std::string blank;
-  SetDefaultSettings(false, uri);
+  SetDefaultSettings(/*send_user_info=*/false, "ipps://test-uri");
   std::string create_job_document_name;
   std::string create_job_username;
   std::string start_document_document_name;
@@ -257,10 +253,10 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
 
   printing_context_->NewDocument(document_name);
 
-  EXPECT_EQ(create_job_document_name, blank);
-  EXPECT_EQ(start_document_document_name, blank);
-  EXPECT_EQ(create_job_username, blank);
-  EXPECT_EQ(start_document_username, blank);
+  EXPECT_EQ(create_job_document_name, "");
+  EXPECT_EQ(start_document_document_name, "");
+  EXPECT_EQ(create_job_username, "");
+  EXPECT_EQ(start_document_username, "");
 }
 
 }  // namespace
