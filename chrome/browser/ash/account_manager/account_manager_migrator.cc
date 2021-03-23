@@ -129,6 +129,10 @@ class AccountMigrationBaseStep : public AccountMigrationRunner::Step {
 
   AccountManager* account_manager() { return account_manager_; }
 
+  account_manager::AccountManagerFacade* account_manager_facade() {
+    return account_manager_facade_;
+  }
+
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
  private:
@@ -198,14 +202,14 @@ class DeviceAccountMigration : public AccountMigrationBaseStep,
       return;
     }
 
-    account_manager()->HasDummyGaiaToken(
+    account_manager_facade()->GetPersistentErrorForAccount(
         device_account_,
-        base::BindOnce(&DeviceAccountMigration::OnHasDummyGaiaToken,
+        base::BindOnce(&DeviceAccountMigration::OnGetPersistentErrorForAccount,
                        weak_factory_.GetWeakPtr()));
   }
 
-  void OnHasDummyGaiaToken(bool has_dummy_token) {
-    if (!has_dummy_token) {
+  void OnGetPersistentErrorForAccount(const GoogleServiceAuthError& error) {
+    if (!error.IsPersistentError()) {
       FinishWithSuccess();
       return;
     }
