@@ -179,6 +179,14 @@ class NavigationControllerBrowserTest
     return form_post_id;
   }
 
+  void ReplaceState(FrameTreeNode* node, const std::string& state) {
+    FrameNavigateParamsCapturer capturer(node);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(node, JsReplace("history.replaceState($1, '')", state)));
+    capturer.Wait();
+    EXPECT_TRUE(capturer.is_same_document());
+  }
+
   void LoadDataWithBaseURL(const GURL& base_url,
                            const std::string& data,
                            const GURL& history_url,
@@ -1840,11 +1848,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
 
   {
     // Back from the browser side.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().GoBack();
+    controller.GoBack();
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(),
@@ -1858,7 +1868,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   {
     // Forward from the browser side.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().GoForward();
+    controller.GoForward();
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(),
@@ -1925,15 +1935,50 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_FALSE(capturer.is_same_document());
   }
 
+  // Replace history.state to "foo".
+  ReplaceState(root, "foo");
+  EXPECT_EQ("foo", EvalJs(root, "history.state"));
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+
   {
-    // Reload from the browser side.
+    // Reload the tab from the browser side.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+    controller.Reload(ReloadType::NORMAL, false);
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
     EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
     EXPECT_FALSE(capturer.is_same_document());
+
+    // We reused the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Reload the frame from the browser side.
+    FrameNavigateParamsCapturer capturer(root);
+    shell()->web_contents()->GetMainFrame()->Reload();
+    capturer.Wait();
+    // We're classifying this as EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+
+    // We reused the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
   }
 
   {
@@ -1947,6 +1992,70 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                                   ui::PAGE_TRANSITION_CLIENT_REDIRECT)));
     EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
     EXPECT_FALSE(capturer.is_same_document());
+
+    // We reused the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Reload the tab (browser-initiated), but this time we hit a network error
+    // and end up in an error page.
+    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(root);
+    shell()->Reload();
+    capturer.Wait();
+    EXPECT_FALSE(reload_observer.last_navigation_succeeded());
+
+    // We're classifying this as EXISTING_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+
+    // We reused the last committed entry for this navigation.
+    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // entry instead.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+
+    previous_entry = controller.GetLastCommittedEntry();
+    url_loader_interceptor.reset();
+  }
+
+  {
+    // Reload the tab successfully after a failed navigation.
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(root);
+    shell()->Reload();
+    capturer.Wait();
+    EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+        capturer.transition(), ui::PAGE_TRANSITION_RELOAD));
+
+    // We replaced the last committed entry with a new entry for this
+    // navigation.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+
+    // We lost the history.state value from before the failed navigation.
+    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+    previous_entry = controller.GetLastCommittedEntry();
   }
 
   {
@@ -1964,6 +2073,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
     EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_FALSE(capturer.is_same_document());
+
+    // We replaced the last committed entry with a new entry for this
+    // navigation.
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+
+    previous_entry = controller.GetLastCommittedEntry();
   }
 
   // Now, various same document navigations.
@@ -2024,7 +2139,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   {
     // Forward.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().GoForward();
+    controller.GoForward();
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(),
@@ -2044,7 +2159,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   {
     // Back.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().GoBack();
+    controller.GoBack();
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(),
@@ -2058,7 +2173,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   {
     // Forward.
     FrameNavigateParamsCapturer capturer(root);
-    shell()->web_contents()->GetController().GoForward();
+    controller.GoForward();
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(),
@@ -2077,21 +2192,197 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
 
+  EXPECT_EQ(1, controller.GetEntryCount());
+  // Replace history.state to "foo".
+  ReplaceState(root, "foo");
+  EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+
   {
-    // Simple load of the same URL.
+    // Navigate to the same URL (browser-initiated).
     FrameNavigateParamsCapturer capturer(root);
-    NavigateFrameToURL(root, url1);
+    EXPECT_TRUE(NavigateToURL(shell(), url1));
     capturer.Wait();
-    EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
-        capturer.transition(), ui::PAGE_TRANSITION_LINK));
+    // The navigation got converted into a reload, and we're classifying this as
+    // EXISTING_ENTRY.
     EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
 
     // Ensure the pending entry was cleared after commit.
     EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
+
+    // We reuse the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (renderer-initiated).
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root, url1));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry.
+    // This differs than the browser-initiated case's behavior, but it's OK.
+    // The renderer-initiated navigation follows the spec  at
+    // https://html.spec.whatwg.org/#navigating-across-documents:hh-replace-3,
+    // while the browser-initiated version got converted into a reload.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    //  Navigate to the same URL (renderer-initiated) with location.replace.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(root, JsReplace("location.replace($1);", url1)));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (browser-initiated), but this time we hit a
+    // network error and end up in an error page.
+    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_FALSE(NavigateToURL(shell(), url1));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation replaced the previously committed entry with a new entry
+    // because the navigation resulted in an error page.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    url_loader_interceptor.reset();
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate successfully to the same URL (browser-initiated) after a failed
+    // navigation.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url1));
+    capturer.Wait();
+    // We're classifying this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+
+    // The navigation added a new entry.
+    // TODO(https://crbug.com/1188956): This should replace the last committed
+    // entry instead.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(2, controller.GetEntryCount());
+
+    // We lost the history.state value from before the failed navigation.
+    EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
+  }
+}
+
+// Verify that navigations to the same URL that has a fragment part (#foo) are
+// correctly classified as EXISTING_ENTRY.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    NavigationTypeClassification_ExistingEntrySameURLWithFragment) {
+  GURL url1(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html#foo"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  // Replace history.state to "foo".
+  ReplaceState(root, "foo");
+  EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+
+  {
+    // Navigate to the same URL (browser-initiated).
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url1));
+    capturer.Wait();
+    // We're classifying this as EXISTING_ENTRY because the navigation got
+    // converted into a reload.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+
+    // Since we did a reload, it's not classified as a same-document navigation.
+    EXPECT_FALSE(capturer.is_same_document());
+
+    // We reuse the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+  }
+
+  {
+    // Navigate to the same URL (renderer-initiated).
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root, url1));
+    capturer.Wait();
+
+    // We did a same-document navigation.
+    EXPECT_TRUE(capturer.is_same_document());
+
+    // We're reusing the previous entry and classifying this as EXISTING_ENTRY
+    // with replacement.
+    // TODO(rakina): did_replace_entry should be false since we're not actually
+    // doing any replacement.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(root, "history.state"));
   }
 }
 
@@ -14543,30 +14834,445 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             url::Origin::Create(GURL("http://another-site.com:0")));
 }
 
-// Navigating a subframe to the same URL should not generate a history entry.
+// Navigating a subframe to the same URL should not append a new history entry.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NoHistoryOnNavigationToSameUrl) {
-  {
-    GURL frame_url = embedded_test_server()->GetURL(
-        "a.com", "/cross_site_iframe_factory.html?a(a)");
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
 
-    ASSERT_TRUE(NavigateToURL(shell(), frame_url));
-    FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
-    GURL child_url = child->current_url();
-    int entry_count = contents()->GetController().GetEntryCount();
+  // 1) Test navigating a same-site subframe to the same URL.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(a)")));
+
+  FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
+  GURL child_url = child->current_url();
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+  FrameNavigationEntry* previous_frame_entry =
+      previous_entry->GetFrameEntry(child);
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  {
+    // Navigate the subframe (renderer-initiated) to the same URL it's currently
+    // on.
+    FrameNavigateParamsCapturer capturer(child);
     ASSERT_TRUE(NavigateToURLFromRenderer(child, child_url));
-    EXPECT_EQ(entry_count, contents()->GetController().GetEntryCount());
+    capturer.Wait();
+
+    // We reused the previous NavigationEntry and FNE, but replaced the entry in
+    // the renderer.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_TRUE(capturer.did_replace_entry());
   }
-  {
-    GURL frame_url = embedded_test_server()->GetURL(
-        "a.com", "/cross_site_iframe_factory.html?a(b)");
 
-    ASSERT_TRUE(NavigateToURL(shell(), frame_url));
-    FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
-    GURL child_url = child->current_url();
-    int entry_count = contents()->GetController().GetEntryCount();
+  // 2) Test navigating a cross-site subframe to the same URL.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  child = contents()->GetFrameTree()->root()->child_at(0);
+  child_url = child->current_url();
+
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Navigate the subframe (renderer-initiated) to the same URL it's currently
+    // on.
+    FrameNavigateParamsCapturer capturer(child);
     ASSERT_TRUE(NavigateToURLFromRenderer(child, child_url));
-    EXPECT_EQ(entry_count, contents()->GetController().GetEntryCount());
+    capturer.Wait();
+
+    // We reused the previous NavigationEntry and FNE, but replaced the entry in
+    // the renderer.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_TRUE(capturer.did_replace_entry());
+
+    // We keep the same history.state value (except when RenderDocument
+    // subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Navigate the subframe (browser-initiated) to the same URL it's currently
+    // on.
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, child_url));
+    capturer.Wait();
+
+    // The navigation got converted into a reload - we reused the previous
+    // NavigationEntry, FNE, and didn't do replacement in the renderer.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_FALSE(capturer.did_replace_entry());
+
+    // We keep the same history.state value (except when RenderDocument
+    // subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+
+  // 3) Test navigating the subframe to the same URL, but it ends up in an error
+  // page due to network error.
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Navigate the subframe (browser-initiated) to the same URL it's currently
+    // on, but end up in an error page instead.
+    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_FALSE(NavigateFrameToURL(child, child_url));
+    capturer.Wait();
+
+    // We reused the previous NavigationEntry and FNE, but replaced the entry in
+    // the renderer.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_TRUE(capturer.did_replace_entry());
+  }
+
+  // 4) Test successfully navigating the subframe to the same URL after a failed
+  // navigation.
+  {
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Navigate the subframe (browser-initiated) to the same URL it's currently
+    // on successfully (instead of ending up in an error page again).
+    TestNavigationObserver observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, child_url));
+    capturer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+
+    // The navigation got converted into a reload - we reused the previous
+    // NavigationEntry, FNE, and didn't do replacement in the renderer.
+    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // is turned on, this should do replacement.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_FALSE(capturer.did_replace_entry());
+
+    // We keep the history.state value from before the failed navigation (except
+    // when RenderDocument subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+}
+
+// Navigating a subframe to the same URL when the URL has a fragment
+// should not append a new history entry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       NoHistoryOnNavigationToSameURLWithFragment) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(a)")));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
+  GURL child_url = child->current_url();
+
+  {
+    // Navigate the subframe to a fragment.
+    TestNavigationObserver observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(ExecuteScript(child, "location.href = '#bar';"));
+    capturer.Wait();
+    observer.Wait();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+    EXPECT_TRUE(capturer.is_same_document());
+    child_url = child->current_url();
+  }
+
+  // Replace history.state to "foo".
+  ReplaceState(child, "foo");
+  EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+  FrameNavigationEntry* previous_frame_entry =
+      previous_entry->GetFrameEntry(child);
+
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  {
+    // Navigate to the same URL (browser-initiated).
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(NavigateFrameToURL(child, child_url));
+    capturer.Wait();
+    // We're classifying this as AUTO_SUBFRAME because the navigation got
+    // converted into a reload.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+
+    // Since we did a reload, it's not classified as a same-document navigation.
+    EXPECT_FALSE(capturer.is_same_document());
+
+    // We reuse the last committed entry for this navigation.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_EQ(2, controller.GetEntryCount());
+
+    // We keep the same history.state value (except when RenderDocument
+    // subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Navigate to the same URL (renderer-initiated).
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url));
+    capturer.Wait();
+
+    // We did a same-document navigation.
+    EXPECT_TRUE(capturer.is_same_document());
+
+    // We reused the previous NavigationEntry and FNE, but replaced the entry in
+    // the renderer.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+
+    // We keep the same history.state value.
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    EXPECT_EQ(2, controller.GetEntryCount());
+  }
+}
+
+// Reloading a subframe should not append a new history entry.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       NoHistoryOnSubframeReload) {
+  // Navigate to a page with a cross-site subframe.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  FrameTreeNode* child = root->child_at(0);
+
+  // Replace history.state to "foo".
+  ReplaceState(child, "foo");
+  EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+  FrameNavigationEntry* previous_frame_entry =
+      previous_entry->GetFrameEntry(child);
+
+  {
+    // Reload the subframe (browser-initiated).
+    FrameNavigateParamsCapturer capturer(child);
+    child->current_frame_host()->Reload();
+    capturer.Wait();
+    // We're classifying this as AUTO_SUBFRAME.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+
+    // We reused the previous NavigationEntry, FNE, and didn't do replacement in
+    // the renderer.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value (except when RenderDocument
+    // subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Reload the subframe (renderer-initiated).
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(ExecJs(child, "location.reload()"));
+    capturer.Wait();
+
+    // We're classifying this as AUTO_SUBFRAME.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+
+    // We reused the previous NavigationEntry, FNE, and didn't do replacement in
+    // the renderer.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the same history.state value (except when RenderDocument
+    // subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
+  }
+
+  {
+    // Replace history.state to "foo".
+    ReplaceState(child, "foo");
+    EXPECT_EQ("foo", EvalJs(child, "history.state"));
+
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Reload the subframe (browser-initiated), but this time we hit a network
+    // error and end up in an error page.
+    std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor;
+    url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(child);
+    child->current_frame_host()->Reload();
+    capturer.Wait();
+    EXPECT_FALSE(reload_observer.last_navigation_succeeded());
+
+    // We're classifying this as AUTO_SUBFRAME.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+
+    // We reused the previous NavigationEntry, FNE, and didn't do replacement in
+    // the renderer.
+    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // is turned on, this should do replacement.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    url_loader_interceptor.reset();
+  }
+
+  {
+    previous_entry = controller.GetLastCommittedEntry();
+    previous_frame_entry = previous_entry->GetFrameEntry(child);
+
+    // Reload the subframe (browser-initiated) after a failed navigation.
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    FrameNavigateParamsCapturer capturer(child);
+    child->current_frame_host()->Reload();
+    capturer.Wait();
+    EXPECT_TRUE(reload_observer.last_navigation_succeeded());
+
+    // We're classifying this as AUTO_SUBFRAME.
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+
+    // We reused the previous NavigationEntry, FNE, and didn't do replacement in
+    // the renderer.
+    // TODO(https://crbug.com/1188956): Once error-page isolation for subframes
+    // is turned on, this should do replacement.
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(previous_frame_entry,
+              controller.GetLastCommittedEntry()->GetFrameEntry(child));
+    EXPECT_EQ(1, controller.GetEntryCount());
+
+    // We keep the history.state value from before the failed navigation (except
+    // when RenderDocument subframe is on).
+    // TODO(http://crbug.com/1068965): Keep the history.state even with
+    // RenderDocument.
+    if (ShouldCreateNewHostForSameSiteSubframe()) {
+      EXPECT_EQ(nullptr, EvalJs(child, "history.state"));
+    } else {
+      EXPECT_EQ("foo", EvalJs(child, "history.state"));
+    }
   }
 }
 

@@ -38,8 +38,9 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // there was no last committed entry.
   GURL previous_main_frame_url;
 
-  // True if the committed entry has replaced the exisiting one.
-  // A non-user initiated redirect causes such replacement.
+  // True if the committed entry has replaced the existing one. Note that in
+  // case of subrames, the NavigationEntry and FrameNavigationEntry objects
+  // don't actually get replaced - they're reused, but with updated attributes.
   bool did_replace_entry;
 
   // Whether the navigation happened without changing document. Examples of
