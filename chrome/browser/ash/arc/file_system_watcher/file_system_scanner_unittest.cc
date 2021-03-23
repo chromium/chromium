@@ -14,7 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"

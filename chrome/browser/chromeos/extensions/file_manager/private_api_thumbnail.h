@@ -13,7 +13,7 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"

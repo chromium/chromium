@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/file_manager/documents_provider_root_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_features.h"
