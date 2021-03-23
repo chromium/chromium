@@ -5,12 +5,26 @@
     max-height: 100%;
     width: 100%;
   }
-
-  #search {
-    margin-bottom: 10px;
+  cr-search-field {
+    --cr-search-field-clear-icon-margin-end: 14px;
+    --cr-search-field-clear-icon-size: 20px;
+    --cr-search-field-input-border-bottom: none;
+    --cr-search-field-input-padding-bottom: 0;
+    --cr-search-field-input-padding-top: 0;
     --cr-search-field-input-width: calc(100% - 24px);
     --cr-search-field-underline-display: none;
-    --cr-search-field-input-border-bottom: none;
+    align-items: center;
+    background-color: var(--cr-separator-color);
+    border-radius: 41px;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 8px;
+  }
+
+  cr-search-field::part(searchIcon) {
+    height: 20px;
+    padding: 0 8px 0 14px;
+    width: 20px;
   }
 
   #container {

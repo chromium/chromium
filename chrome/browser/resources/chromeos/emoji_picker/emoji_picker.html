@@ -1,22 +1,25 @@
 <style>
   :host {
-    /* values overriden in Javascript from constants.js */
+    /* Values overriden in Javascript from constants.js. */
     --emoji-picker-height: 0;
-    --emoji-picker-padding: 0;
+    --emoji-picker-side-padding: 0;
+    --emoji-picker-top-padding: 0;
     --emoji-picker-width: 0;
     --emoji-size: 0;
     --emoji-per-row: 0;
-  }
-
-  :host {
+    /* Values set in css only. */
+    --emoji-group-tabs-left: -4px;
+    --emoji-group-button-size: 36px;
+    /* Actual properties of the emoji picker */
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
-    height: calc(var(--emoji-picker-height) - 2 * var(--emoji-picker-padding));
+    height: calc(var(--emoji-picker-height) - var(--emoji-picker-top-padding));
     margin-top: 0;
-    padding: var(--emoji-picker-padding);
-    padding-bottom: 0;
-    width: calc(var(--emoji-picker-width) - 2 * var(--emoji-picker-padding));
+    padding: var(--emoji-picker-top-padding) var(--emoji-picker-side-padding) 0
+      var(--emoji-picker-side-padding);
+    width: calc(var(--emoji-picker-width) -
+      2 * var(--emoji-picker-side-padding));
   }
 
   #searchContainer,
@@ -31,6 +34,7 @@
   #tabs {
     display: flex;
     flex-shrink: 0;
+    left: var(--emoji-group-tabs-left);
     overflow-x: scroll;
     scroll-behavior: smooth;
     width: 100%;
@@ -50,16 +54,17 @@
 
   .chevron {
     background-color: var(--cr-card-background-color);
-    height: 36px;
+    height: var(--emoji-group-button-size);
     margin: 0;
     padding: 0;
     position: absolute;
-    width: 36px;
+    width: var(--emoji-group-button-size);
     z-index: 2;
   }
 
   #rightChevron {
-    left: calc(36px*8 + var(--emoji-picker-padding));
+    left: calc(var(--emoji-group-button-size) * 8
+      + var(--emoji-picker-side-padding) + var(--emoji-group-tabs-left));
   }
 
   #leftChevron {
@@ -83,9 +88,10 @@
     border-top-right-radius: 2px;
     flex-shrink: 0;
     height: 2px;
+    margin-inline-start: 2px;
     position: relative;
     transition: all 200ms;
-    width: 36px;
+    width: 32px;
   }
 </style>
 
