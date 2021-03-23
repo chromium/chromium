@@ -4387,6 +4387,17 @@ hooks = [
     ],
   },
 
+  {
+    'name': 'Generate component metadata for tests',
+    'pattern': '.',
+    'action': [
+      'vpython',
+      'src/testing/generate_location_tags.py',
+      '--out',
+      'src/testing/location_tags.json',
+    ],
+  },
+
   # Download and initialize "vpython" VirtualEnv environment packages.
   {
     'name': 'vpython_common',
