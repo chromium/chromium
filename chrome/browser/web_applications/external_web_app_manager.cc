@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -82,33 +83,36 @@ struct LoadedConfigs {
   std::vector<std::string> errors;
 };
 
-LoadedConfigs LoadConfigsBlocking(const base::FilePath& config_dir) {
+LoadedConfigs LoadConfigsBlocking(std::vector<base::FilePath> config_dirs) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   LoadedConfigs result;
   base::FilePath::StringType extension(FILE_PATH_LITERAL(".json"));
-  base::FileEnumerator json_files(config_dir,
-                                  false,  // Recursive.
-                                  base::FileEnumerator::FILES);
-  for (base::FilePath file = json_files.Next(); !file.empty();
-       file = json_files.Next()) {
-    if (!file.MatchesExtension(extension)) {
-      continue;
-    }
 
-    JSONFileValueDeserializer deserializer(file);
-    std::string error_msg;
-    std::unique_ptr<base::Value> app_config =
-        deserializer.Deserialize(nullptr, &error_msg);
-    if (!app_config) {
-      result.errors.push_back(base::StrCat(
-          {file.AsUTF8Unsafe(), " was not valid JSON: ", error_msg}));
-      VLOG(1) << result.errors.back();
-      continue;
+  for (auto config_dir : config_dirs) {
+    base::FileEnumerator json_files(config_dir,
+                                    false,  // Recursive.
+                                    base::FileEnumerator::FILES);
+    for (base::FilePath file = json_files.Next(); !file.empty();
+         file = json_files.Next()) {
+      if (!file.MatchesExtension(extension)) {
+        continue;
+      }
+
+      JSONFileValueDeserializer deserializer(file);
+      std::string error_msg;
+      std::unique_ptr<base::Value> app_config =
+          deserializer.Deserialize(nullptr, &error_msg);
+      if (!app_config) {
+        result.errors.push_back(base::StrCat(
+            {file.AsUTF8Unsafe(), " was not valid JSON: ", error_msg}));
+        VLOG(1) << result.errors.back();
+        continue;
+      }
+      result.configs.push_back(
+          {.contents = std::move(*app_config), .file = file});
     }
-    result.configs.push_back(
-        {.contents = std::move(*app_config), .file = file});
   }
   return result;
 }
@@ -118,8 +122,7 @@ struct ParsedConfigs {
   std::vector<std::string> errors;
 };
 
-ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
-                                   LoadedConfigs loaded_configs) {
+ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
   ParsedConfigs result;
   result.errors = std::move(loaded_configs.errors);
 
@@ -128,8 +131,9 @@ ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
                         : std::make_unique<FileUtilsWrapper>();
 
   for (const LoadedConfig& loaded_config : loaded_configs.configs) {
-    OptionsOrError parse_result = ParseConfig(
-        *file_utils, config_dir, loaded_config.file, loaded_config.contents);
+    OptionsOrError parse_result =
+        ParseConfig(*file_utils, loaded_config.file.DirName(),
+                    loaded_config.file, loaded_config.contents);
     if (ExternalInstallOptions* options =
             absl::get_if<ExternalInstallOptions>(&parse_result)) {
       result.options_list.push_back(std::move(*options));
@@ -249,6 +253,15 @@ base::Optional<std::string> GetDisableReason(
   return base::nullopt;
 }
 
+std::string GetExtraConfigSubdirectory() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      chromeos::switches::kExtraWebAppsDir);
+#else
+  return std::string();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 }  // namespace
 
 const char* ExternalWebAppManager::kHistogramEnabledCount =
@@ -352,9 +365,13 @@ void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
   if (g_configs_for_testing) {
     LoadedConfigs loaded_configs;
     for (const base::Value& config : *g_configs_for_testing) {
+      auto file = base::FilePath(FILE_PATH_LITERAL("test.json"));
+      if (g_config_dir_for_testing) {
+        file = g_config_dir_for_testing->Append(file);
+      }
+
       loaded_configs.configs.push_back(
-          {.contents = config.Clone(),
-           .file = base::FilePath(FILE_PATH_LITERAL("test.json"))});
+          {.contents = config.Clone(), .file = file});
     }
     std::move(callback).Run(std::move(loaded_configs));
     return;
@@ -366,11 +383,18 @@ void ExternalWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     return;
   }
 
+  std::vector<base::FilePath> config_dirs = {config_dir};
+  std::string extra_config_subdir = GetExtraConfigSubdirectory();
+  if (!extra_config_subdir.empty()) {
+    config_dirs.push_back(config_dir.AppendASCII(extra_config_subdir));
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&LoadConfigsBlocking, config_dir), std::move(callback));
+      base::BindOnce(&LoadConfigsBlocking, std::move(config_dirs)),
+      std::move(callback));
 }
 
 void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
@@ -379,8 +403,7 @@ void ExternalWebAppManager::ParseConfigs(ConsumeParsedConfigs callback,
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ParseConfigsBlocking, GetConfigDir(),
-                     std::move(loaded_configs)),
+      base::BindOnce(&ParseConfigsBlocking, std::move(loaded_configs)),
       std::move(callback));
 }
 

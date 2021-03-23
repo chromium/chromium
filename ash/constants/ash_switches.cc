@@ -348,6 +348,11 @@ const char kEnterpriseEnrollmentModulusLimit[] =
 const char kExternalMetricsCollectionInterval[] =
     "external-metrics-collection-interval";
 
+// Name of a subdirectory of the main external web apps directory which
+// additional web apps configs should be loaded from. Used to load
+// device-specific web apps.
+const char kExtraWebAppsDir[] = "extra-web-apps-dir";
+
 // An absolute path to the chroot hosting the DriveFS to use. This is only used
 // when running on Linux, i.e. when IsRunningOnChromeOS() returns false.
 const char kFakeDriveFsLauncherChrootPath[] =
