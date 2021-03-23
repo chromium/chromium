@@ -33,6 +33,13 @@ cp four-colors.png four-colors2.png
 gifski -o four-colors.gif four-colors*.png
 ```
 
+### four-colors-flip.gif
+High quality encoding must be used to ensure colors are perfect.
+```
+ffmpeg -i four-colors.png -vf "rotate=PI" four-colors2.png
+gifski -o four-colors-flip.gif four-colors*.png
+```
+
 ### four-colors.jpg
 Used [Sqoosh.app](https://squoosh.app/) with MozJPEG compression then used
 exiftool to add an orientation marker.

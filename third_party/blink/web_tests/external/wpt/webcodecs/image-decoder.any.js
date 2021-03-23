@@ -100,3 +100,103 @@ promise_test(t => {
         t, 'NotSupportedError', decoder.decodeMetadata());
   });
 }, 'Test invalid mime type rejects decodeMetadata() requests');
+
+class InfiniteGifSource {
+  async load(repetitionCount) {
+    let response = await fetch('four-colors-flip.gif');
+    let buffer = await response.arrayBuffer();
+
+    // Strip GIF trailer (0x3B) so we can continue to append frames.
+    this.baseImage = new Uint8Array(buffer.slice(0, buffer.byteLength - 1));
+    this.baseImage[0x23] = repetitionCount;
+    this.counter = 0;
+  }
+
+  start(controller) {
+    this.controller = controller;
+    this.controller.enqueue(this.baseImage);
+  }
+
+  close() {
+    this.controller.enqueue(new Uint8Array([0x3B]));
+    this.controller.close();
+  }
+
+  addFrame() {
+    const FRAME1_START = 0x26;
+    const FRAME2_START = 0x553;
+
+    if (this.counter++ % 2 == 0)
+      this.controller.enqueue(this.baseImage.slice(FRAME1_START, FRAME2_START));
+    else
+      this.controller.enqueue(this.baseImage.slice(FRAME2_START));
+  }
+}
+
+promise_test(async t => {
+  let source = new InfiniteGifSource();
+  await source.load(5);
+
+  let stream = new ReadableStream(source, {type: 'bytes'});
+  let decoder = new ImageDecoder({data: stream, type: 'image/gif'});
+  return decoder.decodeMetadata()
+      .then(_ => {
+        assert_equals(decoder.frameCount, 2);
+        assert_equals(decoder.repetitionCount, 5);
+
+        source.addFrame();
+        return decoder.decode({frameIndex: 2});
+      })
+      .then(result => {
+        assert_equals(decoder.frameCount, 3);
+        assert_equals(result.image.displayWidth, 320);
+        assert_equals(result.image.displayHeight, 240);
+        source.addFrame();
+        return decoder.decode({frameIndex: 3});
+      })
+      .then(result => {
+        assert_equals(decoder.frameCount, 4);
+        assert_equals(result.image.displayWidth, 320);
+        assert_equals(result.image.displayHeight, 240);
+
+        // Decode frame not yet available then reset before it comes in.
+        let p = decoder.decode({frameIndex: 5});
+        decoder.reset();
+        return promise_rejects_dom(t, 'AbortError', p);
+      })
+      .then(_ => {
+        // Ensure we can still decode earlier frames.
+        assert_equals(decoder.frameCount, 4);
+        return decoder.decode({frameIndex: 3});
+      })
+      .then(result => {
+        assert_equals(decoder.frameCount, 4);
+        assert_equals(result.image.displayWidth, 320);
+        assert_equals(result.image.displayHeight, 240);
+
+        // Decode frame not yet available then close before it comes in.
+        let p = decoder.decode({frameIndex: 5});
+        decoder.close();
+
+        assert_equals(decoder.frameCount, 0);
+        assert_equals(decoder.repetitionCount, 0);
+        assert_equals(decoder.type, "");
+        assert_equals(decoder.tracks.length, 0);
+
+        assert_throws_dom('InvalidStateError', _ => {
+          decoder.selectTrack(1);
+        });
+
+        // Previous decode should be aborted.
+        return promise_rejects_dom(t, 'AbortError', p);
+      })
+      .then(_ => {
+        // Ensure feeding the source after closing doesn't crash.
+        source.addFrame();
+        return promise_rejects_dom(
+            t, 'InvalidStateError', decoder.decodeMetadata());
+      })
+      .then(_ => {
+        return promise_rejects_dom(t, 'InvalidStateError', decoder.decode());
+      });
+}, 'Test ReadableStream of gif');

@@ -57,6 +57,8 @@ class MODULES_EXPORT ImageDecoderExternal final
   uint32_t repetitionCount() const;
   bool complete() const;
   const ImageTrackList tracks() const;
+  void reset(DOMException* exception = nullptr);
+  void close();
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
@@ -82,8 +84,11 @@ class MODULES_EXPORT ImageDecoderExternal final
   // ArrayBufferView that has since been neutered.
   bool HasValidEncodedData() const;
 
-  // Create a common unsupported image type exception for rejecting promises.
+  // Helpers for creating common exceptions for rejecting promises.
   DOMException* CreateUnsupportedImageTypeException() const;
+  DOMException* CreateClosedException() const;
+
+  void AbortPendingDecodes(DOMException* exception);
 
   Member<ScriptState> script_state_;
 
@@ -105,6 +110,8 @@ class MODULES_EXPORT ImageDecoderExternal final
   base::Optional<bool> prefer_animation_;
 
   bool data_complete_ = false;
+
+  bool closed_ = false;
 
   std::unique_ptr<ImageDecoder> decoder_;
   String mime_type_;

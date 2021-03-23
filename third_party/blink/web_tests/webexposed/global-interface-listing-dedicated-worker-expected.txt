@@ -764,9 +764,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter repetitionCount
 [Worker]     getter tracks
 [Worker]     getter type
+[Worker]     method close
 [Worker]     method constructor
 [Worker]     method decode
 [Worker]     method decodeMetadata
+[Worker]     method reset
 [Worker]     method selectTrack
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag

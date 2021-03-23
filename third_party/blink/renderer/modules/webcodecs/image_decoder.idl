@@ -39,6 +39,15 @@
   // metadata decode promises will remain valid.
   [RaisesException] void selectTrack(unsigned long trackId);
 
+  // Aborts all pending metadata and decode promises.
+  void reset();
+
+  // Immediately shut down the decoder and free its resources. All pending
+  // decode requests are aborted.
+  //
+  // Not recoverable: make a new ImageDecoder if needed.
+  void close();
+
   // The number of frames in the image.
   //
   // When decoding a ReadableStream the value will be 0 until enough data to

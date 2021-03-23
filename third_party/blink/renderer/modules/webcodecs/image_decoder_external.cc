@@ -102,7 +102,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     prefer_animation_ = init->preferAnimation();
 
   if (init->data().IsReadableStream()) {
-    if (init->data().GetAsReadableStream()->IsLocked()) {
+    if (init->data().GetAsReadableStream()->IsLocked() ||
+        init->data().GetAsReadableStream()->IsDisturbed()) {
       exception_state.ThrowTypeError(
           "ImageDecoder can only accept readable streams that are not yet "
           "locked to a reader");
@@ -170,6 +171,11 @@ ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
 
+  if (closed_) {
+    resolver->Reject(CreateClosedException());
+    return promise;
+  }
+
   if (!decoder_) {
     resolver->Reject(CreateUnsupportedImageTypeException());
     return promise;
@@ -188,6 +194,11 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
 
+  if (closed_) {
+    resolver->Reject(CreateClosedException());
+    return promise;
+  }
+
   if (!decoder_) {
     resolver->Reject(CreateUnsupportedImageTypeException());
     return promise;
@@ -200,9 +211,17 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
 
 void ImageDecoderExternal::selectTrack(uint32_t track_id,
                                        ExceptionState& exception_state) {
+  if (closed_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The decoder has been closed.");
+    return;
+  }
+
   if (track_id >= tracks_.size()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "Track index out of range");
+    exception_state.ThrowRangeError(
+        ExceptionMessages::IndexOutsideRange<uint32_t>(
+            "track index", track_id, 0, ExceptionMessages::kInclusiveBound,
+            tracks_.size(), ExceptionMessages::kExclusiveBound));
     return;
   }
 
@@ -211,13 +230,11 @@ void ImageDecoderExternal::selectTrack(uint32_t track_id,
   if (tracks_.size() == 1 || selected_track_id_ == track_id)
     return;
 
-  for (auto& request : pending_decodes_) {
-    request->resolver->Reject(MakeGarbageCollected<DOMException>(
+  // Promise resolution may be reentrant, so continuously abort promises.
+  while (!pending_decodes_.IsEmpty()) {
+    AbortPendingDecodes(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "Aborted by track change"));
   }
-
-  pending_decodes_.clear();
-  incomplete_frames_.clear();
 
   // TODO(crbug.com/1073995): We eventually need a formal track selection
   // mechanism. For now we can only select between the still and animated images
@@ -252,7 +269,40 @@ const ImageDecoderExternal::ImageTrackList ImageDecoderExternal::tracks()
   return tracks_;
 }
 
+void ImageDecoderExternal::reset(DOMException* exception) {
+  if (!exception) {
+    exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Aborted by reset.");
+  }
+
+  // Move all state to local variables since promise resolution is reentrant.
+  HeapVector<Member<ScriptPromiseResolver>> local_pending_metadata_decodes;
+  local_pending_metadata_decodes.swap(pending_metadata_decodes_);
+
+  AbortPendingDecodes(exception);
+  for (auto& resolver : local_pending_metadata_decodes)
+    resolver->Reject(exception);
+}
+
+void ImageDecoderExternal::close() {
+  reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Aborted by close."));
+  if (consumer_)
+    consumer_->Cancel();
+  consumer_ = nullptr;
+  decoder_.reset();
+  tracks_.clear();
+  frame_count_ = repetition_count_ = 0;
+  mime_type_ = "";
+  stream_buffer_ = nullptr;
+  segment_reader_ = nullptr;
+  closed_ = true;
+}
+
 void ImageDecoderExternal::OnStateChange() {
+  DCHECK(!closed_);
+  DCHECK(consumer_);
+
   const char* buffer;
   size_t available;
   while (!data_complete_) {
@@ -321,6 +371,7 @@ void ImageDecoderExternal::CreateImageDecoder() {
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
+  DCHECK(!closed_);
   DCHECK(decoder_);
   for (auto& request : pending_decodes_) {
     if (!data_complete_) {
@@ -328,9 +379,12 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       if (request->frame_index >= frame_count_)
         continue;
     } else if (request->frame_index >= frame_count_) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
       request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kConstraintError, "Frame index out of range");
+          DOMExceptionCode::kIndexSizeError,
+          ExceptionMessages::IndexOutsideRange<uint32_t>(
+              "frame index", request->frame_index, 0,
+              ExceptionMessages::kInclusiveBound, frame_count_,
+              ExceptionMessages::kExclusiveBound));
       continue;
     }
 
@@ -343,9 +397,10 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 
     auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
     if (decoder_->Failed() || !image) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
       request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kConstraintError, "Failed to decode frame");
+          DOMExceptionCode::kEncodingError,
+          String::Format("Failed to decode frame at index %d",
+                         request->frame_index));
       continue;
     }
 
@@ -362,9 +417,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
                                 : SkImage::MakeFromBitmap(image->Bitmap());
     if (!sk_image) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
       request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Failed to decode frame");
+          DOMExceptionCode::kOperationError, "Failed to access frame");
       continue;
     }
 
@@ -437,6 +491,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 
 void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
   DCHECK(decoder_);
+  DCHECK(!closed_);
   DCHECK(HasValidEncodedData());
   if (!decoder_->IsSizeAvailable() && !decoder_->Failed())
     return;
@@ -449,6 +504,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
 
 void ImageDecoderExternal::MaybeUpdateMetadata() {
   DCHECK(decoder_);
+  DCHECK(!closed_);
 
   if (!HasValidEncodedData())
     return;
@@ -530,6 +586,20 @@ DOMException* ImageDecoderExternal::CreateUnsupportedImageTypeException()
       DOMExceptionCode::kNotSupportedError,
       String::Format("The provided image type (%s) is not supported",
                      mime_type_.Ascii().c_str()));
+}
+
+DOMException* ImageDecoderExternal::CreateClosedException() const {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kInvalidStateError, "The decoder has been closed.");
+}
+
+void ImageDecoderExternal::AbortPendingDecodes(DOMException* exception) {
+  // Swap to a local variable since promise handling may be reentrant.
+  HeapVector<Member<DecodeRequest>> local_pending_decodes;
+  local_pending_decodes.swap(pending_decodes_);
+  for (auto& request : local_pending_decodes)
+    request->resolver->Reject(exception);
+  incomplete_frames_.clear();
 }
 
 }  // namespace blink

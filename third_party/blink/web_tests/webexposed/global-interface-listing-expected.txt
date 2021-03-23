@@ -7215,9 +7215,11 @@ interface ImageDecoder
     getter repetitionCount
     getter tracks
     getter type
+    method close
     method constructor
     method decode
     method decodeMetadata
+    method reset
     method selectTrack
 interface Ink
     attribute @@toStringTag

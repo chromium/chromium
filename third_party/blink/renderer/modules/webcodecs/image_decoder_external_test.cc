@@ -263,6 +263,76 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   ASSERT_TRUE(tester.IsRejected());
 }
 
+TEST_F(ImageDecoderTest, DecoderReset) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  EXPECT_EQ(decoder->type(), "image/gif");
+  decoder->reset();
+
+  // Ensure decoding works properly after reset.
+  {
+    auto promise = decoder->decodeMetadata();
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(decoder->frameCount(), 2u);
+  EXPECT_EQ(decoder->repetitionCount(), 0u);
+  EXPECT_EQ(decoder->complete(), true);
+
+  auto tracks = decoder->tracks();
+  EXPECT_EQ(tracks.size(), 1u);
+  EXPECT_EQ(tracks[0]->id(), 0u);
+  EXPECT_EQ(tracks[0]->animated(), true);
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->duration(), 0u);
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
+  }
+}
+
+TEST_F(ImageDecoderTest, DecoderClose) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  EXPECT_EQ(decoder->type(), "image/gif");
+  decoder->close();
+
+  {
+    auto promise = decoder->decodeMetadata();
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
+}
+
 // TODO(crbug.com/1073995): Add tests for each format, selectTrack(), partial
 // decoding, and ImageBitmapOptions.
 
