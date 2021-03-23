@@ -44,6 +44,9 @@ public class MockWebContents implements WebContents {
             WebContents.InternalsHolder internalsHolder) {}
 
     @Override
+    public void clearJavaWebContentsObservers() {}
+
+    @Override
     public int describeContents() {
         return 0;
     }

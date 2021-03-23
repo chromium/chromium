@@ -83,7 +83,14 @@ public interface WebContents extends Parcelable {
     }
 
     /**
+     * TODO(ctzsm): Rename this method to setDelegates()
+     *
      * Initialize various content objects of {@link WebContents} lifetime.
+     *
+     * Note: This method is more of to set the {@link ViewAndroidDelegate} and {@link
+     * ViewEventSink.InternalAccessDelegate}, most of the embedder should only call this once during
+     * the whole lifecycle of the {@link WebContents}, but it is safe to call it multiple times.
+     *
      * @param productVersion Product version for accessibility.
      * @param viewDelegate Delegate to add/remove anchor views.
      * @param accessDelegate Handles dispatching all hidden or super methods to the containerView.
@@ -93,6 +100,16 @@ public interface WebContents extends Parcelable {
     void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
             @NonNull InternalsHolder internalsHolder);
+
+    /**
+     * Clear Java WebContentsObservers so we can put this WebContents to the background. Use this
+     * method only when the WebContents will not be destroyed shortly. Currently only used by Chrome
+     * for swapping WebContents in Tab.
+     *
+     * Note: This is a temporary workaround for Chrome until it can clean up Observers directly.
+     * Avoid new calls to this method.
+     */
+    void clearJavaWebContentsObservers();
 
     /**
      * @return The top level WindowAndroid associated with this WebContents.  This can be null.
@@ -129,6 +146,7 @@ public interface WebContents extends Parcelable {
      * Removes the native WebContents' reference to this object. This is used when we want to
      * destroy this object without destroying its native counterpart.
      */
+    @Deprecated
     void clearNativeReference();
 
     /**

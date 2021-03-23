@@ -515,6 +515,7 @@ public class MediaSessionTest {
     @Feature({"MediaSession"})
     public void testSessionSuspendedAfterFocusLossWhenPaused() throws Exception {
         ArrayList<StateRecord> expectedStates = new ArrayList<StateRecord>();
+        expectedStates.add(new StateRecord(false, true));
         expectedStates.add(new StateRecord(true, false));
         expectedStates.add(new StateRecord(true, true));
 

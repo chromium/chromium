@@ -219,27 +219,46 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
             InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
             InternalsHolder internalsHolder) {
-        // Makes sure |initialize| is not called more than once.
-        assert !mInitialized;
         assert internalsHolder != null;
 
         mProductVersion = productVersion;
 
+        WebContentsInternalsImpl internals;
+        if (mInternalsHolder != null) {
+            internals = (WebContentsInternalsImpl) mInternalsHolder.get();
+        } else {
+            internals = new WebContentsInternalsImpl();
+            internals.userDataHost = new UserDataHost();
+        }
         mInternalsHolder = internalsHolder;
-        WebContentsInternalsImpl internals = new WebContentsInternalsImpl();
-        internals.userDataHost = new UserDataHost();
         mInternalsHolder.set(internals);
 
-        mRenderCoordinates = new RenderCoordinatesImpl();
-        mRenderCoordinates.reset();
+        if (mRenderCoordinates == null) {
+            mRenderCoordinates = new RenderCoordinatesImpl();
+        }
 
         mInitialized = true;
 
         setViewAndroidDelegate(viewDelegate);
         setTopLevelNativeWindow(windowAndroid);
 
+        if (accessDelegate == null) {
+            accessDelegate = new EmptyInternalAccessDelegate();
+        }
         ViewEventSinkImpl.from(this).setAccessDelegate(accessDelegate);
-        getRenderCoordinates().setDeviceScaleFactor(windowAndroid.getDisplay().getDipScale());
+
+        if (windowAndroid != null) {
+            getRenderCoordinates().setDeviceScaleFactor(windowAndroid.getDisplay().getDipScale());
+        }
+    }
+
+    @Override
+    public void clearJavaWebContentsObservers() {
+        // Clear all the Android specific observers.
+        if (mObserverProxy != null) {
+            mObserverProxy.destroy();
+            mObserverProxy = null;
+        }
     }
 
     @Nullable
@@ -325,12 +344,11 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         return ((WebContentsInternalsImpl) internals).viewAndroidDelegate;
     }
 
-    public void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate) {
+    private void setViewAndroidDelegate(ViewAndroidDelegate viewDelegate) {
         checkNotDestroyed();
         WebContentsInternals internals = mInternalsHolder.get();
         assert internals != null;
         WebContentsInternalsImpl impl = (WebContentsInternalsImpl) internals;
-        assert impl.viewAndroidDelegate == null;
         impl.viewAndroidDelegate = viewDelegate;
         WebContentsImplJni.get().setViewAndroidDelegate(
                 mNativeWebContentsAndroid, WebContentsImpl.this, viewDelegate);

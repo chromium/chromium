@@ -24,8 +24,7 @@ class MediaSessionImpl;
 // teardown Java MediaSession when the native MediaSession is destroyed.
 // Java MediaSessionObservers are also proxied via this class.
 class MediaSessionAndroid final
-    : public media_session::mojom::MediaSessionObserver,
-      public WebContentsAndroid::DestructionObserver {
+    : public media_session::mojom::MediaSessionObserver {
  public:
   // Helper class for calling GetJavaObject() in a static method, in order to
   // avoid leaking the Java object outside.
@@ -48,12 +47,6 @@ class MediaSessionAndroid final
       override;
   void MediaSessionPositionChanged(
       const base::Optional<media_session::MediaPosition>& position) override;
-
-  // WebContentsAndroid::DestructionObserver overrides:
-  // TODO(crbug.com/1091229): Remove this when we correctly support media
-  // sessions in portals.
-  void WebContentsAndroidDestroyed(
-      WebContentsAndroid* web_contents_android) override;
 
   // MediaSession method wrappers.
   void Resume(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);

@@ -311,6 +311,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/sms/SmsUserConsentReceiver.java",
     "java/src/org/chromium/content/browser/sms/SmsVerificationReceiver.java",
     "java/src/org/chromium/content/browser/sms/Wrappers.java",
+    "java/src/org/chromium/content/browser/webcontents/EmptyInternalAccessDelegate.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content_public/browser/AccessibilitySnapshotCallback.java",
