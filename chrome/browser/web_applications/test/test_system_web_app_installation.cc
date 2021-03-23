@@ -321,6 +321,20 @@ TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
       SystemAppType::SETTINGS, std::move(app_info)));
 }
 
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
+    bool value) {
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  /* The default value of allow_scripts_to_close_windows is false. */
+  if (value)
+    app_info.allow_scripts_to_close_windows = true;
+  return base::WrapUnique(new TestSystemWebAppInstallation(
+      SystemAppType::SAMPLE, std::move(app_info)));
+}
+
 std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProvider(SystemAppInfo info,
                                                    Profile* profile) {

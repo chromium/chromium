@@ -172,6 +172,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -3434,6 +3435,16 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             web_app::WebAppProviderBase::GetProviderBase(profile)->registrar();
         if (registrar.IsLocallyInstalled(app_id))
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
+
+        if (browser->app_controller()->is_for_system_web_app()) {
+          auto system_app_type = browser->app_controller()->system_app_type();
+          const web_app::SystemWebAppManager& system_web_app_manager =
+              web_app::WebAppProviderBase::GetProviderBase(profile)
+                  ->system_web_app_manager();
+          web_prefs->allow_scripts_to_close_windows =
+              system_web_app_manager.AllowScriptsToCloseWindows(
+                  system_app_type.value());
+        }
       }
     }
 #endif

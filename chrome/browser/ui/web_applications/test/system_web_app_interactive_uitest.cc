@@ -793,6 +793,76 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+class SystemWebAppManagerCloseFromScriptsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerCloseFromScriptsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
+            true);
+  }
+  ~SystemWebAppManagerCloseFromScriptsTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
+  WaitForTestSystemAppInstall();
+
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
+  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+
+  EXPECT_TRUE(content::ExecuteScript(
+      app_browser->tab_strip_model()->GetActiveWebContents(),
+      "window.close();"));
+
+  ui_test_utils::WaitForBrowserToClose(app_browser);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+}
+
+class SystemWebAppManagerShouldNotCloseFromScriptsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerShouldNotCloseFromScriptsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
+            false);
+  }
+  ~SystemWebAppManagerShouldNotCloseFromScriptsTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
+                       ShouldNotCloseWindow) {
+  WaitForTestSystemAppInstall();
+
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
+  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+
+  content::WebContentsConsoleObserver console_observer(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+  console_observer.SetPattern(
+      "Scripts may close only the windows that were opened by them.");
+
+  EXPECT_TRUE(content::ExecuteScript(
+      app_browser->tab_strip_model()->GetActiveWebContents(),
+      "window.close();"));
+
+  console_observer.Wait();
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
 
@@ -812,4 +882,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     SystemWebAppLaunchOmniboxNavigateBrowsertest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerCloseFromScriptsTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerShouldNotCloseFromScriptsTest);
 }  // namespace web_app

@@ -117,6 +117,10 @@ struct SystemAppInfo {
   // mode.
   bool should_have_reload_button_in_minimal_ui = true;
 
+  // If set, allows the app to close the window through scripts, for example
+  // using `window.close()`.
+  bool allow_scripts_to_close_windows = false;
+
   WebApplicationInfoFactory app_info_factory;
 
   // Setup information to drive a background task.
@@ -212,6 +216,9 @@ class SystemWebAppManager {
 
   // Returns whether the app should have the reload button in minimal ui mode.
   bool ShouldHaveReloadButtonInMinimalUi(SystemAppType type) const;
+
+  // Returns whether the app is allowed to close the window through scripts.
+  bool AllowScriptsToCloseWindows(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(

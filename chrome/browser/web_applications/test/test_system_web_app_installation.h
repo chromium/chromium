@@ -65,6 +65,9 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithBackgroundTask();
 
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetupAppWithAllowScriptsToCloseWindows(bool value);
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

@@ -78,5 +78,14 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUiWithoutReloadButton) {
   EXPECT_FALSE(provider->GetReloadButton());
 }
 
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  EXPECT_TRUE(web_app::WebAppProvider::Get(browser->profile())
+                  ->system_web_app_manager()
+                  .AllowScriptsToCloseWindows(web_app::SystemAppType::ECHE));
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     EcheAppIntegrationTest);

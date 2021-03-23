@@ -247,6 +247,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::ECHE).is_maximizable = false;
     infos.at(SystemAppType::ECHE).should_have_reload_button_in_minimal_ui =
         false;
+    infos.at(SystemAppType::ECHE).allow_scripts_to_close_windows = true;
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::PERSONALIZATION)) {
@@ -686,6 +687,14 @@ bool SystemWebAppManager::ShouldHaveReloadButtonInMinimalUi(
     return false;
 
   return it->second.should_have_reload_button_in_minimal_ui;
+}
+
+bool SystemWebAppManager::AllowScriptsToCloseWindows(SystemAppType type) const {
+  auto it = system_app_infos_.find(type);
+  if (it == system_app_infos_.end())
+    return false;
+
+  return it->second.allow_scripts_to_close_windows;
 }
 
 base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
