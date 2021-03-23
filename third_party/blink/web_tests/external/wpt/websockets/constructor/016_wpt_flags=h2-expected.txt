@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: non-ascii URL in query, document encoding windows-1252 assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

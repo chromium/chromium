@@ -94,6 +94,7 @@ TRAILING WHITESPACE: server-timing/resources/parsing/*
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
+TRAILING WHITESPACE: content-security-policy/support/manifest.json
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
@@ -128,6 +129,7 @@ PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/empty.xml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.svg
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xhtml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xml
+PARSE-FAILED: custom-elements/xhtml-crash.xhtml
 
 # setTimeout usage (should probably mostly be fixed)
 SET TIMEOUT: *-manual.*

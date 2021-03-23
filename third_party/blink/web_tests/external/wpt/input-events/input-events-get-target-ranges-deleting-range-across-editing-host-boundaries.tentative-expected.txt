@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Backspace at "<p>ab[c<span contenteditable="false">no]n-editable</span>def</p>" promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Backspace at "<p>abc<span contenteditable="false">non-[editable</span>de]f</p>" promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Backspace at "<p contenteditable="false"><span contenteditable>a[bc</span>non-editable<span contenteditable>de]f</span></p>" promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Backspace at "<p>a[bc<span contenteditable="false">non-editable<span contenteditable>de]f</span></span></p>" promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+PASS Backspace at "<p><span contenteditable="false"><span contenteditable>a[bc</span>non-editable</span>de]f</p>"
+Harness: the test ran to completion.
+

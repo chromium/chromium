@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'getRegistration' of undefined"
+FAIL Synthetic response without Content-Length header promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'contentWindow' of undefined"
+FAIL Synthetic response with Content-Length header with value larger than response body length promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'contentWindow' of undefined"
+FAIL Synthetic response with two Content-Length headers value larger than response body length promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'contentWindow' of undefined"
+FAIL Synthetic response with bogus Content-Length header promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'contentWindow' of undefined"
+Harness: the test ran to completion.
+

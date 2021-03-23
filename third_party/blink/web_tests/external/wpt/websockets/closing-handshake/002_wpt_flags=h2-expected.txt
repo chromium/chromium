@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: server sends closing handshake assert_unreached: Reached unreachable code
+Harness: the test ran to completion.
+

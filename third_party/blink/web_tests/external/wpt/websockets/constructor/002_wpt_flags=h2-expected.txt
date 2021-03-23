@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS WebSockets: new WebSocket(invalid url)
+FAIL WebSockets: new WebSocket(invalid url) 1 assert_throws_dom: function "function(){new WebSocket("ws://foo bar.com/")}" did not throw
+FAIL WebSockets: new WebSocket(invalid url) 2 assert_throws_dom: function "function(){new WebSocket("wss://foo bar.com/")}" did not throw
+PASS WebSockets: new WebSocket(invalid url) 3
+PASS WebSockets: new WebSocket(invalid url) 4
+PASS WebSockets: new WebSocket(invalid url) 5
+PASS WebSockets: new WebSocket(invalid url) 6
+PASS WebSockets: new WebSocket(invalid url) 7
+PASS WebSockets: new WebSocket(invalid url) 8
+PASS WebSockets: new WebSocket(invalid url) 9
+Harness: the test ran to completion.
+

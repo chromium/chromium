@@ -28,5 +28,13 @@ FAIL Inserting "XY" after deleting first character of a link (Backspace) in <p><
 FAIL Inserting "XY" after deleting first character of a link (execCommand("delete")) in <p><a href="about:blank">z[]abc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
 FAIL Inserting "XY" after deleting first character of a link (Delete) in <p><a href="about:blank">[]zabc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
 FAIL Inserting "XY" after deleting first character of a link (execCommand("forwarddelete")) in <p><a href="about:blank">[]zabc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at start of a link which has a class for bold text in <p><a href="about:blank" class="bold">[]abc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at end of a link which has a class for bold text in <p><a href="about:blank" class="bold">abc[]</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at start of a link which has inline style for bold text in <p><a href="about:blank" style="font-weight: bold">[]abc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at end of a link which has inline style for bold text in <p><a href="about:blank" style="font-weight: bold">abc[]</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at start of a link which has a class for bold text (in CSS mode) in <p><a href="about:blank" class="bold">[]abc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at end of a link which has a class for bold text (in CSS mode) in <p><a href="about:blank" class="bold">abc[]</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at start of a link which has inline style for bold text (in CSS mode) in <p><a href="about:blank" style="font-weight: bold">[]abc</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL Inserting "XY" at end of a link which has inline style for bold text (in CSS mode) in <p><a href="about:blank" style="font-weight: bold">abc[]</a></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
 Harness: the test ran to completion.
 

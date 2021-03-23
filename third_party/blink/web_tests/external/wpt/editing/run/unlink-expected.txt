@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 315 tests; 292 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 395 tests; 372 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL [["unlink",""]] "foo[]bar": execCommand("unlink", false, "") return value assert_equals: expected true but got false
 PASS [["unlink",""]] "foo[]bar" checks for modifications to non-editable content
 PASS [["unlink",""]] "foo[]bar" compare innerHTML
@@ -315,5 +315,85 @@ PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") b
 PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandIndeterm("unlink") after
 PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandState("unlink") after
 PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
+PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
+PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
 Harness: the test ran to completion.
 
