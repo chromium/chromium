@@ -451,6 +451,13 @@ void SearchResultPageView::ShowAnchoredDialog(
   anchored_dialog_->widget()->Show();
 }
 
+SkColor SearchResultPageView::GetBackgroundColorForState(
+    AppListState state) const {
+  if (state == AppListState::kStateSearchResults)
+    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
+}
+
 PrivacyContainerView* SearchResultPageView::GetPrivacyContainerViewForTest() {
   return privacy_container_view_;
 }
@@ -605,11 +612,9 @@ void SearchResultPageView::OnAnimationUpdated(double progress,
       to_state != AppListState::kStateSearchResults) {
     return;
   }
-  const SearchBoxView* search_box =
-      AppListPage::contents_view()->GetSearchBoxView();
   const SkColor color = gfx::Tween::ColorValueBetween(
-      progress, search_box->GetBackgroundColorForState(from_state),
-      search_box->GetBackgroundColorForState(to_state));
+      progress, GetBackgroundColorForState(from_state),
+      GetBackgroundColorForState(to_state));
 
   if (color != background()->get_color()) {
     background()->SetNativeControlColor(color);

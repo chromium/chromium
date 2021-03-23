@@ -391,8 +391,11 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 }
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
-  if (state == AppListState::kStateSearchResults)
+  if (state == AppListState::kStateSearchResults) {
+    if (features::IsDarkLightModeEnabled())
+      return SK_ColorTRANSPARENT;
     return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+  }
   return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
 }
 

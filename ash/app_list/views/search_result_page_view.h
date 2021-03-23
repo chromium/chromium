@@ -116,6 +116,9 @@ class APP_LIST_EXPORT SearchResultPageView
     return anchored_dialog_.get();
   }
 
+  // Returns background color for the given state.
+  SkColor GetBackgroundColorForState(AppListState state) const;
+
   PrivacyContainerView* GetPrivacyContainerViewForTest();
   SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
