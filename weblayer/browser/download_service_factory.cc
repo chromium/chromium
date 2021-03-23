@@ -11,11 +11,11 @@
 #include "base/task/thread_pool.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/public/background_service/basic_task_scheduler.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_service.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
-#include "components/download/public/task/empty_task_scheduler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/browser_context.h"
@@ -176,7 +176,11 @@ KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
              SimpleDownloadManagerCoordinatorFactory::GetForBrowserContext(
                  context),
              proto_db_provider, background_task_runner,
-             std::make_unique<download::EmptyTaskScheduler>())
+             std::make_unique<download::BasicTaskScheduler>(base::BindRepeating(
+                 [](content::BrowserContext* context) {
+                   return DownloadServiceFactory::GetForBrowserContext(context);
+                 },
+                 context)))
       .release();
 }
 
