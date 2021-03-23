@@ -152,6 +152,36 @@ class BaseTypedMap(dict):
       self[key] = value
     return self[key]
 
+  def _value_type(self):
+    raise NotImplementedError()
+
+  def IterToValueType(self, value_type):
+    """Recursively iterates over contents until |value_type| is found.
+
+    Used to get rid of nested loops, instead using a single loop that
+    automatically iterates through all the contents at a certain depth.
+
+    Args:
+      value_type: The type to recurse to and then iterate over. For example,
+          "BuilderStepMap" would result in iterating over the BuilderStepMap
+          values, meaning that the returned generator would create tuples in the
+          form (test_name, expectation, builder_map).
+
+    Returns:
+      A generator that yields tuples. The length and content of the tuples will
+      vary depending on |value_type|. For example, using "BuilderStepMap" would
+      result in tuples of the form (test_name, expectation, builder_map), while
+      "BuildStats" would result in (test_name, expectation, builder_name,
+      step_name, build_stats).
+    """
+    if self._value_type() == value_type:
+      for k, v in self.iteritems():
+        yield k, v
+    else:
+      for k, v in self.iteritems():
+        for nested_value in v.IterToValueType(value_type):
+          yield (k, ) + nested_value
+
 
 class TestExpectationMap(BaseTypedMap):
   """Typed map for string types -> ExpectationBuilderMap.
@@ -180,14 +210,29 @@ class TestExpectationMap(BaseTypedMap):
     assert isinstance(value, ExpectationBuilderMap)
     super(TestExpectationMap, self).__setitem__(key, value)
 
+  def _value_type(self):
+    return ExpectationBuilderMap
+
+  def IterBuilderStepMaps(self):
+    """Iterates over all BuilderStepMaps contained in the map.
+
+    Returns:
+      A generator yielding tuples in the form (test_name (str), expectation
+      (Expectation), builder_map (BuilderStepMap))
+    """
+    return self.IterToValueType(BuilderStepMap)
+
 
 class ExpectationBuilderMap(BaseTypedMap):
   """Typed map for Expectation -> BuilderStepMap."""
 
   def __setitem__(self, key, value):
     assert isinstance(key, Expectation)
-    assert isinstance(value, BuilderStepMap)
+    assert isinstance(value, self._value_type())
     super(ExpectationBuilderMap, self).__setitem__(key, value)
+
+  def _value_type(self):
+    return BuilderStepMap
 
 
 class BuilderStepMap(BaseTypedMap):
@@ -195,8 +240,11 @@ class BuilderStepMap(BaseTypedMap):
 
   def __setitem__(self, key, value):
     assert IsStringType(key)
-    assert isinstance(value, StepBuildStatsMap)
+    assert isinstance(value, self._value_type())
     super(BuilderStepMap, self).__setitem__(key, value)
+
+  def _value_type(self):
+    return StepBuildStatsMap
 
 
 class StepBuildStatsMap(BaseTypedMap):
@@ -204,8 +252,11 @@ class StepBuildStatsMap(BaseTypedMap):
 
   def __setitem__(self, key, value):
     assert IsStringType(key)
-    assert isinstance(value, BuildStats)
+    assert isinstance(value, self._value_type())
     super(StepBuildStatsMap, self).__setitem__(key, value)
+
+  def _value_type(self):
+    return BuildStats
 
 
 def IsStringType(s):

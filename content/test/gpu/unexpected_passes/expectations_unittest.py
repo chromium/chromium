@@ -549,11 +549,12 @@ class AddResultToMapUnittest(unittest.TestCase):
     r = data_types.Result('some/test/case', ['win', 'win10'], 'Pass',
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
-    expectation_map = {
-        'some/test/*': {
-            e: {},
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e: data_types.BuilderStepMap(),
+        }),
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
@@ -574,11 +575,12 @@ class AddResultToMapUnittest(unittest.TestCase):
     r = data_types.Result('some/test/case', ['win', 'win10'], 'Failure',
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
-    expectation_map = {
-        'some/test/*': {
-            e: {},
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e: data_types.BuilderStepMap(),
+        }),
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
@@ -601,15 +603,18 @@ class AddResultToMapUnittest(unittest.TestCase):
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     stats = data_types.BuildStats()
     stats.AddFailedBuild('build_id')
-    expectation_map = {
-        'some/test/*': {
-            e: {
-                'builder': {
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e:
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'pixel_tests': stats,
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
@@ -633,15 +638,18 @@ class AddResultToMapUnittest(unittest.TestCase):
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     stats = data_types.BuildStats()
     stats.AddPassedBuild()
-    expectation_map = {
-        'some/test/*': {
-            e: {
-                'builder': {
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e:
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'pixel_tests': stats,
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
@@ -664,12 +672,13 @@ class AddResultToMapUnittest(unittest.TestCase):
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10'], 'Failure')
     e2 = data_types.Expectation('some/test/case', ['win10'], 'Failure')
-    expectation_map = {
-        'some/test/*': {
-            e: {},
-            e2: {},
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e: data_types.BuilderStepMap(),
+            e2: data_types.BuilderStepMap(),
+        }),
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertTrue(found_matching)
     stats = data_types.BuildStats()
@@ -695,7 +704,12 @@ class AddResultToMapUnittest(unittest.TestCase):
     r = data_types.Result('some/test/case', ['win', 'win10'], 'Failure',
                           'pixel_tests', 'build_id')
     e = data_types.Expectation('some/test/*', ['win10', 'foo'], 'Failure')
-    expectation_map = {'some/test/*': {e: {}}}
+    expectation_map = data_types.TestExpectationMap({
+        'some/test/*':
+        data_types.ExpectationBuilderMap({
+            e: data_types.BuilderStepMap(),
+        })
+    })
     found_matching = expectations._AddResultToMap(r, 'builder', expectation_map)
     self.assertFalse(found_matching)
     expected_expectation_map = {'some/test/*': {e: {}}}

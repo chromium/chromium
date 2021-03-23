@@ -207,6 +207,78 @@ class MapTypeUnittest(unittest.TestCase):
     self._StringToMapHelper(data_types.TestExpectationMap,
                             data_types.ExpectationBuilderMap)
 
+  def _GetSampleBuildStats(self):
+    build_stats = []
+    for i in xrange(8):
+      bs = data_types.BuildStats()
+      for _ in xrange(i):
+        bs.AddPassedBuild()
+      build_stats.append(bs)
+    return build_stats
+
+  def _GetSampleTestExpectationMap(self):
+    build_stats = self._GetSampleBuildStats()
+    return data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['tag'], ['Failure']):
+            data_types.BuilderStepMap({
+                'builder1':
+                data_types.StepBuildStatsMap({
+                    'step1': build_stats[0],
+                    'step2': build_stats[1],
+                }),
+                'builder2':
+                data_types.StepBuildStatsMap({
+                    'step3': build_stats[2],
+                    'step4': build_stats[3],
+                }),
+            }),
+            data_types.Expectation('foo', ['tag2'], ['Failure']):
+            data_types.BuilderStepMap({
+                'builder3':
+                data_types.StepBuildStatsMap({
+                    'step5': build_stats[4],
+                    'step6': build_stats[5],
+                }),
+                'builder4':
+                data_types.StepBuildStatsMap({
+                    'step7': build_stats[6],
+                    'step8': build_stats[7],
+                }),
+            }),
+        }),
+    })
+
+  def testIterBuilderStepMaps(self):
+    """Tests that iterating to BuilderStepMap works as expected."""
+    test_expectation_map = self._GetSampleTestExpectationMap()
+    expected_values = []
+    for test_name, expectation_map in test_expectation_map.iteritems():
+      for expectation, builder_map in expectation_map.iteritems():
+        expected_values.append((test_name, expectation, builder_map))
+    returned_values = []
+    for (test_name, expectation,
+         builder_map) in test_expectation_map.IterBuilderStepMaps():
+      returned_values.append((test_name, expectation, builder_map))
+    self.assertEqual(len(returned_values), len(expected_values))
+    for rv in returned_values:
+      self.assertIn(rv, expected_values)
+      self.assertIsInstance(rv[-1], data_types.BuilderStepMap)
+
+  def testIterToNoSuchValue(self):
+    """Tests that iterating to a type that has no data works as expected."""
+    test_expectation_map = data_types.TestExpectationMap()
+    # This should neither break nor return any data.
+    for _, __, ___ in test_expectation_map.IterBuilderStepMaps():
+      self.fail()
+
+  def testIterToNoSuchType(self):
+    """Tests that an error is raised if no such type is found when iterating."""
+    test_expectation_map = self._GetSampleBuildStats()
+    with self.assertRaises(AttributeError):
+      test_expectation_map.IterToValueType(int)
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

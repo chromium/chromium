@@ -335,6 +335,11 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   """
   assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   output_dict = {}
+  # This initially looks like a good target for using
+  # data_types.TestExpectationMap's iterators since there are many nested loops.
+  # However, we need to reset state in different loops, and the alternative of
+  # keeping all the state outside the loop and resetting under certain
+  # conditions ends up being less readable than just using nested loops.
   for test_name, expectation_map in test_expectation_map.iteritems():
     output_dict[test_name] = {}
 

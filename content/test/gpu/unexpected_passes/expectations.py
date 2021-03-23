@@ -73,10 +73,9 @@ def FilterOutUnusedExpectations(test_expectation_map):
   assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   logging.info('Filtering out unused expectations')
   unused_expectations = []
-  for _, expectation_map in test_expectation_map.iteritems():
-    for expectation, builder_map in expectation_map.iteritems():
-      if not builder_map:
-        unused_expectations.append(expectation)
+  for _, expectation, builder_map in test_expectation_map.IterBuilderStepMaps():
+    if not builder_map:
+      unused_expectations.append(expectation)
   for unused in unused_expectations:
     for _, expectation_map in test_expectation_map.iteritems():
       if unused in expectation_map:
@@ -119,6 +118,12 @@ def SplitExpectationsByStaleness(test_expectation_map):
   stale_dict = data_types.TestExpectationMap()
   semi_stale_dict = data_types.TestExpectationMap()
   active_dict = data_types.TestExpectationMap()
+
+  # This initially looks like a good target for using
+  # data_types.TestExpectationMap's iterators since there are many nested loops.
+  # However, we need to reset state in different loops, and the alternative of
+  # keeping all the state outside the loop and resetting under certain
+  # conditions ends up being less readable than just using nested loops.
   for test_name, expectation_map in test_expectation_map.iteritems():
     for expectation, builder_map in expectation_map.iteritems():
       # A temporary map to hold data so we can later determine whether an
@@ -352,33 +357,33 @@ def AddResultListToMap(expectation_map, builder, results):
   return unmatched_results
 
 
-def _AddResultToMap(result, builder, expectation_map):
-  """Adds a single |result| to |expectation_map|.
+def _AddResultToMap(result, builder, test_expectation_map):
+  """Adds a single |result| to |test_expectation_map|.
 
   Args:
     result: A data_types.Result object to add.
     builder: A string containing the name of the builder |result| came from.
-    expectation_map: A data_types.TestExpectationMap. Will be modified in-place.
+    test_expectation_map: A data_types.TestExpectationMap. Will be modified
+        in-place.
 
   Returns:
-    True if an expectation in |expectation_map| applied to |result|, otherwise
-    False.
+    True if an expectation in |test_expectation_map| applied to |result|,
+    otherwise False.
   """
+  assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   found_matching_expectation = False
   # We need to use fnmatch since wildcards are supported, so there's no point in
   # checking the test name key right now. The AppliesToResult check already does
   # an fnmatch check.
-  for expectations in expectation_map.itervalues():
-    for e, builder_map in expectations.iteritems():
-      if e.AppliesToResult(result):
-        found_matching_expectation = True
-        step_map = builder_map.setdefault(builder,
-                                          data_types.StepBuildStatsMap())
-        stats = step_map.setdefault(result.step, data_types.BuildStats())
-        if result.actual_result == 'Pass':
-          stats.AddPassedBuild()
-        else:
-          stats.AddFailedBuild(result.build_id)
+  for _, expectation, builder_map in test_expectation_map.IterBuilderStepMaps():
+    if expectation.AppliesToResult(result):
+      found_matching_expectation = True
+      step_map = builder_map.setdefault(builder, data_types.StepBuildStatsMap())
+      stats = step_map.setdefault(result.step, data_types.BuildStats())
+      if result.actual_result == 'Pass':
+        stats.AddPassedBuild()
+      else:
+        stats.AddFailedBuild(result.build_id)
   return found_matching_expectation
 
 
