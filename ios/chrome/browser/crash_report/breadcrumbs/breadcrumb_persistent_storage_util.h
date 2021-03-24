@@ -9,18 +9,16 @@
 
 namespace breadcrumb_persistent_storage_util {
 
-// Returns the path to a file for storing breadcrumbs within |storage_dir|.
-base::FilePath GetBreadcrumbPersistentStorageFilePath(
+// DEPRECATED: for migration only. Use
+// breadcrumbs::GetBreadcrumbPersistentStorageTempFilePath() instead.
+// TODO(crbug.com/1187988): Remove along with migration code.
+base::FilePath GetOldBreadcrumbPersistentStorageFilePath(
     base::FilePath storage_dir);
 
-// Returns the path to a file for storing breadcrumbs within ||storage_dir||.
-// This second file is used to write the new breadcrumbs to so that the primary
-// breadcrumbs file at |GetBreadcrumbPersistentStorageFilePath()| is always in a
-// state correctly describing the application. (If the contents of a single file
-// was instead cleared and re-written, the most recent breadcrumbs would be
-// missing if the application crashed during this timeframe which will happen
-// often whenever old breadcrumbs are removed.)
-base::FilePath GetBreadcrumbPersistentStorageTempFilePath(
+// DEPRECATED: for migration only. Use
+// breadcrumbs::GetBreadcrumbPersistentStorageTempFilePath() instead.
+// TODO(crbug.com/1187988): Remove along with migration code.
+base::FilePath GetOldBreadcrumbPersistentStorageTempFilePath(
     base::FilePath storage_dir);
 
 }  // namespace breadcrumb_persistent_storage_util

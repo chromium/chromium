@@ -17,6 +17,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 
@@ -139,25 +140,48 @@ size_t DoGetStoredEventsLength(const base::FilePath& file_path) {
   return strlen(persisted_events.c_str());
 }
 
-}  // namespace
+// Renames breadcrumb files with the old filenames "iOS Breadcrumbs.*" to the
+// new filenames "Breadcrumbs.*", if present.
+void MigrateOldBreadcrumbFiles(
+    const base::FilePath& breadcrumbs_file_path,
+    const base::FilePath& breadcrumbs_temp_file_path) {
+  const base::FilePath old_breadcrumbs_file_path =
+      breadcrumb_persistent_storage_util::
+          GetOldBreadcrumbPersistentStorageFilePath(
+              breadcrumbs_file_path.DirName());
+  if (base::PathExists(old_breadcrumbs_file_path))
+    base::Move(old_breadcrumbs_file_path, breadcrumbs_file_path);
 
-using breadcrumb_persistent_storage_util::
-    GetBreadcrumbPersistentStorageFilePath;
-using breadcrumb_persistent_storage_util::
-    GetBreadcrumbPersistentStorageTempFilePath;
+  const base::FilePath old_breadcrumbs_temp_file_path =
+      breadcrumb_persistent_storage_util::
+          GetOldBreadcrumbPersistentStorageTempFilePath(
+              breadcrumbs_temp_file_path.DirName());
+  if (base::PathExists(old_breadcrumbs_temp_file_path))
+    base::Move(old_breadcrumbs_temp_file_path, breadcrumbs_temp_file_path);
+}
+
+}  // namespace
 
 BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
     base::FilePath directory)
     :  // Ensure first event will not be delayed by initializing with a time in
        // the past.
       last_written_time_(base::TimeTicks::Now() - kMinDelayBetweenWrites),
-      breadcrumbs_file_path_(GetBreadcrumbPersistentStorageFilePath(directory)),
+      breadcrumbs_file_path_(
+          breadcrumbs::GetBreadcrumbPersistentStorageFilePath(directory)),
       breadcrumbs_temp_file_path_(
-          GetBreadcrumbPersistentStorageTempFilePath(directory)),
+          breadcrumbs::GetBreadcrumbPersistentStorageTempFilePath(directory)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       weak_ptr_factory_(this) {
+  // Rename breadcrumb files using the old filenames, if present. This must
+  // happen before the files are used, to ensure that old breadcrumbs are found.
+  // TODO(crbug.com/1187988): remove this and its unit test.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MigrateOldBreadcrumbFiles, breadcrumbs_file_path_,
+                     breadcrumbs_temp_file_path_));
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&DoGetStoredEventsLength, breadcrumbs_file_path_),

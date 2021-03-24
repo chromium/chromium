@@ -7,11 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
+#include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
@@ -24,8 +26,6 @@
 
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-using breadcrumb_persistent_storage_util::
-    GetBreadcrumbPersistentStorageFilePath;
 
 namespace {
 
@@ -251,7 +251,8 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
 TEST_F(BreadcrumbPersistentStorageManagerTest,
        GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
-      GetBreadcrumbPersistentStorageFilePath(scoped_temp_directory_.GetPath());
+      breadcrumbs::GetBreadcrumbPersistentStorageFilePath(
+          scoped_temp_directory_.GetPath());
 
   auto file = std::make_unique<base::File>(
       breadcrumbs_file_path,
@@ -284,4 +285,52 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
     base::RunLoop().RunUntilIdle();
     return events_received;
   }));
+}
+
+using BreadcrumbPersistentStorageManagerFilenameTest = PlatformTest;
+
+TEST_F(BreadcrumbPersistentStorageManagerFilenameTest,
+       MigrateOldBreadcrumbFiles) {
+  web::WebTaskEnvironment task_env;
+  base::ScopedTempDir scoped_temp_directory;
+  ASSERT_TRUE(scoped_temp_directory.CreateUniqueTempDir());
+  base::FilePath directory_name = scoped_temp_directory.GetPath();
+
+  // Create breadcrumb file and temp file with old filenames.
+  const base::FilePath old_breadcrumb_file_path =
+      breadcrumb_persistent_storage_util::
+          GetOldBreadcrumbPersistentStorageFilePath(directory_name);
+  const base::FilePath old_temp_file_path = breadcrumb_persistent_storage_util::
+      GetOldBreadcrumbPersistentStorageTempFilePath(directory_name);
+  base::File old_breadcrumb_file(
+      old_breadcrumb_file_path,
+      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  base::File old_temp_file(old_temp_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                                   base::File::FLAG_WRITE);
+  ASSERT_TRUE(old_breadcrumb_file.IsValid());
+  ASSERT_TRUE(old_temp_file.IsValid());
+  old_temp_file.Close();
+
+  // Write some test data to the breadcrumb file.
+  const std::string test_data = "breadcrumb file test data";
+  ASSERT_NE(-1,
+            old_breadcrumb_file.Write(0, test_data.c_str(), test_data.size()));
+  old_breadcrumb_file.Close();
+
+  BreadcrumbPersistentStorageManager persistent_storage(directory_name);
+  task_env.RunUntilIdle();
+
+  // The old files should have been removed, and the new breadcrumb file should
+  // be present.
+  EXPECT_FALSE(base::PathExists(old_breadcrumb_file_path));
+  EXPECT_FALSE(base::PathExists(old_temp_file_path));
+  base::File new_file(
+      breadcrumbs::GetBreadcrumbPersistentStorageFilePath(directory_name),
+      base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_TRUE(new_file.IsValid());
+  const size_t test_data_size = test_data.size();
+  char new_file_data[test_data_size];
+  EXPECT_EQ(static_cast<int>(test_data_size),
+            new_file.Read(0, new_file_data, test_data_size));
+  EXPECT_EQ(test_data, std::string(new_file_data, test_data_size));
 }
