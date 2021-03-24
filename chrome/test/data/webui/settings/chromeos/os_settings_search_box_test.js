@@ -184,6 +184,15 @@ suite('OSSettingsSearchBox', () => {
     await waitForResultsFetched();
     assertFalse(dropDown.opened);
     assertEquals(searchBox.searchResults_.length, 1);
+
+    // The first item should be selected immediately when the search results
+    // change even if the change occurred while the dropdown was closed.
+    field.$.searchInput.focus();
+    await waitForListUpdate();
+    assertTrue(dropDown.opened);
+    assertEquals(
+        searchBox.getSelectedOsSearchResultRow_().searchResult.resultText,
+        searchBox.selectedItem_.resultText);
   });
 
   test('User action search event', async () => {
