@@ -183,7 +183,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
          });
       )");
   ResultCatcher catcher;
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(),
+                    // Wait for the registration to be stored so that it's
+                    // persistent before the worker is stopped later.
+                    {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
 
   // Wait for the extension to register runtime.onConnect listener.
