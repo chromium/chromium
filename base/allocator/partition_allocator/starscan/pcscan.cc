@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <numeric>
@@ -1345,7 +1346,7 @@ void PCScanTask::SweepQuarantine() {
 
 void PCScanTask::FinishScanner() {
   stats_.ReportTracesAndHists();
-  LogStats(stats_.swept_size(), pcscan_.quarantine_data_.last_size(),
+  LogStats(stats_.swept_size(), pcscan_.quarantine_data_.quarantine_size(),
            stats_.survived_quarantine_size());
 
   const size_t total_pa_heap_size =
@@ -1486,7 +1487,7 @@ class PCScan::PCScanThread final {
 constexpr size_t PCScan::QuarantineData::kQuarantineSizeMinLimit;
 
 void PCScan::QuarantineData::ResetAndAdvanceEpoch() {
-  last_size_ = current_size_.exchange(0, std::memory_order_relaxed);
+  quarantine_size_ = limit_ - trigger_limit_.load(std::memory_order_relaxed);
   epoch_.fetch_add(1, std::memory_order_relaxed);
 }
 
@@ -1494,10 +1495,15 @@ void PCScan::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
   static constexpr double kQuarantineSizeFraction = 0.1;
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
-  size_limit_.store(
-      std::max(kQuarantineSizeMinLimit,
-               static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
-      std::memory_order_relaxed);
+  limit_ = std::max(kQuarantineSizeMinLimit,
+                    static_cast<size_t>(kQuarantineSizeFraction * heap_size));
+  // Force a new scan on the next deallocation if the too many deallocations
+  // accumulated during the current scan.
+  const intptr_t old_trigger_limit =
+      trigger_limit_.fetch_add(limit_, std::memory_order_relaxed);
+  if (old_trigger_limit + limit_ < 0) {
+    trigger_limit_.store(0, std::memory_order_relaxed);
+  }
 }
 
 void PCScan::PerformScan(InvocationMode invocation_mode) {

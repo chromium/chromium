@@ -107,22 +107,25 @@ class BASE_EXPORT PCScan final {
     void ResetAndAdvanceEpoch();
 
     size_t epoch() const { return epoch_.load(std::memory_order_relaxed); }
-    size_t size() const {
-      return current_size_.load(std::memory_order_relaxed);
-    }
-    size_t last_size() const { return last_size_; }
+    size_t limit() const { return limit_; }
+
+    size_t quarantine_size() const { return quarantine_size_; }
 
     bool MinimumScanningThresholdReached() const {
-      return size() > kQuarantineSizeMinLimit;
+      return limit_ - trigger_limit_.load(std::memory_order_relaxed) >
+             kQuarantineSizeMinLimit;
     }
 
    private:
     static constexpr size_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
 
-    std::atomic<size_t> current_size_{0u};
-    std::atomic<size_t> size_limit_{kQuarantineSizeMinLimit};
+    // The next scan will be triggered after limit_ deallocations.
+    size_t limit_{kQuarantineSizeMinLimit};
+    // Deallocations decrement from this counter. When it reaches <=0 a scan
+    // is triggered.
+    std::atomic<intptr_t> trigger_limit_{limit_};
     std::atomic<size_t> epoch_{0u};
-    size_t last_size_ = 0;
+    size_t quarantine_size_ = 0;
   };
 
   enum class State : uint8_t {
@@ -160,8 +163,10 @@ class BASE_EXPORT PCScan final {
 constexpr PCScan::QuarantineData::QuarantineData() = default;
 
 ALWAYS_INLINE bool PCScan::QuarantineData::Account(size_t size) {
-  size_t size_before = current_size_.fetch_add(size, std::memory_order_relaxed);
-  return size_before + size > size_limit_.load(std::memory_order_relaxed);
+  intptr_t trigger_limit_before =
+      trigger_limit_.fetch_sub(size, std::memory_order_relaxed);
+  intptr_t trigger_limit_after = trigger_limit_before - size;
+  return trigger_limit_before >= 0 && trigger_limit_after < 0;
 }
 
 // To please Chromium's clang plugin.
