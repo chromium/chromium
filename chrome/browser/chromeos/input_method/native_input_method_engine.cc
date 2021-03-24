@@ -35,6 +35,7 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }
 
+// TODO(https://crbug/1166082): Use a separate InputMethodEngine for rule-based.
 bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
@@ -263,6 +264,10 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 
     active_engine_id_ = new_engine_id;
     remote_to_engine_->OnInputMethodChanged(new_engine_id);
+
+    if (ShouldRouteToRuleBasedEngine(engine_id)) {
+      ime_base_observer_->OnActivate(engine_id);
+    }
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
