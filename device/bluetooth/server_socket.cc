@@ -28,12 +28,13 @@ ServerSocket::~ServerSocket() {
 }
 
 void ServerSocket::Accept(AcceptCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   server_socket_->Accept(
       base::BindOnce(&ServerSocket::OnAccept, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback),
+                     std::move(split_callback.first)),
       base::BindOnce(&ServerSocket::OnAcceptError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void ServerSocket::Disconnect(DisconnectCallback callback) {

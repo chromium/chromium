@@ -160,18 +160,19 @@ void BluetoothSocketNet::DoReceive(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&BluetoothSocketNet::OnSocketReadComplete, this,
                      std::move(success_callback), std::move(error_callback)));
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
-  int read_result =
-      tcp_socket_->Read(buffer.get(), buffer->size(), copyable_callback);
+  int read_result = tcp_socket_->Read(buffer.get(), buffer->size(),
+                                      std::move(split_callback.first));
 
   read_buffer_ = buffer;
 
-  // Read() will not have run |copyable_callback| if there is no pending I/O.
-  if (read_result != net::ERR_IO_PENDING)
-    copyable_callback.Run(read_result);
+  // Read() will not have run |split_callback.first| if there is no pending I/O.
+  if (read_result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(read_result);
+  }
 }
 
 void BluetoothSocketNet::OnSocketReadComplete(
@@ -259,7 +260,7 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
   pending_write_request_ = std::move(write_queue_.front());
   write_queue_.pop();
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&BluetoothSocketNet::OnSocketWriteComplete, this,
                      std::move(pending_write_request_->success_callback),
                      std::move(pending_write_request_->error_callback)));
@@ -287,12 +288,15 @@ void BluetoothSocketNet::SendFrontWriteRequest() {
             "DeviceAllowBluetooth policy can disable Bluetooth for ChromeOS, "
             "not implemented for other platforms."
         })");
-  int send_result = tcp_socket_->Write(pending_write_request_->buffer.get(),
-                                       pending_write_request_->buffer_size,
-                                       copyable_callback, traffic_annotation);
-  // Write() will not have run |copyable_callback| if there is no pending I/O.
-  if (send_result != net::ERR_IO_PENDING)
-    copyable_callback.Run(send_result);
+  int send_result = tcp_socket_->Write(
+      pending_write_request_->buffer.get(), pending_write_request_->buffer_size,
+      std::move(split_callback.first), traffic_annotation);
+
+  // Write() will not have run |split_callback.first| if there is no pending
+  // I/O.
+  if (send_result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(send_result);
+  }
 }
 
 void BluetoothSocketNet::OnSocketWriteComplete(

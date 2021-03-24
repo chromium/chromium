@@ -333,15 +333,17 @@ void BluetoothSocketWin::DoListen(const BluetoothUUID& uuid,
 void BluetoothSocketWin::DoAccept(AcceptCompletionCallback success_callback,
                                   ErrorCompletionCallback error_callback) {
   DCHECK(socket_thread()->task_runner()->RunsTasksInCurrentSequence());
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   int result = tcp_socket()->Accept(
       &accept_socket_, &accept_address_,
       base::BindOnce(&BluetoothSocketWin::OnAcceptOnSocketThread, this,
-                     std::move(success_callback), copyable_error_callback));
+                     std::move(success_callback),
+                     std::move(split_error_callback.first)));
   if (result != net::OK && result != net::ERR_IO_PENDING) {
     LOG(WARNING) << "Failed to accept, net err=" << result;
-    PostErrorCompletion(copyable_error_callback, kFailedToAccept);
+    PostErrorCompletion(std::move(split_error_callback.second),
+                        kFailedToAccept);
   }
 }
 

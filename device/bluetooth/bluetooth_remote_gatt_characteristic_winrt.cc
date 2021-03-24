@@ -366,8 +366,8 @@ void BluetoothRemoteGattCharacteristicWinrt::UnsubscribeFromNotifications(
     BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  auto repeating_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   base::OnceClosure success_callback = base::BindOnce(
       [](base::WeakPtr<BluetoothRemoteGattCharacteristicWinrt> characteristic,
          base::OnceClosure callback, ErrorCallback error_callback) {
@@ -380,13 +380,13 @@ void BluetoothRemoteGattCharacteristicWinrt::UnsubscribeFromNotifications(
         std::move(callback).Run();
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-      repeating_error_callback);
+      std::move(split_error_callback.first));
   WriteCccDescriptor(
       GattClientCharacteristicConfigurationDescriptorValue_None,
       // Wrap the success and error callbacks in a lambda, so that we can
       // notify callers whether removing the event handler succeeded after
       // the descriptor has been written to.
-      std::move(success_callback), repeating_error_callback);
+      std::move(success_callback), std::move(split_error_callback.second));
 }
 
 BluetoothRemoteGattCharacteristicWinrt::PendingReadCallbacks::

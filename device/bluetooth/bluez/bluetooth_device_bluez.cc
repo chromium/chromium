@@ -475,13 +475,15 @@ bool BluetoothDeviceBlueZ::ExpectingConfirmation() const {
 void BluetoothDeviceBlueZ::GetConnectionInfo(ConnectionInfoCallback callback) {
   // DBus method call should gracefully return an error if the device is not
   // currently connected.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetConnInfo(
       object_path_,
       base::BindOnce(&BluetoothDeviceBlueZ::OnGetConnInfo,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&BluetoothDeviceBlueZ::OnGetConnInfoError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void BluetoothDeviceBlueZ::SetConnectionLatency(
@@ -536,27 +538,25 @@ void BluetoothDeviceBlueZ::Connect(
   BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Connecting, "
                        << num_connecting_calls_ << " in progress";
 
-  // These callbacks are only called once, but are passed to two different
-  // places.
-  base::RepeatingClosure dupe_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  base::RepeatingCallback<ConnectErrorCallback::RunType> dupe_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
-
   if (IsPaired() || !pairing_delegate) {
     // No need to pair, or unable to, skip straight to connection.
-    ConnectInternal(dupe_callback, dupe_error_callback);
+    ConnectInternal(std::move(callback), std::move(error_callback));
   } else {
     // Initiate high-security connection with pairing.
     BeginPairing(pairing_delegate);
 
+    // This callback is only called once but is passed to two different places.
+    auto split_error_callback =
+        base::SplitOnceCallback(std::move(error_callback));
+
     bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->Pair(
         object_path_,
         base::BindOnce(&BluetoothDeviceBlueZ::OnPairDuringConnect,
-                       weak_ptr_factory_.GetWeakPtr(), dupe_callback,
-                       dupe_error_callback),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(split_error_callback.first)),
         base::BindOnce(&BluetoothDeviceBlueZ::OnPairDuringConnectError,
-                       weak_ptr_factory_.GetWeakPtr(), dupe_error_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_error_callback.second)));
   }
 }
 

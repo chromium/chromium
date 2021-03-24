@@ -239,14 +239,15 @@ void BluetoothSocketBlueZ::RegisterProfile(
   DVLOG(1) << uuid_.canonical_value() << " on " << device_path_.value()
            << ": Acquiring profile.";
 
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   adapter->UseProfile(
       uuid_, device_path_, *options_, this,
       base::BindOnce(&BluetoothSocketBlueZ::OnRegisterProfile, this,
-                     std::move(success_callback), copyable_error_callback),
+                     std::move(success_callback),
+                     std::move(split_error_callback.first)),
       base::BindOnce(&BluetoothSocketBlueZ::OnRegisterProfileError, this,
-                     copyable_error_callback));
+                     std::move(split_error_callback.second)));
 }
 
 void BluetoothSocketBlueZ::OnRegisterProfile(

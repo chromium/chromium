@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -286,11 +285,11 @@ bool BluetoothAdapterWin::SetPoweredImpl(bool powered) {
 void BluetoothAdapterWin::UpdateFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
     DiscoverySessionResultCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   DCHECK(discovery_status_ == DISCOVERING ||
          discovery_status_ == DISCOVERY_STARTING);
   if (discovery_status_ == DISCOVERING) {
-    copyable_callback.Run(false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
+    std::move(callback).Run(false,
+                            UMABluetoothDiscoverySessionOutcome::SUCCESS);
     return;
   }
 }

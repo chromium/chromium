@@ -59,12 +59,12 @@ void Adapter::ConnectToDevice(const std::string& address,
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   device->CreateGattConnection(
       base::BindOnce(&Adapter::OnGattConnected, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnConnectError, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback));
+                     std::move(split_callback.second)));
 }
 
 void Adapter::GetDevices(GetDevicesCallback callback) {
@@ -145,43 +145,48 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
         std::move(scan_response_data_map));
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
       base::BindOnce(&Adapter::OnRegisterAdvertisement,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnRegisterAdvertisementError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Adapter::SetDiscoverable(bool discoverable,
                               SetDiscoverableCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
-  adapter_->SetDiscoverable(
-      discoverable,
-      base::BindOnce(&Adapter::OnSetDiscoverable,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindOnce(&Adapter::OnSetDiscoverableError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  adapter_->SetDiscoverable(discoverable,
+                            base::BindOnce(&Adapter::OnSetDiscoverable,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           std::move(split_callback.first)),
+                            base::BindOnce(&Adapter::OnSetDiscoverableError,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           std::move(split_callback.second)));
 }
 
 void Adapter::SetName(const std::string& name, SetNameCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->SetName(
       name,
       base::BindOnce(&Adapter::OnSetName, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnSetNameError, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback));
+                     std::move(split_callback.second)));
 }
 
 void Adapter::StartDiscoverySession(StartDiscoverySessionCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->StartDiscoverySession(
       base::BindOnce(&Adapter::OnStartDiscoverySession,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnDiscoverySessionError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Adapter::ConnectToServiceInsecurely(
@@ -203,15 +208,15 @@ void Adapter::ConnectToServiceInsecurely(
   // This device has neither been discovered, nor has it been paired/connected
   // to previously. Use the ConnectDevice() API, if available, to connect to it.
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->ConnectDevice(
       address, /*address_type=*/base::nullopt,
       base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
                      weak_ptr_factory_.GetWeakPtr(), service_uuid,
-                     copyable_callback),
-      base::BindOnce(&Adapter::OnConnectToServiceError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback,
-                     kCannotConnectToDeviceError));
+                     std::move(split_callback.first)),
+      base::BindOnce(
+          &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
+          std::move(split_callback.second), kCannotConnectToDeviceError));
 #else
   OnConnectToServiceError(std::move(callback), "Device does not exist.");
 #endif
@@ -230,13 +235,15 @@ void Adapter::CreateRfcommServiceInsecurely(
   service_options.name = service_name;
   service_options.require_authentication = false;
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->CreateRfcommService(
       service_uuid, service_options,
       base::BindOnce(&Adapter::OnCreateRfcommServiceInsecurely,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnCreateRfcommServiceInsecurelyError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Adapter::AdapterPresentChanged(device::BluetoothAdapter* adapter,
@@ -335,13 +342,15 @@ void Adapter::OnDeviceFetchedForInsecureServiceConnection(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   device->ConnectToServiceInsecurely(
       service_uuid,
       base::BindOnce(&Adapter::OnConnectToService,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Adapter::OnConnectToServiceError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Adapter::ProcessPendingInsecureServiceConnectionRequest(
