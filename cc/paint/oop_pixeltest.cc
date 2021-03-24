@@ -1692,6 +1692,7 @@ static constexpr SkScalar kTextBlobY = 16.f;
 // strategies.
 enum class TextBlobStrategy {
   kDirect,        // DrawTextBlobOp directly in the display list
+  kDrawRecord,    // DrawRecordOp where the paint record includes text
   kRecordShader,  // DrawRectOp where the paint has a RecordShader with text
   kRecordFilter   // DrawRectOp where the paint has a RecordFilter with text
 };
@@ -1799,6 +1800,10 @@ class OopTextBlobPixelTest
     auto paint_record = sk_make_sp<PaintOpBuffer>();
     paint_record->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
                                        text_flags);
+    if (strategy == TextBlobStrategy::kDrawRecord) {
+      display_list->push<DrawRecordOp>(std::move(paint_record));
+      return;
+    }
 
     PaintFlags record_flags;
     if (strategy == TextBlobStrategy::kRecordShader) {
@@ -1851,6 +1856,9 @@ class OopTextBlobPixelTest
       case TextBlobStrategy::kDirect:
         ss << "Direct";
         break;
+      case TextBlobStrategy::kDrawRecord:
+        ss << "DrawRecord";
+        break;
       case TextBlobStrategy::kRecordShader:
         ss << "RecordShader";
         break;
@@ -1892,6 +1900,7 @@ INSTANTIATE_TEST_SUITE_P(
     P,
     OopTextBlobPixelTest,
     ::testing::Combine(::testing::Values(TextBlobStrategy::kDirect,
+                                         TextBlobStrategy::kDrawRecord,
                                          TextBlobStrategy::kRecordShader,
                                          TextBlobStrategy::kRecordFilter),
                        ::testing::Values(MatrixStrategy::kIdentity,
