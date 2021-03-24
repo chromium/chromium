@@ -20,7 +20,7 @@ class ManifestTypeConvertersTest : public testing::Test {
 
   mojom::blink::ManifestPtr Load(const String& json) {
     KURL url("http://example.com");
-    ManifestParser parser(json, url, url);
+    ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
     parser.Parse();
 
     Vector<mojom::blink::ManifestErrorPtr> errors;

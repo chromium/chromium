@@ -84,10 +84,12 @@ bool IsHostValidForUrlHandler(String host) {
 
 ManifestParser::ManifestParser(const String& data,
                                const KURL& manifest_url,
-                               const KURL& document_url)
+                               const KURL& document_url,
+                               const FeatureContext* feature_context)
     : data_(data),
       manifest_url_(manifest_url),
       document_url_(document_url),
+      feature_context_(feature_context),
       failed_(false) {}
 
 ManifestParser::~ManifestParser() {}
@@ -1250,7 +1252,7 @@ mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
   // Parse if either the command line flag is passed (for about:flags) or the
   // runtime enabled feature is turned on (for origin trial).
   if (!base::FeatureList::IsEnabled(features::kWebAppEnableLinkCapturing) &&
-      !RuntimeEnabledFeatures::WebAppLinkCapturingEnabled()) {
+      !RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(feature_context_)) {
     return mojom::blink::CaptureLinks::kUndefined;
   }
 

@@ -272,10 +272,8 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableLinkCapturing) &&
-      web_application_info_->capture_links !=
-          registrar_.GetAppCaptureLinks(app_id_)) {
+  if (web_application_info_->capture_links !=
+      registrar_.GetAppCaptureLinks(app_id_)) {
     return true;
   }
 

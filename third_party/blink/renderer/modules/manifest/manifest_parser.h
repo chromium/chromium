@@ -27,15 +27,18 @@ class Size;
 namespace blink {
 
 class KURL;
+class FeatureContext;
 
 // ManifestParser handles the logic of parsing the Web Manifest from a string.
 // It implements:
 // http://w3c.github.io/manifest/#dfn-steps-for-processing-a-manifest
+// Takes a |FeatureContext| to check origin trial statuses with.
 class MODULES_EXPORT ManifestParser {
  public:
   ManifestParser(const String& data,
                  const KURL& manifest_url,
-                 const KURL& document_url);
+                 const KURL& document_url,
+                 const FeatureContext* feature_context);
   ~ManifestParser();
 
   // Parse the Manifest from a string using following:
@@ -394,6 +397,7 @@ class MODULES_EXPORT ManifestParser {
   const String data_;
   KURL manifest_url_;
   KURL document_url_;
+  const FeatureContext* feature_context_;
 
   bool failed_;
   mojom::blink::ManifestPtr manifest_;

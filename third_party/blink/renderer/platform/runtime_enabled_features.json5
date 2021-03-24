@@ -2150,6 +2150,7 @@
     },
     {
       name: "WebAppLinkCapturing",
+      origin_trial_feature_name: "WebAppLinkCapturing",
     },
     {
       name: "WebAppWindowControlsOverlay",

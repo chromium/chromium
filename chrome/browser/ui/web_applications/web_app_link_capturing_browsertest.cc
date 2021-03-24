@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -19,11 +20,15 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
@@ -441,5 +446,141 @@ INSTANTIATE_TEST_SUITE_P(
     /*persistence=*/testing::Values(false),
 #endif
     &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
+
+class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  WebAppDeclarativeLinkCapturingOriginTrialBrowserTest() {
+    features_.InitAndDisableFeature(
+        blink::features::kWebAppEnableLinkCapturing);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Using the test public key from docs/origin_trials_integration.md#Testing.
+    command_line->AppendSwitchASCII(
+        embedder_support::kOriginTrialPublicKey,
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+namespace {
+
+// Using localhost to avoid the HTTPS requirement for InstallableManager to even
+// load the manifest.
+constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
+constexpr char kTestWebAppHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+constexpr char kTestWebAppBody[] = R"(
+  <!DOCTYPE html>
+  <head>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta http-equiv="origin-trial" content="$1">
+  </head>
+)";
+
+constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
+constexpr char kTestManifestUrl[] =
+    "http://127.0.0.1:8000/manifest.webmanifest";
+constexpr char kTestManifestHeaders[] =
+    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
+constexpr char kTestManifestBody[] = R"({
+  "name": "Test app",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }],
+  "capture_links": "new-client"
+})";
+
+// Generated from script:
+// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000 \
+// WebAppLinkCapturing --expire-timestamp=2000000000
+constexpr char kOriginTrialToken[] =
+    "A9FvND2pz57gueYZNHgjh4f5vPfcFyck04vOsOOO+OMqj2naHRG9RwO92Vv1C/"
+    "X32R39B+"
+    "EaMCn7r3imGvWVvAsAAABbeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgIm"
+    "ZlYXR1cmUiOiAiV2ViQXBwTGlua0NhcHR1cmluZyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ"
+    "==";
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
+                       OriginTrial) {
+  bool serve_token = true;
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&serve_token](
+          content::URLLoaderInterceptor::RequestParams* params) -> bool {
+        if (params->url_request.url.spec() == kTestWebAppUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestWebAppHeaders,
+              base::ReplaceStringPlaceholders(
+                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
+                  nullptr),
+              params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestManifestUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              kTestManifestHeaders, kTestManifestBody, params->client.get());
+          return true;
+        }
+        if (params->url_request.url.spec() == kTestIconUrl) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/basic-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  // Install web app with origin trial token.
+  content::WebContents* app_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  AppId app_id =
+      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+
+  // Origin trial should grant the app access.
+  WebAppProvider& provider = *WebAppProvider::Get(browser()->profile());
+  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
+            blink::mojom::CaptureLinks::kNewClient);
+
+  // Open the page again with the token missing.
+  {
+    class UpdateAwaiter : public AppRegistrarObserver {
+     public:
+      UpdateAwaiter() = default;
+      void AwaitUpdate() { run_loop_.Run(); }
+      void OnWebAppManifestUpdated(const AppId& app_id,
+                                   base::StringPiece old_name) override {
+        run_loop_.Quit();
+      }
+
+     private:
+      base::RunLoop run_loop_;
+    } update_awaiter;
+    base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observer_scope(
+        &update_awaiter);
+    observer_scope.Observe(&provider.registrar());
+
+    serve_token = false;
+    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
+
+    // Close the app window to unblock updating.
+    app_web_contents->Close();
+
+    update_awaiter.AwaitUpdate();
+  }
+
+  // The app should update to no longer have capture_links defined without the
+  // origin trial.
+  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
+            blink::mojom::CaptureLinks::kUndefined);
+}
 
 }  // namespace web_app
