@@ -256,6 +256,7 @@ void AuthenticatorRequestDialogModel::
   DCHECK(current_step() == Step::kTransportSelection ||
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
+         current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kNotStarted);
   Step cable_step;
   if (cable_extension_provided_) {
