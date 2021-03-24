@@ -16,7 +16,7 @@ namespace extensions {
 ServiceWorkerManager::ServiceWorkerManager(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context_));
 }
 
 ServiceWorkerManager::~ServiceWorkerManager() {}

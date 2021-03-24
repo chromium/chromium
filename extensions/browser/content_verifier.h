@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/version.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_hash.h"
@@ -215,7 +215,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   std::unique_ptr<ContentVerifierDelegate> delegate_;
 
   // For observing the ExtensionRegistry.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
 
   // Data that should only be used on the IO thread.
   ContentVerifierIOData io_data_;

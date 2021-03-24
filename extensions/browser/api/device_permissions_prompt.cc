@@ -12,7 +12,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -74,11 +74,10 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       DevicePermissionsPrompt::UsbDevicesCallback callback)
       : Prompt(extension, context, multiple),
         filters_(std::move(filters)),
-        callback_(std::move(callback)),
-        manager_observer_(this) {}
+        callback_(std::move(callback)) {}
 
  private:
-  ~UsbDevicePermissionsPrompt() override { manager_observer_.RemoveAll(); }
+  ~UsbDevicePermissionsPrompt() override { manager_observation_.Reset(); }
 
   // DevicePermissionsPrompt::Prompt implementation:
   void SetObserver(
@@ -87,10 +86,11 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
 
     if (observer) {
       auto* device_manager = UsbDeviceManager::Get(browser_context());
-      if (device_manager && !manager_observer_.IsObserving(device_manager)) {
+      if (device_manager &&
+          !manager_observation_.IsObservingSource(device_manager)) {
         device_manager->GetDevices(base::BindOnce(
             &UsbDevicePermissionsPrompt::OnDevicesEnumerated, this));
-        manager_observer_.Add(device_manager);
+        manager_observation_.Observe(device_manager);
       }
     }
   }
@@ -178,8 +178,8 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
   std::vector<UsbDeviceFilterPtr> filters_;
   size_t remaining_initial_devices_ = 0;
   DevicePermissionsPrompt::UsbDevicesCallback callback_;
-  ScopedObserver<UsbDeviceManager, UsbDeviceManager::Observer>
-      manager_observer_;
+  base::ScopedObservation<UsbDeviceManager, UsbDeviceManager::Observer>
+      manager_observation_{this};
 };
 
 class HidDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {

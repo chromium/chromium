@@ -6,7 +6,7 @@
 #define EXTENSIONS_TEST_TEST_CONTENT_SCRIPT_LOAD_WAITER_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 
@@ -41,7 +41,8 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
 
   mojom::HostID host_id_;
   base::RunLoop run_loop_;
-  ScopedObserver<UserScriptLoader, UserScriptLoader::Observer> scoped_observer_;
+  base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace extensions

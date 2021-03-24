@@ -8,9 +8,8 @@
 
 namespace extensions {
 
-ContentScriptLoadWaiter::ContentScriptLoadWaiter(UserScriptLoader* loader)
-    : scoped_observer_(this) {
-  scoped_observer_.Add(loader);
+ContentScriptLoadWaiter::ContentScriptLoadWaiter(UserScriptLoader* loader) {
+  scoped_observation_.Observe(loader);
 }
 ContentScriptLoadWaiter::~ContentScriptLoadWaiter() = default;
 

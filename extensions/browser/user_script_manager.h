@@ -9,7 +9,7 @@
 #include <memory>
 #include <set>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_user_script_loader.h"
@@ -92,8 +92,8 @@ class UserScriptManager : public ExtensionRegistryObserver {
 
   content::BrowserContext* const browser_context_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 }  // namespace extensions

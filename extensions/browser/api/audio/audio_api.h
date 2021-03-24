@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/api/audio/audio_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -51,7 +51,8 @@ class AudioAPI : public BrowserContextKeyedAPI, public AudioService::Observer {
   std::unique_ptr<AudioDeviceIdCalculator> stable_id_calculator_;
   std::unique_ptr<AudioService> service_;
 
-  ScopedObserver<AudioService, AudioService::Observer> audio_service_observer_;
+  base::ScopedObservation<AudioService, AudioService::Observer>
+      audio_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioAPI);
 };

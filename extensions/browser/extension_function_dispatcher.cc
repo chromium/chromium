@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,9 +127,8 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
       content::RenderProcessHost* render_process_host,
       int worker_thread_id)
       : dispatcher_(dispatcher),
-        observer_(this),
         render_process_host_(render_process_host) {
-    observer_.Add(render_process_host_);
+    observation_.Observe(render_process_host_);
   }
 
   ~WorkerResponseCallbackWrapper() override = default;
@@ -177,8 +176,9 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
-      observer_{this};
+  base::ScopedObservation<content::RenderProcessHost,
+                          content::RenderProcessHostObserver>
+      observation_{this};
   content::RenderProcessHost* const render_process_host_;
   base::WeakPtrFactory<WorkerResponseCallbackWrapper> weak_ptr_factory_{this};
 

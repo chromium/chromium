@@ -250,7 +250,8 @@ ExtensionUserScriptLoader::ExtensionUserScriptLoader(
           browser_context,
           mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id)),
       content_verifier_(std::move(content_verifier)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
   if (listen_for_extension_system_loaded) {
     ExtensionSystem::Get(browser_context)
         ->ready()

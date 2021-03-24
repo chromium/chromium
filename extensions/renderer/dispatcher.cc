@@ -224,7 +224,6 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       content_watcher_(new ContentWatcher()),
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
-      user_script_set_manager_observer_(this),
       activity_logging_enabled_(false),
       receiver_(this) {
   bindings_system_ = CreateBindingsSystem(
@@ -234,7 +233,7 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   user_script_set_manager_.reset(new UserScriptSetManager());
   script_injection_manager_.reset(
       new ScriptInjectionManager(user_script_set_manager_.get()));
-  user_script_set_manager_observer_.Add(user_script_set_manager_.get());
+  user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
   PopulateSourceMap();
   WakeEventPage::Get()->Init(RenderThread::Get());
   // Ideally this should be done after checking

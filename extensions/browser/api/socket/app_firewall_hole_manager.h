@@ -10,7 +10,7 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/network/firewall_hole.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -89,7 +89,8 @@ class AppFirewallHoleManager : public KeyedService,
   void OnAppWindowShown(AppWindow* app_window, bool was_hidden) override;
 
   content::BrowserContext* context_;
-  ScopedObserver<AppWindowRegistry, AppWindowRegistry::Observer> observer_;
+  base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
+      observation_{this};
   std::multimap<std::string, AppFirewallHole*> tracked_holes_;
 
   base::WeakPtrFactory<AppFirewallHoleManager> weak_factory_{this};

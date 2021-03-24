@@ -194,8 +194,9 @@ RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
   ExtensionSystem::Get(context)->ready().Post(
       FROM_HERE, base::BindOnce(&RuntimeAPI::OnExtensionsReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
-  process_manager_observer_.Add(ProcessManager::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
+  process_manager_observation_.Observe(ProcessManager::Get(browser_context_));
 
   delegate_ = ExtensionsBrowserClient::Get()->CreateRuntimeAPIDelegate(
       browser_context_);

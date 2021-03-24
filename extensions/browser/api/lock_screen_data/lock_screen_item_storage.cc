@@ -145,7 +145,7 @@ LockScreenItemStorage::LockScreenItemStorage(
       tick_clock_(base::DefaultTickClock::GetInstance()),
       value_store_cache_(CreateValueStoreCache(storage_root.Append(user_id_))) {
   CHECK(!user_id_.empty());
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
   task_runner_ = GetBackendTaskRunner();
 
   DCHECK(!g_data_item_storage);

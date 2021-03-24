@@ -217,7 +217,8 @@ void AutomationEventRouter::Register(const ExtensionId& extension_id,
     if (!desktop)
       listener.tree_ids.insert(ax_tree_id);
     listeners_.push_back(listener);
-    rph_observers_.Add(content::RenderProcessHost::FromID(listener_process_id));
+    rph_observers_.AddObservation(
+        content::RenderProcessHost::FromID(listener_process_id));
     UpdateActiveProfile();
     return;
   }
@@ -262,7 +263,7 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
   base::EraseIf(listeners_, [process_id](const AutomationListener& item) {
     return item.process_id == process_id;
   });
-  rph_observers_.Remove(host);
+  rph_observers_.RemoveObservation(host);
   UpdateActiveProfile();
 
   if (rph_observers_.GetSourcesCount() == 0) {

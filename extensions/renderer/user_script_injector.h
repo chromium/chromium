@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
@@ -91,8 +91,8 @@ class UserScriptInjector : public ScriptInjector,
   // script permissions are checked before injection.
   bool is_declarative_;
 
-  ScopedObserver<UserScriptSet, UserScriptSet::Observer>
-      user_script_set_observer_;
+  base::ScopedObservation<UserScriptSet, UserScriptSet::Observer>
+      user_script_set_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserScriptInjector);
 };

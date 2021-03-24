@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -104,9 +104,9 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
 
     content::NotificationRegistrar notification_registrar_;
     base::RepeatingClosureList closure_list_;
-    ScopedObserver<extensions::ProcessManager,
-                   extensions::ProcessManagerObserver>
-        process_manager_observer_{this};
+    base::ScopedObservation<extensions::ProcessManager,
+                            extensions::ProcessManagerObserver>
+        process_manager_observation_{this};
 
     std::map<content::WebContents*,
              std::unique_ptr<ForwardingWebContentsObserver>>
@@ -144,8 +144,8 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   base::OnceClosure quit_closure_;
 
   // Listens to extension loaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionTestNotificationObserver);
 };

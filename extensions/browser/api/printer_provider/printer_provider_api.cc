@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"
@@ -301,11 +301,12 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
   std::map<std::string, PendingUsbPrinterInfoRequests>
       pending_usb_printer_info_requests_;
 
-  ScopedObserver<PrinterProviderInternalAPI, PrinterProviderInternalAPIObserver>
-      internal_api_observer_{this};
+  base::ScopedObservation<PrinterProviderInternalAPI,
+                          PrinterProviderInternalAPIObserver>
+      internal_api_observation_{this};
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrinterProviderAPIImpl);
 };
@@ -504,9 +505,10 @@ void PendingUsbPrinterInfoRequests::FailAll() {
 PrinterProviderAPIImpl::PrinterProviderAPIImpl(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  internal_api_observer_.Add(
+  internal_api_observation_.Observe(
       PrinterProviderInternalAPI::GetFactoryInstance()->Get(browser_context));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
 }
 
 PrinterProviderAPIImpl::~PrinterProviderAPIImpl() {

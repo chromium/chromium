@@ -73,7 +73,7 @@ void ExtensionTestNotificationObserver::NotificationSet::Add(int type) {
 
 void ExtensionTestNotificationObserver::NotificationSet::
     AddExtensionFrameUnregistration(ProcessManager* manager) {
-  process_manager_observer_.Add(manager);
+  process_manager_observation_.Observe(manager);
 }
 
 void ExtensionTestNotificationObserver::NotificationSet::Observe(
@@ -115,7 +115,7 @@ ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
     : context_(context),
       crx_installers_done_observed_(0) {
   if (context_)
-    registry_observer_.Add(ExtensionRegistry::Get(context_));
+    registry_observation_.Observe(ExtensionRegistry::Get(context_));
 }
 
 ExtensionTestNotificationObserver::~ExtensionTestNotificationObserver() {}
@@ -206,7 +206,7 @@ void ExtensionTestNotificationObserver::OnExtensionLoaded(
 
 void ExtensionTestNotificationObserver::OnShutdown(
     ExtensionRegistry* registry) {
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
 }
 
 void ExtensionTestNotificationObserver::WaitForCondition(

@@ -62,7 +62,8 @@ BluetoothEventRouter::BluetoothEventRouter(content::BrowserContext* context)
   DCHECK(browser_context_);
   registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
                  content::Source<content::BrowserContext>(browser_context_));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 BluetoothEventRouter::~BluetoothEventRouter() {

@@ -1050,7 +1050,8 @@ void ManagementInstallReplacementWebAppFunction::FinishResponse(
 
 ManagementEventRouter::ManagementEventRouter(content::BrowserContext* context)
     : browser_context_(context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 ManagementEventRouter::~ManagementEventRouter() {}

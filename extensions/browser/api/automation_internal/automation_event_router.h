@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -136,7 +136,8 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   // RegisterRemoteRouter(nullptr) before it is destroyed.
   AutomationEventRouterInterface* remote_router_ = nullptr;
 
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
       rph_observers_{this};
 
   base::ObserverList<AutomationEventRouterObserver>::Unchecked observers_;

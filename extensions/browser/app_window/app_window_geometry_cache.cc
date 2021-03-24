@@ -31,7 +31,7 @@ AppWindowGeometryCache::AppWindowGeometryCache(content::BrowserContext* context,
                                                ExtensionPrefs* prefs)
     : prefs_(prefs),
       sync_delay_(base::TimeDelta::FromMilliseconds(kSyncTimeoutMilliseconds)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
 AppWindowGeometryCache::~AppWindowGeometryCache() {}

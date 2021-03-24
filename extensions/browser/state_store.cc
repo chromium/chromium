@@ -74,7 +74,7 @@ StateStore::StateStore(content::BrowserContext* context,
                                                backend_type,
                                                GetExtensionFileTaskRunner())),
       task_queue_(std::make_unique<DelayedTaskQueue>()) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 
   if (deferred_load) {
     // Call `Init()` asynchronously with a low priority to not delay startup.

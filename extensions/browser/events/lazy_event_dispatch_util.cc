@@ -27,7 +27,8 @@ const char kPrefPendingOnInstalledEventDispatchInfo[] =
 LazyEventDispatchUtil::LazyEventDispatchUtil(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 LazyEventDispatchUtil::~LazyEventDispatchUtil() {}

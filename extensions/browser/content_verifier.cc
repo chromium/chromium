@@ -431,7 +431,7 @@ ContentVerifier::~ContentVerifier() {
 
 void ContentVerifier::Start() {
   ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
-  observer_.Add(registry);
+  observation_.Observe(registry);
 }
 
 void ContentVerifier::Shutdown() {
@@ -439,7 +439,7 @@ void ContentVerifier::Shutdown() {
   delegate_->Shutdown();
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ContentVerifier::ShutdownOnIO, this));
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void ContentVerifier::ShutdownOnIO() {

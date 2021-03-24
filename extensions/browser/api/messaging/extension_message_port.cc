@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -44,12 +44,11 @@ const char kReceivingEndDoesntExistError[] =
 class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
                                            public ProcessManagerObserver {
  public:
-  explicit FrameTracker(ExtensionMessagePort* port)
-      : pm_observer_(this), port_(port) {}
+  explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
   ~FrameTracker() override {}
 
   void TrackExtensionProcessFrames() {
-    pm_observer_.Add(ProcessManager::Get(port_->browser_context_));
+    pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
   }
 
   void TrackTabFrames(content::WebContents* tab) {
@@ -83,7 +82,8 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
     port_->UnregisterWorker(worker_id);
   }
 
-  ScopedObserver<ProcessManager, ProcessManagerObserver> pm_observer_;
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      pm_observation_{this};
   ExtensionMessagePort* port_;  // Owns this FrameTracker.
 
   DISALLOW_COPY_AND_ASSIGN(FrameTracker);

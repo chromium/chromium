@@ -6,7 +6,7 @@
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -35,8 +35,8 @@ class ServiceWorkerManager : public ExtensionRegistryObserver {
 
   content::BrowserContext* browser_context_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerManager);
 };

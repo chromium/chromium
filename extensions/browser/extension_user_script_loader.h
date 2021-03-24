@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_USER_SCRIPT_LOADER_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
@@ -76,8 +77,8 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   // Manages content verification of the loaded user scripts.
   scoped_refptr<ContentVerifier> content_verifier_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionUserScriptLoader> weak_factory_{this};
 

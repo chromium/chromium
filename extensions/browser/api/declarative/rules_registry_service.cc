@@ -45,7 +45,8 @@ RulesRegistryService::RulesRegistryService(content::BrowserContext* context)
       content_rules_registry_(nullptr),
       browser_context_(context) {
   if (browser_context_) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+    extension_registry_observation_.Observe(
+        ExtensionRegistry::Get(browser_context_));
     EnsureDefaultRulesRegistriesRegistered();
   }
 }

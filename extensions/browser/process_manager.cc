@@ -973,9 +973,9 @@ void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
     content::RenderProcessHost* render_process_host =
         content::RenderProcessHost::FromID(render_process_id);
     DCHECK(render_process_host);
-    if (!process_observer_.IsObserving(render_process_host)) {
+    if (!process_observations_.IsObservingSource(render_process_host)) {
       // These will be cleaned up in RenderProcessExited().
-      process_observer_.Add(render_process_host);
+      process_observations_.AddObservation(render_process_host);
     }
     for (auto& observer : observer_list_)
       observer.OnServiceWorkerRegistered(worker_id);
@@ -985,8 +985,8 @@ void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
 void ProcessManager::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DCHECK(process_observer_.IsObserving(host));
-  process_observer_.Remove(host);
+  DCHECK(process_observations_.IsObservingSource(host));
+  process_observations_.RemoveObservation(host);
   const int render_process_id = host->GetID();
   // Look up and then clean up the entries that are affected by
   // |render_process_id| destruction.

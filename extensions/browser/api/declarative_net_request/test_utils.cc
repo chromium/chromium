@@ -454,8 +454,8 @@ void RulesetManagerObserver::OnEvaluateRequest(const WebRequestInfo& request,
 
 WarningServiceObserver::WarningServiceObserver(WarningService* warning_service,
                                                const ExtensionId& extension_id)
-    : observer_(this), extension_id_(extension_id) {
-  observer_.Add(warning_service);
+    : extension_id_(extension_id) {
+  observation_.Observe(warning_service);
 }
 
 WarningServiceObserver::~WarningServiceObserver() = default;

@@ -17,7 +17,8 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
                               ExtensionId(),
                               true /* listen_for_extension_system_loaded */),
       browser_context_(browser_context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 UserScriptManager::~UserScriptManager() = default;

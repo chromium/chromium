@@ -104,8 +104,8 @@ void AppFirewallHole::OnFirewallHoleOpened(
 }
 
 AppFirewallHoleManager::AppFirewallHoleManager(BrowserContext* context)
-    : context_(context), observer_(this) {
-  observer_.Add(AppWindowRegistry::Get(context));
+    : context_(context) {
+  observation_.Observe(AppWindowRegistry::Get(context));
 }
 
 AppFirewallHoleManager::~AppFirewallHoleManager() {}

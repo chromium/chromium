@@ -51,7 +51,8 @@ LazyBackgroundTaskQueue::LazyBackgroundTaskQueue(
                  extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
                  content::NotificationService::AllBrowserContextsAndSources());
 
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
 }
 
 LazyBackgroundTaskQueue::~LazyBackgroundTaskQueue() {

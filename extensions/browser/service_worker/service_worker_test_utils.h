@@ -6,7 +6,7 @@
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TEST_UTILS_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/process_manager.h"
@@ -70,7 +70,8 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
 
  private:
   ExtensionId extension_id_;
-  ScopedObserver<ProcessManager, ProcessManagerObserver> observer_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
+      this};
   base::RunLoop run_loop_;
 };
 

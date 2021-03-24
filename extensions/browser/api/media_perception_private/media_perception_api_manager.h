@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
@@ -162,9 +162,9 @@ class MediaPerceptionAPIManager
   std::unique_ptr<MediaPerceptionControllerClient>
       media_perception_controller_client_;
 
-  ScopedObserver<chromeos::MediaAnalyticsClient,
-                 chromeos::MediaAnalyticsClient::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<chromeos::MediaAnalyticsClient,
+                          chromeos::MediaAnalyticsClient::Observer>
+      scoped_observation_{this};
   base::WeakPtrFactory<MediaPerceptionAPIManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPerceptionAPIManager);

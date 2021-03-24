@@ -133,7 +133,7 @@ IdleManager::~IdleManager() {
 }
 
 void IdleManager::Init() {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context_));
   event_delegate_->RegisterObserver(this);
 }
 

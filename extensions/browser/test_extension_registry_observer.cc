@@ -51,7 +51,7 @@ TestExtensionRegistryObserver::TestExtensionRegistryObserver(
       ready_waiter_(std::make_unique<Waiter>()),
       unloaded_waiter_(std::make_unique<Waiter>()),
       extension_id_(extension_id) {
-  extension_registry_observer_.Add(registry);
+  extension_registry_observation_.Observe(registry);
 }
 
 TestExtensionRegistryObserver::~TestExtensionRegistryObserver() {

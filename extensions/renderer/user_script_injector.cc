@@ -99,9 +99,8 @@ UserScriptInjector::UserScriptInjector(const UserScript* script,
       user_script_set_(script_list),
       script_id_(script_->id()),
       host_id_(script_->host_id()),
-      is_declarative_(is_declarative),
-      user_script_set_observer_(this) {
-  user_script_set_observer_.Add(script_list);
+      is_declarative_(is_declarative) {
+  user_script_set_observation_.Observe(script_list);
 }
 
 UserScriptInjector::~UserScriptInjector() {

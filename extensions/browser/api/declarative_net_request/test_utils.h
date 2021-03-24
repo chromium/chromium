@@ -12,6 +12,7 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -139,7 +140,8 @@ class WarningServiceObserver : public WarningService::Observer {
   void ExtensionWarningsChanged(
       const ExtensionIdSet& affected_extensions) override;
 
-  ScopedObserver<WarningService, WarningService::Observer> observer_;
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      observation_{this};
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
 };

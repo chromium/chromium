@@ -6,7 +6,7 @@
 #define EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/process_manager.h"
@@ -57,10 +57,10 @@ class ExtensionBackgroundPageWaiter : public ProcessManagerObserver,
   scoped_refptr<const Extension> extension_;
   base::RunLoop host_ready_run_loop_;
   base::RunLoop host_created_run_loop_;
-  ScopedObserver<ExtensionHost, ExtensionHostObserver> extension_host_observer_{
-      this};
-  ScopedObserver<ProcessManager, ProcessManagerObserver>
-      process_manager_observer_{this};
+  base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
+      extension_host_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
 };
 
 }  // namespace extensions

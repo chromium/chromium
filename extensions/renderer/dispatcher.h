@@ -16,7 +16,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/version_info/version_info.h"
 #include "content/public/renderer/render_thread_observer.h"
@@ -359,8 +359,8 @@ class Dispatcher : public content::RenderThreadObserver,
 
   // It is important for this to come after the ScriptInjectionManager, so that
   // the observer is destroyed before the UserScriptSet.
-  ScopedObserver<UserScriptSetManager, UserScriptSetManager::Observer>
-      user_script_set_manager_observer_;
+  base::ScopedObservation<UserScriptSetManager, UserScriptSetManager::Observer>
+      user_script_set_manager_observation_{this};
 
   // Whether or not extension activity is enabled.
   bool activity_logging_enabled_;
