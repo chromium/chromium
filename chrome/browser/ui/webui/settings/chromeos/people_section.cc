@@ -741,11 +741,10 @@ PeopleSection::PeopleSection(
         g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager_ = factory->GetAccountManager(profile->GetPath().value());
     DCHECK(account_manager_);
-    account_manager_->AddObserver(this);
-
     account_manager_facade_ =
         ::GetAccountManagerFacade(profile->GetPath().value());
     DCHECK(account_manager_facade_);
+    account_manager_facade_observation_.Observe(account_manager_facade_);
     FetchAccounts();
   }
 
@@ -798,9 +797,6 @@ PeopleSection::~PeopleSection() {
 
   if (chromeos::features::IsSplitSettingsSyncEnabled() && sync_service_)
     sync_service_->RemoveObserver(this);
-
-  if (account_manager_)
-    account_manager_->RemoveObserver(this);
 }
 
 void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -845,7 +841,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
-                          account_manager_ != nullptr);
+                          account_manager_facade_ != nullptr);
   html_source->AddBoolean(
       "isAccountManagementFlowsV2Enabled",
       chromeos::features::IsAccountManagementFlowsV2Enabled());
@@ -1085,7 +1081,8 @@ void PeopleSection::FetchAccounts() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void PeopleSection::OnTokenUpserted(const ::account_manager::Account& account) {
+void PeopleSection::OnAccountUpserted(
+    const ::account_manager::Account& account) {
   FetchAccounts();
 }
 
