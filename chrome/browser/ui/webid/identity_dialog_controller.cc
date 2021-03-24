@@ -21,7 +21,6 @@ void IdentityDialogController::ShowInitialPermissionDialog(
     const GURL& idp_url,
     InitialApprovalCallback callback) {
   DCHECK(!view_);
-  view_ = WebIdDialog::Create(rp_web_contents);
 
   // The WebContents should be that of RP page to make sure info bar is shown on
   // the RP page.
@@ -32,9 +31,8 @@ void IdentityDialogController::ShowInitialPermissionDialog(
   auto rp_hostname =
       base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
 
-  // TODO(majidvp): remove rp_web_contents from args
-  DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
-  view_->ShowInitialPermission(idp_hostname, rp_hostname, std::move(callback));
+  GetOrCreateView(rp_web_contents)
+      .ShowInitialPermission(idp_hostname, rp_hostname, std::move(callback));
 }
 
 void IdentityDialogController::ShowIdProviderWindow(
@@ -42,10 +40,8 @@ void IdentityDialogController::ShowIdProviderWindow(
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
-  // TODO(majidvp): remove rp_web_contents from args
-  DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
-
-  view_->ShowSigninPage(idp_web_contents, idp_signin_url, std::move(callback));
+  GetOrCreateView(rp_web_contents)
+      .ShowSigninPage(idp_web_contents, idp_signin_url, std::move(callback));
 }
 
 void IdentityDialogController::CloseIdProviderWindow() {
@@ -76,8 +72,19 @@ void IdentityDialogController::ShowTokenExchangePermissionDialog(
   auto rp_hostname =
       base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
 
-  // TODO(majidvp): remove rp_web_contents from args
+  GetOrCreateView(rp_web_contents)
+      .ShowTokenExchangePermission(idp_hostname, rp_hostname,
+                                   std::move(callback));
+}
+
+WebIdDialog& IdentityDialogController::GetOrCreateView(
+    content::WebContents* rp_web_contents) {
+  if (!view_)
+    view_ = WebIdDialog::Create(rp_web_contents);
+
+  // It is expected that we use the same rp_web_contents during the lifetime
+  // of this controller.
   DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
-  view_->ShowTokenExchangePermission(idp_hostname, rp_hostname,
-                                     std::move(callback));
+
+  return *view_;
 }

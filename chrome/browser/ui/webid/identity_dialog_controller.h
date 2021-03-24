@@ -50,6 +50,7 @@ class IdentityDialogController
       TokenExchangeApprovalCallback) override;
 
  private:
+  WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
   WebIdDialog* view_{nullptr};
 };
 
