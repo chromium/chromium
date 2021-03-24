@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1417 tests; 1385 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1417 tests; 1386 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -667,7 +667,7 @@ PASS ImageData must be primary interface of new ImageData(10, 10)
 PASS Stringification of new ImageData(10, 10)
 PASS ImageData interface: new ImageData(10, 10) must inherit property "width" with the proper type
 PASS ImageData interface: new ImageData(10, 10) must inherit property "height" with the proper type
-FAIL ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type assert_inherits: property "data" found on object expected in prototype chain
+PASS ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type
 PASS Path2D interface: existence and properties of interface object
 PASS Path2D interface object length
 PASS Path2D interface object name

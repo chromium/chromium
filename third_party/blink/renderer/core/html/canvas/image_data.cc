@@ -262,32 +262,6 @@ ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
       exception_state);
 }
 
-v8::Local<v8::Object> ImageData::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type,
-    v8::Local<v8::Object> wrapper) {
-  wrapper =
-      ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type, wrapper);
-
-  if (!wrapper.IsEmpty() && data_.IsUint8ClampedArray()) {
-    // Create a V8 object with |data_| and set the "data" property
-    // of the ImageData object to the created v8 object, eliminating the
-    // C++ callback when accessing the "data" property.
-
-    v8::Local<v8::Value> pixel_array = ToV8(data_, wrapper, isolate);
-    bool defined_property;
-    if (pixel_array.IsEmpty() ||
-        !wrapper
-             ->DefineOwnProperty(isolate->GetCurrentContext(),
-                                 V8AtomicString(isolate, "data"), pixel_array,
-                                 v8::ReadOnly)
-             .To(&defined_property) ||
-        !defined_property)
-      return v8::Local<v8::Object>();
-  }
-  return wrapper;
-}
-
 String ImageData::CanvasColorSpaceName(CanvasColorSpace color_space) {
   switch (color_space) {
     case CanvasColorSpace::kSRGB:
