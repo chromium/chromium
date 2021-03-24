@@ -15,6 +15,10 @@ const base::Feature kMojoLinuxChannelSharedMem{
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages{
     &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemPages", 4};
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake{
+    &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemEfdZeroOnWake",
+    false};
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)

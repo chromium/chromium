@@ -38,6 +38,7 @@ void InitFeatures() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   bool shared_mem_enabled =
       base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
+  bool use_zero_on_wake = kMojoLinuxChannelSharedMemEfdZeroOnWake.Get();
   int num_pages = kMojoLinuxChannelSharedMemPages.Get();
   if (num_pages < 0) {
     num_pages = 4;
@@ -46,7 +47,8 @@ void InitFeatures() {
   }
 
   ChannelLinux::SetSharedMemParameters(shared_mem_enabled,
-                                       static_cast<unsigned int>(num_pages));
+                                       static_cast<unsigned int>(num_pages),
+                                       use_zero_on_wake);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #endif  // defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
 }

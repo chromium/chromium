@@ -44,7 +44,9 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
 
   // SetSharedMemParams will control whether shared memory is used for this
   // channel.
-  static void SetSharedMemParameters(bool enabled, uint32_t num_pages);
+  static void SetSharedMemParameters(bool enabled,
+                                     uint32_t num_pages,
+                                     bool use_zero_on_wake);
 
   // ChannelPosix impl:
   void Write(MessagePtr message) override;

@@ -16,6 +16,7 @@ namespace core {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 extern const base::Feature kMojoLinuxChannelSharedMem;
 extern const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages;
+extern const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
 extern const base::Feature kMojoPosixUseWritev;
