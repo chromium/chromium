@@ -350,9 +350,10 @@ void SVGElementResourceClient::InvalidateFilterData() {
     return;
   if (FilterData* filter_data = filter_data_.Release())
     filter_data->Dispose();
-  LayoutObject* layout_object = element_->GetLayoutObject();
-  layout_object->SetNeedsPaintPropertyUpdate();
-  MarkFilterDataDirty();
+  if (LayoutObject* layout_object = element_->GetLayoutObject()) {
+    layout_object->SetNeedsPaintPropertyUpdate();
+    MarkFilterDataDirty();
+  }
 }
 
 void SVGElementResourceClient::MarkFilterDataDirty() {
