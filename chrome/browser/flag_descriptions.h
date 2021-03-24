@@ -453,6 +453,9 @@ extern const char kDesktopPWAsProtocolHandlingDescription[];
 extern const char kDesktopPWAsUrlHandlingName[];
 extern const char kDesktopPWAsUrlHandlingDescription[];
 
+extern const char kDesktopPWAsWindowControlsOverlayName[];
+extern const char kDesktopPWAsWindowControlsOverlayDescription[];
+
 extern const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[];
 extern const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[];
 

@@ -741,6 +741,13 @@ const char kDesktopPWAsUrlHandlingDescription[] =
     "implementation of: "
     "https://github.com/WICG/pwa-url-handler/blob/master/explainer.md";
 
+const char kDesktopPWAsWindowControlsOverlayName[] =
+    "Desktop PWA Window Controls Overlay";
+const char kDesktopPWAsWindowControlsOverlayDescription[] =
+    "Enable web app manifests to declare Window Controls Overlay as a display "
+    "override. Prototype implementation of: "
+    "https://github.com/WICG/window-controls-overlay/blob/main/explainer.md";
+
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
     "Migrate default G Suite Chrome apps to web apps";
 const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[] =
