@@ -7,22 +7,25 @@
 # Given an expectations file (e.g. web_tests/WebGPUExpectations), extracts only
 # the test name from each expectation (e.g. wpt_internal/webgpu/cts.html?...).
 
-from blinkpy.common import path_finder
+import sys
+from os import path as os_path
+
+try:
+    old_sys_path = sys.path
+    third_party_dir = os_path.dirname(
+        os_path.dirname(os_path.dirname(os_path.abspath(__file__))))
+    sys.path = old_sys_path + [os_path.join(third_party_dir, 'blink', 'tools')]
+
+    from blinkpy.common import path_finder
+finally:
+    sys.path = old_sys_path
 
 path_finder.add_typ_dir_to_sys_path()
 
 from typ.expectations_parser import TaggedTestListParser
-import sys
-
-
-class StubPort(object):
-    def is_wpt_test(name):
-        return False
-
 
 filename = sys.argv[1]
 with open(filename) as f:
-    port = StubPort()
     parser = TaggedTestListParser(f.read())
     for test_expectation in parser.expectations:
         if test_expectation.test:

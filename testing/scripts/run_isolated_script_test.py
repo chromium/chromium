@@ -48,7 +48,7 @@ import xvfb
 
 # Some harnesses understand the --isolated-script-test arguments
 # directly and prefer that they be passed through.
-KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py'}
+KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py', 'run_webgpu_cts.py'}
 
 
 # Known typ test runners this script wraps. They need a different argument name
