@@ -194,6 +194,8 @@ class FileSystemRenameHandlerTest : public testing::Test {
     content::DownloadItemUtils::AttachInfo(&item_, profile_,
                                            web_contents_.get());
 
+    item_.SetTargetFilePath(base::FilePath::FromUTF8Unsafe("somefile.png"));
+
     ConnectorsService* service = ConnectorsServiceFactory::GetForBrowserContext(
         content::DownloadItemUtils::GetBrowserContext(&item_));
     auto settings = service->GetFileSystemSettings(

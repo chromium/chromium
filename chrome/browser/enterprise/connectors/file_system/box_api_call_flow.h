@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_FLOW_H_
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -120,6 +121,12 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
                              std::unique_ptr<std::string> body) override;
 
  private:
+  // Try to delete a local file and return true if and only if the file existed
+  // and was successfully deleted
+  // TODO(https://crbugs.com/1190891): Move to shared FSConnector code when we
+  // support other partners
+  static bool DeleteIfExists(base::FilePath file_path);
+
   // Post a task to ThreadPool to read the local file, forward the
   // parameters from Start() into OnFileRead(), which is the callback that then
   // kicks off OAuth2CallFlow::Start() after file content is read.

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_dialog_delegate.h"
@@ -87,13 +88,14 @@ FileSystemRenameHandler::CreateIfNeeded(download::DownloadItem* download_item) {
   return Create(download_item, std::move(settings.value()));
 }
 
-// The only permitted use of |download_item| in this class is passing it to
-// content::DownloadItemUtils methods.  This class runs in the UI thread where
-// method of |download_item| should not be called.
+// The only permitted use of |download_item| in this class other than the ctor
+// is passing it to content::DownloadItemUtils methods.  Methods in this class
+// run on the UI thread where methods of |download_item| should not be called.
 FileSystemRenameHandler::FileSystemRenameHandler(
     download::DownloadItem* download_item,
     FileSystemSettings settings)
     : download::DownloadItemRenameHandler(download_item),
+      target_path_(download_item->GetTargetFilePath()),
       settings_(std::move(settings)),
       controller_(download_item) {}
 
@@ -272,6 +274,8 @@ void FileSystemRenameHandler::NotifyResultToDownloadThread(bool success) {
   // TODO(https://crbug.com/1168815): Define required error messages.
   auto reason = success ? download::DOWNLOAD_INTERRUPT_REASON_NONE
                         : download::DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+  // Make sure target_path_ has been initialized.
+  DCHECK(!target_path_.empty());
   std::move(download_callback_).Run(reason, target_path_);
 }
 

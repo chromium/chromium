@@ -18,6 +18,7 @@
 #include "net/base/mime_util.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "rename_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -279,6 +280,20 @@ void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(
 // API reference:
 // https://developer.box.com/reference/post-files-content/
 
+// static
+bool BoxWholeFileUploadApiCallFlow::DeleteIfExists(base::FilePath file_path) {
+  if (!base::PathExists(file_path)) {
+    // If the file is deleted by some other thread, how can we be sure what we
+    // read and uploaded was correct?! So report as error. Otherwise, it is
+    // considered successful to
+    // attempt to delete a file that does not exist by base::DeleteFile().
+    DLOG(ERROR) << "[FileSystemRenameHandler] temporary local file "
+                << file_path << " no longer exists!";
+    return false;
+  }
+  return base::DeleteFile(file_path);
+}
+
 BoxWholeFileUploadApiCallFlow::BoxWholeFileUploadApiCallFlow(
     TaskCallback callback,
     const std::string& folder_id,
@@ -390,22 +405,11 @@ bool BoxWholeFileUploadApiCallFlow::IsExpectedSuccessCode(int code) const {
 void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  if (!base::PathExists(local_file_path_)) {
-    // If the file is deleted by some other thread, how can we be sure what we
-    // read and uploaded was correct?! So report as error. Otherwise, it is
-    // considered successful to
-    // attempt to delete a file that does not exist by base::DeleteFile().
-    DLOG(ERROR) << "[BoxApiCallFlow] Whole File Upload: temporary local file "
-                   "no longer exists!";
-    OnFileDeleted(false);
-    return;
-  }
-
   PostDeleteFileTask();
 }
 
 void BoxWholeFileUploadApiCallFlow::PostDeleteFileTask() {
-  auto delete_file_task = base::BindOnce(&base::DeleteFile, local_file_path_);
+  auto delete_file_task = base::BindOnce(&DeleteIfExists, local_file_path_);
   auto delete_file_reply = base::BindOnce(
       &BoxWholeFileUploadApiCallFlow::OnFileDeleted, factory_.GetWeakPtr());
   base::ThreadPool::PostTaskAndReplyWithResult(

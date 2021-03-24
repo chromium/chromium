@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/enterprise/connectors/common.h"
