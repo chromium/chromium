@@ -29,10 +29,9 @@ public class TabStateExtractor {
             return sTabStatesForTesting.get(tab.getId());
         }
 
-        TabImpl tabImpl = (TabImpl) tab;
-        if (!tabImpl.isInitialized()) return null;
+        if (!tab.isInitialized()) return null;
         TabState tabState = new TabState();
-        tabState.contentsState = getWebContentsState(tabImpl);
+        tabState.contentsState = getWebContentsState(tab);
         tabState.openerAppId = TabAssociatedApp.getAppId(tab);
         tabState.parentId = CriticalPersistedTabData.from(tab).getParentId();
         tabState.timestampMillis = CriticalPersistedTabData.from(tab).getTimestampMillis();
@@ -43,15 +42,15 @@ public class TabStateExtractor {
         tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()
                 ? tab.getThemeColor()
                 : TabState.UNSPECIFIED_THEME_COLOR;
-        tabState.rootId = CriticalPersistedTabData.from(tabImpl).getRootId();
+        tabState.rootId = CriticalPersistedTabData.from(tab).getRootId();
         return tabState;
     }
 
     /**
      * Returns an object representing the state of the Tab's WebContents.
-     * @param tab The {@link TabImpl} from which to extract the WebContents state.
+     * @param tab The {@link Tab} from which to extract the WebContents state.
      **/
-    public static WebContentsState getWebContentsState(TabImpl tab) {
+    public static WebContentsState getWebContentsState(Tab tab) {
         if (CriticalPersistedTabData.from(tab).getWebContentsState() != null) {
             return CriticalPersistedTabData.from(tab).getWebContentsState();
         }
@@ -66,7 +65,7 @@ public class TabStateExtractor {
     }
 
     /** Returns an ByteBuffer representing the state of the Tab's WebContents. */
-    private static ByteBuffer getWebContentsStateAsByteBuffer(TabImpl tab) {
+    private static ByteBuffer getWebContentsStateAsByteBuffer(Tab tab) {
         LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
         if (pendingLoadParams == null) {
             return WebContentsStateBridge.getContentsStateAsByteBuffer(tab.getWebContents());
