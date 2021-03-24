@@ -1028,10 +1028,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
-    enum="InvalidDevicePolicyFilesStatus" expires_after="2021-05-02">
+    enum="InvalidDevicePolicyFilesStatus" expires_after="2022-01-01">
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <summary>
     Chrome OS only. Result of checking if device policy files are valid when
     reading the device policy data.
