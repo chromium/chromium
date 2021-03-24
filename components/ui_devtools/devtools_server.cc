@@ -119,8 +119,8 @@ void UiDevToolsServer::CreateTCPServerSocket(
     int port,
     net::NetworkTrafficAnnotationTag tag,
     network::mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
-  // Create the socket using the address 0.0.0.0 to listen on all interfaces.
-  net::IPAddress address(0, 0, 0, 0);
+  // Create the socket using the address 127.0.0.1 to listen on all interfaces.
+  net::IPAddress address(127, 0, 0, 1);
   constexpr int kBacklog = 1;
   network_context->CreateTCPServerSocket(
       net::IPEndPoint(address, port), kBacklog,
