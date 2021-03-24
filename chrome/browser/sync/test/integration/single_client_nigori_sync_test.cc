@@ -199,16 +199,22 @@ class TrustedVaultRecoverabilityNotDegradedChecker
 };
 
 class FakeSecurityDomainsServerMemberStatusChecker
-    : public StatusChangeChecker {
+    : public StatusChangeChecker,
+      public syncer::FakeSecurityDomainsServer::Observer {
  public:
   FakeSecurityDomainsServerMemberStatusChecker(
       int expected_member_count,
       const std::vector<uint8_t>& expected_trusted_vault_key,
-      const syncer::FakeSecurityDomainsServer* server)
+      syncer::FakeSecurityDomainsServer* server)
       : expected_member_count_(expected_member_count),
         expected_trusted_vault_key_(expected_trusted_vault_key),
-        server_(server) {}
-  ~FakeSecurityDomainsServerMemberStatusChecker() override = default;
+        server_(server) {
+    server_->AddObserver(this);
+  }
+
+  ~FakeSecurityDomainsServerMemberStatusChecker() override {
+    server_->RemoveObserver(this);
+  }
 
  protected:
   // StatusChangeChecker implementation.
@@ -230,9 +236,12 @@ class FakeSecurityDomainsServerMemberStatusChecker
   }
 
  private:
+  // FakeSecurityDomainsServer::Observer implementation.
+  void OnRequestHandled() override { CheckExitCondition(); }
+
   int expected_member_count_;
   std::vector<uint8_t> expected_trusted_vault_key_;
-  const syncer::FakeSecurityDomainsServer* server_;
+  syncer::FakeSecurityDomainsServer* const server_;
 };
 
 class SingleClientNigoriSyncTest : public SyncTest {

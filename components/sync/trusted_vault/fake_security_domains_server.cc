@@ -13,7 +13,7 @@ namespace syncer {
 
 namespace {
 
-const char kServerPathPrefix[] = "sds";
+const char kServerPathPrefix[] = "sds/";
 
 std::unique_ptr<net::test_server::HttpResponse>
 CreateHttpResponseForInvalidRequest() {
@@ -75,24 +75,37 @@ FakeSecurityDomainsServer::FakeSecurityDomainsServer(GURL base_url)
 
 FakeSecurityDomainsServer::~FakeSecurityDomainsServer() = default;
 
+void FakeSecurityDomainsServer::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeSecurityDomainsServer::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::unique_ptr<net::test_server::HttpResponse>
 FakeSecurityDomainsServer::HandleRequest(
     const net::test_server::HttpRequest& http_request) {
   DVLOG(1) << "Received request";
-  if (base::StartsWith(http_request.relative_url, kServerPathPrefix)) {
+  if (!base::StartsWith(http_request.GetURL().spec(), server_url_.spec())) {
     // This request shouldn't be handled by security domains server.
     return nullptr;
   }
 
+  std::unique_ptr<net::test_server::HttpResponse> response;
   if (http_request.GetURL() ==
       GetFullJoinSecurityDomainsURLForTesting(server_url_)) {
-    return HandleJoinSecurityDomainsRequest(http_request);
+    response = HandleJoinSecurityDomainsRequest(http_request);
+  } else {
+    DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
+    received_invalid_request_ = true;
+    response = CreateHttpResponseForInvalidRequest();
   }
 
-  DVLOG(1) << "Unknown request url: " << http_request.GetURL().spec();
-  received_invalid_request_ = true;
-
-  return CreateHttpResponseForInvalidRequest();
+  for (auto& observer : observers_) {
+    observer.OnRequestHandled();
+  }
+  return response;
 }
 
 int FakeSecurityDomainsServer::GetMemberCount() const {

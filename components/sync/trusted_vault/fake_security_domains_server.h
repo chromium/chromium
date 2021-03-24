@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -21,11 +22,22 @@ namespace syncer {
 // used with EmbeddedTestServer via registration of HandleRequest() method.
 class FakeSecurityDomainsServer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when handling of request is completed. Called iff request is
+    // supposed to be handled by FakeSecurityDomainsServer (determined by the
+    // URL prefix).
+    virtual void OnRequestHandled() = 0;
+  };
+
   explicit FakeSecurityDomainsServer(GURL base_url);
   FakeSecurityDomainsServer(const FakeSecurityDomainsServer& other) = delete;
   FakeSecurityDomainsServer& operator=(const FakeSecurityDomainsServer& other) =
       delete;
   ~FakeSecurityDomainsServer();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Handles request if it belongs to security domains server (identified by
   // request url). Returns nullptr otherwise.
@@ -56,6 +68,8 @@ class FakeSecurityDomainsServer {
   // |constant_key_allowed_| set to true.
   int current_epoch_ = 0;
   bool constant_key_allowed_ = true;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace syncer
