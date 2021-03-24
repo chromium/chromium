@@ -6,13 +6,7 @@
 
 #include <array>
 
-#include "ash/clipboard/clipboard_history_item.h"
-#include "ash/public/cpp/file_icon_util.h"
-#include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
-#include "base/files/file_path.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -61,26 +55,8 @@ void ClipboardHistoryFileItemView::OnThemeChanged() {
   // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
   ScopedLightModeAsDefault scoped_light_mode_as_default;
 
-  const SkColor icon_color = ash::AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-
-  const int copied_files_count = ClipboardHistoryUtil::GetCountOfCopiedFiles(
-      clipboard_history_item()->data());
-  if (copied_files_count == 1) {
-    // Choose the icon based on the file type that is deduced by the file
-    // name.
-    const std::string copied_file_name = base::UTF16ToUTF8(text());
-    file_icon_->SetImage(
-        GetIconForPath(base::FilePath(copied_file_name), icon_color));
-    return;
-  }
-
-  constexpr std::array<const gfx::VectorIcon*, 9> icons = {
-      &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
-      &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
-      &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
-  file_icon_->SetImage(CreateVectorIcon(
-      *icons[std::min(copied_files_count, 10) - 2], icon_color));
+  file_icon_->SetImage(ClipboardHistoryUtil::GetIconForFileClipboardItem(
+      *clipboard_history_item(), base::UTF16ToUTF8(text())));
 }
 
 }  // namespace ash

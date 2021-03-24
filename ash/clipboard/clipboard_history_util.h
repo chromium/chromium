@@ -11,6 +11,10 @@
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace ui {
 class ClipboardData;
 enum class ClipboardInternalFormat;
@@ -118,6 +122,11 @@ ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);
 
 // Returns whether the clipboard history is enabled for the current user mode.
 ASH_EXPORT bool IsEnabledInCurrentMode();
+
+// Returns an image icon for the file clipboard item.
+ASH_EXPORT gfx::ImageSkia GetIconForFileClipboardItem(
+    const ClipboardHistoryItem& item,
+    const std::string& file_name);
 
 }  // namespace ClipboardHistoryUtil
 }  // namespace ash
