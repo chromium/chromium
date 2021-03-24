@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/keyboard/ui/keyboard_util.h"
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
-#include "ash/sticky_keys/sticky_keys_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/macros.h"

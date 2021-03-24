@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
@@ -22,7 +23,6 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/sticky_keys/sticky_keys_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"

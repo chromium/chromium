@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -16,7 +17,6 @@
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"

@@ -4,7 +4,7 @@
 
 #include "ash/accelerators/magnifier_key_scroller.h"
 
-#include "ash/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"

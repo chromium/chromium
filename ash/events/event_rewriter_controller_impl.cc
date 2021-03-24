@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,7 +14,6 @@
 #include "ash/events/keyboard_driven_event_rewriter.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
-#include "ash/sticky_keys/sticky_keys_controller.h"
 #include "base/command_line.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/env.h"

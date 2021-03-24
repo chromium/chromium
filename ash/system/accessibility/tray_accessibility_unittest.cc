@@ -7,7 +7,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"

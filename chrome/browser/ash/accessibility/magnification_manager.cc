@@ -7,7 +7,7 @@
 #include <limits>
 #include <memory>
 
-#include "ash/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/docked_magnifier_controller.h"
 #include "ash/shell.h"

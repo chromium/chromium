@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
-#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"

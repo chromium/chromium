@@ -4,8 +4,8 @@
 
 #include <string>
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/bind.h"

@@ -4,8 +4,8 @@
 
 #include "ash/display/display_highlight_controller.h"
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

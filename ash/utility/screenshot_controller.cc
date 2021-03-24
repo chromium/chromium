@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/display/mouse_cursor_event_filter.h"
-#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"

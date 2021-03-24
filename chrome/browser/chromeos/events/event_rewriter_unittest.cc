@@ -4,10 +4,10 @@
 
 #include <vector>
 
+#include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
+#include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/sticky_keys/sticky_keys_controller.h"
-#include "ash/sticky_keys/sticky_keys_overlay.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"

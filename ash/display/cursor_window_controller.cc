@@ -4,13 +4,13 @@
 
 #include "ash/display/cursor_window_controller.h"
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/display/display_color_manager.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/fast_ink/cursor/cursor_view.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"

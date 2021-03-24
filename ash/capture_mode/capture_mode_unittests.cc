@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
@@ -25,8 +27,6 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
-#include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
 #include "ash/root_window_controller.h"

@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
-#include "ash/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/shell.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/views/focus/focus_manager.h"

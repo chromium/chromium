@@ -5,9 +5,9 @@
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/keyboard/keyboard_util.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"

@@ -6,8 +6,8 @@
 
 #include <cmath>
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/utility/transformer_util.h"

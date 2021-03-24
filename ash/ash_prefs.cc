@@ -5,6 +5,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
@@ -16,7 +17,6 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"

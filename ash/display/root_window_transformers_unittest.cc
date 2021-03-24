@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/accessibility/magnifier/magnification_controller.h"
 #include "ash/display/display_util.h"
 #include "ash/display/mirror_window_test_api.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
