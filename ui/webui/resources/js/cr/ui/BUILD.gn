@@ -90,6 +90,7 @@ preprocess_if_expr("preprocess_generated") {
     "list.m.js",
     "list_selection_controller.m.js",
     "list_selection_model.m.js",
+    "splitter.m.js",
     "store_client.m.js",
     "store.m.js",
     "tabs.m.js",
@@ -106,7 +107,6 @@ preprocess_if_expr("preprocess_generated") {
       "menu_item.m.js",
       "menu.m.js",
       "position_util.m.js",
-      "splitter.m.js",
     ]
   }
 
