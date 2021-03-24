@@ -1457,4 +1457,124 @@ TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
             target2->LocalToAncestorRect(rect, nullptr));
 }
 
+TEST_F(LayoutObjectTest, LocalToAncestoRectIgnoreAncestorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=ancestor style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="width: 100px; height: 100px"></div>
+    </div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* ancestor =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
+  ancestor->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                          mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, 0));
+}
+
+TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div style="height: 2000px"></div>
+    <div id="target" style="width: 100px; height: 100px"></div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, 0));
+}
+
+TEST_F(LayoutObjectTest,
+       LocalToAncestoRectIgnoreAncestorScrollIntermediateScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=ancestor style="overflow:scroll; width: 100px; height: 100px">
+      <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+        <div style="height: 2000px"></div>
+        <div id="target" style="width: 100px; height: 100px"></div>
+      </div>
+      <div style="height: 2000px"></div>
+    </div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* ancestor =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+  ancestor->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                          mojom::blink::ScrollType::kUser);
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                              mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
+            target->LocalToAncestorRect(rect, ancestor, 0));
+}
+
+TEST_F(LayoutObjectTest,
+       LocalToAncestoRectViewIgnoreAncestorScrollIntermediateScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="width: 100px; height: 100px"></div>
+    </div>
+    <div style="height: 2000px"></div>
+    )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
+                                              mojom::blink::ScrollType::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect rect(0, 0, 100, 100);
+  EXPECT_EQ(PhysicalRect(0, 1900, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr,
+                                        kIgnoreScrollOffsetOfAncestor));
+
+  EXPECT_EQ(PhysicalRect(0, 2000, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, kIgnoreScrollOffset));
+
+  EXPECT_EQ(PhysicalRect(0, 1800, 100, 100),
+            target->LocalToAncestorRect(rect, nullptr, 0));
+}
+
 }  // namespace blink

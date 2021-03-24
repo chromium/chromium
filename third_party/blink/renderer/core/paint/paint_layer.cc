@@ -1186,7 +1186,7 @@ const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
 const IntRect PaintLayer::UnclippedAbsoluteBoundingBox() const {
   return EnclosingIntRect(GetLayoutObject().LocalToAbsoluteRect(
       LocalBoundingBoxForCompositingOverlapTest(),
-      kUseGeometryMapperMode | kIgnoreScrollOffset));
+      kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
 }
 
 void PaintLayer::SetNeedsCompositingInputsUpdateInternal() {
