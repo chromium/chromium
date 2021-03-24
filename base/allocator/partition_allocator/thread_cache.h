@@ -21,6 +21,7 @@
 #include "base/partition_alloc_buildflags.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 
 // Need TLS support.
 #if defined(OS_POSIX) || defined(OS_WIN)
@@ -228,8 +229,19 @@ class BASE_EXPORT ThreadCache {
   static constexpr float kDefaultMultiplier = 2.;
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
+#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
+  // TODO((lizeb): Tune this better. Right now this is set to a high value on
+  // Linux x86_64, partly to see the impact on performance and memory usage on
+  // bots.
+  //
+  // 32kiB is chosen here as from local experiments, "zone" allocation in
+  // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
+  // each individual allocation.
+  static constexpr size_t kSizeThreshold = 1 << 15;
+#else
   // TODO(lizeb): Optimize the threshold.
   static constexpr size_t kSizeThreshold = 512;
+#endif
 
  private:
   struct Bucket {
