@@ -34,5 +34,6 @@ specific_include_rules = {
 
   ".*test_suite\.cc": [
     "+ui/base",
+    "+ui/gl/test",
   ],
 }

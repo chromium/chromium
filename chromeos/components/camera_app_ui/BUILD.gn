@@ -20,10 +20,6 @@ static_library("camera_app_ui") {
     "camera_app_ui.cc",
     "camera_app_ui.h",
     "camera_app_ui_delegate.h",
-    "camera_app_window_manager.cc",
-    "camera_app_window_manager.h",
-    "camera_app_window_state_controller.cc",
-    "camera_app_window_state_controller.h",
     "resources.h",
     "url_constants.cc",
     "url_constants.h",
@@ -37,21 +33,54 @@ static_library("camera_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    ":window_managemet",
     "//ash/public/cpp",
     "//chromeos/components/web_applications",
-    "//chromeos/strings",
-    "//chromeos/system",
     "//components/arc",
     "//content/public/browser",
     "//content/public/common",
     "//media/capture:capture_lib",
     "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/platform",
     "//mojo/public/js:resources_grit",
     "//net",
     "//services/network/public/mojom",
-    "//ui/views",
     "//ui/webui",
+  ]
+}
+
+source_set("window_managemet") {
+  sources = [
+    "camera_app_window_manager.cc",
+    "camera_app_window_manager.h",
+    "camera_app_window_state_controller.cc",
+    "camera_app_window_state_controller.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/public/cpp",
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/aura",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "camera_app_window_manager_unittest.cc" ]
+
+  deps = [
+    ":window_managemet",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }
 

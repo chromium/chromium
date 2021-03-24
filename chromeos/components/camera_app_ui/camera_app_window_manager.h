@@ -48,6 +48,8 @@ class CameraAppWindowManager : public views::WidgetObserver {
   void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
+  friend class CameraAppWindowManagerTest;
+
   CameraAppWindowManager();
 
   friend struct base::DefaultSingletonTraits<CameraAppWindowManager>;
