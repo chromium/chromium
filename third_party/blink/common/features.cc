@@ -688,6 +688,9 @@ const base::Feature kInputPredictorTypeChoice{
 const base::Feature kResamplingInputEvents{"ResamplingInputEvents",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kInputTargetClientHighPriority{
+    "InputTargetClientHighPriority", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kResamplingScrollEvents{"ResamplingScrollEvents",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -147,10 +147,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalInspector,
     TaskType::kInternalNavigationAssociatedUnfreezable,
     TaskType::kInternalHighPriorityLocalFrame,
+    TaskType::kInternalInputBlocking,
     TaskType::kWakeLock};
 
 static_assert(
-    static_cast<int>(TaskType::kCount) == 77,
+    static_cast<int>(TaskType::kCount) == 78,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -436,6 +437,10 @@ class FrameSchedulerImplTest : public testing::Test {
 
   scoped_refptr<MainThreadTaskQueue> ForegroundOnlyTaskQueue() {
     return GetTaskQueue(FrameSchedulerImpl::ForegroundOnlyTaskQueueTraits());
+  }
+
+  scoped_refptr<MainThreadTaskQueue> InputBlockingTaskQueue() {
+    return GetTaskQueue(FrameSchedulerImpl::InputBlockingQueueTraits());
   }
 
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType type) {
@@ -1414,6 +1419,33 @@ TEST_F(FrameSchedulerImplTest,
 
 // TODO(farahcharab) Move priority testing to MainThreadTaskQueueTest after
 // landing the change that moves priority computation to MainThreadTaskQueue.
+
+TEST_F(FrameSchedulerImplTest, NormalPriorityInputBlockingTaskQueue) {
+  page_scheduler_->SetPageVisible(false);
+  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+            TaskQueue::QueuePriority::kNormalPriority);
+  page_scheduler_->SetPageVisible(true);
+  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+            TaskQueue::QueuePriority::kNormalPriority);
+}
+
+class InputHighPriorityFrameSchedulerImplTest : public FrameSchedulerImplTest {
+ public:
+  InputHighPriorityFrameSchedulerImplTest()
+      : FrameSchedulerImplTest(
+            {::blink::features::kInputTargetClientHighPriority},
+            {}) {}
+};
+
+TEST_F(InputHighPriorityFrameSchedulerImplTest,
+       HighestPriorityInputBlockingTaskQueue) {
+  page_scheduler_->SetPageVisible(false);
+  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+            TaskQueue::QueuePriority::kHighestPriority);
+  page_scheduler_->SetPageVisible(true);
+  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+            TaskQueue::QueuePriority::kHighestPriority);
+}
 
 class LowPriorityBackgroundPageExperimentTest : public FrameSchedulerImplTest {
  public:

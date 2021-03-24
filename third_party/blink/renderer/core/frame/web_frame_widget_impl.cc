@@ -44,6 +44,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/ukm_manager.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -520,9 +521,13 @@ void WebFrameWidgetImpl::BindWidgetCompositor(
 void WebFrameWidgetImpl::BindInputTargetClient(
     mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver) {
   DCHECK(!input_target_receiver_.is_bound());
-  input_target_receiver_.Bind(
-      std::move(receiver),
-      local_root_->GetTaskRunner(TaskType::kInternalDefault));
+  TaskType priority = TaskType::kInternalDefault;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kInputTargetClientHighPriority)) {
+    priority = TaskType::kInternalInputBlocking;
+  }
+  input_target_receiver_.Bind(std::move(receiver),
+                              local_root_->GetTaskRunner(priority));
 }
 
 void WebFrameWidgetImpl::FrameSinkIdAt(const gfx::PointF& point,

@@ -467,6 +467,8 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       }
     case TaskType::kInternalNavigationAssociated:
       return FreezableTaskQueueTraits();
+    case TaskType::kInternalInputBlocking:
+      return InputBlockingQueueTraits();
     // Some tasks in the tests need to run when objects are paused e.g. to hook
     // when recovering from debugger JavaScript statetment.
     case TaskType::kInternalTest:
@@ -1145,6 +1147,13 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   }
 
   if (task_queue->GetPrioritisationType() ==
+          MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput &&
+      base::FeatureList::IsEnabled(
+          ::blink::features::kInputTargetClientHighPriority)) {
+    return TaskQueue::QueuePriority::kHighestPriority;
+  }
+
+  if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::
           kExperimentalDatabase) {
     // TODO(shaseley): This decision should probably be based on Agent
@@ -1430,6 +1439,12 @@ MainThreadTaskQueue::QueueTraits
 FrameSchedulerImpl::FindInPageTaskQueueTraits() {
   return PausableTaskQueueTraits().SetPrioritisationType(
       QueueTraits::PrioritisationType::kFindInPage);
+}
+
+MainThreadTaskQueue::QueueTraits
+FrameSchedulerImpl::InputBlockingQueueTraits() {
+  return QueueTraits().SetPrioritisationType(
+      QueueTraits::PrioritisationType::kInput);
 }
 }  // namespace scheduler
 }  // namespace blink

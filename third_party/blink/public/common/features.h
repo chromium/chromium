@@ -240,6 +240,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kInputPredictorTypeChoice;
 // Enables resampling input events on main thread.
 BLINK_COMMON_EXPORT extern const base::Feature kResamplingInputEvents;
 
+// Elevates the InputTargetClient mojo interface to input, since its input
+// blocking.
+BLINK_COMMON_EXPORT extern const base::Feature kInputTargetClientHighPriority;
+
 // Enables resampling GestureScroll events on compositor thread.
 // Uses the kPredictorName* values in ui_base_features.h as the 'predictor'
 // feature param.

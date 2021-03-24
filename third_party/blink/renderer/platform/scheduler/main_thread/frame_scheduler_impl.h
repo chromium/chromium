@@ -306,6 +306,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   static MainThreadTaskQueue::QueueTraits UnfreezableLoadingTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits LoadingControlTaskQueueTraits();
   static MainThreadTaskQueue::QueueTraits FindInPageTaskQueueTraits();
+  static MainThreadTaskQueue::QueueTraits InputBlockingQueueTraits();
 
   const FrameScheduler::FrameType frame_type_;
 
