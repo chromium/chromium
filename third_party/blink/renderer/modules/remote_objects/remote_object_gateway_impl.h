@@ -84,14 +84,28 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
 };
 
 class RemoteObjectGatewayFactoryImpl
-    : public mojom::blink::RemoteObjectGatewayFactory {
+    : public GarbageCollected<RemoteObjectGatewayFactoryImpl>,
+      public mojom::blink::RemoteObjectGatewayFactory,
+      public Supplement<LocalFrame> {
  public:
-  static void Create(
+  static const char kSupplementName[];
+
+  explicit RemoteObjectGatewayFactoryImpl(
+      base::PassKey<RemoteObjectGatewayFactoryImpl>,
+      LocalFrame& frame,
+      mojo::PendingReceiver<mojom::blink::RemoteObjectGatewayFactory> receiver);
+
+  // This supplement is only installed if the RemoteObjectGatewayFactory mojom
+  // interface is requested to be bound (currently only for Android WebView).
+  static RemoteObjectGatewayFactoryImpl* From(LocalFrame&);
+
+  static void Bind(
       LocalFrame* frame,
       mojo::PendingReceiver<mojom::blink::RemoteObjectGatewayFactory> receiver);
 
+  void Trace(Visitor* visitor) const override;
+
  private:
-  explicit RemoteObjectGatewayFactoryImpl(LocalFrame& frame);
   // Not copyable or movable
   RemoteObjectGatewayFactoryImpl(const RemoteObjectGatewayFactoryImpl&) =
       delete;
@@ -104,7 +118,10 @@ class RemoteObjectGatewayFactoryImpl
       mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver)
       override;
 
-  WeakPersistent<LocalFrame> frame_;
+  HeapMojoReceiver<mojom::blink::RemoteObjectGatewayFactory,
+                   RemoteObjectGatewayFactoryImpl,
+                   HeapMojoWrapperMode::kForceWithoutContextObserver>
+      receiver_;
 };
 
 }  // namespace blink

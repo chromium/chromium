@@ -179,7 +179,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
       &TextSuggestionBackendImpl::Create, WrapWeakPersistent(&frame)));
 #if defined(OS_ANDROID)
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &RemoteObjectGatewayFactoryImpl::Create, WrapWeakPersistent(&frame)));
+      &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
 #endif  // OS_ANDROID
 
   frame.GetInterfaceRegistry()->AddInterface(
