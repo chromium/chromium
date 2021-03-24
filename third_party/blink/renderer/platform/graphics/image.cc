@@ -147,7 +147,7 @@ PaintImage Image::ResizeAndOrientImage(
   paint.setAlpha(opacity * 255);
   SkSamplingOptions sampling;
   if (interpolation_quality != kInterpolationNone)
-    sampling = SkSamplingOptions({1.0f / 3, 1.0f / 3});
+    sampling = SkSamplingOptions(SkCubicResampler::CatmullRom());
 
   SkCanvas* canvas = surface->getCanvas();
   canvas->concat(AffineTransformToSkMatrix(transform));
