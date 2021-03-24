@@ -68,10 +68,7 @@ void PaintWidget(cc::PaintCanvas* canvas,
                     rect.x(), rect.y());
 }
 
-base::Optional<SkColor> SkColorFromColorId(
-    ui::NativeTheme::ColorId color_id,
-    const ui::NativeTheme* base_theme,
-    ui::NativeTheme::ColorScheme color_scheme) {
+base::Optional<SkColor> SkColorFromColorId(ui::NativeTheme::ColorId color_id) {
   switch (color_id) {
     case ui::NativeTheme::kColorId_WindowBackground:
     case ui::NativeTheme::kColorId_DialogBackground:
@@ -172,10 +169,9 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // Link
     case ui::NativeTheme::kColorId_LinkDisabled:
-      return SkColorSetA(
-          base_theme->GetSystemColor(ui::NativeTheme::kColorId_LinkEnabled,
-                                     color_scheme),
-          0xBB);
+      if (GtkCheckVersion(3, 12))
+        return GetFgColor("GtkLabel#label.link:link:disabled");
+      FALLTHROUGH;
     case ui::NativeTheme::kColorId_LinkPressed:
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link:hover:active");
@@ -549,7 +545,7 @@ SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
                                                  bool apply_processing) const {
   base::Optional<SkColor> color = color_cache_[color_id];
   if (!color) {
-    color = SkColorFromColorId(color_id, this, color_scheme);
+    color = SkColorFromColorId(color_id);
     if (!color) {
       color = ui::NativeThemeBase::GetSystemColorDeprecated(
           color_id, color_scheme, apply_processing);
