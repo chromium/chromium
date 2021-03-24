@@ -23,9 +23,9 @@ Polymer({
      */
     disabled_: {
       type: Boolean,
-      value: false,
       reflectToAttribute: true,
       observer: 'disabledChanged_',
+      computed: 'computeDisabled_(deviceState, deviceState.inhibitReason)'
     },
 
     /** @type {!NetworkList.NetworkListItemType|undefined} */
@@ -242,6 +242,17 @@ Polymer({
    */
   getButtonLabel_() {
     return this.i18n('networkListItemSubpageButtonLabel', this.getItemName_());
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeDisabled_() {
+    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return OncMojo.deviceIsInhibited(this.deviceState);
   },
 
   /**

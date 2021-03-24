@@ -261,8 +261,15 @@ suite('NetworkListItemTest', function() {
         iccid: 'iccid',
       },
     };
-    listItem.disabled_ = true;
+    listItem.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+    };
+
     await flushAsync();
+
+    listItem.deviceState.inhibitedReason =
+        mojom.InhibitReason.kInstallingProfile;
 
     let installButton = listItem.$$('#installButton');
     assertTrue(!!installButton);
@@ -284,10 +291,13 @@ suite('NetworkListItemTest', function() {
   test(
       'Network disabled, no arrow and enter and click does not fire events',
       async () => {
-        listItem.disabled_ = true;
         listItem.showButtons = true;
         listItem.networkState =
             OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, name);
+        listItem.deviceState = {
+          type: mojom.NetworkType.kCellular,
+          inhibitedReason: mojom.InhibitReason.kInstallingProfile,
+        };
         await flushAsync();
 
         let arrow = listItem.$$('#subpage-button');

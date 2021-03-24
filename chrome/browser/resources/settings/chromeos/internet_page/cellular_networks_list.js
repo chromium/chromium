@@ -35,7 +35,8 @@ Polymer({
     showTechnologyBadge: Boolean,
 
     /**
-     * Device state for the network type.
+     * Device state for the cellular network type.
+     * TODO(cvandermerwe): Rename to cellularDeviceState.
      * @type {!OncMojo.DeviceStateProperties|undefined}
      */
     deviceState: Object,
@@ -43,6 +44,13 @@ Polymer({
     isConnectedToNonCellularNetwork: {
       type: Boolean,
     },
+
+    /**
+     * Device state for the tether network type. This device state should be
+     * used for instant tether networks.
+     * @type {!OncMojo.DeviceStateProperties|undefined}
+     */
+    tetherDeviceState: Object,
 
     /**
      * The list of eSIM network state properties for display.
