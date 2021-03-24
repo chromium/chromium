@@ -15,6 +15,15 @@
 
 namespace ui {
 
+namespace {
+
+WaylandWindow* GetParentWindow(WaylandConnection* connection,
+                               gfx::AcceleratedWidget widget) {
+  return connection->wayland_window_manager()->FindParentForNewWindow(widget);
+}
+
+}  // namespace
+
 // static
 std::unique_ptr<WaylandWindow> WaylandWindow::Create(
     PlatformWindowDelegate* delegate,
@@ -26,7 +35,9 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       if (connection->IsDragInProgress()) {
         // We are in the process of drag and requested a popup. Most probably,
         // it is an arrow window.
-        window = std::make_unique<WaylandAuxiliaryWindow>(delegate, connection);
+        window = std::make_unique<WaylandAuxiliaryWindow>(
+            delegate, connection,
+            GetParentWindow(connection, properties.parent_widget));
         break;
       }
       FALLTHROUGH;
@@ -40,18 +51,18 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       // another by WaylandPopup) is a bad practice, and the parent window is
       // set here instead. TODO(crbug.com/1078328): Feed ozone/wayland with full
       // layout info required to properly position popup windows.
-      if (auto* parent_window =
-              connection->wayland_window_manager()->FindParentForNewWindow(
-                  properties.parent_widget)) {
-        window = std::make_unique<WaylandPopup>(delegate, connection);
-        window->set_parent_window(parent_window);
+      if (auto* parent =
+              GetParentWindow(connection, properties.parent_widget)) {
+        window = std::make_unique<WaylandPopup>(delegate, connection, parent);
       } else {
         DLOG(WARNING) << "Failed to determine for menu/popup window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       }
       break;
     case PlatformWindowType::kTooltip:
-      window = std::make_unique<WaylandAuxiliaryWindow>(delegate, connection);
+      window = std::make_unique<WaylandAuxiliaryWindow>(
+          delegate, connection,
+          GetParentWindow(connection, properties.parent_widget));
       break;
     case PlatformWindowType::kWindow:
     case PlatformWindowType::kBubble:

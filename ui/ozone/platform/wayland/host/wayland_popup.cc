@@ -16,8 +16,11 @@
 namespace ui {
 
 WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
-                           WaylandConnection* connection)
-    : WaylandWindow(delegate, connection) {}
+                           WaylandConnection* connection,
+                           WaylandWindow* parent)
+    : WaylandWindow(delegate, connection) {
+  set_parent_window(parent);
+}
 
 WaylandPopup::~WaylandPopup() = default;
 

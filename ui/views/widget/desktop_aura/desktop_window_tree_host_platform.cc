@@ -21,6 +21,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -121,6 +122,17 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
 
   if (params.parent && params.parent->GetHost())
     properties.parent_widget = params.parent->GetHost()->GetAcceleratedWidget();
+
+#if defined(USE_OZONE)
+  if (properties.type == ui::PlatformWindowType::kTooltip &&
+      features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .set_parent_for_non_top_level_windows) {
+    properties.parent_widget =
+        params.context->GetHost()->GetAcceleratedWidget();
+  }
+#endif
 
   return properties;
 }

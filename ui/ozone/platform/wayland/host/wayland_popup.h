@@ -14,7 +14,9 @@ class ShellPopupWrapper;
 
 class WaylandPopup : public WaylandWindow {
  public:
-  WaylandPopup(PlatformWindowDelegate* delegate, WaylandConnection* connection);
+  WaylandPopup(PlatformWindowDelegate* delegate,
+               WaylandConnection* connection,
+               WaylandWindow* parent);
   ~WaylandPopup() override;
 
   ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }

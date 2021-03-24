@@ -235,6 +235,14 @@ class OzonePlatformWayland : public OzonePlatform {
       // toplevel windows, clients simply don't know their position on screens
       // and always assume they are located at some arbitrary position.
       properties->ignore_screen_bounds_for_menus = true;
+      // Wayland uses sub-surfaces to show tooltips, and sub-surfaces must be
+      // bound to their root surfaces always, but finding the correct root
+      // surface at the moment of creating the tooltip is not always possible
+      // due to how Wayland handles focus and activation.
+      // Therefore, the platform should be given a hint at the moment when the
+      // surface is initialised, where it is known for sure which root surface
+      // shows the tooltip.
+      properties->set_parent_for_non_top_level_windows = true;
       properties->app_modal_dialogs_use_event_blocker = true;
 
       // Primary planes can be transluscent due to underlay strategy. As a

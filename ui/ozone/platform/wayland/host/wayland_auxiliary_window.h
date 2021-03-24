@@ -13,7 +13,8 @@ namespace ui {
 class WaylandAuxiliaryWindow : public WaylandWindow {
  public:
   WaylandAuxiliaryWindow(PlatformWindowDelegate* delegate,
-                         WaylandConnection* connection);
+                         WaylandConnection* connection,
+                         WaylandWindow* parent);
   WaylandAuxiliaryWindow(const WaylandAuxiliaryWindow&) = delete;
   WaylandAuxiliaryWindow& operator=(const WaylandAuxiliaryWindow&) = delete;
   ~WaylandAuxiliaryWindow() override;
@@ -30,9 +31,6 @@ class WaylandAuxiliaryWindow : public WaylandWindow {
 
   // Creates (if necessary) and shows a subsurface window.
   void CreateSubsurface();
-
-  // Finds an appropriate parent window.
-  WaylandWindow* FindParentWindow();
 
   wl::Object<wl_subsurface> subsurface_;
 };
