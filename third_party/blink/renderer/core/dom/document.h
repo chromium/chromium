@@ -2166,11 +2166,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<LazyLoadImageObserver> lazy_load_image_observer_;
 
-  // Tracks which permissions policies have already been parsed, so as not to
+  // Tracks which document policies have already been parsed, so as not to
   // count them multiple times. The size of this vector is 0 until
-  // PermissionsPolicyFeatureObserved is called.
-  Vector<bool> parsed_feature_policies_;
-
+  // `DocumentPolicyFeatureObserved` is called.
   Vector<bool> parsed_document_policies_;
 
   AtomicString override_last_modified_;
