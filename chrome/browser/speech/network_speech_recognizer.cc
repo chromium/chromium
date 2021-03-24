@@ -217,6 +217,7 @@ void NetworkSpeechRecognizer::EventListener::StopSpeechTimeout() {
 void NetworkSpeechRecognizer::EventListener::SpeechTimeout() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   StopOnIOThread();
+  NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
 }
 
 void NetworkSpeechRecognizer::EventListener::OnRecognitionStart(
@@ -249,11 +250,11 @@ void NetworkSpeechRecognizer::EventListener::OnRecognitionResults(
                      result_str, final_count == results.size(),
                      base::nullopt /* word offsets */));
 
-  // Stop the moment we have a final result. If we receive any new or changed
-  // text, restart the timer to give the user more time to speak. (The timer is
-  // recording the amount of time since the most recent utterance.)
+  // Restart the timer when we have a final result. If we receive any new or
+  // changed text, restart the timer to give the user more time to speak. (The
+  // timer is recording the amount of time since the most recent utterance.)
   if (final_count == results.size())
-    StopOnIOThread();
+    StartSpeechTimeout(kNoSpeechTimeoutInSeconds);
   else if (result_str != last_result_str_)
     StartSpeechTimeout(kNoNewSpeechTimeoutInSeconds);
 

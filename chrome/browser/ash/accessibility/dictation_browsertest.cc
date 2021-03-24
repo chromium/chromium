@@ -10,6 +10,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -24,7 +25,11 @@ const char kFinalSpeechResult[] = "hello world";
 
 }  // namespace
 
-class DictationTest : public InProcessBrowserTest {
+enum DictationListeningTestVariant { kTestDefault, kTestWithLongerListening };
+
+class DictationTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<DictationListeningTestVariant> {
  protected:
   DictationTest() {
     input_context_handler_.reset(new ui::MockIMEInputContextHandler());
@@ -52,6 +57,14 @@ class DictationTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  // InProcessBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam() == kTestWithLongerListening) {
+      command_line->AppendSwitch(
+          switches::kEnableExperimentalAccessibilityDictationListening);
+    }
+  }
+
   void SetUpOnMainThread() override {
     ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
   }
@@ -69,12 +82,16 @@ class DictationTest : public InProcessBrowserTest {
     GetManager()->dictation_->OnTextInputStateChanged(client);
   }
 
+  bool IsDictationOff() {
+    return !GetManager()->dictation_ ||
+           GetManager()->dictation_->current_state_ == SPEECH_RECOGNIZER_OFF;
+  }
+
   void ToggleDictation() {
-    bool is_turning_on =
-        !GetManager()->dictation_ ||
-        GetManager()->dictation_->current_state_ == SPEECH_RECOGNIZER_OFF;
+    // We are trying to toggle on if Dictation is currently off.
+    bool will_toggle_on = IsDictationOff();
     GetManager()->ToggleDictation();
-    if (is_turning_on) {
+    if (will_toggle_on) {
       // SpeechRecognitionManager is asynchronous: it is turned on from the UI
       // thread. Wait for it to complete before moving on to ensures that we are
       // ready to receive speech. In Dictation, a tone is played when
@@ -97,7 +114,12 @@ class DictationTest : public InProcessBrowserTest {
       fake_speech_recognition_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEnds) {
+INSTANTIATE_TEST_SUITE_P(TestWithDefaultAndLongerListening,
+                         DictationTest,
+                         ::testing::Values(kTestDefault,
+                                           kTestWithLongerListening));
+
+IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
@@ -115,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEnds) {
             input_context_handler_->last_commit_text());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
+IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
   EnableChromeVox();
   EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
@@ -135,14 +157,14 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
             input_context_handler_->last_commit_text());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationBeforeSpeech) {
+IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationBeforeSpeech) {
   ToggleDictation();
   ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
   EXPECT_EQ(0, input_context_handler_->commit_text_call_count());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
+IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
@@ -156,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
             input_context_handler_->last_commit_text());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
+IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
 
   EnableChromeVox();
@@ -174,10 +196,14 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
             input_context_handler_->last_commit_text());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
+IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   // Turn on dictation and say something.
   ToggleDictation();
-  SendSpeechResult(kFirstSpeechResult, true /* is_final */);
+  base::RunLoop loop1;
+  fake_speech_recognition_manager_->SetFakeResult(kFirstSpeechResult);
+  fake_speech_recognition_manager_->SendFakeResponse(false,
+                                                     loop1.QuitClosure());
+  loop1.Run();
 
   // Speech goes to the default IMEInputContextHandler.
   EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
@@ -193,10 +219,15 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   fake_speech_recognition_manager_->WaitForRecognitionEnded();
   // Now wait for the callbacks to propagate on the UI thread.
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsDictationOff());
 
   // Turn on dictation and say something else.
   ToggleDictation();
-  SendSpeechResult(kSecondSpeechResult, true /* is_final */);
+  base::RunLoop loop2;
+  fake_speech_recognition_manager_->SetFakeResult(kSecondSpeechResult);
+  fake_speech_recognition_manager_->SendFakeResponse(false,
+                                                     loop2.QuitClosure());
+  loop2.Run();
 
   // Speech goes to the new IMEInputContextHandler.
   EXPECT_EQ(base::ASCIIToUTF16(kSecondSpeechResult),
@@ -205,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, ChangeInputField) {
+IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
   // Turn on dictation and start speaking.
   ToggleDictation();
   SendSpeechResult(kFinalSpeechResult, false /* is_final */);
@@ -219,6 +250,47 @@ IN_PROC_BROWSER_TEST_F(DictationTest, ChangeInputField) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
             input_context_handler_->last_commit_text());
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTest, MightListenForMultipleResults) {
+  // Turn on dictation and send a final result.
+  ToggleDictation();
+  base::RunLoop loop1;
+  fake_speech_recognition_manager_->SetFakeResult("Purple");
+  fake_speech_recognition_manager_->SendFakeResponse(
+      false /* end recognition */, loop1.QuitClosure());
+  loop1.Run();
+
+  EXPECT_EQ(u"Purple", input_context_handler_->last_commit_text());
+  if (GetParam() == kTestDefault) {
+    // Dictation should turn off.
+    EXPECT_TRUE(IsDictationOff());
+    return;
+  }
+  EXPECT_FALSE(IsDictationOff());
+
+  // Send another result.
+  base::RunLoop loop2;
+  fake_speech_recognition_manager_->SetFakeResult("pink");
+  fake_speech_recognition_manager_->SendFakeResponse(
+      false /* end recognition */, loop2.QuitClosure());
+  loop2.Run();
+  EXPECT_EQ(2, input_context_handler_->commit_text_call_count());
+  // Space in front of the result.
+  EXPECT_EQ(u" pink", input_context_handler_->last_commit_text());
+
+  base::RunLoop loop3;
+  fake_speech_recognition_manager_->SetFakeResult(" blue");
+  fake_speech_recognition_manager_->SendFakeResponse(
+      false /* end recognition */, loop3.QuitClosure());
+  loop3.Run();
+  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
+  // Only one space in front of the result.
+  EXPECT_EQ(u" blue", input_context_handler_->last_commit_text());
+
+  ToggleDictation();
+  // No change expected after toggle.
+  EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
 }
 
 }  // namespace ash

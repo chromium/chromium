@@ -77,7 +77,7 @@ bool Dictation::OnToggleDictation() {
     DictationOff();
     return false;
   }
-
+  has_committed_text_ = false;
   if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable() &&
       switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
     // On-device recognition is behind a flag and then only available if
@@ -96,11 +96,22 @@ bool Dictation::OnToggleDictation() {
 }
 
 void Dictation::OnSpeechResult(
-    const std::u16string& query,
+    const std::u16string& transcription,
     bool is_final,
     const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
         word_offsets) {
-  composition_->text = query;
+  // If the first character of text isn't a space, add a space before it.
+  // NetworkSpeechRecognizer adds the preceding space but
+  // OnDeviceSpeechRecognizer does not. This is also done in
+  // CaptionBubbleModel::CommitPartialText.
+  // TODO(crbug.com/1055150): This feature is launching for English first.
+  // Make sure spacing is correct for all languages.
+  if (has_committed_text_ && transcription.size() > 0 &&
+      transcription.compare(0, 1, u" ") != 0) {
+    composition_->text = u" " + transcription;
+  } else {
+    composition_->text = transcription;
+  }
 
   if (!is_final) {
     // If ChromeVox is enabled, we don't want to show intermediate results
@@ -112,7 +123,12 @@ void Dictation::OnSpeechResult(
       input_context->UpdateCompositionText(*composition_, 0, true);
     return;
   }
-  DictationOff();
+  if (switches::IsExperimentalAccessibilityDictationListeningEnabled()) {
+    CommitCurrentText();
+  } else {
+    // Turn off after finalized speech.
+    DictationOff();
+  }
 }
 
 void Dictation::OnSpeechSoundLevelChanged(int16_t level) {}
@@ -157,17 +173,9 @@ void Dictation::DictationOff() {
   if (!speech_recognizer_)
     return;
 
+  CommitCurrentText();
   if (!composition_->text.empty()) {
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationEnd));
-
-    ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
-    if (input_context) {
-      input_context->CommitText(
-          composition_->text,
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-    }
-
-    composition_->text = std::u16string();
   } else {
     audio::SoundsManager::Get()->Play(
         static_cast<int>(Sound::kDictationCancel));
@@ -177,6 +185,21 @@ void Dictation::DictationOff() {
       AccessibilityNotificationType::kToggleDictation, false /* enabled */);
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
   speech_recognizer_.reset();
+}
+
+void Dictation::CommitCurrentText() {
+  if (composition_->text.empty()) {
+    return;
+  }
+  has_committed_text_ = true;
+  ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
+  if (input_context) {
+    input_context->CommitText(
+        composition_->text,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  }
+
+  composition_->text = std::u16string();
 }
 
 }  // namespace ash

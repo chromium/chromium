@@ -25,12 +25,7 @@ const char kTestResult[] = "Pictures of the moon";
 namespace content {
 
 FakeSpeechRecognitionManager::FakeSpeechRecognitionManager()
-    : session_id_(0),
-      listener_(nullptr),
-      fake_result_(kTestResult),
-      did_cancel_all_(false),
-      should_send_fake_response_(true),
-      delegate_(nullptr) {}
+    : session_id_(0), listener_(nullptr), fake_result_(kTestResult) {}
 
 void FakeSpeechRecognitionManager::SetDelegate(
     SpeechRecognitionManagerDelegate* delegate) {
@@ -60,6 +55,20 @@ void FakeSpeechRecognitionManager::WaitForRecognitionEnded() {
   runner.Run();
 }
 
+void FakeSpeechRecognitionManager::SendFakeResponse(
+    bool end_recognition,
+    base::OnceClosure on_fake_response_sent) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // The session must be started.
+  EXPECT_NE(session_id_, 0);
+  EXPECT_TRUE(listener_ != nullptr);
+  on_fake_response_sent_closure_ = std::move(on_fake_response_sent);
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeSpeechRecognitionManager::SetFakeRecognitionResult,
+                     base::Unretained(this), end_recognition));
+}
+
 void FakeSpeechRecognitionManager::OnRecognitionStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Complete the closure on the UI thread instead of the IO thread to avoid
@@ -74,6 +83,13 @@ void FakeSpeechRecognitionManager::OnRecognitionEnded() {
   // threading issues.
   if (recognition_ended_closure_)
     std::move(recognition_ended_closure_).Run();
+}
+
+void FakeSpeechRecognitionManager::OnFakeResponseSent() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (on_fake_response_sent_closure_) {
+    std::move(on_fake_response_sent_closure_).Run();
+  }
 }
 
 void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value) {
@@ -92,6 +108,7 @@ int FakeSpeechRecognitionManager::CreateSession(
   session_ctx_ = config.initial_context;
   session_config_ = config;
   session_id_ = 1;
+  has_sent_result_ = false;
   return session_id_;
 }
 
@@ -116,7 +133,7 @@ void FakeSpeechRecognitionManager::StartSession(int session_id) {
             // when the test shuts down. Disabling refcounting here saves a bit
             // of unnecessary code and the factory method can return a plain
             // pointer below as required by the real code.
-            base::Unretained(this)));
+            base::Unretained(this), true /* end recognition */));
   }
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -127,9 +144,6 @@ void FakeSpeechRecognitionManager::StartSession(int session_id) {
 void FakeSpeechRecognitionManager::AbortSession(int session_id) {
   VLOG(1) << "FAKE AbortSession invoked.";
   EXPECT_EQ(session_id_, session_id);
-  // The real SpeechRecognitionManagerImpl::Abort call chain eventually calls to
-  // OnRecognitionEnd from SpeechRecognizerImpl::Abort.
-  listener_->OnRecognitionEnd(session_id_);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSpeechRecognitionManager::OnRecognitionEnded,
@@ -166,13 +180,17 @@ SpeechRecognitionSessionContext FakeSpeechRecognitionManager::GetSessionContext(
   return session_ctx_;
 }
 
-void FakeSpeechRecognitionManager::SetFakeRecognitionResult() {
+void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
+    bool end_recognition) {
   if (!session_id_)  // Do a check in case we were cancelled..
     return;
   VLOG(1) << "Setting fake recognition result.";
-  listener_->OnAudioStart(session_id_);
-  listener_->OnSoundStart(session_id_);
-  listener_->OnAudioEnd(session_id_);
+  LOG(ERROR) << "SetFakeRecognitionResult";
+  if (!has_sent_result_) {
+    listener_->OnAudioStart(session_id_);
+    listener_->OnSoundStart(session_id_);
+    has_sent_result_ = true;
+  }
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
@@ -180,19 +198,27 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult() {
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(std::move(result));
   listener_->OnRecognitionResults(session_id_, results);
-  // End recognition. Note that in normal SpeechRecognitionManager, a session
-  // is not ended after the final result is sent. This behavior is just
-  // to make testing easier.
-  // Check if the listener has destructed itself after a final result.
-  if (listener_) {
-    listener_->OnRecognitionEnd(session_id_);
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FakeSpeechRecognitionManager::OnRecognitionEnded,
-                       base::Unretained(this)));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakeSpeechRecognitionManager::OnFakeResponseSent,
+                     base::Unretained(this)));
+  if (end_recognition) {
+    LOG(ERROR) << "Ending recognition";
+    // End recognition. Note that in normal SpeechRecognitionManager, a session
+    // is not ended after the final result is sent. This behavior is just
+    // to make testing easier.
+    // Check if the listener has destructed itself after a final result.
+    if (listener_) {
+      listener_->OnAudioEnd(session_id_);
+      listener_->OnRecognitionEnd(session_id_);
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&FakeSpeechRecognitionManager::OnRecognitionEnded,
+                         base::Unretained(this)));
+    }
+    session_id_ = 0;
+    listener_ = nullptr;
   }
-  session_id_ = 0;
-  listener_ = nullptr;
   VLOG(1) << "Finished setting fake recognition result.";
 }
 
