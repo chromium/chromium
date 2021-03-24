@@ -13,12 +13,19 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+base::TimeDelta kScrollTimeInterval = base::TimeDelta::FromSeconds(1);
+}
+
 namespace ash {
 
-ScrollArrowButton::ScrollArrowButton(PressedCallback callback,
+ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                                      bool is_left_arrow,
                                      DesksBarView* bar_view)
-    : Button(std::move(callback)),
+    : on_scroll_(std::move(on_scroll)),
+      state_change_subscription_(AddStateChangedCallback(
+          base::BindRepeating(&ScrollArrowButton::OnStateChanged,
+                              base::Unretained(this)))),
       is_left_arrow_(is_left_arrow),
       bar_view_(bar_view) {
   SetPaintToLayer();
@@ -26,6 +33,8 @@ ScrollArrowButton::ScrollArrowButton(PressedCallback callback,
 
   SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
 }
+
+ScrollArrowButton::~ScrollArrowButton() = default;
 
 void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
   const bool show_left_arrow = is_left_arrow_ ^ base::i18n::IsRTL();
@@ -49,6 +58,33 @@ void ScrollArrowButton::OnThemeChanged() {
 
 const char* ScrollArrowButton::GetClassName() const {
   return "ScrollArrowButton";
+}
+
+void ScrollArrowButton::OnDeskHoverStart() {
+  // Don't start the timer again, if it's already running.
+  if (timer_.IsRunning())
+    return;
+
+  timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+  on_scroll_.Run();
+}
+
+void ScrollArrowButton::OnDeskHoverEnd() {
+  timer_.Stop();
+}
+
+void ScrollArrowButton::OnStateChanged() {
+  if (GetState() == ButtonState::STATE_PRESSED) {
+    // Please note that the order of the function calls matters. If call
+    // |on_scroll_| first, when the scroll view moves to the end, the visibility
+    // of the scroll arrow button will be set to |FALSE|, at the same time, the
+    // state of the button will be set to |STATE_NORMAL|. In this case, stopping
+    // timer will be called before starting timer.
+    timer_.Start(FROM_HERE, kScrollTimeInterval, on_scroll_);
+    on_scroll_.Run();
+  } else {
+    timer_.Stop();
+  }
 }
 
 }  // namespace ash

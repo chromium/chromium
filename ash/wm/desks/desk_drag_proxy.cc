@@ -50,8 +50,10 @@ void DeskDragProxy::OnImplicitAnimationsCompleted() {
   desks_bar_view_->FinalizeDragDesk();
 }
 
-gfx::Point DeskDragProxy::GetPositionInScreen() const {
-  return drag_widget_->GetWindowBoundsInScreen().origin();
+gfx::Rect DeskDragProxy::GetBoundsInScreen() const {
+  return gfx::Rect(
+      drag_widget_->GetWindowBoundsInScreen().origin(),
+      gfx::ScaleToFlooredSize(drag_preview_size_, kDragProxyScale));
 }
 
 void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
