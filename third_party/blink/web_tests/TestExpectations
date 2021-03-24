@@ -5735,5 +5735,8 @@ crbug.com/1190905 [ Mac ] http/tests/devtools/indexeddb/live-update-indexeddb-li
 crbug.com/1190905 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 
-# Sherif 2021-03-23
+# Sheriff 2021-03-23
 crbug.com/1182689 [ Mac ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
+
+# Sheriff 2021-03-24
+crbug.com/1192215 [ Linux ] external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken-weird.html [ Pass Failure ]
