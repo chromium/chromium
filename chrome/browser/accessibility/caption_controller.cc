@@ -39,8 +39,6 @@ const char* const kCaptionStylePrefsToObserve[] = {
     prefs::kAccessibilityCaptionsTextShadow,
     prefs::kAccessibilityCaptionsBackgroundOpacity};
 
-constexpr int kSodaCleanUpDelayInDays = 30;
-
 }  // namespace
 
 namespace captions {
@@ -124,11 +122,8 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
     StartLiveCaption();
   } else {
     StopLiveCaption();
-    // Schedule SODA to be deleted in 30 days if the feature is not enabled
-    // before then.
-    g_browser_process->local_state()->SetTime(
-        prefs::kSodaScheduledDeletionTime,
-        base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
+    speech::SodaInstaller::GetInstance()->SetUninstallTimer(
+        profile_->GetPrefs(), g_browser_process->local_state());
   }
 }
 

@@ -45,6 +45,10 @@ class SodaInstaller {
   // for uninstallation, and if so, triggers uninstallation.
   void InitForProfileIfAppropriate(Profile* profile);
 
+  // Schedules SODA for uninstallation if no SODA client features are
+  // currently enabled.
+  void SetUninstallTimer(PrefService* profile_prefs, PrefService* global_prefs);
+
   // Gets the directory path of the installed SODA lib bundle, or an empty path
   // if not installed. Currently Chrome OS only, returns empty path on other
   // platforms.
@@ -73,10 +77,6 @@ class SodaInstaller {
   // asynchronously returned an answer.
   virtual bool IsSodaInstalled() const = 0;
 
-  // Uninstalls SODA and associated language model(s). On some platforms, disc
-  // space may not be freed immediately.
-  virtual void UninstallSoda(PrefService* global_prefs) = 0;
-
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 
@@ -86,6 +86,10 @@ class SodaInstaller {
   void NotifySodaInstalledForTesting();
 
  protected:
+  // Uninstalls SODA and associated language model(s). On some platforms, disc
+  // space may not be freed immediately.
+  virtual void UninstallSoda(PrefService* global_prefs) = 0;
+
   // Notifies the observers that the SODA installation has completed.
   void NotifyOnSodaInstalled();
 

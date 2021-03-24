@@ -11,6 +11,12 @@
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
 
+namespace {
+
+constexpr int kSodaCleanUpDelayInDays = 30;
+
+}  // namespace
+
 namespace speech {
 
 SodaInstaller::SodaInstaller() = default;
@@ -43,6 +49,19 @@ void SodaInstaller::InitForProfileIfAppropriate(Profile* profile) {
       UninstallSoda(global_prefs);
     }
   }
+}
+
+void SodaInstaller::SetUninstallTimer(PrefService* profile_prefs,
+                                      PrefService* global_prefs) {
+  // Do not schedule uninstallation if any SODA client features are still
+  // enabled. Currently the only relevant feature is Live Caption.
+  if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled))
+    return;
+
+  // Schedule deletion.
+  global_prefs->SetTime(
+      prefs::kSodaScheduledDeletionTime,
+      base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
 }
 
 void SodaInstaller::AddObserver(Observer* observer) {

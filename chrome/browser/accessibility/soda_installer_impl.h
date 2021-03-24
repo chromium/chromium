@@ -42,9 +42,11 @@ class SodaInstallerImpl : public SodaInstaller,
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
-  void UninstallSoda(PrefService* global_prefs) override;
 
  private:
+  // SodaInstaller:
+  void UninstallSoda(PrefService* global_prefs) override;
+
   // component_updater::ServiceObserver:
   void OnEvent(Events event, const std::string& id) override;
 
