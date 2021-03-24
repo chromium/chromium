@@ -11,7 +11,6 @@
 #include "base/sys_byteorder.h"
 
 namespace base {
-
 // Implementation of SHA-1. Only handles data in byte-sized blocks,
 // which simplifies the code a fair bit.
 
@@ -28,38 +27,6 @@ namespace base {
 // memcpy(somewhere, sha.Digest(), 20);
 //
 // to reuse the instance of sha, call sha.Init();
-
-class SecureHashAlgorithm {
- public:
-  SecureHashAlgorithm() { Init(); }
-
-  static const int kDigestSizeBytes;
-
-  void Init();
-  void Update(const void* data, size_t nbytes);
-  void Final();
-
-  // 20 bytes of message digest.
-  const unsigned char* Digest() const {
-    return reinterpret_cast<const unsigned char*>(H);
-  }
-
- private:
-  void Pad();
-  void Process();
-
-  uint32_t A, B, C, D, E;
-
-  uint32_t H[5];
-
-  union {
-    uint32_t W[80];
-    uint8_t M[64];
-  };
-
-  uint32_t cursor;
-  uint64_t l;
-};
 
 static inline uint32_t f(uint32_t t, uint32_t B, uint32_t C, uint32_t D) {
   if (t < 20)
@@ -85,9 +52,7 @@ static inline uint32_t K(uint32_t t) {
   return 0xca62c1d6;
 }
 
-const int SecureHashAlgorithm::kDigestSizeBytes = 20;
-
-void SecureHashAlgorithm::Init() {
+void SHA1Context::Init() {
   A = 0;
   B = 0;
   C = 0;
@@ -102,37 +67,45 @@ void SecureHashAlgorithm::Init() {
   H[4] = 0xc3d2e1f0;
 }
 
-void SecureHashAlgorithm::Final() {
-  Pad();
-  Process();
-
-  for (auto& t : H)
-    t = ByteSwap(t);
-}
-
-void SecureHashAlgorithm::Update(const void* data, size_t nbytes) {
+void SHA1Context::Update(const void* data, size_t nbytes) {
   const uint8_t* d = reinterpret_cast<const uint8_t*>(data);
   while (nbytes--) {
     M[cursor++] = *d++;
-    if (cursor >= 64)
+    if (cursor >= 64) {
       Process();
+    }
     l += 8;
   }
 }
 
-void SecureHashAlgorithm::Pad() {
+void SHA1Context::Final() {
+  Pad();
+  Process();
+
+  for (auto& t : H) {
+    t = ByteSwap(t);
+  }
+}
+
+const unsigned char* SHA1Context::GetDigest() const {
+  return reinterpret_cast<const unsigned char*>(H);
+}
+
+void SHA1Context::Pad() {
   M[cursor++] = 0x80;
 
   if (cursor > 64 - 8) {
     // pad out to next block
-    while (cursor < 64)
+    while (cursor < 64) {
       M[cursor++] = 0;
+    }
 
     Process();
   }
 
-  while (cursor < 64 - 8)
+  while (cursor < 64 - 8) {
     M[cursor++] = 0;
+  }
 
   M[cursor++] = (l >> 56) & 0xff;
   M[cursor++] = (l >> 48) & 0xff;
@@ -144,7 +117,7 @@ void SecureHashAlgorithm::Pad() {
   M[cursor++] = l & 0xff;
 }
 
-void SecureHashAlgorithm::Process() {
+void SHA1Context::Process() {
   uint32_t t;
 
   // Each a...e corresponds to a section in the FIPS 180-3 algorithm.
@@ -153,12 +126,14 @@ void SecureHashAlgorithm::Process() {
   //
   // W and M are in a union, so no need to memcpy.
   // memcpy(W, M, sizeof(M));
-  for (t = 0; t < 16; ++t)
+  for (t = 0; t < 16; ++t) {
     W[t] = ByteSwap(W[t]);
+  }
 
   // b.
-  for (t = 16; t < 80; ++t)
+  for (t = 16; t < 80; ++t) {
     W[t] = S(1, W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16]);
+  }
 
   // c.
   A = H[0];
@@ -187,25 +162,39 @@ void SecureHashAlgorithm::Process() {
   cursor = 0;
 }
 
+// These functions allow streaming SHA-1 operations.
+void SHA1Init(SHA1Context& context) {
+  context.Init();
+}
+
+void SHA1Update(const StringPiece data, SHA1Context& context) {
+  context.Update(data.data(), data.size());
+}
+
+void SHA1Final(SHA1Context& context, SHA1Digest& digest) {
+  context.Final();
+  memcpy(digest.data(), context.GetDigest(), kSHA1Length);
+}
+
 SHA1Digest SHA1HashSpan(span<const uint8_t> data) {
   SHA1Digest hash;
   SHA1HashBytes(data.data(), data.size(), hash.data());
   return hash;
 }
 
-std::string SHA1HashString(const std::string& str) {
-  char hash[SecureHashAlgorithm::kDigestSizeBytes];
-  SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.c_str()),
+std::string SHA1HashString(StringPiece str) {
+  char hash[kSHA1Length];
+  SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.as_string().c_str()),
                 str.length(), reinterpret_cast<unsigned char*>(hash));
-  return std::string(hash, SecureHashAlgorithm::kDigestSizeBytes);
+  return std::string(hash, kSHA1Length);
 }
 
 void SHA1HashBytes(const unsigned char* data, size_t len, unsigned char* hash) {
-  SecureHashAlgorithm sha;
-  sha.Update(data, len);
-  sha.Final();
+  SHA1Context context;
+  context.Update(data, len);
+  context.Final();
 
-  memcpy(hash, sha.Digest(), SecureHashAlgorithm::kDigestSizeBytes);
+  memcpy(hash, context.GetDigest(), kSHA1Length);
 }
 
 }  // namespace base

@@ -1748,12 +1748,14 @@ component("base") {
       "hash/md5_nacl.cc",
       "hash/md5_nacl.h",
       "hash/sha1_nacl.cc",
+      "hash/sha1_nacl.h",
     ]
   } else {
     sources += [
       "hash/md5_boringssl.cc",
       "hash/md5_boringssl.h",
       "hash/sha1_boringssl.cc",
+      "hash/sha1_boringssl.h",
     ]
     public_deps += [ "//third_party/boringssl" ]
   }
