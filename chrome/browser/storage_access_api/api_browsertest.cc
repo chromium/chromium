@@ -43,6 +43,8 @@ namespace {
 
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 
+enum class TestType { kFrame, kWorker };
+
 class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
  protected:
   StorageAccessAPIBrowserTest()
@@ -135,10 +137,86 @@ class StorageAccessAPIBrowserTest : public InProcessBrowserTest {
     return ChildFrameAt(GetFrame(), 0);
   }
 
- protected:
+  void TestThirdPartyIFrameStorageRequestsAccess(TestType test_type) {
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/browsing_data/site_data.html");
+
+    ExpectStorage(test_type, GetFrame(), false);
+    SetStorage(test_type, GetFrame());
+    ExpectStorage(test_type, GetFrame(), true);
+
+    SetBlockThirdPartyCookies(true);
+
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/browsing_data/site_data.html");
+    ExpectStorage(test_type, GetFrame(), false);
+    storage::test::CheckStorageAccessForFrame(GetFrame(), false);
+
+    // Allow all requests to b.com on a.com to access storage.
+    storage::test::RequestStorageAccessForFrame(GetFrame(), true);
+    storage::test::CheckStorageAccessForFrame(GetFrame(), true);
+
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/browsing_data/site_data.html");
+    ExpectStorage(test_type, GetFrame(), true);
+    storage::test::CheckStorageAccessForFrame(GetFrame(), true);
+  }
+
+  void TestNestedThirdPartyIFrameStorage(TestType test_type) {
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/iframe.html");
+    NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
+
+    ExpectStorage(test_type, GetNestedFrame(), false);
+    SetStorage(test_type, GetNestedFrame());
+    ExpectStorage(test_type, GetNestedFrame(), true);
+
+    SetBlockThirdPartyCookies(true);
+
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/iframe.html");
+    NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
+    ExpectStorage(test_type, GetNestedFrame(), false);
+    storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
+
+    // Allow all requests to b.com on a.com to access storage.
+    storage::test::RequestStorageAccessForFrame(GetNestedFrame(), true);
+    storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
+
+    NavigateToPageWithFrame("a.com");
+    NavigateFrameTo("b.com", "/iframe.html");
+    NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
+    ExpectStorage(test_type, GetNestedFrame(), true);
+    storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
+  }
+
   net::test_server::EmbeddedTestServer https_server_;
 
  private:
+  void ExpectStorage(TestType test_type,
+                     content::RenderFrameHost* frame,
+                     bool expected) {
+    switch (test_type) {
+      case TestType::kFrame:
+        storage::test::ExpectStorageForFrame(frame, expected);
+        return;
+      case TestType::kWorker:
+        storage::test::ExpectStorageForWorker(frame, expected);
+        return;
+    }
+  }
+
+  void SetStorage(TestType test_type, content::RenderFrameHost* frame) {
+    switch (test_type) {
+      case TestType::kFrame:
+        storage::test::SetStorageForFrame(frame);
+        return;
+      case TestType::kWorker:
+        storage::test::SetStorageForWorker(frame);
+        return;
+    }
+  }
+
   base::test::ScopedFeatureList feature_enable_;
 };
 
@@ -306,57 +384,23 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 // access when a grant is given and that it only applies to the top-level/third
 // party pair requested on.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       ThirdPartyIFrameStorageRequestsAccess) {
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetFrame(), false);
-  storage::test::SetStorageForFrame(GetFrame());
-  storage::test::ExpectStorageForFrame(GetFrame(), true);
-
-  SetBlockThirdPartyCookies(true);
-
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetFrame(), false);
-  storage::test::CheckStorageAccessForFrame(GetFrame(), false);
-
-  // Allow all requests to b.com on a.com to access storage.
-  storage::test::RequestStorageAccessForFrame(GetFrame(), true);
-  storage::test::CheckStorageAccessForFrame(GetFrame(), true);
-
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetFrame(), true);
-  storage::test::CheckStorageAccessForFrame(GetFrame(), true);
+                       ThirdPartyIFrameStorageRequestsAccessForFrame) {
+  TestThirdPartyIFrameStorageRequestsAccess(TestType::kFrame);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       NestedThirdPartyIFrameStorage) {
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/iframe.html");
-  NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
+                       ThirdPartyIFrameStorageRequestsAccessForWorker) {
+  TestThirdPartyIFrameStorageRequestsAccess(TestType::kWorker);
+}
 
-  storage::test::ExpectStorageForFrame(GetNestedFrame(), false);
-  storage::test::SetStorageForFrame(GetNestedFrame());
-  storage::test::ExpectStorageForFrame(GetNestedFrame(), true);
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       NestedThirdPartyIFrameStorageForFrame) {
+  TestNestedThirdPartyIFrameStorage(TestType::kFrame);
+}
 
-  SetBlockThirdPartyCookies(true);
-
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/iframe.html");
-  NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetNestedFrame(), false);
-  storage::test::CheckStorageAccessForFrame(GetNestedFrame(), false);
-
-  // Allow all requests to b.com on a.com to access storage.
-  storage::test::RequestStorageAccessForFrame(GetNestedFrame(), true);
-  storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
-
-  NavigateToPageWithFrame("a.com");
-  NavigateFrameTo("b.com", "/iframe.html");
-  NavigateNestedFrameTo("c.com", "/browsing_data/site_data.html");
-  storage::test::ExpectStorageForFrame(GetNestedFrame(), true);
-  storage::test::CheckStorageAccessForFrame(GetNestedFrame(), true);
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       NestedThirdPartyIFrameStorageForWorker) {
+  TestNestedThirdPartyIFrameStorage(TestType::kWorker);
 }
 
 // Test third-party cookie blocking of features that allow to communicate
