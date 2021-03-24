@@ -10,7 +10,7 @@
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 
 namespace apps {

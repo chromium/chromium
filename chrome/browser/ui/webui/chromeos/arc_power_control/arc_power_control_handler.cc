@@ -11,7 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/instance_throttle/arc_instance_throttle.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_system_stat_collector.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_tracing_model.h"

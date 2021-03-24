@@ -143,7 +143,7 @@
       'filepath': 'chrome/browser/ash/arc/auth'
     },
     'arc_ime': {
-      'filepath': 'chrome/browser/chromeos/arc/input_method_manager/'\
+      'filepath': 'chrome/browser/ash/arc/input_method_manager/'\
                   '|components/arc/ime/'
     },
     'arc_kiosk': {

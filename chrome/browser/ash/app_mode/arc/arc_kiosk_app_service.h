@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
-#include "chrome/browser/chromeos/arc/kiosk/arc_kiosk_bridge.h"
+#include "chrome/browser/ash/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"

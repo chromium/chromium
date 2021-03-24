@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
+#include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
