@@ -49,7 +49,7 @@ class SystemIdleCache;
 
 // Forward declaration for class defined in .cc file that holds most of the
 // business logic of this class.
-class LacrosChromeServiceNeverBlockingState;
+class LacrosChromeServiceImplNeverBlockingState;
 
 // This class is responsible for receiving and routing mojo messages from
 // ash-chrome via the mojo::Receiver |sequenced_state_.receiver_|. This class is
@@ -333,9 +333,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void SetInitParamsForTests(crosapi::mojom::BrowserInitParamsPtr init_params);
 
  private:
-  // LacrosChromeServiceNeverBlockingState is an implementation detail of this
-  // class.
-  friend class LacrosChromeServiceNeverBlockingState;
+  // LacrosChromeServiceImplNeverBlockingState is an implementation detail of
+  // this class.
+  friend class LacrosChromeServiceImplNeverBlockingState;
 
   // Creates a new window on the affine sequence.
   void NewWindowAffineSequence();
@@ -397,13 +397,14 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including
   // destruction, happen on the |never_blocking_sequence_|.
-  std::unique_ptr<LacrosChromeServiceNeverBlockingState,
+  std::unique_ptr<LacrosChromeServiceImplNeverBlockingState,
                   base::OnTaskRunnerDeleter>
       sequenced_state_;
 
   // This member is instantiated on the affine sequence, but only ever
   // dereferenced on the |never_blocking_sequence_|.
-  base::WeakPtr<LacrosChromeServiceNeverBlockingState> weak_sequenced_state_;
+  base::WeakPtr<LacrosChromeServiceImplNeverBlockingState>
+      weak_sequenced_state_;
 
   // A sequence that is guaranteed to never block.
   scoped_refptr<base::SequencedTaskRunner> never_blocking_sequence_;

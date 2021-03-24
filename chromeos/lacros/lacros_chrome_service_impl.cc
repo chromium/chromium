@@ -16,6 +16,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/startup/startup.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -62,169 +63,6 @@ crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
 
 }  // namespace
 
-// This class that holds all state that is affine to a single, never-blocking
-// sequence. The sequence must be never-blocking to avoid deadlocks, see
-// https://crbug.com/1103765.
-class LacrosChromeServiceNeverBlockingState
-    : public crosapi::mojom::BrowserService {
- public:
-  LacrosChromeServiceNeverBlockingState(
-      scoped_refptr<base::SequencedTaskRunner> owner_sequence,
-      base::WeakPtr<LacrosChromeServiceImpl> owner,
-      crosapi::mojom::BrowserInitParamsPtr* init_params)
-      : owner_sequence_(owner_sequence),
-        owner_(owner),
-        init_params_(init_params) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
-  ~LacrosChromeServiceNeverBlockingState() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
-
-  // crosapi::mojom::BrowserService:
-  void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override {
-    if (init_params_)
-      *init_params_ = std::move(params);
-    initialized_.Signal();
-  }
-
-  void RequestCrosapiReceiver(
-      RequestCrosapiReceiverCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(hidehiko): Remove non-error logging from here.
-    LOG(WARNING) << "CrosapiReceiver requested.";
-    std::move(callback).Run(std::move(pending_crosapi_receiver_));
-  }
-
-  void NewWindow(NewWindowCallback callback) override {
-    owner_sequence_->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&LacrosChromeServiceImpl::NewWindowAffineSequence,
-                       owner_),
-        std::move(callback));
-  }
-
-  void GetFeedbackData(GetFeedbackDataCallback callback) override {
-    owner_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceImpl::GetFeedbackDataAffineSequence, owner_,
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                               std::move(callback))));
-  }
-
-  void GetHistograms(GetHistogramsCallback callback) override {
-    owner_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceImpl::GetHistogramsAffineSequence, owner_,
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                               std::move(callback))));
-  }
-
-  void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {
-    owner_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceImpl::GetActiveTabUrlAffineSequence, owner_,
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                               std::move(callback))));
-  }
-
-  void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {
-    owner_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence,
-            owner_, policy));
-  }
-
-  // Unlike most of other methods of this class, this is called on the
-  // affined thread. Specifically, it is intended to be called before starting
-  // the message pumping of the affined thread to pass the initialization
-  // parameter from ash-chrome needed for the procedure running before the
-  // message pumping.
-  void WaitForInit() { initialized_.Wait(); }
-
-  // Crosapi is the interface that lacros-chrome uses to message
-  // ash-chrome. This method binds the remote, which allows queuing of message
-  // to ash-chrome. The messages will not go through until
-  // RequestCrosapiReceiver() is invoked.
-  void BindCrosapi() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    pending_crosapi_receiver_ = crosapi_.BindNewPipeAndPassReceiver();
-  }
-
-  // BrowserService is the interface that ash-chrome uses to message
-  // lacros-chrome. This handles and routes all incoming messages from
-  // ash-chrome.
-  void BindBrowserServiceReceiver(
-      mojo::PendingReceiver<crosapi::mojom::BrowserService> receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    receiver_.Bind(std::move(receiver));
-  }
-
-  void FusePipeCrosapi(
-      mojo::PendingRemote<crosapi::mojom::Crosapi> pending_remote) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    mojo::FusePipes(std::move(pending_crosapi_receiver_),
-                    std::move(pending_remote));
-    crosapi_->BindBrowserServiceHost(
-        browser_service_host_.BindNewPipeAndPassReceiver());
-    browser_service_host_->AddBrowserService(
-        receiver_.BindNewPipeAndPassRemote());
-  }
-
-  void OnBrowserStartup(crosapi::mojom::BrowserInfoPtr browser_info) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    crosapi_->OnBrowserStartup(std::move(browser_info));
-  }
-
-  // Calls the indicated Bind* function on the crosapi interface with the given
-  // receiver.
-  template <typename ReceiverType, void (Crosapi::*bind_func)(ReceiverType)>
-  void BindCrosapiFeatureReceiver(ReceiverType receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    (crosapi_.get()->*bind_func)(std::move(receiver));
-  }
-
-  base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  // Receives and routes messages from ash-chrome.
-  mojo::Receiver<crosapi::mojom::BrowserService> receiver_{this};
-
-  // This remote allows lacros-chrome to send messages to ash-chrome.
-  mojo::Remote<crosapi::mojom::Crosapi> crosapi_;
-
-  mojo::Remote<crosapi::mojom::BrowserServiceHost> browser_service_host_;
-
-  // This class holds onto the receiver for Crosapi until ash-chrome
-  // is ready to bind it.
-  mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_crosapi_receiver_;
-
-  // This allows LacrosChromeServiceNeverBlockingState to route IPC messages
-  // back to the affine thread on LacrosChromeServiceImpl. |owner_| is affine to
-  // |owner_sequence_|.
-  scoped_refptr<base::SequencedTaskRunner> owner_sequence_;
-  base::WeakPtr<LacrosChromeServiceImpl> owner_;
-
-  // Owned by LacrosChromeServiceImpl.
-  crosapi::mojom::BrowserInitParamsPtr* const init_params_;
-
-  // Lock to wait for InitDeprecated() invocation.
-  // Because the parameters are needed before starting the affined thread's
-  // message pumping, it is necessary to use sync primitive here, instead.
-  base::WaitableEvent initialized_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<LacrosChromeServiceNeverBlockingState> weak_factory_{
-      this};
-};
-
 namespace {
 
 // This function binds a pending receiver by posting the corresponding task to
@@ -234,12 +72,13 @@ template <typename PendingReceiverOrRemote,
 void BindPendingReceiverOrRemote(
     PendingReceiverOrRemote pending_receiver_or_remote,
     scoped_refptr<base::SequencedTaskRunner> sequence,
-    base::WeakPtr<LacrosChromeServiceNeverBlockingState> weak_sequenced_state) {
+    base::WeakPtr<LacrosChromeServiceImplNeverBlockingState>
+        weak_sequenced_state) {
   sequence->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindCrosapiFeatureReceiver<
-              PendingReceiverOrRemote, bind_func>,
+          &LacrosChromeServiceImplNeverBlockingState::
+              BindCrosapiFeatureReceiver<PendingReceiverOrRemote, bind_func>,
           weak_sequenced_state, std::move(pending_receiver_or_remote)));
 }
 
@@ -254,7 +93,8 @@ template <typename CrosapiFeature,
 void InitializeAndBindRemote(
     mojo::Remote<CrosapiFeature>* remote,
     scoped_refptr<base::SequencedTaskRunner> sequence,
-    base::WeakPtr<LacrosChromeServiceNeverBlockingState> weak_sequenced_state) {
+    base::WeakPtr<LacrosChromeServiceImplNeverBlockingState>
+        weak_sequenced_state) {
   mojo::PendingReceiver<CrosapiFeature> pending_receiver =
       remote->BindNewPipeAndPassReceiver();
   BindPendingReceiverOrRemote<mojo::PendingReceiver<CrosapiFeature>, bind_func>(
@@ -329,9 +169,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-  sequenced_state_ = std::unique_ptr<LacrosChromeServiceNeverBlockingState,
+  sequenced_state_ = std::unique_ptr<LacrosChromeServiceImplNeverBlockingState,
                                      base::OnTaskRunnerDeleter>(
-      new LacrosChromeServiceNeverBlockingState(
+      new LacrosChromeServiceImplNeverBlockingState(
           affine_sequence, weak_factory_.GetWeakPtr(),
           init_params_.is_null() ? &init_params_ : nullptr),
       base::OnTaskRunnerDeleter(never_blocking_sequence_));
@@ -339,7 +179,7 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
 
   never_blocking_sequence_->PostTask(
       FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceNeverBlockingState::BindCrosapi,
+      base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::BindCrosapi,
                      weak_sequenced_state_));
 
   DCHECK(!g_instance);
@@ -359,10 +199,9 @@ void LacrosChromeServiceImpl::BindReceiver(
     // TODO(crbug.com/1180712): Remove this after all base ash-chrome is new
     // enough supporting new invitation flow.
     never_blocking_sequence_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LacrosChromeServiceNeverBlockingState::BindBrowserServiceReceiver,
-            weak_sequenced_state_, std::move(receiver)));
+        FROM_HERE, base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::
+                                      BindBrowserServiceReceiver,
+                                  weak_sequenced_state_, std::move(receiver)));
 
     // If ash-chrome is too old, BrowserInitParams may not be passed from
     // a memory backed file directly. Then, try to wait for InitDeprecated()
@@ -386,10 +225,11 @@ void LacrosChromeServiceImpl::BindReceiver(
     auto invitation = mojo::IncomingInvitation::Accept(std::move(endpoint));
     never_blocking_sequence_->PostTask(
         FROM_HERE,
-        base::BindOnce(&LacrosChromeServiceNeverBlockingState::FusePipeCrosapi,
-                       weak_sequenced_state_,
-                       mojo::PendingRemote<crosapi::mojom::Crosapi>(
-                           invitation.ExtractMessagePipe(0), /*version=*/0)));
+        base::BindOnce(
+            &LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi,
+            weak_sequenced_state_,
+            mojo::PendingRemote<crosapi::mojom::Crosapi>(
+                invitation.ExtractMessagePipe(0), /*version=*/0)));
 
     // In this case, ash-chrome should be new enough, so init params should be
     // passed from the startup outband file descriptor.
@@ -471,9 +311,9 @@ void LacrosChromeServiceImpl::BindReceiver(
   if (IsOnBrowserStartupAvailable()) {
     never_blocking_sequence_->PostTask(
         FROM_HERE,
-        base::BindOnce(&LacrosChromeServiceNeverBlockingState::OnBrowserStartup,
-                       weak_sequenced_state_,
-                       ToMojo(delegate_->GetChromeVersion())));
+        base::BindOnce(
+            &LacrosChromeServiceImplNeverBlockingState::OnBrowserStartup,
+            weak_sequenced_state_, ToMojo(delegate_->GetChromeVersion())));
   }
 
   if (IsPrefsAvailable()) {
