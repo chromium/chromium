@@ -63,8 +63,10 @@ class ANIMATION_EXPORT Tween {
     // ACCEL_100_DECEL_100 = (1, 0, 0, 1): https://cubic-bezier.com/#1,0,0,1
     // ACCEL_LIN_DECEL_LIN = (0, 0, 1, 1): https://cubic-bezier.com/#0,0,1,1
     // ACCEL_40_DECEL_80 = (0.4, 0, 0.2, 1): https://cubic-bezier.com/#.4,0,.2,1
-    ACCEL_LIN_DECEL_60,  // Pulling a small to medium element into a place.
-    ACCEL_20_DECEL_60,   // Moving a small, low emphasis or responsive elements.
+    ACCEL_LIN_DECEL_60,   // Pulling a small to medium element into a place.
+    ACCEL_LIN_DECEL_100,  // Pulling a small to medium element into a place that
+                          // has very fast deceleration.
+    ACCEL_20_DECEL_60,  // Moving a small, low emphasis or responsive elements.
   };
 
   // Returns the value based on the tween type. |state| is from 0-1.

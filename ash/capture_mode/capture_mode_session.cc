@@ -36,6 +36,7 @@
 #include "ui/base/cursor/cursor_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -125,7 +126,7 @@ constexpr int kCaptureRegionMinimumPaddingDp = 16;
 // Animation parameters needed when countdown starts.
 // The animation duration that the label fades out and scales down before count
 // down starts.
-constexpr base::TimeDelta kCaptureLabelAnimationDuration =
+constexpr base::TimeDelta kCaptureLabelCountdownStartDuration =
     base::TimeDelta::FromMilliseconds(267);
 // The animation duration that the capture bar fades out before count down
 // starts.
@@ -138,6 +139,17 @@ constexpr base::TimeDelta kCaptureShieldFadeOutDuration =
 // If there is no text message was showing when count down starts, the label
 // widget will shrink down from 120% -> 100% and fade in.
 constexpr float kLabelScaleUpOnCountdown = 1.2;
+
+// The animation duration that the label fades out and scales up when going from
+// the selection phase to the fine tune phase.
+constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDuration =
+    base::TimeDelta::FromMilliseconds(167);
+// The delay before the label fades out and scales up.
+constexpr base::TimeDelta kCaptureLabelRegionPhaseChangeDelay =
+    base::TimeDelta::FromMilliseconds(67);
+// When going from the select region phase to the fine tune phase, the label
+// widget will scale up from 80% -> 100%.
+constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 
 // Animation parameters for capture bar overlapping the user capture region.
 // The default animation duration for opacity changes to the capture bar.
@@ -545,7 +557,7 @@ void CaptureModeSession::Initialize() {
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
     focus_cycler_->AdvanceFocus(/*reverse=*/false);
 
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   RefreshStackingOrder(parent);
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
@@ -628,7 +640,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_mode_bar_view_->OnCaptureSourceChanged(new_source);
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
@@ -641,7 +653,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
@@ -696,7 +708,7 @@ void CaptureModeSession::StartCountDown(
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   label_view->StartCountDown(std::move(countdown_finished_callback));
-  UpdateCaptureLabelWidgetBounds(/*animate=*/true);
+  UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kCountdownStart);
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
@@ -816,13 +828,13 @@ void CaptureModeSession::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void CaptureModeSession::OnTabletModeStarted() {
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 }
 
 void CaptureModeSession::OnTabletModeEnded() {
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 }
@@ -863,7 +875,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   capture_mode_bar_widget_->SetBounds(
       CaptureModeBarView::GetBounds(current_root_));
   if (capture_label_widget_)
-    UpdateCaptureLabelWidget();
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   layer()->SchedulePaint(layer()->bounds());
 }
 
@@ -1315,7 +1327,7 @@ void CaptureModeSession::OnLocatedEventReleased(
 
   // After first release event, we advance to the next phase.
   is_selecting_region_ = false;
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kRegionPhaseChange);
 }
 
 void CaptureModeSession::UpdateCaptureRegion(
@@ -1336,7 +1348,7 @@ void CaptureModeSession::UpdateCaptureRegion(
 
   controller_->SetUserCaptureRegion(new_capture_region, by_user);
   UpdateDimensionsLabelWidget(is_resizing);
-  UpdateCaptureLabelWidget();
+  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -1466,7 +1478,8 @@ std::vector<gfx::Point> CaptureModeSession::GetAnchorPointsForPosition(
   return anchor_points;
 }
 
-void CaptureModeSession::UpdateCaptureLabelWidget() {
+void CaptureModeSession::UpdateCaptureLabelWidget(
+    CaptureLabelAnimation animation_type) {
   if (!capture_label_widget_) {
     capture_label_widget_ = std::make_unique<views::Widget>();
     auto* parent = GetParentContainer(current_root_);
@@ -1480,12 +1493,13 @@ void CaptureModeSession::UpdateCaptureLabelWidget() {
   CaptureLabelView* label_view =
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
   label_view->UpdateIconAndText();
-  UpdateCaptureLabelWidgetBounds(/*animate=*/false);
+  UpdateCaptureLabelWidgetBounds(animation_type);
 
   focus_cycler_->OnCaptureLabelWidgetUpdated();
 }
 
-void CaptureModeSession::UpdateCaptureLabelWidgetBounds(bool animate) {
+void CaptureModeSession::UpdateCaptureLabelWidgetBounds(
+    CaptureLabelAnimation animation_type) {
   DCHECK(capture_label_widget_);
 
   const gfx::Rect bounds = CalculateCaptureLabelWidgetBounds();
@@ -1494,20 +1508,45 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds(bool animate) {
   if (old_bounds == bounds)
     return;
 
-  if (!animate) {
+  if (animation_type == CaptureLabelAnimation::kNone) {
     capture_label_widget_->SetBounds(bounds);
     return;
   }
 
   ui::Layer* layer = capture_label_widget_->GetLayer();
+  ui::LayerAnimator* animator = layer->GetAnimator();
+
+  if (animation_type == CaptureLabelAnimation::kRegionPhaseChange) {
+    capture_label_widget_->SetBounds(bounds);
+    const gfx::Point center_point = bounds.CenterPoint();
+    layer->SetTransform(
+        gfx::GetScaleTransform(gfx::Point(center_point.x() - bounds.x(),
+                                          center_point.y() - bounds.y()),
+                               kLabelScaleDownOnPhaseChange));
+    layer->SetOpacity(0.f);
+
+    ui::ScopedLayerAnimationSettings settings(animator);
+    settings.SetTransitionDuration(kCaptureLabelRegionPhaseChangeDuration);
+    settings.SetTweenType(gfx::Tween::ACCEL_LIN_DECEL_100);
+    settings.SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
+    animator->SchedulePauseForProperties(
+        kCaptureLabelRegionPhaseChangeDelay,
+        ui::LayerAnimationElement::TRANSFORM |
+            ui::LayerAnimationElement::OPACITY);
+    layer->SetTransform(gfx::Transform());
+    layer->SetOpacity(1.f);
+    return;
+  }
+
+  DCHECK_EQ(CaptureLabelAnimation::kCountdownStart, animation_type);
   if (!old_bounds.IsEmpty()) {
     // This happens if there is a label or a label button showing when count
     // down starts. In this case we'll do a bounds change animation.
-    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
+    ui::ScopedLayerAnimationSettings settings(animator);
     settings.SetTweenType(gfx::Tween::LINEAR_OUT_SLOW_IN);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(kCaptureLabelAnimationDuration);
+    settings.SetTransitionDuration(kCaptureLabelCountdownStartDuration);
     capture_label_widget_->SetBounds(bounds);
   } else {
     // This happens when no text message was showing when count down starts, in
@@ -1521,8 +1560,8 @@ void CaptureModeSession::UpdateCaptureLabelWidgetBounds(bool animate) {
     layer->SetOpacity(0.f);
 
     // Fade in.
-    ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(kCaptureLabelAnimationDuration);
+    ui::ScopedLayerAnimationSettings settings(animator);
+    settings.SetTransitionDuration(kCaptureLabelCountdownStartDuration);
     settings.SetTweenType(gfx::Tween::LINEAR);
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
@@ -1708,7 +1747,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   // bounds, moving it onto the correct display, but will early return if the
   // region is already empty.
   if (controller_->user_capture_region().IsEmpty())
-    UpdateCaptureLabelWidgetBounds(/*animate=*/false);
+    UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation::kNone);
 
   // Start with a new region when we switch displays.
   is_selecting_region_ = true;

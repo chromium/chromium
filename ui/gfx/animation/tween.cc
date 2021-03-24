@@ -84,6 +84,9 @@ double Tween::CalculateValue(Tween::Type type, double state) {
     case ACCEL_LIN_DECEL_60:
       return gfx::CubicBezier(0, 0, 0.4, 1).Solve(state);
 
+    case ACCEL_LIN_DECEL_100:
+      return gfx::CubicBezier(0, 0, 0, 1).Solve(state);
+
     case ACCEL_20_DECEL_60:
       return gfx::CubicBezier(0.2, 0, 0.4, 1).Solve(state);
   }

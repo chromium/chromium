@@ -131,6 +131,17 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   class CursorSetter;
   class ScopedA11yOverrideWindowSetter;
 
+  enum class CaptureLabelAnimation {
+    // No animation on the capture label.
+    kNone,
+    // The animation on the capture label when the user has finished selecting a
+    // region and is moving to the fine tune phase.
+    kRegionPhaseChange,
+    // The animation on the capture label when the user has clicked record and
+    // the capture label animates into a countdown label.
+    kCountdownStart,
+  };
+
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
 
@@ -195,11 +206,14 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // anchor points if |position| is an edge.
   std::vector<gfx::Point> GetAnchorPointsForPosition(FineTunePosition position);
 
-  // Updates the capture label widget's icon/text and bounds.
-  void UpdateCaptureLabelWidget();
-  // Updates the capture label widget's bounds. If |animate| is true, do bounds
-  // animation.
-  void UpdateCaptureLabelWidgetBounds(bool animate);
+  // Updates the capture label widget's icon/text and bounds. The capture label
+  // widget may be animated depending on |animation_type|.
+  void UpdateCaptureLabelWidget(CaptureLabelAnimation animation_type);
+
+  // Updates the capture label widget's bounds. The capture label
+  // widget may be animated depending on |animation_type|.
+  void UpdateCaptureLabelWidgetBounds(CaptureLabelAnimation animation_type);
+
   // Calculates the targeted capture label widget bounds in screen coordinates.
   gfx::Rect CalculateCaptureLabelWidgetBounds();
 
