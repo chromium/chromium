@@ -840,6 +840,7 @@
               "fast/events/wheel",
               "fast/scrolling/document-level-wheel-event-listener-passive-by-default.html",
               "http/tests/devtools/layers/layer-scroll-rects-get.js",
+              "http/tests/devtools/layers/wheel-hit-rects-update-svg.js",
               "pointer-lock/wheel-event-cancelable.html",
               "pointer-lock/wheel-event-target.html",
               "scrollbars/scrollevent-iframe-no-scrolling-wheel.html",
