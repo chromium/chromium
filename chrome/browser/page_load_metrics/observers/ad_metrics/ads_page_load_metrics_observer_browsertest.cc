@@ -224,15 +224,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       static_cast<int>(ad_metrics::OriginStatus::kSame));
 }
 
-// Test that an ad with a different origin as the main page is cross origin.
-// Disable due to flaky, crbug.com/1189868
-#if defined(OS_CHROMEOS)
-#define MAYBE_OriginStatusMetricCross DISABLED_OriginStatusMetricCross
-#else
-#define MAYBE_OriginStatusMetricCross OriginStatusMetricCross
-#endif  // defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_OriginStatusMetricCross) {
+                       OriginStatusMetricCross) {
   // Note: Cannot navigate cross-origin without dynamically generating the URL.
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
