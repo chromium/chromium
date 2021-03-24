@@ -491,6 +491,10 @@ crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-for
 
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
+# Sometimes still blurred on the edges.
+crbug.com/1169154 [ Linux ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
+crbug.com/1169154 [ Win ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
+
 # ====== Paint team owned tests to here ======
 
 crbug.com/1142958 external/wpt/layout-instability/absolute-child-shift-with-parent-will-change.html [ Failure ]
@@ -2689,8 +2693,6 @@ crbug.com/626703 external/wpt/css/css-images/object-fit-none-svg-003i.html [ Fai
 crbug.com/626703 external/wpt/css/css-images/object-fit-fill-svg-002e.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
-crbug.com/626703 [ Win ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html [ Failure ]
 crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
