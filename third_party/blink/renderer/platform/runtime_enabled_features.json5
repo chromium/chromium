@@ -1016,7 +1016,7 @@
     },
     {
       name: "GravitySensor",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "GroupEffect",
