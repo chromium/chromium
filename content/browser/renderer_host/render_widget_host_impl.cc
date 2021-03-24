@@ -1996,8 +1996,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // not to change it during resizes.  This means that the RWHV::GetScreenInfo
   // returned might be stale wrt GetAllDisplays() below.  Fix this.
   // For now, just return the legacy screen info for mac.
-  // TODO(enne): http://crbug.com/1189526, disabled due to Windows crashes.
-#if defined(OS_MAC) || defined(OS_WIN)
+#if defined(OS_MAC)
   return blink::ScreenInfos(current_screen_info);
 #else
 
@@ -2014,7 +2013,7 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // screen info for any child widgets to avoid races between visual
   // property propagation of legacy screen info vs GetAllDisplays.
   // In the future, child frames should use screen_infos from the connector.
-  if (!view_->IsRenderWidgetHostViewChildFrame()) {
+  if (view_->IsRenderWidgetHostViewChildFrame()) {
     return blink::ScreenInfos(current_screen_info);
   }
 
