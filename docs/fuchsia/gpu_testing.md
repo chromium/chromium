@@ -33,6 +33,9 @@ $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --fuchsia-out-dir=/path/to/fuchsia/outdir
 ```
 
+Note that `fx serve` must be running for communication with the device to
+succeed.
+
 ## Run on a device the host is connected to remotely via ssh
 
 Note the `--ssh-config` flag, which should point to the config file used to set
