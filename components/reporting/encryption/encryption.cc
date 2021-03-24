@@ -111,13 +111,18 @@ void Encryptor::Handle::ProduceEncryptedRecord(
       reinterpret_cast<const char*>(out_public_value), X25519_PUBLIC_VALUE_LEN);
 
   // Encrypt the whole record.
-  if (!aead.Seal(record_, nonce, std::string(),
-                 encrypted_record.mutable_encrypted_wrapped_record()) ||
+  if (!aead.Seal(
+          /*plaintext=*/record_, nonce,
+          /*additional_data=*/std::string(),
+          /*ciphertext=*/encrypted_record.mutable_encrypted_wrapped_record()) ||
       encrypted_record.encrypted_wrapped_record().empty()) {
     std::move(cb).Run(Status(error::INTERNAL, "Failed to encrypt the record"));
     return;
   }
   record_.clear();  // Free unused memory.
+
+  // Attach nonce at the head of the encrypted data.
+  encrypted_record.mutable_encrypted_wrapped_record()->insert(0, nonce);
 
   // Return EncryptedRecord.
   std::move(cb).Run(encrypted_record);

@@ -65,14 +65,13 @@ void Decryptor::Handle::CloseRecord(
   // Use the symmetric key for data decryption.
   aead.Init(base::make_span(out_symmetric_key.get(), aead.KeyLength()));
 
-  // Set nonce to 0s, since a symmetric key is only used once.
-  // Note: if we ever start reusing the same symmetric key, we will need
-  // to generate new nonce for every record and transfer it to the peer.
-  std::string nonce(aead.NonceLength(), 0);
-
   // Decrypt collected record.
   std::string decrypted;
-  if (!aead.Open(record_, nonce, std::string(), &decrypted)) {
+  if (!aead.Open(
+          /*ciphertext=*/record_.substr(aead.NonceLength()),
+          /*nonce=*/record_.substr(0, aead.NonceLength()),
+          /*additional_data=*/std::string(),
+          /*plaintext=*/&decrypted)) {
     std::move(cb).Run(Status(error::INTERNAL, "Failed to decrypt"));
     return;
   }
