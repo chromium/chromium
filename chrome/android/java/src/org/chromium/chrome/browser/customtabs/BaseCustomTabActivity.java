@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -63,6 +64,9 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
  */
 public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTabActivityComponent> {
     protected static Integer sOverrideCoreCountForTesting;
+
+    // Fallback study name used for experiments ids.
+    private static final String GSA_FALLBACK_STUDY_NAME = "GsaExperiments";
 
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     protected CustomTabDelegateFactory mDelegateFactory;
@@ -514,5 +518,18 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
      */
     public boolean isInTwaMode() {
         return mTwaCoordinator == null ? false : mTwaCoordinator.shouldUseAppModeUi();
+    }
+
+    @Override
+    public void maybePreconnect() {
+        // The ids need to be set early on, this way prewarming will pick them up.
+        int[] experimentIds = mIntentDataProvider.getGsaExperimentIds();
+        if (experimentIds != null) {
+            // When ids are set through the intent, we don't want them to override the existing ids.
+            boolean override = false;
+            UmaSessionStats.registerExternalExperiment(
+                    GSA_FALLBACK_STUDY_NAME, experimentIds, override);
+        }
+        super.maybePreconnect();
     }
 }

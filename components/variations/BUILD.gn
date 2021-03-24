@@ -104,7 +104,10 @@ static_library("variations") {
     ]
   }
 
-  public_deps = [ ":variations_features" ]
+  public_deps = [
+    ":variations_features",
+    "proto",
+  ]
 
   deps = [
     ":buildflags",

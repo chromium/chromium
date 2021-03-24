@@ -1026,6 +1026,20 @@ junit_binary("chrome_junit_tests") {
   package_name = chrome_public_manifest_package
 }
 
+generate_jni("chrome_test_util_jni_headers") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java" ]
+}
+
+source_set("chrome_test_util_jni") {
+  testonly = true
+  sources = [ "javatests/src/custom_tabs_test_utils.cc" ]
+  deps = [
+    ":chrome_test_util_jni_headers",
+    "//components/variations",
+  ]
+}
+
 # Files used for both chrome tests and VR/AR and autofill_assistant tests
 android_library("chrome_test_util_java") {
   testonly = true
@@ -1043,6 +1057,7 @@ android_library("chrome_test_util_java") {
     ":browser_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//cc:cc_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
@@ -1066,6 +1081,8 @@ android_library("chrome_test_util_java") {
     "//third_party/junit:junit",
     "//ui/android:ui_no_recycler_view_java",
   ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("chrome_test_java") {
@@ -1080,6 +1097,7 @@ android_library("chrome_test_java") {
     ":browser_java_test_support",
     ":chrome_app_java_resources",
     ":chrome_test_util_java",
+    ":chrome_test_util_jni",
     ":partner_location_descriptor_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -1707,6 +1725,7 @@ chrome_common_shared_library("libchromefortest") {
   deps = [
     ":browser_test_support",
     ":chrome_jni_for_test_registration($default_toolchain)",
+    ":chrome_test_util_jni",
     "//base/test:test_support",
     "//chrome:chrome_android_core",
     "//chrome/browser/android/metrics:ukm_utils_for_test",
@@ -2049,6 +2068,7 @@ java_group("chrome_public_base_module_java_for_test") {
   deps = [
     ":browser_java_test_support",
     ":chrome_public_base_module_java",
+    ":chrome_test_util_java",
     "//chrome/android/features/autofill_assistant:autofill_assistant_java_test_support",
     "//chrome/browser/android/metrics:ukm_java_test_support",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",

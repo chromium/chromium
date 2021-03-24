@@ -197,7 +197,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             + "To make locally-built Chrome a first-party app, sign with release-test "
             + "signing keys and run on userdebug devices. See use_signing_keys GN arg.";
 
-    private static final String EXPERIMENT_IDS =
+    // Extra whose value is an array of ints that is supplied to
+    // SyntheticTrialRegistry::RegisterExternalExperiments().
+    public static final String EXPERIMENT_IDS =
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
     private final Intent mIntent;
