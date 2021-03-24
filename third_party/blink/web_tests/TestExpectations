@@ -5739,5 +5739,4 @@ crbug.com/1190905 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-
 crbug.com/1190905 [ Win ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Failure ]
 
 # Sherif 2021-03-23
-crbug.com/1191548 [ Linux ] virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/background-color-transition-with-initially-transparent.html [ Pass Failure ]
 crbug.com/1182689 [ Mac ] external/wpt/editing/run/delete.html?6001-last [ Failure ]
