@@ -73,9 +73,9 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void StopSpeechRecognition();
 
   ProjectorClient* client_ = nullptr;
+  std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
-  std::unique_ptr<ProjectorSessionImpl> projector_session_;
 
   // Whether the caption bubble ui is being shown or not.
   bool is_caption_on_ = false;

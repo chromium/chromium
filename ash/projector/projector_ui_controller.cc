@@ -36,6 +36,7 @@ void ShowToast(const std::string& id,
 void AddExcludedWindowToFastInkController(aura::Window* window) {
   DCHECK(window);
   Shell::Get()->laser_pointer_controller()->AddExcludedWindow(window);
+  MarkerController::Get()->AddExcludedWindow(window);
 }
 
 void EnableLaserPointer(bool enabled) {
@@ -54,7 +55,10 @@ void EnableMarker(bool enabled) {
 
 ProjectorUiController::ProjectorUiController(
     ProjectorControllerImpl* projector_controller)
-    : projector_controller_(projector_controller) {}
+    : projector_controller_(projector_controller) {
+  projector_session_observation_.Observe(
+      projector_controller->projector_session());
+}
 
 ProjectorUiController::~ProjectorUiController() = default;
 
@@ -106,6 +110,11 @@ void ProjectorUiController::ResetTools() {
   EnableLaserPointer(false);
   // Reset marker.
   EnableMarker(false);
+}
+
+void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
+  if (!active)
+    MarkerController::Get()->Clear();
 }
 
 bool ProjectorUiController::IsToolbarVisible() const {

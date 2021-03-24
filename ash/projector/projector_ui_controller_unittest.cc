@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/marker/marker_controller.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,12 +29,13 @@ class ProjectorUiControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = std::make_unique<ProjectorUiController>(
-        /*projector_controller_impl=*/nullptr);
+    controller_ =
+        static_cast<ProjectorControllerImpl*>(ProjectorController::Get())
+            ->ui_controller();
   }
 
  protected:
-  std::unique_ptr<ProjectorUiController> controller_;
+  ProjectorUiController* controller_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

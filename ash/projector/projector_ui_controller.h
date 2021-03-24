@@ -10,6 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/projector/model/projector_ui_model.h"
+#include "ash/public/cpp/projector/projector_session.h"
+#include "base/scoped_observation.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -17,12 +19,12 @@ namespace ash {
 class ProjectorControllerImpl;
 
 // The controller in charge of UI.
-class ASH_EXPORT ProjectorUiController {
+class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  public:
   explicit ProjectorUiController(ProjectorControllerImpl* projector_controller);
   ProjectorUiController(const ProjectorUiController&) = delete;
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
-  virtual ~ProjectorUiController();
+  ~ProjectorUiController() override;
 
   // Show Projector toolbar. Virtual for testing.
   virtual void ShowToolbar();
@@ -46,10 +48,16 @@ class ASH_EXPORT ProjectorUiController {
   // widgets, etc.
   void ResetTools();
 
+  // ProjectorSessionObserver:
+  void OnProjectorSessionActiveStateChanged(bool active) override;
+
   ProjectorUiModel model_;
   views::UniqueWidgetPtr projector_bar_widget_;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
+
+  base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
+      projector_session_observation_{this};
 };
 
 }  // namespace ash

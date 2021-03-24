@@ -70,7 +70,7 @@ class ProjectorControllerTest : public AshTestBase {
     controller_ = std::make_unique<ProjectorControllerImpl>();
 
     auto mock_ui_controller =
-        std::make_unique<MockProjectorUiController>(nullptr);
+        std::make_unique<MockProjectorUiController>(controller_.get());
     mock_ui_controller_ = mock_ui_controller.get();
     controller_->SetProjectorUiControllerForTest(std::move(mock_ui_controller));
 

@@ -10,8 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
+
+class HighlighterView;
 
 // A checked observer which receives notification of changes to the marker
 // activation state.
@@ -31,20 +34,41 @@ class ASH_EXPORT MarkerController : public fast_ink::FastInkPointerController {
 
   static MarkerController* Get();
 
-  // Adds/removes the specified |observer|.
+  // Adds/removes the specified `observer`.
   void AddObserver(MarkerObserver* observer);
   void RemoveObserver(MarkerObserver* observer);
 
+  // Clears marker pointer.
+  void Clear();
+
   // fast_ink::FastInkPointerController:
   void SetEnabled(bool enabled) override;
+
+ private:
+  friend class MarkerControllerTestApi;
+
+  // Destroys `marker_view_widget_`, if it exists.
+  void DestroyMarkerView();
+  // Returns the marker view in use, or nullptr.
+  // TODO(llin): Consider renaming HighlighterView to DrawingView.
+  HighlighterView* GetMarkerView();
+  // Notifies observers when state changed.
+  void NotifyStateChanged(bool enabled);
+
+  // fast_ink::FastInkPointerController:
   views::View* GetPointerView() const override;
   void CreatePointerView(base::TimeDelta presentation_delay,
                          aura::Window* root_window) override;
   void UpdatePointerView(ui::TouchEvent* event) override;
+  void UpdatePointerView(ui::MouseEvent* event) override;
   void DestroyPointerView() override;
+  bool CanStartNewGesture(ui::LocatedEvent* event) override;
+  bool ShouldProcessEvent(ui::LocatedEvent* event) override;
 
- private:
-  void NotifyStateChanged(bool enabled);
+  // `marker_view_widget_` will only hold an instance when the Marker is enabled
+  // and activated (pressed or dragged) and until cleared.
+  views::UniqueWidgetPtr marker_view_widget_;
+  HighlighterView* marker_view_ = nullptr;
 
   base::ObserverList<MarkerObserver> observers_;
 

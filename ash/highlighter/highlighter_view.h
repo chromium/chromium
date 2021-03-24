@@ -54,6 +54,7 @@ class HighlighterView : public fast_ink::FastInkView {
 
  private:
   friend class HighlighterControllerTestApi;
+  friend class MarkerControllerTestApi;
 
   HighlighterView(const base::TimeDelta presentation_delay);
 
