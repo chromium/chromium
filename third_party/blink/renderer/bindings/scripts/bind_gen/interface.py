@@ -1575,16 +1575,24 @@ def make_v8_set_return_value(cg_context):
     # pass the creation context to ToV8.
     if (cg_context.member_like.extended_attributes.value_of("CheckSecurity") ==
             "ReturnValue"):
-        return T("""\
-// [CheckSecurity=ReturnValue]
-bindings::V8SetReturnValue(
-    ${info},
-    ToV8(${return_value},
-         ToV8(${blink_receiver}->contentWindow(),
-              v8::Local<v8::Object>(),
-              ${isolate}).As<v8::Object>(),
-         ${isolate}));\
-""")
+        condition = F(
+            "!ToV8Traits<{}>::ToV8(ToScriptState(To<LocalFrame>("
+            "${blink_receiver}->contentWindow()->GetFrame()), "
+            "${script_state}->World()), ${return_value})"
+            ".ToLocal(&v8_value)", native_value_tag(return_type))
+        node = CxxBlockNode([
+            T("// [CheckSecurity=ReturnValue]"),
+            T("DCHECK(IsA<LocalFrame>("
+              "${blink_receiver}->contentWindow()->GetFrame()));"),
+            T("v8::Local<v8::Value> v8_value;"),
+            CxxUnlikelyIfNode(cond=condition, body=T("return;")),
+            T("bindings::V8SetReturnValue(${info}, v8_value);"),
+        ])
+        node.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/core/frame/local_frame.h",
+            ]))
+        return node
 
     return_type = return_type.unwrap(typedef=True)
     return_type_body = return_type.unwrap()
