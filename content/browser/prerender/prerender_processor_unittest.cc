@@ -10,7 +10,9 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -39,16 +41,11 @@ class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void DestroyPrerenderProcessors() {
-    // Resetting the web contents destroys render frame hosts, which in turn
-    // destroy `RenderFrameHostImpl::prerender_processor_receivers_`.
-    web_contents_.reset();
-  }
-
   RenderFrameHostImpl* GetRenderFrameHost() {
-    DCHECK(web_contents_);
     return web_contents_->GetMainFrame();
   }
+
+  TestWebContents* GetWebContents() { return web_contents_.get(); }
 
   GURL GetSameOriginUrl(const std::string& path) {
     return GURL("https://example.com" + path);
@@ -56,6 +53,10 @@ class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
 
   GURL GetCrossOriginUrl(const std::string& path) {
     return GURL("https://other.example.com" + path);
+  }
+
+  GURL GetCrossSiteUrl(const std::string& path) {
+    return GURL("https://example.test" + path);
   }
 
   PrerenderHostRegistry* GetPrerenderHostRegistry() const {
@@ -142,8 +143,16 @@ TEST_F(PrerenderProcessorTest, CancelOnDestruction) {
   remote.FlushForTesting();
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 
-  // The destructor of PrerenderProcessor should abandon the prerender host.
-  DestroyPrerenderProcessors();
+  // Navigate the primary page to a cross-site URL that induces destruction of
+  // the render frame host.
+  RenderFrameDeletedObserver observer(render_frame_host);
+  const GURL kCrossSiteUrl = GetCrossSiteUrl("/cross-site");
+  NavigationSimulator::NavigateAndCommitFromBrowser(GetWebContents(),
+                                                    kCrossSiteUrl);
+  observer.WaitUntilDeleted();
+
+  // The destruction of the render frame host should destroy PrerenderProcessor
+  // and cancel prerendering.
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
