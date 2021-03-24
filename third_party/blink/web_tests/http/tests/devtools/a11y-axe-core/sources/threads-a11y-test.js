@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Testing accessibility in the threads sidebar pane.');
 
-  await TestRunner.loadModule('axe_core_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);

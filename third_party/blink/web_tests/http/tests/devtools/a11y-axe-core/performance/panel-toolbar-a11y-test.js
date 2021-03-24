@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Testing a11y in performance panel - panel toolbar.');
 
-  await TestRunner.loadModule('axe_core_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 

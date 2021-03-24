@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests showing several node ranges in the Summary view of detailed heap snapshot.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 50;

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that extension does not get disconnected after a page with OOPIFs is reloaded\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('http://localhost:8000/devtools/extensions/resources/page-with-oopif.html');
 
   await ExtensionsTestRunner.runExtensionTests([

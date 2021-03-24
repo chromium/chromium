@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests how execution context and target are selected.\n`);
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.loadLegacyModule('main');
   await TestRunner.showPanel('sources');
 

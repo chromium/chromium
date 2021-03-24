@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that scripts panel UI elements work as intended.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.showPanel('sources');
 
   function dumpNavigator(sourcesNavigatorView) {
