@@ -133,9 +133,19 @@ class NET_EXPORT HttpResponseHeaders
                           int64_t resource_size,
                           bool replace_status_line);
 
-  // Fetch the "normalized" value of a single header, where all values for the
-  // header name are separated by commas.  See the GetNormalizedHeaders for
-  // format details.  Returns false if this header wasn't found.
+  // Fetches the "normalized" value of a single header, where all values for the
+  // header name are separated by commas. This will be the sequence of strings
+  // that would be returned from repeated calls to EnumerateHeader, joined by
+  // the string ", ".
+  //
+  // Returns false if this header wasn't found.
+  //
+  // Example:
+  //   Foo: a, b,c
+  //   Foo: d
+  //
+  //   string value;
+  //   GetNormalizedHeader("Foo", &value);  // Now, |value| is "a, b, c, d".
   //
   // NOTE: Do not make any assumptions about the encoding of this output
   // string.  It may be non-ASCII, and the encoding used by the server is not
@@ -162,6 +172,16 @@ class NET_EXPORT HttpResponseHeaders
   // 'size_t' variable to 0 and pass it by address to EnumerateHeaderLines.
   // Call EnumerateHeaderLines repeatedly until it returns false.  The
   // out-params 'name' and 'value' are set upon success.
+  //
+  // WARNING: In effect, repeatedly calling EnumerateHeaderLines should return
+  // the same collection of (name, value) pairs that you'd obtain from passing
+  // each header name into EnumerateHeader and repeatedly calling
+  // EnumerateHeader. This means the output will *not* necessarily correspond to
+  // the verbatim lines of the headers. For instance, given
+  //   Foo: a, b
+  //   Foo: c
+  // EnumerateHeaderLines will output ("Foo", "a"), ("Foo", "b"), and
+  // ("Foo", "c").
   bool EnumerateHeaderLines(size_t* iter,
                             std::string* name,
                             std::string* value) const;
