@@ -362,7 +362,11 @@ public class FeedSurfaceMediator
         }
     }
 
-    /** Update whether the section header should be expanded and its text contents. */
+    /**
+     * Update whether the section header should be expanded.
+     *
+     * Called when a settings change or update to this/another NTP caused the feed to show/hide.
+     */
     private void updateSectionHeader() {
         boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
         mSectionHeaderModel.set(
@@ -383,6 +387,9 @@ public class FeedSurfaceMediator
         }
         if (suggestionsVisible) mCoordinator.getStreamLifecycleManager().activate();
         mStreamContentChanged = true;
+
+        // Update Feed stream visibility.
+        mCoordinator.getStream().setStreamContentVisibility(suggestionsVisible);
     }
 
     /**
@@ -393,15 +400,13 @@ public class FeedSurfaceMediator
         boolean isExpanded =
                 !mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
 
-        // Update model.
-        mSectionHeaderModel.set(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, isExpanded);
-
         // Record in prefs and UMA.
+        // Model and stream visibility set in {@link #updateSectionHeader}
+        // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
-        mCoordinator.getStream().toggledArticlesListVisible(isExpanded);
-        mCoordinator.getStream().setStreamContentVisibility(isExpanded);
         FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_TOGGLED_FEED);
         SuggestionsMetrics.recordArticlesListVisible();
+        mCoordinator.getStream().toggledArticlesListVisible(isExpanded);
     }
 
     /** Returns the interest feed header text based on the selected default search engine */
