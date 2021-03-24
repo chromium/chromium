@@ -728,7 +728,7 @@ void ParkableStringImpl::PostBackgroundWritingTask() {
         this, metadata_->compressed_->data(), metadata_->compressed_->size(),
         Thread::Current()->GetTaskRunner());
     worker_pool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+        FROM_HERE, {base::MayBlock()},
         CrossThreadBindOnce(&ParkableStringImpl::WriteToDiskInBackground,
                             std::move(params)));
   }

@@ -26,7 +26,7 @@ class SequenceBoundTest : public testing::Test {
 
 TEST_F(SequenceBoundTest, CanInstantiate) {
   SequenceBound<Foo> sequence_bound(
-      base::CreateSingleThreadTaskRunner({base::ThreadPool()}));
+      base::ThreadPool::CreateSingleThreadTaskRunner({}));
 
   sequence_bound.AsyncCall(&Foo::Bar).WithArgs(5);
   sequence_bound.PostTaskWithThisObject(FROM_HERE,

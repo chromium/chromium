@@ -95,8 +95,6 @@ using LazyThreadPoolCOMSTATaskRunner =
 // |traits| are TaskTraits used when creating the SequencedTaskRunner.
 #define LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(traits)     \
   base::LazyThreadPoolSequencedTaskRunner::CreateInternal(traits);     \
-  /* ThreadPool() as a trait is deprecated and implicit here */        \
-  static_assert(!traits.use_thread_pool(), "");                        \
   ALLOW_UNUSED_TYPE constexpr base::TaskTraits                         \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr, \
                                             __LINE__) = traits
@@ -108,8 +106,6 @@ using LazyThreadPoolCOMSTATaskRunner =
                                                                thread_mode) \
   base::LazyThreadPoolSingleThreadTaskRunner::CreateInternal(traits,        \
                                                              thread_mode);  \
-  /* ThreadPool() as a trait is deprecated and implicit here */             \
-  static_assert(!traits.use_thread_pool(), "");                             \
   ALLOW_UNUSED_TYPE constexpr base::TaskTraits                              \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,      \
                                             __LINE__) = traits;             \
@@ -123,8 +119,6 @@ using LazyThreadPoolCOMSTATaskRunner =
 // SingleThreadTaskRunners.
 #define LAZY_COM_STA_TASK_RUNNER_INITIALIZER(traits, thread_mode)            \
   base::LazyThreadPoolCOMSTATaskRunner::CreateInternal(traits, thread_mode); \
-  /* ThreadPool() as a trait is deprecated and implicit here */              \
-  static_assert(!traits.use_thread_pool(), "");                              \
   ALLOW_UNUSED_TYPE constexpr base::TaskTraits                               \
       LAZY_TASK_RUNNER_CONCATENATE_INTERNAL(kVerifyTraitsAreConstexpr,       \
                                             __LINE__) = traits;              \

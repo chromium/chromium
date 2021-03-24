@@ -152,7 +152,7 @@ ScriptPromise NativeIOFile::getLength(ScriptState* script_state,
   // via WrapCrossThreadPersistent. Therefore, the FileState instance is
   // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoGetLength, WrapCrossThreadPersistent(this),
                           WrapCrossThreadPersistent(resolver),
                           CrossThreadUnretained(file_state_.get()),
@@ -239,7 +239,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
   // via WrapCrossThreadPersistent. Therefore, the FileState instance is
   // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoSetLength, WrapCrossThreadPersistent(this),
                           WrapCrossThreadPersistent(resolver),
                           CrossThreadUnretained(file_state_.get()),
@@ -288,7 +288,7 @@ ScriptPromise NativeIOFile::read(ScriptState* script_state,
   // WrapCrossThreadPersistent. Therefore, the buffer is guaranteed to remain
   // alive during the task's execution.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(
           &DoRead, WrapCrossThreadPersistent(this),
           WrapCrossThreadPersistent(resolver),
@@ -372,7 +372,7 @@ ScriptPromise NativeIOFile::write(ScriptState* script_state,
   // WrapCrossThreadPersistent. Therefore, the data is guaranteed to remain
   // alive during the task's execution.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(
           &DoWrite, WrapCrossThreadPersistent(this),
           WrapCrossThreadPersistent(resolver),
@@ -408,7 +408,7 @@ ScriptPromise NativeIOFile::flush(ScriptState* script_state,
   // via WrapCrossThreadPersistent. Therefore, the FileState instance is
   // guaranteed to remain alive during the task's execution.
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoFlush, WrapCrossThreadPersistent(this),
                           WrapCrossThreadPersistent(resolver),
                           CrossThreadUnretained(file_state_.get()),
@@ -440,7 +440,7 @@ void NativeIOFile::DispatchQueuedClose() {
   queued_close_resolver_ = nullptr;
 
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce(&DoClose, WrapCrossThreadPersistent(this),
                           WrapCrossThreadPersistent(resolver),
                           CrossThreadUnretained(file_state_.get()),
@@ -876,7 +876,7 @@ void NativeIOFile::CloseBackingFile() {
   }
 
   worker_pool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::ThreadPool()},
+      FROM_HERE, {base::MayBlock()},
       CrossThreadBindOnce([](base::File file) { file.Close(); },
                           std::move(backing_file)));
 }

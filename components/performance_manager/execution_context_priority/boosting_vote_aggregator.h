@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/flat_map.h"
+#include "base/macros.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"

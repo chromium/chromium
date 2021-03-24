@@ -1631,7 +1631,7 @@ void ThreadState::ScheduleConcurrentMarking() {
       blink::features::kBlinkHeapConcurrentMarking));
 
   marker_handle_ = base::PostJob(
-      FROM_HERE, {base::ThreadPool(), base::TaskPriority::USER_VISIBLE},
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       ConvertToBaseRepeatingCallback(
           WTF::CrossThreadBindRepeating(&ThreadState::PerformConcurrentMark,
                                         WTF::CrossThreadUnretained(this))),

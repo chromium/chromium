@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
