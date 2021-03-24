@@ -95,7 +95,7 @@ Polymer({
     },
 
     /**
-     * True if lottie animation should be used instead of animated PNGs.
+     * True if lottie animation file should be used instead of an illustration.
      * @type {boolean}
      * @private
      */

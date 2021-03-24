@@ -270,43 +270,6 @@ void AddMarketingOptInResources(content::WebUIDataSource* source) {
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 
-void AddFingerprintResources(content::WebUIDataSource* source) {
-  int animation_id;
-  bool is_lottie_animation = false;
-  switch (quick_unlock::GetFingerprintLocation()) {
-    case quick_unlock::FingerprintLocation::TABLET_POWER_BUTTON:
-      is_lottie_animation = true;
-      animation_id = IDR_LOGIN_FINGER_PRINT_TABLET_ANIMATION;
-      break;
-    case quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
-      animation_id = IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_LEFT_ANIMATION;
-      break;
-    case quick_unlock::FingerprintLocation::KEYBOARD_BOTTOM_RIGHT:
-      animation_id =
-          IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION;
-      break;
-    case quick_unlock::FingerprintLocation::KEYBOARD_TOP_RIGHT:
-      animation_id = IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION;
-      break;
-  }
-  if (is_lottie_animation) {
-    source->AddResourcePath("fingerprint_scanner_animation.json", animation_id);
-
-    // To use lottie, the worker-src CSP needs to be updated for the web ui that
-    // is using it. Since as of now there are only a couple of webuis using
-    // lottie animations, this update has to be performed manually. As the usage
-    // increases, set this as the default so manual override is no longer
-    // required.
-    source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::WorkerSrc,
-        "worker-src blob: 'self';");
-  } else {
-    source->AddResourcePath("fingerprint_scanner_animation.png", animation_id);
-  }
-
-  source->AddBoolean("useLottieAnimationForFingerprint", is_lottie_animation);
-}
-
 void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
   source->AddResourcePath("multidevice_setup.json",
                           IDR_MULTIDEVICE_SETUP_ANIMATION);
@@ -392,7 +355,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   // Configure shared resources
   AddProductLogoResources(source);
 
-  AddFingerprintResources(source);
+  chromeos::quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);
   AddArcScreensResources(source);
   AddAssistantScreensResources(source);

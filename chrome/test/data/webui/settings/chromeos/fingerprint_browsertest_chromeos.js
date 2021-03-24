@@ -9,7 +9,7 @@
 // #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
-// #import {FingerprintBrowserProxyImpl, FingerprintSetupStep, FingerprintResultType, FingerprintLocation, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FingerprintBrowserProxyImpl, FingerprintSetupStep, FingerprintResultType, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 /** @implements {settings.FingerprintBrowserProxy} */
@@ -164,8 +164,7 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingFingerprintLottieAnimation', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.TABLET_POWER_BUTTON,
+      useLottieAnimationForFingerprint: true,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
@@ -175,11 +174,10 @@ suite('settings-fingerprint-list', function() {
     });
   });
 
-  test('EnrollingFingerprintPNG', function() {
+  test('EnrollingFingerprintIllustration', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_TOP_RIGHT,
+      useLottieAnimationForFingerprint: false,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
@@ -194,15 +192,14 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingFingerprint', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_BOTTOM_RIGHT,
+      useLottieAnimationForFingerprint: true,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll').then(function() {
       assertTrue(dialog.$$('#dialog').open);
       assertEquals(0, dialog.percentComplete_);
       assertEquals(settings.FingerprintSetupStep.LOCATE_SCANNER, dialog.step_);
-      assertFalse(dialog.$$('#scannerLocation').hidden);
+      assertFalse(dialog.$$('#scannerLocationLottie').hidden);
       assertTrue(dialog.$$('#arc').hidden);
       // Message should be shown for LOCATE_SCANNER step.
       assertEquals(
@@ -214,7 +211,7 @@ suite('settings-fingerprint-list', function() {
           settings.FingerprintResultType.SUCCESS, false, 20 /* percent */);
       assertEquals(20, dialog.percentComplete_);
       assertEquals(settings.FingerprintSetupStep.MOVE_FINGER, dialog.step_);
-      assertTrue(dialog.$$('#scannerLocation').hidden);
+      assertTrue(dialog.$$('#scannerLocationLottie').hidden);
       assertFalse(dialog.$$('#arc').hidden);
 
       // Verify that by sending a scan problem, the div that contains the
@@ -262,8 +259,7 @@ suite('settings-fingerprint-list', function() {
   test('EnrollingAnotherFingerprint', function() {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
-      fingerprintReaderLocation:
-          settings.FingerprintLocation.KEYBOARD_TOP_RIGHT,
+      useLottieAnimationForFingerprint: false,
     });
     openDialog();
     return browserProxy.whenCalled('startEnroll')

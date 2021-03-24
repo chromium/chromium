@@ -55,6 +55,7 @@ cr.define('settings', function() {
         type: String,
         value: '',
       },
+
       /**
        * The problem message to display.
        * @private
@@ -86,49 +87,15 @@ cr.define('settings', function() {
       },
 
       /**
-       * This is used to display right animation for fingerprint sensor.
-       * @private {string}
-       */
-      fingerprintScannerAnimationClass_: {
-        type: String,
-        value() {
-          if (!loadTimeData.getBoolean('fingerprintUnlockEnabled')) {
-            return '';
-          }
-          const fingerprintLocation =
-              loadTimeData.getInteger('fingerprintReaderLocation');
-          switch (fingerprintLocation) {
-            case FingerprintLocation.TABLET_POWER_BUTTON:
-              return '';
-            case FingerprintLocation.KEYBOARD_BOTTOM_LEFT:
-              return 'fingerprint-scanner-laptop-bottom-left';
-            case FingerprintLocation.KEYBOARD_BOTTOM_RIGHT:
-              return 'fingerprint-scanner-laptop-bottom-right';
-            case FingerprintLocation.KEYBOARD_TOP_RIGHT:
-              return 'fingerprint-scanner-laptop-top-right';
-          }
-          assertNotReached();
-        },
-        readOnly: true,
-      },
-
-      /**
-       * True lottie animation file should be used instead of a png animation
-       * image sequence.
-       * @private {boolean}
+       * True if lottie animation file should be used instead of an
+       * illustration.
+       * @type {boolean}
+       * @private
        */
       shouldUseLottieAnimation_: {
         type: Boolean,
         value() {
-          if (!loadTimeData.getBoolean('fingerprintUnlockEnabled')) {
-            return false;
-          }
-
-          const fingerprintLocation =
-              loadTimeData.getInteger('fingerprintReaderLocation');
-          const isTabletPowerButton =
-              FingerprintLocation.TABLET_POWER_BUTTON === fingerprintLocation;
-          return isTabletPowerButton;
+          return loadTimeData.getBoolean('useLottieAnimationForFingerprint');
         },
         readOnly: true,
       }

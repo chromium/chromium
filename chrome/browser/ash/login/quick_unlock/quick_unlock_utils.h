@@ -9,6 +9,10 @@ namespace base {
 class TimeDelta;
 }
 
+namespace content {
+class WebUIDataSource;
+}  // namespace content
+
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
@@ -68,6 +72,10 @@ bool IsEnabledForTesting();
 
 // Forcibly disable PIN for testing purposes.
 void DisablePinByPolicyForTesting(bool disable);
+
+// Add fingerprint animations and illustrations. Used for the Fingerprint setup
+// screen and the settings.
+void AddFingerprintResources(content::WebUIDataSource* html_source);
 
 }  // namespace quick_unlock
 }  // namespace chromeos

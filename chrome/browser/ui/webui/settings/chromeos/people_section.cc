@@ -513,25 +513,12 @@ void AddFingerprintListStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-void AddFingerprintStrings(content::WebUIDataSource* html_source,
-                           bool are_fingerprint_settings_allowed) {
+void AddFingerprintResources(content::WebUIDataSource* html_source,
+                             bool are_fingerprint_settings_allowed) {
   html_source->AddBoolean("fingerprintUnlockEnabled",
                           are_fingerprint_settings_allowed);
   if (are_fingerprint_settings_allowed) {
-    html_source->AddInteger(
-        "fingerprintReaderLocation",
-        static_cast<int32_t>(chromeos::quick_unlock::GetFingerprintLocation()));
-
-    // To use lottie, the worker-src CSP needs to be updated for the web ui that
-    // is using it. Since as of now there are only a couple of webuis using
-    // lottie animations, this update has to be performed manually. As the usage
-    // increases, set this as the default so manual override is no longer
-    // required.
-    html_source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::WorkerSrc,
-        "worker-src blob: 'self';");
-    html_source->AddResourcePath("finger_print.json",
-                                 IDR_LOGIN_FINGER_PRINT_TABLET_ANIMATION);
+    chromeos::quick_unlock::AddFingerprintResources(html_source);
   }
 
   int instruction_id, aria_label_id;
@@ -890,7 +877,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       html_source, kerberos_credentials_manager_);
   AddLockScreenPageStrings(html_source, profile()->GetPrefs());
   AddFingerprintListStrings(html_source);
-  AddFingerprintStrings(html_source, AreFingerprintSettingsAllowed());
+  AddFingerprintResources(html_source, AreFingerprintSettingsAllowed());
   AddSetupFingerprintDialogStrings(html_source);
   AddSetupPinDialogStrings(html_source);
   AddSyncControlsStrings(html_source);

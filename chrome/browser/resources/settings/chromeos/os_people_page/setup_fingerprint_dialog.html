@@ -20,26 +20,11 @@
         width: 500px;
       }
 
-      .fingerprint-scanner-laptop-bottom-left {
-        background:
-            url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_LEFT_ANIMATION);
-      }
-
-      .fingerprint-scanner-laptop-bottom-right {
-        background:
-            url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION);
-      }
-
-      .fingerprint-scanner-laptop-top-right {
-        background:
-            url(chrome://theme/IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION);
-      }
-
       #scannerLocation {
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 298px 205px;
-        height: 240px;
+        display: block;
+        height: 205px;
+        margin: auto;
+        padding: 10px 0;
       }
 
       #scannerLocationLottie {
@@ -74,16 +59,15 @@
           <div id="scannerLocationLottie"
             hidden="[[!showScannerLocation_(step_)]]" aria-live="polite"
             aria-label="$i18n{configureFingerprintScannerStepAriaLabel}">
-            <cr-lottie animation-url="finger_print.json" autoplay>
+            <cr-lottie animation-url="fingerprint_scanner_animation.json" autoplay>
             </cr-lottie>
           </div>
         </template>
         <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
-          <div id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
-             class$="[[fingerprintScannerAnimationClass_]]"
-             aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
-             aria-live="polite" >
-          </div>
+          <img id="scannerLocation" hidden="[[!showScannerLocation_(step_)]]"
+            aria-label="$i18n{configureFingerprintScannerStepAriaLabel}"
+            aria-live="polite"
+            src="fingerprint_scanner_illustration.svg">
         </template>
         <cr-fingerprint-progress-arc id="arc" circle-radius="100" autoplay
             hidden="[[!showArc_(step_)]]">

@@ -109,12 +109,6 @@
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_HELP" file="print_notification/help.png" />
 
-      <!-- Fingerprint images. -->
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_LEFT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_bottom_left.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_BOTTOM_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_bottom_right.png" />
-      <structure type="chrome_scaled_image" name="IDR_LOGIN_FINGERPRINT_SCANNER_LAPTOP_TOP_RIGHT_ANIMATION" file="fingerprint/fingerprint_scanner_laptop_top_right.png" />
-      <structure type="chrome_html" name="IDR_LOGIN_FINGER_PRINT_TABLET_ANIMATION" file="vector/finger_print.json" compress="gzip" />
-
       <!-- Kerberos. -->
       <structure type="chrome_scaled_image" name="IDR_KERBEROS_ICON_KEY" file="kerberos/vpn_key_grey600_24dp.png" />
 
