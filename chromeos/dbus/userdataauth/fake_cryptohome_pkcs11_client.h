@@ -23,6 +23,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomePkcs11Client
   FakeCryptohomePkcs11Client& operator=(const FakeCryptohomePkcs11Client&) =
       delete;
 
+  // Checks that a FakeCryptohomePkcs11Client instance was initialized and
+  // returns it.
+  static FakeCryptohomePkcs11Client* Get();
+
   // CryptohomePkcs11Client override:
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
@@ -32,6 +36,31 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomePkcs11Client
   void Pkcs11GetTpmTokenInfo(
       const ::user_data_auth::Pkcs11GetTpmTokenInfoRequest& request,
       Pkcs11GetTpmTokenInfoCallback callback) override;
+
+  // WaitForServiceToBeAvailable() related:
+
+  // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
+  // pending callbacks if is_available is true.
+  void SetServiceIsAvailable(bool is_available);
+
+  // Runs pending availability callbacks reporting that the service is
+  // unavailable. Expects service not to be available when called.
+  void ReportServiceIsNotAvailable();
+
+ private:
+  // WaitForServiceToBeAvailable() related fields:
+
+  // If set, we tell callers that service is available.
+  bool service_is_available_ = true;
+
+  // If set, WaitForServiceToBeAvailable will run the callback, even if service
+  // is not available (instead of adding the callback to pending callback list).
+  bool service_reported_not_available_ = false;
+
+  // The list of callbacks passed to WaitForServiceToBeAvailable when the
+  // service wasn't available.
+  std::vector<WaitForServiceToBeAvailableCallback>
+      pending_wait_for_service_to_be_available_callbacks_;
 };
 
 }  // namespace chromeos
