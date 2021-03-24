@@ -5,9 +5,12 @@
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 
 #include "base/callback_helpers.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/pciguard/fake_pciguard_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
+#include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/pciguard/dbus-constants.h"
 
@@ -27,16 +30,75 @@ class PciguardClientImpl : public PciguardClient {
   // PciguardClient:: overrides
   void SendExternalPciDevicesPermissionState(bool permitted) override;
 
-  void Init(dbus::Bus* bus) {
-    pci_guard_proxy_ =
-        bus->GetObjectProxy(pciguard::kPciguardServiceName,
-                            dbus::ObjectPath(pciguard::kPciguardServicePath));
-  }
+  void Init(dbus::Bus* bus);
 
  private:
+  void BlockedThunderboltDevicedConnectedReceieved(dbus::Signal* signal);
+  void OnSignalConnected(const std::string& interface_name,
+                         const std::string& signal_name,
+                         bool success);
+
   dbus::ObjectProxy* pci_guard_proxy_ = nullptr;
+  base::WeakPtrFactory<PciguardClientImpl> weak_ptr_factory_{this};
 };
 
+// PciguardClientImpl
+void PciguardClientImpl::Init(dbus::Bus* bus) {
+  pci_guard_proxy_ =
+      bus->GetObjectProxy(pciguard::kPciguardServiceName,
+                          dbus::ObjectPath(pciguard::kPciguardServicePath));
+
+  // Listen to D-Bus signals emitted by pciguard.
+  typedef void (PciguardClientImpl::*SignalMethod)(dbus::Signal*);
+  const std::pair<const char*, SignalMethod> kSignalMethods[] = {
+      {pciguard::kPCIDeviceBlockedSignal,
+       &PciguardClientImpl::BlockedThunderboltDevicedConnectedReceieved}};
+
+  auto on_connected_callback = base::BindRepeating(
+      &PciguardClientImpl::OnSignalConnected, weak_ptr_factory_.GetWeakPtr());
+
+  for (const auto& signal : kSignalMethods) {
+    pci_guard_proxy_->ConnectToSignal(
+        pciguard::kPciguardServiceInterface, signal.first,
+        base::BindRepeating(signal.second, weak_ptr_factory_.GetWeakPtr()),
+        on_connected_callback);
+  }
+}
+
+void PciguardClientImpl::BlockedThunderboltDevicedConnectedReceieved(
+    dbus::Signal* signal) {
+  dbus::MessageReader reader(signal);
+  std::string device_name;
+  if (!reader.PopString(&device_name)) {
+    LOG(ERROR) << "Pciguard: Unable to decode connected device name from "
+               << pciguard::kPCIDeviceBlockedSignal << " signal.";
+    return;
+  }
+
+  NotifyOnBlockedThunderboltDeviceConnected(device_name);
+}
+
+void PciguardClientImpl::OnSignalConnected(const std::string& interface_name,
+                                           const std::string& signal_name,
+                                           bool success) {
+  if (!success) {
+    LOG(ERROR) << "Pciguard: Failed to connect to signal " << signal_name
+               << ".";
+  }
+}
+
+void PciguardClientImpl::SendExternalPciDevicesPermissionState(bool permitted) {
+  dbus::MethodCall method_call(
+      pciguard::kPciguardServiceInterface,
+      pciguard::kSetExternalPciDevicesPermissionMethod);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendBool(permitted);
+
+  pci_guard_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
+}
+
+// PciguardClient
 PciguardClient::PciguardClient() {
   CHECK(!g_instance);
   g_instance = this;
@@ -47,16 +109,18 @@ PciguardClient::~PciguardClient() {
   g_instance = nullptr;
 }
 
-// PciguardClientImpl
-void PciguardClientImpl::SendExternalPciDevicesPermissionState(bool permitted) {
-  dbus::MethodCall method_call(
-      pciguard::kPciguardServiceInterface,
-      pciguard::kSetExternalPciDevicesPermissionMethod);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendBool(permitted);
+void PciguardClient::AddObserver(PciguardClient::Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
 
-  pci_guard_proxy_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, base::DoNothing());
+void PciguardClient::RemoveObserver(PciguardClient::Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void PciguardClient::NotifyOnBlockedThunderboltDeviceConnected(
+    const std::string& device_name) {
+  for (auto& observer : observer_list_)
+    observer.OnBlockedThunderboltDeviceConnected(device_name);
 }
 
 // static

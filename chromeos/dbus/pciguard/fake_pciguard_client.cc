@@ -18,4 +18,9 @@ FakePciguardClient::~FakePciguardClient() = default;
 void FakePciguardClient::SendExternalPciDevicesPermissionState(bool permitted) {
 }
 
+void FakePciguardClient::EmitDeviceBlockedSignal(
+    const std::string& device_name) {
+  NotifyOnBlockedThunderboltDeviceConnected(device_name);
+}
+
 }  // namespace chromeos

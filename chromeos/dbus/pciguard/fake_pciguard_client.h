@@ -21,6 +21,10 @@ class COMPONENT_EXPORT(PCIGUARD) FakePciguardClient : public PciguardClient {
   FakePciguardClient(const FakePciguardClient&) = delete;
   FakePciguardClient& operator=(const FakePciguardClient&) = delete;
 
+  // Simple fake to simulate emitting a D-Bus signal that a blocked deviced
+  // has been plugged in.
+  void EmitDeviceBlockedSignal(const std::string& device_name);
+
   // PciguardClient:
   void SendExternalPciDevicesPermissionState(bool permitted) override;
 };

@@ -24,11 +24,14 @@ PciePeripheralManager::PciePeripheralManager(bool is_guest_profile,
     : is_guest_profile_(is_guest_profile),
       is_pcie_tunneling_allowed_(is_pcie_tunneling_allowed) {
   DCHECK(chromeos::TypecdClient::Get());
+  DCHECK(chromeos::PciguardClient::Get());
   chromeos::TypecdClient::Get()->AddObserver(this);
+  chromeos::PciguardClient::Get()->AddObserver(this);
 }
 
 PciePeripheralManager::~PciePeripheralManager() {
   chromeos::TypecdClient::Get()->RemoveObserver(this);
+  chromeos::PciguardClient::Get()->RemoveObserver(this);
 
   CHECK_EQ(this, g_instance);
   g_instance = nullptr;
@@ -87,6 +90,12 @@ void PciePeripheralManager::OnThunderboltDeviceConnected(
 
   RecordConnectivityMetric(
       PciePeripheralConnectivityResults::kTBTSupportedAndAllowed);
+}
+
+void PciePeripheralManager::OnBlockedThunderboltDeviceConnected(
+    const std::string& name) {
+  // Currently the device name is not shown in the notification.
+  NotifyPeripheralBlockedReceived();
 }
 
 void PciePeripheralManager::SetPcieTunnelingAllowedState(

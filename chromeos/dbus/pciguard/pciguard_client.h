@@ -6,6 +6,8 @@
 #define CHROMEOS_DBUS_PCIGUARD_PCIGUARD_CLIENT_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace dbus {
 class Bus;
@@ -16,6 +18,16 @@ namespace chromeos {
 // PciguardClient is responsible for sending DBus signals to PciGuard daemon.
 class COMPONENT_EXPORT(PCIGUARD) PciguardClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+    virtual void OnBlockedThunderboltDeviceConnected(
+        const std::string& device_name) = 0;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Pciguard daemon D-Bus method call. See
   // third_party/cros_system_api/dbus/pciguard/dbus-constants.h for D-Bus
   // constant definitions.
@@ -40,6 +52,12 @@ class COMPONENT_EXPORT(PCIGUARD) PciguardClient {
   PciguardClient(const PciguardClient&) = delete;
   PciguardClient& operator=(const PciguardClient&) = delete;
   virtual ~PciguardClient();
+
+  void NotifyOnBlockedThunderboltDeviceConnected(
+      const std::string& device_name);
+
+ private:
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace chromeos

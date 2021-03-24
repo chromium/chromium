@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/dbus/pciguard/fake_pciguard_client.h"
+#include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/fake_typecd_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +70,10 @@ class PciePeripheralManagerTest : public testing::Test {
     chromeos::TypecdClient::InitializeFake();
     fake_typecd_client_ =
         static_cast<chromeos::FakeTypecdClient*>(chromeos::TypecdClient::Get());
+
+    chromeos::PciguardClient::InitializeFake();
+    fake_pciguard_client_ = static_cast<chromeos::FakePciguardClient*>(
+        chromeos::PciguardClient::Get());
   }
 
   void InitializeManager(bool is_guest_session,
@@ -83,10 +89,15 @@ class PciePeripheralManagerTest : public testing::Test {
     manager_->RemoveObserver(&fake_observer_);
     PciePeripheralManager::Shutdown();
     chromeos::TypecdClient::Shutdown();
+    chromeos::PciguardClient::Shutdown();
   }
 
   chromeos::FakeTypecdClient* fake_typecd_client() {
     return fake_typecd_client_;
+  }
+
+  chromeos::FakePciguardClient* fake_pciguard_client() {
+    return fake_pciguard_client_;
   }
 
   size_t GetNumLimitedPerformanceObserverCalls() {
@@ -97,6 +108,10 @@ class PciePeripheralManagerTest : public testing::Test {
     return fake_observer_.num_guest_notification_calls();
   }
 
+  size_t GetNumPeripheralBlockedNotificationObserverCalls() {
+    return fake_observer_.num_peripheral_blocked_notification_calls();
+  }
+
   bool GetIsCurrentGuestDeviceTbtOnly() {
     return fake_observer_.is_current_guest_device_tbt_only();
   }
@@ -105,6 +120,7 @@ class PciePeripheralManagerTest : public testing::Test {
 
  private:
   chromeos::FakeTypecdClient* fake_typecd_client_;
+  chromeos::FakePciguardClient* fake_pciguard_client_;
   PciePeripheralManager* manager_ = nullptr;
   FakeObserver fake_observer_;
 };
@@ -268,6 +284,22 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
       PciePeripheralManager::PciePeripheralConnectivityResults::
           kTBTOnlyAndBlockedInGuestSession,
       1);
+}
+
+TEST_F(PciePeripheralManagerTest, BlockedDeviceReceived) {
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/true);
+
+  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
+  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
+  EXPECT_EQ(0u, GetNumPeripheralBlockedNotificationObserverCalls());
+
+  // Simulate emitting D-Bus signal for a blocked device received.
+  fake_pciguard_client()->EmitDeviceBlockedSignal(/*device_name=*/"test");
+
+  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
+  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
+  EXPECT_EQ(1u, GetNumPeripheralBlockedNotificationObserverCalls());
 }
 
 }  // namespace ash

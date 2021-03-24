@@ -11,6 +11,7 @@ component("pcie_peripheral") {
 
   deps = [
     "//base",
+    "//chromeos/dbus/pciguard",
     "//chromeos/dbus/typecd",
   ]
 
@@ -28,6 +29,7 @@ source_set("unit_tests") {
   deps = [
     ":pcie_peripheral",
     "//base/test:test_support",
+    "//chromeos/dbus/pciguard",
     "//chromeos/dbus/typecd",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
