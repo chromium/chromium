@@ -63,6 +63,7 @@ ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
 CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
                                          cros::mojom::CameraInfoPtr camera_info)
     : device_id_(device_id),
+      allow_new_ipc_weak_ptrs_(true),
       camera_info_(std::move(camera_info)),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       next_metadata_observer_id_(0),
@@ -89,10 +90,14 @@ void CameraAppDeviceImpl::BindReceiver(
 }
 
 base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+  return allow_new_ipc_weak_ptrs_ ? weak_ptr_factory_.GetWeakPtr() : nullptr;
 }
 
-void CameraAppDeviceImpl::InvalidatePtrs(base::OnceClosure callback) {
+void CameraAppDeviceImpl::InvalidatePtrs(base::OnceClosure callback,
+                                         bool should_disable_new_ptrs) {
+  if (should_disable_new_ptrs) {
+    allow_new_ipc_weak_ptrs_ = false;
+  }
   weak_ptr_factory_.InvalidateWeakPtrs();
   std::move(callback).Run();
 }

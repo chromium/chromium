@@ -68,11 +68,14 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void BindReceiver(
       mojo::PendingReceiver<cros::mojom::CameraAppDevice> receiver);
 
-  // All the weak pointers should be dereferenced and invalidated on the camera
-  // device ipc thread.
+  // All the weak pointers should be retrieved, dereferenced and invalidated on
+  // the camera device ipc thread.
   base::WeakPtr<CameraAppDeviceImpl> GetWeakPtr();
 
-  void InvalidatePtrs(base::OnceClosure callback);
+  // Invalidates all the existing weak pointers and then triggers |callback|.
+  // When |should_disable_new_ptrs| is set to true, no more weak pointers can be
+  // created. It is used when tearing down the CameraAppDeviceImpl instance.
+  void InvalidatePtrs(base::OnceClosure callback, bool should_disable_new_ptrs);
 
   // Consumes all the pending reprocess tasks if there is any and eventually
   // generates a ReprocessTaskQueue which contains:
@@ -146,6 +149,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void NotifyShutterDoneOnMojoThread();
 
   std::string device_id_;
+
+  // If it is set to false, no weak pointers for this instance can be generated
+  // for IPC thread.
+  bool allow_new_ipc_weak_ptrs_;
 
   mojo::ReceiverSet<cros::mojom::CameraAppDevice> receivers_;
 

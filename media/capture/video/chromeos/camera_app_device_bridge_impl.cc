@@ -15,18 +15,6 @@
 
 namespace media {
 
-namespace {
-
-void InvalidateDevicePtrsOnDeviceIpcThread(
-    base::WeakPtr<CameraAppDeviceImpl> device,
-    base::OnceClosure callback) {
-  if (device) {
-    device->InvalidatePtrs(std::move(callback));
-  }
-}
-
-}  // namespace
-
 CameraAppDeviceBridgeImpl::CameraAppDeviceBridgeImpl() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -60,13 +48,22 @@ void CameraAppDeviceBridgeImpl::OnVideoCaptureDeviceCreated(
 
 void CameraAppDeviceBridgeImpl::OnVideoCaptureDeviceClosing(
     const std::string& device_id) {
+  auto remove_ipc_task_runner =
+      base::BindOnce(&CameraAppDeviceBridgeImpl::RemoveIpcTaskRunner,
+                     base::Unretained(this), device_id);
   base::AutoLock lock(task_runner_map_lock_);
   DCHECK_EQ(ipc_task_runners_.count(device_id), 1u);
+
+  // Since the IPC thread is owned by VCD and the CameraAppBridgeImpl is a
+  // singleton which has longer lifetime than VCD, it is safe to use
+  // base::Unretained(this) here.
   ipc_task_runners_[device_id]->PostTask(
-      FROM_HERE, base::BindOnce(&InvalidateDevicePtrsOnDeviceIpcThread,
-                                GetWeakCameraAppDevice(device_id),
-                                base::DoNothing::Once()));
-  ipc_task_runners_.erase(device_id);
+      FROM_HERE,
+      base::BindOnce(
+          &CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread,
+          base::Unretained(this), device_id,
+          /* should_disable_new_ptrs */ false,
+          std::move(remove_ipc_task_runner)));
 }
 
 void CameraAppDeviceBridgeImpl::OnDeviceMojoDisconnected(
@@ -78,14 +75,31 @@ void CameraAppDeviceBridgeImpl::OnDeviceMojoDisconnected(
     base::AutoLock lock(task_runner_map_lock_);
     auto it = ipc_task_runners_.find(device_id);
     if (it != ipc_task_runners_.end()) {
+      // Since the IPC thread is owned by VCD and the CameraAppBridgeImpl is a
+      // singleton which has longer lifetime than VCD, it is safe to use
+      // base::Unretained(this) here.
       it->second->PostTask(
-          FROM_HERE, base::BindOnce(&InvalidateDevicePtrsOnDeviceIpcThread,
-                                    GetWeakCameraAppDevice(device_id),
-                                    std::move(remove_device)));
+          FROM_HERE,
+          base::BindOnce(
+              &CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread,
+              base::Unretained(this), device_id,
+              /* should_disable_new_ptrs */ true, std::move(remove_device)));
       return;
     }
   }
   std::move(remove_device).Run();
+}
+
+void CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread(
+    const std::string& device_id,
+    bool should_disable_new_ptrs,
+    base::OnceClosure callback) {
+  auto device = GetWeakCameraAppDevice(device_id);
+  if (device) {
+    device->InvalidatePtrs(std::move(callback), should_disable_new_ptrs);
+  } else {
+    std::move(callback).Run();
+  }
 }
 
 void CameraAppDeviceBridgeImpl::SetCameraInfoGetter(
@@ -129,6 +143,12 @@ void CameraAppDeviceBridgeImpl::RemoveCameraAppDevice(
     return;
   }
   camera_app_devices_.erase(it);
+}
+
+void CameraAppDeviceBridgeImpl::RemoveIpcTaskRunner(
+    const std::string& device_id) {
+  base::AutoLock lock(device_map_lock_);
+  camera_app_devices_.erase(device_id);
 }
 
 void CameraAppDeviceBridgeImpl::GetCameraAppDevice(

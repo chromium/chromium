@@ -43,6 +43,10 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void OnDeviceMojoDisconnected(const std::string& device_id);
 
+  void InvalidateDevicePtrsOnDeviceIpcThread(const std::string& device_id,
+                                             bool should_disable_new_ptrs,
+                                             base::OnceClosure callback);
+
   void SetCameraInfoGetter(CameraInfoGetter camera_info_getter);
 
   void UnsetCameraInfoGetter();
@@ -56,6 +60,8 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
       const std::string& device_id);
 
   void RemoveCameraAppDevice(const std::string& device_id);
+
+  void RemoveIpcTaskRunner(const std::string& device_id);
 
   // cros::mojom::CameraAppDeviceBridge implementations.
   void GetCameraAppDevice(const std::string& device_id,
