@@ -124,17 +124,25 @@ class SMILTime {
     return SMILTime(time_ % other.time_);
   }
 
-  bool operator==(SMILTime other) const { return time_ == other.time_; }
+  constexpr bool operator==(SMILTime other) const {
+    return time_ == other.time_;
+  }
   explicit operator bool() const { return IsFinite() && !time_.is_zero(); }
-  bool operator!=(SMILTime other) const { return time_ != other.time_; }
+  constexpr bool operator!=(SMILTime other) const {
+    return time_ != other.time_;
+  }
 
   // Ordering of SMILTimes has to follow: finite < indefinite < unresolved. We
   // set this up by assigning consecutive sentinel values for the two latter
   // (see above).
-  bool operator>(SMILTime other) const { return time_ > other.time_; }
-  bool operator<(SMILTime other) const { return time_ < other.time_; }
-  bool operator>=(SMILTime other) const { return time_ >= other.time_; }
-  bool operator<=(SMILTime other) const { return time_ <= other.time_; }
+  constexpr bool operator>(SMILTime other) const { return time_ > other.time_; }
+  constexpr bool operator<(SMILTime other) const { return time_ < other.time_; }
+  constexpr bool operator>=(SMILTime other) const {
+    return time_ >= other.time_;
+  }
+  constexpr bool operator<=(SMILTime other) const {
+    return time_ <= other.time_;
+  }
 
  private:
   constexpr SMILTime(base::TimeDelta time) : time_(time) {}
