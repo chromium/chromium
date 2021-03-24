@@ -221,6 +221,8 @@ mojo::core::ports::PortLocker::port_refs_
 mojo::core::RequestContext::tls_context_
 
 # Populated manually - on-stack pointee
+mojo::internal::ContainerValidateParams::key_validate_params
+mojo::internal::ContainerValidateParams::element_validate_params
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
 
 # Populated manually - using mmap, MapViewOfFile or base::AllocPages directly
