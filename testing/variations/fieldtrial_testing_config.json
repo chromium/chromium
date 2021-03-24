@@ -1249,6 +1249,26 @@
             ]
         }
     ],
+    "CPSS": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210201",
+                    "enable_features": [
+                        "PermissionPredictions"
+                    ]
+                }
+            ]
+        }
+    ],
     "CalculateNativeWinOcclusionCheckVirtualDesktopUsed": [
         {
             "platforms": [
