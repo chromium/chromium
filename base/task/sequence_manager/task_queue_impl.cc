@@ -1388,7 +1388,7 @@ void TaskQueueImpl::OnQueueUnblocked() {
   main_thread_only().enqueue_order_at_which_we_became_unblocked =
       sequence_manager_->GetNextSequenceNumber();
 
-  recordreplay::Assert("TaskQueueImpl::OnQueueUnblocked %d %lu",
+  recordreplay::Assert("TaskQueueImpl::OnQueueUnblocked %lu",
                        main_thread_only().enqueue_order_at_which_we_became_unblocked);
 
   static_assert(TaskQueue::QueuePriority::kLowPriority >

@@ -71,6 +71,8 @@ void WatcherDispatcher::InvokeWatchCallback(uintptr_t context,
                                             MojoResult result,
                                             const HandleSignalsState& state,
                                             MojoTrapEventFlags flags) {
+  recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback Start");
+
   MojoTrapEvent event;
   event.struct_size = sizeof(event);
   event.trigger_context = context;
@@ -92,11 +94,15 @@ void WatcherDispatcher::InvokeWatchCallback(uintptr_t context,
     // This guarantee is sufficient to make safe, synchronized, per-context
     // state management possible in user code.
     base::AutoLock lock(lock_);
-    if (closed_ && result != MOJO_RESULT_CANCELLED)
+    if (closed_ && result != MOJO_RESULT_CANCELLED) {
+      recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback #1");
       return;
+    }
   }
 
   handler_(&event);
+
+  recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback Done");
 }
 
 Dispatcher::Type WatcherDispatcher::GetType() const {

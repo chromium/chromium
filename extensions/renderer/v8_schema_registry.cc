@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/record_replay.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_api.h"
@@ -173,6 +174,11 @@ v8::Local<v8::Context> V8SchemaRegistry::GetOrCreateContext(
     context_holder_.reset(new gin::ContextHolder(isolate));
     context_holder_->SetContext(v8::Context::New(isolate));
     schema_cache_.reset(new SchemaCache(isolate));
+
+    // After creating a context, we are able to create checkpoints. Create the
+    // first one now if this is the first context.
+    recordreplay::NewCheckpoint();
+
     return context_holder_->context();
   }
   return context_holder_->context();

@@ -332,6 +332,8 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
 // Called from the run loop.
 // static
 void MessagePumpCFRunLoopBase::RunWorkSource(void* info) {
+  recordreplay::NewCheckpoint();
+
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
   base::mac::CallWithEHFrame(^{
     self->RunWork();

@@ -562,19 +562,26 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 void Connector::ReadAllAvailableMessages() {
   recordreplay::Assert("Connector::ReadAllAvailableMessages Start");
 
-  if (paused_ || error_)
+  if (paused_ || error_) {
+    recordreplay::Assert("Connector::ReadAllAvailableMessages #1");
     return;
+  }
 
   base::WeakPtr<Connector> weak_self = weak_self_;
 
   do {
+    recordreplay::Assert("Connector::ReadAllAvailableMessages #2");
+
     Message message;
     MojoResult rv = ReadMessage(&message);
+
+    recordreplay::Assert("Connector::ReadAllAvailableMessages #3 %d", rv);
 
     switch (rv) {
       case MOJO_RESULT_OK:
         DCHECK(!message.IsNull());
         if (!DispatchMessage(std::move(message)) || !weak_self || paused_) {
+          recordreplay::Assert("Connector::ReadAllAvailableMessages #4");
           return;
         }
         break;
@@ -598,12 +605,18 @@ void Connector::ReadAllAvailableMessages() {
                     false /* force_async_handler */);
         return;
     }
+
+    recordreplay::Assert("Connector::ReadAllAvailableMessages #5");
   } while (weak_self && should_dispatch_messages_immediately());
+
+  recordreplay::Assert("Connector::ReadAllAvailableMessages #6 %d", !!weak_self);
 
   if (weak_self) {
     const auto pending_message_count = QueryPendingMessageCount();
     ScheduleDispatchOfPendingMessagesOrWaitForMore(pending_message_count);
   }
+
+  recordreplay::Assert("Connector::ReadAllAvailableMessages Done");
 }
 
 void Connector::CancelWait() {

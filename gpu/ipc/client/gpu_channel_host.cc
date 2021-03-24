@@ -49,7 +49,8 @@ GpuChannelHost::GpuChannelHost(int channel_id,
       image_decode_accelerator_proxy_(
           this,
           static_cast<int32_t>(
-              GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
+              GpuChannelReservedRoutes::kImageDecodeAccelerator)),
+      context_lock_("GpuChannelHost.context_lock_") {
   next_image_id_.GetNext();
   for (int32_t i = 0;
        i <= static_cast<int32_t>(GpuChannelReservedRoutes::kMaxValue); ++i)
@@ -146,8 +147,9 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
 }
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
-  AutoLock lock(context_lock_);
   recordreplay::Assert("GpuChannelHost::EnsureFlush Start");
+  AutoLock lock(context_lock_);
+  recordreplay::Assert("GpuChannelHost::EnsureFlush #1");
   InternalFlush(deferred_message_id);
   recordreplay::Assert("GpuChannelHost::EnsureFlush Done");
 }
@@ -185,6 +187,9 @@ void GpuChannelHost::EnqueuePendingOrderingBarrier() {
 
 void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
   context_lock_.AssertAcquired();
+
+  recordreplay::Assert("GpuChannelHost::InternalFlush Start %d %u %u",
+                       deferred_messages_.empty(), deferred_message_id, flushed_deferred_message_id_);
 
   EnqueuePendingOrderingBarrier();
   if (!deferred_messages_.empty() &&

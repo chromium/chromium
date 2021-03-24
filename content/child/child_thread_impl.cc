@@ -679,6 +679,7 @@ void ChildThreadImpl::Init(const Options& options) {
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).
   if (!IsInBrowserProcess()) {
+    recordreplay::Assert("ChildThreadImpl::Init #1");
     field_trial_syncer_.reset(
         new variations::ChildProcessFieldTrialSyncer(this));
     field_trial_syncer_->InitFieldTrialObserving(

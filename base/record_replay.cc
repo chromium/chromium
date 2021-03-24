@@ -27,6 +27,7 @@ extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
 extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
 extern "C" void V8RecordReplayOrderedLock(int lock);
 extern "C" void V8RecordReplayOrderedUnlock(int lock);
+extern "C" void V8RecordReplayNewCheckpoint();
 extern "C" void V8RecordReplayBeginPassThroughEvents();
 extern "C" void V8RecordReplayEndPassThroughEvents();
 extern "C" void V8RecordReplayRegisterPointer(void* ptr);
@@ -73,6 +74,10 @@ void OrderedLock(int lock) {
 
 void OrderedUnlock(int lock) {
   OP(V8RecordReplayOrderedUnlock(lock));
+}
+
+void NewCheckpoint() {
+  OP(V8RecordReplayNewCheckpoint());
 }
 
 void BeginPassThroughEvents() {

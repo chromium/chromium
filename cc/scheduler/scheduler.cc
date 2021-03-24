@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -736,6 +737,8 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
 }
 
 void Scheduler::OnBeginImplFrameDeadline() {
+  recordreplay::Assert("Scheduler::OnBeginImplFrameDeadline Start");
+
   TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
   begin_impl_frame_deadline_task_.Cancel();
   // We split the deadline actions up into two phases so the state machine
@@ -757,6 +760,8 @@ void Scheduler::OnBeginImplFrameDeadline() {
     FinishImplFrameSynchronous();
   else
     FinishImplFrame();
+
+  recordreplay::Assert("Scheduler::OnBeginImplFrameDeadline Done");
 }
 
 void Scheduler::FinishImplFrameSynchronous() {
