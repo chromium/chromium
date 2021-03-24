@@ -25,6 +25,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace ash {
+enum class ParentCodeValidationResult;
+}  // namespace ash
+
 namespace base {
 class Clock;
 class TickClock;
@@ -128,7 +132,7 @@ class ScreenTimeController
       usage_time_limit::PolicyType policy_type);
 
   // parent_access::ParentAccessService::Observer:
-  void OnAccessCodeValidation(bool result,
+  void OnAccessCodeValidation(ash::ParentCodeValidationResult result,
                               base::Optional<AccountId> account_id) override;
 
   // session_manager::SessionManagerObserver:

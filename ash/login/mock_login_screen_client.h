@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_MOCK_LOGIN_SCREEN_CLIENT_H_
 #define ASH_LOGIN_MOCK_LOGIN_SCREEN_CLIENT_H_
 
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
@@ -27,7 +28,7 @@ class MockLoginScreenClient : public LoginScreenClient {
               AuthenticateUserWithChallengeResponse_,
               (const AccountId& account_id,
                base::OnceCallback<void(bool)>& callback));
-  MOCK_METHOD(bool,
+  MOCK_METHOD(ParentCodeValidationResult,
               ValidateParentAccessCode_,
               (const AccountId& account_id,
                const std::string& access_code,
@@ -41,7 +42,8 @@ class MockLoginScreenClient : public LoginScreenClient {
 
   // Sets the result that should be passed to |callback| in
   // |ValidateParentAccessCode|.
-  void set_validate_parent_access_code_result(bool value) {
+  void set_validate_parent_access_code_result(
+      ParentCodeValidationResult value) {
     validate_parent_access_code_result_ = value;
   }
 
@@ -61,9 +63,10 @@ class MockLoginScreenClient : public LoginScreenClient {
   void AuthenticateUserWithChallengeResponse(
       const AccountId& account_id,
       base::OnceCallback<void(bool)> callback) override;
-  bool ValidateParentAccessCode(const AccountId& account_id,
-                                const std::string& code,
-                                base::Time validation_time) override;
+  ParentCodeValidationResult ValidateParentAccessCode(
+      const AccountId& account_id,
+      const std::string& code,
+      base::Time validation_time) override;
   MOCK_METHOD(void,
               AuthenticateUserWithEasyUnlock,
               (const AccountId& account_id),
@@ -110,7 +113,8 @@ class MockLoginScreenClient : public LoginScreenClient {
 
  private:
   bool authenticate_user_callback_result_ = true;
-  bool validate_parent_access_code_result_ = true;
+  ParentCodeValidationResult validate_parent_access_code_result_ =
+      ParentCodeValidationResult::kValid;
   base::OnceCallback<void(bool)>*
       authenticate_user_with_password_or_pin_callback_storage_ = nullptr;
 

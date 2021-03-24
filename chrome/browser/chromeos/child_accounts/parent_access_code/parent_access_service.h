@@ -18,6 +18,7 @@
 class PrefRegistrySimple;
 
 namespace ash {
+enum class ParentCodeValidationResult;
 enum class SupervisedAction;
 }  // namespace ash
 
@@ -36,7 +37,7 @@ class ParentAccessService {
     // event, when it is filled it means that the validation happened
     // specifically to the account identified by the parameter.
     virtual void OnAccessCodeValidation(
-        bool result,
+        ash::ParentCodeValidationResult result,
         base::Optional<AccountId> account_id) = 0;
   };
 
@@ -54,9 +55,10 @@ class ParentAccessService {
   // for any child that was added to this device. |validation_time| is the time
   // that will be used to validate the code, it will succeed if the code was
   // valid this given time.
-  bool ValidateParentAccessCode(const AccountId& account_id,
-                                const std::string& access_code,
-                                base::Time validation_time);
+  ash::ParentCodeValidationResult ValidateParentAccessCode(
+      const AccountId& account_id,
+      const std::string& access_code,
+      base::Time validation_time);
 
   // Reloads config for the provided user.
   void LoadConfigForUser(const user_manager::User* user);
@@ -69,6 +71,9 @@ class ParentAccessService {
 
   ParentAccessService();
   ~ParentAccessService();
+
+  void NotifyObservers(ash::ParentCodeValidationResult validation_result,
+                       const AccountId& account_id);
 
   // Provides configurations to be used for validation of access codes.
   ConfigSource config_source_;

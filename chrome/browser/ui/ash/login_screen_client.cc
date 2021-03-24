@@ -137,9 +137,10 @@ void LoginScreenClient::AuthenticateUserWithChallengeResponse(
   }
 }
 
-bool LoginScreenClient::ValidateParentAccessCode(const AccountId& account_id,
-                                                 const std::string& access_code,
-                                                 base::Time validation_time) {
+ash::ParentCodeValidationResult LoginScreenClient::ValidateParentAccessCode(
+    const AccountId& account_id,
+    const std::string& access_code,
+    base::Time validation_time) {
   return chromeos::parent_access::ParentAccessService::Get()
       .ValidateParentAccessCode(account_id, access_code, validation_time);
 }

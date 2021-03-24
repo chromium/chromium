@@ -14,6 +14,10 @@
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
+namespace ash {
+enum class ParentCodeValidationResult;
+}  // namespace ash
+
 namespace base {
 class ListValue;
 }
@@ -91,9 +95,10 @@ class LoginScreenClient : public ash::LoginScreenClient {
   void AuthenticateUserWithChallengeResponse(
       const AccountId& account_id,
       base::OnceCallback<void(bool)> callback) override;
-  bool ValidateParentAccessCode(const AccountId& account_id,
-                                const std::string& access_code,
-                                base::Time validation_time) override;
+  ash::ParentCodeValidationResult ValidateParentAccessCode(
+      const AccountId& account_id,
+      const std::string& access_code,
+      base::Time validation_time) override;
   void HardlockPod(const AccountId& account_id) override;
   void OnFocusPod(const AccountId& account_id) override;
   void OnNoPodFocused() override;

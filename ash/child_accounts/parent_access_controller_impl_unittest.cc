@@ -4,6 +4,8 @@
 
 #include "ash/child_accounts/parent_access_controller_impl.h"
 
+#include <string>
+
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/login_test_base.h"
@@ -101,10 +103,33 @@ class ParentAccessControllerImplTest : public LoginTestBase {
         ParentAccessControllerImpl::kUMAParentAccessCodeAction, total_count);
   }
 
+  // Verifies expectation that UMA validation |result| was logged for the
+  // |action| and into the aggregated histogram.
+  void ExpectUMAValidationResultReported(
+      ParentAccessControllerImpl::UMAValidationResult result,
+      SupervisedAction action,
+      int bucket_count,
+      int total_count) {
+    const std::string action_result_histogram =
+        ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
+            action);
+    histogram_tester_.ExpectBucketCount(action_result_histogram, result,
+                                        bucket_count);
+    histogram_tester_.ExpectTotalCount(action_result_histogram, total_count);
+
+    const std::string all_results_histogram =
+        ParentAccessControllerImpl::GetUMAParentCodeValidationResultHistorgam(
+            base::nullopt);
+
+    histogram_tester_.ExpectBucketCount(all_results_histogram, result,
+                                        bucket_count);
+    histogram_tester_.ExpectTotalCount(all_results_histogram, total_count);
+  }
+
   // Simulates entering a code. |success| determines whether the code will be
   // accepted.
-  void SimulateValidation(bool success) {
-    login_client_->set_validate_parent_access_code_result(success);
+  void SimulateValidation(ParentCodeValidationResult result) {
+    login_client_->set_validate_parent_access_code_result(result);
     EXPECT_CALL(*login_client_, ValidateParentAccessCode_(account_id_, "012345",
                                                           validation_time_))
         .Times(1);
@@ -234,21 +259,27 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
 // Tests successful parent access validation flow.
 TEST_F(ParentAccessControllerImplTest, ParentAccessSuccessfulValidation) {
   StartParentAccess();
-  SimulateValidation(true);
+  SimulateValidation(ParentCodeValidationResult::kValid);
 
   EXPECT_EQ(1, successful_validation_);
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kValidationSuccess, 1, 1);
+  ExpectUMAValidationResultReported(
+      ParentAccessControllerImpl::UMAValidationResult::kValid,
+      SupervisedAction::kUnlockTimeLimits, 1, 1);
 }
 
 // Tests unsuccessful parent access flow, including help button and cancelling
 // the request.
 TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
   StartParentAccess();
-  SimulateValidation(false);
+  SimulateValidation(ParentCodeValidationResult::kInvalid);
 
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kValidationError, 1, 1);
+  ExpectUMAValidationResultReported(
+      ParentAccessControllerImpl::UMAValidationResult::kInvalid,
+      SupervisedAction::kUnlockTimeLimits, 1, 1);
 
   EXPECT_CALL(*login_client_, ShowParentAccessHelpApp(_)).Times(1);
   SimulateButtonPress(PinRequestView::TestApi(view_).help_button());
@@ -258,6 +289,28 @@ TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
   ExpectUMAActionReported(
       ParentAccessControllerImpl::UMAAction::kCanceledByUser, 1, 3);
+}
+
+TEST_F(ParentAccessControllerImplTest, ParentAccessNoConfig) {
+  StartParentAccess();
+  SimulateValidation(ParentCodeValidationResult::kNoConfig);
+
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kValidationError, 1, 1);
+  ExpectUMAValidationResultReported(
+      ParentAccessControllerImpl::UMAValidationResult::kNoConfig,
+      SupervisedAction::kUnlockTimeLimits, 1, 1);
+}
+
+TEST_F(ParentAccessControllerImplTest, ParentAccessInternalError) {
+  StartParentAccess();
+  SimulateValidation(ParentCodeValidationResult::kInternalError);
+
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kValidationError, 1, 1);
+  ExpectUMAValidationResultReported(
+      ParentAccessControllerImpl::UMAValidationResult::kInternalError,
+      SupervisedAction::kUnlockTimeLimits, 1, 1);
 }
 
 #if DCHECK_IS_ON()
