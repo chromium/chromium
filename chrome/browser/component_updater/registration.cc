@@ -16,6 +16,7 @@
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
+#include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/floc_component_installer.h"
@@ -138,6 +139,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   }
   RegisterSSLErrorAssistantComponent(cus);
   RegisterFileTypePoliciesComponent(cus);
+  RegisterDesktopSharingHubComponent(cus);
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // CRLSetFetcher attempts to load a CRL set from either the local disk or
   // network.

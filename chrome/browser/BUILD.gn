@@ -318,6 +318,8 @@ static_library("browser") {
     "component_updater/crl_set_component_installer.h",
     "component_updater/crowd_deny_component_installer.cc",
     "component_updater/crowd_deny_component_installer.h",
+    "component_updater/desktop_sharing_hub_component_installer.cc",
+    "component_updater/desktop_sharing_hub_component_installer.h",
     "component_updater/file_type_policies_component_installer.cc",
     "component_updater/file_type_policies_component_installer.h",
     "component_updater/first_party_sets_component_installer.cc",
