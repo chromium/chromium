@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -41,8 +42,6 @@ namespace {
 constexpr unsigned kLengthLimit = 4096;
 constexpr char kAmazonDomain[] = "amazon.com";
 constexpr char kEbayDomain[] = "ebay.com";
-constexpr char kAppleDomain[] = "apple.com";
-constexpr char kMacysDomain[] = "macys.com";
 
 constexpr base::FeatureParam<std::string> kSkipPattern{
     &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
@@ -171,37 +170,60 @@ const re2::RE2& GetAddToCartPattern() {
   return *instance;
 }
 
-// The heuristics of cart pages are from top 30 US shopping domains.
-// https://colab.corp.google.com/drive/1ANuCcRphLieSbhy5t05IEnOYLT5RmEdf#scrollTo=k9Sh9VvodKQx
-const re2::RE2& GetVisitCartPatternAmazon() {
-  static base::NoDestructor<re2::RE2> instance(
-      "^/(-/[A-Za-z_-]+/)?gp/((.*/)?cart(/.*)?)(/|$)");
-  return *instance;
-}
-
-const re2::RE2& GetVisitCartPatternApple() {
-  static base::NoDestructor<re2::RE2> instance("/([^/]+/)?shop/([^/]+/)?bag$");
-  return *instance;
-}
-
-const re2::RE2& GetVisitCartPatternMacy() {
-  static base::NoDestructor<re2::RE2> instance("/(my-bag|bag(/[^/]+)*.ognc)$");
-  return *instance;
-}
-
-const re2::RE2& GetVisitCartPattern() {
-  re2::RE2::Options options;
+// The heuristics of cart pages are from top 100 US shopping domains.
+// https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
+// TODO(crbug.com/1189786): Using per-site pattern and full URL matching could
+// be unnecessary. Improve this later by using general pattern if possible and
+// more flexible matching.
+const re2::RE2& GetVisitCartPattern(const GURL& url) {
+  static base::NoDestructor<std::map<std::string, std::string>>
+      heuristic_string_map([] {
+        const base::StringPiece json_resource(
+            ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+                IDR_CART_DOMAIN_CART_URL_REGEX_JSON));
+        const base::NoDestructor<base::Value> json(
+            base::JSONReader::Read(json_resource).value());
+        DCHECK(json->is_dict());
+        std::map<std::string, std::string> map;
+        for (const auto& item : json->DictItems()) {
+          map.insert(
+              {std::move(item.first), std::move(item.second.GetString())});
+        }
+        return map;
+      }());
+  static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
+      heuristic_regex_map;
+  static re2::RE2::Options options;
   options.set_case_sensitive(false);
-  static base::NoDestructor<re2::RE2> instance(
-      "(/(my|co-|shopping[-_]?)?(cart|bag)(view)?(/|\\.|$|\\?))"
-      "|"
-      "(/checkout/([^/]+/)?(basket|bag)(/|\\.|$))"
-      "|"
-      "(/checkoutcart(display)?view(/|\\.|$))"
-      "|"
-      "(/bundles/shop(/|\\.|$))",
-      options);
-  return *instance;
+  const std::string& domain = eTLDPlusOne(url);
+  if (heuristic_string_map->find(domain) == heuristic_string_map->end()) {
+    // clang-format off
+    static base::NoDestructor<re2::RE2> instance(
+        "(^https?://cart\\.)"
+        "|"
+        "(/("
+          "(((my|co|shopping)[-_]?)?(cart|bag)(view|display)?)"
+          "|"
+          "(checkout/([^/]+/)?(basket|bag))"
+          "|"
+          "(checkoutcart(display)?view)"
+          "|"
+          "(bundles/shop)"
+          "|"
+          "((ajax)?orderitemdisplay(view)?)"
+          "|"
+          "(cart-show)"
+        ")(/|\\.|$))",
+        options);
+    // clang-format on
+    return *instance;
+  }
+  if (heuristic_regex_map->find(domain) == heuristic_regex_map->end()) {
+    heuristic_regex_map->insert(
+        {domain, std::make_unique<re2::RE2>(heuristic_string_map->at(domain),
+                                            options)});
+  }
+  return *heuristic_regex_map->at(domain);
 }
 
 // TODO(crbug/1164236): cover more shopping sites.
@@ -347,22 +369,8 @@ bool CommerceHintAgent::IsAddToCart(base::StringPiece str) {
 }
 
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
-  if (eTLDPlusOne(url) == kAmazonDomain) {
-    return PartialMatch(url.path_piece().substr(0, kLengthLimit),
-                        GetVisitCartPatternAmazon()) ||
-           url.path_piece() == "/gp/aw/c";
-  }
-  if (eTLDPlusOne(url) == kAppleDomain) {
-    return PartialMatch(url.path_piece().substr(0, kLengthLimit),
-                        GetVisitCartPatternApple());
-  }
-  if (eTLDPlusOne(url) == kMacysDomain) {
-    return PartialMatch(url.path_piece().substr(0, kLengthLimit),
-                        GetVisitCartPatternMacy());
-  }
-  return PartialMatch(url.path_piece().substr(0, kLengthLimit),
-                      GetVisitCartPattern()) ||
-         base::StartsWith(url.host_piece(), "cart");
+  return PartialMatch(url.spec().substr(0, kLengthLimit),
+                      GetVisitCartPattern(url));
 }
 
 bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
@@ -494,6 +502,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   if (frame->Parent())
     return;
 
+  if (!url.SchemeIs(url::kHttpsScheme))
+    return;
   if (IsVisitCart(url) && IsSameDomainXHR(url.host(), request)) {
     DVLOG(1) << "In-cart XHR: " << request.Url();
     ExtractProducts();
@@ -534,7 +544,7 @@ void CommerceHintAgent::DidFinishLoad() {
   if (frame->Parent())
     return;
   const GURL& url(frame->GetDocument().Url());
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIs(url::kHttpsScheme))
     return;
 
   if (IsVisitCart(url)) {
@@ -564,7 +574,7 @@ void CommerceHintAgent::DidObserveLayoutShift(double score,
   if (frame->Parent())
     return;
   const GURL url(frame->GetDocument().Url());
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIs(url::kHttpsScheme))
     return;
 
   if (IsVisitCart(url)) {
