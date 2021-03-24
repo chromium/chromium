@@ -12,17 +12,16 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.DownloadDirectoryProvider.SecondaryStorageInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,6 +31,7 @@ import java.util.List;
  * Test content URI can be generated correctly by {@link DownloadFileProvider}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DownloadFileProviderTest {
     private static final String PRIMARY_STORAGE_DOWNLOAD_DIRECTORY_PATH =
             "/storage/emulated/1234/Download";
@@ -50,9 +50,6 @@ public class DownloadFileProviderTest {
 
     private static final String EXTERNAL_SD_CARD_DOWNLOAD_PATH =
             EXTERNAL_SD_CARD_DOWNLOAD_DIRECTORY_PATH + "/app-wise-release.apk";
-
-    @Rule
-    public final ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock
     private DownloadDirectoryProvider.Delegate mMockDirectoryDelegate;
