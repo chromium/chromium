@@ -737,6 +737,13 @@ jlong PersonalDataManagerAndroid::GetCurrentDateForTesting(
   return base::Time::Now().ToTimeT();
 }
 
+void PersonalDataManagerAndroid::ClearServerDataForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& unused_obj) {
+  personal_data_manager_->ClearAllServerData();
+  personal_data_manager_->NotifyPersonalDataObserver();
+}
+
 void PersonalDataManagerAndroid::LoadRulesForAddressNormalization(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj,

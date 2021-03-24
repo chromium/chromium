@@ -917,6 +917,13 @@ public class PersonalDataManager {
                 mPersonalDataManagerAndroid, PersonalDataManager.this);
     }
 
+    @VisibleForTesting
+    protected void clearServerDataForTesting() {
+        ThreadUtils.assertOnUiThread();
+        PersonalDataManagerJni.get().clearServerDataForTesting(
+                mPersonalDataManagerAndroid, PersonalDataManager.this);
+    }
+
     /**
      * Starts loading the address validation rules for the specified {@code regionCode}.
      *
@@ -1173,6 +1180,8 @@ public class PersonalDataManager {
         long getCreditCardUseDateForTesting(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
         long getCurrentDateForTesting(
+                long nativePersonalDataManagerAndroid, PersonalDataManager caller);
+        void clearServerDataForTesting(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         void clearUnmaskedCache(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);

@@ -260,6 +260,20 @@ public class AutofillTestHelper {
                 () -> PersonalDataManager.getInstance().getCurrentDateForTesting());
     }
 
+    /**
+     * Clears all local and server data, including server cards added via {@link
+     * #addServerCreditCard(CreditCard)}}.
+     */
+    public void clearAllDataForTesting() throws TimeoutException {
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> PersonalDataManager.getInstance().clearServerDataForTesting());
+        mOnPersonalDataChangedHelper.waitForCallback(callCount);
+        // Clear remaining local profiles and cards.
+        for (AutofillProfile profile : getProfilesForSettings()) deleteProfile(profile.getGUID());
+        for (CreditCard card : getCreditCardsForSettings()) deleteCreditCard(card.getGUID());
+    }
+
     /** Returns the YYYY value of the year after the current year. */
     public static String nextYear() {
         return String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1);

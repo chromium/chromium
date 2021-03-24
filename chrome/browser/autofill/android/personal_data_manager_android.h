@@ -303,6 +303,11 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& unused_obj);
 
+  // Clears server profiles and cards, to be used in tests only.
+  void ClearServerDataForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& unused_obj);
+
   // These functions help address normalization.
   // --------------------
 
