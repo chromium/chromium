@@ -281,9 +281,9 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
     raster_source_ = raster_source;
 
 #if DCHECK_IS_ON()
-  for (size_t i = 0; i < tilings_.size(); ++i) {
-    DCHECK_NE(tilings_[i]->contents_scale_key(), raster_transform.scale());
-    DCHECK_EQ(tilings_[i]->raster_source(), raster_source.get());
+  for (const auto& tiling : tilings_) {
+    DCHECK_NE(tiling->contents_scale_key(), raster_transform.scale());
+    DCHECK_EQ(tiling->raster_source(), raster_source.get());
   }
 #endif  // DCHECK_IS_ON()
 
@@ -307,9 +307,9 @@ int PictureLayerTilingSet::NumHighResTilings() const {
 
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
     float scale_key) const {
-  for (size_t i = 0; i < tilings_.size(); ++i) {
-    if (tilings_[i]->contents_scale_key() == scale_key)
-      return tilings_[i].get();
+  for (const auto& tiling : tilings_) {
+    if (tiling->contents_scale_key() == scale_key)
+      return tiling.get();
   }
   return nullptr;
 }
@@ -365,8 +365,8 @@ void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
 }
 
 void PictureLayerTilingSet::RemoveAllTiles() {
-  for (size_t i = 0; i < tilings_.size(); ++i)
-    tilings_[i]->Reset();
+  for (const auto& tiling : tilings_)
+    tiling->Reset();
 }
 
 float PictureLayerTilingSet::GetSnappedContentsScaleKey(
@@ -725,17 +725,17 @@ PictureLayerTilingSet::CoverageIterator::operator bool() const {
 
 void PictureLayerTilingSet::AsValueInto(
     base::trace_event::TracedValue* state) const {
-  for (size_t i = 0; i < tilings_.size(); ++i) {
+  for (const auto& tiling : tilings_) {
     state->BeginDictionary();
-    tilings_[i]->AsValueInto(state);
+    tiling->AsValueInto(state);
     state->EndDictionary();
   }
 }
 
 size_t PictureLayerTilingSet::GPUMemoryUsageInBytes() const {
   size_t amount = 0;
-  for (size_t i = 0; i < tilings_.size(); ++i)
-    amount += tilings_[i]->GPUMemoryUsageInBytes();
+  for (const auto& tiling : tilings_)
+    amount += tiling->GPUMemoryUsageInBytes();
   return amount;
 }
 
@@ -746,7 +746,7 @@ PictureLayerTilingSet::TilingRange PictureLayerTilingSet::GetTilingRange(
   // compute them only when the tiling set has changed instead.
   size_t tilings_size = tilings_.size();
   TilingRange high_res_range(0, 0);
-  TilingRange low_res_range(tilings_.size(), tilings_.size());
+  TilingRange low_res_range(tilings_size, tilings_size);
   for (size_t i = 0; i < tilings_size; ++i) {
     const PictureLayerTiling* tiling = tilings_[i].get();
     if (tiling->resolution() == HIGH_RESOLUTION)
