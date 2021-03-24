@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test preservation of orientation and scale when that switching devices in device mode.\n`);
-  await TestRunner.loadModule('device_mode_test_runner');
+  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var phoneB = DeviceModeTestRunner.buildFakePhone();

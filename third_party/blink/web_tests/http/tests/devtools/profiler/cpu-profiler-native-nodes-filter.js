@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests filtering of native nodes.
     Also tests loading of a legacy nodes format, where nodes were represented as a tree.\n`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profile = {
     'head': {

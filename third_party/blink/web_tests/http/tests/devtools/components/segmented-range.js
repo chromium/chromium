@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests SegmentedRange\n`);
-  await TestRunner.loadModule('data_grid_test_runner');
+  await TestRunner.loadTestModule('data_grid_test_runner');
 
   function testCase(testName, data, merge, expectSameBackwards) {
     TestRunner.addResult('Test case: ' + testName);

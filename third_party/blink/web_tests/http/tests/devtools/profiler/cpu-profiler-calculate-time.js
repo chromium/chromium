@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests self and total time calculation in CPU profiler.\n`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   // Profile for 1070ms, 2140 samples.
   var profileAndExpectations = {

@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 (async function() {
   TestRunner.addResult(`Tests missing samples are replaced with neighbor stacks.`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadTestModule('cpu_profiler_test_runner');
   const profile = {
     startTime: 1000,
     endTime: 4000,
