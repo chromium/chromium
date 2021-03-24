@@ -66,6 +66,7 @@
 #include "components/arc/camera/arc_camera_bridge.h"
 #include "components/arc/clipboard/arc_clipboard_bridge.h"
 #include "components/arc/crash_collector/arc_crash_collector_bridge.h"
+#include "components/arc/dark_theme/arc_dark_theme_bridge.h"
 #include "components/arc/disk_quota/arc_disk_quota_bridge.h"
 #include "components/arc/ime/arc_ime_service.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -198,6 +199,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcCastReceiverService::GetForBrowserContext(profile);
   ArcClipboardBridge::GetForBrowserContext(profile);
   ArcCrashCollectorBridge::GetForBrowserContext(profile);
+  ArcDarkThemeBridge::GetForBrowserContext(profile);
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
   ArcDiskQuotaBridge::GetForBrowserContext(profile)->SetAccountId(
       multi_user_util::GetAccountIdFromProfile(profile));
