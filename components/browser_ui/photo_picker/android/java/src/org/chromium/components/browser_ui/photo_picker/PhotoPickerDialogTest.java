@@ -627,13 +627,16 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         // Simulate an early configuration change for the photo grid.
         Configuration configuration = getActivity().getResources().getConfiguration();
         PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
-        categoryView.onConfigurationChanged(configuration);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { categoryView.onConfigurationChanged(configuration); });
 
         waitForDecoder();
 
         // Simulate an early configuration change for the video player (before showing).
-        PickerVideoPlayer videoPlayer = categoryView.getVideoPlayerForTesting();
-        videoPlayer.onConfigurationChanged(configuration);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PickerVideoPlayer videoPlayer = categoryView.getVideoPlayerForTesting();
+            videoPlayer.onConfigurationChanged(configuration);
+        });
 
         dismissDialog();
     }
