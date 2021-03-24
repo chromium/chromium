@@ -755,13 +755,14 @@ void AXObject::Init(AXObject* parent_if_known) {
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
 #endif
 
-  // The role must be determined immedediately.
+  // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
   role_ = DetermineAccessibilityRole();
 #if DCHECK_IS_ON()
-  DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for " << GetNode()
-                             << " " << GetLayoutObject();
+  DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for\n"
+                             << GetNode() << '\n'
+                             << GetLayoutObject();
 #endif
 
   // Determine the parent as soon as possible.
@@ -770,10 +771,7 @@ void AXObject::Init(AXObject* parent_if_known) {
   DCHECK(parent_ || IsA<Document>(GetNode()))
       << "The following node should have a parent: " << GetNode();
 
-  // First time object is initialized, it hasn't computed children yet.
-  SetNeedsToUpdateChildren();  // Called after role_ is set.
-
-  // Initialize all other cached values.
+  SetNeedsToUpdateChildren();  // Should be called after role_ is set.
   UpdateCachedAttributeValuesIfNeeded(false);
 }
 
@@ -3563,10 +3561,13 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // ARIA states if an item can get focus, it should not be presentational.
   // It also states user agents should ignore the presentational role if
   // the element has global ARIA states and properties.
-  if ((role == ax::mojom::blink::Role::kNone ||
-       role == ax::mojom::blink::Role::kPresentational) &&
-      (CanSetFocusAttribute() || HasGlobalARIAAttribute()))
+  if (ui::IsPresentational(role) &&
+      ((GetElement() && GetElement()->SupportsFocus()) ||
+       HasGlobalARIAAttribute())) {
+    // If we return an unknown role, then the native HTML role would be used
+    // instead.
     return ax::mojom::blink::Role::kUnknown;
+  }
 
   if (role == ax::mojom::blink::Role::kButton)
     role = ButtonRoleType();
@@ -3586,10 +3587,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
   }
 
-  if (role != ax::mojom::blink::Role::kUnknown)
-    return role;
-
-  return ax::mojom::blink::Role::kUnknown;
+  return role;
 }
 
 bool AXObject::IsEditableRoot() const {
