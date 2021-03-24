@@ -316,6 +316,19 @@ class BlinkScrollbarPartAnimationTimer {
 
   void SetDuration(CFTimeInterval duration) { duration_ = duration; }
 
+  // This is a speculative fix for crbug.com/1183276.
+  // In BlinkScrollbarPainterDelegate::setUpAlphaAnimation we are
+  // deallocating BlinkScrollbarPartAnimation and create a new one.
+  // The problem seems to be with BlinkScrollbarPartAnimation, passing a
+  // pointer to itself to BlinkScrollbarPartAnimationTimer.
+  // BlinkScrollbarPartAnimationTimer uses a TaskRunnerTimer to schedule
+  // the animation to run 60 times second.
+  // When we deallocate BlinkScrollbarPartAnimation,
+  // BlinkScrollbarPartAnimationTimer fires again, I believe because it
+  // uses PostTaskDelayed to schedule the next animation.
+  // Ideally the timer won't fire again.
+  void CancelAnimation() { animation_ = nullptr; }
+
  private:
   void TimerFired(TimerBase*) {
     double current_time = base::Time::Now().ToDoubleT();
@@ -323,6 +336,9 @@ class BlinkScrollbarPartAnimationTimer {
 
     if (delta >= duration_)
       timer_.Stop();
+    // This is a speculative fix for crbug.com/1183276.
+    if (!animation_)
+      return;
 
     double fraction = delta / duration_;
     fraction = clampTo(fraction, 0.0, 1.0);
@@ -435,6 +451,7 @@ class BlinkScrollbarPartAnimationTimer {
   [self stopAnimation];
   END_BLOCK_OBJC_EXCEPTIONS;
   _scrollbar = 0;
+  _timer->CancelAnimation();
 }
 
 @end
@@ -529,7 +546,7 @@ class BlinkScrollbarPartAnimationTimer {
 
   // If we are currently animating, stop
   if (scrollbarPartAnimation) {
-    [scrollbarPartAnimation stopAnimation];
+    [scrollbarPartAnimation invalidate];
     scrollbarPartAnimation.reset();
   }
 
