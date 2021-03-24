@@ -1806,10 +1806,6 @@
       name: "SanitizerAPI",
       status: "test",
     },
-    {
-      name: "ScreenWakeLock",
-      status: "stable",
-    },
     // WebSpeech API with both speech recognition and synthesis functionality
     // is not fully enabled on all platforms.
     {
@@ -2135,9 +2131,13 @@
       status: "experimental",
     },
     {
+      // The "WakeLock" feature was originally implied_by "ScreenWakeLock" and
+      // "SystemWakeLock". The former was removed after being promoted to
+      // stable, but we need to keep this feature around for code and IDLs that
+      // should work with both screen and system wake locks.
       name: "WakeLock",
-      origin_trial_feature_name: "WakeLock",
-      implied_by: ['ScreenWakeLock', 'SystemWakeLock'],
+      status: "stable",
+      implied_by: ['SystemWakeLock'],
     },
     {
       name: "WebAnimationsAPI",

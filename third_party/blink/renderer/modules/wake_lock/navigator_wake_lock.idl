@@ -6,7 +6,6 @@
 
 [
   ImplementedAs=WakeLock,
-  RuntimeEnabled=WakeLock,
   SecureContext
 ] partial interface Navigator {
   [SameObject] readonly attribute WakeLock wakeLock;

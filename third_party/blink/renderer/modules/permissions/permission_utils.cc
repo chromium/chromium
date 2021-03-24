@@ -194,11 +194,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
   if (name == "periodic-background-sync")
     return CreatePermissionDescriptor(PermissionName::PERIODIC_BACKGROUND_SYNC);
   if (name == "screen-wake-lock") {
-    if (!RuntimeEnabledFeatures::ScreenWakeLockEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Screen Wake Lock is not enabled.");
-      return nullptr;
-    }
     return CreatePermissionDescriptor(PermissionName::SCREEN_WAKE_LOCK);
   }
   if (name == "system-wake-lock") {
