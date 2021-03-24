@@ -19,10 +19,6 @@ namespace {
 // potential for process reuse (crbug.com/894253).
 const void* const kRecentlyDestroyedHostTrackerKey =
     "RecentlyDestroyedHostTrackerKey";
-// Storage time for information about recently destroyed processes. Intended to
-// be long enough to capture a large portion of the process-reuse opportunity.
-constexpr base::TimeDelta kRecentlyDestroyedTimeout =
-    base::TimeDelta::FromSeconds(10);
 // Sentinel value indicating that no recently destroyed process matches the
 // host currently seeking a process. Changing this invalidates the histogram.
 constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
@@ -37,6 +33,9 @@ void RecordMetric(base::TimeDelta value) {
 }
 
 }  // namespace
+
+constexpr base::TimeDelta
+    RecentlyDestroyedHosts::kRecentlyDestroyedStorageTimeout;
 
 RecentlyDestroyedHosts::~RecentlyDestroyedHosts() = default;
 
@@ -58,7 +57,7 @@ void RecentlyDestroyedHosts::Add(
     RenderProcessHost* host,
     const base::TimeDelta& time_spent_in_delayed_shutdown,
     BrowserContext* browser_context) {
-  if (time_spent_in_delayed_shutdown > kRecentlyDestroyedTimeout)
+  if (time_spent_in_delayed_shutdown > kRecentlyDestroyedStorageTimeout)
     return;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -107,7 +106,7 @@ RecentlyDestroyedHosts* RecentlyDestroyedHosts::GetInstance(
 
 void RecentlyDestroyedHosts::RemoveExpiredEntries() {
   const auto expired_cutoff_time =
-      base::TimeTicks::Now() - kRecentlyDestroyedTimeout;
+      base::TimeTicks::Now() - kRecentlyDestroyedStorageTimeout;
   for (auto iter = map_.begin(); iter != map_.end();) {
     if (iter->second < expired_cutoff_time) {
       iter = map_.erase(iter);

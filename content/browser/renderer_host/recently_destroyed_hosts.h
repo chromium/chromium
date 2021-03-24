@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_RECENTLY_DESTROYED_HOSTS_H_
 
 #include "base/supports_user_data.h"
+#include "content/common/content_export.h"
 
 namespace base {
 class TimeDelta;
@@ -18,8 +19,15 @@ class BrowserContext;
 class ProcessLock;
 class RenderProcessHost;
 
-class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
+class CONTENT_EXPORT RecentlyDestroyedHosts
+    : public base::SupportsUserData::Data {
  public:
+  // Storage time for information about recently destroyed processes. Intended
+  // to be long enough to capture a large portion of the process-reuse
+  // opportunity.
+  static constexpr base::TimeDelta kRecentlyDestroyedStorageTimeout =
+      base::TimeDelta::FromSeconds(10);
+
   ~RecentlyDestroyedHosts() override;
   RecentlyDestroyedHosts(const RecentlyDestroyedHosts& other) = delete;
   RecentlyDestroyedHosts& operator=(const RecentlyDestroyedHosts& other) =
