@@ -88,6 +88,52 @@ bool ShouldShowActivateCellularNetwork(const NetworkInfo& info) {
          chromeos::features::IsCellularActivationUiEnabled();
 }
 
+gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
+  gfx::ImageSkia network_image;
+  if (NetworkTypeMatchesType(info.type, NetworkType::kMobile) &&
+      info.connection_state == ConnectionStateType::kNotConnected) {
+    // Mobile icons which are not connecting or connected should display a small
+    // "X" icon superimposed so that it is clear that they are disconnected.
+    network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+        info.image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
+                                          info.image.height(), GetIconColor()));
+  } else {
+    network_image = info.image;
+  }
+
+  // When we are inhibited, cellular devices should have a grayed out appearance
+  // since the rows are disabled, which gives users the impression that these
+  // networks are unavailable. We must change the image before we add it to the
+  // view, and then alter the label and sub-label if they exist after it is
+  // added to the view.
+  if (info.inhibited) {
+    network_image = gfx::ImageSkiaOperations::CreateTransparentImage(
+        network_image, kAlphaValueForInhibitedIconOpacity);
+  }
+  return network_image;
+}
+
+// If inhibited, creates a grayed out affect by replacing colors of the
+// network's label and sub label to their disabled color counterparts, if
+// the labels exist.
+void SetNetworkViewTextStyle(HoverHighlightView* view,
+                             const NetworkInfo& info) {
+  if (!info.inhibited)
+    return;
+  if (view->text_label()) {
+    auto text_label_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    view->text_label()->SetEnabledColor(
+        AshColorProvider::GetDisabledColor(text_label_color));
+  }
+  if (view->sub_text_label()) {
+    auto sub_text_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPositive);
+    view->sub_text_label()->SetEnabledColor(
+        AshColorProvider::GetDisabledColor(sub_text_color));
+  }
+}
+
 }  // namespace
 
 // NetworkListView:
@@ -376,50 +422,6 @@ bool NetworkListView::ShouldMobileDataSectionBeShown() {
     return false;
 
   return true;
-}
-
-gfx::ImageSkia NetworkListView::GetNetworkImageForNetwork(
-    const NetworkInfo& info) {
-  gfx::ImageSkia network_image;
-  if (NetworkTypeMatchesType(info.type, NetworkType::kMobile) &&
-      info.connection_state == ConnectionStateType::kNotConnected) {
-    // Mobile icons which are not connecting or connected should display a small
-    // "X" icon superimposed so that it is clear that they are disconnected.
-    network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        info.image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
-                                          info.image.height(), GetIconColor()));
-  } else {
-    network_image = info.image;
-  }
-
-  // When we are inhibited, cellular devices should have a grayed out appearance
-  // since the rows are disabled, which gives users the impression that these
-  // networks are unavailable. We must change the image before we add it to the
-  // view, and then alter the label and sub-label if they exist after it is
-  // added to the view.
-  if (info.inhibited) {
-    network_image = gfx::ImageSkiaOperations::CreateTransparentImage(
-        network_image, kAlphaValueForInhibitedIconOpacity);
-  }
-  return network_image;
-}
-
-void NetworkListView::SetNetworkViewTextStyle(HoverHighlightView* view,
-                                              const NetworkInfo& info) {
-  if (!info.inhibited)
-    return;
-  if (view->text_label()) {
-    auto text_label_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    view->text_label()->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(text_label_color));
-  }
-  if (view->sub_text_label()) {
-    auto sub_text_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPositive);
-    view->sub_text_label()->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(sub_text_color));
-  }
 }
 
 void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,

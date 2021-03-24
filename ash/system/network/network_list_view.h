@@ -137,15 +137,6 @@ class NetworkListView : public NetworkStateListDetailedView,
   // all details that are shown in the ui.
   std::u16string GenerateAccessibilityDescription(const NetworkInfo& info);
 
-  // Returns the network image to use for the network row in the list.
-  gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info);
-
-  // If inhibited, creates a grayed out affect by replacing colors of the
-  // network's label and sub label to their disabled color counterparts, if
-  // the labels exist.
-  void SetNetworkViewTextStyle(HoverHighlightView* view,
-                               const NetworkInfo& info);
-
   bool needs_relayout_ = false;
 
   // Owned by the views heirarchy.
