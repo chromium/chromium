@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
@@ -16,12 +17,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/c/system/trap.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace mojo {
 
@@ -199,7 +194,7 @@ void SimpleWatcher::Cancel() {
 
 MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
                               HandleSignalsState* ready_state) {
-  V8RecordReplayAssert("SimpleWatcher::Arm Start");
+  recordreplay::Assert("SimpleWatcher::Arm Start");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t num_blocking_events = 1;
@@ -219,7 +214,7 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
     }
   }
 
-  V8RecordReplayAssert("SimpleWatcher::Arm Done");
+  recordreplay::Assert("SimpleWatcher::Arm Done");
   return rv;
 }
 
@@ -256,12 +251,12 @@ void SimpleWatcher::OnHandleReady(int watch_id,
                                   const HandleSignalsState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  V8RecordReplayAssert("SimpleWatcher::OnHandleReady Start");
+  recordreplay::Assert("SimpleWatcher::OnHandleReady Start");
 
   // This notification may be for a previously watched context, in which case
   // we just ignore it.
   if (watch_id != watch_id_) {
-    V8RecordReplayAssert("SimpleWatcher::OnHandleReady #1");
+    recordreplay::Assert("SimpleWatcher::OnHandleReady #1");
     return;
   }
 
@@ -290,14 +285,14 @@ void SimpleWatcher::OnHandleReady(int watch_id,
     base::WeakPtr<SimpleWatcher> weak_self = weak_factory_.GetWeakPtr();
     callback.Run(result, state);
     if (!weak_self) {
-      V8RecordReplayAssert("SimpleWatcher::OnHandleReady #2");
+      recordreplay::Assert("SimpleWatcher::OnHandleReady #2");
       return;
     }
 
     // Prevent |MOJO_RESULT_FAILED_PRECONDITION| task spam by only notifying
     // at most once in AUTOMATIC arming mode.
     if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-      V8RecordReplayAssert("SimpleWatcher::OnHandleReady #3");
+      recordreplay::Assert("SimpleWatcher::OnHandleReady #3");
       return;
     }
 
@@ -305,6 +300,6 @@ void SimpleWatcher::OnHandleReady(int watch_id,
       ArmOrNotify();
   }
 
-  V8RecordReplayAssert("SimpleWatcher::OnHandleReady Done");
+  recordreplay::Assert("SimpleWatcher::OnHandleReady Done");
 }
 }  // namespace mojo

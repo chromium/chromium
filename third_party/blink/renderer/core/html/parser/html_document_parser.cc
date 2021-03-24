@@ -30,6 +30,7 @@
 
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
@@ -67,12 +68,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace blink {
 
@@ -635,13 +630,13 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
   DCHECK(!RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled());
   TRACE_EVENT0("blink", "HTMLDocumentParser::EnqueueTokenizedChunk");
 
-  V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk Start");
+  recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk Start");
 
   DCHECK(chunk);
   DCHECK(GetDocument());
 
   if (!IsParsing()) {
-    V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk #1");
+    recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk #1");
     return;
   }
 
@@ -683,7 +678,7 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
     // Delay sending some requests if meta tag based CSP is present or
     // if AppCache was used to fetch the HTML but was not yet initialized for
     // this document.
-    V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk #2 %d",
+    recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk #2 %d",
                          !!pending_csp_meta_token_);
     if (pending_csp_meta_token_ ||
         ((!base::FeatureList::IsEnabled(
@@ -714,7 +709,7 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
   if (!IsPaused() && !IsScheduledForUnpause())
     parser_scheduler_->ScheduleForUnpause();
 
-  V8RecordReplayAssert("HTMLDocumentParser::EnqueueTokenizedChunk Done");
+  recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk Done");
 }
 
 void HTMLDocumentParser::DidReceiveEncodingDataFromBackgroundParser(
@@ -1601,7 +1596,7 @@ void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
   TRACE_EVENT2("blink", "HTMLDocumentParser::appendBytes", "size",
                (unsigned)length, "parser", (void*)this);
 
-  V8RecordReplayAssert("HTMLDocumentParser::AppendBytes %lu %u", length, data[0]);
+  recordreplay::Assert("HTMLDocumentParser::AppendBytes %lu %u", length, data[0]);
 
   DCHECK(Thread::MainThread()->IsCurrentThread());
 

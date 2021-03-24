@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
@@ -35,8 +36,6 @@
 #include "third_party/blink/renderer/core/html_tokenizer_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 
 namespace blink {
 
@@ -130,7 +129,7 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
-  V8RecordReplayAssert("HTMLTokenizer::NextToken Start %u %u",
+  recordreplay::Assert("HTMLTokenizer::NextToken Start %u %u",
                        source.length(), source.CurrentChar());
 
   // If we have a token in progress, then we're supposed to be called back
@@ -148,18 +147,18 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     temporary_buffer_.clear();
     if (state_ == HTMLTokenizer::kDataState) {
       // We're back in the data state, so we must be done with the tag.
-      V8RecordReplayAssert("HTMLTokenizer::NextToken #1");
+      recordreplay::Assert("HTMLTokenizer::NextToken #1");
       return true;
     }
   }
 
   if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) {
-    V8RecordReplayAssert("HTMLTokenizer::NextToken #2");
+    recordreplay::Assert("HTMLTokenizer::NextToken #2");
     return HaveBufferedCharacterToken();
   }
   UChar cc = input_stream_preprocessor_.NextInputCharacter();
 
-  V8RecordReplayAssert("HTMLTokenizer::NextToken #3 %d", state_);
+  recordreplay::Assert("HTMLTokenizer::NextToken #3 %d", state_);
 
   // Source: http://www.whatwg.org/specs/web-apps/current-work/#tokenisation0
   switch (state_) {

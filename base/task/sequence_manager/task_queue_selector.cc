@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
@@ -15,10 +16,8 @@
 #include "base/trace_event/base_tracing.h"
 
 #ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" size_t V8RecordReplayPointerId(void* ptr);
 #else
-static void V8RecordReplayAssert(const char* format, ...) {}
 static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
 #endif
 
@@ -179,11 +178,11 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
     SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService Start");
+  recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService Start");
 
   auto highest_priority = GetHighestPendingPriority(option);
   if (!highest_priority.has_value()) {
-    V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #1");
+    recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #1");
     return nullptr;
   }
 
@@ -205,7 +204,7 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
             :
 #endif
             ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
-    V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #2 %lu",
+    recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #2 %lu",
                          V8RecordReplayPointerId(queue));
     return queue;
   }
@@ -226,7 +225,7 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
     immediate_starvation_count_ = 0;
   }
 
-  V8RecordReplayAssert("TaskQueueSelector::SelectWorkQueueToService #3 %lu",
+  recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #3 %lu",
                        V8RecordReplayPointerId(queue));
   return queue;
 }
@@ -244,18 +243,18 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
 
 Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
     SelectTaskOption option) const {
-  V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority Start %d", option);
+  recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority Start %d", option);
 
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!active_priority_tracker_.HasActivePriority()) {
-    V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #1");
+    recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #1");
     return nullopt;
   }
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
   if (option != SelectTaskOption::kSkipDelayedTask) {
-    V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #2 %d", highest_priority);
+    recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #2 %d", highest_priority);
     return highest_priority;
   }
 
@@ -263,12 +262,12 @@ Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
        highest_priority = NextPriority(highest_priority)) {
     if (active_priority_tracker_.IsActive(highest_priority) &&
         !immediate_work_queue_sets_.IsSetEmpty(highest_priority)) {
-      V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #3 %d", highest_priority);
+      recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #3 %d", highest_priority);
       return highest_priority;
     }
   }
 
-  V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #4");
+  recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #4");
   return nullopt;
 }
 
@@ -288,7 +287,7 @@ TaskQueueSelector::ActivePriorityTracker::ActivePriorityTracker() = default;
 void TaskQueueSelector::ActivePriorityTracker::SetActive(
     TaskQueue::QueuePriority priority,
     bool is_active) {
-  V8RecordReplayAssert("ActivePriorityTracker::SetActive %d %d", priority, is_active);
+  recordreplay::Assert("ActivePriorityTracker::SetActive %d %d", priority, is_active);
 
   DCHECK_LT(priority, TaskQueue::QueuePriority::kQueuePriorityCount);
   DCHECK_NE(IsActive(priority), is_active);

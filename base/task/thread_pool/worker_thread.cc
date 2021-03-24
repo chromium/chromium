@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/record_replay.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
@@ -21,8 +22,6 @@
 #if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
-
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 
 namespace base {
 namespace internal {
@@ -294,7 +293,7 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
 #endif  // defined(OS_WIN)
 
 void WorkerThread::RunWorker() {
-  V8RecordReplayAssert("WorkerThread::RunWorker Start");
+  recordreplay::Assert("WorkerThread::RunWorker Start");
 
   DCHECK_EQ(self_, this);
   TRACE_EVENT_INSTANT0("base", "WorkerThread born", TRACE_EVENT_SCOPE_THREAD);
@@ -303,11 +302,11 @@ void WorkerThread::RunWorker() {
   if (worker_thread_observer_)
     worker_thread_observer_->OnWorkerThreadMainEntry();
 
-  V8RecordReplayAssert("WorkerThread::RunWorker #1");
+  recordreplay::Assert("WorkerThread::RunWorker #1");
 
   delegate_->OnMainEntry(this);
 
-  V8RecordReplayAssert("WorkerThread::RunWorker #2");
+  recordreplay::Assert("WorkerThread::RunWorker #2");
 
   // Background threads can take an arbitrary amount of time to complete, do not
   // watch them for hangs. Ignore priority boosting for now.
@@ -324,11 +323,11 @@ void WorkerThread::RunWorker() {
 
   // A WorkerThread starts out waiting for work.
   {
-    V8RecordReplayAssert("WorkerThread::RunWorker #3");
+    recordreplay::Assert("WorkerThread::RunWorker #3");
     TRACE_EVENT_END0("base", "WorkerThread active");
     delegate_->WaitForWork(&wake_up_event_);
     TRACE_EVENT_BEGIN0("base", "WorkerThread active");
-    V8RecordReplayAssert("WorkerThread::RunWorker #4");
+    recordreplay::Assert("WorkerThread::RunWorker #4");
   }
 
   while (!ShouldExit()) {
@@ -351,9 +350,9 @@ void WorkerThread::RunWorker() {
 
       TRACE_EVENT_END0("base", "WorkerThread active");
       hang_watch_scope.reset();
-      V8RecordReplayAssert("WorkerThread::RunWorker #5");
+      recordreplay::Assert("WorkerThread::RunWorker #5");
       delegate_->WaitForWork(&wake_up_event_);
-      V8RecordReplayAssert("WorkerThread::RunWorker #6");
+      recordreplay::Assert("WorkerThread::RunWorker #6");
       TRACE_EVENT_BEGIN0("base", "WorkerThread active");
       continue;
     }

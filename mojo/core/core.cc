@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,10 +44,8 @@
 #include "mojo/core/watcher_dispatcher.h"
 
 #ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" int V8RecordReplayPointerId(void* ptr);
 #else
-static void V8RecordReplayAssert(const char* format, ...) {}
 static int V8RecordReplayPointerId(void* ptr) { return 0; }
 #endif
 
@@ -499,7 +498,7 @@ MojoResult Core::CreateMessagePipe(const MojoCreateMessagePipeOptions* options,
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
 
-  V8RecordReplayAssert("Core::CreateMessagePipe %lu %lu %lu %lu",
+  recordreplay::Assert("Core::CreateMessagePipe %lu %lu %lu %lu",
                        port0.name().v1, port0.name().v2,
                        port1.name().v1, port1.name().v2);
 
@@ -596,7 +595,7 @@ MojoResult Core::FuseMessagePipes(MojoHandle handle0,
   MessagePipeDispatcher* mpd1 =
       static_cast<MessagePipeDispatcher*>(dispatcher1.get());
 
-  V8RecordReplayAssert("Core::FuseMessagePipes %lu %lu",
+  recordreplay::Assert("Core::FuseMessagePipes %lu %lu",
                        V8RecordReplayPointerId(mpd0), V8RecordReplayPointerId(mpd1));
 
   if (!mpd0->Fuse(mpd1))

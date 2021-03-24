@@ -11,17 +11,16 @@
 #include "base/debug/alias.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "mojo/core/watch.h"
 
 #ifdef OS_MAC
 extern "C" void V8RecordReplayRegisterPointer(void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" size_t V8RecordReplayPointerId(void* ptr);
 #else
 static void V8RecordReplayRegisterPointer(void* ptr) {}
 static void V8RecordReplayUnregisterPointer(void* ptr) {}
-static void V8RecordReplayAssert(const char* format, ...) {}
 static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
 #endif
 
@@ -36,7 +35,7 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
 
 void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,
                                           const HandleSignalsState& state) {
-  V8RecordReplayAssert("WatcherDispatcher::NotifyHandleState %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("WatcherDispatcher::NotifyHandleState %lu", V8RecordReplayPointerId(this));
   base::AutoLock lock(lock_);
   auto it = watched_handles_.find(dispatcher);
   if (it == watched_handles_.end())

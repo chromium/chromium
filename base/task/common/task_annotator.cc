@@ -12,15 +12,10 @@
 #include "base/hash/md5.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/sys_byteorder.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/base_tracing.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace base {
 
@@ -118,7 +113,7 @@ void TaskAnnotator::WillQueueTask(const char* trace_event_name,
 
 void TaskAnnotator::RunTask(const char* trace_event_name,
                             PendingTask* pending_task) {
-  V8RecordReplayAssert("TaskAnnotator::RunTask Start");
+  recordreplay::Assert("TaskAnnotator::RunTask Start");
 
   DCHECK(trace_event_name);
   DCHECK(pending_task);
@@ -181,7 +176,7 @@ void TaskAnnotator::RunTask(const char* trace_event_name,
   task_backtrace.back() = nullptr;
   debug::Alias(&task_backtrace);
 
-  V8RecordReplayAssert("TaskAnnotator::RunTask Done");
+  recordreplay::Assert("TaskAnnotator::RunTask Done");
 }
 
 uint64_t TaskAnnotator::GetTaskTraceID(const PendingTask& task) const {

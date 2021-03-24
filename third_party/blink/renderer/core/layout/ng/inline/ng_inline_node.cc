@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -39,8 +40,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
-
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 
 namespace blink {
 
@@ -858,9 +857,9 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 }
 
 const NGInlineNodeData& NGInlineNode::EnsureData() const {
-  V8RecordReplayAssert("NGInlineNode::EnsureData Start");
+  recordreplay::Assert("NGInlineNode::EnsureData Start");
   PrepareLayoutIfNeeded();
-  V8RecordReplayAssert("NGInlineNode::EnsureData #1");
+  recordreplay::Assert("NGInlineNode::EnsureData #1");
   return Data();
 }
 

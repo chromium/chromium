@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -43,12 +44,6 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace IPC {
 
@@ -779,7 +774,7 @@ class ChannelAssociatedGroupController
   }
 
   void NotifyEndpointOfError(Endpoint* endpoint, bool force_async) {
-    V8RecordReplayAssert("NotifyEndpointOfError Start");
+    recordreplay::Assert("NotifyEndpointOfError Start");
 
     lock_.AssertAcquired();
     DCHECK(endpoint->task_runner() && endpoint->client());
@@ -798,7 +793,7 @@ class ChannelAssociatedGroupController
                          this, endpoint->id(), base::Unretained(endpoint)));
     }
 
-    V8RecordReplayAssert("NotifyEndpointOfError Done");
+    recordreplay::Assert("NotifyEndpointOfError Done");
   }
 
   void NotifyEndpointOfErrorOnEndpointThread(mojo::InterfaceId id,
@@ -926,7 +921,7 @@ class ChannelAssociatedGroupController
   }
 
   void AcceptOnProxyThread(mojo::Message message) {
-    V8RecordReplayAssert("AcceptOnProxyThread Start");
+    recordreplay::Assert("AcceptOnProxyThread Start");
 
     DCHECK(proxy_task_runner_->BelongsToCurrentThread());
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
@@ -938,13 +933,13 @@ class ChannelAssociatedGroupController
     base::AutoLock locker(lock_);
     Endpoint* endpoint = FindEndpoint(id);
     if (!endpoint) {
-      V8RecordReplayAssert("AcceptOnProxyThread #1");
+      recordreplay::Assert("AcceptOnProxyThread #1");
       return;
     }
 
     mojo::InterfaceEndpointClient* client = endpoint->client();
     if (!client) {
-      V8RecordReplayAssert("AcceptOnProxyThread #2");
+      recordreplay::Assert("AcceptOnProxyThread #2");
       return;
     }
 
@@ -965,7 +960,7 @@ class ChannelAssociatedGroupController
     if (!result)
       RaiseError();
 
-    V8RecordReplayAssert("AcceptOnProxyThread Done");
+    recordreplay::Assert("AcceptOnProxyThread Done");
   }
 
   void AcceptSyncMessage(mojo::InterfaceId interface_id, uint32_t message_id) {

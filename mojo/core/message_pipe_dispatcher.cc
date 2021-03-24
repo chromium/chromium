@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/core/core.h"
 #include "mojo/core/node_controller.h"
@@ -19,12 +20,10 @@
 #include "mojo/core/user_message_impl.h"
 
 #ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" void V8RecordReplayRegisterPointer(void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
 extern "C" int V8RecordReplayPointerId(void* ptr);
 #else
-static void V8RecordReplayAssert(const char* format, ...) {}
 static void V8RecordReplayRegisterPointer(void* ptr) {}
 static void V8RecordReplayUnregisterPointer(void* ptr) {}
 static int V8RecordReplayPointerId(void* ptr) { return 0; }
@@ -113,13 +112,13 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
       port_, base::MakeRefCounted<PortObserverThunk>(this));
 
   V8RecordReplayRegisterPointer(this);
-  V8RecordReplayAssert("MessagePipeDispatcher %lu %lu %lu",
+  recordreplay::Assert("MessagePipeDispatcher %lu %lu %lu",
                        V8RecordReplayPointerId(this),
                        port_.name().v1, port_.name().v2);
 }
 
 bool MessagePipeDispatcher::Fuse(MessagePipeDispatcher* other) {
-  V8RecordReplayAssert("MessagePipeDispatcher::Fuse %lu %lu %lu %lu",
+  recordreplay::Assert("MessagePipeDispatcher::Fuse %lu %lu %lu %lu",
                        port_.name().v1, port_.name().v2,
                        other->port_.name().v1, other->port_.name().v2);
 

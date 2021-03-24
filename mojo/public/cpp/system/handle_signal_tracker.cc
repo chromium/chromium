@@ -5,14 +5,9 @@
 #include "mojo/public/cpp/system/handle_signal_tracker.h"
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace mojo {
 
@@ -72,14 +67,14 @@ void HandleSignalTracker::Arm() {
 
 void HandleSignalTracker::OnNotify(MojoResult result,
                                    const HandleSignalsState& state) {
-  V8RecordReplayAssert("HandleSignalTracker::OnNotify Start");
+  recordreplay::Assert("HandleSignalTracker::OnNotify Start");
 
   last_known_state_ = state;
   Arm();
   if (notification_callback_)
     notification_callback_.Run(state);
 
-  V8RecordReplayAssert("HandleSignalTracker::OnNotify Done");
+  recordreplay::Assert("HandleSignalTracker::OnNotify Done");
 }
 
 }  // namespace mojo

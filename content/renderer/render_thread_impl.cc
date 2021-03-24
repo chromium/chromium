@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -911,10 +912,8 @@ void RenderThreadImpl::SetResourceDispatcherDelegate(
   resource_dispatcher_->set_delegate(delegate);
 }
 
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-
 void RenderThreadImpl::InitializeCompositorThread() {
-  V8RecordReplayAssert("RenderThreadImpl::InitializeCompositorThread START");
+  recordreplay::Assert("RenderThreadImpl::InitializeCompositorThread START");
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
   compositor_task_runner_->PostTask(
@@ -923,7 +922,7 @@ void RenderThreadImpl::InitializeCompositorThread() {
                      false));
   GetContentClient()->renderer()->PostCompositorThreadCreated(
       compositor_task_runner_.get());
-  V8RecordReplayAssert("RenderThreadImpl::InitializeCompositorThread DONE");
+  recordreplay::Assert("RenderThreadImpl::InitializeCompositorThread DONE");
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

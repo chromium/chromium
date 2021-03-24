@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -24,12 +25,6 @@
 #include "ipc/message_filter.h"
 #include "ipc/message_filter_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace IPC {
 
@@ -304,12 +299,12 @@ void ChannelProxy::Context::OnRemoveFilter(MessageFilter* filter) {
 
 // Called on the listener's thread
 void ChannelProxy::Context::AddFilter(MessageFilter* filter) {
-  V8RecordReplayAssert("ChannelProxy::Context::AddFilter Start");
+  recordreplay::Assert("ChannelProxy::Context::AddFilter Start");
   base::AutoLock auto_lock(pending_filters_lock_);
   pending_filters_.push_back(base::WrapRefCounted(filter));
   ipc_task_runner_->PostTask(FROM_HERE,
                              base::BindOnce(&Context::OnAddFilter, this));
-  V8RecordReplayAssert("ChannelProxy::Context::AddFilter Done");
+  recordreplay::Assert("ChannelProxy::Context::AddFilter Done");
 }
 
 // Called on the listener's thread
@@ -404,10 +399,10 @@ void ChannelProxy::Context::OnDispatchBadMessage(const Message& message) {
 void ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  V8RecordReplayAssert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Start");
+  recordreplay::Assert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Start");
   if (listener_)
     listener_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
-  V8RecordReplayAssert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Done");
+  recordreplay::Assert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Done");
 }
 
 void ChannelProxy::Context::ClearChannel() {

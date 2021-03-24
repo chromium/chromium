@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
@@ -33,12 +34,6 @@
 
 #if defined(ENABLE_IPC_FUZZER)
 #include "mojo/public/cpp/bindings/message_dumper.h"
-#endif
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
 #endif
 
 namespace mojo {
@@ -225,7 +220,7 @@ ScopedMessagePipeHandle Connector::PassMessagePipe() {
 }
 
 void Connector::RaiseError() {
-  V8RecordReplayAssert("Connector::RaiseError");
+  recordreplay::Assert("Connector::RaiseError");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -241,7 +236,7 @@ void Connector::SetConnectionGroup(ConnectionGroup::Ref ref) {
 }
 
 bool Connector::WaitForIncomingMessage() {
-  V8RecordReplayAssert("Connector::WaitForIncomingMessage Start");
+  recordreplay::Assert("Connector::WaitForIncomingMessage Start");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -397,7 +392,7 @@ void Connector::OnSyncHandleWatcherHandleReady(MojoResult result) {
 }
 
 void Connector::OnHandleReadyInternal(MojoResult result) {
-  V8RecordReplayAssert("Connector::OnHandleReadyInternal Start");
+  recordreplay::Assert("Connector::OnHandleReadyInternal Start");
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -485,7 +480,7 @@ MojoResult Connector::ReadMessage(Message* message) {
 }
 
 bool Connector::DispatchMessage(Message message) {
-  V8RecordReplayAssert("Connector::DispatchMessage Start");
+  recordreplay::Assert("Connector::DispatchMessage Start");
 
   DCHECK(!paused_);
 
@@ -565,7 +560,7 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 }
 
 void Connector::ReadAllAvailableMessages() {
-  V8RecordReplayAssert("Connector::ReadAllAvailableMessages Start");
+  recordreplay::Assert("Connector::ReadAllAvailableMessages Start");
 
   if (paused_ || error_)
     return;
@@ -618,10 +613,10 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
-  V8RecordReplayAssert("Connector::HandleError Start");
+  recordreplay::Assert("Connector::HandleError Start");
 
   if (error_ || !message_pipe_.is_valid()) {
-    V8RecordReplayAssert("Connector::HandleError #1");
+    recordreplay::Assert("Connector::HandleError #1");
     return;
   }
 
@@ -636,19 +631,19 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     force_pipe_reset = true;
 
   if (force_pipe_reset) {
-    V8RecordReplayAssert("Connector::HandleError #2");
+    recordreplay::Assert("Connector::HandleError #2");
     CancelWait();
-    V8RecordReplayAssert("Connector::HandleError #3");
+    recordreplay::Assert("Connector::HandleError #3");
     internal::MayAutoLock locker(&lock_);
     message_pipe_.reset();
     MessagePipe dummy_pipe;
     message_pipe_ = std::move(dummy_pipe.handle0);
   } else {
-    V8RecordReplayAssert("Connector::HandleError #4");
+    recordreplay::Assert("Connector::HandleError #4");
     CancelWait();
   }
 
-  V8RecordReplayAssert("Connector::HandleError #5");
+  recordreplay::Assert("Connector::HandleError #5");
 
   if (force_async_handler) {
     if (!paused_)
@@ -659,7 +654,7 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
       std::move(connection_error_handler_).Run();
   }
 
-  V8RecordReplayAssert("Connector::HandleError Done");
+  recordreplay::Assert("Connector::HandleError Done");
 }
 
 void Connector::EnsureSyncWatcherExists() {

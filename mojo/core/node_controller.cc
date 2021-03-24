@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
+#include "base/record_replay.h"
 #include "base/task/current_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -33,12 +34,6 @@
 
 #if !defined(OS_NACL)
 #include "crypto/random.h"
-#endif
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
 #endif
 
 namespace mojo {
@@ -752,7 +747,7 @@ void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
 
-  V8RecordReplayAssert("NodeController::ForwardEvent %d %lu %lu %lu %lu",
+  recordreplay::Assert("NodeController::ForwardEvent %d %lu %lu %lu %lu",
                        node == name_,
                        name_.v1, name_.v2,
                        node.v1, node.v2);
@@ -1030,7 +1025,7 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
                                     Channel::MessagePtr channel_message) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  V8RecordReplayAssert("NodeController::OnEventMessage Start");
+  recordreplay::Assert("NodeController::OnEventMessage Start");
 
   auto event = DeserializeEventMessage(from_node, std::move(channel_message));
   if (!event) {
@@ -1044,7 +1039,7 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
 
   AttemptShutdownIfRequested();
 
-  V8RecordReplayAssert("NodeController::OnEventMessage Done");
+  recordreplay::Assert("NodeController::OnEventMessage Done");
 }
 
 void NodeController::OnRequestPortMerge(

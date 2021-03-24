@@ -4,18 +4,17 @@
 
 #include "mojo/core/watch.h"
 
+#include "base/record_replay.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/watcher_dispatcher.h"
 
 #ifdef OS_MAC
 extern "C" void V8RecordReplayRegisterPointer(void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" size_t V8RecordReplayPointerId(void* ptr);
 #else
 static void V8RecordReplayRegisterPointer(void* ptr) {}
 static void V8RecordReplayUnregisterPointer(void* ptr) {}
-static void V8RecordReplayAssert(const char* format, ...) {}
 static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
 #endif
 
@@ -39,7 +38,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
                         bool allowed_to_call_callback) {
   AssertWatcherLockAcquired();
 
-  V8RecordReplayAssert("Watch::NotifyState %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("Watch::NotifyState %lu", V8RecordReplayPointerId(this));
 
   // NOTE: This method must NEVER call into |dispatcher_| directly, because it
   // may be called while |dispatcher_| holds a lock.
@@ -59,7 +58,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
              !state.can_satisfy_any(signals_)) {
     rv = MOJO_RESULT_FAILED_PRECONDITION;
     if (allowed_to_call_callback && rv != last_known_result_) {
-      V8RecordReplayAssert("Watch::NotifyState #1 %lu", V8RecordReplayPointerId(this));
+      recordreplay::Assert("Watch::NotifyState #1 %lu", V8RecordReplayPointerId(this));
       request_context->AddWatchNotifyFinalizer(
           this, MOJO_RESULT_FAILED_PRECONDITION, state);
     }
@@ -72,7 +71,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
 }
 
 void Watch::Cancel() {
-  V8RecordReplayAssert("Watch::Cancel %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("Watch::Cancel %lu", V8RecordReplayPointerId(this));
   RequestContext::current()->AddWatchCancelFinalizer(this);
 }
 

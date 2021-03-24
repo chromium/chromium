@@ -31,6 +31,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -96,8 +97,6 @@
 // https://github.com/llvm/llvm-project/blob/master/compiler-rt/lib/profile/InstrProfiling.h
 extern "C" void __llvm_profile_set_file_object(FILE* File, int EnableMerge);
 #endif
-
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 
 namespace content {
 namespace {
@@ -539,7 +538,7 @@ void ChildThreadImpl::OnFieldTrialGroupFinalized(
 }
 
 void ChildThreadImpl::Init(const Options& options) {
-  V8RecordReplayAssert("ChildThreadImpl::Init Start");
+  recordreplay::Assert("ChildThreadImpl::Init Start");
 
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
   g_lazy_child_thread_impl_tls.Pointer()->Set(this);
@@ -686,7 +685,7 @@ void ChildThreadImpl::Init(const Options& options) {
         *base::CommandLine::ForCurrentProcess());
   }
 
-  V8RecordReplayAssert("ChildThreadImpl::Init Done");
+  recordreplay::Assert("ChildThreadImpl::Init Done");
 }
 
 ChildThreadImpl::~ChildThreadImpl() {

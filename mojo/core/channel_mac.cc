@@ -23,6 +23,7 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 
@@ -31,7 +32,6 @@ kern_return_t fileport_makeport(int fd, mach_port_t*);
 int fileport_makefd(mach_port_t);
 }  // extern "C"
 
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
 extern "C" int V8IsReplaying();
 
@@ -229,7 +229,7 @@ class ChannelMac : public Channel,
   bool RequestSendDeadNameNotification() {
     base::mac::ScopedMachSendRight previous;
 
-    V8RecordReplayAssert("RequestSendDeadNameNotification %d %d %d %d",
+    recordreplay::Assert("RequestSendDeadNameNotification %d %d %d %d",
                          send_port_.get(), MACH_NOTIFY_DEAD_NAME,
                          receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE);
 

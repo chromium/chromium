@@ -17,6 +17,7 @@
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "base/record_replay.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -32,8 +33,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 
 namespace cc {
 namespace {
@@ -1503,7 +1502,7 @@ void TileManager::FlushAndIssueSignals() {
 }
 
 void TileManager::IssueSignals() {
-  V8RecordReplayAssert("TileManager::IssueSignals Start");
+  recordreplay::Assert("TileManager::IssueSignals Start");
 
   // Ready to activate.
   if (signals_.activate_tile_tasks_completed &&
@@ -1556,7 +1555,7 @@ void TileManager::IssueSignals() {
         CheckerImageTracker::DecodeType::kRaster);
   }
 
-  V8RecordReplayAssert("TileManager::IssueSignals Done");
+  recordreplay::Assert("TileManager::IssueSignals Done");
 }
 
 void TileManager::CheckIfMoreTilesNeedToBePrepared() {
