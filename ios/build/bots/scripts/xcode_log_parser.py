@@ -420,6 +420,21 @@ class Xcode11LogParser(object):
       diagnostic_folder = '%s_diagnostic' % xcresult
       Xcode11LogParser._export_data(xcresult, diagnostics_ref, 'directory',
                                     diagnostic_folder)
+      # Copy log files out of diagnostic_folder if any. Use |name_count| to
+      # generate an index for same name files produced from Xcode parallel
+      # testing.
+      name_count = {}
+      for root, dirs, files in os.walk(diagnostic_folder):
+        for filename in files:
+          if 'StandardOutputAndStandardError' in filename:
+            file_index = name_count.get(filename, 0)
+            output_filename = (
+                '%s_simulator#%d_%s' %
+                (os.path.basename(output_path), file_index, filename))
+            output_filepath = os.path.join(output_path, os.pardir,
+                                           output_filename)
+            shutil.copy(os.path.join(root, filename), output_filepath)
+            name_count[filename] = name_count.get(filename, 0) + 1
       file_util.zip_and_remove_folder(diagnostic_folder)
     except KeyError:
       LOGGER.warn('Did not parse diagnosticsRef from %s!' % xcresult)
