@@ -42,6 +42,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 
 using content::WebContents;
 
@@ -245,6 +246,14 @@ class CommandsApiTest : public ExtensionApiTest {
     waiter.WaitForActivation();
     ASSERT_TRUE(browser()->window()->IsActive());
 #endif
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits. This primarily impacts chromeos for the test
+    // CommandsApiTest.ContinuePropagation.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
  protected:
