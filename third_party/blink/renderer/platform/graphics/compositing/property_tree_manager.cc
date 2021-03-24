@@ -439,7 +439,12 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
       transform_node.IsInSubtreeOfPageScale();
 
   compositor_node.will_change_transform =
-      transform_node.RequiresCompositingForWillChangeTransform();
+      transform_node.RequiresCompositingForWillChangeTransform() &&
+      // cc assumes preference of performance over raster quality for
+      // will-change:transform, but for SVG we still prefer raster quality, so
+      // don't pass will-change:transform to cc for SVG.
+      // TODO(crbug.com/1186020): find a better way to handle this.
+      !transform_node.IsForSVGChild();
 
   if (const auto* sticky_constraint = transform_node.GetStickyConstraint()) {
     cc::StickyPositionNodeData& sticky_data =
