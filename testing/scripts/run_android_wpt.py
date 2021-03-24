@@ -135,6 +135,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       "--no-pause-after-test",
       "--no-capture-stdio",
       "--no-manifest-download",
+      "--binary-arg=--enable-blink-test-features",
+      "--binary-arg=--disable-field-trial-config",
     ])
     # if metadata was created then add the metadata directory
     # to the list of wpt arguments
