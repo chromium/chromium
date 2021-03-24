@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/environment.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
@@ -81,6 +82,9 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     // Make sure the loaded locale is "en-US".
     if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
         kDefaultLocale) {
+      // Linux uses environment to determine locale.
+      std::unique_ptr<base::Environment> env(base::Environment::Create());
+      env->SetVar("LANG", kDefaultLocale);
       ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
           kDefaultLocale);
     }
