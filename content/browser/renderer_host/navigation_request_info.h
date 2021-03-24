@@ -42,7 +42,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const base::UnguessableToken& devtools_frame_token,
       bool obey_origin_policy,
       net::HttpRequestHeaders cors_exempt_headers,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      const base::Optional<std::vector<net::SourceStream::SourceType>>&
+          devtools_accepted_stream_types);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -94,6 +96,12 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // TODO(https://crbug.com/1129326): Set this for top-level navigation requests
   // too once the UX story is sorted out.
   const network::mojom::ClientSecurityStatePtr client_security_state;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<std::vector<net::SourceStream::SourceType>>
+      devtools_accepted_stream_types;
 };
 
 }  // namespace content

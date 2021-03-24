@@ -97,7 +97,8 @@ class NavigationURLLoaderTest : public testing::Test {
             base::UnguessableToken::Create() /* devtools_frame_token */,
             false /* obey_origin_policy */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
-            nullptr /* client_security_state */));
+            nullptr /* client_security_state */,
+            base::nullopt /* devtools_accepted_stream_types */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, nullptr, delegate,

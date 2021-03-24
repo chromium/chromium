@@ -214,7 +214,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::UnguessableToken::Create() /* devtools_frame_token */,
             false /* obey_origin_policy */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
-            nullptr /* client_security_state */));
+            nullptr /* client_security_state */,
+            base::nullopt /* devtools_accepted_stream_types */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = base::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(

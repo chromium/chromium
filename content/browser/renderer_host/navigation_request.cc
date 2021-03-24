@@ -3339,8 +3339,11 @@ void NavigationRequest::OnStartChecksComplete(
   // Give DevTools a chance to override begin params (headers, skip SW)
   // before actually loading resource.
   bool report_raw_headers = false;
+  base::Optional<std::vector<net::SourceStream::SourceType>>
+      devtools_accepted_stream_types;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
-      frame_tree_node_, begin_params_.get(), &report_raw_headers);
+      frame_tree_node_, begin_params_.get(), &report_raw_headers,
+      &devtools_accepted_stream_types);
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);
 
   // Merge headers with embedder's headers.
@@ -3406,7 +3409,8 @@ void NavigationRequest::OnStartChecksComplete(
                                    : nullptr,
           devtools_navigation_token(), frame_tree_node_->devtools_frame_token(),
           OriginPolicyThrottle::ShouldRequestOriginPolicy(common_params_->url),
-          std::move(cors_exempt_headers), std::move(client_security_state)),
+          std::move(cors_exempt_headers), std::move(client_security_state),
+          devtools_accepted_stream_types),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
       this, loader_type, CreateCookieAccessObserver(),

@@ -64,9 +64,12 @@ class InspectorIssue;
 
 namespace devtools_instrumentation {
 
-void ApplyNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
-                                  mojom::BeginNavigationParams* begin_params,
-                                  bool* report_raw_headers);
+void ApplyNetworkRequestOverrides(
+    FrameTreeNode* frame_tree_node,
+    mojom::BeginNavigationParams* begin_params,
+    bool* report_raw_headers,
+    base::Optional<std::vector<net::SourceStream::SourceType>>*
+        devtools_accepted_stream_types);
 
 // Returns true if devtools want |*override_out| to be used.
 // (A true return and |*override_out| being nullopt means no user agent client

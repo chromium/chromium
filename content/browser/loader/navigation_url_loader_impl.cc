@@ -229,6 +229,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         request_info->begin_params->web_bundle_token;
     new_request->web_bundle_token_params->render_process_id = render_process_id;
   }
+  new_request->devtools_accepted_stream_types =
+      request_info->devtools_accepted_stream_types;
 
   new_request->resource_type = static_cast<int>(
       request_info->is_main_frame ? blink::mojom::ResourceType::kMainFrame

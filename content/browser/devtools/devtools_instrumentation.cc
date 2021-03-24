@@ -395,9 +395,12 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   return false;
 }
 
-void ApplyNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
-                                  mojom::BeginNavigationParams* begin_params,
-                                  bool* report_raw_headers) {
+void ApplyNetworkRequestOverrides(
+    FrameTreeNode* frame_tree_node,
+    mojom::BeginNavigationParams* begin_params,
+    bool* report_raw_headers,
+    base::Optional<std::vector<net::SourceStream::SourceType>>*
+        devtools_accepted_stream_types) {
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
