@@ -202,24 +202,42 @@ void Vp8Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
 
   // Wrapper for vpx_codec_encode() to access the YUV data in the |video_frame|.
   // Only the VISIBLE rectangle within |video_frame| is exposed to the codec.
+  vpx_img_fmt_t vpx_format = video_frame->format() == PIXEL_FORMAT_NV12
+                                 ? VPX_IMG_FMT_NV12
+                                 : VPX_IMG_FMT_I420;
   vpx_image_t vpx_image;
   vpx_image_t* const result = vpx_img_wrap(
-      &vpx_image,
-      VPX_IMG_FMT_I420,
-      frame_size.width(),
-      frame_size.height(),
-      1,
+      &vpx_image, vpx_format, frame_size.width(), frame_size.height(), 1,
       video_frame->data(VideoFrame::kYPlane));
   DCHECK_EQ(result, &vpx_image);
-  vpx_image.planes[VPX_PLANE_Y] =
-      video_frame->visible_data(VideoFrame::kYPlane);
-  vpx_image.planes[VPX_PLANE_U] =
-      video_frame->visible_data(VideoFrame::kUPlane);
-  vpx_image.planes[VPX_PLANE_V] =
-      video_frame->visible_data(VideoFrame::kVPlane);
-  vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
-  vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
-  vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
+  switch (vpx_format) {
+    case VPX_IMG_FMT_I420:
+      vpx_image.planes[VPX_PLANE_Y] =
+          video_frame->visible_data(VideoFrame::kYPlane);
+      vpx_image.planes[VPX_PLANE_U] =
+          video_frame->visible_data(VideoFrame::kUPlane);
+      vpx_image.planes[VPX_PLANE_V] =
+          video_frame->visible_data(VideoFrame::kVPlane);
+      vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
+      vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
+      vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);
+      break;
+    case VPX_IMG_FMT_NV12:
+      vpx_image.planes[VPX_PLANE_Y] =
+          video_frame->visible_data(VideoFrame::kYPlane);
+      // In libvpx, the UV plane of NV12 frames is represented by two planes
+      // with the same stride, shifted by one byte.
+      vpx_image.planes[VPX_PLANE_U] =
+          video_frame->visible_data(VideoFrame::kUVPlane);
+      vpx_image.planes[VPX_PLANE_V] = vpx_image.planes[VPX_PLANE_U] + 1;
+      vpx_image.stride[VPX_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
+      vpx_image.stride[VPX_PLANE_U] = video_frame->stride(VideoFrame::kUVPlane);
+      vpx_image.stride[VPX_PLANE_V] = video_frame->stride(VideoFrame::kUVPlane);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 
   // The frame duration given to the VP8 codec affects a number of important
   // behaviors, including: per-frame bandwidth, CPU time spent encoding,

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -123,8 +124,15 @@ void VideoCaptureClient::OnNewBuffer(
 
   if (!buffer_handle->is_read_only_shmem_region() &&
       !buffer_handle->is_shared_buffer_handle()) {
+#if defined(OS_MAC)
+    if (!buffer_handle->is_gpu_memory_buffer_handle()) {
+      NOTIMPLEMENTED();
+      return;
+    }
+#else
     NOTIMPLEMENTED();
     return;
+#endif
   }
   const auto insert_result = client_buffers_.emplace(
       std::make_pair(buffer_id, std::move(buffer_handle)));
@@ -145,7 +153,8 @@ void VideoCaptureClient::OnBufferReady(
   scaled_buffers.clear();
 
   bool consume_buffer = !frame_deliver_callback_.is_null();
-  if (buffer->info->pixel_format != media::PIXEL_FORMAT_I420 &&
+  if (buffer->info->pixel_format != media::PIXEL_FORMAT_NV12 &&
+      buffer->info->pixel_format != media::PIXEL_FORMAT_I420 &&
       buffer->info->pixel_format != media::PIXEL_FORMAT_Y16) {
     consume_buffer = false;
     LOG(DFATAL) << "Wrong pixel format, got pixel format:"
@@ -182,7 +191,18 @@ void VideoCaptureClient::OnBufferReady(
   }
   scoped_refptr<media::VideoFrame> frame;
   BufferFinishedCallback buffer_finished_callback;
-  if (buffer_iter->second->is_shared_buffer_handle()) {
+  if (buffer_iter->second->is_gpu_memory_buffer_handle()) {
+#if defined(OS_MAC)
+    frame = media::VideoFrame::WrapUnacceleratedIOSurface(
+        buffer_iter->second->get_gpu_memory_buffer_handle().Clone(),
+        buffer->info->visible_rect, buffer->info->timestamp);
+    buffer_finished_callback = media::BindToCurrentLoop(base::BindOnce(
+        &VideoCaptureClient::OnClientBufferFinished, weak_factory_.GetWeakPtr(),
+        buffer->buffer_id, base::ReadOnlySharedMemoryMapping()));
+#else
+    NOTREACHED();
+#endif
+  } else if (buffer_iter->second->is_shared_buffer_handle()) {
     // TODO(crbug.com/843117): Remove this case after migrating
     // media::VideoCaptureDeviceClient to the new shared memory API.
     auto mapping_iter = mapped_buffers_.find(buffer->buffer_id);
