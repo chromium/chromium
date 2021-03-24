@@ -191,9 +191,11 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   // StyleDifference handles changes in table-layout, border-spacing.
   if (old_style) {
-    bool borders_changed = !old_style->BorderVisuallyEqual(StyleRef()) ||
-                           (diff.TextDecorationOrColorChanged() &&
-                            StyleRef().HasBorderColorReferencingCurrentColor());
+    bool borders_changed =
+        !old_style->BorderVisuallyEqual(StyleRef()) ||
+        old_style->GetWritingMode() != StyleRef().GetWritingMode() ||
+        (diff.TextDecorationOrColorChanged() &&
+         StyleRef().HasBorderColorReferencingCurrentColor());
     bool collapse_changed =
         StyleRef().BorderCollapse() != old_style->BorderCollapse();
     if (borders_changed || collapse_changed)

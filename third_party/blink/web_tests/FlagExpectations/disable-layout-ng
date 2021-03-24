@@ -796,6 +796,7 @@ crbug.com/958381 external/wpt/css/css-text/white-space/tab-bidi-001.html [ Failu
 crbug.com/958381 external/wpt/css/css-text/word-break/break-boundary-2-chars-001.html [ Failure ]
 crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.html [ Failure ]
 crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.worker.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/border-writing-mode-dynamic-001.html [ Failure ]
 
 ### Should we rebase virtuals too?
 crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Failure ]
