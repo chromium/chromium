@@ -230,6 +230,9 @@ public final class EventConstants {
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 
+    /** Mic toolbar IPH event */
+    public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
+
     /**
      * Do not instantiate.
      */

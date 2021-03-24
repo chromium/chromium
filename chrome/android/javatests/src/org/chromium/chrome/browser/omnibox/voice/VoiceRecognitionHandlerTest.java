@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -110,6 +111,7 @@ public class VoiceRecognitionHandlerTest {
     private TestWindowAndroid mWindowAndroid;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
     private List<VoiceResult> mAutocompleteVoiceResults;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
             new OnSuggestionsReceivedListener() {
@@ -165,8 +167,9 @@ public class VoiceRecognitionHandlerTest {
         @VoiceIntentTarget
         private int mVoiceConfidenceValueTarget;
 
-        public TestVoiceRecognitionHandler(Delegate delegate) {
-            super(delegate, () -> mAssistantVoiceSearchService, () -> {});
+        public TestVoiceRecognitionHandler(
+                Delegate delegate, ObservableSupplierImpl<Profile> profileSupplier) {
+            super(delegate, () -> mAssistantVoiceSearchService, () -> {}, profileSupplier);
         }
 
         @Override
@@ -598,12 +601,14 @@ public class VoiceRecognitionHandlerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mLifecycleDispatcher = mActivityTestRule.getActivity().getLifecycleDispatcher();
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());
+            mProfileSupplier = new ObservableSupplierImpl<>();
+        });
 
         mDataProvider = new TestDataProvider();
         mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
-        mHandler = new TestVoiceRecognitionHandler(mDelegate);
+        mHandler = new TestVoiceRecognitionHandler(mDelegate, mProfileSupplier);
         mHandler.addObserver(mObserver);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
 
@@ -718,7 +723,7 @@ public class VoiceRecognitionHandlerTest {
     @SmallTest
     @Feature("VoiceSearchAudioCapturePolicy")
     @EnableFeatures({ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY})
-    public void testIsVoiceSearchEnabled_UpdateAfterProfileLoads() {
+    public void testIsVoiceSearchEnabled_UpdateAfterProfileSet() {
         setAudioCapturePref(true);
         mPermissionDelegate.setCanRequestPermission(true);
         mPermissionDelegate.setHasPermission(true);
@@ -727,7 +732,7 @@ public class VoiceRecognitionHandlerTest {
 
         setAudioCapturePref(false);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHandler.onProfileAdded(Profile.getLastUsedRegularProfile()); });
+                () -> { mProfileSupplier.set(Profile.getLastUsedRegularProfile()); });
         Assert.assertFalse(isVoiceSearchEnabled());
         verify(mObserver).onVoiceAvailabilityImpacted();
     }

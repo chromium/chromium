@@ -129,6 +129,12 @@ public @interface FeatureConstants {
      */
     String DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_FEATURE = "IPH_DownloadInfoBarDownloadsAreFaster";
 
+    /**
+     * An IPH feature attached to the mic button in the toolbar prompring user
+     * to try voice.
+     */
+    String IPH_MIC_TOOLBAR_FEATURE = "IPH_MicToolbar";
+
     /** An IPH feature to prompt users to open the new tab page after a navigation. */
     String NEW_TAB_PAGE_HOME_BUTTON_FEATURE = "IPH_NewTabPageHomeButton";
 

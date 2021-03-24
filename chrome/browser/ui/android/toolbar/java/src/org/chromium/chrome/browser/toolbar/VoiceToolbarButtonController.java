@@ -9,6 +9,8 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
@@ -19,7 +21,9 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,6 +41,8 @@ public class VoiceToolbarButtonController
      * Default minimum width to show the voice search button.
      */
     public static final int DEFAULT_MIN_WIDTH_DP = 360;
+
+    private static final String IPH_PROMO_PARAM = "generic_message";
 
     private final Supplier<Tab> mActiveTabSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -153,7 +159,42 @@ public class VoiceToolbarButtonController
     @Override
     public ButtonData get(Tab tab) {
         mButtonData.setCanShow(shouldShowVoiceButton(tab));
+        maybeSetIphCommandBuilder(tab);
         return mButtonData;
+    }
+
+    /**
+     * Since Features are not yet initialized when ButtonData is created, use the
+     * fist available opportunity to create and set IPHCommandBuilder. Once set it's
+     * never updated.
+     */
+    private void maybeSetIphCommandBuilder(Tab tab) {
+        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
+                || !FeatureList.isInitialized()
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID)) {
+            return;
+        }
+
+        boolean useGenericMessage = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID, IPH_PROMO_PARAM, true);
+        @StringRes
+        int text = useGenericMessage ? R.string.iph_mic_toolbar_generic_message_text
+                                     : R.string.iph_mic_toolbar_example_query_text;
+        @StringRes
+        int accessibilityText =
+                useGenericMessage ? R.string.iph_mic_toolbar_generic_message_accessibility_text
+                                  : R.string.iph_mic_toolbar_example_query_accessibility_text;
+
+        IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, text, accessibilityText);
+
+        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
+        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
+                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
+                currentSpec.getSupportsTinting(), iphCommandBuilder);
+
+        mButtonData.setButtonSpec(newSpec);
     }
 
     private boolean shouldShowVoiceButton(Tab tab) {

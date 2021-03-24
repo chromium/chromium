@@ -8125,6 +8125,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_LiveCaption" label="In product help for Live Caption."/>
   <suffix name="IPH_LongPressToolbarTip"
       label="In product help LongPress toolbar."/>
+  <suffix name="IPH_MicToolbar"
+      label="In product help for the mic button in the toolbar."/>
   <suffix name="IPH_NewIncognitoTabTip"
       label="In product help new incognito tab tip."/>
   <suffix name="IPH_NewTab" label="In product help new tab."/>

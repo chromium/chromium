@@ -27929,6 +27929,7 @@ should be able to be added at any place in this file.
   <suffix name="IncognitoWindow" label="For IncognitoWindow feature."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
+  <suffix name="MicToolbar" label="In product help for toolbar mic."/>
   <suffix name="NewIncognitoTabTip" label="For NewIncognitoTabTip feature."/>
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>

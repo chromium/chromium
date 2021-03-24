@@ -17,13 +17,16 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -37,6 +40,8 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -53,7 +58,7 @@ import java.util.List;
 /**
  * Class containing functionality related to voice search.
  */
-public class VoiceRecognitionHandler implements ProfileManager.Observer {
+public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";
 
     /**
@@ -153,6 +158,8 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private TranslateBridgeWrapper mTranslateBridgeWrapper;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Runnable mLaunchAssistanceSettingsAction;
+    private CallbackController mCallbackController = new CallbackController();
+    private ObservableSupplier<Profile> mProfileSupplier;
 
     /**
      * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
@@ -362,12 +369,14 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
 
     public VoiceRecognitionHandler(Delegate delegate,
             Supplier<AssistantVoiceSearchService> assistantVoiceSearchServiceSupplier,
-            Runnable launchAssistanceSettingsAction) {
+            Runnable launchAssistanceSettingsAction, ObservableSupplier<Profile> profileSupplier) {
         mDelegate = delegate;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchServiceSupplier;
         mLaunchAssistanceSettingsAction = launchAssistanceSettingsAction;
         mTranslateBridgeWrapper = new TranslateBridgeWrapper();
-        ProfileManager.addObserver(this);
+        mProfileSupplier = profileSupplier;
+        mProfileSupplier.addObserver(
+                mCallbackController.makeCancelable(profile -> notifyVoiceAvailabilityImpacted()));
     }
 
     public void addObserver(Observer observer) {
@@ -384,17 +393,9 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         }
     }
 
-    /**
-     * After profile is created and prefs loaded ensure that UI is updated and the mic shown/hidden
-     * as needed.
-     */
-    @Override
-    public void onProfileAdded(Profile profile) {
+    public void setActiveProfile(Profile profile) {
         notifyVoiceAvailabilityImpacted();
     }
-
-    @Override
-    public void onProfileDestroyed(Profile profile) {}
 
     /**
      * Instantiated when a voice search is performed to monitor the web contents for a navigation
@@ -470,6 +471,15 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 return;
             }
 
+            // Log successful voice use for IPH purposes.
+            if (FeatureList.isInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID)
+                    && mProfileSupplier.hasValue()) {
+                // mic shouldn't be visibble
+                assert !mProfileSupplier.get().isOffTheRecord();
+                Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+                tracker.notifyEvent(EventConstants.SUCCESSFUL_VOICE_SEARCH);
+            }
             // Assume transcription by default when the page URL feature is disabled.
             @AssistantActionPerformed
             int actionPerformed = AssistantActionPerformed.TRANSCRIPTION;
@@ -1007,7 +1017,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             PrefService prefService = getPrefService();
             // If the PrefService isn't initialized yet we won't know here whether or not voice
             // search is allowed by policy. In that case, treat voice search as enabled but check
-            // again before starting voice search.
+            // again when a Profile is set and PrefService becomes available.
             if (prefService != null && !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
                 return false;
             }
@@ -1252,10 +1262,5 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     /** Sets the start time for testing. */
     void setQueryStartTimeForTesting(Long queryStartTimeMs) {
         mQueryStartTimeMs = queryStartTimeMs;
-    }
-
-    /** Clean up. Creators must call this when the object is no longer needed. */
-    public void destroy() {
-        ProfileManager.removeObserver(this);
     }
 }

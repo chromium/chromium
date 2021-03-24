@@ -174,8 +174,9 @@ class LocationBarMediator
         mLocationBarDataProvider.addObserver(this);
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mLocaleManager = localeManager;
-        mVoiceRecognitionHandler = new VoiceRecognitionHandler(
-                this, mAssistantVoiceSearchServiceSupplier, launchAssistanceSettingsAction);
+        mVoiceRecognitionHandler =
+                new VoiceRecognitionHandler(this, mAssistantVoiceSearchServiceSupplier,
+                        launchAssistanceSettingsAction, profileSupplier);
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
@@ -223,7 +224,6 @@ class LocationBarMediator
         mUrlCoordinator = null;
         mPrivacyPreferencesManager = null;
         mVoiceRecognitionHandler.removeObserver(this);
-        mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();
