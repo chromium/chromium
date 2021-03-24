@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.page_info;
+package org.chromium.chrome.browser.omnibox.status;
 
 import android.app.Activity;
 import android.os.Handler;
@@ -21,9 +21,9 @@ import org.chromium.components.feature_engagement.Tracker;
 /**
  * Controller to manage when an IPH bubble for PageInfo is shown.
  */
-public class PageInfoIPHController {
+class PageInfoIPHController {
     private final UserEducationHelper mUserEducationHelper;
-    View mStatusView;
+    private final View mStatusView;
 
     /**
      * Constructor
