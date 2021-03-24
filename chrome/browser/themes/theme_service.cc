@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -237,7 +238,10 @@ base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
 
 const CustomThemeSupplier*
 ThemeService::BrowserThemeProvider::GetThemeSupplier() const {
-  return delegate_->GetThemeSupplier();
+  bool should_ignore_theme_supplier =
+      incognito_ && base::FeatureList::IsEnabled(
+                        features::kIncognitoBrandConsistencyForDesktop);
+  return should_ignore_theme_supplier ? nullptr : delegate_->GetThemeSupplier();
 }
 
 // ThemeService ---------------------------------------------------------------

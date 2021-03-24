@@ -302,11 +302,12 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
   DCHECK(profile_->HasAnyOffTheRecordProfile());
+
   // Cookie controls service returns the same result for all off-the-record
   // profiles, so it doesn't matter which of them we use.
+  Profile* incognito_profile = profile_->GetAllOffTheRecordProfiles()[0];
   CookieControlsService* cookie_controls_service =
-      CookieControlsServiceFactory::GetForProfile(
-          profile_->GetAllOffTheRecordProfiles()[0]);
+      CookieControlsServiceFactory::GetForProfile(incognito_profile);
 
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(reading_list::switches::IsReadingListEnabled()
@@ -336,8 +337,12 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   replacements["cookieControlsTooltipText"] = l10n_util::GetStringUTF8(
       IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT);
 
+  // The ThemeProvider can have different behavior depending on regular or
+  // Incognito profile. Therefore, making use of Incognito profile explicitly
+  // here.
   const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(profile_);
+      ThemeService::GetThemeProviderForProfile(incognito_profile);
+
   replacements["hasCustomBackground"] =
       tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
 
