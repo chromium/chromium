@@ -523,3 +523,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TwoClientPasswordsSyncTest, ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TwoClientPasswordsSyncTestWithVerifier,
+                         ::testing::Bool());
