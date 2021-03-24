@@ -396,7 +396,7 @@ TEST_F(InputMethodManagerImplTest, TestCandidateWindowObserver) {
   manager_->RemoveCandidateWindowObserver(&observer);
 }
 
-TEST_F(InputMethodManagerImplTest, TestObserver) {
+TEST_F(InputMethodManagerImplTest, DISABLED_TestObserver) {
   // For http://crbug.com/19655#c11 - (3). browser_state_monitor_unittest.cc is
   // also for the scenario.
   std::vector<std::string> keyboard_layouts;
@@ -472,7 +472,7 @@ TEST_F(InputMethodManagerImplTest, TestGetSupportedInputMethods) {
   EXPECT_TRUE(Contain(methods, *id_to_find));
 }
 
-TEST_F(InputMethodManagerImplTest, TestEnableLayouts) {
+TEST_F(InputMethodManagerImplTest, DISABLED_TestEnableLayouts) {
   // Currently 8 keyboard layouts are supported for en-US, and 1 for ja. See
   // ibus_input_method.txt.
   std::vector<std::string> keyboard_layouts;
@@ -500,7 +500,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsAndCurrentInputMethod) {
   EXPECT_EQ(ImeIdFromEngineId("xkb:se::swe"), im_id);
 }
 
-TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
+TEST_F(InputMethodManagerImplTest,
+       DISABLED_TestEnableLayoutsNonUsHardwareKeyboard) {
   InitComponentExtension();
   // The physical layout is French.
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
@@ -530,7 +531,8 @@ TEST_F(InputMethodManagerImplTest, TestEnableLayoutsNonUsHardwareKeyboard) {
             manager_->GetActiveIMEState()->GetActiveInputMethodIds().front());
 }
 
-TEST_F(InputMethodManagerImplTest, TestEnableMultipleHardwareKeyboardLayout) {
+TEST_F(InputMethodManagerImplTest,
+       DISABLED_TestEnableMultipleHardwareKeyboardLayout) {
   InitComponentExtension();
   // The physical layouts are French and Hungarian.
   manager_->GetInputMethodUtil()->SetHardwareKeyboardLayoutForTesting(
@@ -942,7 +944,7 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
             menu_manager_->GetCurrentInputMethodMenuItemList().at(0).key);
 }
 
-TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
+TEST_F(InputMethodManagerImplTest, DISABLED_TestNextInputMethod) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
@@ -998,7 +1000,7 @@ TEST_F(InputMethodManagerImplTest, TestNextInputMethod) {
   manager_->RemoveObserver(&observer);
 }
 
-TEST_F(InputMethodManagerImplTest, TestLastUsedInputMethod) {
+TEST_F(InputMethodManagerImplTest, DISABLED_TestLastUsedInputMethod) {
   TestObserver observer;
   InitComponentExtension();
   manager_->AddObserver(&observer);
