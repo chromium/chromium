@@ -1,0 +1,15 @@
+<!--
+@WAIT-FOR:done
+-->
+<q></q>
+<style>
+.no_quote q::before { content: no-close-quote; }
+</style>
+<script>
+ window.addEventListener("load", () => {
+   setTimeout(() => {
+     document.body.className = 'no_quote';
+     document.title = 'done';
+   }, 100);
+ });
+</script>

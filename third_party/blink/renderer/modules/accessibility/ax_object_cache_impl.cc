@@ -587,7 +587,13 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
     // but now it's in a locked subtree so we should remove the entry with its
     // layout object and replace it with an AXNodeObject created from the node
     // instead. Do this later at a safe time.
-    Invalidate(ax_id);
+    if (node) {
+      Invalidate(ax_id);
+    } else {
+      // Happens if pseudo content no longer relevant.
+      Remove(const_cast<LayoutObject*>(layout_object));
+      return nullptr;
+    }
   }
 
   AXObject* result = objects_.at(ax_id);
