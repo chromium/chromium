@@ -10,11 +10,12 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -43,7 +44,7 @@ class PerformanceManagerImplTest : public testing::Test {
 
  private:
   std::unique_ptr<PerformanceManagerImpl> performance_manager_;
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(PerformanceManagerImplTest);
 };
@@ -130,7 +131,7 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
                                              base::TimeTicks::Now());
   base::RunLoop run_loop;
   base::OnceClosure quit_closure = run_loop.QuitClosure();
-  EXPECT_FALSE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   PerformanceManagerImpl::GraphImplCallback graph_callback =
       base::BindLambdaForTesting([&](GraphImpl* graph) {
         EXPECT_TRUE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());
@@ -152,7 +153,7 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphAndReplyWithResult) {
                                              base::TimeTicks::Now());
   base::RunLoop run_loop;
 
-  EXPECT_FALSE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   base::OnceCallback<int(GraphImpl*)> task =
       base::BindLambdaForTesting([&](GraphImpl* graph) {
         EXPECT_TRUE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());

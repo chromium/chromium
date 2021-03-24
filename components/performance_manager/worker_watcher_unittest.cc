@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "components/performance_manager/frame_node_source.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -28,6 +27,7 @@
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_worker_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -710,7 +710,7 @@ class WorkerWatcherTest : public testing::Test {
   void TestFrameDestroyed(bool enable_service_worker_relationships);
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   TestDedicatedWorkerService dedicated_worker_service_;
   TestSharedWorkerService shared_worker_service_;

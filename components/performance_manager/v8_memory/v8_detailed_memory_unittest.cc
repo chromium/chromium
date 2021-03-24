@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -17,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -1696,12 +1698,21 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
   MockV8DetailedMemoryReporter mock_reporter1;
   MockV8DetailedMemoryReporter mock_reporter2;
   {
-    auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_bytes_used = 1U;
-    ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data),
-                                main_process_id());
+    // Delay the main process response a little bit so that it will be
+    // scheduled *after* the event that adds |process1_query|, allowing it to
+    // satisfy both of these queries. Otherwise a second round of measurement
+    // will be started for this process.
+    {
+      InSequence seq;
+      ExpectBindReceiver(&mock_reporter1, main_process_id());
+      auto data = NewPerProcessV8MemoryUsage(1);
+      data->isolates[0]->shared_bytes_used = 1U;
+      ExpectQueryAndDelayReply(&mock_reporter1,
+                               base::TimeDelta::FromMilliseconds(1),
+                               std::move(data));
+    }
 
-    data = NewPerProcessV8MemoryUsage(1);
+    auto data = NewPerProcessV8MemoryUsage(1);
     data->isolates[0]->shared_bytes_used = 2U;
     ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data),
                                 child_process_id());
@@ -1720,18 +1731,24 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
 
   // When a measurement is available the all process observer should be invoked
   // for both processes, and the single process observer only for process 1.
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(3, run_loop.QuitClosure());
+
   EXPECT_CALL(all_process_observer,
               OnV8MemoryMeasurementAvailable(main_process_id(),
-                                             expected_process_data1, _));
+                                             expected_process_data1, _))
+      .WillOnce(base::test::RunClosure(barrier));
   EXPECT_CALL(all_process_observer,
               OnV8MemoryMeasurementAvailable(child_process_id(),
-                                             expected_process_data2, _));
+                                             expected_process_data2, _))
+      .WillOnce(base::test::RunClosure(barrier));
   EXPECT_CALL(single_process_observer,
               OnV8MemoryMeasurementAvailable(main_process_id(),
-                                             expected_process_data1, _));
+                                             expected_process_data1, _))
+      .WillOnce(base::test::RunClosure(barrier));
 
   // Now execute all the above tasks.
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(&mock_reporter1);
   Mock::VerifyAndClearExpectations(&mock_reporter2);
   Mock::VerifyAndClearExpectations(&all_process_observer);

@@ -15,10 +15,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
@@ -156,7 +156,7 @@ class LevelDBSiteDataStoreTest : public ::testing::Test {
   const url::Origin kDummyOrigin = url::Origin::Create(GURL("http://foo.com"));
 
   base::FilePath db_path_;
-  base::test::TaskEnvironment task_env_;
+  content::BrowserTaskEnvironment task_env_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LevelDBSiteDataStore> db_;
 };

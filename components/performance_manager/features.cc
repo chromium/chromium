@@ -47,5 +47,8 @@ TabLoadingFrameNavigationThrottlesParams::GetParams() {
   return params;
 }
 
+const base::Feature kRunOnMainThread{"RunOnMainThread",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace performance_manager

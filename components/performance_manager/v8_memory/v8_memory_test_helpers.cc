@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
@@ -175,18 +177,20 @@ V8MemoryPerformanceManagerTestHarness::
 void V8MemoryPerformanceManagerTestHarness::SetUp() {
   PerformanceManagerTestHarness::SetUp();
 
-  // Precondition: CallOnGraph must run on a different sequence. Note that
-  // all tasks passed to CallOnGraph will only run when run_loop.Run() is
-  // called.
-  ASSERT_TRUE(GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&] {
-        EXPECT_FALSE(
-            this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  if (!base::FeatureList::IsEnabled(features::kRunOnMainThread)) {
+    // Precondition: CallOnGraph must run on a different sequence. Note that
+    // all tasks passed to CallOnGraph will only run when run_loop.Run() is
+    // called.
+    ASSERT_TRUE(GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          EXPECT_FALSE(
+              this->GetMainThreadTaskRunner()->RunsTasksInCurrentSequence());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 
   // Set the active contents and simulate a navigation, which adds nodes to
   // the graph.

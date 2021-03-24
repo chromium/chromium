@@ -15,6 +15,8 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +28,15 @@ namespace mechanism {
 namespace {
 
 static constexpr char kUrl[] = "https://www.foo.com/";
+
+void FlushUIThreadTasks() {
+  // Post a single task and wait for it to finish. This will ensure that any
+  // tasks not yet run but posted prior to this task have been dispatched.
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 void MaybeFreezePageNode(content::WebContents* content) {
   base::RunLoop run_loop;
@@ -42,6 +53,11 @@ void MaybeFreezePageNode(content::WebContents* content) {
                      PerformanceManager::GetPageNodeForWebContents(content),
                      std::move(quit_closure)));
   run_loop.Run();
+
+  // Allow the bounce back to the UI thread to run; it will have been scheduled
+  // but not yet necessarily processed if the PM is also running on the UI
+  // thread.
+  FlushUIThreadTasks();
 }
 
 void UnfreezePageNode(content::WebContents* content) {
@@ -59,6 +75,11 @@ void UnfreezePageNode(content::WebContents* content) {
                      PerformanceManager::GetPageNodeForWebContents(content),
                      std::move(quit_closure)));
   run_loop.Run();
+
+  // Allow the bounce back to the UI thread to run; it will have been scheduled
+  // but not yet necessarily processed if the PM is also running on the UI
+  // thread.
+  FlushUIThreadTasks();
 }
 
 }  // namespace
