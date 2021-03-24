@@ -537,6 +537,10 @@ ci.android_builder(
     execution_timeout = 5 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
+    experiments = {
+        # TODO(crbug.com/1143122): remove this.
+        "luci.swarming.use_rbe_cas": 20,
+    },
 )
 
 ci.android_builder(
