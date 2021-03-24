@@ -92,18 +92,17 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     }
 
     public void validateAccountSettings() {
-        // validateAccountsInternal accesses account list (to check whether account exists), so
-        // postpone the call until account list cache in AccountManagerFacade is ready.
-        AccountManagerFacadeProvider.getInstance().runAfterCacheIsPopulated(
-                () -> validateAccountsInternal());
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            mAccountTrackerService.seedAccountsIfNeeded(
+                    () -> { validateSignedInAccountExists(accounts); });
+        });
     }
 
-    private void validateAccountsInternal() {
-        // Ensure System accounts have been seeded.
-        mAccountTrackerService.checkAndSeedSystemAccounts();
+    private void validateSignedInAccountExists(List<Account> accounts) {
         if (mSigninManager.isOperationInProgress()) {
             // Wait for ongoing sign-in/sign-out operation to finish before validating accounts.
-            mSigninManager.runAfterOperationInProgress(() -> validateAccountsInternal());
+            mSigninManager.runAfterOperationInProgress(
+                    () -> validateSignedInAccountExists(accounts));
             return;
         }
 
@@ -113,35 +112,34 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
             return;
         }
 
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            if (AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
-                // Do nothing if the signed-in account is still on device
-                return;
-            }
-            // If the signed-in account is no longer on device, check if it is renamed to
-            // another account existing on device.
-            new AsyncTask<String>() {
-                @Override
-                protected String doInBackground() {
-                    return getNewNameOfRenamedAccount(
-                            new SystemAccountChangeEventChecker(), oldAccount.getEmail(), accounts);
-                }
+        if (AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
+            // Do nothing if the signed-in account is still on device
+            return;
+        }
 
-                @Override
-                protected void onPostExecute(String newAccountName) {
-                    if (newAccountName != null) {
-                        // Sign in to the new account if the current account is renamed
-                        // to a new account
-                        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
-                            mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
-                                    AccountUtils.createAccountFromName(newAccountName), null);
-                        }, false);
-                    } else {
-                        mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
-                    }
+        // If the signed-in account is no longer on device, check if it is renamed to
+        // another account existing on device.
+        new AsyncTask<String>() {
+            @Override
+            protected String doInBackground() {
+                return getNewNameOfRenamedAccount(
+                        new SystemAccountChangeEventChecker(), oldAccount.getEmail(), accounts);
+            }
+
+            @Override
+            protected void onPostExecute(String newAccountName) {
+                if (newAccountName != null) {
+                    // Sign in to the new account if the current account is renamed
+                    // to a new account
+                    mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+                        mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
+                                AccountUtils.createAccountFromName(newAccountName), null);
+                    }, false);
+                } else {
+                    mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                 }
-            }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-        });
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     @VisibleForTesting
