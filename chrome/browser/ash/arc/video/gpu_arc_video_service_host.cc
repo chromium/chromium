@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/video/gpu_arc_video_service_host.h"
+#include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
 
 #include <memory>
 #include <string>

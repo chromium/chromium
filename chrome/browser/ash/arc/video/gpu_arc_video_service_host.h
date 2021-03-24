@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
+#ifndef CHROME_BROWSER_ASH_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
+#define CHROME_BROWSER_ASH_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
@@ -67,4 +67,4 @@ class GpuArcVideoKeyedService : public KeyedService {
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
+#endif  // CHROME_BROWSER_ASH_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_

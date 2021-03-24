@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
+#define CHROME_BROWSER_ASH_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
 
 #include "base/macros.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
@@ -48,4 +48,4 @@ class ArcUserSessionService
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_ARC_USER_SESSION_ARC_USER_SESSION_SERVICE_H_

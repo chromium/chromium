@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
+#define CHROME_BROWSER_ASH_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
 
 #include "components/arc/usb/usb_host_bridge.h"
 
@@ -18,4 +18,4 @@ class ArcUsbHostBridgeDelegate : public ArcUsbHostBridge::Delegate {
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
