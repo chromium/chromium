@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
 
 namespace device {
 // There are a handful of methods to create/register RootCompositorFrameSinks
@@ -20,9 +21,19 @@ class COMPONENT_EXPORT(VR_PUBLIC_CPP) XrFrameSinkClient {
   XrFrameSinkClient();
   virtual ~XrFrameSinkClient();
 
-  // TODO(https://crbug.com/1178028): Add needed methods to this interface.
+  // Registers/sets up a RootCompositorFrameSink. Note that on_initialized will
+  // be run on the UI thread.
+  virtual void InitializeRootCompositorFrameSink(
+      viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      base::OnceClosure on_initialized) = 0;
+
+  // Used to shutdown a RootCompositorFrameSink upon its drawing surface being
+  // destroyed. This must be called from the UI thread.
+  virtual void SurfaceDestroyed() = 0;
 };
 
+// This factory must be run on the UI thread, so that the XrFrameSinkClient can
+// be created and destroyed on the UI thread.
 using XrFrameSinkClientFactory =
     base::RepeatingCallback<std::unique_ptr<XrFrameSinkClient>()>;
 }  // namespace device

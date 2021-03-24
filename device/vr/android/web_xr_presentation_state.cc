@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image_egl.h"
@@ -28,10 +29,12 @@ bool WebXrFrame::IsValid() const {
 
 void WebXrFrame::Recycle() {
   DCHECK(!state_locked);
+  DCHECK(reclaimed_sync_tokens.empty());
   index = -1;
   deferred_start_processing.Reset();
   recycle_once_unlocked = false;
   gvr_handoff_fence.reset();
+  begin_frame_args.reset();
 }
 
 WebXrPresentationState::WebXrPresentationState() {
@@ -43,6 +46,14 @@ WebXrPresentationState::WebXrPresentationState() {
 }
 
 WebXrPresentationState::~WebXrPresentationState() {}
+
+void WebXrPresentationState::SetStateMachineType(StateMachineType type) {
+  state_machine_type_ = type;
+}
+
+bool WebXrPresentationState::CanStartFrameAnimating() {
+  return !idle_frames_.empty();
+}
 
 WebXrFrame* WebXrPresentationState::GetAnimatingFrame() const {
   DCHECK(HaveAnimatingFrame());
@@ -78,10 +89,32 @@ std::string WebXrPresentationState::DebugState() const {
     ss << "---";
   }
   ss << "|";
-  if (HaveRenderingFrame()) {
-    ss << std::setw(3) << GetRenderingFrame()->index;
-  } else {
-    ss << "---";
+  switch (state_machine_type_) {
+    case StateMachineType::kBrowserComposited: {
+      if (HaveRenderingFrame()) {
+        ss << std::setw(3) << GetRenderingFrame()->index;
+      } else {
+        ss << "---";
+      }
+      break;
+    }
+    case StateMachineType::kVizComposited: {
+      if (rendering_frames_.size() > 0) {
+        for (size_t i = 0; i < rendering_frames_.size(); i++) {
+          auto* frame = rendering_frames_[i];
+          ss << std::setw(3) << frame->index;
+          ss << "(" << frame->shared_buffer->id << ", "
+             << frame->camera_image_shared_buffer->id << ")";
+          // Append a "," separator, unless this is the last element to list.
+          if (i != rendering_frames_.size() - 1) {
+            ss << ",";
+          }
+        }
+      } else {
+        ss << "---";
+      }
+      break;
+    }
   }
   ss << "]";
 
@@ -125,14 +158,63 @@ void WebXrPresentationState::TransitionFrameProcessingToRendering() {
   DCHECK(HaveProcessingFrame());
   DCHECK(processing_frame_->IsValid());
   DCHECK(!processing_frame_->state_locked);
-  DCHECK(!HaveRenderingFrame());
-  rendering_frame_ = processing_frame_;
+
+  switch (state_machine_type_) {
+    // In the BrowserComposited StateMachine we can only have one RenderingFrame
+    // at a time. Assert that we don't have one, and then assign it to the slot.
+    case StateMachineType::kBrowserComposited: {
+      DCHECK(!HaveRenderingFrame());
+      rendering_frame_ = processing_frame_;
+      break;
+    }
+    // In the VizComposited StateMachine multiple frames may be "Rendering",
+    // where "Rendering" means that the frame has been passed to the viz
+    // compositor. We need to wait until the viz compositor is done with a frame
+    // before it can be recycled.
+    case StateMachineType::kVizComposited: {
+      rendering_frames_.push_back(processing_frame_);
+      break;
+    }
+  }
+
   processing_frame_ = nullptr;
+  DVLOG(3) << DebugState() << __func__;
+}
+
+void WebXrPresentationState::EndFrameRendering(WebXrFrame* frame) {
+  DCHECK(frame);
+  // If we have a rendering frame, that means we should be in the
+  // BrowserComposited mode. In that case, the caller may have called us with
+  // the result of GetRenderingFrame() to simplify code-paths for operations
+  // that they need to do with the Frame. Ensure that if we have a rendering
+  // frame, we were called with it, and then process in that mode.
+  if (HaveRenderingFrame()) {
+    DCHECK_EQ(frame, rendering_frame_);
+    EndFrameRendering();
+    return;
+  }
+
+  // In this case, we don't have a RenderingFrame. If we're not running the viz
+  // composited state machine, this is an error. If we are, then there should
+  // be exactly one instance of this frame in the rendering_frames_ list.
+  // Remove it from the list, and then recycle the frame.
+  DVLOG(3) << DebugState() << __func__;
+  DCHECK_EQ(state_machine_type_, StateMachineType::kVizComposited);
+  auto erased = base::EraseIf(rendering_frames_,
+                              [frame](const WebXrFrame* rendering_frame) {
+                                return frame == rendering_frame;
+                              });
+
+  // Not using DCHECK_EQ as the compiler doesn't pick the right type to compare.
+  DCHECK(erased == 1);
+  frame->Recycle();
+  idle_frames_.push(frame);
   DVLOG(3) << DebugState() << __func__;
 }
 
 void WebXrPresentationState::EndFrameRendering() {
   DVLOG(3) << DebugState() << __func__;
+  DCHECK_EQ(state_machine_type_, StateMachineType::kBrowserComposited);
   DCHECK(HaveRenderingFrame());
   DCHECK(rendering_frame_->IsValid());
   rendering_frame_->Recycle();
@@ -175,6 +257,11 @@ void WebXrPresentationState::EndPresentation() {
     idle_frames_.push(rendering_frame_);
     rendering_frame_ = nullptr;
   }
+  for (auto* frame : rendering_frames_) {
+    frame->Recycle();
+    idle_frames_.push(frame);
+  }
+  rendering_frames_.clear();
   if (HaveProcessingFrame()) {
     RecycleProcessingFrameIfPossible();
   }
@@ -192,6 +279,14 @@ bool WebXrPresentationState::CanProcessFrame() const {
   }
   if (processing_frame_) {
     DVLOG(2) << __FUNCTION__ << ": waiting for previous processing frame";
+    return false;
+  }
+
+  // If we're running the viz composited state machine, we need to keep a frame
+  // in the "Animating" state until we have our BeginFrameArgs.
+  if (state_machine_type_ == StateMachineType::kVizComposited &&
+      !animating_frame_->begin_frame_args) {
+    DVLOG(2) << __FUNCTION__ << ": waiting for BeginFrameArgs";
     return false;
   }
 

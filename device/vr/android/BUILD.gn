@@ -11,6 +11,7 @@ static_library("vr_android") {
   ]
 
   deps = [
+    "//components/viz/common",
     "//gpu/ipc/common:common",
     "//ui/gl:gl",
   ]

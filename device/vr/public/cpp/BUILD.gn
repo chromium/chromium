@@ -23,5 +23,6 @@ component("cpp") {
     "//base",
     "//device/vr/public/mojom:isolated_xr_service",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/compositing",
   ]
 }

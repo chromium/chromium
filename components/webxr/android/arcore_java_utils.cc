@@ -79,7 +79,7 @@ void ArCoreJavaUtils::OnDrawingSurfaceReady(
   gpu::SurfaceHandle surface_handle =
       gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
           gpu::GpuSurfaceTracker::SurfaceRecord(
-              window, surface, /*can_be_used_with_surface_control=*/true));
+              window, surface, /*can_be_used_with_surface_control=*/false));
   ui::WindowAndroid* root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(java_root_window);
   display::Display::Rotation display_rotation =

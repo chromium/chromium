@@ -128,6 +128,12 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
+  // Because the FrameSinkClient needs to have a teardown method called on it
+  // before it is destructed, we need to own it rather than the ArCoreGl. Note
+  // that this *also* means that we need to guarantee that it outlives the Gl
+  // thread.
+  std::unique_ptr<XrFrameSinkClient> frame_sink_client_;
+
   // Encapsulates data with session lifetime.
   struct SessionState {
     SessionState();
