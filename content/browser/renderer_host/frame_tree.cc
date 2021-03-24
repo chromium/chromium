@@ -625,25 +625,6 @@ void FrameTree::StopLoading() {
     node->StopLoading();
 }
 
-bool FrameTree::HasNavigation() {
-  // NOTE: this functionality is currently implemented for MPArch prerendering
-  // only and assumes no portals or other inner pages; we will need to update
-  // accordingly if this check is going to be used in those other cases.
-  for (FrameTreeNode* node : Nodes()) {
-    // Navigation waiting for the response:
-    if (node->navigation_request())
-      return true;
-
-    // Same-RenderFrameHost navigation is committing:
-    if (node->current_frame_host()->HasPendingCommitNavigation())
-      return true;
-
-    // Cross-RenderFrameHost navigation is committing:
-    if (node->render_manager()->speculative_frame_host())
-      return true;
-  }
-  return false;
-}
 
 void FrameTree::Shutdown() {
 #if DCHECK_IS_ON()

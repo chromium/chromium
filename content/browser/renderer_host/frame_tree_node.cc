@@ -817,4 +817,19 @@ void FrameTreeNode::WriteIntoTracedValue(perfetto::TracedValue context) const {
   dict.Add("is_main_frame", IsMainFrame());
 }
 
+bool FrameTreeNode::HasNavigation() {
+  if (navigation_request())
+    return true;
+
+  // Same-RenderFrameHost navigation is committing:
+  if (current_frame_host()->HasPendingCommitNavigation())
+    return true;
+
+  // Cross-RenderFrameHost navigation is committing:
+  if (render_manager()->speculative_frame_host())
+    return true;
+
+  return false;
+}
+
 }  // namespace content

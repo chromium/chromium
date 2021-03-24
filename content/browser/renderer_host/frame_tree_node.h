@@ -452,6 +452,10 @@ class CONTENT_EXPORT FrameTreeNode {
   // Write a representation of this object into a trace.
   void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
+  // Returns true the node is navigating, i.e. it has an associated
+  // NavigationRequest.
+  bool HasNavigation();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);

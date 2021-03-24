@@ -31,8 +31,13 @@ namespace {
 void CollectAllChildren(RenderFrameHostImpl& rfh,
                         std::vector<RenderFrameHostImpl*>* result) {
   result->push_back(&rfh);
-  for (size_t i = 0; i < rfh.child_count(); ++i)
+  for (size_t i = 0; i < rfh.child_count(); ++i) {
+    if (RenderFrameHostImpl* speculative_frame_host =
+            rfh.child_at(i)->render_manager()->speculative_frame_host()) {
+      result->push_back(speculative_frame_host);
+    }
     CollectAllChildren(*(rfh.child_at(i)->current_frame_host()), result);
+  }
 }
 
 // Iterate over RenderFrameHostImpl::children_ rather than FrameTree::Nodes()
@@ -151,13 +156,16 @@ class PrerenderHost::MPArchPageHolder
 
   ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
                           NavigationRequest& navigation_request) override {
-    if (frame_tree_->HasNavigation()) {
-      // We do not yet support activation if there is an ongoing navigation
-      // anywhere in the page as it's not clear yet in which cases
-      // NavigationRequests can be transferred to a new NavigationController.
-      // TODO(https://crbug.com/1170277): Relax the restrictions here, starting
-      // with supporting activation when there are ongoing navigations in the
-      // subframes.
+    if (frame_tree_->root()->HasNavigation()) {
+      // We do not yet support activation if there is an ongoing navigation in
+      // the main frame as the code assumes that NavigationRequest is associated
+      // with the fixed frame tree node. Ongoing navigations in frames are
+      // supported experimentally and require more investigation to ensure that
+      // these NavigationRequests can be transferred to a new
+      // NavigationController and that new NavigationEntries will be correctly
+      // created for them.
+      // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
+      // fine.
       return ActivateResult(FinalStatus::kInProgressNavigation, nullptr);
     }
 

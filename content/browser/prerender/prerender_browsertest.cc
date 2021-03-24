@@ -720,13 +720,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
 // Flaky https://crbug.com/1190262.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
                        DISABLED_DeferCrossOriginSubframeNavigation) {
-  // TODO(toyoshim, bokan): Enable this test with MPArch.
-  // It seems NavigationThrottles are not constructed for iframe navigation
-  // under MPArch environment. It needs some investigation to enable this with
-  // MPArch.
-  if (IsMPArchActive())
-    return;
-
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?initial");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -815,13 +808,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 // Flaky https://crbug.com/1190262.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
                        DISABLED_DeferCrossOriginRedirectsOnSubframeNavigation) {
-  // TODO(toyoshim, bokan): Enable this test with MPArch.
-  // It seems NavigationThrottles are not constructed for iframe navigation
-  // under MPArch environment. It needs some investigation to enable this with
-  // MPArch.
-  if (IsMPArchActive())
-    return;
-
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?initial");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));

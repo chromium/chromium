@@ -373,10 +373,6 @@ class CONTENT_EXPORT FrameTree {
   // Stops all ongoing navigations in each of the nodes of this FrameTree.
   void StopLoading();
 
-  // Returns true if any of the nodes in this frame tree is navigating, i.e. it
-  // has an associated NavigationRequest.
-  bool HasNavigation();
-
   // Prepares this frame tree for destruction, cleaning up the internal state
   // and firing the appropriate events like FrameDeleted.
   // Must be called before FrameTree is destroyed.
