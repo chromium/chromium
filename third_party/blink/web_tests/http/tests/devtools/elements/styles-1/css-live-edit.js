@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that styles are updated when live-editing css resource.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`

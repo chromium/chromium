@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies that author shadow root's #document-fragment is displayed and user-agent one is hidden by default.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

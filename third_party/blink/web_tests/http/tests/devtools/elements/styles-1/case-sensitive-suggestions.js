@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that text prompt suggestions' casing follows that of the user input.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <div id="inner" style="color:initial;"></div>

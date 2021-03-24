@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that distributed nodes and their updates are correctly shown in different shadow host display modes.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <template id="youngestShadowRootTemplate">

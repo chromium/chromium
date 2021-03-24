@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that changing a disabled property enables it as well.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container" style="font-weight:bold">

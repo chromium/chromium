@@ -6,7 +6,7 @@
   TestRunner.addResult('Tests that styles sidebar can be navigated with arrow keys.\n');
 
   await TestRunner.showPanel('elements');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
 
   await TestRunner.loadHTML(`
     <style>

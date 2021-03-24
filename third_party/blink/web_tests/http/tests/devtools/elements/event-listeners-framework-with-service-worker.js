@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');

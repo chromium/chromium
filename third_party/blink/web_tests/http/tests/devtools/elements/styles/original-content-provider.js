@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verifies that CSSStyleSheetHeader.originalContentProvider() indeed returns original content.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <style>

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that inline style sourceMappingURL is resolved properly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <body id="inspect">

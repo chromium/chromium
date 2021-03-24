@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests removing event listeners in the Elements sidebar panel.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="node">Inspect Me</button>

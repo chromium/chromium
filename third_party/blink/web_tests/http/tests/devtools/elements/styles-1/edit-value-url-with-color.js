@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that colors are not re-formatted inside url(...) when editing property values.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="background: white">&quot;white&quot; background</div>

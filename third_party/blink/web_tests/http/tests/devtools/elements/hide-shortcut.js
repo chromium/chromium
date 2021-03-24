@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests the hide shortcut, which toggles visibility:hidden on the node and it's ancestors. Bug 110641\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that injected user stylesheets are reflected in the Styles pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

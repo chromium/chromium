@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies that revealing a whitespace text node RemoteObject reveals its parentElement DIV.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

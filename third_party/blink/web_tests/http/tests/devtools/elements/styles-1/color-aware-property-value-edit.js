@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that property value being edited uses the user-specified color format.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected1" style="border: 1px solid red">inspected1</div>

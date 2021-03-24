@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding an @import with data URI does not lead to stylesheet collection crbug.com/644719\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>

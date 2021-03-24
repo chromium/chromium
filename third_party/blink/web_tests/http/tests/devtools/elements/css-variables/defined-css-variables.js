@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that CSS variables are defined correctly wrt DOM inheritance`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style>

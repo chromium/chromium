@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests file system project mappings.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

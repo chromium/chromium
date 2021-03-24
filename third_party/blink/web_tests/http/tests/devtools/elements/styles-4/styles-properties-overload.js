@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that inspector figures out overloaded properties correctly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

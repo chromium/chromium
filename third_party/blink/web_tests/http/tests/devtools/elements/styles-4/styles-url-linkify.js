@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that URLs are linked to and completed correctly. Bugs 51663, 53171, 62643, 72373, 79905\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="local"></div>

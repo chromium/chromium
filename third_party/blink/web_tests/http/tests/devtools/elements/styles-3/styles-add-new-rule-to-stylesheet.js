@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding new rule in the stylesheet end works as expected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div class="inspected">Styled element</div>

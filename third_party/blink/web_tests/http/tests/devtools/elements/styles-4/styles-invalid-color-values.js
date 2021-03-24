@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the displayed string for colors correctly handles clipped CSS values and RGB percentages.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   var colors = [

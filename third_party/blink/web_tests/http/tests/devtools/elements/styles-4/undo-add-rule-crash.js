@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the inspected page does not crash after undoing a new rule addition. Bug 104806\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
