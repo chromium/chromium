@@ -75,7 +75,7 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class SigninFragmentTest {
+public class SyncConsentFragmentTest {
     /**
      * This class is used to test {@link SigninFirstRunFragment}.
      */
