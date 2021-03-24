@@ -1363,6 +1363,7 @@ crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-computed.html [ 
 crbug.com/1133390 external/wpt/css/css-values/round-function.html [ Failure ]
 crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-serialize-length.html [ Failure ]
 crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-serialize-time.html [ Failure ]
+crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-serialize-angle.html [ Failure ]
 
 
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-catch-divide-by-0.html [ Pass ]
@@ -1370,6 +1371,7 @@ crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/round-function.html [ Pass ]
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-serialize-length.html [ Pass ]
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-serialize-time.html [ Pass ]
+crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-serialize-angle.html [ Pass ]
 
 
 

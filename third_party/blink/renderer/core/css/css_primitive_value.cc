@@ -217,9 +217,13 @@ double CSSPrimitiveValue::ComputeSeconds() const {
 }
 
 double CSSPrimitiveValue::ComputeDegrees() const {
-  if (IsCalculated())
-    return To<CSSMathFunctionValue>(this)->ComputeDegrees();
-  return To<CSSNumericLiteralValue>(this)->ComputeDegrees();
+  double result = IsCalculated()
+                      ? To<CSSMathFunctionValue>(this)->ComputeDegrees()
+                      : To<CSSNumericLiteralValue>(this)->ComputeDegrees();
+  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
+    result = CSSValueClampingUtils::ClampAngle(result);
+  }
+  return result;
 }
 
 double CSSPrimitiveValue::ComputeDotsPerPixel() const {

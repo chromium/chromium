@@ -7,6 +7,18 @@
 
 namespace blink {
 
+/*
+ The value must be multiple of 360deg.
+ Reference:  https://drafts.csswg.org/css-values/#numeric-types
+
+ This constant is the biggest multiple of 360 that a double can accurately
+ represent, and after converting to rads, the sin() value is close enough to 0.
+
+ The details: https://bit.ly/349gXjq
+*/
+
+constexpr static double kApproxDoubleInfinityAngle = 2867080569122160;
+
 double CSSValueClampingUtils::ClampDouble(double value) {
   if (std::isnan(value))
     value = std::numeric_limits<double>::max();
@@ -19,6 +31,13 @@ double CSSValueClampingUtils::ClampLength(double value) {
 
 double CSSValueClampingUtils::ClampTime(double value) {
   return ClampDouble(value);
+}
+
+double CSSValueClampingUtils::ClampAngle(double value) {
+  if (std::isnan(value))
+    value = kApproxDoubleInfinityAngle;
+  return clampTo<double>(value, -kApproxDoubleInfinityAngle,
+                         kApproxDoubleInfinityAngle);
 }
 
 float CSSValueClampingUtils::ClampLength(float value) {

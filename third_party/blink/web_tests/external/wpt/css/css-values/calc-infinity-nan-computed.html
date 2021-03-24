@@ -47,7 +47,22 @@ test_computed_value_greater_or_lower_than("transition-delay", "calc(-infinity* 1
 test_computed_value_greater_or_lower_than("transition-delay", "calc(max(10000s, 0s) + min(-infinity * 1s, infinity * 1s))", APPROX_NEGATIVE_INFINITY);
 test_computed_value_greater_or_lower_than("transition-delay", "calc(min(-infinity * 1s, 10s))", APPROX_NEGATIVE_INFINITY);
 
-// ----------------
+// For <angle>
+compareValueCloseTo("transform", "rotate(calc(infinity * 1deg))", 0.0001, "rotate(0deg)" );
+compareValueCloseTo("transform", "rotate(calc(-infinity * 1deg))", 0.0001, "rotate(0deg)");
+compareValueCloseTo("transform", "rotate(calc(NaN * 1deg))", 0.0001, "rotate(0deg)");
+
+compareValueCloseTo("transform", "rotate(calc(infinity * 1turn))", 0.0001, "rotate(0turn)" );
+compareValueCloseTo("transform", "rotate(calc(-infinity * 1turn))", 0.0001, "rotate(0turn)");
+compareValueCloseTo("transform", "rotate(calc(NaN * 1turn))", 0.0001, "rotate(0turn)");
+
+compareValueCloseTo("transform", "rotate(calc(infinity * 1rad))", 0.0001, "rotate(0rad)" );
+compareValueCloseTo("transform", "rotate(calc(-infinity * 1rad))", 0.0001, "rotate(0rad)");
+compareValueCloseTo("transform", "rotate(calc(NaN * 1rad))", 0.0001, "rotate(0rad)");
+
+compareValueCloseTo("transform", "rotate(calc(infinity * 1grad))", 0.0001, "rotate(0grad)" );
+compareValueCloseTo("transform", "rotate(calc(-infinity * 1grad))", 0.0001, "rotate(0grad)");
+compareValueCloseTo("transform", "rotate(calc(NaN * 1grad))", 0.0001, "rotate(0grad)");
 
 </script>
 </body>

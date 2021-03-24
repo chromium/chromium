@@ -947,6 +947,8 @@ CSSPrimitiveValue* ConsumeAngle(
     if (calculation->Category() != kCalcAngle)
       return nullptr;
     if (CSSMathFunctionValue* result = math_parser.ConsumeValue()) {
+      if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
+        return result;
       if (result->ComputeDegrees() < minimum_value) {
         return CSSNumericLiteralValue::Create(
             minimum_value, CSSPrimitiveValue::UnitType::kDegrees);
