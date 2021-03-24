@@ -443,17 +443,15 @@ void AwContentBrowserClient::AllowCertificateError(
   bool cancel_request = true;
   // We only call the callback once but we must pass ownership to a function
   // that conditionally calls it.
-  // TODO(estaab): Change AwContentsClientBridge::AllowCertificateError to
-  //               return the callback if it doesn't call it.
-  base::RepeatingCallback<void(content::CertificateRequestResultType)>
-      repeating_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   if (client) {
     client->AllowCertificateError(cert_error, ssl_info.cert.get(), request_url,
-                                  base::BindOnce(repeating_callback),
+                                  std::move(split_callback.first),
                                   &cancel_request);
   }
   if (cancel_request) {
-    repeating_callback.Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_DENY);
+    std::move(split_callback.second)
+        .Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_DENY);
   }
 }
 
