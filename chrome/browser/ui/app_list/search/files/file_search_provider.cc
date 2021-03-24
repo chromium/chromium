@@ -85,6 +85,9 @@ std::vector<base::FilePath> SearchFilesByPattern(
 FileSearchProvider::FileSearchProvider(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::FilePath root_path_ =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
 }
 
 FileSearchProvider::~FileSearchProvider() = default;
@@ -107,12 +110,9 @@ void FileSearchProvider::Start(const std::u16string& query) {
 
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  base::FilePath root_path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(SearchFilesByPattern, root_path, base::UTF16ToUTF8(query),
+      base::BindOnce(SearchFilesByPattern, root_path_, base::UTF16ToUTF8(query),
                      query_start_time_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));

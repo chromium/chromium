@@ -5111,6 +5111,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/search_result_ranker/search_result_ranker_unittest.cc",
       "../browser/ui/app_list/search/tests/app_search_provider_unittest.cc",
       "../browser/ui/app_list/search/tests/file_result_unittest.cc",
+      "../browser/ui/app_list/search/tests/file_search_provider_unittest.cc",
       "../browser/ui/app_list/search/tests/mixer_unittest.cc",
       "../browser/ui/app_list/search/tests/omnibox_result_unittest.cc",
       "../browser/ui/app_list/search/tests/zero_state_file_provider_unittest.cc",

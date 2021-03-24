@@ -33,6 +33,10 @@ class FileSearchProvider : public SearchProvider {
   ash::AppListSearchResultType ResultType() override;
   void Start(const std::u16string& query) override;
 
+  void SetRootPathForTesting(const base::FilePath& root_path) {
+    root_path_ = root_path;
+  }
+
  private:
   void OnSearchComplete(const std::vector<base::FilePath>& paths);
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path);
@@ -40,6 +44,7 @@ class FileSearchProvider : public SearchProvider {
   base::TimeTicks query_start_time_;
   base::Optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
+  base::FilePath root_path_;
 
   Profile* const profile_;
 
