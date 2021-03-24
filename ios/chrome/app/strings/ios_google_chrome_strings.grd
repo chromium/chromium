@@ -245,7 +245,7 @@ locale.  The strings in this file are specific to iOS.
           Get a better Google experience in Chrome based on your location.
       </message>
       <message name="IDS_IOS_LOCATION_MODAL_DESCRIPTION" desc="The description of the location permissions modal [Length: unlimited] [iOS only].">
-          If you allow Chrome to know your location, Chrome sends it to your default search engine and any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
+          If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chrome shares your location with sites you allow.
