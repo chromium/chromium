@@ -25,17 +25,11 @@ bool GoogleTtsInitBuffered(const uint8_t* text_jspb,
 
 int GoogleTtsReadBuffered(float* audio_channel_buffer, size_t* frames_written);
 
-void GoogleTtsFinalizeBuffered();
-
 size_t GoogleTtsGetTimepointsCount();
 
 float GoogleTtsGetTimepointsTimeInSecsAtIndex(size_t index);
 
 int GoogleTtsGetTimepointsCharIndexAtIndex(size_t index);
-
-char* GoogleTtsGetEventBufferPtr();
-
-size_t GoogleTtsGetEventBufferLen();
 
 size_t GoogleTtsGetFramesInAudioBuffer();
 
