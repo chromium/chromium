@@ -34,6 +34,8 @@ chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
 
 cast_source_set("proxy") {
   sources = [
+    "audio_channel_broker_impl.cc",
+    "audio_channel_broker_impl.h",
     "audio_decoder_pipeline_node.cc",
     "audio_decoder_pipeline_node.h",
     "buffer_id_manager.cc",
@@ -67,7 +69,6 @@ cast_source_set("proxy") {
 
   if (!enable_chromium_runtime_cast_renderer ||
       chromecast_branding == "public") {
-    sources += [ "audio_channel_broker_simple.cc" ]
     sources += [ "cast_runtime_audio_channel_endpoint_simple.cc" ]
   }
 }

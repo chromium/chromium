@@ -206,9 +206,10 @@ std::unique_ptr<CmaProxyHandler> CmaProxyHandler::Create(
 
 ProxyCallTranslator::ProxyCallTranslator(TaskRunner* client_task_runner,
                                          CmaProxyHandler::Client* client)
-    : ProxyCallTranslator(client_task_runner,
-                          client,
-                          CastRuntimeAudioChannelBroker::Create(this)) {}
+    : ProxyCallTranslator(
+          client_task_runner,
+          client,
+          CastRuntimeAudioChannelBroker::Create(client_task_runner, this)) {}
 
 ProxyCallTranslator::ProxyCallTranslator(
     TaskRunner* client_task_runner,

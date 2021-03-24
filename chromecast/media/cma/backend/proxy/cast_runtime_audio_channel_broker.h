@@ -13,6 +13,9 @@
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {
+
+class TaskRunner;
+
 namespace media {
 // Exposes the CastAudioDecoderChannel RPC client with a callback-based API.
 //
@@ -51,7 +54,6 @@ class CastRuntimeAudioChannelBroker {
     kUnavailable = 14,
     kDataLoss = 15,
     kDoNotUse = -1,
-    kReadDone = -2,
   };
 
   // Callbacks associated with RPC communication done by gRPC.
@@ -106,6 +108,7 @@ class CastRuntimeAudioChannelBroker {
   };
 
   static std::unique_ptr<CastRuntimeAudioChannelBroker> Create(
+      TaskRunner* task_runner,
       Handler* handler);
 
   virtual ~CastRuntimeAudioChannelBroker();
