@@ -224,8 +224,8 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
 
   // Verify that setting the cursor using one cursor client
   // will set it for all root windows.
-  EXPECT_EQ(ui::mojom::CursorType::kNone, cursor_client_a->GetCursor().type());
-  EXPECT_EQ(ui::mojom::CursorType::kNone, cursor_client_b->GetCursor().type());
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client_a->GetCursor().type());
+  EXPECT_EQ(ui::mojom::CursorType::kNull, cursor_client_b->GetCursor().type());
 
   cursor_client_b->SetCursor(ui::mojom::CursorType::kPointer);
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
