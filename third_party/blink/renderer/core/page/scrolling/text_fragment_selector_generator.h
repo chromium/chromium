@@ -68,6 +68,9 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   String GetNextTextBlockForTesting(const Position& position) {
     return GetNextTextBlock(position);
   }
+  void SetCallbackForTesting(RequestSelectorCallback callback) {
+    pending_generate_selector_callback_ = std::move(callback);
+  }
 
   // Releases members if necessary.
   void ClearSelection();

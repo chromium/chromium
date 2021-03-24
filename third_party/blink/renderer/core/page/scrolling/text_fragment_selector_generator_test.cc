@@ -1226,6 +1226,35 @@ TEST_P(TextFragmentSelectorGeneratorTest, InputSubmitPrefix) {
   VerifySelector(start, end, "button%20text-,paragraph,-text");
 }
 
+// TODO(crbug.com/1192047): Update the test to better reflect the real repro
+// steps. Test case for crash in crbug.com/1190137. When selector is requested
+// after callback is set and unused.
+TEST_P(TextFragmentSelectorGeneratorTest, SecondGenerationCrash) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <p id='p'>First paragraph text</p>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* p = GetDocument().getElementById("p");
+  const auto& start = Position(p->lastChild(), 0);
+  const auto& end = Position(p->lastChild(), 15);
+  ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
+
+  auto callback = WTF::Bind([](const String& generated_selector) {});
+  GetDocument()
+      .GetFrame()
+      ->GetTextFragmentSelectorGenerator()
+      ->SetCallbackForTesting(std::move(callback));
+
+  // This shouldn't crash.
+  GetDocument().GetFrame()->GetTextFragmentSelectorGenerator()->UpdateSelection(
+      GetDocument().GetFrame(),
+      ToEphemeralRangeInFlatTree(EphemeralRange(start, end)));
+  base::RunLoop().RunUntilIdle();
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");

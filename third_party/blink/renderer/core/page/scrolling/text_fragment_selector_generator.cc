@@ -195,8 +195,10 @@ void TextFragmentSelectorGenerator::UpdateSelection(
       ToPositionInDOMTree(selection_range.StartPosition()),
       ToPositionInDOMTree(selection_range.EndPosition()));
   if (base::FeatureList::IsEnabled(
-          shared_highlighting::kPreemptiveLinkToTextGeneration))
+          shared_highlighting::kPreemptiveLinkToTextGeneration)) {
+    Reset();
     GenerateSelector();
+  }
 }
 
 void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
@@ -298,11 +300,13 @@ void TextFragmentSelectorGenerator::Cancel() {
 void TextFragmentSelectorGenerator::RequestSelector(
     RequestSelectorCallback callback) {
   DCHECK(callback);
-  pending_generate_selector_callback_ = std::move(callback);
   if (!base::FeatureList::IsEnabled(
           shared_highlighting::kPreemptiveLinkToTextGeneration)) {
+    Reset();
+    pending_generate_selector_callback_ = std::move(callback);
     GenerateSelector();
   } else {
+    pending_generate_selector_callback_ = std::move(callback);
     DCHECK_NE(state_, kNotStarted);
     if (state_ == kFailure || state_ == kSuccess) {
       selector_requested_before_ready_ = false;
@@ -321,7 +325,6 @@ void TextFragmentSelectorGenerator::RequestSelector(
 void TextFragmentSelectorGenerator::GenerateSelector() {
   DCHECK(selection_range_);
 
-  Reset();
   selection_range_->OwnerDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
 
@@ -655,6 +658,7 @@ void TextFragmentSelectorGenerator::Reset() {
   iteration_ = 0;
   selector_ = nullptr;
   selector_requested_before_ready_.reset();
+  pending_generate_selector_callback_.Reset();
 }
 
 void TextFragmentSelectorGenerator::RecordAllMetrics(
