@@ -36,6 +36,7 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
                WebMenuSourceType menu_source_type = kMenuSourceNone);
 
   PointerId pointerId() const { return pointer_id_; }
+  PointerId pointerIdForBindings() const;
   double width() const { return width_; }
   double height() const { return height_; }
   float pressure() const { return pressure_; }

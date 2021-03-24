@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -194,6 +196,12 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 
   return dispatcher.Dispatch();
+}
+
+PointerId PointerEvent::pointerIdForBindings() const {
+  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view()))
+    UseCounter::Count(local_dom_window->document(), WebFeature::kPointerId);
+  return pointerId();
 }
 
 }  // namespace blink

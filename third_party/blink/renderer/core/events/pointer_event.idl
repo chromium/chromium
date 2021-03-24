@@ -8,7 +8,7 @@
     Exposed=Window
 ] interface PointerEvent : MouseEvent {
     constructor(DOMString type, optional PointerEventInit eventInitDict = {});
-    [MeasureAs=PointerEventAttributeCount]   readonly    attribute long      pointerId;
+    [MeasureAs=PointerEventAttributeCount, ImplementedAs=pointerIdForBindings] readonly attribute long pointerId;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute double    width;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute double    height;
     [MeasureAs=PointerEventAttributeCount]   readonly    attribute float     pressure;
