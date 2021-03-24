@@ -52,8 +52,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
-#include "third_party/blink/public/common/origin_trials/trial_token.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
@@ -62,14 +60,16 @@
 namespace {
 // tools/origin_trials/generate_token.py http://mockhost AppCache
 // --expire-days=2000
+//
+// tools/origin_trials/check_token.py extracts token expiry: 1761166418.
 #define APPCACHE_ORIGIN_TRIAL_TOKEN                                            \
   "AhiiB7vi3JiEO1/"                                                            \
   "RQIytQslLSN3WYVu3Xd32abYhTia+91ladjnXSClfU981x+"                            \
   "aoPimEqYVy6tWoeMZZYTpqlggAAABNeyJvcmlnaW4iOiAiaHR0cDovL21vY2tob3N0OjgwIiwg" \
   "ImZlYXR1cmUiOiAiQXBwQ2FjaGUiLCAiZXhwaXJ5IjogMTc2MTE2NjQxOH0="
 
-const char* kTestAppCacheOriginTrialToken = APPCACHE_ORIGIN_TRIAL_TOKEN;
-
+const base::Time kTestOriginTrialTokenExpiry =
+    base::Time::FromDoubleT(1761166418);
 }  // namespace
 
 namespace content {
@@ -1250,19 +1250,7 @@ class AppCacheUpdateJobTest : public testing::Test,
     expect_group_has_cache_ = true;
     tested_manifest_path_override_ = "files/notmodified";
     tested_manifest_ = MANIFEST1;
-
-    // Get the expected expiration date of the test token.
-    {
-      blink::TrialTokenValidator validator;
-      blink::TrialTokenResult result = validator.ValidateToken(
-          kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
-          base::Time::Now());
-      ASSERT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
-      expect_token_expires_ = result.ParsedToken()->expiry_time();
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(),
-                result.ParsedToken()->feature_name());
-      EXPECT_NE(base::Time(), expect_token_expires_);
-    }
+    expect_token_expires_ = kTestOriginTrialTokenExpiry;
 
     frontend->AddExpectedEvent(
         blink::mojom::AppCacheEventID::APPCACHE_CHECKING_EVENT);
@@ -4308,19 +4296,7 @@ class AppCacheUpdateJobTest : public testing::Test,
   }
 
   void OriginTrialUpdateTest() {
-    // Get the expected expiration date of the test token.
-    {
-      blink::TrialTokenValidator validator;
-      blink::TrialTokenResult result = validator.ValidateToken(
-          kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
-          base::Time::Now());
-      ASSERT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
-      expect_token_expires_ = result.ParsedToken()->expiry_time();
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(),
-                result.ParsedToken()->feature_name());
-      EXPECT_NE(base::Time(), expect_token_expires_);
-    }
-
+    expect_token_expires_ = kTestOriginTrialTokenExpiry;
     MakeService();
     tested_manifest_path_override_ = "files/manifest2-origin-trial";
     group_ = base::MakeRefCounted<AppCacheGroup>(
