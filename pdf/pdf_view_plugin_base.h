@@ -243,7 +243,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) = 0;
 
-  constexpr bool IsSaveDataSizeValid(size_t size) {
+  static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
@@ -276,12 +276,14 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   bool stop_scrolling() const { return stop_scrolling_; }
 
-  DocumentLoadState document_load_state() { return document_load_state_; }
+  DocumentLoadState document_load_state() const { return document_load_state_; }
   void set_document_load_state(DocumentLoadState state) {
     document_load_state_ = state;
   }
 
-  AccessibilityState accessibility_state() { return accessibility_state_; }
+  AccessibilityState accessibility_state() const {
+    return accessibility_state_;
+  }
 
   bool edit_mode() const { return edit_mode_; }
   void set_edit_mode(bool edit_mode) { edit_mode_ = edit_mode; }
