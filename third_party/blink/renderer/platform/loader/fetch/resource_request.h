@@ -402,12 +402,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_token_ = devtools_token;
   }
 
-  const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+  const scoped_refptr<
+      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
   GetDevToolsAcceptedStreamTypes() const {
     return devtools_accepted_stream_types_;
   }
   void SetDevToolsAcceptedStreamTypes(
-      const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+      const scoped_refptr<
+          base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
           types) {
     devtools_accepted_stream_types_ = types;
   }
@@ -650,7 +652,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  base::Optional<base::flat_set<net::SourceStream::SourceType>>
+  // Instead of using base::Optional, we use scoped_refptr to reduce
+  // blink memory footprint because the attribute is only used by DevTools
+  // and we should keep the footprint minimal when DevTools is closed.
+  scoped_refptr<
+      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
       devtools_accepted_stream_types_;
 };
 

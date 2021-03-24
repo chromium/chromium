@@ -270,8 +270,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   if (src.GetDevToolsAcceptedStreamTypes()) {
     dest->devtools_accepted_stream_types =
         std::vector<net::SourceStream::SourceType>(
-            src.GetDevToolsAcceptedStreamTypes()->begin(),
-            src.GetDevToolsAcceptedStreamTypes()->end());
+            src.GetDevToolsAcceptedStreamTypes()->data.begin(),
+            src.GetDevToolsAcceptedStreamTypes()->data.end());
   }
   if (src.RequestorOrigin()->ToString() == "null") {
     // "file:" origin is treated like an opaque unique origin when
