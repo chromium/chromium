@@ -274,8 +274,9 @@ void MediaSessionImpl::WebContentsDestroyed() {
 }
 
 void MediaSessionImpl::RenderFrameDeleted(RenderFrameHost* rfh) {
-  if (services_.count(rfh))
-    OnServiceDestroyed(services_[rfh]);
+  const auto rfh_id = rfh->GetGlobalFrameRoutingId();
+  if (services_.count(rfh_id))
+    OnServiceDestroyed(services_[rfh_id]);
 }
 
 void MediaSessionImpl::DidFinishNavigation(
@@ -294,9 +295,10 @@ void MediaSessionImpl::DidFinishNavigation(
     origin_ = new_origin;
   }
 
-  RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-  if (services_.count(rfh))
-    services_[rfh]->DidFinishNavigation();
+  const auto rfh_id =
+      navigation_handle->GetRenderFrameHost()->GetGlobalFrameRoutingId();
+  if (services_.count(rfh_id))
+    services_[rfh_id]->DidFinishNavigation();
 
   RebuildAndNotifyMetadataChanged();
 }
@@ -1261,19 +1263,17 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
 // MediaSessionService-related methods
 
 void MediaSessionImpl::OnServiceCreated(MediaSessionServiceImpl* service) {
-  RenderFrameHost* rfh = service->GetRenderFrameHost();
-  if (!rfh)
-    return;
+  const auto rfh_id = service->GetRenderFrameHostId();
 
   content::BackForwardCache::DisableForRenderFrameHost(
-      rfh, "MediaSessionImpl::OnServiceCreated");
+      rfh_id, "MediaSessionImpl::OnServiceCreated");
 
-  services_[rfh] = service;
+  services_[rfh_id] = service;
   UpdateRoutedService();
 }
 
 void MediaSessionImpl::OnServiceDestroyed(MediaSessionServiceImpl* service) {
-  services_.erase(service->GetRenderFrameHost());
+  services_.erase(service->GetRenderFrameHostId());
 
   if (routed_service_ == service)
     UpdateRoutedService();
@@ -1362,7 +1362,7 @@ void MediaSessionImpl::DidReceiveAction(
 }
 
 bool MediaSessionImpl::IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh) {
-  return services_.find(rfh) != services_.end();
+  return services_.find(rfh->GetGlobalFrameRoutingId()) != services_.end();
 }
 
 void MediaSessionImpl::UpdateRoutedService() {
@@ -1417,7 +1417,8 @@ MediaSessionServiceImpl* MediaSessionImpl::ComputeServiceForRouting() {
     min_depth = depth;
   }
 
-  return best_frame ? services_[best_frame] : nullptr;
+  return best_frame ? services_[best_frame->GetGlobalFrameRoutingId()]
+                    : nullptr;
 }
 
 void MediaSessionImpl::OnPictureInPictureAvailabilityChanged() {

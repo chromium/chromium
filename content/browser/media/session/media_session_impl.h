@@ -484,7 +484,7 @@ class MediaSessionImpl : public MediaSession,
 #endif  // defined(OS_ANDROID)
 
   // MediaSessionService-related fields
-  using ServicesMap = std::map<RenderFrameHost*, MediaSessionServiceImpl*>;
+  using ServicesMap = std::map<GlobalFrameRoutingId, MediaSessionServiceImpl*>;
 
   // The current metadata and images associated with the current media session.
   media_session::MediaMetadata metadata_;
