@@ -11497,7 +11497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Prerender.PrerenderLoadComplete" units="BooleanSuccess"
-    expires_after="2021-04-30">
+    expires_after="2022-03-30">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -11534,7 +11534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Prerender.PrerenderTimeSaved" units="ms"
-    expires_after="2021-04-30">
+    expires_after="2022-03-30">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
