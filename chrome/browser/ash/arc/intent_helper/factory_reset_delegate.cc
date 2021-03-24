@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/intent_helper/factory_reset_delegate.h"
 
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 
 namespace arc {
 

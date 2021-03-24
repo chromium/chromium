@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/session/adb_sideloading_availability_delegate_impl.h"
+#include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 

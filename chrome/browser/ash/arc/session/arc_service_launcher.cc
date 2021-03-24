@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 
 #include <string>
 #include <utility>
@@ -39,12 +39,12 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
+#include "chrome/browser/ash/arc/session/arc_demo_mode_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_demo_mode_preference_handler.h"
-#include "chrome/browser/chromeos/arc/session/arc_play_store_enabled_preference_handler.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/sharesheet/arc_sharesheet_bridge.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_tracing_bridge.h"

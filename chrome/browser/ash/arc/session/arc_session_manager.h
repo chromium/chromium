@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_SESSION_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_SESSION_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_H_
+#define CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_H_
 
 #include <memory>
 #include <ostream>
@@ -15,10 +15,10 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
+#include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
-#include "chrome/browser/chromeos/arc/session/adb_sideloading_availability_delegate_impl.h"
-#include "chrome/browser/chromeos/arc/session/arc_app_id_provider_impl.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/chromeos/policy/android_management_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -456,4 +456,4 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_SESSION_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_H_

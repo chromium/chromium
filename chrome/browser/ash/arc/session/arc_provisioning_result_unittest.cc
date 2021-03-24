@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/session/arc_provisioning_result.h"
+#include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
 #include "testing/gtest/include/gtest/gtest.h"

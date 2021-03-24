@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/vm_starting_observer.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_PROVISIONING_RESULT_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_PROVISIONING_RESULT_H_
+#ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_PROVISIONING_RESULT_H_
+#define CHROME_BROWSER_ASH_ARC_SESSION_ARC_PROVISIONING_RESULT_H_
 
 #include <ostream>
 
@@ -68,4 +68,4 @@ std::ostream& operator<<(std::ostream& os, const ArcProvisioningResult& result);
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_SESSION_ARC_PROVISIONING_RESULT_H_
+#endif  // CHROME_BROWSER_ASH_ARC_SESSION_ARC_PROVISIONING_RESULT_H_

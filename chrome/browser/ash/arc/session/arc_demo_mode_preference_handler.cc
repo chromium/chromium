@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/session/arc_demo_mode_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_demo_mode_preference_handler.h"
 
 #include <utility>
 
@@ -10,9 +10,9 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"

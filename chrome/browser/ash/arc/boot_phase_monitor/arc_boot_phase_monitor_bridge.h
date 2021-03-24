@@ -14,7 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"

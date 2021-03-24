@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

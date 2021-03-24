@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/session/arc_play_store_enabled_preference_handler.h"
+#include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 
 #include <memory>
 #include <string>
@@ -11,9 +11,9 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"

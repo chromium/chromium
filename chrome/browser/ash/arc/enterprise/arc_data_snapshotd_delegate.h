@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
