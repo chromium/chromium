@@ -468,8 +468,6 @@ class Internals final : public ScriptWrappable {
   DOMRect* selectionBounds(ExceptionState&);
   String textAffinity();
 
-  bool loseSharedGraphicsContext3D();
-
   void forceCompositingUpdate(Document*, ExceptionState&);
 
   void setForcedColorsAndDarkPreferredColorScheme(Document* document);

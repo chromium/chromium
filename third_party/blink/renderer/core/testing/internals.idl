@@ -291,8 +291,6 @@
     [RaisesException] DOMRect selectionBounds();
     readonly attribute DOMString textAffinity;
 
-    boolean loseSharedGraphicsContext3D();
-
     [RaisesException] void forceCompositingUpdate(Document document);
 
     void setForcedColorsAndDarkPreferredColorScheme(Document document);

@@ -3300,23 +3300,6 @@ void Internals::resetTypeAheadSession(HTMLSelectElement* select) {
   select->ResetTypeAheadSessionForTesting();
 }
 
-bool Internals::loseSharedGraphicsContext3D() {
-  std::unique_ptr<WebGraphicsContext3DProvider> shared_provider =
-      Platform::Current()->CreateSharedOffscreenGraphicsContext3DProvider();
-  if (!shared_provider)
-    return false;
-  gpu::gles2::GLES2Interface* shared_gl = shared_provider->ContextGL();
-  if (!shared_gl)
-    return false;
-  shared_gl->LoseContextCHROMIUM(GL_GUILTY_CONTEXT_RESET_EXT,
-                                 GL_INNOCENT_CONTEXT_RESET_EXT);
-  // To prevent tests that call loseSharedGraphicsContext3D from being
-  // flaky, we call finish so that the context is guaranteed to be lost
-  // synchronously (i.e. before returning).
-  shared_gl->Finish();
-  return true;
-}
-
 void Internals::forceCompositingUpdate(Document* document,
                                        ExceptionState& exception_state) {
   DCHECK(document);
