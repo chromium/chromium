@@ -125,4 +125,9 @@ public interface RenderFrameHost {
      * @return Status code indicating the result of the MakeCredential request security checks.
      */
     int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId, Origin effectiveOrigin);
+
+    /**
+     * @return An identifier for this RenderFrameHost.
+     */
+    GlobalFrameRoutingId getGlobalFrameRoutingId();
 }

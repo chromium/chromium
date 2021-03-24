@@ -5,6 +5,7 @@
 package org.chromium.content_public.browser.test.mock;
 
 import org.chromium.base.Callback;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
@@ -75,5 +76,10 @@ public class MockRenderFrameHost implements RenderFrameHost {
     public int performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId, Origin effectiveOrigin) {
         return 0;
+    }
+
+    @Override
+    public GlobalFrameRoutingId getGlobalFrameRoutingId() {
+        return new GlobalFrameRoutingId(-1, -1);
     }
 }

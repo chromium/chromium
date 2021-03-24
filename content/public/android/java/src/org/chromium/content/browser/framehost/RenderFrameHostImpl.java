@@ -12,6 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.bindings.Interface;
@@ -31,20 +32,24 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     // mDelegate can be null.
     private final RenderFrameHostDelegate mDelegate;
     private final boolean mIncognito;
+    private final GlobalFrameRoutingId mRenderFrameHostId;
 
     private RenderFrameHostImpl(long nativeRenderFrameHostAndroid, RenderFrameHostDelegate delegate,
-            boolean isIncognito) {
+            boolean isIncognito, int renderProcessId, int renderFrameId) {
         mNativeRenderFrameHostAndroid = nativeRenderFrameHostAndroid;
         mDelegate = delegate;
         mIncognito = isIncognito;
+        mRenderFrameHostId = new GlobalFrameRoutingId(renderProcessId, renderFrameId);
 
         mDelegate.renderFrameCreated(this);
     }
 
     @CalledByNative
     private static RenderFrameHostImpl create(long nativeRenderFrameHostAndroid,
-            RenderFrameHostDelegate delegate, boolean isIncognito) {
-        return new RenderFrameHostImpl(nativeRenderFrameHostAndroid, delegate, isIncognito);
+            RenderFrameHostDelegate delegate, boolean isIncognito, int renderProcessId,
+            int renderFrameId) {
+        return new RenderFrameHostImpl(nativeRenderFrameHostAndroid, delegate, isIncognito,
+                renderProcessId, renderFrameId);
     }
 
     @CalledByNative
@@ -185,6 +190,11 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         return RenderFrameHostImplJni.get().performMakeCredentialWebAuthSecurityChecks(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
                 effectiveOrigin);
+    }
+
+    @Override
+    public GlobalFrameRoutingId getGlobalFrameRoutingId() {
+        return mRenderFrameHostId;
     }
 
     @NativeMethods

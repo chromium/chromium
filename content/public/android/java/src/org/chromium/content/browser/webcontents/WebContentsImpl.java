@@ -40,6 +40,7 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
 import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.MessagePort;
@@ -403,10 +404,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public RenderFrameHost getRenderFrameHostFromId(int renderProcessId, int renderFrameId) {
+    public RenderFrameHost getRenderFrameHostFromId(GlobalFrameRoutingId id) {
         checkNotDestroyed();
         return WebContentsImplJni.get().getRenderFrameHostFromId(
-                mNativeWebContentsAndroid, renderProcessId, renderFrameId);
+                mNativeWebContentsAndroid, id.childId(), id.frameRoutingId());
     }
 
     public List<RenderFrameHost> getAllRenderFrameHosts() {

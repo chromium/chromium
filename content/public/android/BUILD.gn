@@ -326,6 +326,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/GestureListenerManager.java",
     "java/src/org/chromium/content_public/browser/GestureStateListener.java",
     "java/src/org/chromium/content_public/browser/GestureStateListenerWithScroll.java",
+    "java/src/org/chromium/content_public/browser/GlobalFrameRoutingId.java",
     "java/src/org/chromium/content_public/browser/ImageDownloadCallback.java",
     "java/src/org/chromium/content_public/browser/ImeAdapter.java",
     "java/src/org/chromium/content_public/browser/ImeEventObserver.java",

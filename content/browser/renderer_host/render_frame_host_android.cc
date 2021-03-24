@@ -85,13 +85,15 @@ base::android::ScopedJavaLocalRef<jobject>
 RenderFrameHostAndroid::GetJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (obj_.is_uninitialized()) {
-    bool is_incognito = render_frame_host_->GetSiteInstance()
-                            ->GetBrowserContext()
-                            ->IsOffTheRecord();
+    const bool is_incognito = render_frame_host_->GetSiteInstance()
+                                  ->GetBrowserContext()
+                                  ->IsOffTheRecord();
+    const GlobalFrameRoutingId rfh_id =
+        render_frame_host_->GetGlobalFrameRoutingId();
     ScopedJavaLocalRef<jobject> local_ref = Java_RenderFrameHostImpl_create(
         env, reinterpret_cast<intptr_t>(this),
         render_frame_host_->delegate()->GetJavaRenderFrameHostDelegate(),
-        is_incognito);
+        is_incognito, rfh_id.child_id, rfh_id.frame_routing_id);
     obj_ = JavaObjectWeakGlobalRef(env, local_ref);
     return local_ref;
   }
