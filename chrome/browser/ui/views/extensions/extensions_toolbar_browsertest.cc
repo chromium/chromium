@@ -61,15 +61,28 @@ void ExtensionsToolbarBrowserTest::SetUpOnMainThread() {
 
 ExtensionsToolbarContainer*
 ExtensionsToolbarBrowserTest::GetExtensionsToolbarContainer() const {
-  return BrowserView::GetBrowserViewForBrowser(browser())
+  return GetExtensionsToolbarContainerForBrowser(browser());
+}
+
+ExtensionsToolbarContainer*
+ExtensionsToolbarBrowserTest::GetExtensionsToolbarContainerForBrowser(
+    Browser* browser) const {
+  return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar()
       ->extensions_container();
 }
 
 std::vector<ToolbarActionView*>
 ExtensionsToolbarBrowserTest::GetToolbarActionViews() const {
+  return GetToolbarActionViewsForBrowser(browser());
+}
+
+std::vector<ToolbarActionView*>
+ExtensionsToolbarBrowserTest::GetToolbarActionViewsForBrowser(
+    Browser* browser) const {
   std::vector<ToolbarActionView*> views;
-  for (auto* view : GetExtensionsToolbarContainer()->children()) {
+  for (auto* view :
+       GetExtensionsToolbarContainerForBrowser(browser)->children()) {
     if (views::IsViewClass<ToolbarActionView>(view))
       views.push_back(static_cast<ToolbarActionView*>(view));
   }

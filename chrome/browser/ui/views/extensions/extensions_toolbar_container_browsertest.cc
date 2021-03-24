@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/process_manager.h"
@@ -180,4 +181,43 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
       1u, process_manager->GetRenderFrameHostsForExtension(beta->id()).size());
   EXPECT_FALSE(alpha_action->view_controller()->IsShowingPopup());
   EXPECT_TRUE(beta_action->view_controller()->IsShowingPopup());
+}
+
+namespace {
+
+class IncognitoExtensionsToolbarContainerBrowserTest
+    : public ExtensionsToolbarContainerBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionsToolbarContainerBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+}  // namespace
+
+// Tests that first loading an extension action in an incognito profile, then
+// removing the incognito profile and using the extension action in a normal
+// profile doesn't crash.
+// Regression test for crbug.com/663726.
+IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarContainerBrowserTest,
+                       TestExtensionFirstLoadedInIncognitoMode) {
+  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/api_test/browser_action_with_icon",
+                        /*allow_incognito=*/true);
+  ASSERT_TRUE(extension);
+  Browser* second_browser = CreateBrowser(profile()->GetOriginalProfile());
+  EXPECT_FALSE(second_browser->profile()->IsOffTheRecord());
+
+  CloseBrowserSynchronously(browser());
+
+  std::vector<ToolbarActionView*> extension_views =
+      GetToolbarActionViewsForBrowser(second_browser);
+  ASSERT_EQ(1u, extension_views.size());
+
+  gfx::ImageSkia icon = extension_views[0]->GetIconForTest();
+  // Force the image to try and load a representation.
+  icon.GetRepresentation(2.0);
 }

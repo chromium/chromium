@@ -234,44 +234,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBarBrowserTest,
             browser_actions_bar()->GetExtensionId(1));
 }
 
-// A test that runs in incognito mode.
-class BrowserActionsBarIncognitoTest : public BrowserActionsBarBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BrowserActionsBarBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch("incognito");
-  }
-};
-
-// Tests that first loading an extension action in an incognito profile, then
-// removing the incognito profile and using the extension action in a normal
-// profile doesn't crash.
-// Regression test for crbug.com/663726.
-IN_PROC_BROWSER_TEST_F(BrowserActionsBarIncognitoTest, IncognitoMode) {
-  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
-  const extensions::Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action_with_icon"),
-      {.allow_in_incognito = true});
-  ASSERT_TRUE(extension);
-  Browser* second_browser = CreateBrowser(profile()->GetOriginalProfile());
-  EXPECT_FALSE(second_browser->profile()->IsOffTheRecord());
-
-  CloseBrowserSynchronously(browser());
-
-  ToolbarActionsBar* const toolbar_actions_bar =
-      ToolbarActionsBar::FromBrowserWindow(second_browser->window());
-  std::vector<ToolbarActionViewController*> actions =
-      toolbar_actions_bar->GetActions();
-  ASSERT_EQ(1u, actions.size());
-  gfx::Image icon = actions[0]->GetIcon(
-      second_browser->tab_strip_model()->GetActiveWebContents(),
-      toolbar_actions_bar->GetViewSize());
-  const gfx::ImageSkia* skia = icon.ToImageSkia();
-  ASSERT_TRUE(skia);
-  // Force the image to try and load a representation.
-  skia->GetRepresentation(2.0);
-}
-
 class BrowserActionsBarRuntimeHostPermissionsBrowserTest
     : public BrowserActionsBarBrowserTest {
  public:

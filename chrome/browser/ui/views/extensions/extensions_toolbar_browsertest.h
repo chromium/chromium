@@ -61,10 +61,17 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
 
   // Gets the extensions toolbar container from the browser() toolbar.
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const;
+  // Returns the extensions toolbar container for the given `browser`.
+  ExtensionsToolbarContainer* GetExtensionsToolbarContainerForBrowser(
+      Browser* browser) const;
 
   // Gets the ToolbarActionView instances inside
   // GetExtensionsToolbarContainer().
   std::vector<ToolbarActionView*> GetToolbarActionViews() const;
+  // Returns the ToolbarActionView instances within the extensions toolbar for
+  // the given `browser`.
+  std::vector<ToolbarActionView*> GetToolbarActionViewsForBrowser(
+      Browser* browser) const;
 
   // Gets only the visible ToolbarActionView instances from
   // GetToolbarActionViews().
