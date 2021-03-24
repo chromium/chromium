@@ -171,7 +171,7 @@ export const fakeSystemInfo = {
   deviceCapabilities: {hasBattery: true},
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
 /** @type {!SystemInfo} */
@@ -183,7 +183,7 @@ export const fakeSystemInfoWithoutBattery = {
   deviceCapabilities: {hasBattery: false},
   marketingName: 'Coolest Chromebook',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
 /** @type {!SystemInfo} */
@@ -195,7 +195,7 @@ export const fakeSystemInfoWithTBD = {
   deviceCapabilities: {hasBattery: true},
   marketingName: 'TBD',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
 /** @type {!SystemInfo} */
@@ -207,7 +207,7 @@ export const fakeSystemInfoWithoutBoardName = {
   deviceCapabilities: {hasBattery: true},
   marketingName: 'TBD',
   totalMemoryKib: 128000,
-  versionInfo: {milestoneVersion: 'M99'},
+  versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 /** @type {!Map<!RoutineType, !StandardRoutineResult>} */
 export const fakeRoutineResults = new Map([

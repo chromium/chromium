@@ -78,8 +78,11 @@ void PopulateCpuInfo(const healthd::CpuInfo& cpu_info,
 
 void PopulateVersionInfo(const healthd::SystemInfo& system_info,
                          mojom::SystemInfo& out_system_info) {
-  out_system_info.version_info =
-      mojom::VersionInfo::New(system_info.os_version->release_milestone);
+  const std::string full_version = system_info.os_version->release_milestone +
+                                   '.' + system_info.os_version->build_number +
+                                   '.' + system_info.os_version->patch_number;
+  out_system_info.version_info = mojom::VersionInfo::New(
+      system_info.os_version->release_milestone, full_version);
 }
 
 void PopulateMemorySize(const healthd::MemoryInfo& memory_info,

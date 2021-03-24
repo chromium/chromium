@@ -14,6 +14,7 @@ struct DeviceCapabilities {
 // Contains information about the OS version on the device.
 struct VersionInfo {
   string milestone_version;
+  string full_version_string;
 };
 
 // Contains a snapshot of static system information.

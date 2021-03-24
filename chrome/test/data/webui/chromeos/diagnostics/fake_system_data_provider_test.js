@@ -30,6 +30,7 @@ export function fakeSystemDataProviderTestSuite() {
     /** @type {!VersionInfo} */
     const version = {
       milestoneVersion: 'M97',
+      fullVersionString: 'M97.1234.5.6',
     };
 
     /** @type {!SystemInfo} */
