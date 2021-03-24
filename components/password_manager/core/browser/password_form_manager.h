@@ -206,7 +206,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Copies all known field data from FieldDataManager to |observed_form()|
   // and provisionally saves the manager if the relevant data is found.
   void ProvisionallySaveFieldDataManagerInfo(
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver);
 #endif  // defined(OS_IOS)
 

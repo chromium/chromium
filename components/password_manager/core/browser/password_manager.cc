@@ -767,7 +767,7 @@ void PasswordManager::OnPasswordNoLongerGenerated(
 
 void PasswordManager::OnPasswordFormRemoved(
     PasswordManagerDriver* driver,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     FormRendererId form_id) {
   for (auto& manager : form_managers_) {
     if (driver && !manager->GetDriver())
@@ -783,7 +783,7 @@ void PasswordManager::OnPasswordFormRemoved(
 void PasswordManager::OnIframeDetach(
     const std::string& frame_id,
     PasswordManagerDriver* driver,
-    const FieldDataManager* field_data_manager) {
+    const FieldDataManager& field_data_manager) {
   for (auto& manager : form_managers_) {
     // Find a form with corresponding frame id. Stop iterating in case the
     // target form manager was found to avoid crbug.com/1129758 and since only
@@ -796,7 +796,7 @@ void PasswordManager::OnIframeDetach(
 }
 
 void PasswordManager::PropagateFieldDataManagerInfo(
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     const PasswordManagerDriver* driver) {
   for (auto& manager : form_managers_) {
     manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager, driver);
@@ -1283,7 +1283,7 @@ bool PasswordManager::IsFormManagerPendingPasswordUpdate() const {
 #if defined(OS_IOS)
 bool PasswordManager::DetectPotentialSubmission(
     PasswordFormManager* form_manager,
-    const FieldDataManager* field_data_manager,
+    const FieldDataManager& field_data_manager,
     PasswordManagerDriver* driver) {
   // If the manager is not submitted, it still can have autofilled data.
   if (!form_manager->is_submitted()) {

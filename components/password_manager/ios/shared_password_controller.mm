@@ -194,7 +194,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   auto fieldDataManager =
       UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
   _passwordManager->PropagateFieldDataManagerInfo(
-      fieldDataManager.get(), _delegate.passwordManagerDriver);
+      *fieldDataManager, _delegate.passwordManagerDriver);
   // On non-iOS platforms navigations initiated by link click are excluded from
   // navigations which might be form submssions. On iOS there is no easy way to
   // check that the navigation is link initiated, so it is skipped. It should
@@ -255,7 +255,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     return;
   _passwordManager->OnIframeDetach(web_frame->GetFrameId(),
                                    _delegate.passwordManagerDriver,
-                                   self.formHelper.fieldDataManager.get());
+                                   *self.formHelper.fieldDataManager);
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -706,9 +706,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // If the form was removed, PasswordManager should be informed to decide
   // whether the form was submitted.
   if (params.type == "password_form_removed") {
-    _passwordManager->OnPasswordFormRemoved(
-        _delegate.passwordManagerDriver, self.formHelper.fieldDataManager.get(),
-        params.unique_form_id);
+    _passwordManager->OnPasswordFormRemoved(_delegate.passwordManagerDriver,
+                                            *self.formHelper.fieldDataManager,
+                                            params.unique_form_id);
   }
 
   // If the form was cleared PasswordManager should be informed to decide

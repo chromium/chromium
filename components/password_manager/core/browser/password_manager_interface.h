@@ -89,7 +89,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // the form was submitted.
   virtual void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       autofill::FormRendererId form_id) = 0;
 
   // Checks if there is a submitted PasswordFormManager for a form from the
@@ -97,12 +97,12 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnIframeDetach(
       const std::string& frame_id,
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager) = 0;
+      const autofill::FieldDataManager& field_data_manager) = 0;
 
   // Propagates all available field data manager info to existing form managers
   // and provisionally saves them if the relevant data is retrieved.
   virtual void PropagateFieldDataManagerInfo(
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) = 0;
 #endif
 };

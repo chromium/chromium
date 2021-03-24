@@ -2091,7 +2091,7 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
       observed_form_.fields[2].unique_renderer_id, u"autofilled_pw",
       FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
-  form_manager_->ProvisionallySaveFieldDataManagerInfo(field_data_manager.get(),
+  form_manager_->ProvisionallySaveFieldDataManagerInfo(*field_data_manager,
                                                        &driver_);
 
   EXPECT_EQ(form_manager_->observed_form()->fields[1].user_input,

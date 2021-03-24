@@ -89,18 +89,18 @@ class MockPasswordManager : public PasswordManagerInterface {
   MOCK_METHOD(void,
               OnPasswordFormRemoved,
               (PasswordManagerDriver*,
-               const autofill::FieldDataManager*,
+               const autofill::FieldDataManager&,
                autofill::FormRendererId),
               (override));
   MOCK_METHOD(void,
               OnIframeDetach,
               (const std::string&,
                PasswordManagerDriver*,
-               const autofill::FieldDataManager*),
+               const autofill::FieldDataManager&),
               (override));
   MOCK_METHOD(void,
               PropagateFieldDataManagerInfo,
-              (const autofill::FieldDataManager*, const PasswordManagerDriver*),
+              (const autofill::FieldDataManager&, const PasswordManagerDriver*),
               (override));
 };
 

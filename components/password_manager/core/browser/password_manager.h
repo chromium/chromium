@@ -101,14 +101,14 @@ class PasswordManager : public PasswordManagerInterface {
   void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) override;
   void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       autofill::FormRendererId form_id) override;
   void OnIframeDetach(
       const std::string& frame_id,
       PasswordManagerDriver* driver,
-      const autofill::FieldDataManager* field_data_manager) override;
+      const autofill::FieldDataManager& field_data_manager) override;
   void PropagateFieldDataManagerInfo(
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver) override;
 #endif
 
@@ -318,7 +318,7 @@ class PasswordManager : public PasswordManagerInterface {
   // might be shown.
   bool DetectPotentialSubmission(
       PasswordFormManager* form_manager,
-      const autofill::FieldDataManager* field_data_manager,
+      const autofill::FieldDataManager& field_data_manager,
       PasswordManagerDriver* driver);
 #endif
 
