@@ -252,9 +252,9 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
     }
   }
 
-  return base::WrapUnique(new TrialToken(origin, is_subdomain, *feature_name,
-                                         expiry_timestamp, is_third_party,
-                                         usage));
+  return base::WrapUnique(new TrialToken(
+      origin, is_subdomain, *feature_name,
+      base::Time::FromDoubleT(expiry_timestamp), is_third_party, usage));
 }
 
 bool TrialToken::ValidateOrigin(const url::Origin& origin) const {
@@ -295,14 +295,27 @@ bool TrialToken::ValidateSignature(base::StringPiece signature,
 TrialToken::TrialToken(const url::Origin& origin,
                        bool match_subdomains,
                        const std::string& feature_name,
-                       uint64_t expiry_timestamp,
+                       base::Time expiry_time,
                        bool is_third_party,
                        UsageRestriction usage_restriction)
     : origin_(origin),
       match_subdomains_(match_subdomains),
       feature_name_(feature_name),
-      expiry_time_(base::Time::FromDoubleT(expiry_timestamp)),
+      expiry_time_(expiry_time),
       is_third_party_(is_third_party),
       usage_restriction_(usage_restriction) {}
+
+// static
+std::unique_ptr<TrialToken> TrialToken::CreateTrialTokenForTesting(
+    const url::Origin& origin,
+    bool match_subdomains,
+    const std::string& feature_name,
+    base::Time expiry_time,
+    bool is_third_party,
+    UsageRestriction usage_restriction) {
+  return base::WrapUnique(new TrialToken(origin, match_subdomains, feature_name,
+                                         expiry_time, is_third_party,
+                                         usage_restriction));
+}
 
 }  // namespace blink

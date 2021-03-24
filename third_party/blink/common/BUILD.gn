@@ -150,6 +150,7 @@ source_set("common") {
     "notifications/notification_resources.cc",
     "notifications/platform_notification_data.cc",
     "origin_trials/trial_token.cc",
+    "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",
     "page/content_to_visible_time_reporter.cc",
     "page/drag_mojom_traits.cc",

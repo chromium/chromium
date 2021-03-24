@@ -23,22 +23,7 @@ class URLRequest;
 namespace blink {
 
 class OriginTrialPolicy;
-enum class OriginTrialTokenStatus;
-
-struct BLINK_COMMON_EXPORT TrialTokenResult {
-  TrialTokenResult();
-  explicit TrialTokenResult(OriginTrialTokenStatus);
-  TrialTokenResult(OriginTrialTokenStatus status,
-                   std::string name,
-                   base::Time expiry,
-                   bool is_third_party);
-  ~TrialTokenResult();
-
-  OriginTrialTokenStatus status;
-  std::string feature_name;
-  base::Time expiry_time;
-  bool is_third_party = false;
-};
+class TrialTokenResult;
 
 // TrialTokenValidator checks that a page's OriginTrial token enables a certain
 // feature.

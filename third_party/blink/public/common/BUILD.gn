@@ -165,6 +165,7 @@ source_set("headers") {
     "oom_intervention/oom_intervention_types.h",
     "origin_trials/origin_trial_policy.h",
     "origin_trials/trial_token.h",
+    "origin_trials/trial_token_result.h",
     "origin_trials/trial_token_validator.h",
     "page/content_to_visible_time_reporter.h",
     "page/drag_mojom_traits.h",

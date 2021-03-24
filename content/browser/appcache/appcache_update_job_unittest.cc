@@ -53,6 +53,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
@@ -1256,9 +1257,10 @@ class AppCacheUpdateJobTest : public testing::Test,
       blink::TrialTokenResult result = validator.ValidateToken(
           kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
           base::Time::Now());
-      expect_token_expires_ = result.expiry_time;
-      ASSERT_EQ(result.status, blink::OriginTrialTokenStatus::kSuccess);
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(), result.feature_name);
+      ASSERT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+      expect_token_expires_ = result.ParsedToken()->expiry_time();
+      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(),
+                result.ParsedToken()->feature_name());
       EXPECT_NE(base::Time(), expect_token_expires_);
     }
 
@@ -4312,9 +4314,10 @@ class AppCacheUpdateJobTest : public testing::Test,
       blink::TrialTokenResult result = validator.ValidateToken(
           kTestAppCacheOriginTrialToken, MockHttpServer::GetOrigin(),
           base::Time::Now());
-      expect_token_expires_ = result.expiry_time;
-      ASSERT_EQ(result.status, blink::OriginTrialTokenStatus::kSuccess);
-      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(), result.feature_name);
+      ASSERT_EQ(result.Status(), blink::OriginTrialTokenStatus::kSuccess);
+      expect_token_expires_ = result.ParsedToken()->expiry_time();
+      EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(),
+                result.ParsedToken()->feature_name());
       EXPECT_NE(base::Time(), expect_token_expires_);
     }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -43,8 +44,7 @@ const char kTokenPlaceholder[] = "The token contents are not used";
 
 class MockTokenValidator : public TrialTokenValidator {
  public:
-  MockTokenValidator()
-      : response_(OriginTrialTokenStatus::kNotSupported), call_count_(0) {}
+  MockTokenValidator() = default;
   ~MockTokenValidator() override = default;
 
   // blink::WebTrialTokenValidator implementation
@@ -52,7 +52,11 @@ class MockTokenValidator : public TrialTokenValidator {
                                  const url::Origin& origin,
                                  base::Time current_time) const override {
     call_count_++;
-    return response_;
+    return TrialTokenResult(
+        status_, TrialToken::CreateTrialTokenForTesting(
+                     url::Origin(),
+                     /* match_subdomains */ true, feature_, expiry_,
+                     is_third_party_, TrialToken::UsageRestriction::kNone));
   }
   TrialTokenResult ValidateToken(base::StringPiece token,
                                  const url::Origin& origin,
@@ -66,21 +70,25 @@ class MockTokenValidator : public TrialTokenValidator {
                    const std::string& feature,
                    base::Time expiry = base::Time(),
                    bool is_third_party = false) {
-    response_.status = status;
-    response_.feature_name = feature;
-    response_.expiry_time = expiry;
-    response_.is_third_party = is_third_party;
+    status_ = status;
+    feature_ = feature;
+    expiry_ = expiry;
+    is_third_party_ = is_third_party;
   }
+
   int CallCount() { return call_count_; }
 
  private:
-  TrialTokenResult response_;
+  // Mocking response data members.
+  OriginTrialTokenStatus status_ = OriginTrialTokenStatus::kNotSupported;
+  std::string feature_;
+  base::Time expiry_;
+  bool is_third_party_;
 
-  mutable int call_count_;
+  mutable int call_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MockTokenValidator);
 };
-
 }  // namespace
 
 class OriginTrialContextTest : public testing::Test {

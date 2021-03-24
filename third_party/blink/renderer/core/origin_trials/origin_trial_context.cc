@@ -11,6 +11,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -478,18 +479,19 @@ bool OriginTrialContext::EnableTrialFromToken(
   TrialTokenResult token_result = trial_token_validator_->ValidateToken(
       token_string.AsStringPiece(), origin->ToUrlOrigin(),
       script_origin ? &script_url_origin : nullptr, base::Time::Now());
-  DVLOG(1) << "EnableTrialFromToken: token_result = " << token_result.status
+  DVLOG(1) << "EnableTrialFromToken: token_result = " << token_result.Status()
            << ", token = " << token;
-  OriginTrialTokenStatus status = token_result.status;
+  OriginTrialTokenStatus status = token_result.Status();
   if (status == OriginTrialTokenStatus::kSuccess) {
-    String trial_name = String::FromUTF8(token_result.feature_name.data(),
-                                         token_result.feature_name.size());
+    const TrialToken& parsed_token = *token_result.ParsedToken();
+    String trial_name = String::FromUTF8(parsed_token.feature_name().data(),
+                                         parsed_token.feature_name().size());
     if (origin_trials::IsTrialValid(trial_name)) {
       status = ValidateTokenResult(trial_name, is_origin_secure,
                                    is_script_origin_secure,
-                                   token_result.is_third_party);
+                                   parsed_token.is_third_party());
       if (status == OriginTrialTokenStatus::kSuccess)
-        valid = EnableTrialFromName(trial_name, token_result.expiry_time);
+        valid = EnableTrialFromName(trial_name, parsed_token.expiry_time());
     }
   }
   RecordTokenValidationResultHistogram(status);

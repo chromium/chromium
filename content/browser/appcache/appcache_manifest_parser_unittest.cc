@@ -16,6 +16,7 @@
 #include "content/browser/appcache/test_origin_trial_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
@@ -820,11 +821,11 @@ TEST_F(AppCacheManifestParserTest, OriginTrial) {
     const char* token = APPCACHE_ORIGIN_TRIAL_TOKEN;
     blink::TrialTokenResult expect_token_result =
         validator.ValidateToken(token, origin, base::Time::Now());
-    expect_token_expires = expect_token_result.expiry_time;
-    ASSERT_EQ(expect_token_result.status,
+    ASSERT_EQ(expect_token_result.Status(),
               blink::OriginTrialTokenStatus::kSuccess);
+    expect_token_expires = expect_token_result.ParsedToken()->expiry_time();
     EXPECT_EQ(GetAppCacheOriginTrialNameForTesting(),
-              expect_token_result.feature_name);
+              expect_token_result.ParsedToken()->feature_name());
     EXPECT_NE(base::Time(), expect_token_expires);
   }
 

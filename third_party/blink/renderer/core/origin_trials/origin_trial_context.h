@@ -18,6 +18,7 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptState;
+enum class OriginTrialTokenStatus;
 
 // The Origin Trials Framework provides limited access to experimental features,
 // on a per-origin basis (origin trials). This class provides the implementation

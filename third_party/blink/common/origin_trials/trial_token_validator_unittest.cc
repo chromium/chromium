@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -286,26 +287,27 @@ class TrialTokenValidatorTest : public testing::Test {
 TEST_F(TrialTokenValidatorTest, ValidateValidToken) {
   TrialTokenResult result =
       validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
-  EXPECT_EQ(false, result.is_third_party);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(false, result.ParsedToken()->is_third_party());
 
   // All signing keys should be able to validate their tokens.
-  result = validator_.ValidateToken(kSampleToken2, appropriate_origin_, Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
-  EXPECT_EQ(false, result.is_third_party);
+  TrialTokenResult result2 =
+      validator_.ValidateToken(kSampleToken2, appropriate_origin_, Now());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result2.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result2.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result2.ParsedToken()->expiry_time());
+  EXPECT_EQ(false, result2.ParsedToken()->is_third_party());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenFromExternalScript) {
   TrialTokenResult result = validator_.ValidateToken(
       kThirdPartyToken, inappropriate_origin_, &appropriate_origin_, Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
-  EXPECT_EQ(true, result.is_third_party);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
 }
 
 TEST_F(TrialTokenValidatorTest,
@@ -314,7 +316,7 @@ TEST_F(TrialTokenValidatorTest,
             validator_
                 .ValidateToken(kThirdPartyToken, appropriate_origin_,
                                &inappropriate_origin_, Now())
-                .status);
+                .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenNotFromExternalScript) {
@@ -322,51 +324,58 @@ TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenNotFromExternalScript) {
       blink::OriginTrialTokenStatus::kWrongOrigin,
       validator_
           .ValidateToken(kThirdPartyToken, appropriate_origin_, nullptr, Now())
-          .status);
+          .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateInappropriateOrigin) {
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
-            validator_.ValidateToken(kSampleToken, inappropriate_origin_, Now())
-                .status);
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kWrongOrigin,
-      validator_.ValidateToken(kSampleToken, insecure_origin_, Now()).status);
+  TrialTokenResult inappropriate_result =
+      validator_.ValidateToken(kSampleToken, inappropriate_origin_, Now());
+  EXPECT_EQ(inappropriate_result.Status(),
+            blink::OriginTrialTokenStatus::kWrongOrigin);
+  EXPECT_NE(inappropriate_result.ParsedToken(), nullptr);
+
+  TrialTokenResult insecure_result =
+      validator_.ValidateToken(kSampleToken, insecure_origin_, Now());
+  EXPECT_EQ(insecure_result.Status(),
+            blink::OriginTrialTokenStatus::kWrongOrigin);
+  EXPECT_NE(insecure_result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateInvalidSignature) {
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kInvalidSignature,
-      validator_
-          .ValidateToken(kInvalidSignatureToken, appropriate_origin_, Now())
-          .status);
+  TrialTokenResult result = validator_.ValidateToken(
+      kInvalidSignatureToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInvalidSignature);
+  EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateUnparsableToken) {
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kMalformed,
-      validator_.ValidateToken(kUnparsableToken, appropriate_origin_, Now())
-          .status);
+  TrialTokenResult result =
+      validator_.ValidateToken(kUnparsableToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kMalformed);
+  EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateExpiredToken) {
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kExpired,
-            validator_.ValidateToken(kExpiredToken, appropriate_origin_, Now())
-                .status);
+  TrialTokenResult result =
+      validator_.ValidateToken(kExpiredToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kExpired);
+  EXPECT_NE(result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateValidTokenWithIncorrectKey) {
   SetPublicKeys(kTestPublicKeys2, kTestPublicKeys2Size);
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kInvalidSignature,
-            validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .status);
+  TrialTokenResult result =
+      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kInvalidSignature);
+  EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, PublicKeyNotAvailable) {
   SetPublicKeys({}, 0);
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kNotSupported,
-            validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .status);
+  TrialTokenResult result =
+      validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
+  EXPECT_EQ(result.Status(), blink::OriginTrialTokenStatus::kNotSupported);
+  EXPECT_EQ(result.ParsedToken(), nullptr);
 }
 
 TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeatures) {
@@ -374,29 +383,30 @@ TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledFeatures) {
       validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
   // Disable an irrelevant feature; token should still validate
   DisableFeature(kInappropriateFeatureName);
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   // Disable the token's feature; it should no longer be valid
   DisableFeature(kAppropriateFeatureName);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kFeatureDisabled,
             validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .status);
+                .Status());
 }
 TEST_F(TrialTokenValidatorTest,
        ValidatorRespectsDisabledFeaturesForUserWithFirstPartyToken) {
   // Token should be valid if the feature is not disabled for user.
   TrialTokenResult result =
       validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateThirdPartyFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   // Token should be invalid when the feature is disabled for user.
   DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
   EXPECT_EQ(
       blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
       validator_.ValidateToken(kUsageSubsetToken, appropriate_origin_, Now())
-          .status);
+          .Status());
 }
 
 TEST_F(TrialTokenValidatorTest,
@@ -405,9 +415,10 @@ TEST_F(TrialTokenValidatorTest,
   TrialTokenResult result = validator_.ValidateToken(
       kThirdPartyUsageSubsetToken, inappropriate_origin_, &appropriate_origin_,
       Now());
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateThirdPartyFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateThirdPartyFeatureName,
+            result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
   // Token should be invalid when the feature is disabled for user.
   DisableFeatureForUser(kAppropriateThirdPartyFeatureName);
   EXPECT_EQ(
@@ -415,7 +426,7 @@ TEST_F(TrialTokenValidatorTest,
       validator_
           .ValidateToken(kThirdPartyUsageSubsetToken, inappropriate_origin_,
                          &appropriate_origin_, Now())
-          .status);
+          .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledTokens) {
@@ -423,15 +434,15 @@ TEST_F(TrialTokenValidatorTest, ValidatorRespectsDisabledTokens) {
       validator_.ValidateToken(kSampleToken, appropriate_origin_, Now());
   // Disable an irrelevant token; token should still validate
   DisableToken(expired_token_signature_);
-  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.status);
-  EXPECT_EQ(kAppropriateFeatureName, result.feature_name);
-  EXPECT_EQ(kSampleTokenExpiryTime, result.expiry_time);
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
 
   // Disable the token; it should no longer be valid
   DisableToken(valid_token_signature_);
   EXPECT_EQ(blink::OriginTrialTokenStatus::kTokenDisabled,
             validator_.ValidateToken(kSampleToken, appropriate_origin_, Now())
-                .status);
+                .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateRequestInsecure) {
