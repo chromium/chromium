@@ -65,7 +65,7 @@ bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
       "http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"};
   static const std::string kPrefix = "Malformed printer URI: ";
 
-  if (kKnownSchemes.count(uri.GetScheme()) == 0) {
+  if (!kKnownSchemes.contains(uri.GetScheme())) {
     if (error_message)
       *error_message = kPrefix + "unknown or missing scheme";
     return false;

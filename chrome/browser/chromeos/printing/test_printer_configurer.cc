@@ -16,10 +16,9 @@ TestPrinterConfigurer::~TestPrinterConfigurer() = default;
 void TestPrinterConfigurer::SetUpPrinter(const Printer& printer,
                                          PrinterSetupCallback callback) {
   MarkConfigured(printer.id());
-  PrinterSetupResult result = PrinterSetupResult::kSuccess;
-  if (assigned_results_.count(printer.id())) {
-    result = assigned_results_[printer.id()];
-  }
+  auto it = assigned_results_.find(printer.id());
+  PrinterSetupResult result =
+      it != assigned_results_.end() ? it->second : PrinterSetupResult::kSuccess;
   std::move(callback).Run(result);
 }
 

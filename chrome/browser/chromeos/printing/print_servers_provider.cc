@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -126,7 +127,8 @@ TaskResults ParseData(int task_id, std::unique_ptr<std::string> data) {
     }
     // Checks if server's ID and URL is not already used. If yes, a warning is
     // emitted and the record is skipped.
-    if (print_server_ids.count(*id) || print_server_urls.count(gurl)) {
+    if (base::Contains(print_server_ids, *id) ||
+        base::Contains(print_server_urls, gurl)) {
       LOG(WARNING) << "Entry in print servers policy skipped. There is "
                    << "already a record with the same ID (" << *id << ") or "
                    << "the same URL (" << gurl.spec() << ")";
@@ -272,7 +274,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
       new_servers = servers_;
     } else {
       for (auto& print_server : servers_) {
-        if (allowlist_.value().count(print_server.GetId())) {
+        if (base::Contains(allowlist_.value(), print_server.GetId())) {
           new_servers.push_back(print_server);
         }
       }
