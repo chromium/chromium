@@ -4656,6 +4656,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanel)},
 
+    {"side-panel-prototype", flag_descriptions::kSidePanelPrototypeName,
+     flag_descriptions::kSidePanelPrototypeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanelPrototype)},
+
     {"tab-outlines-in-low-contrast-themes",
      flag_descriptions::kTabOutlinesInLowContrastThemesName,
      flag_descriptions::kTabOutlinesInLowContrastThemesDescription, kOsDesktop,

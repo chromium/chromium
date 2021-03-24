@@ -2110,6 +2110,10 @@ const char kSendTabToSelfWhenSignedInDescription[] =
 const char kSidePanelName[] = "Side panel";
 const char kSidePanelDescription[] = "Host some content in a side panel.";
 
+const char kSidePanelPrototypeName[] = "Side panel prototype";
+const char kSidePanelPrototypeDescription[] =
+    "Display a prototype of the side panel.";
+
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

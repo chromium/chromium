@@ -1238,6 +1238,9 @@ extern const char kSendTabToSelfWhenSignedInDescription[];
 extern const char kSidePanelName[];
 extern const char kSidePanelDescription[];
 
+extern const char kSidePanelPrototypeName[];
+extern const char kSidePanelPrototypeDescription[];
+
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 
