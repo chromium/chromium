@@ -41,6 +41,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 
+using chromeos::network_config::IsInhibited;
 using chromeos::network_config::NetworkTypeMatchesType;
 using chromeos::network_config::StateIsConnected;
 
@@ -145,14 +146,21 @@ void NetworkListView::OnGetNetworkStateList(
 
     auto info = std::make_unique<NetworkInfo>(network->guid);
     ActivationStateType activation_state = ActivationStateType::kUnknown;
+    const chromeos::network_config::mojom::DeviceStateProperties*
+        cellular_device = model()->GetDevice(NetworkType::kCellular);
     switch (network->type) {
       case NetworkType::kCellular:
         activation_state =
             network->type_state->get_cellular()->activation_state;
         info->activation_state = activation_state;
-        // If cellular is not enabled, skip cellular networks with no service.
+        if (cellular_device && IsInhibited(cellular_device))
+          info->inhibited = true;
+
+        // If cellular is not enabled, skip cellular networks with no service,
+        // unless the device state is inhibited.
         if (model()->GetDeviceState(NetworkType::kCellular) !=
                 DeviceStateType::kEnabled &&
+            !info->inhibited &&
             activation_state == ActivationStateType::kNoService) {
           continue;
         }
@@ -179,9 +187,13 @@ void NetworkListView::OnGetNetworkStateList(
     // |network_list_| only contains non virtual networks.
     info->image = network_icon::GetImageForNonVirtualNetwork(
         network.get(), network_icon::ICON_TYPE_LIST, false /* badge_vpn */);
+
+    // If the device state is inhibited, we want to have the cellular network
+    // rows disabled and not connectable.
     info->disable = activation_state == ActivationStateType::kActivating ||
-                    network->prohibited_by_policy;
-    info->connectable = network->connectable;
+                    network->prohibited_by_policy || info->inhibited;
+    info->connectable = network->connectable && info->inhibited;
+
     if (network->prohibited_by_policy) {
       info->tooltip =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_PROHIBITED);

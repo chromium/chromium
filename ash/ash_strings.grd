@@ -2085,6 +2085,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_CELLULAR_ADDRESS" desc="The label for the mac address of the cellular device.">
         Cellular: <ph name="ADDRESS">$1<ex>01:23:45:67:89:AB</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR" desc="When the modem is rebooting, it cannot process any new commands, so we disable the button and show this message in the tooltip.">
+        Modem reboot. Wait 30 sec before trying again.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR" desc="Message for the status area when initializing the cellular device.">
         Initializing...
       </message>

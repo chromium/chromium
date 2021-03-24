@@ -27,7 +27,8 @@ bool NetworkInfo::operator==(const NetworkInfo& other) const {
          type == other.type && disable == other.disable &&
          connection_state == other.connection_state && source == other.source &&
          activation_state == other.activation_state &&
-         battery_percentage == other.battery_percentage;
+         battery_percentage == other.battery_percentage &&
+         inhibited == other.inhibited;
 }
 
 }  // namespace ash

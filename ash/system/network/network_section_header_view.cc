@@ -15,11 +15,14 @@
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/controls/image_view.h"
+
+using chromeos::network_config::IsInhibited;
 
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStateType;
@@ -36,12 +39,21 @@ namespace {
 
 const int64_t kBluetoothTimeoutDelaySeconds = 2;
 
+bool IsCellularDeviceInhibited() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+  if (!cellular_device)
+    return false;
+  return cellular_device->inhibit_reason !=
+         chromeos::network_config::mojom::InhibitReason::kNotInhibited;
+}
+
 bool IsCellularSimLocked() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-  return cellular_device &&
-         !cellular_device->sim_lock_status->lock_type.empty();
+  return IsInhibited(cellular_device);
 }
 
 void ShowCellularSettings() {
@@ -184,6 +196,17 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
       SetToggleVisibility(false);
       return IDS_ASH_STATUS_TRAY_SIM_CARD_MISSING;
     }
+
+    if (IsCellularDeviceInhibited()) {
+      // When a device is inhibited, it cannot process any new operations. Thus,
+      // keep the toggle on to show users that the device is active, but set it
+      // to be disabled to make it clear that users cannot update it until it
+      // becomes uninhibited.
+      SetToggleVisibility(true);
+      SetToggleState(false /* toggle_enabled */, true /* is_on */);
+      return 0;
+    }
+
     bool toggle_enabled = default_toggle_enabled &&
                           (cellular_state == DeviceStateType::kEnabled ||
                            cellular_state == DeviceStateType::kDisabled);
@@ -314,12 +337,16 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
 }
 
 void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
+  // If the device state is inhibited, add a tool tip specific to modem
+  // reset.
+  int tooltip_message_id = IsCellularDeviceInhibited()
+                               ? IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR
+                               : IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
   TopShortcutButton* add_cellular_button = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
-      vector_icons::kAddCellularNetworkIcon,
-      IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL);
-  add_cellular_button->SetEnabled(enabled);
+      vector_icons::kAddCellularNetworkIcon, tooltip_message_id);
+  add_cellular_button->SetEnabled(enabled && !IsCellularDeviceInhibited());
   container()->AddView(TriView::Container::END, add_cellular_button);
 }
 
