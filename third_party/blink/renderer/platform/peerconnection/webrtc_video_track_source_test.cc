@@ -64,7 +64,7 @@ class WebRtcVideoTrackSourceTest
                      media::VideoPixelFormat pixel_format) {
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         coded_size, visible_rect, natural_size, storage_type, pixel_format);
-    track_source_->OnFrameCaptured(frame);
+    track_source_->OnFrameCaptured(frame, {});
   }
 
   void SendTestFrameAndVerifyFeedback(
@@ -77,7 +77,7 @@ class WebRtcVideoTrackSourceTest
       float max_framerate) {
     scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
         coded_size, visible_rect, natural_size, storage_type, pixel_format);
-    track_source_->OnFrameCaptured(frame);
+    track_source_->OnFrameCaptured(frame, {});
     EXPECT_EQ(feedback_.max_pixels, max_pixels);
     EXPECT_EQ(feedback_.max_framerate_fps, max_framerate);
   }
@@ -93,7 +93,7 @@ class WebRtcVideoTrackSourceTest
         coded_size, visible_rect, natural_size, storage_type, pixel_format);
     frame->metadata().capture_counter = capture_counter;
     frame->metadata().capture_update_rect = update_rect;
-    track_source_->OnFrameCaptured(frame);
+    track_source_->OnFrameCaptured(frame, {});
   }
 
   WebRtcVideoTrackSource::FrameAdaptationParams FrameAdaptation_KeepAsIs(

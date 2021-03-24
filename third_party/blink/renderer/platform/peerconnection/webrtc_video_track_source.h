@@ -12,6 +12,7 @@
 #include "media/capture/video_frame_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/media/base/adapted_video_track_source.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
@@ -54,7 +55,9 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   bool remote() const override;
   bool is_screencast() const override;
   absl::optional<bool> needs_denoising() const override;
-  void OnFrameCaptured(scoped_refptr<media::VideoFrame> frame);
+  void OnFrameCaptured(
+      scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
 
   using webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
   using webrtc::VideoTrackSourceInterface::RemoveSink;
@@ -71,13 +74,15 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   // |frame->visible_rect()|) has changed since the last delivered frame, the
   // whole frame is marked as updated.
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
+                    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     gfx::Rect* update_rect,
                     int64_t timestamp_us);
 
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> adapter_resources_;
   scoped_refptr<LegacyWebRtcVideoFrameAdapter::SharedResources>
-      adapter_resources_;
+      legacy_adapter_resources_;
   // State for the timestamp translation.
   rtc::TimestampAligner timestamp_aligner_;
 

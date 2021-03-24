@@ -17,6 +17,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/capture/video_frame_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 
 namespace media {
@@ -37,7 +38,7 @@ namespace blink {
 // Creators of LegacyWebRtcVideoFrameAdapter can ensure the frame is convertible
 // by calling |IsFrameAdaptable| before constructing this object.
 class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
-    : public webrtc::VideoFrameBuffer {
+    : public WebRtcVideoFrameAdapterInterface {
  public:
   class PLATFORM_EXPORT SharedResources
       : public base::RefCountedThreadSafe<SharedResources> {
@@ -119,7 +120,9 @@ class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
       scoped_refptr<media::VideoFrame> frame,
       scoped_refptr<SharedResources> shared_resources);
 
-  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
+    return frame_;
+  }
 
  private:
   Type type() const override;
