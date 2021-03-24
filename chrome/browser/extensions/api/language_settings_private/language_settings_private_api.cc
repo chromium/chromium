@@ -187,6 +187,13 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
     }
   }
 
+  // Add the rest of the third party IMEs
+  auto item = descriptors.begin();
+  while (item != descriptors.end()) {
+    ime_list.push_back(item->id());
+    item = descriptors.erase(item);
+  }
+
   return ime_list;
 }
 

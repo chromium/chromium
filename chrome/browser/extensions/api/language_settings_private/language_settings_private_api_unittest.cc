@@ -388,17 +388,15 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
     TestState() {
       // Set up three IMEs
       std::string layout("us");
-      std::vector<std::string> languages({"en-US", "en"});
-      std::vector<std::string> arc_languages(
-          {chromeos::extension_ime_util::kArcImeLanguage});
       InputMethodDescriptor extension_ime(
-          GetExtensionImeId(), "ExtensionIme", "", layout, languages,
+          GetExtensionImeId(), "ExtensionIme", "", layout, {"vi"},
           false /* is_login_keyboard */, GURL(), GURL());
       InputMethodDescriptor component_extension_ime(
           GetComponentExtensionImeId(), "ComponentExtensionIme", "", layout,
-          languages, false /* is_login_keyboard */, GURL(), GURL());
+          {"en-US", "en"}, false /* is_login_keyboard */, GURL(), GURL());
       InputMethodDescriptor arc_ime(
-          GetArcImeId(), "ArcIme", "", layout, arc_languages,
+          GetArcImeId(), "ArcIme", "", layout,
+          {chromeos::extension_ime_util::kArcImeLanguage},
           false /* is_login_keyboard */, GURL(), GURL());
       input_methods_ = {extension_ime, component_extension_ime, arc_ime};
     }
