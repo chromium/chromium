@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
@@ -467,29 +468,37 @@ void BaseRenderingContext2D::setGlobalCompositeOperation(
   ModifiableState().SetGlobalComposite(sk_blend_mode);
 }
 
-void BaseRenderingContext2D::filter(StringOrObject& filter) const {
-  filter.SetString(GetState().UnparsedFilter());
+void BaseRenderingContext2D::filter(StringOrCanvasFilter& filter) const {
+  if (GetState().GetCanvasFilter())
+    filter.SetCanvasFilter(GetState().GetCanvasFilter());
+  else
+    filter.SetString(GetState().UnparsedCSSFilter());
 }
 
 void BaseRenderingContext2D::setFilter(
     const ExecutionContext* execution_context,
-    StringOrObject input) {
+    StringOrCanvasFilter input) {
   if (input.IsString()) {
     String filter_string = input.GetAsString();
 
-    if (filter_string == GetState().UnparsedFilter())
+    if (!GetState().GetCanvasFilter() &&
+        filter_string == GetState().UnparsedCSSFilter())
       return;
 
-    const CSSValue* filter_value = CSSParser::ParseSingleValue(
+    const CSSValue* css_value = CSSParser::ParseSingleValue(
         CSSPropertyID::kFilter, filter_string,
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, execution_context->GetSecureContextMode()));
 
-    if (!filter_value || filter_value->IsCSSWideKeyword())
+    if (!css_value || css_value->IsCSSWideKeyword())
       return;
 
-    ModifiableState().SetUnparsedFilter(filter_string);
-    ModifiableState().SetFilter(filter_value);
+    ModifiableState().SetUnparsedCSSFilter(filter_string);
+    ModifiableState().SetCSSFilter(css_value);
+    SnapshotStateForFilter();
+  } else if (input.IsCanvasFilter() &&
+             RuntimeEnabledFeatures::NewCanvas2DAPIEnabled()) {
+    ModifiableState().SetCanvasFilter(input.GetAsCanvasFilter());
     SnapshotStateForFilter();
   }
 }

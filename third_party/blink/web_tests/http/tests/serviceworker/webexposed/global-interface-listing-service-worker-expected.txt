@@ -120,6 +120,9 @@ interface CanMakePaymentEvent : ExtendableEvent
     method constructor
     method respondWith
     method respondWithMinimalUI
+interface CanvasFilter
+    attribute @@toStringTag
+    method constructor
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
