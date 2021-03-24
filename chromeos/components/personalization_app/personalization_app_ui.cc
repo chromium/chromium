@@ -4,6 +4,7 @@
 
 #include "chromeos/components/personalization_app/personalization_app_ui.h"
 
+#include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/grit/chromeos_personalization_app_resources.h"
 #include "chromeos/grit/chromeos_personalization_app_resources_map.h"
@@ -36,10 +37,16 @@ void AddStrings(content::WebUIDataSource* source) {
 
 }  // namespace
 
-PersonalizationAppUI::PersonalizationAppUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui) {
+PersonalizationAppUI::PersonalizationAppUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<PersonalizationAppUiDelegate> delegate)
+    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   auto source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIPersonalizationAppHost));
+
+  // TODO(crbug/1169829) set up trusted types properly to allow Polymer to write
+  // html
+  source->DisableTrustedTypesCSP();
 
   AddResources(source.get());
   AddStrings(source.get());
@@ -49,5 +56,13 @@ PersonalizationAppUI::PersonalizationAppUI(content::WebUI* web_ui)
 }
 
 PersonalizationAppUI::~PersonalizationAppUI() = default;
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<
+        chromeos::personalization_app::mojom::WallpaperProvider> receiver) {
+  delegate_->BindInterface(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)
 
 }  // namespace chromeos

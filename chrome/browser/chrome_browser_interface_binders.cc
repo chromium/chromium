@@ -200,6 +200,8 @@
 #include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/media_app_ui.mojom.h"
 #include "chromeos/components/multidevice/debug_webui/proximity_auth_ui.h"
+#include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
+#include "chromeos/components/personalization_app/personalization_app_ui.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/components/print_management/print_management_ui.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
@@ -213,7 +215,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || \
     defined(OS_ANDROID)
@@ -842,6 +844,12 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     RegisterWebUIControllerInterfaceBinder<
         emoji_picker::mojom::PageHandlerFactory, chromeos::EmojiUI>(map);
+  }
+
+  if (chromeos::features::IsWallpaperWebUIEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::personalization_app::mojom::WallpaperProvider,
+        chromeos::PersonalizationAppUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

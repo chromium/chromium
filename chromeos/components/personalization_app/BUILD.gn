@@ -8,11 +8,13 @@ static_library("personalization_app") {
   sources = [
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
+    "personalization_app_ui_delegate.h",
     "personalization_app_url_constants.cc",
     "personalization_app_url_constants.h",
   ]
 
   deps = [
+    "//chromeos/components/personalization_app/mojom",
     "//chromeos/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",

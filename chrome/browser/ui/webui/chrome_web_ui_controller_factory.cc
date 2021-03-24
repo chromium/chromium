@@ -161,6 +161,7 @@
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/chrome_personalization_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
@@ -838,7 +839,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chromeos::kChromeUIPersonalizationAppHost &&
       chromeos::features::IsWallpaperWebUIEnabled()) {
-    return &NewWebUI<chromeos::PersonalizationAppUI>;
+    return &NewComponentUI<chromeos::PersonalizationAppUI,
+                           ChromePersonalizationAppUiDelegate>;
   }
 
 #if !defined(OFFICIAL_BUILD)

@@ -3,14 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview the main entry point for the Wallpaper app.
+ * @fileoverview the main entry point for the Personalization SWA. This imports
+ * all of the necessary global modules and polymer elements to bootstrap the
+ * page.
  */
 
 import '/strings.m.js';
-
-// TODO(b/182012641) move wallpaper functionality here from chrome://os-settings
-function testing() {
-  console.log('Personalization App Loaded');
-}
-
-document.addEventListener('DOMContentLoaded', testing);
+import './wallpaper_collections_element.js';

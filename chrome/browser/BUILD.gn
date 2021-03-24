@@ -2391,6 +2391,8 @@ static_library("browser") {
       "//chromeos/components/media_app_ui",
       "//chromeos/components/media_app_ui:mojo_bindings",
       "//chromeos/components/multidevice/debug_webui",
+      "//chromeos/components/personalization_app",
+      "//chromeos/components/personalization_app/mojom",
       "//chromeos/components/print_management",
       "//chromeos/components/print_management/mojom",
       "//chromeos/components/quick_answers/public/cpp:prefs",
