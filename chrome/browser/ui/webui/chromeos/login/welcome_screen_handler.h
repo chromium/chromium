@@ -53,6 +53,7 @@ class WelcomeView {
 
   // ChromeVox hint.
   virtual void GiveChromeVoxHint() = 0;
+  virtual void CancelChromeVoxHintIdleDetection() = 0;
 };
 
 // WebUI implementation of WelcomeScreenView. It is used to interact with
@@ -76,6 +77,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void ShowEditRequisitionDialog(const std::string& requisition) override;
   void ShowRemoraRequisitionDialog() override;
   void GiveChromeVoxHint() override;
+  void CancelChromeVoxHintIdleDetection() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

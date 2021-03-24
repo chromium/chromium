@@ -588,7 +588,7 @@ LockContentsView::LockContentsView(
 
   data_dispatcher_->AddObserver(this);
   display_observation_.Observe(display::Screen::GetScreen());
-  Shell::Get()->system_tray_notifier()->AddSystemTrayFocusObserver(this);
+  Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 
   // We reuse the focusable state on this view as a signal that focus should
@@ -684,7 +684,7 @@ LockContentsView::~LockContentsView() {
   Shell::Get()->accelerator_controller()->UnregisterAll(this);
   data_dispatcher_->RemoveObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
-  Shell::Get()->system_tray_notifier()->RemoveSystemTrayFocusObserver(this);
+  Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
 
   // Times a password was incorrectly entered until view is destroyed.
   Shell::Get()->metrics()->login_metrics_recorder()->RecordNumLoginAttempts(

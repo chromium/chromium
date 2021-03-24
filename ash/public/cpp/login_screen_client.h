@@ -153,6 +153,9 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // reversed direction.
   virtual void OnFocusLeavingSystemTray(bool reverse) = 0;
 
+  // Called when the system tray bubble is shown.
+  virtual void OnSystemTrayBubbleShown() = 0;
+
   // Called when the lock screen is shown.
   virtual void OnLoginScreenShown() = 0;
 

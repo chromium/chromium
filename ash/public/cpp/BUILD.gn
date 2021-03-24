@@ -284,7 +284,7 @@ component("cpp") {
     "system_tray.cc",
     "system_tray.h",
     "system_tray_client.h",
-    "system_tray_focus_observer.h",
+    "system_tray_observer.h",
     "tablet_mode.cc",
     "tablet_mode.h",
     "tablet_mode_observer.h",

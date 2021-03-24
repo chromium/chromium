@@ -309,12 +309,12 @@ void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
 
 void OobeUIDialogDelegate::Show() {
   if (LoginScreenClient::Get()) {
-    scoped_system_tray_focus_observer_ =
-        std::make_unique<base::ScopedObservation<
-            LoginScreenClient, ash::SystemTrayFocusObserver,
-            &LoginScreenClient::AddSystemTrayFocusObserver,
-            &LoginScreenClient::RemoveSystemTrayFocusObserver>>(this);
-    scoped_system_tray_focus_observer_->Observe(LoginScreenClient::Get());
+    scoped_system_tray_observer_ = std::make_unique<
+        base::ScopedObservation<LoginScreenClient, ash::SystemTrayObserver,
+                                &LoginScreenClient::AddSystemTrayObserver,
+                                &LoginScreenClient::RemoveSystemTrayObserver>>(
+        this);
+    scoped_system_tray_observer_->Observe(LoginScreenClient::Get());
   }
   widget_->Show();
   if (state_ == ash::OobeDialogState::HIDDEN) {
@@ -333,7 +333,7 @@ void OobeUIDialogDelegate::ShowFullScreen() {
 }
 
 void OobeUIDialogDelegate::Hide() {
-  scoped_system_tray_focus_observer_.reset();
+  scoped_system_tray_observer_.reset();
   if (!widget_)
     return;
   widget_->Hide();

@@ -66,11 +66,11 @@ void SetSystemTrayVisibility(SystemTrayVisibility visibility) {
 LoginScreenController::LoginScreenController(
     SystemTrayNotifier* system_tray_notifier)
     : system_tray_notifier_(system_tray_notifier) {
-  system_tray_notifier_->AddSystemTrayFocusObserver(this);
+  system_tray_notifier_->AddSystemTrayObserver(this);
 }
 
 LoginScreenController::~LoginScreenController() {
-  system_tray_notifier_->RemoveSystemTrayFocusObserver(this);
+  system_tray_notifier_->RemoveSystemTrayObserver(this);
 }
 
 // static
@@ -479,6 +479,12 @@ void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
   if (!client_)
     return;
   client_->OnFocusLeavingSystemTray(reverse);
+}
+
+void LoginScreenController::OnSystemTrayBubbleShown() {
+  if (!client_)
+    return;
+  client_->OnSystemTrayBubbleShown();
 }
 
 void LoginScreenController::OnLockScreenDestroyed() {

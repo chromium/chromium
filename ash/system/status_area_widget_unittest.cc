@@ -10,7 +10,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -74,7 +74,7 @@ TEST_F(StatusAreaWidgetTest, Basics) {
   EXPECT_FALSE(status->virtual_keyboard_tray_for_testing()->GetVisible());
 }
 
-class SystemTrayFocusTestObserver : public SystemTrayFocusObserver {
+class SystemTrayFocusTestObserver : public SystemTrayObserver {
  public:
   SystemTrayFocusTestObserver() = default;
   ~SystemTrayFocusTestObserver() override = default;
@@ -83,7 +83,7 @@ class SystemTrayFocusTestObserver : public SystemTrayFocusObserver {
   int reverse_focus_out_count() { return reverse_focus_out_count_; }
 
  protected:
-  // SystemTrayFocusObserver:
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override {
     reverse ? ++reverse_focus_out_count_ : ++focus_out_count_;
   }
@@ -104,13 +104,13 @@ class StatusAreaWidgetFocusTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     test_observer_.reset(new SystemTrayFocusTestObserver);
-    Shell::Get()->system_tray_notifier()->AddSystemTrayFocusObserver(
+    Shell::Get()->system_tray_notifier()->AddSystemTrayObserver(
         test_observer_.get());
   }
 
   // AshTestBase:
   void TearDown() override {
-    Shell::Get()->system_tray_notifier()->RemoveSystemTrayFocusObserver(
+    Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(
         test_observer_.get());
     test_observer_.reset();
     AshTestBase::TearDown();

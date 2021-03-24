@@ -4,7 +4,7 @@
 
 #include "ash/system/tray/system_tray_notifier.h"
 
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/network/network_observer.h"
 #include "ash/system/screen_security/screen_capture_observer.h"
@@ -93,19 +93,23 @@ void SystemTrayNotifier::NotifyScreenShareStop() {
     observer.OnScreenShareStop();
 }
 
-void SystemTrayNotifier::AddSystemTrayFocusObserver(
-    SystemTrayFocusObserver* observer) {
-  system_tray_focus_observers_.AddObserver(observer);
+void SystemTrayNotifier::AddSystemTrayObserver(SystemTrayObserver* observer) {
+  system_tray_observers_.AddObserver(observer);
 }
 
-void SystemTrayNotifier::RemoveSystemTrayFocusObserver(
-    SystemTrayFocusObserver* observer) {
-  system_tray_focus_observers_.RemoveObserver(observer);
+void SystemTrayNotifier::RemoveSystemTrayObserver(
+    SystemTrayObserver* observer) {
+  system_tray_observers_.RemoveObserver(observer);
 }
 
 void SystemTrayNotifier::NotifyFocusOut(bool reverse) {
-  for (auto& observer : system_tray_focus_observers_)
+  for (auto& observer : system_tray_observers_)
     observer.OnFocusLeavingSystemTray(reverse);
+}
+
+void SystemTrayNotifier::NotifySystemTrayBubbleShown() {
+  for (auto& observer : system_tray_observers_)
+    observer.OnSystemTrayBubbleShown();
 }
 
 void SystemTrayNotifier::AddVirtualKeyboardObserver(

@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -54,7 +54,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public ChromeKeyboardControllerClient::Observer,
                              public CaptivePortalWindowProxy::Observer,
                              public views::ViewObserver,
-                             public ash::SystemTrayFocusObserver {
+                             public ash::SystemTrayObserver {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
   ~OobeUIDialogDelegate() override;
@@ -121,7 +121,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void OnBeforeCaptivePortalShown() override;
   void OnAfterCaptivePortalHidden() override;
 
-  // ash::SystemTrayFocusObserver:
+  // ash::SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
 
   base::WeakPtr<LoginDisplayHostMojo> controller_;
@@ -143,12 +143,12 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                           CaptivePortalWindowProxy::Observer>
       captive_portal_observer_{this};
 
-  std::unique_ptr<base::ScopedObservation<
-      LoginScreenClient,
-      ash::SystemTrayFocusObserver,
-      &LoginScreenClient::AddSystemTrayFocusObserver,
-      &LoginScreenClient::RemoveSystemTrayFocusObserver>>
-      scoped_system_tray_focus_observer_;
+  std::unique_ptr<
+      base::ScopedObservation<LoginScreenClient,
+                              ash::SystemTrayObserver,
+                              &LoginScreenClient::AddSystemTrayObserver,
+                              &LoginScreenClient::RemoveSystemTrayObserver>>
+      scoped_system_tray_observer_;
 
   std::map<ui::Accelerator, ash::LoginAcceleratorAction> accel_map_;
   ash::OobeDialogState state_ = ash::OobeDialogState::HIDDEN;
