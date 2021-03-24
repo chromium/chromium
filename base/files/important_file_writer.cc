@@ -395,21 +395,21 @@ void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
     BackgroundDataProducerCallback background_data_producer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RepeatingClosure task = AdaptCallbackForRepeating(
+  auto split_task = SplitOnceCallback(
       BindOnce(&ProduceAndWriteStringToFileAtomically, path_,
                std::move(background_data_producer),
                std::move(before_next_write_callback_),
                std::move(after_next_write_callback_), histogram_suffix_));
 
   if (!task_runner_->PostTask(
-          FROM_HERE,
-          MakeCriticalClosure("ImportantFileWriter::WriteNow", task))) {
+          FROM_HERE, MakeCriticalClosure("ImportantFileWriter::WriteNow",
+                                         std::move(split_task.first)))) {
     // Posting the task to background message loop is not expected
     // to fail, but if it does, avoid losing data and just hit the disk
     // on the current thread.
     NOTREACHED();
 
-    std::move(task).Run();
+    std::move(split_task.second).Run();
   }
   ClearPendingWrite();
 }
