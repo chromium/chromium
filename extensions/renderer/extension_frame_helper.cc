@@ -23,6 +23,7 @@
 #include "extensions/renderer/native_renderer_messaging_service.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -292,6 +293,14 @@ void ExtensionFrameHelper::ScheduleAtDocumentEnd(base::OnceClosure callback) {
 
 void ExtensionFrameHelper::ScheduleAtDocumentIdle(base::OnceClosure callback) {
   document_idle_callbacks_.push_back(std::move(callback));
+}
+
+mojom::LocalFrameHost* ExtensionFrameHelper::GetLocalFrameHost() {
+  if (!local_frame_host_remote_.is_bound()) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        local_frame_host_remote_.BindNewEndpointAndPassReceiver());
+  }
+  return local_frame_host_remote_.get();
 }
 
 void ExtensionFrameHelper::ReadyToCommitNavigation(

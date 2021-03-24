@@ -72,7 +72,9 @@ using mojom::ManifestLocation;
 
 namespace {
 
-void Increment(int* i) {
+void Increment(int* i, bool granted) {
+  if (!granted)
+    return;
   CHECK(i);
   ++(*i);
 }

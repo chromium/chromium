@@ -184,7 +184,7 @@ ScriptInjection::~ScriptInjection() {
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
     mojom::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
-    CompletionCallback async_completion_callback) {
+    StatusUpdatedCallback async_updated_callback) {
   if (current_location < run_location_)
     return INJECTION_WAITING;  // Wait for the right location.
 
@@ -206,14 +206,14 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
       NotifyWillNotInject(ScriptInjector::NOT_ALLOWED);
       return INJECTION_FINISHED;  // We're done.
     case PermissionsData::PageAccess::kWithheld:
-      RequestPermissionFromBrowser();
+      RequestPermissionFromBrowser(std::move(async_updated_callback));
       return INJECTION_WAITING;  // Wait around for permission.
     case PermissionsData::PageAccess::kAllowed:
       InjectionResult result = Inject(scripts_run_info);
       // If the injection is blocked, we need to set the manager so we can
       // notify it upon completion.
       if (result == INJECTION_BLOCKED)
-        async_completion_callback_ = std::move(async_completion_callback);
+        async_completion_callback_ = std::move(async_updated_callback);
       return result;
   }
 
@@ -235,19 +235,32 @@ void ScriptInjection::OnHostRemoved() {
   injection_host_.reset(nullptr);
 }
 
-void ScriptInjection::RequestPermissionFromBrowser() {
+void ScriptInjection::RequestPermissionFromBrowser(
+    StatusUpdatedCallback async_updated_callback) {
   // If we are just notifying the browser of the injection, then send an
   // invalid request (which is treated like a notification).
   request_id_ = g_next_pending_id++;
-  render_frame_->Send(new ExtensionHostMsg_RequestScriptInjectionPermission(
-      render_frame_->GetRoutingID(), host_id().id, injector_->script_type(),
-      run_location_, request_id_));
+  ExtensionFrameHelper::Get(render_frame_)
+      ->GetLocalFrameHost()
+      ->RequestScriptInjectionPermission(
+          host_id().id, injector_->script_type(), run_location_,
+          base::BindOnce(&ScriptInjection::HandlePermission,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(async_updated_callback)));
 }
 
 void ScriptInjection::NotifyWillNotInject(
     ScriptInjector::InjectFailureReason reason) {
   complete_ = true;
   injector_->OnWillNotInject(reason);
+}
+
+void ScriptInjection::HandlePermission(
+    StatusUpdatedCallback async_updated_callback,
+    bool granted) {
+  if (!granted)
+    return;
+  std::move(async_updated_callback).Run(InjectionStatus::kPermitted, this);
 }
 
 ScriptInjection::InjectionResult ScriptInjection::Inject(
@@ -378,7 +391,7 @@ void ScriptInjection::OnJsInjectionCompleted(
     complete_ = true;
     injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
     // Warning: this object can be destroyed after this line!
-    std::move(async_completion_callback_).Run(this);
+    std::move(async_completion_callback_).Run(InjectionStatus::kFinished, this);
   }
 }
 

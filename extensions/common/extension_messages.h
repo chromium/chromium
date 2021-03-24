@@ -62,9 +62,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::CSSOrigin,
 IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
                           content::SocketPermissionRequest::OPERATION_TYPE_LAST)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::InjectionType,
-                          extensions::mojom::InjectionType::kMaxValue)
-
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
                           extensions::mojom::RunLocation::kMaxValue)
 
@@ -677,23 +674,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
 IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
                     ExecutingScriptsMap,
                     GURL /* url of the _topmost_ frame */)
-
-// Sent from the renderer to the browser to request permission for a script
-// injection.
-// If request id is -1, this signals that the request has already ran, and this
-// merely serves as a notification. This happens when the feature to disable
-// scripts running without user consent is not enabled.
-IPC_MESSAGE_ROUTED4(ExtensionHostMsg_RequestScriptInjectionPermission,
-                    std::string /* extension id */,
-                    extensions::mojom::InjectionType /* script type */,
-                    extensions::mojom::RunLocation /* run location */,
-                    int64_t /* request id */)
-
-// Sent from the browser to the renderer in reply to a
-// RequestScriptInjectionPermission message, granting permission for a script
-// script to run.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_PermitScriptInjection,
-                    int64_t /* request id */)
 
 // Sent by the renderer when a web page is checking if its app is installed.
 IPC_MESSAGE_ROUTED3(ExtensionHostMsg_GetAppInstallState,

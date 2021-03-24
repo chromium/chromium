@@ -69,8 +69,16 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   using ScriptInjectionVector = std::vector<std::unique_ptr<ScriptInjection>>;
 
+  // Notifies that an injection has been finished or permission has been
+  // handled.
+  void OnInjectionStatusUpdated(ScriptInjection::InjectionStatus status,
+                                ScriptInjection* injection);
+
   // Notifies that an injection has been finished.
   void OnInjectionFinished(ScriptInjection* injection);
+
+  // Handle the GrantInjectionPermission extension message.
+  void OnPermitScriptInjectionHandled(ScriptInjection* injection);
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(
@@ -94,9 +102,6 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void TryToInject(std::unique_ptr<ScriptInjection> injection,
                    mojom::RunLocation run_location,
                    ScriptsRunInfo* scripts_run_info);
-
-  // Handle the GrantInjectionPermission extension message.
-  void HandlePermitScriptInjection(int64_t request_id);
 
   // The map of active web frames to their corresponding statuses. The
   // RunLocation of the frame corresponds to the last location that has ran.

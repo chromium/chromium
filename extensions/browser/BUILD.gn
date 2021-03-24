@@ -138,6 +138,8 @@ source_set("browser_sources") {
     "extension_error.h",
     "extension_file_task_runner.cc",
     "extension_file_task_runner.h",
+    "extension_frame_host.cc",
+    "extension_frame_host.h",
     "extension_function.cc",
     "extension_function.h",
     "extension_function_constants.cc",

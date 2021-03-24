@@ -16,6 +16,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8.h"
@@ -142,6 +143,8 @@ class ExtensionFrameHelper
   // Schedule a callback, to be run at the next RunScriptsAtDocumentIdle call.
   void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
+  mojom::LocalFrameHost* GetLocalFrameHost();
+
  private:
   void BindLocalFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalFrame> receiver);
@@ -214,6 +217,8 @@ class ExtensionFrameHelper
   // Note: Chrome Apps intentionally do not support new navigations. When a
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
+
+  mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 

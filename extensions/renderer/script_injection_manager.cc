@@ -75,7 +75,6 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
 
  private:
   // RenderFrameObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
   void DidCreateNewDocument() override;
   void DidCreateDocumentElement() override;
   void DidFailProvisionalLoad() override;
@@ -83,8 +82,6 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void WillDetach() override;
   void OnDestruct() override;
   void OnStop() override;
-
-  virtual void OnPermitScriptInjection(int64_t request_id);
 
   // Tells the ScriptInjectionManager to run tasks associated with
   // document_idle.
@@ -128,17 +125,6 @@ void ScriptInjectionManager::RFOHelper::Initialize() {
   if (!render_frame()->IsMainFrame()) {
     DidCreateDocumentElement();
   }
-}
-
-bool ScriptInjectionManager::RFOHelper::OnMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ScriptInjectionManager::RFOHelper, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_PermitScriptInjection,
-                        OnPermitScriptInjection)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 void ScriptInjectionManager::RFOHelper::DidCreateNewDocument() {
@@ -226,11 +212,6 @@ void ScriptInjectionManager::RFOHelper::OnStop() {
   DidFailProvisionalLoad();
 }
 
-void ScriptInjectionManager::RFOHelper::OnPermitScriptInjection(
-    int64_t request_id) {
-  manager_->HandlePermitScriptInjection(request_id);
-}
-
 void ScriptInjectionManager::RFOHelper::RunIdle() {
   // Only notify the manager if the frame hasn't already had idle run since the
   // task to RunIdle() was posted.
@@ -293,8 +274,7 @@ void ScriptInjectionManager::OnExtensionUnloaded(
   }
 }
 
-void ScriptInjectionManager::OnInjectionFinished(
-    ScriptInjection* injection) {
+void ScriptInjectionManager::OnInjectionFinished(ScriptInjection* injection) {
   auto iter =
       std::find_if(running_injections_.begin(), running_injections_.end(),
                    [injection](const std::unique_ptr<ScriptInjection>& mode) {
@@ -420,6 +400,19 @@ void ScriptInjectionManager::InjectScripts(content::RenderFrame* frame,
   scripts_run_info.LogRun(activity_logging_enabled_);
 }
 
+void ScriptInjectionManager::OnInjectionStatusUpdated(
+    ScriptInjection::InjectionStatus status,
+    ScriptInjection* injection) {
+  switch (status) {
+    case ScriptInjection::InjectionStatus::kPermitted:
+      ScriptInjectionManager::OnPermitScriptInjectionHandled(injection);
+      break;
+    case ScriptInjection::InjectionStatus::kFinished:
+      ScriptInjectionManager::OnInjectionFinished(injection);
+      break;
+  }
+}
+
 void ScriptInjectionManager::TryToInject(
     std::unique_ptr<ScriptInjection> injection,
     mojom::RunLocation run_location,
@@ -431,7 +424,7 @@ void ScriptInjectionManager::TryToInject(
   // ScriptInjections, so is guaranteed to outlive them.
   switch (injection->TryToInject(
       run_location, scripts_run_info,
-      base::BindOnce(&ScriptInjectionManager::OnInjectionFinished,
+      base::BindOnce(&ScriptInjectionManager::OnInjectionStatusUpdated,
                      base::Unretained(this)))) {
     case ScriptInjection::INJECTION_WAITING:
       pending_injections_.push_back(std::move(injection));
@@ -497,30 +490,30 @@ void ScriptInjectionManager::ExecuteDeclarativeScript(
   }
 }
 
-void ScriptInjectionManager::HandlePermitScriptInjection(int64_t request_id) {
-  auto iter = pending_injections_.begin();
-  for (; iter != pending_injections_.end(); ++iter) {
-    if ((*iter)->request_id() == request_id) {
-      DCHECK((*iter)->host_id().type == mojom::HostID::HostType::kExtensions);
-      break;
-    }
-  }
+void ScriptInjectionManager::OnPermitScriptInjectionHandled(
+    ScriptInjection* injection) {
+  auto iter =
+      std::find_if(pending_injections_.begin(), pending_injections_.end(),
+                   [injection](const std::unique_ptr<ScriptInjection>& mode) {
+                     return injection == mode.get();
+                   });
   if (iter == pending_injections_.end())
     return;
+  DCHECK((*iter)->host_id().type == mojom::HostID::HostType::kExtensions);
 
-  // At this point, because the request is present in pending_injections_, we
+  // At this point, because the injection is present in pending_injections_, we
   // know that this is the same page that issued the request (otherwise,
   // RFOHelper::InvalidateAndResetFrame would have caused it to be cleared out).
 
-  std::unique_ptr<ScriptInjection> injection(std::move(*iter));
+  std::unique_ptr<ScriptInjection> script_injection(std::move(*iter));
   pending_injections_.erase(iter);
 
-  ScriptsRunInfo scripts_run_info(injection->render_frame(),
+  ScriptsRunInfo scripts_run_info(script_injection->render_frame(),
                                   mojom::RunLocation::kRunDeferred);
-  ScriptInjection::InjectionResult res = injection->OnPermissionGranted(
-      &scripts_run_info);
+  ScriptInjection::InjectionResult res =
+      script_injection->OnPermissionGranted(&scripts_run_info);
   if (res == ScriptInjection::INJECTION_BLOCKED)
-    running_injections_.push_back(std::move(injection));
+    running_injections_.push_back(std::move(script_injection));
   scripts_run_info.LogRun(activity_logging_enabled_);
 }
 

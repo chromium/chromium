@@ -264,6 +264,7 @@ source_set("renderer") {
     "//skia",
     "//storage/common",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
     "//third_party/blink/public/strings:strings",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:compression_utils",

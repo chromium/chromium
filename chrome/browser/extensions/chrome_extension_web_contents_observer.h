@@ -43,6 +43,8 @@ class ChromeExtensionWebContentsObserver
   // ExtensionWebContentsObserver:
   void InitializeRenderFrame(
       content::RenderFrameHost* render_frame_host) override;
+  std::unique_ptr<ExtensionFrameHost> CreateExtensionFrameHost(
+      content::WebContents* web_contents) override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

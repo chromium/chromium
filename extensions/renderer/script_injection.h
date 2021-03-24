@@ -43,7 +43,14 @@ class ScriptInjection {
     INJECTION_WAITING
   };
 
-  using CompletionCallback = base::OnceCallback<void(ScriptInjection*)>;
+  // Represents the purpose of calling StatusUpdatedCallback.
+  enum class InjectionStatus {
+    kPermitted,
+    kFinished,
+  };
+
+  using StatusUpdatedCallback =
+      base::OnceCallback<void(InjectionStatus, ScriptInjection*)>;
 
   // Return the id of the injection host associated with the given world.
   static std::string GetHostIdForIsolatedWorld(int world_id);
@@ -64,11 +71,11 @@ class ScriptInjection {
   // finished yet, returns INJECTION_WAITING if injections is delayed (either
   // for permission purposes or because |current_location| is not the designated
   // |run_location_|).
-  // If INJECTION_BLOCKED is returned, |async_completion_callback| will be
-  // called upon completion.
+  // If INJECTION_BLOCKED or INJECTION_WAITING is returned,
+  // |async_updated_callback| will be called upon the status updated.
   InjectionResult TryToInject(mojom::RunLocation current_location,
                               ScriptsRunInfo* scripts_run_info,
-                              CompletionCallback async_completion_callback);
+                              StatusUpdatedCallback async_updated_callback);
 
   // Called when permission for the given injection has been granted.
   // Returns INJECTION_FINISHED if injection has injected or will never inject,
@@ -94,7 +101,14 @@ class ScriptInjection {
   class FrameWatcher;
 
   // Sends a message to the browser to request permission to inject.
-  void RequestPermissionFromBrowser();
+  // |async_updated_callback| should be called if the permission is handled.
+  void RequestPermissionFromBrowser(
+      StatusUpdatedCallback async_updated_callback);
+
+  // Handles the injection permission calling |async_updated_callback| if
+  // |granted| is true.
+  void HandlePermission(StatusUpdatedCallback async_updated_callback,
+                        bool granted);
 
   // Injects the script. Returns INJECTION_FINISHED if injection has finished,
   // otherwise INJECTION_BLOCKED.
@@ -143,8 +157,9 @@ class ScriptInjection {
   // Results storage.
   std::unique_ptr<base::Value> execution_result_;
 
-  // The callback to run upon completing asynchronously.
-  CompletionCallback async_completion_callback_;
+  // The callback to run upon the status updated asynchronously. It's used for
+  // the reply of the permission handling or script injection completion.
+  StatusUpdatedCallback async_completion_callback_;
 
   // A helper class to hold the render frame and watch for its deletion.
   std::unique_ptr<FrameWatcher> frame_watcher_;

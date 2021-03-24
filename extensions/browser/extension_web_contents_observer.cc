@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -38,11 +39,20 @@ ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
       web_contents);
 }
 
+std::unique_ptr<ExtensionFrameHost>
+ExtensionWebContentsObserver::CreateExtensionFrameHost(
+    content::WebContents* web_contents) {
+  return std::make_unique<ExtensionFrameHost>(web_contents);
+}
+
 void ExtensionWebContentsObserver::Initialize() {
   if (initialized_)
     return;
 
   initialized_ = true;
+
+  extension_frame_host_ = CreateExtensionFrameHost(web_contents());
+
   for (content::RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
     // We only initialize the frame if the renderer counterpart is live;
     // otherwise we wait for the RenderFrameCreated notification.

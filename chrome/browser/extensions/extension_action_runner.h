@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -31,10 +32,6 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
-
-namespace IPC {
-class Message;
 }
 
 namespace extensions {
@@ -107,6 +104,16 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     test_observer_ = observer;
   }
 
+  // Handles mojom::LocalFrameHost::RequestScriptInjectionPermission(). It
+  // replies back with |callback|.
+  void OnRequestScriptInjectionPermission(
+      const std::string& extension_id,
+      mojom::InjectionType script_type,
+      mojom::RunLocation run_location,
+      mojom::LocalFrameHost::RequestScriptInjectionPermissionCallback callback);
+
+  using ScriptInjectionCallback = base::OnceCallback<void(bool)>;
+
 #if defined(UNIT_TEST)
   // Only used in tests.
   PermissionsData::PageAccess RequiresUserConsentForScriptInjectionForTesting(
@@ -116,7 +123,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
                                         mojom::RunLocation run_location,
-                                        base::OnceClosure callback) {
+                                        ScriptInjectionCallback callback) {
     return RequestScriptInjection(extension, run_location, std::move(callback));
   }
   void ClearInjectionsForTesting(const Extension& extension) {
@@ -127,7 +134,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
  private:
   struct PendingScript {
     PendingScript(mojom::RunLocation run_location,
-                  base::OnceClosure permit_script);
+                  ScriptInjectionCallback permit_script);
     PendingScript(const PendingScript&) = delete;
     PendingScript& operator=(const PendingScript&) = delete;
     ~PendingScript();
@@ -136,7 +143,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     mojom::RunLocation run_location;
 
     // The callback to run when the script is permitted by the user.
-    base::OnceClosure permit_script;
+    ScriptInjectionCallback permit_script;
   };
 
   using PendingScriptList = std::vector<std::unique_ptr<PendingScript>>;
@@ -153,19 +160,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // |callback| is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
                               mojom::RunLocation run_location,
-                              base::OnceClosure callback);
+                              ScriptInjectionCallback callback);
 
   // Runs any pending injections for the corresponding extension.
   void RunPendingScriptsForExtension(const Extension* extension);
-
-  // Handle the RequestScriptInjectionPermission message.
-  void OnRequestScriptInjectionPermission(const std::string& extension_id,
-                                          mojom::InjectionType script_type,
-                                          mojom::RunLocation run_location,
-                                          int64_t request_id);
-
-  // Grants permission for the given request to run.
-  void PermitScriptInjection(int64_t request_id);
 
   // Notifies the ExtensionActionAPI of a change (either that an extension now
   // wants permission to run, or that it has been run).
@@ -208,8 +206,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void RunBlockedActions(const Extension* extension);
 
   // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
@@ -218,6 +214,12 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
+
+  // Runs the callback from the pending script. Since the callback holds
+  // RequestScriptInjectionPermissionCallback, it should be called before the
+  // pending script is cleared. |granted| represents whether the script is
+  // granted or not.
+  void RunCallbackOnPendingScript(const PendingScriptList& list, bool granted);
 
   // The total number of requests from the renderer on the current page,
   // including any that are pending or were immediately granted.

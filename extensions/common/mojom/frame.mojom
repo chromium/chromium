@@ -7,6 +7,7 @@ module extensions.mojom;
 import "extensions/common/mojom/action_type.mojom";
 import "extensions/common/mojom/css_origin.mojom";
 import "extensions/common/mojom/host_id.mojom";
+import "extensions/common/mojom/injection_type.mojom";
 import "extensions/common/mojom/run_location.mojom";
 import "extensions/common/mojom/view_type.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -113,4 +114,17 @@ interface LocalFrame {
                            string extension_id,
                            string script_id,
                            url.mojom.Url url);
+};
+
+// Implemented in the browser, this interface defines the local frame host
+// specific methods.
+interface LocalFrameHost {
+  // Requests permission for a script injection from the renderer to the
+  // browser.
+  // The reply is sent back to the renderer with |granted| for granting
+  // permission for a script to run. If |granted| is false, the permission
+  // should not be handled.
+  RequestScriptInjectionPermission(string extension_id,
+                      InjectionType script_type,
+                      RunLocation run_location) => (bool granted);
 };
