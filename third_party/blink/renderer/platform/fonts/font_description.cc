@@ -220,11 +220,30 @@ void FontDescription::SetVariantNumeric(
 float FontDescription::EffectiveFontSize() const {
   // Ensure that the effective precision matches the font-cache precision.
   // This guarantees that the same precision is used regardless of cache status.
+  // Note: HasSizeAdjust() is for the font-size-adjust property, not for the
+  // size-adjust descriptor.
   float computed_or_adjusted_size =
-      HasSizeAdjust() ? AdjustedSize() : ComputedSize();
+      HasSizeAdjust() || fields_.has_size_adjust_descriptor_ ? AdjustedSize()
+                                                             : ComputedSize();
   return floorf(computed_or_adjusted_size *
                 FontCacheKey::PrecisionMultiplier()) /
          FontCacheKey::PrecisionMultiplier();
+}
+
+FontDescription FontDescription::SizeAdjustedFontDescription(
+    float size_adjust) const {
+  // TODO(crbug.com/451346): The font-size-adjust property and size-adjust
+  // descriptor currently don't work together. For sanity, if both are set, we
+  // ignore size-adjust. Fix it when shipping font-size-adjust.
+  if (HasSizeAdjust())
+    return *this;
+
+  // size-adjust should be applied at most once.
+  DCHECK(!fields_.has_size_adjust_descriptor_);
+  FontDescription result(*this);
+  result.SetAdjustedSize(ComputedSize() * size_adjust);
+  result.fields_.has_size_adjust_descriptor_ = true;
+  return result;
 }
 
 FontCacheKey FontDescription::CacheKey(

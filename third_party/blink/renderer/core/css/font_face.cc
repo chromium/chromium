@@ -939,4 +939,9 @@ FontMetricsOverride FontFace::GetFontMetricsOverride() const {
   return result;
 }
 
+float FontFace::GetSizeAdjust() const {
+  DCHECK(size_adjust_);
+  return To<CSSPrimitiveValue>(*size_adjust_).GetFloatValue() / 100;
+}
+
 }  // namespace blink

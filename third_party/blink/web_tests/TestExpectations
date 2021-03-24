@@ -1863,6 +1863,8 @@ crbug.com/752449 [ Mac10.14 ] external/wpt/css/css-fonts/matching/fixed-stretch-
 crbug.com/752449 [ Mac10.12 ] external/wpt/css/css-fonts/matching/stretch-distance-over-weight-distance.html [ Failure ]
 crbug.com/752449 [ Mac10.12 ] external/wpt/css/css-fonts/matching/style-ranges-over-weight-direction.html [ Failure ]
 
+crbug.com/1191718 external/wpt/css/css-fonts/size-adjust-text-decoration.tentative.html [ Failure ]
+
 # CSS Font Feature Resolution is not implemented yet
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-002.html [ Failure ]

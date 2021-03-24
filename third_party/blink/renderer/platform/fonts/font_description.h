@@ -167,9 +167,24 @@ class PLATFORM_EXPORT FontDescription {
   }
   float SpecifiedSize() const { return specified_size_; }
   float ComputedSize() const { return computed_size_; }
-  float AdjustedSize() const { return adjusted_size_; }
+
+  // TODO(xiaochengh): The functions and members for size-adjust descriptor and
+  // font-size-adjust property have similar names and are very confusing. Rename
+  // them for better clarity.
+
+  // For CSS font-size-adjust property
   float SizeAdjust() const { return size_adjust_; }
   bool HasSizeAdjust() const { return size_adjust_ != kFontSizeAdjustNone; }
+
+  // Return a copy with the size-adjust descriptor applied.
+  // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
+  FontDescription SizeAdjustedFontDescription(float size_adjust) const;
+
+  // The used value of font-size applying font-size-adjust or size-adjust.
+  // TODO(crbug.com/451346): Make font-size-adjust and size-adjust work
+  // together.
+  float AdjustedSize() const { return adjusted_size_; }
+
   int ComputedPixelSize() const { return int(computed_size_ + 0.5f); }
   FontVariantCaps VariantCaps() const {
     return static_cast<FontVariantCaps>(fields_.variant_caps_);
@@ -454,6 +469,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned variant_east_asian_ : 6;
     unsigned subpixel_ascent_descent_ : 1;
     unsigned font_optical_sizing_ : 1;
+    unsigned has_size_adjust_descriptor_ : 1;
 
     unsigned hash_category_ : 2;  // HashCategory
   };
