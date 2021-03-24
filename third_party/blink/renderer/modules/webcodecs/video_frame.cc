@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/checked_math.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
@@ -390,18 +391,27 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const gfx::Size coded_size(init->codedWidth(), init->codedHeight());
-  if (coded_size.IsEmpty()) {
+  // gfx::Size() takes int.
+  if (!base::CheckedNumeric<uint32_t>(init->codedWidth()).IsValid<int>() ||
+      !base::CheckedNumeric<uint32_t>(init->codedHeight()).IsValid<int>() ||
+      init->codedWidth() == 0 || init->codedHeight() == 0) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kConstraintError,
-        String::Format("Invalid coded size (%d, %d) provided",
+        String::Format("Invalid coded size (%u, %u) provided",
                        init->codedWidth(), init->codedHeight()));
     return nullptr;
   }
+  const gfx::Size coded_size(init->codedWidth(), init->codedHeight());
 
   for (wtf_size_t i = 0; i < planes.size(); ++i) {
     const auto minimum_size =
         media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
+    if (!base::CheckedNumeric<uint32_t>(planes[i]->stride()).IsValid<int>()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format("The stride of plane %u is too large", i));
+      return nullptr;
+    }
     if (planes[i]->stride() < uint32_t{minimum_size.width()}) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kConstraintError,
