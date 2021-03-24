@@ -8,16 +8,6 @@
 #include "mojo/core/request_context.h"
 #include "mojo/core/watcher_dispatcher.h"
 
-#ifdef OS_MAC
-extern "C" void V8RecordReplayRegisterPointer(void* ptr);
-extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" size_t V8RecordReplayPointerId(void* ptr);
-#else
-static void V8RecordReplayRegisterPointer(void* ptr) {}
-static void V8RecordReplayUnregisterPointer(void* ptr) {}
-static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
-#endif
-
 namespace mojo {
 namespace core {
 
@@ -31,14 +21,14 @@ Watch::Watch(const scoped_refptr<WatcherDispatcher>& watcher,
       context_(context),
       signals_(signals),
       condition_(condition) {
-  V8RecordReplayRegisterPointer(this);
+  recordreplay::RegisterPointer(this);
 }
 
 bool Watch::NotifyState(const HandleSignalsState& state,
                         bool allowed_to_call_callback) {
   AssertWatcherLockAcquired();
 
-  recordreplay::Assert("Watch::NotifyState %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("Watch::NotifyState %lu", recordreplay::PointerId(this));
 
   // NOTE: This method must NEVER call into |dispatcher_| directly, because it
   // may be called while |dispatcher_| holds a lock.
@@ -58,7 +48,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
              !state.can_satisfy_any(signals_)) {
     rv = MOJO_RESULT_FAILED_PRECONDITION;
     if (allowed_to_call_callback && rv != last_known_result_) {
-      recordreplay::Assert("Watch::NotifyState #1 %lu", V8RecordReplayPointerId(this));
+      recordreplay::Assert("Watch::NotifyState #1 %lu", recordreplay::PointerId(this));
       request_context->AddWatchNotifyFinalizer(
           this, MOJO_RESULT_FAILED_PRECONDITION, state);
     }
@@ -71,7 +61,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
 }
 
 void Watch::Cancel() {
-  recordreplay::Assert("Watch::Cancel %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("Watch::Cancel %lu", recordreplay::PointerId(this));
   RequestContext::current()->AddWatchCancelFinalizer(this);
 }
 
@@ -96,7 +86,7 @@ void Watch::InvokeCallback(MojoResult result,
 }
 
 Watch::~Watch() {
-  V8RecordReplayUnregisterPointer(this);
+  recordreplay::UnregisterPointer(this);
 }
 
 #if DCHECK_IS_ON()

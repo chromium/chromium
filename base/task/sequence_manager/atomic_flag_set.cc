@@ -11,22 +11,6 @@
 #include "base/check_op.h"
 #include "base/record_replay.h"
 
-#ifdef OS_MAC
-extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
-extern "C" void V8RecordReplayOrderedLock(int lock);
-extern "C" void V8RecordReplayOrderedUnlock(int lock);
-#else
-static size_t V8RecordReplayCreateOrderedLock(const char* name) { return 0; }
-static void V8RecordReplayOrderedLock(int lock) {}
-static void V8RecordReplayOrderedUnlock(int lock) {}
-#endif
-
-struct AutoOrderedLock {
-  AutoOrderedLock(int id) : id_(id) { V8RecordReplayOrderedLock(id_); }
-  ~AutoOrderedLock() { V8RecordReplayOrderedUnlock(id_); }
-  int id_;
-};
-
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -59,7 +43,7 @@ AtomicFlagSet::AtomicFlag::AtomicFlag(AtomicFlag&& other)
 
 void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
   DCHECK(group_);
-  AutoOrderedLock lock(group_->ordered_lock_id_);
+  recordreplay::AutoOrderedLock lock(group_->ordered_lock_id_);
   if (active) {
     // Release semantics are required to ensure that all memory accesses made on
     // this thread happen-before any others done on the thread running the
@@ -134,7 +118,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
     // synchronized with this thread before it returns from this method.
     size_t active_flags;
     {
-      AutoOrderedLock lock(iter->ordered_lock_id_);
+      recordreplay::AutoOrderedLock lock(iter->ordered_lock_id_);
       active_flags = std::atomic_exchange_explicit(
         &iter->flags, size_t{0}, std::memory_order_acquire);
     }
@@ -154,7 +138,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
 }
 
 AtomicFlagSet::Group::Group()
-  : ordered_lock_id_(V8RecordReplayCreateOrderedLock("AtomicFlagSet::Group")) {}
+  : ordered_lock_id_(recordreplay::CreateOrderedLock("AtomicFlagSet::Group")) {}
 
 AtomicFlagSet::Group::~Group() {
   DCHECK_EQ(allocated_flags, 0u);

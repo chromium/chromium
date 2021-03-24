@@ -15,12 +15,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/base_tracing.h"
 
-#ifdef OS_MAC
-extern "C" size_t V8RecordReplayPointerId(void* ptr);
-#else
-static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
-#endif
-
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -205,7 +199,7 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
 #endif
             ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
     recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #2 %lu",
-                         V8RecordReplayPointerId(queue));
+                         recordreplay::PointerId(queue));
     return queue;
   }
 
@@ -226,7 +220,7 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   }
 
   recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #3 %lu",
-                       V8RecordReplayPointerId(queue));
+                       recordreplay::PointerId(queue));
   return queue;
 }
 

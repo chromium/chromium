@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/record_replay.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -71,8 +72,6 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::Map() const {
   return MapAt(0, handle_.GetSize());
 }
 
-extern "C" void V8RecordReplayBytes(const char*, void*, size_t);
-
 ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     off_t offset,
     size_t size) const {
@@ -85,7 +84,7 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     return {};
 
 #ifdef OS_MAC
-  V8RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt", memory, size);
+  recordreplay::RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt", memory, size);
 #endif
 
   return ReadOnlySharedMemoryMapping(memory, size, mapped_size,

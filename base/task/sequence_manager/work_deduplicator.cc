@@ -12,32 +12,16 @@ namespace base {
 namespace sequence_manager {
 namespace internal {
 
-#ifdef OS_MAC
-extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
-extern "C" void V8RecordReplayOrderedLock(int lock);
-extern "C" void V8RecordReplayOrderedUnlock(int lock);
-#else
-static size_t V8RecordReplayCreateOrderedLock(const char* name) { return 0; }
-static void V8RecordReplayOrderedLock(int lock) {}
-static void V8RecordReplayOrderedUnlock(int lock) {}
-#endif
-
-struct AutoOrderedLock {
-  AutoOrderedLock(int id) : id_(id) { V8RecordReplayOrderedLock(id_); }
-  ~AutoOrderedLock() { V8RecordReplayOrderedUnlock(id_); }
-  int id_;
-};
-
 WorkDeduplicator::WorkDeduplicator(
     scoped_refptr<AssociatedThreadId> associated_thread)
-    : state_ordered_lock_id_(V8RecordReplayCreateOrderedLock("WorkDeduplicator.state_"))
+    : state_ordered_lock_id_(recordreplay::CreateOrderedLock("WorkDeduplicator.state_"))
     , associated_thread_(std::move(associated_thread)) {}
 
 WorkDeduplicator::~WorkDeduplicator() = default;
 
 WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::BindToCurrentThread() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  AutoOrderedLock ordered(state_ordered_lock_id_);
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   int previous_flags = state_.fetch_or(kBoundFlag);
   DCHECK_EQ(previous_flags & kBoundFlag, 0) << "Can't bind twice!";
   return previous_flags & kPendingDoWorkFlag
@@ -47,7 +31,7 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::BindToCurrentThread() {
 
 WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::OnWorkRequested() {
   // Set kPendingDoWorkFlag and return true if we were previously kIdle.
-  AutoOrderedLock ordered(state_ordered_lock_id_);
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   return state_.fetch_or(kPendingDoWorkFlag) == State::kIdle
              ? ShouldScheduleWork::kScheduleImmediate
              : ShouldScheduleWork::kNotNeeded;
@@ -66,7 +50,7 @@ void WorkDeduplicator::OnWorkStarted() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
   // Clear kPendingDoWorkFlag and mark us as in a DoWork.
-  AutoOrderedLock ordered(state_ordered_lock_id_);
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   state_.store(State::kInDoWork);
 }
 
@@ -75,7 +59,7 @@ void WorkDeduplicator::WillCheckForMoreWork() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
   // Clear kPendingDoWorkFlag if it was set.
-  AutoOrderedLock ordered(state_ordered_lock_id_);
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   state_.store(State::kInDoWork);
 }
 
@@ -93,7 +77,7 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::DidCheckForMoreWork(
   // OnWorkRequested() was invoked racily from another thread just after this
   // thread determined that the next task wasn't immediate. In that case, that
   // other thread relies on us to return kScheduleImmediate.
-  AutoOrderedLock ordered(state_ordered_lock_id_);
+  recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
   bool v = (state_.fetch_and(~kInDoWorkFlag) & kPendingDoWorkFlag);
   recordreplay::Assert("WorkDeduplicator::DidCheckForMoreWork #1 %d", v);
   return v

@@ -10,16 +10,6 @@
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "build/build_config.h"
 
-#ifdef OS_MAC
-extern "C" void V8RecordReplayRegisterPointer(void* ptr);
-extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" size_t V8RecordReplayPointerId(void* ptr);
-#else
-static void V8RecordReplayRegisterPointer(void* ptr) {}
-static void V8RecordReplayUnregisterPointer(void* ptr) {}
-static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
-#endif
-
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -28,8 +18,8 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      const char* name,
                      QueueType queue_type)
     : task_queue_(task_queue), name_(name), queue_type_(queue_type) {
-  V8RecordReplayRegisterPointer(this);
-  recordreplay::Assert("WorkQueue::WorkQueue %lu", V8RecordReplayPointerId(this));
+  recordreplay::RegisterPointer(this);
+  recordreplay::Assert("WorkQueue::WorkQueue %lu", recordreplay::PointerId(this));
 }
 
 Value WorkQueue::AsValue(TimeTicks now) const {
@@ -40,7 +30,7 @@ Value WorkQueue::AsValue(TimeTicks now) const {
 }
 
 WorkQueue::~WorkQueue() {
-  V8RecordReplayUnregisterPointer(this);
+  recordreplay::UnregisterPointer(this);
   DCHECK(!work_queue_sets_) << task_queue_->GetName() << " : "
                             << work_queue_sets_->GetName() << " : " << name_;
 }
@@ -70,7 +60,7 @@ bool WorkQueue::BlockedByFence() const {
 bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
   if (tasks_.empty() || BlockedByFence()) {
     recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #1 %lu",
-                         V8RecordReplayPointerId((void*)this));
+                         recordreplay::PointerId((void*)this));
     return false;
   }
   // Quick sanity check.
@@ -79,13 +69,13 @@ bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
       << name_;
   *enqueue_order = tasks_.front().enqueue_order();
   recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #2 %lu %lu",
-                       V8RecordReplayPointerId((void*)this), (size_t)*enqueue_order);
+                       recordreplay::PointerId((void*)this), (size_t)*enqueue_order);
   return true;
 }
 
 void WorkQueue::Push(Task task) {
   recordreplay::Assert("WorkQueue::Push %lu %lu",
-                       V8RecordReplayPointerId(this), (size_t)task.enqueue_order());
+                       recordreplay::PointerId(this), (size_t)task.enqueue_order());
 
   bool was_empty = tasks_.empty();
 #ifndef NDEBUG
@@ -116,7 +106,7 @@ WorkQueue::TaskPusher::TaskPusher(TaskPusher&& other)
 
 void WorkQueue::TaskPusher::Push(Task* task) {
   recordreplay::Assert("WorkQueue::TaskPusher::Push %lu %lu",
-                       V8RecordReplayPointerId(work_queue_),
+                       recordreplay::PointerId(work_queue_),
                        (size_t)task->enqueue_order());
 
   DCHECK(work_queue_);
@@ -148,7 +138,7 @@ WorkQueue::TaskPusher WorkQueue::CreateTaskPusher() {
 
 void WorkQueue::PushNonNestableTaskToFront(Task task) {
   recordreplay::Assert("WorkQueue::PushNonNestableTaskToFront %lu %lu",
-                       V8RecordReplayPointerId(this),
+                       recordreplay::PointerId(this),
                        (size_t)task.enqueue_order());
 
   DCHECK(task.nestable == Nestable::kNonNestable);
@@ -201,7 +191,7 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   DCHECK(!tasks_.empty());
 
   recordreplay::Assert("WorkQueue::TakeTaskFromWorkQueue Start %lu",
-                       V8RecordReplayPointerId(this));
+                       recordreplay::PointerId(this));
 
   Task pending_task = std::move(tasks_.front());
   tasks_.pop_front();

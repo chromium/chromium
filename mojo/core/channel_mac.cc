@@ -32,9 +32,6 @@ kern_return_t fileport_makeport(int fd, mach_port_t*);
 int fileport_makefd(mach_port_t);
 }  // extern "C"
 
-extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
-extern "C" int V8IsReplaying();
-
 namespace mojo {
 namespace core {
 
@@ -637,12 +634,12 @@ class ChannelMac : public Channel,
       // which we can't dereference. Allocate a new block of memory and copy
       // in its contents from the recording.
       void* address = descriptor->address;
-      if (V8IsReplaying()) {
+      if (recordreplay::IsReplaying()) {
         address = nullptr;
         kr = vm_allocate(mach_task_self(), (vm_address_t*)&address, descriptor->size, true);
         CHECK(kr == KERN_SUCCESS);
       }
-      V8RecordReplayBytes("ChannelMac::OnMachMessageReceived", address, descriptor->size);
+      recordreplay::RecordReplayBytes("ChannelMac::OnMachMessageReceived", address, descriptor->size);
 
       payload = base::span<const char>(
           reinterpret_cast<const char*>(address), descriptor->size);

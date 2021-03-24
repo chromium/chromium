@@ -12,7 +12,6 @@
 
 namespace recordreplay {
 
-void SetRecordingOrReplaying(void* handle);
 bool IsRecordingOrReplaying();
 bool IsRecording();
 bool IsReplaying();
@@ -28,6 +27,12 @@ void RecordReplayBytes(const char* why, void* buf, size_t size);
 size_t CreateOrderedLock(const char* name);
 void OrderedLock(int lock);
 void OrderedUnlock(int lock);
+
+struct AutoOrderedLock {
+  AutoOrderedLock(int id) : id_(id) { OrderedLock(id_); }
+  ~AutoOrderedLock() { OrderedUnlock(id_); }
+  int id_;
+};
 
 void InvalidateRecording(const char* why);
 void NewCheckpoint();

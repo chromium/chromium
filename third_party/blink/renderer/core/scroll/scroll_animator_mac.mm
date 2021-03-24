@@ -30,6 +30,7 @@
 #include <memory>
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -42,16 +43,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-
-// Messages implemented by blink will not currently be replayed.
-// Pass through events in these messages to avoid interacting with the recording.
-extern "C" void V8RecordReplayBeginPassThroughEvents();
-extern "C" void V8RecordReplayEndPassThroughEvents();
-
-struct RecordReplayAutoPassThroughEvents {
-  RecordReplayAutoPassThroughEvents() { V8RecordReplayBeginPassThroughEvents(); }
-  ~RecordReplayAutoPassThroughEvents() { V8RecordReplayEndPassThroughEvents(); }
-};
 
 namespace {
 
@@ -681,7 +672,11 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)invalidate {
   _scrollbar = 0;
-  RecordReplayAutoPassThroughEvents pt;
+
+  // Messages implemented by blink will not currently be replayed.
+  // Pass through events in these messages to avoid interacting with the recording.
+  recordreplay::AutoPassThroughEvents pt;
+
   BEGIN_BLOCK_OBJC_EXCEPTIONS;
   [_knobAlphaAnimation invalidate];
   [_trackAlphaAnimation invalidate];

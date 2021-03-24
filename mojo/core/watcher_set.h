@@ -9,13 +9,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/record_replay.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
-
-#ifdef OS_MAC
-extern "C" int V8RecordReplayPointerId(void* ptr);
-extern "C" bool V8IsRecordingOrReplaying();
-#endif
 
 namespace mojo {
 namespace core {
@@ -23,14 +19,12 @@ namespace core {
 struct CompareRecordReplayPointerId {
   template <typename T>
   bool operator()(const T* a, const T* b) const {
-#ifdef OS_MAC
-    if (V8IsRecordingOrReplaying()) {
-      int ida = V8RecordReplayPointerId((void*)a);
-      int idb = V8RecordReplayPointerId((void*)b);
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId((void*)a);
+      int idb = recordreplay::PointerId((void*)b);
       CHECK(ida && idb);
       return ida < idb;
     }
-#endif
     return (uintptr_t)a < (uintptr_t)b;
   }
 };

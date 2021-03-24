@@ -16,6 +16,7 @@
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/optional.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/record_replay.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -24,25 +25,21 @@
 
 namespace base {
 
-extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
-extern "C" void V8RecordReplayOrderedLock(int lock);
-extern "C" void V8RecordReplayOrderedUnlock(int lock);
-
 // The record/replay driver does not order mach_msg calls when they are used
 // for inter-thread communication. We use an ordered lock to ensure that
 // threads do not return from event waits until after the event has actually
 // been signaled.
 static inline void RecordReplayEnsureOrdered(int lock_id) {
   if (lock_id) {
-    V8RecordReplayOrderedLock(lock_id);
-    V8RecordReplayOrderedUnlock(lock_id);
+    recordreplay::OrderedLock(lock_id);
+    recordreplay::OrderedUnlock(lock_id);
   }
 }
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
-  record_replay_ordered_lock_id_ = (int)V8RecordReplayCreateOrderedLock("WaitableEvent");
+  record_replay_ordered_lock_id_ = (int)recordreplay::CreateOrderedLock("WaitableEvent");
 
   mach_port_options_t options{};
   options.flags = MPO_INSERT_SEND_RIGHT;

@@ -43,12 +43,6 @@
 #include "mojo/core/user_message_impl.h"
 #include "mojo/core/watcher_dispatcher.h"
 
-#ifdef OS_MAC
-extern "C" int V8RecordReplayPointerId(void* ptr);
-#else
-static int V8RecordReplayPointerId(void* ptr) { return 0; }
-#endif
-
 namespace mojo {
 namespace core {
 
@@ -596,7 +590,7 @@ MojoResult Core::FuseMessagePipes(MojoHandle handle0,
       static_cast<MessagePipeDispatcher*>(dispatcher1.get());
 
   recordreplay::Assert("Core::FuseMessagePipes %lu %lu",
-                       V8RecordReplayPointerId(mpd0), V8RecordReplayPointerId(mpd1));
+                       recordreplay::PointerId(mpd0), recordreplay::PointerId(mpd1));
 
   if (!mpd0->Fuse(mpd1))
     return MOJO_RESULT_FAILED_PRECONDITION;

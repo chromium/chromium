@@ -33,12 +33,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#ifdef OS_MAC
-extern "C" void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes);
-#else
-static inline void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes) {}
-#endif
-
 namespace base {
 namespace sequence_manager {
 namespace {
@@ -974,11 +968,7 @@ EnqueueOrder SequenceManagerImpl::GetNextSequenceNumber() {
   // because they affect the order in which tasks will run. We could use
   // an ordered lock here, but it's more efficient to just record/replay
   // the EnqueueOrders which were created when recording.
-  //
-  // This would be better off in EnqueueOrderGenerator itself, but trying
-  // to call record/replay APIs from that function doesn't seem to work for
-  // some reason.
-  V8RecordReplayBytes("GetNextSequenceNumber", &rv, sizeof rv);
+  recordreplay::RecordReplayBytes("GetNextSequenceNumber", &rv, sizeof(rv));
 
   return rv;
 }

@@ -6,15 +6,11 @@
 
 #include <algorithm>
 
+#include "base/record_replay.h"
 #include "mojo/core/ports/port.h"
 
 #if DCHECK_IS_ON()
 #include "base/threading/thread_local.h"
-#endif
-
-#ifdef OS_MAC
-extern "C" bool V8IsRecordingOrReplaying();
-extern "C" int V8RecordReplayPointerId(void* ptr);
 #endif
 
 namespace mojo {
@@ -39,8 +35,8 @@ static uintptr_t GetPortId(Port* port) {
   // When recording/replaying the sorted order of ports need to be consistent,
   // so we use the ID associated with the port via RegisterPointer for sorting.
 #ifdef OS_MAC
-  if (V8IsRecordingOrReplaying()) {
-    uintptr_t id = V8RecordReplayPointerId(port);
+  if (recordreplay::IsRecordingOrReplaying()) {
+    uintptr_t id = recordreplay::PointerId(port);
     CHECK(id);
     return id;
   } else {
