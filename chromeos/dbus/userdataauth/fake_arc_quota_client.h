@@ -22,6 +22,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeArcQuotaClient
   FakeArcQuotaClient(const FakeArcQuotaClient&) = delete;
   FakeArcQuotaClient& operator=(const FakeArcQuotaClient&) = delete;
 
+  // Checks that a FakeArcQuotaClient instance was initialized and returns it.
+  static FakeArcQuotaClient* Get();
+
   // ArcQuotaClient override:
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
@@ -39,6 +42,31 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeArcQuotaClient
       GetCurrentSpaceForArcProjectIdCallback callback) override;
   void SetProjectId(const ::user_data_auth::SetProjectIdRequest& request,
                     SetProjectIdCallback callback) override;
+
+  // WaitForServiceToBeAvailable() related:
+
+  // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
+  // pending callbacks if is_available is true.
+  void SetServiceIsAvailable(bool is_available);
+
+  // Runs pending availability callbacks reporting that the service is
+  // unavailable. Expects service not to be available when called.
+  void ReportServiceIsNotAvailable();
+
+ private:
+  // WaitForServiceToBeAvailable() related fields:
+
+  // If set, we tell callers that service is available.
+  bool service_is_available_ = true;
+
+  // If set, WaitForServiceToBeAvailable will run the callback, even if service
+  // is not available (instead of adding the callback to pending callback list).
+  bool service_reported_not_available_ = false;
+
+  // The list of callbacks passed to WaitForServiceToBeAvailable when the
+  // service wasn't available.
+  std::vector<WaitForServiceToBeAvailableCallback>
+      pending_wait_for_service_to_be_available_callbacks_;
 };
 
 }  // namespace chromeos
