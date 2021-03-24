@@ -1279,6 +1279,7 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
     }
     switch (item->Type()) {
       case NGFragmentItem::kText:
+      case NGFragmentItem::kSVGText:
       case NGFragmentItem::kGeneratedText:
         if (!item->IsHiddenForPaint())
           PaintTextItem(*cursor, paint_info, paint_offset, parent_offset);

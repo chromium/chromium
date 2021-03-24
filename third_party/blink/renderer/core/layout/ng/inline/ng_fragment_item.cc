@@ -196,6 +196,11 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
     case kText:
       new (&text_) TextItem(source.text_);
       break;
+    case kSVGText:
+      new (&svg_text_) SVGTextItem();
+      svg_text_.data =
+          std::make_unique<NGSVGFragmentData>(*source.svg_text_.data);
+      break;
     case kGeneratedText:
       new (&generated_text_) GeneratedTextItem(source.generated_text_);
       break;
@@ -233,6 +238,9 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
+    case kSVGText:
+      new (&svg_text_) SVGTextItem(std::move(source.svg_text_));
+      break;
     case kGeneratedText:
       new (&generated_text_)
           GeneratedTextItem(std::move(source.generated_text_));
@@ -250,6 +258,9 @@ NGFragmentItem::~NGFragmentItem() {
   switch (Type()) {
     case kText:
       text_.~TextItem();
+      break;
+    case kSVGText:
+      svg_text_.~SVGTextItem();
       break;
     case kGeneratedText:
       generated_text_.~GeneratedTextItem();
@@ -297,7 +308,7 @@ bool NGFragmentItem::IsGeneratedText() const {
     return true;
   }
   DCHECK_NE(TextType(), NGTextType::kLayoutGenerated);
-  if (Type() == kText)
+  if (Type() == kText || Type() == kSVGText)
     return GetLayoutObject()->IsStyleGenerated();
   NOTREACHED();
   return false;
@@ -305,6 +316,19 @@ bool NGFragmentItem::IsGeneratedText() const {
 
 bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
+}
+
+void NGFragmentItem::ConvertToSVGText(const FloatRect rect) {
+  DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
+  DCHECK_EQ(Type(), kText);
+  auto data = std::make_unique<NGSVGFragmentData>();
+  data->shape_result = std::move(text_.shape_result);
+  data->text_offset = std::move(text_.text_offset);
+  data->rect = rect;
+  text_.~TextItem();
+  new (&svg_text_) SVGTextItem();
+  svg_text_.data = std::move(data);
+  type_ = kSVGText;
 }
 
 bool NGFragmentItem::HasNonVisibleOverflow() const {
@@ -389,6 +413,8 @@ PhysicalRect NGFragmentItem::InkOverflow() const {
 const ShapeResultView* NGFragmentItem::TextShapeResult() const {
   if (Type() == kText)
     return text_.shape_result.get();
+  if (Type() == kSVGText)
+    return svg_text_.data->shape_result.get();
   if (Type() == kGeneratedText)
     return generated_text_.shape_result.get();
   NOTREACHED();
@@ -398,6 +424,8 @@ const ShapeResultView* NGFragmentItem::TextShapeResult() const {
 NGTextOffset NGFragmentItem::TextOffset() const {
   if (Type() == kText)
     return text_.text_offset;
+  if (Type() == kSVGText)
+    return svg_text_.data->text_offset;
   if (Type() == kGeneratedText)
     return {0, generated_text_.text.length()};
   NOTREACHED();
@@ -408,6 +436,11 @@ StringView NGFragmentItem::Text(const NGFragmentItems& items) const {
   if (Type() == kText) {
     return StringView(items.Text(UsesFirstLineStyle()), text_.text_offset.start,
                       text_.text_offset.Length());
+  }
+  if (Type() == kSVGText) {
+    return StringView(items.Text(UsesFirstLineStyle()),
+                      svg_text_.data->text_offset.start,
+                      svg_text_.data->text_offset.Length());
   }
   if (Type() == kGeneratedText)
     return GeneratedText();
@@ -420,6 +453,11 @@ NGTextFragmentPaintInfo NGFragmentItem::TextPaintInfo(
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
             text_.text_offset.end, text_.shape_result.get()};
+  }
+  if (Type() == kSVGText) {
+    return {items.Text(UsesFirstLineStyle()), svg_text_.data->text_offset.start,
+            svg_text_.data->text_offset.end,
+            svg_text_.data->shape_result.get()};
   }
   if (Type() == kGeneratedText) {
     return {generated_text_.text, 0, generated_text_.text.length(),
@@ -435,7 +473,7 @@ TextDirection NGFragmentItem::BaseDirection() const {
 }
 
 TextDirection NGFragmentItem::ResolvedDirection() const {
-  DCHECK(Type() == kText || Type() == kGeneratedText || IsAtomicInline());
+  DCHECK(IsText() || IsAtomicInline());
   return static_cast<TextDirection>(text_direction_);
 }
 
@@ -686,7 +724,7 @@ PhysicalRect NGFragmentItem::LocalRect(StringView text,
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     const PhysicalOffset& point,
     const NGInlineCursor& cursor) const {
-  DCHECK_EQ(Type(), kText);
+  DCHECK(Type() == kText || Type() == kSVGText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   if (IsGeneratedText())
     return PositionWithAffinity();
@@ -697,7 +735,7 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
 PositionWithAffinity NGFragmentItem::PositionForPointInText(
     unsigned text_offset,
     const NGInlineCursor& cursor) const {
-  DCHECK_EQ(Type(), kText);
+  DCHECK(Type() == kText || Type() == kSVGText);
   DCHECK_EQ(cursor.CurrentItem(), this);
   DCHECK(!IsGeneratedText());
   DCHECK_LE(text_offset, EndOffset());
@@ -714,7 +752,7 @@ PositionWithAffinity NGFragmentItem::PositionForPointInText(
 unsigned NGFragmentItem::TextOffsetForPoint(
     const PhysicalOffset& point,
     const NGFragmentItems& items) const {
-  DCHECK_EQ(Type(), kText);
+  DCHECK(Type() == kText || Type() == kSVGText);
   const ComputedStyle& style = Style();
   const LayoutUnit& point_in_line_direction =
       style.IsHorizontalWritingMode() ? point.left : point.top;
@@ -750,6 +788,10 @@ std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {
     case NGFragmentItem::kText:
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
+      break;
+    case NGFragmentItem::kSVGText:
+      ostream << "SVGText " << item.StartOffset() << "-" << item.EndOffset()
+              << " " << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
       break;
     case NGFragmentItem::kGeneratedText:
       ostream << "GeneratedText \"" << item.GeneratedText() << "\"";

@@ -89,6 +89,7 @@ bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
     case NGFragmentItem::kGeneratedText:
       return true;
     case NGFragmentItem::kText:
+    case NGFragmentItem::kSVGText:
       // Returns true when |item.GetLayoutObject().IsStyleGenerated()|.
       // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
       return item.IsGeneratedText();
@@ -761,6 +762,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
   const NGFragmentItem& child_item = *CurrentItem();
   switch (child_item.Type()) {
     case NGFragmentItem::kText:
+    case NGFragmentItem::kSVGText:
       return child_item.PositionForPointInText(
           point_in_container - child_item.OffsetInContainerFragment(), *this);
     case NGFragmentItem::kGeneratedText:
