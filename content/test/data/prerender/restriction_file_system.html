@@ -21,20 +21,20 @@ const result = new Promise((resolve, reject) => {
   rejectFunc = reject;
 });
 
-async function startShowOpenFilePicker() {
+async function accessOriginPrivateFileSystem() {
   try {
     // The page should initially be in the prerendering state.
     eventsSeen.push(
-        `startShowOpenFilePicker (prerendering: ${document.prerendering})`);
+        `accessOriginPrivateFileSystem (prerendering: ${document.prerendering})`);
 
-    const [fileHandle] = await window.showOpenFilePicker();
+    const directoryHandle = await navigator.storage.getDirectory();
 
-    // showOpenFilePicker() is expected to be deferred until the prerendered
+    // `navigator.storage.getDirectory()` is expected to be deferred until the prerendered
     // page is activated. So `document.prerendering` should be false here.
     eventsSeen.push(
-        `showOpenFilePicker (prerendering: ${document.prerendering})`);
+        `getDirectory (prerendering: ${document.prerendering})`);
 
-    resolveFunc(fileHandle.name);
+    resolveFunc(true);
   } catch (err) {
     rejectFunc(err);
   }

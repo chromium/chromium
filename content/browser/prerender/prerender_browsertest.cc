@@ -1502,44 +1502,18 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
   }
 }
 
-class PrerenderFileSystemAccessBrowserTest : public PrerenderBrowserTest {
- public:
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    ContentBrowserTest::SetUp();
-  }
-
- protected:
-  base::ScopedTempDir temp_dir_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderFileSystemAccessBrowserTest,
-                         testing::Values(kWebContents, kMPArch),
-                         ToString);
-
 // TODO(https://crbug.com/1182032): Now the File System Access API is not
 // supported on Android. Enable this browser test after
 // https://crbug.com/1011535 is fixed.
 #if defined(OS_ANDROID)
-#define MAYBE_FileSystemAccessError DISABLED_FileSystemAccessError
+#define MAYBE_LocalFileSystemAccessError DISABLED_LocalFileSystemAccessError
 #else
-#define MAYBE_FileSystemAccessError FileSystemAccessError
+#define MAYBE_LocalFileSystemAccessError LocalFileSystemAccessError
 #endif
 
-// Tests that the prerendering page cannot access the File System Access API.
-IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
-                       MAYBE_FileSystemAccessError) {
-  base::FilePath temp_file;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(
-        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file));
-  }
-  SelectFileDialogParams dialog_params;
-  ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({temp_file}, &dialog_params));
-
+// Tests that the prerendering page cannot access local file system via the File
+// System Access API.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MAYBE_LocalFileSystemAccessError) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -1563,7 +1537,60 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
               ::testing::HasSubstr(
                   "Failed to execute 'showOpenFilePicker' on 'Window': Must be "
                   "handling a user gesture to show a file picker."));
-  ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+// TODO(https://crbug.com/1182032): Now the File System Access API is not
+// supported on Android. Enable this browser test after
+// https://crbug.com/1011535 is fixed.
+#if defined(OS_ANDROID)
+#define MAYBE_DeferPrivateOriginFileSystem DISABLED_DeferPrivateOriginFileSystem
+#else
+#define MAYBE_DeferPrivateOriginFileSystem DeferPrivateOriginFileSystem
+#endif
+
+// Tests that access to the origin private file system via the File System
+// Access API is deferred until activating the prerendered page.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       MAYBE_DeferPrivateOriginFileSystem) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/restriction_file_system.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerender_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+
+  EXPECT_EQ(
+      true,
+      ExecJs(prerender_render_frame_host, "accessOriginPrivateFileSystem();",
+             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                 EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  // Run a event loop so the page can fail the test.
+  EXPECT_TRUE(ExecJs(prerender_render_frame_host, "runLoop();"));
+
+  // Activate the page.
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  // Wait for the completion of `accessOriginPrivateFileSystem`.
+  EXPECT_EQ(true, EvalJs(prerender_render_frame_host, "result;"));
+  // Check the event sequence seen in the prerendered page.
+  EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
+  std::vector<std::string> eventsSeen;
+  for (auto& result : results.ExtractList())
+    eventsSeen.push_back(result.GetString());
+  EXPECT_THAT(eventsSeen,
+              testing::ElementsAreArray(
+                  {"accessOriginPrivateFileSystem (prerendering: true)",
+                   "prerenderingchange (prerendering: false)",
+                   "getDirectory (prerendering: false)"}));
 }
 
 // Tests that RenderDocumentHostUserData object is not cleared on activating a
