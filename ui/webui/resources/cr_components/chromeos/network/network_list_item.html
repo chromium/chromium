@@ -70,6 +70,10 @@
         color: var(--google-green-500);
       }
 
+      .locked {
+        color: var(--google-yellow-700);
+      }
+
       cr-policy-indicator {
         padding: 0 var(--cr-controlled-by-spacing);
       }
@@ -121,7 +125,7 @@
             [[getSubtitle(subtitle_)]]
           </div>
           <div id="networkStateText"
-              class="cr-secondary-text"
+              class$="[[getNetworkStateTextClass_(networkState.*)]]"
               hidden$="[[!isStateTextVisible_(networkState.*)]]"
               active$="[[isStateTextActive_(networkState.*,
                            activationUnavailable)]]">
@@ -144,6 +148,19 @@
                 focus-type="subpageButton">
             </cr-icon-button>
           </div>
+        </template>
+        <template is="dom-if" if="[[shouldShowUnlockButton_(networkState)]]" restamp>
+          <cr-button id="unlockButton"
+              aria-label$="[[getUnlockBtnA11yLabel_(item)]]"
+              on-click="onUnlockButtonClick_">
+              [[i18n('networkListItemUnlock')]]
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
+          <sim-lock-dialogs
+              is-dialog-open="{{isCellularUnlockDialogOpen_}}"
+              device-state="[[deviceState]]">
+          </sim-lock-dialogs>
         </template>
         <template is="dom-if" if="[[isESimPendingProfile_]]" restamp>
           <cr-button id="installButton"

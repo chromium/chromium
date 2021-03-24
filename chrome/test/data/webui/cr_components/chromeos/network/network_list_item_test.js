@@ -40,11 +40,12 @@ suite('NetworkListItemTest', function() {
     Polymer.dom.flush();
   });
 
-  function initCellularNetwork(iccid, eid) {
+  function initCellularNetwork(iccid, eid, simLocked) {
     const networkState =
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular);
     networkState.typeState.cellular.iccid = iccid;
     networkState.typeState.cellular.eid = eid;
+    networkState.typeState.cellular.simLocked = simLocked;
     return networkState;
   }
 
@@ -184,5 +185,42 @@ suite('NetworkListItemTest', function() {
     assertEquals(
         networkStateText.textContent.trim(),
         listItem.i18n('networkListItemScanning'));
+  });
+
+  test('Show sim lock dialog when cellular network is locked', async () => {
+    const iccid = '11111111111111111111';
+    const eid = '1';
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+    const networkStateLockedText =
+        listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
+
+    listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ false);
+
+    await flushAsync();
+
+    let unlockBtn = listItem.$$('#unlockButton');
+
+    assertFalse(!!unlockBtn);
+    let networkStateText = listItem.$$('#networkStateText');
+    assertTrue(!!networkStateText);
+    assertNotEquals(
+        networkStateLockedText, networkStateText.textContent.trim());
+
+    listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+
+    await flushAsync();
+    unlockBtn = listItem.$$('#unlockButton');
+    let simLockDialog = listItem.$$('sim-lock-dialogs');
+    assertTrue(!!unlockBtn);
+    assertFalse(!!simLockDialog);
+
+    unlockBtn.click();
+    await flushAsync();
+
+    simLockDialog = listItem.$$('sim-lock-dialogs');
+    assertTrue(!!simLockDialog);
+    networkStateText = listItem.$$('#networkStateText');
+    assertTrue(!!networkStateText);
+    assertEquals(networkStateLockedText, networkStateText.textContent.trim());
   });
 });

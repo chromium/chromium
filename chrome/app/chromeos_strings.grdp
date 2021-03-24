@@ -1616,6 +1616,9 @@
   <message name="IDS_NETWORK_LIST_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked.">
     SIM card is locked
   </message>
+  <message name="IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_LOCKED" desc="Text in the network list element when a Cellular network's SIM card is locked. Used when updated cellular activation flag in on.">
+    Locked
+  </message>
   <message name="IDS_NETWORK_LIST_NOT_CONNECTED" desc="Text in the network list element when there is a network for the type, but it is not connected or connecting.">
     Not connected
   </message>
@@ -1705,6 +1708,12 @@
   </message>
   <message name="IDS_NETWORK_LIST_ITEM_DOWNLOAD" desc="Text for the button displayed for pending eSIM profiles that installs the profile when pressed.">
     Download
+  </message>
+  <message name="IDS_NETWORK_LIST_ITEM_UNLOCK" desc="Text for the button displayed for locked cellular networks that opens a dialog to unlock the network when pressed ">
+    Unlock
+  </message>
+  <message name="IDS_NETWORK_LIST_ITEM_UNLOCK_A11Y_LABEL" desc="A11Y label for button displayed for locked cellular networks that opens a dialog to unlock the network when pressed. Includes network name.">
+    <ph name="NETWORK_NAME">$1<ex>Cellular</ex></ph>, Unlock
   </message>
   <message name="IDS_NETWORK_LIST_ITEM_ADDING_PROFILE" desc="Loading text indicating that an eSIM profile is currently installing.">
     Adding Profile...

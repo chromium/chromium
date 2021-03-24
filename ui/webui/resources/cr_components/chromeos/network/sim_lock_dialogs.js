@@ -390,8 +390,12 @@ Polymer({
     this.isDialogOpen = skipIsDialogOpenUpdate ? skipIsDialogOpenUpdate : false;
   },
 
-  /** @private */
-  onCancelClick_() {
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onCancelClick_(event) {
+    event.stopPropagation();
     this.closeDialogs_();
   },
 

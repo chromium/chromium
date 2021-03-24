@@ -123,6 +123,12 @@ Polymer({
         return loadTimeData.getBoolean('updatedCellularActivationUi');
       }
     },
+
+    /**@private {boolean} */
+    isCellularUnlockDialogOpen_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
@@ -427,8 +433,15 @@ Polymer({
       if (this.isCellularNetworkScanning_()) {
         return this.i18n('networkListItemScanning');
       }
-      if (this.networkState.typeState.cellular.simLocked) {
+
+      if (this.networkState.typeState.cellular.simLocked &&
+          !this.isUpdatedCellularUiEnabled_) {
         return this.i18n('networkListItemSimCardLocked');
+      }
+
+      if (this.networkState.typeState.cellular.simLocked &&
+          this.isUpdatedCellularUiEnabled_) {
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
     }
 
@@ -442,6 +455,21 @@ Polymer({
       return this.i18n('networkListItemConnecting');
     }
     return '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getNetworkStateTextClass_() {
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.networkState &&
+        this.networkState.type === mojom.NetworkType.kCellular &&
+        this.networkState.typeState.cellular.simLocked &&
+        this.isUpdatedCellularUiEnabled_) {
+      return 'locked';
+    }
+    return 'cr-secondary-text';
   },
 
   /**
@@ -467,7 +495,7 @@ Polymer({
    * @private
    */
   isSubpageButtonVisible_(networkState, showButtons) {
-    return !!networkState && showButtons;
+    return !!networkState && showButtons && !this.shouldShowUnlockButton_();
   },
 
   /**
@@ -515,6 +543,8 @@ Polymer({
       this.fireShowDetails_(event);
     } else if (this.isESimPendingProfile_) {
       this.onInstallButtonClick_(event);
+    } else if (this.shouldShowUnlockButton_()) {
+      this.onUnlockButtonClick_();
     } else if (this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
     } else {
@@ -621,5 +651,30 @@ Polymer({
     return this.deviceState.simInfos.some(simInfo => {
       return simInfo.iccid === iccid && simInfo.isPrimary;
     });
+  },
+
+  /** @private */
+  onUnlockButtonClick_() {
+    this.isCellularUnlockDialogOpen_ = true;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowUnlockButton_() {
+    if (!this.networkState || !this.networkState.typeState.cellular ||
+        !this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return this.networkState.typeState.cellular.simLocked;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getUnlockBtnA11yLabel_() {
+    return this.i18n('networkListItemUnlockA11YLabel', this.getItemName_());
   }
 });
