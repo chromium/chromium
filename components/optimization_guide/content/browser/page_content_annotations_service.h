@@ -57,13 +57,13 @@ class PageContentAnnotationsService : public KeyedService {
   base::Optional<int64_t> GetPageTopicsModelVersion() const;
 
  private:
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
       const base::Optional<history::VisitContentAnnotations>&
           content_annotations);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif
 

@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/common/thumbnail_score.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/query_parser/query_parser.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -676,6 +677,7 @@ enum class UrlsModifiedReason {
 
 // Annotations -----------------------------------------------------------------
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // A structure containing the annotations made to page content for a visit.
 struct VisitContentAnnotations {
   struct Category {
@@ -705,6 +707,7 @@ struct VisitContentAnnotations {
   // The version of the page topics model that was used to annotate content.
   int64_t page_topics_model_version = -1;
 };
+#endif
 
 }  // namespace history
 

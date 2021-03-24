@@ -367,6 +367,8 @@ DeletionInfo& DeletionInfo::operator=(DeletionInfo&& rhs) noexcept = default;
 // Annotations
 // ----------------------------------------------------------
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
 VisitContentAnnotations::Category::Category(int id, int weight)
     : id(id), weight(weight) {}
 VisitContentAnnotations::Category::Category() = default;
@@ -392,5 +394,7 @@ VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;
 VisitContentAnnotations::~VisitContentAnnotations() = default;
+
+#endif
 
 }  // namespace history

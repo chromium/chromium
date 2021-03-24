@@ -36,6 +36,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 #endif
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
     const base::Optional<history::VisitContentAnnotations>&
@@ -47,6 +48,7 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
     // TODO(crbug/1177102): Send annotations to store in history service.
   }
 }
+#endif
 
 base::Optional<int64_t>
 PageContentAnnotationsService::GetPageTopicsModelVersion() const {
