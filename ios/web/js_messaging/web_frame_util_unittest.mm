@@ -34,12 +34,12 @@ class WebFrameUtilTest : public PlatformTest {
 TEST_F(WebFrameUtilTest, GetMainFrame) {
   // Still no main frame.
   EXPECT_EQ(nullptr, GetMainFrame(&fake_web_state_));
-  auto iframe = std::make_unique<FakeChildWebFrame>(GURL::EmptyGURL());
+  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
   fake_web_frames_manager_->AddWebFrame(std::move(iframe));
   // Still no main frame.
   EXPECT_EQ(nullptr, GetMainFrame(&fake_web_state_));
 
-  auto main_frame = std::make_unique<FakeMainWebFrame>(GURL::EmptyGURL());
+  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   FakeWebFrame* main_frame_ptr = main_frame.get();
   fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
   // Now there is a main frame.
@@ -54,12 +54,12 @@ TEST_F(WebFrameUtilTest, GetMainFrame) {
 TEST_F(WebFrameUtilTest, GetMainWebFrameId) {
   // Still no main frame.
   EXPECT_TRUE(GetMainWebFrameId(&fake_web_state_).empty());
-  auto iframe = std::make_unique<FakeChildWebFrame>(GURL::EmptyGURL());
+  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
   fake_web_frames_manager_->AddWebFrame(std::move(iframe));
   // Still no main frame.
   EXPECT_TRUE(GetMainWebFrameId(&fake_web_state_).empty());
 
-  auto main_frame = std::make_unique<FakeMainWebFrame>(GURL::EmptyGURL());
+  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   FakeWebFrame* main_frame_ptr = main_frame.get();
   fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
   // Now there is a main frame.
@@ -76,7 +76,7 @@ TEST_F(WebFrameUtilTest, GetWebFrameWithId) {
   EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kChildFakeFrameId));
   EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
   EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
-  auto iframe = std::make_unique<FakeChildWebFrame>(GURL::EmptyGURL());
+  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
   FakeWebFrame* iframe_ptr = iframe.get();
   fake_web_frames_manager_->AddWebFrame(std::move(iframe));
   // There is an iframe.
@@ -84,7 +84,7 @@ TEST_F(WebFrameUtilTest, GetWebFrameWithId) {
   EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, kMainFakeFrameId));
   EXPECT_EQ(nullptr, GetWebFrameWithId(&fake_web_state_, "unused"));
 
-  auto main_frame = std::make_unique<FakeMainWebFrame>(GURL::EmptyGURL());
+  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   FakeWebFrame* main_frame_ptr = main_frame.get();
   fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
   // Now there is a main frame.
@@ -112,18 +112,18 @@ TEST_F(WebFrameUtilTest, GetWebFrameWithId) {
 // Tests the GetWebFrameId GetWebFrameId function.
 TEST_F(WebFrameUtilTest, GetWebFrameId) {
   EXPECT_EQ(std::string(), GetWebFrameId(nullptr));
-  FakeMainWebFrame frame(GURL::EmptyGURL());
-  EXPECT_EQ(kMainFakeFrameId, GetWebFrameId(&frame));
+  auto frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  EXPECT_EQ(kMainFakeFrameId, GetWebFrameId(frame.get()));
 }
 
 // Tests the GetAllWebFrames function.
 TEST_F(WebFrameUtilTest, GetAllWebFrames) {
   EXPECT_EQ(0U,
             fake_web_state_.GetWebFramesManager()->GetAllWebFrames().size());
-  auto main_frame = std::make_unique<FakeMainWebFrame>(GURL::EmptyGURL());
+  auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   FakeWebFrame* main_frame_ptr = main_frame.get();
   fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
-  auto iframe = std::make_unique<FakeChildWebFrame>(GURL::EmptyGURL());
+  auto iframe = FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
   FakeWebFrame* iframe_ptr = iframe.get();
   fake_web_frames_manager_->AddWebFrame(std::move(iframe));
   std::set<WebFrame*> all_frames =

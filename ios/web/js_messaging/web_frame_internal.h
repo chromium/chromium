@@ -11,13 +11,12 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "ios/web/public/js_messaging/web_frame.h"
 
 namespace web {
 
 class JavaScriptContentWorld;
 
-class WebFrameInternal : public WebFrame {
+class WebFrameInternal {
  public:
   // Calls the JavaScript function |name| in the frame context in the same
   // manner as the inherited CallJavaScriptFunction functions. |content_world|
@@ -42,13 +41,6 @@ class WebFrameInternal : public WebFrame {
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) = 0;
-
- protected:
-  ~WebFrameInternal() override {}
-  WebFrameInternal() {}
-
-  WebFrameInternal(const WebFrameInternal&) = delete;
-  WebFrameInternal& operator=(const WebFrameInternal&) = delete;
 };
 
 }  // namespace web

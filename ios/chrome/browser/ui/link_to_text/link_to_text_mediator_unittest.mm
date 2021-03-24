@@ -82,8 +82,8 @@ class LinkToTextMediatorTest : public PlatformTest {
     web_frames_manager_ = web_frames_manager.get();
     web_state_->SetWebFramesManager(std::move(web_frames_manager));
 
-    auto main_frame = std::make_unique<web::FakeWebFrame>(
-        web::kMainFakeFrameId, true, GURL("https://chromium.org/"));
+    auto main_frame = web::FakeWebFrame::Create(web::kMainFakeFrameId, true,
+                                                GURL("https://chromium.org/"));
     main_frame_ = main_frame.get();
     web_frames_manager_->AddWebFrame(std::move(main_frame));
 

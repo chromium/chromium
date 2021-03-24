@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 #define IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 
-#include "ios/web/js_messaging/web_frame_internal.h"
 
 #include <map>
 #include <string>
@@ -15,6 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "crypto/symmetric_key.h"
+#include "ios/web/js_messaging/web_frame_internal.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
@@ -25,7 +26,9 @@ namespace web {
 
 class JavaScriptContentWorld;
 
-class WebFrameImpl : public WebFrameInternal, public web::WebStateObserver {
+class WebFrameImpl : public WebFrame,
+                     public WebFrameInternal,
+                     public web::WebStateObserver {
  public:
   // Creates a new WebFrame. |initial_message_id| will be used as the message ID
   // of the next message sent to the frame with the |CallJavaScriptFunction|
@@ -45,6 +48,7 @@ class WebFrameImpl : public WebFrameInternal, public web::WebStateObserver {
   WebState* GetWebState();
 
   // WebFrame:
+  WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;

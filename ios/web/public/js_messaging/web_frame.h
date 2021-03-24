@@ -20,6 +20,7 @@ class Value;
 namespace web {
 
 class BrowserState;
+class WebFrameInternal;
 
 // Default timeout in milliseconds for |CallJavaScriptFunction|.
 extern const double kJavaScriptFunctionCallDefaultTimeout;
@@ -69,6 +70,9 @@ class WebFrame : public base::SupportsUserData {
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) = 0;
+
+  // Returns the WebFrameInternal instance for this object.
+  virtual WebFrameInternal* GetWebFrameInternal() = 0;
 
   ~WebFrame() override {}
 

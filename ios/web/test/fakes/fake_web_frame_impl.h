@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_INTERNAL_H_
-#define IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_INTERNAL_H_
+#ifndef IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_IMPL_H_
+#define IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_IMPL_H_
 
+#include <map>
+#include <vector>
+
+#include "base/values.h"
 #include "ios/web/js_messaging/web_frame_internal.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 
@@ -12,18 +16,18 @@ namespace web {
 
 class JavaScriptContentWorld;
 
-class FakeWebFrameInternal : public FakeWebFrame, public WebFrameInternal {
+class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
  public:
-  FakeWebFrameInternal(const std::string& frame_id,
-                       bool is_main_frame,
-                       GURL security_origin);
+  FakeWebFrameImpl(const std::string& frame_id,
+                   bool is_main_frame,
+                   GURL security_origin);
 
   // Returns the JavaScriptContentWorld parameter value received in the last
   // call to |CallJavaScriptFunctionInContentWorld|.
   JavaScriptContentWorld* last_received_content_world();
 
   // WebFrame:
-  // NOTE: These WebFrame overrides simply call the FakeWebFrame implementation.
+  WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
@@ -37,6 +41,17 @@ class FakeWebFrameInternal : public FakeWebFrame, public WebFrameInternal {
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
+
+  // FakeWebFrame:
+  std::string GetLastJavaScriptCall() const override;
+  const std::vector<std::string>& GetJavaScriptCallHistory() override;
+  void set_browser_state(BrowserState* browser_state) override;
+  void AddJsResultForFunctionCall(base::Value* js_result,
+                                  const std::string& function_name) override;
+  void set_force_timeout(bool force_timeout) override;
+  void set_can_call_function(bool can_call_function) override;
+  void set_call_java_script_function_callback(
+      base::RepeatingClosure callback) override;
 
   // WebFrameInternal:
   // If |CanCallJavaScriptFunction()| is true, the JavaScript call which would
@@ -60,28 +75,34 @@ class FakeWebFrameInternal : public FakeWebFrame, public WebFrameInternal {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
 
-  ~FakeWebFrameInternal() override;
+  ~FakeWebFrameImpl() override;
 
  private:
+  // Map holding values to be passed in CallJavaScriptFunction() callback. Keyed
+  // by JavaScript function |name| expected to be passed into
+  // CallJavaScriptFunction().
+  std::map<std::string, base::Value*> result_map_;
+  // The frame identifier which uniquely identifies this frame across the
+  // application's lifetime.
+  std::string frame_id_;
+  // Whether or not the receiver represents the main frame.
+  bool is_main_frame_ = false;
+  // The security origin associated with this frame.
+  GURL security_origin_;
+  // Vector holding history of all javascript handler calls made in this frame.
+  // The calls are sorted with the most recent appended at the end.
+  std::vector<std::string> java_script_calls_;
+  // The return value of CanCallJavaScriptFunction().
+  bool can_call_function_ = true;
+  // When set to true, will force calls to CallJavaScriptFunction to fail with
+  // timeout.
+  bool force_timeout_ = false;
+  BrowserState* browser_state_;
+
   JavaScriptContentWorld* last_received_content_world_;
-};
-
-// A fake web frame representing the main frame with a |frame_id_| of
-// |kMainFakeFrameId|.
-class FakeMainWebFrameInternal : public FakeWebFrameInternal {
- public:
-  explicit FakeMainWebFrameInternal(GURL security_origin);
-  ~FakeMainWebFrameInternal() override;
-};
-
-// A fake web frame representing a child frame with a |frame_id_| of
-// |kChildFakeFrameId|.
-class FakeChildWebFrameInternal : public FakeWebFrameInternal {
- public:
-  explicit FakeChildWebFrameInternal(GURL security_origin);
-  ~FakeChildWebFrameInternal() override;
+  base::RepeatingClosure call_java_script_function_callback_;
 };
 
 }  // namespace web
 
-#endif  // IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_INTERNAL_H_
+#endif  // IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_IMPL_H_

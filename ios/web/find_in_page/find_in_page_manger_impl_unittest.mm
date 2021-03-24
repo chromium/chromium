@@ -14,10 +14,10 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
-#include "ios/web/test/fakes/fake_web_frame_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -57,9 +57,9 @@ class FindInPageManagerImplTest : public WebTest {
 
   // Returns a fake WebFrame that represents the main frame which will return
   // |js_result| for the JavaScript function call "findInString.findString".
-  std::unique_ptr<FakeWebFrameInternal> CreateMainWebFrameWithJsResultForFind(
+  std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
       base::Value* js_result) {
-    auto frame = std::make_unique<FakeMainWebFrameInternal>(GURL());
+    auto frame = FakeWebFrame::CreateMainWebFrame(GURL());
     frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
     frame->set_browser_state(GetBrowserState());
     return frame;
@@ -67,9 +67,9 @@ class FindInPageManagerImplTest : public WebTest {
 
   // Returns a fake WebFrame that represents a child frame which will return
   // |js_result| for the JavaScript function call "findInString.findString".
-  std::unique_ptr<FakeWebFrameInternal> CreateChildWebFrameWithJsResultForFind(
+  std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
       base::Value* js_result) {
-    auto frame = std::make_unique<FakeChildWebFrameInternal>(GURL());
+    auto frame = FakeWebFrame::CreateChildWebFrame(GURL());
     frame->AddJsResultForFunctionCall(js_result, kFindInPageSearch);
     frame->set_browser_state(GetBrowserState());
     return frame;

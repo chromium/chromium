@@ -202,8 +202,9 @@ TEST_F(SharedPasswordControllerTest, FormHelperSetsUpUniqueIDsForNewFrame) {
       setUpForUniqueIDsWithInitialState:1
                                 inFrame:static_cast<web::WebFrame*>(
                                             [OCMArg anyPointer])];
-  web::FakeWebFrame web_frame("dummy-frame-id", /*is_main_frame=*/true, GURL());
-  web_state_.OnWebFrameDidBecomeAvailable(&web_frame);
+  auto web_frame = web::FakeWebFrame::Create("dummy-frame-id",
+                                             /*is_main_frame=*/true, GURL());
+  web_state_.OnWebFrameDidBecomeAvailable(web_frame.get());
 }
 
 // Tests that suggestions are reported as unavailable for nonpassword forms.
@@ -456,11 +457,12 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
   params.type = "focus";
   params.input_missing = false;
 
-  web::FakeWebFrame web_frame("frame-id", /*is_main_frame=*/true, GURL());
+  auto web_frame =
+      web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true, GURL());
 
   [controller_ webState:&web_state_
       didRegisterFormActivity:params
-                      inFrame:&web_frame];
+                      inFrame:web_frame.get()];
 
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
@@ -487,11 +489,12 @@ TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
   params.type = "focus";
   params.input_missing = true;
 
-  web::FakeWebFrame web_frame("frame-id", /*is_main_frame=*/true, GURL());
+  auto web_frame =
+      web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true, GURL());
 
   [controller_ webState:&web_state_
       didRegisterFormActivity:params
-                      inFrame:&web_frame];
+                      inFrame:web_frame.get()];
 
   [[delegate_ reject] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]

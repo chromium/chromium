@@ -61,7 +61,6 @@ source_set("fakes") {
     "fake_navigation_manager.mm",
     "fake_web_client.h",
     "fake_web_client.mm",
-    "fake_web_frame.cc",
     "fake_web_frame.h",
     "fake_web_frames_manager.h",
     "fake_web_frames_manager.mm",

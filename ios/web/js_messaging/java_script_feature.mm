@@ -11,7 +11,8 @@
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/js_messaging/web_frame_impl.h"
+#include "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -163,9 +164,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
 
-  WebFrameInternal* web_frame_content_world_api =
-      static_cast<WebFrameInternal*>(web_frame);
-  return web_frame_content_world_api->CallJavaScriptFunctionInContentWorld(
+  return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world);
 }
 
@@ -184,9 +183,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
 
-  WebFrameInternal* web_frame_content_world_api =
-      static_cast<WebFrameInternal*>(web_frame);
-  return web_frame_content_world_api->CallJavaScriptFunctionInContentWorld(
+  return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);
 }
 

@@ -51,28 +51,6 @@ using base::test::ios::WaitUntilCondition;
 - (void)updateFieldManagerWithFillingResults:(NSString*)jsonString;
 @end
 
-// Subclass of web::FakeWebFrame that allow to set a callback before any
-// JavaScript call. This callback can be used to check the state of the page.
-class FakeWebFrameCallback : public web::FakeWebFrame {
- public:
-  FakeWebFrameCallback(const std::string& frame_id,
-                       bool is_main_frame,
-                       GURL security_origin,
-                       std::function<void()> callback)
-      : web::FakeWebFrame(frame_id, is_main_frame, security_origin),
-        callback_(callback) {}
-
-  bool CallJavaScriptFunction(
-      const std::string& name,
-      const std::vector<base::Value>& parameters) override {
-    callback_();
-    return web::FakeWebFrame::CallJavaScriptFunction(name, parameters);
-  }
-
- private:
-  std::function<void()> callback_;
-};
-
 // Test fixture for AutofillAgent testing.
 class AutofillAgentTests : public PlatformTest {
  public:
@@ -101,7 +79,7 @@ class AutofillAgentTests : public PlatformTest {
     fake_web_state_.SetWebFramesManager(std::move(frames_manager));
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);
-    auto main_frame = std::make_unique<web::FakeWebFrame>("frameID", true, url);
+    auto main_frame = web::FakeWebFrame::Create("frameID", true, url);
     fake_main_frame_ = main_frame.get();
     AddWebFrame(std::move(main_frame));
 
@@ -521,19 +499,18 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
 
   // Both frames available, then page loaded.
   fake_web_state_.SetLoading(true);
-  auto main_frame_unique =
-      std::make_unique<web::FakeWebFrame>("main", true, GURL());
+  auto main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
   web::FakeWebFrame* main_frame = main_frame_unique.get();
   AddWebFrame(std::move(main_frame_unique));
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
                                                            main_frame);
   EXPECT_TRUE(main_frame_driver->IsInMainFrame());
-  auto iframe_unique = std::make_unique<FakeWebFrameCallback>(
-      "iframe", false, GURL(), [main_frame_driver]() {
-        EXPECT_TRUE(main_frame_driver->is_processed());
-      });
-  FakeWebFrameCallback* iframe = iframe_unique.get();
+  auto iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
+    EXPECT_TRUE(main_frame_driver->is_processed());
+  }));
+  web::FakeWebFrame* iframe = iframe_unique.get();
   AddWebFrame(std::move(iframe_unique));
   autofill::AutofillDriverIOS* iframe_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
@@ -549,14 +526,14 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Main frame available, then page loaded, then iframe available
-  main_frame_unique = std::make_unique<web::FakeWebFrame>("main", true, GURL());
+  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = std::make_unique<FakeWebFrameCallback>(
-      "iframe", false, GURL(), [main_frame_driver]() {
-        EXPECT_TRUE(main_frame_driver->is_processed());
-      });
+  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
+    EXPECT_TRUE(main_frame_driver->is_processed());
+  }));
   iframe = iframe_unique.get();
   iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, iframe);
@@ -575,14 +552,14 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Page loaded, then main frame, then iframe
-  main_frame_unique = std::make_unique<web::FakeWebFrame>("main", true, GURL());
+  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = std::make_unique<FakeWebFrameCallback>(
-      "iframe", false, GURL(), [main_frame_driver]() {
-        EXPECT_TRUE(main_frame_driver->is_processed());
-      });
+  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
+    EXPECT_TRUE(main_frame_driver->is_processed());
+  }));
   iframe = iframe_unique.get();
   iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, iframe);
@@ -601,14 +578,14 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Page loaded, then iframe, then main frame
-  main_frame_unique = std::make_unique<web::FakeWebFrame>("main", true, GURL());
+  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = std::make_unique<FakeWebFrameCallback>(
-      "iframe", false, GURL(), [main_frame_driver]() {
-        EXPECT_TRUE(main_frame_driver->is_processed());
-      });
+  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
+    EXPECT_TRUE(main_frame_driver->is_processed());
+  }));
   iframe = iframe_unique.get();
   iframe_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, iframe);

@@ -68,7 +68,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     });
   }
 
-  // Returns WebFramesManager instance.
+  // Returns all web frames for |web_state()|.
   std::set<WebFrameImpl*> all_web_frames() {
     std::set<WebFrameImpl*> frames;
     for (WebFrame* frame :
@@ -78,9 +78,10 @@ class FindInPageJsTest : public WebTestWithWebState {
     return frames;
   }
   // Returns main frame for |web_state_|.
-  WebFrameImpl* main_web_frame() {
-    return static_cast<WebFrameImpl*>(
-        web_state()->GetWebFramesManager()->GetMainWebFrame());
+  WebFrameInternal* main_web_frame() {
+    WebFrame* main_frame =
+        web_state()->GetWebFramesManager()->GetMainWebFrame();
+    return main_frame->GetWebFrameInternal();
   }
 
   JavaScriptContentWorld* content_world_;
@@ -153,12 +154,12 @@ TEST_F(FindInPageJsTest, FindIFrameText) {
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
   std::set<WebFrameImpl*> all_frames = all_web_frames();
   __block bool message_received = false;
-  WebFrameImpl* child_frame = nullptr;
+  WebFrameInternal* child_frame = nullptr;
   for (auto* frame : all_frames) {
     if (frame->IsMainFrame()) {
       continue;
     }
-    child_frame = frame;
+    child_frame = frame->GetWebFrameInternal();
   }
   ASSERT_TRUE(child_frame);
   std::vector<base::Value> params;

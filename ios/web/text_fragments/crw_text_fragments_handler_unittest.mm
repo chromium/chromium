@@ -447,8 +447,8 @@ TEST_F(CRWTextFragmentsHandlerTest,
 
   web::WebState::ScriptCommandCallback parse_function =
       web_state_->last_callback();
-  web::FakeWebFrame fake_main_frame(/*frame_id=*/"", /*is_main_frame=*/true,
-                                    GURL());
+  auto fake_main_frame = web::FakeWebFrame::Create(
+      /*frame_id=*/"", /*is_main_frame=*/true, GURL());
 
   // 100% rate case.
   {
@@ -461,7 +461,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
     js_response.SetDoublePath("result.successCount", 2);
 
     parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, &fake_main_frame);
+                       /*interacted=*/true, fake_main_frame.get());
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 0,
                                         1);
@@ -482,7 +482,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
     js_response.SetDoublePath("result.successCount", 3);
 
     parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, &fake_main_frame);
+                       /*interacted=*/true, fake_main_frame.get());
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
@@ -503,7 +503,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
     js_response.SetDoublePath("result.successCount", 0);
 
     parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, &fake_main_frame);
+                       /*interacted=*/true, fake_main_frame.get());
 
     histogram_tester.ExpectUniqueSample("TextFragmentAnchor.AmbiguousMatch", 1,
                                         1);
@@ -524,7 +524,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
     js_response.SetDoublePath("result.successCount", 4);
 
     parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, &fake_main_frame);
+                       /*interacted=*/true, fake_main_frame.get());
 
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);
@@ -543,7 +543,7 @@ TEST_F(CRWTextFragmentsHandlerTest,
     js_response.SetDoublePath("result.successCount", 4);
 
     parse_function.Run(js_response, GURL("https://text.com"),
-                       /*interacted=*/true, &fake_main_frame);
+                       /*interacted=*/true, fake_main_frame.get());
 
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.AmbiguousMatch", 0);
     histogram_tester.ExpectTotalCount("TextFragmentAnchor.MatchRate", 0);

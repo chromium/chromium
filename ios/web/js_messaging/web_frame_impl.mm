@@ -80,6 +80,10 @@ WebFrameImpl::~WebFrameImpl() {
   DetachFromWebState();
 }
 
+WebFrameInternal* WebFrameImpl::GetWebFrameInternal() {
+  return this;
+}
+
 void WebFrameImpl::SetEncryptionKey(
     std::unique_ptr<crypto::SymmetricKey> frame_key) {
   frame_key_ = std::move(frame_key);
