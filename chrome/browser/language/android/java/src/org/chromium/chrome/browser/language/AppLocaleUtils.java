@@ -8,16 +8,9 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.google.android.play.core.splitinstall.SplitInstallManager;
-import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
-import com.google.android.play.core.splitinstall.SplitInstallRequest;
-
 import org.chromium.base.BundleUtils;
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-
-import java.util.Locale;
 
 /**
  * Provides utility functions to assist with overriding the application language.
@@ -25,8 +18,6 @@ import java.util.Locale;
  */
 public class AppLocaleUtils {
     private AppLocaleUtils(){};
-
-    private static final String TAG = "AppLocale";
 
     // Value of AppLocale preference when the system language is used.
     public static final String SYSTEM_LANGUAGE_VALUE = null;
@@ -63,31 +54,30 @@ public class AppLocaleUtils {
     }
 
     /**
-     * Set the value of application language shared preference. If set to null
-     * the system language will be used.
+     * Set the application language shared preference and download the language split if needed. If
+     * set to null the system language will be used.
+     * @param languageName String BCP-47 code of language to download.
      */
     public static void setAppLanguagePref(String languageName) {
-        SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
-        if (BundleUtils.isBundle()) {
-            ensureLanguageSplitInstalled(languageName);
-        }
+        setAppLanguagePref(languageName, success -> {});
     }
 
     /**
-     * For bundle builds ensure that the language split for languageName is downloaded.
+     * Set the application language shared preference and download the language split using the
+     * provided listener for callbacks. If called from an APK build where no bundle needs to be
+     * downloaded the listener's on complete function is immediately called, triggering the success
+     * UI. If languageName is null the system language will be used.
+     * @param languageName String BCP-47 code of language to download.
+     * @param listener LanguageSplitInstaller.InstallListener to use for callbacks.
      */
-    private static void ensureLanguageSplitInstalled(String languageName) {
-        SplitInstallManager splitInstallManager =
-                SplitInstallManagerFactory.create(ContextUtils.getApplicationContext());
-
-        // TODO(perrier): check if languageName is already installed. https://crbug.com/1103806
-        if (!TextUtils.equals(languageName, SYSTEM_LANGUAGE_VALUE)) {
-            SplitInstallRequest installRequest =
-                    SplitInstallRequest.newBuilder()
-                            .addLanguage(Locale.forLanguageTag(languageName))
-                            .build();
-            splitInstallManager.startInstall(installRequest);
+    public static void setAppLanguagePref(
+            String languageName, LanguageSplitInstaller.InstallListener listener) {
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
+        if (BundleUtils.isBundle() && !TextUtils.equals(languageName, SYSTEM_LANGUAGE_VALUE)) {
+            LanguageSplitInstaller.getInstance().installLanguage(languageName, listener);
+        } else {
+            listener.onComplete(true);
         }
     }
 }

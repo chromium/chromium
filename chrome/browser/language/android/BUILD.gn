@@ -9,6 +9,7 @@ android_library("base_module_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLocaleUtils.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleController.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageSplitInstaller.java",
   ]
   deps = [
     "//base:base_java",

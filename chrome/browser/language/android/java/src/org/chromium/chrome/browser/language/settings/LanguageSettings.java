@@ -15,8 +15,10 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.LanguageSplitInstaller;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -57,6 +59,8 @@ public class LanguageSettings extends PreferenceFragmentCompat
     static final String TRANSLATION_ADVANCED_SECTION = "translation_advanced_settings_section";
     static final String TARGET_LANGUAGE_KEY = "translate_settings_target_language";
     static final String ALWAYS_LANGUAGES_KEY = "translate_settings_always_languages";
+
+    private static final String TAG = "LanguageSettings";
 
     // SettingsLauncher injected from main Settings Activity.
     private SettingsLauncher mSettingsLauncher;
@@ -112,6 +116,11 @@ public class LanguageSettings extends PreferenceFragmentCompat
      * translate target language, and detailed translate preferences.
      */
     private void createDetailedPreferences(Bundle savedInstanceState, String rootKey) {
+        // Log currently installed language splits.
+        String installedLanguages =
+                TextUtils.join(",", LanguageSplitInstaller.getInstance().getInstalledLanguages());
+        Log.i(TAG, TextUtils.concat("Installed Languages: ", installedLanguages).toString());
+
         SettingsUtils.addPreferencesFromResource(this, R.xml.languages_detailed_preferences);
 
         setupAppLanguageSection();
@@ -130,8 +139,8 @@ public class LanguageSettings extends PreferenceFragmentCompat
         // Set title to include current app name.
         PreferenceCategory mAppLanguageTitle =
                 (PreferenceCategory) findPreference(APP_LANGUAGE_SECTION_KEY);
-        String mAppName = BuildInfo.getInstance().hostPackageLabel;
-        mAppLanguageTitle.setTitle(getResources().getString(R.string.app_language_title, mAppName));
+        String appName = BuildInfo.getInstance().hostPackageLabel;
+        mAppLanguageTitle.setTitle(getResources().getString(R.string.app_language_title, appName));
 
         LanguageItemPickerPreference appLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
@@ -207,23 +216,18 @@ public class LanguageSettings extends PreferenceFragmentCompat
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
         if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
             LanguagesManager.getInstance().addToAcceptLanguages(code);
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_ADDED);
         } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE
                 && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
-            LanguageItemPickerPreference appLanguagePreference =
-                    (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
-            appLanguagePreference.setLanguageItem(code);
-            AppLocaleUtils.setAppLanguagePref(code);
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
+            startLanguageSplitDownload(code);
         } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE
                 && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
             LanguageItemPickerPreference targetLanguagePreference =
                     (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
             targetLanguagePreference.setLanguageItem(code);
@@ -271,6 +275,70 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 return true;
             }
         });
+    }
+
+    /**
+     * Start the download and installation of a language split for the BCP-47 formatted language
+     * |code| and register a listener when the installation is complete or has failed. The App
+     * Language preference is disabled while the download is occurring to prevent simultaneous
+     * language downloads.
+     * @param code String language code to be downloaded and installed.
+     */
+    private void startLanguageSplitDownload(String code) {
+        LanguageItemPickerPreference appLanguagePreference =
+                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
+
+        // Set language text and initial downloading summary.
+        appLanguagePreference.setLanguageItem(code);
+        CharSequence nativeName = appLanguagePreference.getLanguageItem().getNativeDisplayName();
+        CharSequence downloadingMessage =
+                getActivity().getResources().getString(R.string.languages_split_downloading);
+        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadingMessage);
+        appLanguagePreference.setSummary(summary);
+
+        // Disable preference so a second downloaded cannot be started while one is in progress.
+        appLanguagePreference.setEnabled(false);
+
+        AppLocaleUtils.setAppLanguagePref(code, (success) -> {
+            if (success) {
+                languageSplitDownloadComplete();
+            } else {
+                languageSplitDownloadFailed();
+            }
+        });
+    }
+
+    /**
+     * Callback to update the UI when a language split has successfully been installed.
+     */
+    private void languageSplitDownloadComplete() {
+        LanguageItemPickerPreference appLanguagePreference =
+                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
+        CharSequence nativeName = appLanguagePreference.getLanguageItem().getNativeDisplayName();
+        CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
+        CharSequence downloadReadyMessage =
+                getActivity().getResources().getString(R.string.languages_split_ready, appName);
+        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadReadyMessage);
+        appLanguagePreference.setSummary(summary);
+        appLanguagePreference.setEnabled(true);
+    }
+
+    /**
+     * Callback to update the UI when a language split installation has failed.
+     */
+    private void languageSplitDownloadFailed() {
+        LanguageItemPickerPreference appLanguagePreference =
+                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
+        LanguageItem appLanguageItem = appLanguagePreference.getLanguageItem();
+        CharSequence nativeName = appLanguageItem.getNativeDisplayName();
+        CharSequence downloadFailedMessage = getActivity().getResources().getString(
+                R.string.download_failed_reason_unknown_error, "");
+        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadFailedMessage);
+        appLanguagePreference.setSummary(summary);
+        appLanguagePreference.setEnabled(true);
+
+        // Start a deferred install of the language split on failure.
+        LanguageSplitInstaller.getInstance().deferredLanguageInstall(appLanguageItem.getCode());
     }
 
     /**
