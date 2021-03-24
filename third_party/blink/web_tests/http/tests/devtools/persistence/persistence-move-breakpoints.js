@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that breakpoints are moved appropriately\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 

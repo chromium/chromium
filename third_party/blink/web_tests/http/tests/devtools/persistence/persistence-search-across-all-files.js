@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that search across all files omits filesystem uiSourceCodes with binding to network.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.loadLegacyModule('search');
   await TestRunner.addScriptTag('resources/foo.js');
 

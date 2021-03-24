@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verify that persistence does not overwrite CSS files when CSS model reports error on getStyleSheetText.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadHTML(`
       <style>

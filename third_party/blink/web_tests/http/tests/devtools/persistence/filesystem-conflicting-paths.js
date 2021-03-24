@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that uiSourceCode.delete actually deltes file from IsolatedFileSystem.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var fs1 = new BindingsTestRunner.TestFileSystem('file:///var/www');
   var file1 = fs1.addFile('foo.js', 'foo.js', 0);

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that UISourceCodes are removed as iframes are getting detached.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   TestRunner.markStep('initialWorkspace');
   var snapshot = BindingsTestRunner.dumpWorkspace();

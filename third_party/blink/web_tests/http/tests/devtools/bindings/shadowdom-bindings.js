@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verify that UISourceCodes are added and removed as shadow dom styles and scripts are added and removed.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.loadHTML(`
     <template id='template'>
     <style>div {

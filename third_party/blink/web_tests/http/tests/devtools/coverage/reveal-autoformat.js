@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the CSS highlight in sources after the Pretty print formatting.\n`);
-  await TestRunner.loadModule('coverage_test_runner');
+  await TestRunner.loadModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
   await TestRunner.loadHTML(`
       <p id="id">PASS</p>
     `);

@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Verify that messages are synced in UISourceCodeFrame between UISourceCodes of persistence binding.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 

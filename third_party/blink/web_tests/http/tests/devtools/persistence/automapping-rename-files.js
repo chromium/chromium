@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that automapping is sane.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   // Disable default-running automapping so that it doesn't conflict
   // with AutomappingTest.

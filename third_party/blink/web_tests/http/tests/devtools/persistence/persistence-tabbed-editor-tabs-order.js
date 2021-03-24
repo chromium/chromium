@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Verify that tabbed editor doesn't shuffle tabs when bindings are dropped and then re-added during reload.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(TestRunner.url('resources/persistence-tabbed-editor-tab-order.html'));
 

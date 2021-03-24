@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Editing inline styles should play nice with inline scripts.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   await TestRunner.navigatePromise('./resources/inline-style.html');
   const uiSourceCode = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.projectTypes.Network);

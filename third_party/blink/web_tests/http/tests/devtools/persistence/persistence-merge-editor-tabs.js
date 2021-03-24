@@ -6,7 +6,7 @@
   'use strict';
   TestRunner.addResult(`Verify that tabs get merged when binding is added and removed.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 

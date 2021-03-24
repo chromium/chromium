@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that navigator view removes mapped UISourceCodes.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var filesNavigator = new Sources.FilesNavigatorView();
   filesNavigator.show(UI.inspectorView.element);

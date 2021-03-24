@@ -7,7 +7,7 @@
   TestRunner.addResult(
       `Verify that a network file tab gets substituted with filesystem tab when persistence binding comes.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo.js');
 

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that automapping is sane.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var timestamp = new Date('December 1, 1989');
   var index_html = {

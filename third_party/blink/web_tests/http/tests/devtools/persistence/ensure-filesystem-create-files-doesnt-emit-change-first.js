@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that fs.createFile is creating UISourceCode atomically with content`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var folderLocation = 'file:///var/test';
   await (new BindingsTestRunner.TestFileSystem(folderLocation)).reportCreatedPromise();

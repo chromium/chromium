@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
 
   function fileSystemUISourceCodes() {

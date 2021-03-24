@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Ensures that when a project is added with already existing files they bind.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   await TestRunner.navigatePromise('http://127.0.0.1:8000/devtools/network/resources/empty.html');
 
