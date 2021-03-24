@@ -7,6 +7,7 @@
   .container {
     align-items: center;
     color: var(--scanning-done-section-option-text-color);
+    cursor: pointer;
     display: flex;
     font-family: var(--scanning-done-section-option-font-family);
     font-size: var(--scanning-done-section-option-font-size);
@@ -20,6 +21,10 @@
     padding-inline-end: 16px;
   }
 
+  .container[hidden] {
+    display: none;
+  }
+
   #doneButtonContainer {
     display: flex;
     justify-content: flex-end;
@@ -28,6 +33,13 @@
     margin-inline-start: 32px;
     margin-top: 32px;
     padding-inline-end: 16px;
+  }
+
+  .button {
+    flex-direction: column;
+    height: 20px;
+    margin: 0;
+    width: 20px;
   }
 
   .label {
@@ -45,6 +57,15 @@
   <span id="fileSavedText" class="label"
       inner-h-t-m-l="[[fileSavedTextContent_]]">
   </span>
+</div>
+<div class="container" hidden="[[!showEditButton_]]"
+    on-click="openMediaApp_" >
+  <span id="editButtonLabel" class="label" aria-hidden="true">
+    [[i18n('editButtonLabel')]]
+  </span>
+  <cr-icon-button id="editButton" class="button"
+      iron-icon="cr:open-in-new" aria-labelledby="editButtonLabel">
+  </cr-icon-button>
 </div>
 <div id="doneButtonContainer">
   <cr-button id="doneButton" class="action-button"

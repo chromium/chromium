@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -36,10 +37,28 @@ Polymer({
     scannedFilePaths: Array,
 
     /** @type {string} */
+    selectedFileType: String,
+
+    /** @type {string} */
     selectedFolder: String,
 
     /** @private {string} */
     fileSavedTextContent_: String,
+
+    /** @private {boolean} */
+    scanAppMediaLinkEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('scanAppMediaLinkEnabled');
+      }
+    },
+
+    /** @private {boolean} */
+    showEditButton_: {
+      type: Boolean,
+      computed:
+          'computeShowEditButton_(scanAppMediaLinkEnabled_, selectedFileType)',
+    },
   },
 
   observers: ['setFileSavedTextContent_(numFilesSaved, selectedFolder)'],
@@ -127,5 +146,20 @@ Polymer({
     anchorTags[0].setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
 
     return tempEl.innerHTML;
+  },
+
+  /** @private */
+  computeShowEditButton_() {
+    return this.scanAppMediaLinkEnabled_ &&
+        this.selectedFileType !==
+        chromeos.scanning.mojom.FileType.kPdf.toString();
+  },
+
+  /** @private */
+  openMediaApp_() {
+    assert(this.scanAppMediaLinkEnabled_ && this.scannedFilePaths.length !== 0);
+
+    this.browserProxy_.openFilesInMediaApp(
+        this.scannedFilePaths.map(filePath => filePath.path));
   },
 });

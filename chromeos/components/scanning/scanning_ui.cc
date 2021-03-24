@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/components/scanning/scanning_app_delegate.h"
@@ -57,6 +59,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"colorOptionText", IDS_SCANNING_APP_COLOR_OPTION_TEXT},
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"doneButtonText", IDS_SCANNING_APP_DONE_BUTTON_TEXT},
+      {"editButtonLabel", IDS_SCANNING_APP_EDIT_BUTTON_LABEL},
       {"fileNotFoundToastText", IDS_SCANNING_APP_FILE_NOT_FOUND_TOAST_TEXT},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"fitToScanAreaOptionText",
@@ -111,6 +114,12 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
     handler->AddStringToPluralMap(str.name, str.id);
 }
 
+void AddFeatureFlags(content::WebUIDataSource* html_source) {
+  html_source->AddBoolean(
+      "scanAppMediaLinkEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink));
+}
+
 }  // namespace
 
 ScanningUI::ScanningUI(
@@ -135,6 +144,8 @@ ScanningUI::ScanningUI(
                                IDR_SCANNING_MOJO_LITE_JS);
   html_source->AddResourcePath("file_path.mojom-lite.js",
                                IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
+
+  AddFeatureFlags(html_source.get());
 
   AddScanningAppStrings(html_source.get());
 
