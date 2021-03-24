@@ -1414,8 +1414,8 @@
   },
   {
     "name": "enable-close-all-tabs-confirmation",
-    "owners": [ "ewannpv. gambard" ],
-    "expiry_milestone": 90
+    "owners": [ "ewannpv", "gambard" ],
+    "expiry_milestone": 94
   },
   {
     "name": "enable-close-tab-suggestions",
