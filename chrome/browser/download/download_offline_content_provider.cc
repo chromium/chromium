@@ -505,6 +505,8 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
     int64_t system_download_id) {
 #if defined(OS_ANDROID)
   DownloadItem* item = GetDownload(download_guid);
+  if (!item)
+    return;
   if (DownloadUtils::IsOmaDownloadDescription(item->GetMimeType())) {
     DownloadManagerService::GetInstance()->HandleOMADownload(
         item, system_download_id);
