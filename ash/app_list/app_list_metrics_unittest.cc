@@ -85,9 +85,6 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
 
     search_model_ = Shell::Get()->app_list_controller()->GetSearchModel();
 
-    app_list_test_model_ = static_cast<test::AppListTestModel*>(
-        Shell::Get()->app_list_controller()->GetModel());
-
     shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
   }
@@ -193,7 +190,11 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
 
   void PopulateAndLaunchAppInGrid() {
     // Populate apps in the root app grid.
-    app_list_test_model_->PopulateApps(4);
+    AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+    model->AddItem(std::make_unique<AppListItem>("item 0"));
+    model->AddItem(std::make_unique<AppListItem>("item 1"));
+    model->AddItem(std::make_unique<AppListItem>("item 2"));
+    model->AddItem(std::make_unique<AppListItem>("item 3"));
 
     AppListView::TestApi test_api(
         Shell::Get()->app_list_controller()->presenter()->GetView());
@@ -207,7 +208,6 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
 
  private:
   SearchModel* search_model_ = nullptr;
-  test::AppListTestModel* app_list_test_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListAppLaunchedMetricTest);

@@ -67,8 +67,7 @@ void AppListTestModel::AppListTestItem::SetPosition(
 
 // AppListTestModel
 
-AppListTestModel::AppListTestModel()
-    : activate_count_(0), last_activated_(nullptr) {}
+AppListTestModel::AppListTestModel() = default;
 
 AppListItem* AppListTestModel::AddItem(AppListItem* item) {
   return AppListModel::AddItem(base::WrapUnique(item));
@@ -89,18 +88,17 @@ std::string AppListTestModel::GetItemName(int id) {
 }
 
 void AppListTestModel::PopulateApps(int n) {
-  int start_index = static_cast<int>(top_level_item_list()->item_count());
-  for (int i = 0; i < n; ++i)
-    CreateAndAddItem(GetItemName(start_index + i));
+  for (int i = 0; i < n; ++i) {
+    CreateAndAddItem(GetItemName(naming_index_++));
+  }
 }
 
 AppListFolderItem* AppListTestModel::CreateAndPopulateFolderWithApps(int n) {
   DCHECK_GT(n, 1);
-  int start_index = static_cast<int>(top_level_item_list()->item_count());
-  AppListTestItem* item = CreateAndAddItem(GetItemName(start_index));
+  AppListTestItem* item = CreateAndAddItem(GetItemName(naming_index_++));
   std::string merged_item_id = item->id();
   for (int i = 1; i < n; ++i) {
-    AppListTestItem* new_item = CreateAndAddItem(GetItemName(start_index + i));
+    AppListTestItem* new_item = CreateAndAddItem(GetItemName(naming_index_++));
     merged_item_id = AppListModel::MergeItems(merged_item_id, new_item->id());
   }
   AppListItem* merged_item = FindItem(merged_item_id);
