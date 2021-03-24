@@ -32,16 +32,9 @@ class TestNavigationPredictor : public NavigationPredictor {
  public:
   TestNavigationPredictor(
       mojo::PendingReceiver<AnchorElementMetricsHost> receiver,
-      content::WebContents* web_contents,
-      bool init_feature_list)
+      content::WebContents* web_contents)
       : NavigationPredictor(web_contents),
-        receiver_(this, std::move(receiver)) {
-    if (init_feature_list) {
-      const std::vector<base::Feature> features = {
-          blink::features::kNavigationPredictor};
-      feature_list_.InitWithFeatures(features, {});
-    }
-  }
+        receiver_(this, std::move(receiver)) {}
 
   ~TestNavigationPredictor() override {}
 
@@ -69,8 +62,6 @@ class TestNavigationPredictor : public NavigationPredictor {
   // Maps from target URL to area rank of the anchor element.
   mutable std::map<GURL, int> area_rank_map_;
 
-  base::test::ScopedFeatureList feature_list_;
-
   // Used to bind Mojo interface
   mojo::Receiver<AnchorElementMetricsHost> receiver_;
 
@@ -82,11 +73,8 @@ class TestNavigationPredictorBasedOnScroll : public TestNavigationPredictor {
  public:
   TestNavigationPredictorBasedOnScroll(
       mojo::PendingReceiver<AnchorElementMetricsHost> receiver,
-      content::WebContents* web_contents,
-      bool init_feature_list)
-      : TestNavigationPredictor(std::move(receiver),
-                                web_contents,
-                                init_feature_list) {}
+      content::WebContents* web_contents)
+      : TestNavigationPredictor(std::move(receiver), web_contents) {}
 
   ~TestNavigationPredictorBasedOnScroll() override {}
 
@@ -136,10 +124,15 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void SetUp() override {
+    // To avoid tsan data race test flakes, this needs to happen before
+    // ChromeRenderViewHostTestHarness::SetUp causes tasks on other threads
+    // to check if a feature is enabled.
+    if (!field_trial_initiated_)
+      feature_list_.InitAndEnableFeature(blink::features::kNavigationPredictor);
+
     ChromeRenderViewHostTestHarness::SetUp();
     predictor_service_helper_ = std::make_unique<TestNavigationPredictor>(
-        predictor_service_.BindNewPipeAndPassReceiver(), web_contents(),
-        !field_trial_initiated_);
+        predictor_service_.BindNewPipeAndPassReceiver(), web_contents());
   }
 
   void SetupFieldTrial(base::Optional<int> prefetch_url_score_threshold,
@@ -160,7 +153,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
       params["prefetch_after_preconnect"] =
           prefetch_after_preconnect.value() ? "true" : "false";
     }
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
+    feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kNavigationPredictor, params);
   }
 
@@ -168,7 +161,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestNavigationPredictor> predictor_service_helper_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList feature_list_;
 
   bool field_trial_initiated_ = false;
 };
@@ -488,7 +481,7 @@ class NavigationPredictorSendUkmMetricsEnabledTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     predictor_service_helper_ = std::make_unique<TestNavigationPredictor>(
-        predictor_service_.BindNewPipeAndPassReceiver(), web_contents(), false);
+        predictor_service_.BindNewPipeAndPassReceiver(), web_contents());
   }
 
   struct TestMetrics {
@@ -723,8 +716,7 @@ class NavigationPredictorPrefetchAfterPreconnectEnabledTest
     ChromeRenderViewHostTestHarness::SetUp();
     predictor_service_helper_ =
         std::make_unique<TestNavigationPredictorBasedOnScroll>(
-            predictor_service_.BindNewPipeAndPassReceiver(), web_contents(),
-            false);
+            predictor_service_.BindNewPipeAndPassReceiver(), web_contents());
   }
 
   blink::mojom::AnchorElementMetricsPtr CreateMetricsPtrWithRatioDistance(
@@ -783,7 +775,7 @@ class NavigationPredictorPrefetchDisabledTest : public NavigationPredictorTest {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     predictor_service_helper_ = std::make_unique<TestNavigationPredictor>(
-        predictor_service_.BindNewPipeAndPassReceiver(), web_contents(), false);
+        predictor_service_.BindNewPipeAndPassReceiver(), web_contents());
   }
 };
 
@@ -866,7 +858,7 @@ class NavigationPredictorPreconnectPrefetchDisabledTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     predictor_service_helper_ = std::make_unique<TestNavigationPredictor>(
-        predictor_service_.BindNewPipeAndPassReceiver(), web_contents(), false);
+        predictor_service_.BindNewPipeAndPassReceiver(), web_contents());
   }
 };
 
