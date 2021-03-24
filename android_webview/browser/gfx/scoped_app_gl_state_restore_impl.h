@@ -22,8 +22,8 @@ class ScopedAppGLStateRestoreImpl : public ScopedAppGLStateRestore::Impl {
   ~ScopedAppGLStateRestoreImpl() override;
 
  protected:
-  void SaveHWUIState();
-  void RestoreHWUIState();
+  void SaveHWUIState(bool save_restore);
+  void RestoreHWUIState(bool save_restore);
 
   const ScopedAppGLStateRestore::CallMode mode_;
   const bool save_restore_;
