@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -127,6 +128,24 @@ GURL GetLaunchUrl(WebAppProvider& provider,
   return provider.os_integration_manager()
       .GetMatchingFileHandlerURL(params.app_id, params.launch_files)
       .value_or(app_url);
+}
+
+bool IsProtocolHandlerCommandLineArg(const base::CommandLine::StringType& arg) {
+#if defined(OS_WIN)
+  GURL url(base::WideToUTF16(arg));
+#else
+  GURL url(arg);
+#endif
+  return url.is_valid();
+}
+
+bool DoesCommandLineContainProtocolUrl(const base::CommandLine& command_line) {
+  for (const auto& arg : command_line.GetArgs()) {
+    if (IsProtocolHandlerCommandLineArg(arg)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -318,7 +337,9 @@ void WebAppLaunchManager::LaunchApplication(
       WindowOpenDisposition::NEW_WINDOW, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
+  if (!DoesCommandLineContainProtocolUrl(command_line)) {
+    params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
+  }
   params.url_handler_launch_url = url_handler_launch_url;
 
   if (base::FeatureList::IsEnabled(

@@ -558,7 +558,7 @@ std::string GetDesktopFileContentsForCommand(
     // Note: We only include this parameter if the application is actually able
     // to handle files, to prevent it showing up in the list of all applications
     // which can handle files.
-    modified_command_line.AppendArg("%F");
+    modified_command_line.AppendArg("%U");
   }
 
   // Set the "Exec" key.

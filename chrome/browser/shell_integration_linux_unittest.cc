@@ -429,7 +429,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Type=Application\n"
        "Name=Paint\n"
        "MimeType=image/png;image/jpg\n"
-       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %F\n"
+       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %U\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"},
