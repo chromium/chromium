@@ -1135,9 +1135,10 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
     builder.SetSmallTextRatio(mf.small_text_ratio);
 
   if (mf.viewport_initial_scale_x10 != -1) {
-    builder.SetViewportInitialScaleX10(
-        ukm::GetExponentialBucketMin(mf.viewport_initial_scale_x10, 1.2));
+    builder.SetViewportInitialScaleX10(internal::BucketWithOffsetAndUnit(
+        mf.viewport_initial_scale_x10, 10, 2));
   }
+
   if (mf.viewport_hardcoded_width != -1) {
     builder.SetViewportHardcodedWidth(internal::BucketWithOffsetAndUnit(
         mf.viewport_hardcoded_width, 500, 10));

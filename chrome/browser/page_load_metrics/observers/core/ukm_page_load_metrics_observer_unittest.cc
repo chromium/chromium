@@ -1066,10 +1066,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, MobileFriendliness) {
   blink::MobileFriendliness mobile_friendliness;
   mobile_friendliness.viewport_device_width = blink::mojom::ViewportStatus::kNo;
   mobile_friendliness.viewport_hardcoded_width = 533;
-  mobile_friendliness.viewport_initial_scale_x10 = 1;
+  mobile_friendliness.viewport_initial_scale_x10 = 10;
   mobile_friendliness.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
   const int expected_viewport_hardcoded_width = 520;
-  const double expected_viewport_initial_scale = 1;
+  const int expected_viewport_initial_scale = 10;
 
   tester()->SimulateMobileFriendlinessUpdate(mobile_friendliness);
 
