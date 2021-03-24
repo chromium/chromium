@@ -1859,21 +1859,6 @@
             ]
         }
     ],
-    "ContextualSearchLongpressResolve": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ContextualSearchLongpressResolve",
-                    "enable_features": [
-                        "ContextualSearchLongpressResolve"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualSearchTranslations": [
         {
             "platforms": [
@@ -1881,7 +1866,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Translations_20210224",
+                    "name": "Translations_20210322",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:translations_bubble_shown;comparator:<3;window:30;storage:180",
