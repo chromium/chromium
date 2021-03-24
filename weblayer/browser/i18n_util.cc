@@ -19,8 +19,8 @@
 
 namespace {
 
-base::CallbackList<void()>& GetLocaleChangeCallbacks() {
-  static base::NoDestructor<base::CallbackList<void()>> instance;
+base::RepeatingClosureList& GetLocaleChangeClosures() {
+  static base::NoDestructor<base::RepeatingClosureList> instance;
   return *instance;
 }
 
@@ -45,7 +45,7 @@ std::string GetAcceptLangs() {
 
 base::CallbackListSubscription RegisterLocaleChangeCallback(
     base::RepeatingClosure locale_changed) {
-  return GetLocaleChangeCallbacks().Add(locale_changed);
+  return GetLocaleChangeClosures().Add(locale_changed);
 }
 
 #if defined(OS_ANDROID)
@@ -58,7 +58,7 @@ static void JNI_LocaleChangedBroadcastReceiver_LocaleChanged(JNIEnv* env) {
         ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
             {} /*pref_locale*/);
       }),
-      base::BindOnce([]() { GetLocaleChangeCallbacks().Notify(); }));
+      base::BindOnce([]() { GetLocaleChangeClosures().Notify(); }));
   // TODO(estade): need to update the ResourceBundle for non-Browser processes
   // as well.
 }
