@@ -83,8 +83,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void LocationChanged(const LayoutObject*) = 0;
   virtual void ImageLoaded(const LayoutObject*) = 0;
 
+  // Remove AXObject backed by passed-in object, if there is one.
   virtual void Remove(AccessibleNode*) = 0;
-  virtual void Remove(LayoutObject*) = 0;
+  virtual bool Remove(LayoutObject*) = 0;  // Return true if AXObject removed.
   virtual void Remove(Node*) = 0;
   virtual void Remove(AbstractInlineTextBox*) = 0;
 
