@@ -4,21 +4,9 @@
 
 # Expectations for CompositeAfterPaint
 # See: https://docs.google.com/document/d/1QCM912Dr6u38DqyQqd7pxQxDy8FFOoWMMDq7uAXqKdA/view
-http/tests/devtools/tracing/* [ Skip ]
 
 virtual/composite-after-paint/* [ Skip ]
-
-virtual/layout_ng_block_frag/* [ Skip ]
-virtual/layout_ng_fragment_traversal/* [ Skip ]
-virtual/prefer_compositing_to_lcd_text/compositing/overflow/* [ Skip ]
 virtual/stable/* [ Skip ]
-
-# For now we track the failures of the base tests of the following virtual suites.
-virtual/exotic-color-space/images/* [ Skip ]
-virtual/gpu-rasterization/images/* [ Skip ]
-virtual/threaded/printing/* [ Skip ]
-virtual/threaded/http/tests/devtools/tracing/* [ Skip ]
-virtual/controls-refresh-hc/* [ Skip ]
 
 # They test Layer::ScrollsWithRespectTo() which is for pre-CompositeAfterPaint only.
 compositing/overflow/scrolls-with-respect-to-nested.html [ Skip ]
@@ -43,7 +31,7 @@ external/wpt/css/css-break/transform-002.html [ Pass ]
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 
-# Outline paints incorrectly with columns. Needs LayoutNGBlockFragment.
+# Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
 
 compositing/gestures/gesture-tapHighlight-composited-img.html [ Pass Failure ]
@@ -60,9 +48,19 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 crbug.com/1099379 compositing/squashing/squash-above-fixed-1.html [ Failure ]
 crbug.com/1099379 compositing/squashing/squash-above-fixed-3.html [ Failure ]
 
+# FragmentClip hierarchy issue. Will be fixed by LayoutNGBlockFragmentation.
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 
 # These tests expect fragment stitching when composited, which isn't correct rendering.
 crbug.com/1058792 fast/multicol/composited-layer-with-transform.html [ Skip ]
 crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ Skip ]
+
+# Needs to meet requirement of DevTools for trace events.
+crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
+crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+
+crbug.com/1191162 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/composited-under-clip-under-multicol.html [ Failure ]
+crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-clipped.html [ Failure ]
+crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-in-clipped.html [ Failure ]
