@@ -471,4 +471,24 @@ void GetPasswordManagerValue(
   }
 }
 
+ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
+                                        const UserData* user_data,
+                                        std::string* out_value) {
+  if (client_memory_key.empty()) {
+    return ClientStatus(INVALID_ACTION);
+  }
+  if (!user_data->has_additional_value(client_memory_key) ||
+      user_data->additional_value(client_memory_key)
+              ->strings()
+              .values()
+              .size() != 1) {
+    VLOG(1) << "Requested key '" << client_memory_key
+            << "' not available in client memory";
+    return ClientStatus(PRECONDITION_FAILED);
+  }
+  out_value->assign(
+      user_data->additional_value(client_memory_key)->strings().values(0));
+  return OkClientStatus();
+}
+
 }  // namespace autofill_assistant

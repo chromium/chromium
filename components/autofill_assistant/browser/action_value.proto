@@ -74,5 +74,6 @@ message TextValue {
     string text = 1;
     AutofillValue autofill_value = 2;
     PasswordManagerValue password_manager_value = 3;
+    string client_memory_key = 4;
   }
 }

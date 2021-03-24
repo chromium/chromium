@@ -100,6 +100,10 @@ void GetPasswordManagerValue(
     WebsiteLoginManager* website_login_manager,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
 
+ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
+                                        const UserData* user_data,
+                                        std::string* out_value);
+
 }  // namespace autofill_assistant
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_DATA_UTIL_H_

@@ -111,31 +111,18 @@ void SetFormFieldValueAction::InternalProcessAction(
         // Currently no check required.
         field_inputs_.emplace_back(/* value = */ keypress.text());
         break;
-      case SetFormFieldValueProto_KeyPress::kClientMemoryKey:
-        if (keypress.client_memory_key().empty()) {
-          VLOG(1) << "SetFormFieldValueAction: empty |client_memory_key|";
-          FailAction(ClientStatus(INVALID_ACTION), keypress_index);
+      case SetFormFieldValueProto_KeyPress::kClientMemoryKey: {
+        std::string value;
+        ClientStatus client_memory_status = GetClientMemoryStringValue(
+            keypress.client_memory_key(), delegate_->GetUserData(), &value);
+        if (!client_memory_status.ok()) {
+          VLOG(1) << "SetFormFieldValueAction: bad |client_memory_key|";
+          FailAction(client_memory_status, keypress_index);
           return;
         }
-        if (!delegate_->GetUserData()->has_additional_value(
-                keypress.client_memory_key()) ||
-            delegate_->GetUserData()
-                    ->additional_value(keypress.client_memory_key())
-                    ->strings()
-                    .values()
-                    .size() != 1) {
-          VLOG(1) << "SetFormFieldValueAction: requested key '"
-                  << keypress.client_memory_key()
-                  << "' not available in client memory";
-          FailAction(ClientStatus(PRECONDITION_FAILED), keypress_index);
-          return;
-        }
-        field_inputs_.emplace_back(
-            /* value = */ delegate_->GetUserData()
-                ->additional_value(keypress.client_memory_key())
-                ->strings()
-                .values(0));
+        field_inputs_.emplace_back(/* value = */ value);
         break;
+      }
       case SetFormFieldValueProto_KeyPress::kAutofillValue: {
         std::string value;
         ClientStatus autofill_status = GetFormattedAutofillValue(

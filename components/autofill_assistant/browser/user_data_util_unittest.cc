@@ -905,5 +905,35 @@ TEST_F(UserDataPasswordManagerValueTest, GetStoredPasswordFails) {
                      base::Unretained(this)));
 }
 
+TEST(UserDataUtilTest, ClientMemoryKey) {
+  UserData user_data;
+  ValueProto value_proto;
+  value_proto.mutable_strings()->add_values("Hello World");
+  user_data.additional_values_["key"] = value_proto;
+
+  std::string result;
+
+  EXPECT_TRUE(GetClientMemoryStringValue("key", &user_data, &result).ok());
+  EXPECT_EQ(result, "Hello World");
+}
+
+TEST(UserDataUtilTest, EmptyClientMemoryKey) {
+  UserData user_data;
+  std::string result;
+
+  EXPECT_EQ(INVALID_ACTION,
+            GetClientMemoryStringValue(std::string(), &user_data, &result)
+                .proto_status());
+}
+
+TEST(UserDataUtilTest, NonExistingClientMemoryKey) {
+  UserData user_data;
+  std::string result;
+
+  EXPECT_EQ(
+      PRECONDITION_FAILED,
+      GetClientMemoryStringValue("key", &user_data, &result).proto_status());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

@@ -377,6 +377,28 @@ TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
                                       base::Unretained(this)));
 }
 
+TEST_F(ActionDelegateUtilTest, PerformWithClientMemoryKey) {
+  auto element = std::make_unique<ElementFinder::Result>();
+
+  ValueProto value_proto;
+  value_proto.mutable_strings()->add_values("Hello World");
+  user_data_.additional_values_["key"] = value_proto;
+
+  EXPECT_CALL(*this, MockValueAction("Hello World", _, _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(*this, MockDone(EqualsStatus(OkClientStatus())));
+
+  TextValue text_value;
+  text_value.set_client_memory_key("key");
+
+  PerformWithTextValue(&mock_action_delegate_, text_value,
+                       base::BindOnce(&ActionDelegateUtilTest::MockValueAction,
+                                      base::Unretained(this)),
+                       *element,
+                       base::BindOnce(&ActionDelegateUtilTest::MockDone,
+                                      base::Unretained(this)));
+}
+
 }  // namespace
 }  // namespace action_delegate_util
 }  // namespace autofill_assistant

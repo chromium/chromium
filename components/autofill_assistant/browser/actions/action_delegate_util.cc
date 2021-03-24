@@ -211,6 +211,15 @@ void PerformWithTextValue(
                          element, std::move(done)));
       return;
     }
+    case TextValue::kClientMemoryKey: {
+      ClientStatus client_memory_status = GetClientMemoryStringValue(
+          text_value.client_memory_key(), delegate->GetUserData(), &value);
+      if (!client_memory_status.ok()) {
+        std::move(done).Run(client_memory_status);
+        return;
+      }
+      break;
+    }
     case TextValue::VALUE_NOT_SET:
       std::move(done).Run(ClientStatus(INVALID_ACTION));
       return;
