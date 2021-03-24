@@ -6,8 +6,12 @@ source_set("ad_metrics") {
   sources = [
     "ads_page_load_metrics_observer.cc",
     "ads_page_load_metrics_observer.h",
-    "frame_data.cc",
-    "frame_data.h",
+    "aggregate_frame_data.cc",
+    "aggregate_frame_data.h",
+    "frame_data_utils.cc",
+    "frame_data_utils.h",
+    "frame_tree_data.cc",
+    "frame_tree_data.h",
     "page_ad_density_tracker.cc",
     "page_ad_density_tracker.h",
   ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_load_metrics/browser/observers/ad_metrics/frame_data.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 
 #include <algorithm>
 #include <limits>
@@ -12,13 +12,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/frame_data_utils.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/mime_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -35,93 +35,6 @@ const base::FeatureParam<int> kHeavyAdUnloadPolicyParam = {
 }  // namespace
 
 namespace ad_metrics {
-
-ResourceLoadAggregator::ResourceLoadAggregator() = default;
-ResourceLoadAggregator::~ResourceLoadAggregator() = default;
-
-// static
-ResourceMimeType ResourceLoadAggregator::GetResourceMimeType(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
-  if (blink::IsSupportedImageMimeType(resource->mime_type))
-    return ResourceMimeType::kImage;
-  if (blink::IsSupportedJavascriptMimeType(resource->mime_type))
-    return ResourceMimeType::kJavascript;
-
-  std::string top_level_type;
-  std::string subtype;
-  // Categorize invalid mime types as "Other".
-  if (!net::ParseMimeTypeWithoutParameter(resource->mime_type, &top_level_type,
-                                          &subtype)) {
-    return ResourceMimeType::kOther;
-  }
-  if (top_level_type.compare("video") == 0)
-    return ResourceMimeType::kVideo;
-  if (top_level_type.compare("text") == 0 && subtype.compare("css") == 0)
-    return ResourceMimeType::kCss;
-  if (top_level_type.compare("text") == 0 && subtype.compare("html") == 0)
-    return ResourceMimeType::kHtml;
-  return ResourceMimeType::kOther;
-}
-
-void ResourceLoadAggregator::ProcessResourceLoad(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource) {
-  bytes_ += resource->delta_bytes;
-  network_bytes_ += resource->delta_bytes;
-
-  // Report cached resource body bytes to overall frame bytes.
-  if (resource->is_complete &&
-      resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached) {
-    bytes_ += resource->encoded_body_length;
-  }
-
-  if (resource->reported_as_ad_resource) {
-    ad_network_bytes_ += resource->delta_bytes;
-    ad_bytes_ += resource->delta_bytes;
-    // Report cached resource body bytes to overall frame bytes.
-    if (resource->is_complete &&
-        resource->cache_type != page_load_metrics::mojom::CacheType::kNotCached)
-      ad_bytes_ += resource->encoded_body_length;
-
-    ResourceMimeType mime_type = GetResourceMimeType(resource);
-    ad_bytes_by_mime_[static_cast<size_t>(mime_type)] += resource->delta_bytes;
-  }
-}
-
-void ResourceLoadAggregator::AdjustAdBytes(int64_t unaccounted_ad_bytes,
-                                           ResourceMimeType mime_type) {
-  ad_network_bytes_ += unaccounted_ad_bytes;
-  ad_bytes_ += unaccounted_ad_bytes;
-  ad_bytes_by_mime_[static_cast<size_t>(mime_type)] += unaccounted_ad_bytes;
-}
-
-PeakCpuAggregator::PeakCpuAggregator() = default;
-PeakCpuAggregator::~PeakCpuAggregator() = default;
-
-// static
-constexpr base::TimeDelta PeakCpuAggregator::kWindowSize;
-
-void PeakCpuAggregator::UpdatePeakWindowedPercent(
-    base::TimeDelta cpu_usage_update,
-    base::TimeTicks update_time) {
-  current_window_total_ += cpu_usage_update;
-  current_window_updates_.push(CpuUpdateData(update_time, cpu_usage_update));
-  base::TimeTicks cutoff_time = update_time - kWindowSize;
-  while (!current_window_updates_.empty() &&
-         current_window_updates_.front().update_time < cutoff_time) {
-    current_window_total_ -= current_window_updates_.front().usage_info;
-    current_window_updates_.pop();
-  }
-  int current_windowed_percent = 100 * current_window_total_.InMilliseconds() /
-                                 kWindowSize.InMilliseconds();
-  if (current_windowed_percent > peak_windowed_percent_)
-    peak_windowed_percent_ = current_windowed_percent;
-}
-
-void MemoryUsageAggregator::UpdateUsage(int64_t delta_bytes) {
-  current_bytes_used_ += delta_bytes;
-  if (current_bytes_used_ > max_bytes_used_)
-    max_bytes_used_ = current_bytes_used_;
-}
 
 FrameTreeData::FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
                              int heavy_ad_network_threshold_noise)
@@ -396,37 +309,6 @@ HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
   }
 
   return HeavyAdAction::kUnload;
-}
-
-AggregateFrameData::AggregateFrameData() = default;
-AggregateFrameData::~AggregateFrameData() = default;
-
-void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
-                                        base::TimeDelta update,
-                                        bool is_ad) {
-  // Update the overall usage for all of the relevant buckets.
-  cpu_usage_ += update;
-
-  // Update the peak usage.
-  total_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
-  if (!is_ad)
-    non_ad_peak_cpu_.UpdatePeakWindowedPercent(update, update_time);
-}
-
-void AggregateFrameData::ProcessResourceLoadInFrame(
-    const page_load_metrics::mojom::ResourceDataUpdatePtr& resource,
-    bool is_main_frame) {
-  resource_data_.ProcessResourceLoad(resource);
-  if (is_main_frame)
-    main_frame_resource_data_.ProcessResourceLoad(resource);
-}
-
-void AggregateFrameData::AdjustAdBytes(int64_t unaccounted_ad_bytes,
-                                       ResourceMimeType mime_type,
-                                       bool is_main_frame) {
-  resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
-  if (is_main_frame)
-    main_frame_resource_data_.AdjustAdBytes(unaccounted_ad_bytes, mime_type);
 }
 
 }  // namespace ad_metrics
