@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
 #include "components/sync/model/model_type_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
@@ -29,6 +30,9 @@ namespace syncer {
 // ModelTypeStoreBackend handles operations with leveldb. It is oblivious of the
 // fact that it is called from separate thread (with the exception of ctor),
 // meaning it shouldn't deal with callbacks and task_runners.
+//
+// Created and destroyed on any sequence, but otherwise initialized and used on
+// a single sequence (attached during Init()).
 class ModelTypeStoreBackend
     : public base::RefCountedThreadSafe<ModelTypeStoreBackend> {
  public:
@@ -41,7 +45,7 @@ class ModelTypeStoreBackend
   // Init opens database at |path|. If database doesn't exist it creates one.
   // It can be called from a sequence that is different to the constructing one,
   // but from this point on the backend is bound to the current sequence, and
-  // must be used and destructed in it.
+  // must be used on it. May be destructed on any sequence.
   base::Optional<ModelError> Init(const base::FilePath& path);
 
   // Can be called from any sequence.
@@ -87,6 +91,34 @@ class ModelTypeStoreBackend
  private:
   friend class base::RefCountedThreadSafe<ModelTypeStoreBackend>;
 
+  // This is a slightly adapted version of base::OnTaskRunnerDeleter: The one
+  // difference is that if the destruction request already happens on the target
+  // sequence, then this avoids posting a task, and instead deletes the given
+  // object immediately. This is convenient for unit-tests that don't run all
+  // posted tasks, to avoid leaking memory.
+  struct CustomOnTaskRunnerDeleter {
+    explicit CustomOnTaskRunnerDeleter(
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+    CustomOnTaskRunnerDeleter(CustomOnTaskRunnerDeleter&&);
+    CustomOnTaskRunnerDeleter& operator=(CustomOnTaskRunnerDeleter&&);
+    ~CustomOnTaskRunnerDeleter();
+
+    // For compatibility with std:: deleters.
+    template <typename T>
+    void operator()(const T* ptr) {
+      if (!ptr)
+        return;
+
+      if (task_runner_->RunsTasksInCurrentSequence()) {
+        delete ptr;
+      } else {
+        task_runner_->DeleteSoon(FROM_HERE, ptr);
+      }
+    }
+
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+
   // Normally |env| should be nullptr, this causes leveldb to use default disk
   // based environment from leveldb::Env::Default().
   // Providing |env| allows to override environment used by leveldb for tests
@@ -124,9 +156,17 @@ class ModelTypeStoreBackend
   //
   // env_ declaration should appear before declaration of db_ because
   // environment object should still be valid when db_'s destructor is called.
+  //
+  // Note that no custom deleter is used for |env_| because it is non-null for
+  // callers of CreateInMemoryForTest(), which initializes |db_| synchronously
+  // and hence |db_| also gets deleted without involving task-posting (i.e.
+  // |db_| cannot outlive |env_|).
   const std::unique_ptr<leveldb::Env> env_;
 
-  std::unique_ptr<leveldb::DB> db_;
+  // Destruction of |leveldb::DB| may incur blocking calls, and this class may
+  // be destructed on any sequence, so let's avoid worst-case blocking the UI
+  // thread by destroying leveldb::DB on the sequence where Init() was called.
+  std::unique_ptr<leveldb::DB, CustomOnTaskRunnerDeleter> db_;
 
   // Ensures that operations with backend are performed seqentially, not
   // concurrently.
