@@ -1649,6 +1649,7 @@ public class StartSurfaceTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1192027")
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
