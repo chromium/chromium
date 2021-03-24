@@ -30,8 +30,7 @@ extern const char kFileSystemBoxCreateFolderResponseFolderId[];
 
 // Expected url's for each of the Box mini classes for chunked file upload.
 extern const char kFileSystemBoxChunkedUploadCreateSessionUrl[];
-extern const char kFileSystemBoxChunkedUploadPartUploadUrl[];
-extern const char kFileSystemBoxChunkedUploadAbortUrl[];
+extern const char kFileSystemBoxChunkedUploadSessionUrl[];
 extern const char kFileSystemBoxChunkedUploadCommitUrl[];
 
 extern const char kFileSystemBoxChunkedUploadSha[];

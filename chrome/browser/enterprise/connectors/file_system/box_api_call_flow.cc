@@ -327,9 +327,9 @@ void BoxWholeFileUploadApiCallFlow::PostReadFileTask(
     const std::string& access_token) {
   auto read_file_task = base::BindOnce(&BoxWholeFileUploadApiCallFlow::ReadFile,
                                        local_file_path_);
-  auto read_file_reply =
-      base::BindOnce(&BoxWholeFileUploadApiCallFlow::OnFileRead,
-                     factory_.GetWeakPtr(), url_loader_factory, access_token);
+  auto read_file_reply = base::BindOnce(
+      &BoxWholeFileUploadApiCallFlow::OnFileRead, weak_factory_.GetWeakPtr(),
+      url_loader_factory, access_token);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
@@ -410,8 +410,9 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallSuccess(
 
 void BoxWholeFileUploadApiCallFlow::PostDeleteFileTask() {
   auto delete_file_task = base::BindOnce(&DeleteIfExists, local_file_path_);
-  auto delete_file_reply = base::BindOnce(
-      &BoxWholeFileUploadApiCallFlow::OnFileDeleted, factory_.GetWeakPtr());
+  auto delete_file_reply =
+      base::BindOnce(&BoxWholeFileUploadApiCallFlow::OnFileDeleted,
+                     weak_factory_.GetWeakPtr());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       std::move(delete_file_task), std::move(delete_file_reply));
@@ -491,7 +492,7 @@ void BoxCreateUploadSessionApiCallFlow::ProcessApiCallSuccess(
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       *body, base::BindOnce(&BoxCreateUploadSessionApiCallFlow::OnJsonParsed,
-                            factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()));
 }
 
 void BoxCreateUploadSessionApiCallFlow::ProcessApiCallFailure(
@@ -532,6 +533,19 @@ void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ChunkedUpload: Base
+////////////////////////////////////////////////////////////////////////////////
+BoxChunkedUploadBaseApiCallFlow::BoxChunkedUploadBaseApiCallFlow(
+    const GURL endpoint)
+    : endpoint_(endpoint) {
+  DCHECK(endpoint_.is_valid());
+}
+
+GURL BoxChunkedUploadBaseApiCallFlow::CreateApiCallUrl() {
+  return endpoint_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ChunkedUpload: PartFileUpload
 ////////////////////////////////////////////////////////////////////////////////
 // BoxApiCallFlow interface.
@@ -540,21 +554,19 @@ void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
 
 BoxPartFileUploadApiCallFlow::BoxPartFileUploadApiCallFlow(
     TaskCallback callback,
-    const std::string& upload_endpoint,
+    const std::string& session_endpoint,
     const std::string& file_part_content,
     const size_t byte_from,
     const size_t byte_to,
     const size_t byte_total)
-    : callback_(std::move(callback)),
-      upload_endpoint_(upload_endpoint),
+    : BoxChunkedUploadBaseApiCallFlow(GURL(session_endpoint)),
+      callback_(std::move(callback)),
       part_content_(file_part_content),
       content_range_(base::StringPrintf("bytes %zu-%zu/%zu",
                                         byte_from,
                                         byte_to,
                                         byte_total)),
-      sha_digest_(CreateFileDigest(file_part_content)) {
-  DCHECK(upload_endpoint_.is_valid());
-}
+      sha_digest_(CreateFileDigest(file_part_content)) {}
 
 BoxPartFileUploadApiCallFlow::~BoxPartFileUploadApiCallFlow() = default;
 
@@ -570,10 +582,6 @@ std::string BoxPartFileUploadApiCallFlow::CreateFileDigest(
   return sha_digest;
 }
 
-GURL BoxPartFileUploadApiCallFlow::CreateApiCallUrl() {
-  return upload_endpoint_;
-}
-
 net::HttpRequestHeaders BoxPartFileUploadApiCallFlow::CreateApiCallHeaders() {
   net::HttpRequestHeaders headers;
   headers.SetHeader("content-range", content_range_);
@@ -584,7 +592,6 @@ net::HttpRequestHeaders BoxPartFileUploadApiCallFlow::CreateApiCallHeaders() {
 std::string BoxPartFileUploadApiCallFlow::CreateApiCallBody() {
   return part_content_;
 }
-// TODO read the file in parts? #include "net/base/upload_file_element_reader.h"
 
 std::string BoxPartFileUploadApiCallFlow::CreateApiCallBodyContentType() {
   return "application/octet-stream";
@@ -606,7 +613,7 @@ void BoxPartFileUploadApiCallFlow::ProcessApiCallSuccess(
   DCHECK(body);
   data_decoder::DataDecoder::ParseJsonIsolated(
       *body, base::BindOnce(&BoxPartFileUploadApiCallFlow::OnJsonParsed,
-                            factory_.GetWeakPtr()));
+                            weak_factory_.GetWeakPtr()));
 }
 
 void BoxPartFileUploadApiCallFlow::ProcessApiCallFailure(
@@ -642,6 +649,43 @@ void BoxPartFileUploadApiCallFlow::OnJsonParsed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ChunkedUpload: AbortUploadSession
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/delete-files-upload-sessions-id/
+BoxAbortUploadSessionApiCallFlow::BoxAbortUploadSessionApiCallFlow(
+    TaskCallback callback,
+    const std::string& session_endpoint)
+    : BoxChunkedUploadBaseApiCallFlow(GURL(session_endpoint)),
+      callback_(std::move(callback)) {}
+
+BoxAbortUploadSessionApiCallFlow::~BoxAbortUploadSessionApiCallFlow() = default;
+
+bool BoxAbortUploadSessionApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_NO_CONTENT;
+}
+
+std::string BoxAbortUploadSessionApiCallFlow::GetRequestTypeForBody(
+    const std::string& body) {
+  return "DELETE";
+}
+
+void BoxAbortUploadSessionApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  std::move(callback_).Run(!body || body->empty(),  // Expecting an empty body.
+                           head->headers->response_code());
+}
+
+void BoxAbortUploadSessionApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  std::move(callback_).Run(false, head->headers->response_code());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ChunkedUpload: CommitUploadSession
 ////////////////////////////////////////////////////////////////////////////////
 // BoxApiCallFlow interface.
@@ -649,22 +693,16 @@ void BoxPartFileUploadApiCallFlow::OnJsonParsed(
 // https://developer.box.com/reference/post-files-upload-sessions-id-commit/
 BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
     TaskCallback callback,
-    const std::string& commit_endpoint,
+    const std::string& session_endpoint,
     const base::Value& parts,
     const std::string digest)
-    : callback_(std::move(callback)),
-      commit_endpoint_(commit_endpoint),
+    : BoxChunkedUploadBaseApiCallFlow(GURL(session_endpoint)),
+      callback_(std::move(callback)),
       upload_session_parts_(parts.Clone()),
-      sha_digest_(digest) {
-  DCHECK(commit_endpoint_.is_valid());
-}
+      sha_digest_(digest) {}
 
 BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
     default;
-
-GURL BoxCommitUploadSessionApiCallFlow::CreateApiCallUrl() {
-  return commit_endpoint_;
-}
 
 net::HttpRequestHeaders
 BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders() {

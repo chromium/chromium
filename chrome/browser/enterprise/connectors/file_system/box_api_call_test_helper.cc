@@ -74,10 +74,7 @@ const char kFileSystemBoxCreateFolderResponseFolderId[] = "67890";
 
 const char kFileSystemBoxChunkedUploadCreateSessionUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions/";
-const char kFileSystemBoxChunkedUploadPartUploadUrl[] =
-    "https://upload.box.com/api/2.0/files/upload_sessions/"
-    "F971964745A5CD0C001BBE4E58196BFD";
-const char kFileSystemBoxChunkedUploadAbortUrl[] =
+const char kFileSystemBoxChunkedUploadSessionUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions/"
     "F971964745A5CD0C001BBE4E58196BFD";
 const char kFileSystemBoxChunkedUploadCommitUrl[] =
