@@ -72,5 +72,5 @@ void ExistingWindowSubMenuModel::ExecuteNewCommand(int event_flags) {
 }
 
 void ExistingWindowSubMenuModel::ExecuteExistingCommand(int command_index) {
-  model()->ExecuteAddToExistingWindowCommand(context_index(), command_index);
+  model()->ExecuteAddToExistingWindowCommand(GetContextIndex(), command_index);
 }
