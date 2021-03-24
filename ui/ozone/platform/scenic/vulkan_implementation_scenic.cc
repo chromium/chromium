@@ -187,7 +187,7 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
   import.semaphore = semaphore;
   import.handleType =
       VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.handle = event.get();
+  import.zirconHandle = event.get();
 
   result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
   if (result != VK_SUCCESS) {
