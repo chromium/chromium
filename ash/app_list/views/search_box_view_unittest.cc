@@ -834,9 +834,7 @@ TEST_F(SearchBoxViewAssistantButtonTest,
   EXPECT_FALSE(view()->assistant_button()->GetVisible());
 }
 
-class SearchBoxViewAutocompleteTest
-    : public SearchBoxViewTest,
-      public ::testing::WithParamInterface<ui::KeyboardCode> {
+class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAutocompleteTest() = default;
   ~SearchBoxViewAutocompleteTest() override = default;
@@ -951,21 +949,11 @@ class SearchBoxViewAutocompleteTest
     ResetAutocompleteBehaviorTest();
   }
 
-  ui::KeyboardCode key_code() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAutocompleteTest);
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SearchBoxViewAutocompleteTest,
-                         ::testing::Values(ui::VKEY_LEFT,
-                                           ui::VKEY_RIGHT,
-                                           ui::VKEY_UP,
-                                           ui::VKEY_DOWN,
-                                           ui::VKEY_BACK));
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
 // titles.

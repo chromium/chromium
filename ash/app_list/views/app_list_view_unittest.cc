@@ -387,6 +387,9 @@ class AppListViewTest : public views::ViewsTestBase,
     }
   }
 
+  // Restores the locale to default when destructor is called.
+  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+
   AppListView* view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
@@ -398,6 +401,8 @@ class AppListViewTest : public views::ViewsTestBase,
 
   DISALLOW_COPY_AND_ASSIGN(AppListViewTest);
 };
+
+INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewTest, ::testing::Bool());
 
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
