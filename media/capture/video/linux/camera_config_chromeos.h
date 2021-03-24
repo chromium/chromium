@@ -10,7 +10,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <base/strings/string_piece.h>
+#include "base/strings/string_piece.h"
 #include "media/base/video_facing.h"
 #include "media/capture/capture_export.h"
 

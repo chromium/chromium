@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include <base/optional.h>
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

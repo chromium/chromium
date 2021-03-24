@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 
-#include <base/macros.h>
 #include <memory>
+
+#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

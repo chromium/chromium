@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_FEATURE_LIST_H_
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_FEATURE_LIST_H_
 
-#include <base/feature_list.h>
 #include <jni.h>
+
+#include "base/feature_list.h"
 
 namespace payments {
 namespace android {

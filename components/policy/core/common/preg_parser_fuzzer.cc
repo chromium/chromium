@@ -5,11 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <base/strings/utf_string_conversions.h>
 #include <string>
 
 #include "base/logging.h"
-
+#include "base/strings/utf_string_conversions.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/preg_parser.h"
 #include "components/policy/core/common/registry_dict.h"

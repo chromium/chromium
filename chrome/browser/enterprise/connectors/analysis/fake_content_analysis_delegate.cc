@@ -4,8 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 
-#include <base/callback.h>
-#include <base/logging.h>
+#include "base/callback.h"
+#include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_
 #define CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_
 
-#include <base/feature_list.h>
 #include <jni.h>
+
+#include "base/feature_list.h"
 
 namespace chrome {
 namespace android {

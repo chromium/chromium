@@ -7,8 +7,8 @@
 
 #include <map>
 
-#include <base/memory/weak_ptr.h>
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"

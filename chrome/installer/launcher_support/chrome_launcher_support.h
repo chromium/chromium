@@ -5,8 +5,8 @@
 #ifndef CHROME_INSTALLER_LAUNCHER_SUPPORT_CHROME_LAUNCHER_SUPPORT_H_
 #define CHROME_INSTALLER_LAUNCHER_SUPPORT_CHROME_LAUNCHER_SUPPORT_H_
 
-#include <base/files/file_path.h>
-#include <base/version.h>
+#include "base/files/file_path.h"
+#include "base/version.h"
 
 namespace chrome_launcher_support {
 
