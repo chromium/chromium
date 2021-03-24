@@ -15,9 +15,8 @@ template("compute_fuchsia_package_sizes") {
     executable = "//build/fuchsia/binary_sizes.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
 
-    assert(
-        target_cpu == "arm64" || target_cpu == "x64",
-        "target_cpu must be arm64 or x64 in fuchsia_sizes_test($target_name)")
+    assert(target_cpu == "arm64" || target_cpu == "x64",
+           "target_cpu must be arm64 or x64")
 
     if (!defined(data)) {
       data = []
