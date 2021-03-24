@@ -250,6 +250,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 
+  // Records user actions.
+  virtual void UserMetricsRecordAction(const std::string& action) = 0;
+
   void set_url(const std::string& url) { url_ = url; }
 
   SkBitmap& mutable_image_data() { return image_data_; }

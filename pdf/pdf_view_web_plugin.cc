@@ -13,6 +13,8 @@
 
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -435,6 +437,10 @@ void PdfViewWebPlugin::SetAccessibilityPageInfo(
 void PdfViewWebPlugin::SetAccessibilityViewportInfo(
     const AccessibilityViewportInfo& viewport_info) {
   NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
+  base::RecordAction(base::UserMetricsAction(action.c_str()));
 }
 
 void PdfViewWebPlugin::OnViewportChanged(gfx::Rect view_rect,

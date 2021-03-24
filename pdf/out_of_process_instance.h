@@ -155,6 +155,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
+  void UserMetricsRecordAction(const std::string& action) override;
 
  private:
   // Message handlers.
@@ -169,8 +170,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SaveToFile(const std::string& token);
 
   void FormDidOpen(int32_t result);
-
-  void UserMetricsRecordAction(const std::string& action);
 
   // Must match SaveRequestType in chrome/browser/resources/pdf/constants.js.
   enum class SaveRequestType {
