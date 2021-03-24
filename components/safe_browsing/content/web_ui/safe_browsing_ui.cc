@@ -1338,6 +1338,12 @@ std::string SerializeRTLookupPing(const RTLookupRequestAndToken& ping) {
   }
   request_dict.SetKey("os", base::Value(os));
 
+  auto referrer_chain = std::make_unique<base::ListValue>();
+  for (const auto& referrer_chain_entry : request.referrer_chain()) {
+    referrer_chain->Append(SerializeReferrer(referrer_chain_entry));
+  }
+  request_dict.SetList("referrer_chain", std::move(referrer_chain));
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);
