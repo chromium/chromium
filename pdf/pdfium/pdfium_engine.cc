@@ -391,6 +391,7 @@ std::u16string GetAttachmentName(FPDF_ATTACHMENT attachment) {
 }
 
 std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
+  std::string xyz_params;
   FPDF_BOOL has_x_coord;
   FPDF_BOOL has_y_coord;
   FPDF_BOOL has_zoom;
@@ -399,28 +400,26 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
   FS_FLOAT zoom;
   if (!FPDFDest_GetLocationInPage(dest, &has_x_coord, &has_y_coord, &has_zoom,
                                   &x, &y, &zoom)) {
-    return "";
+    return xyz_params;
   }
 
-  // Handle out-of-range page coordinates.
-  x = has_x_coord ? page->PreProcessInPageCoordX(x) : 0;
-  y = has_y_coord ? page->PreProcessInPageCoordY(y) : 0;
-
-  // Convert in-page coordinates to in-screen coordinates.
-  gfx::PointF xy(x, y);
-  gfx::PointF screen_coords = page->TransformPageToScreenXY(xy);
-
   // Generate a string of the parameters
-  std::string xyz_params;
-  if (has_x_coord)
-    xyz_params = base::NumberToString(screen_coords.x()) + ",";
-  else
+  if (has_x_coord) {
+    // Handle out-of-range page coordinates and convert in-page coordinates to
+    // in-screen coordinates.
+    xyz_params =
+        base::NumberToString(page->PreProcessAndTransformInPageCoordX(x)) + ",";
+  } else {
     xyz_params = "null,";
+  }
 
-  if (has_y_coord)
-    xyz_params += base::NumberToString(screen_coords.y()) + ",";
-  else
+  if (has_y_coord) {
+    // Same conversions as x coordinates above.
+    xyz_params +=
+        base::NumberToString(page->PreProcessAndTransformInPageCoordY(y)) + ",";
+  } else {
     xyz_params += "null,";
+  }
 
   if (has_zoom) {
     if (zoom == 0.0f)
