@@ -61,7 +61,7 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   // |pid| is the renderer process id, |lid| is the renderer local id used to
   // identify a PeerConnection, |url| is the url of the tab owning the
   // PeerConnection, |rtc_configuration| is the serialized RTCConfiguration,
-  // |constraints| is the media constraints used to initialize the
+  // |constraints| is the serialized legacy constraints used to initialize the
   // PeerConnection.
   void OnAddPeerConnection(int render_process_id,
                            base::ProcessId pid,
@@ -212,7 +212,8 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   // "pid" -- OS process id of the renderer that creates the PeerConnection.
   // "lid" -- local Id assigned to the PeerConnection.
   // "url" -- url of the web page that created the PeerConnection.
-  // "servers" and "constraints" -- server configuration and media constraints
+  // "rtcConfiguration" -- serialized rtcConfiguration object.
+  // "constraints" -- serialized legacy peerconnection constraints.
   // used to initialize the PeerConnection respectively.
   // "log" -- a ListValue contains all the updates for the PeerConnection. Each
   // list item is a DictionaryValue containing "time", which is the number of

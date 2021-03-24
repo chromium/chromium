@@ -224,6 +224,9 @@ void WebRTCInternals::OnUpdatePeerConnection(
     }
   } else if (type == "stop") {
     MaybeClosePeerConnection(record);
+  } else if (type == "setConfiguration") {
+    // Update the configuration we have for this connection.
+    record->SetString("rtcConfiguration", value);
   }
 
   // Don't update entries if there aren't any observers.
