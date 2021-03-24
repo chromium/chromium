@@ -96,6 +96,8 @@ void PciePeripheralManager::OnBlockedThunderboltDeviceConnected(
     const std::string& name) {
   // Currently the device name is not shown in the notification.
   NotifyPeripheralBlockedReceived();
+  RecordConnectivityMetric(
+      PciePeripheralConnectivityResults::kPeripheralBlocked);
 }
 
 void PciePeripheralManager::SetPcieTunnelingAllowedState(

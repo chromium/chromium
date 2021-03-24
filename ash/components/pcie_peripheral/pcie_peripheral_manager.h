@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
     kTBTOnlyAndBlockedInGuestSession = 2,
     kAltModeFallbackDueToPciguard = 3,
     kAltModeFallbackInGuestSession = 4,
-    kMaxValue = kAltModeFallbackInGuestSession,
+    kPeripheralBlocked = 5,
+    kMaxValue = kPeripheralBlocked,
   };
 
   // Sets the global instance. Must be called before any calls to Get().

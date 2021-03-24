@@ -300,6 +300,12 @@ TEST_F(PciePeripheralManagerTest, BlockedDeviceReceived) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_EQ(1u, GetNumPeripheralBlockedNotificationObserverCalls());
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kPeripheralBlocked,
+      1);
 }
 
 }  // namespace ash
