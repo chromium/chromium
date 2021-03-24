@@ -26,7 +26,7 @@ var zoomLevel = 5;
 
 /**
  * Keep in sync with ArcTracingGraphicsModel::BufferEventType
- * See chrome/browser/chromeos/arc/tracing/arc_tracing_graphics_model.h.
+ * See chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h.
  * Describes how events should be rendered. |color| specifies color of the
  * event, |name| is used in tooltips. |width| defines the width in case it is
  * rendered as a line and |radius| defines the radius in case it is rendered as
@@ -168,7 +168,7 @@ var endSequenceEvents = {
 
 /**
  * Keep in sync with ArcValueEvent::Type
- * See chrome/browser/chromeos/arc/tracing/arc_value_event.h.
+ * See chrome/browser/ash/arc/tracing/arc_value_event.h.
  * Describes how value events should be rendered in charts. |color| specifies
  * color of the event, |name| is used in tooltips, |width| specify width of
  * the line in chart, |scale| is used to convert actual value to rendered value.
