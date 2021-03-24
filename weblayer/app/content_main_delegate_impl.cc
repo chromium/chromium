@@ -200,9 +200,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
   blink::WebRuntimeFeatures::EnableWebGPU(false);
 
-  // TODO(crbug.com/1097107): Add support for Content Indexing on WebLayer.
-  blink::WebRuntimeFeatures::EnableContentIndex(false);
-
 #if defined(OS_ANDROID)
   content::Compositor::Initialize();
 #endif
