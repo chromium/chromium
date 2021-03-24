@@ -44,16 +44,6 @@ ProjectorBarView::ProjectorBarView(
     ProjectorControllerImpl* projector_controller)
     : projector_controller_(projector_controller) {
   InitLayout();
-
-  // TODO(llin): Consider observing marker and laser state changes in
-  // |ProjectorUiController| instead.
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  DCHECK(laser_pointer_controller);
-  laser_pointer_controller_observation_.Observe(laser_pointer_controller);
-
-  auto* marker_controller = MarkerController::Get();
-  DCHECK(marker_controller);
-  marker_controller_observation_.Observe(marker_controller);
 }
 
 ProjectorBarView::~ProjectorBarView() = default;
@@ -83,28 +73,19 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
   return widget;
 }
 
-void ProjectorBarView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateVectorIcon();
-}
-
 void ProjectorBarView::OnLaserPointerStateChanged(bool enabled) {
   laser_pointer_button_->SetToggled(enabled);
-
-  // Disable marker if laser pointer is enabled;
-  if (enabled)
-    MarkerController::Get()->SetEnabled(false);
 }
 
 void ProjectorBarView::OnMarkerStateChanged(bool enabled) {
   marker_button_->SetToggled(enabled);
 
-  if (enabled) {
-    // TODO(llin): shows the marker submenu.
+  // TODO(llin): shows the marker submenu if marker is enabled.
+}
 
-    // Disable laser pointer since marker is enabled;
-    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
-  }
+void ProjectorBarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateVectorIcon();
 }
 
 void ProjectorBarView::InitLayout() {

@@ -5,12 +5,9 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 
-#include "ash/fast_ink/laser/laser_pointer_controller.h"
-#include "ash/marker/marker_controller.h"
 #include "ash/projector/model/projector_ui_model.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/projector/ui/projector_image_button.h"
-#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,9 +19,7 @@ namespace ash {
 
 class ProjectorControllerImpl;
 
-class ProjectorBarView : public views::View,
-                         public LaserPointerObserver,
-                         public MarkerObserver {
+class ProjectorBarView : public views::View {
  public:
   METADATA_HEADER(ProjectorBarView);
 
@@ -36,16 +31,15 @@ class ProjectorBarView : public views::View,
   static views::UniqueWidgetPtr Create(
       ProjectorControllerImpl* projector_controller);
 
+  // Invoke when laser pointer activation state changed.
+  void OnLaserPointerStateChanged(bool enabled);
+  // Invoke when marker activation state changed.
+  void OnMarkerStateChanged(bool enabled);
+
   // views::View:
   void OnThemeChanged() override;
 
  private:
-  // LaserPointerObserver:
-  void OnLaserPointerStateChanged(bool enabled) override;
-
-  // MarkerObserver:
-  void OnMarkerStateChanged(bool enabled) override;
-
   void InitLayout();
   void InitWidget();
 
@@ -65,12 +59,6 @@ class ProjectorBarView : public views::View,
   ProjectorButton* marker_button_ = nullptr;
 
   ProjectorControllerImpl* projector_controller_ = nullptr;
-
-  base::ScopedObservation<LaserPointerController, LaserPointerObserver>
-      laser_pointer_controller_observation_{this};
-
-  base::ScopedObservation<MarkerController, MarkerObserver>
-      marker_controller_observation_{this};
 };
 
 }  // namespace ash
