@@ -14,7 +14,9 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -1719,11 +1721,12 @@ std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
 bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
                              int extra_info_spec,
                              const std::string& name) {
-  static const std::set<std::string> kRequestHeaders(
-      {"accept-encoding", "accept-language", "cookie", "origin", "referer"});
+  static constexpr auto kRequestHeaders =
+      base::MakeFixedFlatSet<base::StringPiece>({"accept-encoding",
+                                                 "accept-language", "cookie",
+                                                 "origin", "referer"});
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
-         kRequestHeaders.find(base::ToLowerASCII(name)) !=
-             kRequestHeaders.end();
+         base::Contains(kRequestHeaders, base::ToLowerASCII(name));
 }
 
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {

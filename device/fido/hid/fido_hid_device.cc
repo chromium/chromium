@@ -10,9 +10,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
@@ -614,10 +616,11 @@ FidoTransportProtocol FidoHidDevice::DeviceTransport() const {
 void FidoHidDevice::DiscoverSupportedProtocolAndDeviceInfo(
     base::OnceClosure done) {
   // The following devices cannot handle GetInfo messages.
-  static const base::flat_set<std::string> kForceU2fCompatibilitySet({
-      "10c4:8acf",  // U2F Zero
-      "20a0:4287",  // Nitrokey FIDO U2F
-  });
+  static constexpr auto kForceU2fCompatibilitySet =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "10c4:8acf",  // U2F Zero
+          "20a0:4287",  // Nitrokey FIDO U2F
+      });
 
   if (base::Contains(kForceU2fCompatibilitySet, VidPidToString(device_info_))) {
     supported_protocol_ = ProtocolVersion::kU2f;

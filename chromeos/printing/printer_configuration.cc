@@ -4,7 +4,7 @@
 
 #include "chromeos/printing/printer_configuration.h"
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -61,8 +61,9 @@ std::string ToString(PrinterClass pclass) {
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
-  static const base::flat_set<std::string> kKnownSchemes = {
-      "http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"};
+  static constexpr auto kKnownSchemes =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"});
   static const std::string kPrefix = "Malformed printer URI: ";
 
   if (!kKnownSchemes.contains(uri.GetScheme())) {
