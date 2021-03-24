@@ -109,13 +109,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool RunExtensionSubtest(const std::string& extension_name,
                            const std::string& page_url) WARN_UNUSED_RESULT;
 
-  // Same as RunExtensionSubtest, except run with the specific |flags|
-  // (as defined in the Flags enum).
-  bool RunExtensionSubtest(const std::string& extension_name,
-                           const std::string& page_url,
-                           int browser_test_flags,
-                           int api_test_flags) WARN_UNUSED_RESULT;
-
   // Similar to RunExtensionTest, except used for running tests in platform app
   // shell windows.
   bool RunPlatformAppTest(const std::string& extension_name) WARN_UNUSED_RESULT;

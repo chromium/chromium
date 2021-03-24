@@ -148,8 +148,10 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunSubtest(const std::string& subtest) {
-    return RunExtensionSubtest("users_private", "main.html?" + subtest,
-                               kFlagNone, kFlagLoadAsComponent);
+    const std::string page_url = "main.html?" + subtest;
+    return RunExtensionTest({.name = "users_private",
+                             .page_url = page_url.c_str(),
+                             .load_as_component = true});
   }
 
   // Static pointer to the TestDelegate so that it can be accessed in
@@ -231,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsOwner) {
 
 // User profile - logged in, screen not locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
-  EXPECT_TRUE(RunExtensionSubtest("users_private", "main.html?getLoginStatus",
-                                  kFlagNone, kFlagLoadAsComponent))
+  EXPECT_TRUE(RunExtensionTest({.name = "users_private",
+                                .page_url = "main.html?getLoginStatus",
+                                .load_as_component = true}))
       << message_;
 }
 
@@ -241,8 +244,9 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
 // Screenlock - logged in, screen locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLockStatusTest, ScreenLock) {
   chromeos::ScreenLockerTester().Lock();
-  EXPECT_TRUE(RunExtensionSubtest("users_private", "main.html?getLoginStatus",
-                                  kFlagNone, kFlagLoadAsComponent))
+  EXPECT_TRUE(RunExtensionTest({.name = "users_private",
+                                .page_url = "main.html?getLoginStatus",
+                                .load_as_component = true}))
       << message_;
 }
 

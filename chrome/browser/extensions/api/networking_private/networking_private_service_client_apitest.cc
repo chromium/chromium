@@ -88,9 +88,10 @@ class NetworkingPrivateServiceClientApiTest
   NetworkingPrivateServiceClientApiTest() {}
 
   bool RunNetworkingSubtest(const std::string& subtest) {
-    return RunExtensionSubtest("networking_private/service_client",
-                               "main.html?" + subtest, kFlagNone,
-                               kFlagLoadAsComponent);
+    const std::string page_url = "main.html?" + subtest;
+    return RunExtensionTest({.name = "networking_private/service_client",
+                             .page_url = page_url.c_str(),
+                             .load_as_component = true});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

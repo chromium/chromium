@@ -172,16 +172,9 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
 
 bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
                                            const std::string& page_url) {
-  return RunExtensionSubtest(extension_name, page_url, kFlagNone, kFlagNone);
-}
-
-bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
-                                           const std::string& page_url,
-                                           int browser_test_flags,
-                                           int api_test_flags) {
   DCHECK(!page_url.empty()) << "Argument page_url is required.";
-  return RunExtensionTestImpl(extension_name, page_url, nullptr,
-                              browser_test_flags, api_test_flags);
+  return RunExtensionTestImpl(extension_name, page_url, nullptr, kFlagNone,
+                              kFlagNone);
 }
 
 bool ExtensionApiTest::RunPlatformAppTest(const std::string& extension_name) {

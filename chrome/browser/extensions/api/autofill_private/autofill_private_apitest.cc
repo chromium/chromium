@@ -39,8 +39,10 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   bool RunAutofillSubtest(const std::string& subtest) {
     autofill::WaitForPersonalDataManagerToBeLoaded(profile());
 
-    return RunExtensionSubtest("autofill_private", "main.html?" + subtest,
-                               kFlagNone, kFlagLoadAsComponent);
+    const std::string page_url = "main.html?" + subtest;
+    return RunExtensionTest({.name = "autofill_private",
+                             .page_url = page_url.c_str(),
+                             .load_as_component = true});
   }
 };
 

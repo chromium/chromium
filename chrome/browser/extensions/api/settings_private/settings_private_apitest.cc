@@ -60,8 +60,10 @@ class SettingsPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunSettingsSubtest(const std::string& subtest) {
-    return RunExtensionSubtest("settings_private", "main.html?" + subtest,
-                               kFlagNone, kFlagLoadAsComponent);
+    const std::string page_url = "main.html?" + subtest;
+    return RunExtensionTest({.name = "settings_private",
+                             .page_url = page_url.c_str(),
+                             .load_as_component = true});
   }
 
   void SetPrefPolicy(const std::string& key, policy::PolicyLevel level) {
