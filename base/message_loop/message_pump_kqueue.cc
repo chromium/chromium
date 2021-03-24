@@ -408,6 +408,7 @@ bool MessagePumpKqueue::DoInternalWork(Delegate::NextWorkInfo* next_work_info) {
 }
 
 bool MessagePumpKqueue::ProcessEvents(int count) {
+  recordreplay::Assert("MessagePumpKqueue::ProcessEvents Start");
   bool did_work = false;
 
   for (int i = 0; i < count; ++i) {
@@ -462,13 +463,16 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
       // The controller could have been removed by some other work callout
       // before this event could be processed.
       if (controller) {
+        recordreplay::Assert("MessagePumpKqueue::ProcessEvents #1");
         controller->watcher()->OnMachMessageReceived(port);
+        recordreplay::Assert("MessagePumpKqueue::ProcessEvents #2");
       }
     } else {
       NOTREACHED() << "Unexpected event for filter " << event->filter;
     }
   }
 
+  recordreplay::Assert("MessagePumpKqueue::ProcessEvents Done %d", did_work);
   return did_work;
 }
 

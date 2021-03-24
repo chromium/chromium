@@ -543,14 +543,18 @@ void NodeChannel::OnChannelMessage(const void* payload,
                                    std::vector<PlatformHandle> handles) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
+  recordreplay::Assert("NodeChannel::OnChannelMessage Start");
+
   RequestContext request_context(RequestContext::Source::SYSTEM);
 
   if (payload_size <= sizeof(Header)) {
+    recordreplay::Assert("NodeChannel::OnChannelMessage #1");
     delegate_->OnChannelError(remote_node_name_, this);
     return;
   }
 
   const Header* header = static_cast<const Header*>(payload);
+  recordreplay::Assert("NodeChannel::OnChannelMessage #2 %d", header->type);
   switch (header->type) {
     case MessageType::ACCEPT_INVITEE: {
       AcceptInviteeData data;

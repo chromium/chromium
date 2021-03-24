@@ -9,7 +9,36 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/record_replay.h"
 #include "base/threading/post_task_and_reply_impl.h"
+
+#ifndef NACL_TC_REV
+
+#include <dlfcn.h>
+
+// There are linker problems if we try to use recordreplay::Assert here.
+static void (*gRecordReplayAssertFn)(const char*, va_list);
+
+static void RecordReplayAssert(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayAssertFn(aFormat, ap);
+  va_end(ap);
+}
+
+#else
+
+static void RecordReplayAssert(const char* aFormat, ...) {}
+
+#endif
 
 namespace base {
 
@@ -42,7 +71,10 @@ bool PostTaskAndReplyTaskRunner::PostTask(const Location& from_here,
 }  // namespace
 
 bool TaskRunner::PostTask(const Location& from_here, OnceClosure task) {
-  return PostDelayedTask(from_here, std::move(task), base::TimeDelta());
+  RecordReplayAssert("TaskRunner::PostTask Start");
+  bool rv = PostDelayedTask(from_here, std::move(task), base::TimeDelta());
+  RecordReplayAssert("TaskRunner::PostTask Done %d", rv);
+  return rv;
 }
 
 bool TaskRunner::PostTaskAndReply(const Location& from_here,

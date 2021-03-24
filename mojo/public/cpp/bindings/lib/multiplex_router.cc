@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -331,7 +332,7 @@ MultiplexRouter::MultiplexRouter(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (config == MULTI_INTERFACE)
-    lock_.emplace();
+    lock_.emplace("MultiplexRouter.lock_");
 
   if (config == SINGLE_INTERFACE_WITH_SYNC_METHODS ||
       config == MULTI_INTERFACE) {
@@ -881,6 +882,8 @@ bool MultiplexRouter::ProcessIncomingMessage(
     MessageWrapper* message_wrapper,
     ClientCallBehavior client_call_behavior,
     base::SequencedTaskRunner* current_task_runner) {
+  recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage Start");
+
   DCHECK(!current_task_runner ||
          current_task_runner->RunsTasksInCurrentSequence());
   DCHECK(!paused_);
@@ -891,6 +894,7 @@ bool MultiplexRouter::ProcessIncomingMessage(
   if (message->IsNull()) {
     // This is a sync message and has been processed during sync handle
     // watching.
+    recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage #1");
     return true;
   }
 
@@ -908,6 +912,7 @@ bool MultiplexRouter::ProcessIncomingMessage(
     if (!result)
       RaiseErrorInNonTestingMode();
 
+    recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage #2");
     return true;
   }
 
@@ -915,12 +920,15 @@ bool MultiplexRouter::ProcessIncomingMessage(
   DCHECK(IsValidInterfaceId(id));
 
   InterfaceEndpoint* endpoint = FindEndpoint(id);
-  if (!endpoint || endpoint->closed())
+  if (!endpoint || endpoint->closed()) {
+    recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage #3");
     return true;
+  }
 
   if (!endpoint->client()) {
     // We need to wait until a client is attached in order to dispatch further
     // messages.
+    recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage #4");
     return false;
   }
 
@@ -935,6 +943,7 @@ bool MultiplexRouter::ProcessIncomingMessage(
 
   if (!can_direct_call) {
     MaybePostToProcessTasks(endpoint->task_runner());
+    recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage #5");
     return false;
   }
 
@@ -957,6 +966,7 @@ bool MultiplexRouter::ProcessIncomingMessage(
   if (!result)
     RaiseErrorInNonTestingMode();
 
+  recordreplay::Assert("MultiplexRouter::ProcessIncomingMessage Done");
   return true;
 }
 

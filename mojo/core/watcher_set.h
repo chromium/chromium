@@ -16,19 +16,6 @@
 namespace mojo {
 namespace core {
 
-struct CompareRecordReplayPointerId {
-  template <typename T>
-  bool operator()(const T* a, const T* b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId((void*)a);
-      int idb = recordreplay::PointerId((void*)b);
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return (uintptr_t)a < (uintptr_t)b;
-  }
-};
-
 // A WatcherSet maintains a set of references to WatcherDispatchers to be
 // notified when a handle changes state.
 //
@@ -72,7 +59,7 @@ class WatcherSet {
   };
 
   Dispatcher* const owner_;
-  base::flat_map<WatcherDispatcher*, Entry, CompareRecordReplayPointerId> watchers_;
+  base::flat_map<WatcherDispatcher*, Entry, recordreplay::CompareByPointerId> watchers_;
   base::Optional<HandleSignalsState> last_known_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WatcherSet);

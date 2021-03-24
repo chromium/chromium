@@ -8,8 +8,7 @@
 
 namespace recordreplay {
 
-// Helper for dealing with nacl.
-// V8 isn't linked to when building for nacl, so we can't call its symbols.
+// Watch out for build environments where we aren't linked to V8.
 #ifndef NACL_TC_REV
 #define OP(RR) RR
 #define OP2(RR, NORR) RR

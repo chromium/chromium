@@ -1463,14 +1463,20 @@ bool TileManager::IsReadyToDraw() const {
 void TileManager::ScheduleCheckRasterFinishedQueries() {
   DCHECK(has_pending_queries_);
 
-  if (!check_pending_tile_queries_callback_.IsCancelled())
+  recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries Start");
+
+  if (!check_pending_tile_queries_callback_.IsCancelled()) {
+    recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries #1");
     return;
+  }
 
   check_pending_tile_queries_callback_.Reset(base::BindOnce(
       &TileManager::CheckRasterFinishedQueries, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE,
                                 check_pending_tile_queries_callback_.callback(),
                                 base::TimeDelta::FromMilliseconds(100));
+
+  recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries Done");
 }
 
 void TileManager::CheckRasterFinishedQueries() {

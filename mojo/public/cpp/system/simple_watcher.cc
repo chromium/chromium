@@ -214,16 +214,19 @@ MojoResult SimpleWatcher::Arm(MojoResult* ready_result,
     }
   }
 
-  recordreplay::Assert("SimpleWatcher::Arm Done");
+  recordreplay::Assert("SimpleWatcher::Arm Done %d", rv);
   return rv;
 }
 
 void SimpleWatcher::ArmOrNotify() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  recordreplay::Assert("SimpleWatcher::ArmOrNotify Start");
 
   // Already cancelled, nothing to do.
-  if (!IsWatching())
+  if (!IsWatching()) {
+    recordreplay::Assert("SimpleWatcher::ArmOrNotify #1");
     return;
+  }
 
   MojoResult ready_result;
   HandleSignalsState ready_state;
@@ -232,8 +235,10 @@ void SimpleWatcher::ArmOrNotify() {
   // NOTE: If the watched handle has been closed, the above call will result in
   // MOJO_RESULT_NOT_FOUND. A MOJO_RESULT_CANCELLED notification will already
   // have been posted to this object as a result, so there's nothing else to do.
-  if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND)
+  if (rv == MOJO_RESULT_OK || rv == MOJO_RESULT_NOT_FOUND) {
+    recordreplay::Assert("SimpleWatcher::ArmOrNotify #2");
     return;
+  }
 
   DCHECK_EQ(MOJO_RESULT_FAILED_PRECONDITION, rv);
   {
@@ -244,6 +249,8 @@ void SimpleWatcher::ArmOrNotify() {
                                           weak_factory_.GetWeakPtr(), watch_id_,
                                           ready_result, ready_state));
   }
+
+  recordreplay::Assert("SimpleWatcher::ArmOrNotify Done");
 }
 
 void SimpleWatcher::OnHandleReady(int watch_id,

@@ -269,6 +269,8 @@ int NodeController::SendUserMessage(
 
 void NodeController::MergePortIntoInviter(const std::string& name,
                                           const ports::PortRef& port) {
+  recordreplay::Assert("NodeController::MergePortIntoInviter Start");
+
   scoped_refptr<NodeChannel> inviter;
   bool reject_merge = false;
   {
@@ -278,6 +280,8 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     // |pending_port_merges_|.
     base::AutoLock lock(pending_port_merges_lock_);
     inviter = GetInviterChannel();
+    recordreplay::Assert("NodeController::MergePortIntoInviter #1 %d %d",
+                         reject_pending_merges_, !!inviter);
     if (reject_pending_merges_) {
       reject_merge = true;
     } else if (!inviter) {
@@ -289,10 +293,13 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     node_->ClosePort(port);
     DVLOG(2) << "Rejecting port merge for name " << name
              << " due to closed inviter channel.";
+    recordreplay::Assert("NodeController::MergePortIntoInviter #2");
     return;
   }
 
+  recordreplay::Assert("NodeController::MergePortIntoInviter #3");
   inviter->RequestPortMerge(port.name(), name);
+  recordreplay::Assert("NodeController::MergePortIntoInviter Done");
 }
 
 int NodeController::MergeLocalPorts(const ports::PortRef& port0,

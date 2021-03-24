@@ -7,8 +7,7 @@
 #ifndef BASE_RECORD_REPLAY_H_
 #define BASE_RECORD_REPLAY_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include "base/check.h"
 
 namespace recordreplay {
 
@@ -57,6 +56,21 @@ void RegisterPointer(void* ptr);
 void UnregisterPointer(void* ptr);
 int PointerId(void* ptr);
 void* IdPointer(int id);
+
+// stl comparator that uses pointer IDs to compare elements when recording/replaying,
+// giving a deterministic sort order.
+struct CompareByPointerId {
+  template <typename T>
+  bool operator()(const T* a, const T* b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId((void*)a);
+      int idb = recordreplay::PointerId((void*)b);
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return (uintptr_t)a < (uintptr_t)b;
+  }
+};
 
 } // namespace recordreplay
 

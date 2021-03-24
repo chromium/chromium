@@ -20,7 +20,8 @@ Watch::Watch(const scoped_refptr<WatcherDispatcher>& watcher,
       dispatcher_(dispatcher),
       context_(context),
       signals_(signals),
-      condition_(condition) {
+      condition_(condition),
+      notification_lock_("Watch.notification_lock_") {
   recordreplay::RegisterPointer(this);
 }
 
@@ -28,7 +29,7 @@ bool Watch::NotifyState(const HandleSignalsState& state,
                         bool allowed_to_call_callback) {
   AssertWatcherLockAcquired();
 
-  recordreplay::Assert("Watch::NotifyState %lu", recordreplay::PointerId(this));
+  recordreplay::Assert("Watch::NotifyState %lu %d", recordreplay::PointerId(this), allowed_to_call_callback);
 
   // NOTE: This method must NEVER call into |dispatcher_| directly, because it
   // may be called while |dispatcher_| holds a lock.
@@ -41,6 +42,8 @@ bool Watch::NotifyState(const HandleSignalsState& state,
        condition_ == MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED);
   if (notify_success) {
     rv = MOJO_RESULT_OK;
+    recordreplay::Assert("Watch::NotifyState #0 %d %d",
+                         allowed_to_call_callback, last_known_result_);
     if (allowed_to_call_callback && rv != last_known_result_) {
       request_context->AddWatchNotifyFinalizer(this, MOJO_RESULT_OK, state);
     }

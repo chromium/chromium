@@ -133,6 +133,8 @@ WorkQueue::TaskPusher::~TaskPusher() {
 }
 
 WorkQueue::TaskPusher WorkQueue::CreateTaskPusher() {
+  recordreplay::Assert("WorkQueue::CreateTaskPusher %lu",
+                       recordreplay::PointerId(this));
   return TaskPusher(this);
 }
 

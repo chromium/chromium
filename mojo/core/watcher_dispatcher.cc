@@ -18,7 +18,8 @@ namespace mojo {
 namespace core {
 
 WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
-    : handler_(handler) {
+    : handler_(handler),
+      lock_("WatcherDispatcher.lock_") {
   // Registering dispatchers is needed for deterministic sort order in WatcherSets.
   recordreplay::RegisterPointer(this);
 }
@@ -221,18 +222,26 @@ MojoResult WatcherDispatcher::CancelWatch(uintptr_t context) {
 
 MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
                                   MojoTrapEvent* blocking_events) {
+  recordreplay::Assert("WatcherDispatcher::Arm Start");
   base::AutoLock lock(lock_);
-  if (num_blocking_events && !blocking_events)
+  if (num_blocking_events && !blocking_events) {
+    recordreplay::Assert("WatcherDispatcher::Arm #1");
     return MOJO_RESULT_INVALID_ARGUMENT;
-  if (closed_)
+  }
+  if (closed_) {
+    recordreplay::Assert("WatcherDispatcher::Arm #2");
     return MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
-  if (watched_handles_.empty())
+  if (watched_handles_.empty()) {
+    recordreplay::Assert("WatcherDispatcher::Arm #3");
     return MOJO_RESULT_NOT_FOUND;
+  }
 
   if (ready_watches_.empty()) {
     // Fast path: No watches are ready to notify, so we're done.
     armed_ = true;
+    recordreplay::Assert("WatcherDispatcher::Arm #4");
     return MOJO_RESULT_OK;
   }
 
@@ -269,6 +278,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
     }
   }
 
+  recordreplay::Assert("WatcherDispatcher::Arm Done");
   return MOJO_RESULT_FAILED_PRECONDITION;
 }
 

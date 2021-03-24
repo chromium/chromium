@@ -131,6 +131,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
       should_monitor_quiescence_(spec.should_monitor_quiescence),
       should_notify_observers_(spec.should_notify_observers),
       delayed_fence_allowed_(spec.delayed_fence_allowed) {
+  recordreplay::RegisterPointer(this);
   DCHECK(time_domain);
   UpdateCrossThreadQueueStateLocked();
   // SequenceManager can't be set later, so we need to prevent task runners
@@ -140,6 +141,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
 }
 
 TaskQueueImpl::~TaskQueueImpl() {
+  recordreplay::UnregisterPointer(this);
 #if DCHECK_IS_ON()
   base::internal::CheckedAutoLock lock(any_thread_lock_);
   // NOTE this check shouldn't fire because |SequenceManagerImpl::queues_|
@@ -584,6 +586,9 @@ Optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {
 }
 
 void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
+  recordreplay::Assert("TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue %lu",
+                       recordreplay::PointerId(this));
+
   // Enqueue all delayed tasks that should be running now, skipping any that
   // have been canceled.
   WorkQueue::TaskPusher delayed_work_queue_task_pusher(

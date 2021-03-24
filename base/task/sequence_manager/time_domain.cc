@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/time_domain.h"
 
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -15,9 +16,13 @@ namespace sequence_manager {
 
 TimeDomain::TimeDomain()
     : sequence_manager_(nullptr),
-      associated_thread_(MakeRefCounted<internal::AssociatedThreadId>()) {}
+      associated_thread_(MakeRefCounted<internal::AssociatedThreadId>()) {
+  // TimeDomains can be compared based on their pointer IDs, see sequence_manager_impl.h
+  recordreplay::RegisterPointer(this);
+}
 
 TimeDomain::~TimeDomain() {
+  recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 }
 

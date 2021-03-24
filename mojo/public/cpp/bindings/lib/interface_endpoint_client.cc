@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
@@ -502,6 +503,8 @@ void InterfaceEndpointClient::OnAssociationEvent(
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
   DCHECK_EQ(handle_.id(), message->interface_id());
 
+  recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage Start");
+
   if (encountered_error_) {
     // This message is received after error has been encountered. For associated
     // interfaces, this means the remote side sends a
@@ -509,6 +512,7 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     // for the same interface. Close the pipe because this shouldn't happen.
     DVLOG(1) << "A message is received for an interface after it has been "
              << "disconnected. Closing the pipe.";
+    recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #1");
     return false;
   }
 
@@ -520,8 +524,10 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     auto responder = std::make_unique<ResponderThunk>(
         weak_ptr_factory_.GetWeakPtr(), task_runner_);
     if (mojo::internal::ControlMessageHandler::IsControlMessage(message)) {
-      return control_message_handler_.AcceptWithResponder(message,
-                                                          std::move(responder));
+      bool rv = control_message_handler_.AcceptWithResponder(message,
+                                                             std::move(responder));
+      recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #2 %d", rv);
+      return rv;
     } else {
       if (idle_tracking_connection_group_)
         responder->set_connection_group(idle_tracking_connection_group_);
@@ -534,22 +540,32 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     if (message->has_flag(Message::kFlagIsSync) &&
         !force_outgoing_messages_async_) {
       auto it = sync_responses_.find(request_id);
-      if (it == sync_responses_.end())
+      if (it == sync_responses_.end()) {
+        recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #3");
         return false;
+      }
       it->second->response = std::move(*message);
       *it->second->response_received = true;
+      recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #4");
       return true;
     }
 
     auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end())
+    if (it == async_responders_.end()) {
+      recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #5");
       return false;
+    }
     std::unique_ptr<MessageReceiver> responder = std::move(it->second);
     async_responders_.erase(it);
-    return responder->Accept(message);
+    bool rv = responder->Accept(message);
+    recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #6 %d", rv);
+    return rv;
   } else {
-    if (mojo::internal::ControlMessageHandler::IsControlMessage(message))
-      return control_message_handler_.Accept(message);
+    if (mojo::internal::ControlMessageHandler::IsControlMessage(message)) {
+      bool rv = control_message_handler_.Accept(message);
+      recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage #7 %d", rv);
+      return rv;
+    }
 
     accepted_interface_message = incoming_receiver_->Accept(message);
   }
@@ -561,6 +577,8 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       MaybeStartIdleTimer();
   }
 
+  recordreplay::Assert("InterfaceEndpointClient::HandleValidatedMessage Done %d",
+                       accepted_interface_message);
   return accepted_interface_message;
 }
 
