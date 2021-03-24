@@ -40,6 +40,7 @@ import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -89,6 +90,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     private final PageInfoIPHController mPageInfoIPHController;
     private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
             new PageInfoDiscoverabilityMetrics();
+    private final WindowAndroid mWindowAndroid;
 
     private boolean mUrlBarTextIsSearch = true;
 
@@ -112,7 +114,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
             PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
             Supplier<TemplateUrlService> templateUrlServiceSupplier,
-            Supplier<Profile> profileSupplier, PageInfoIPHController pageInfoIPHController) {
+            Supplier<Profile> profileSupplier, PageInfoIPHController pageInfoIPHController,
+            WindowAndroid windowAndroid) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
@@ -124,6 +127,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mContext = context;
         mUrlBarEditingTextStateProvider = urlBarEditingTextStateProvider;
         mPageInfoIPHController = pageInfoIPHController;
+        mWindowAndroid = windowAndroid;
 
         mEndPaddingPixelSizeOnFocusDelta =
                 mResources.getDimensionPixelSize(R.dimen.sei_location_bar_icon_end_padding_focused)
@@ -676,9 +680,10 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     // PermissionDialogController.Observer interface
     @Override
-    public void onDialogResult(
-            @ContentSettingsType int[] permissions, @ContentSettingValues int result) {
-        if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)) {
+    public void onDialogResult(WindowAndroid window, @ContentSettingsType int[] permissions,
+            @ContentSettingValues int result) {
+        if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)
+                || window != mWindowAndroid) {
             return;
         }
         @ContentSettingsType
