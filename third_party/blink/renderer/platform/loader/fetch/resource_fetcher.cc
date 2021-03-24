@@ -1238,9 +1238,16 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());
   DCHECK(loader_factory_);
+
+  // Set |unfreezable_task_runner| to the thread task-runner for keepalive
+  // fetches because we want it to keep running even after the frame is
+  // detached. It's pretty fragile to do that with the
+  // |unfreezable_task_runner_| that's saved in the ResourceFetcher, because
+  // that task runner is frame-associated.
   return loader_factory_->CreateURLLoader(
       ResourceRequest(request), options, freezable_task_runner_,
-      unfreezable_task_runner_,
+      request.GetKeepalive() ? Thread::Current()->GetTaskRunner()
+                             : unfreezable_task_runner_,
       WebBackForwardCacheLoaderHelper(back_forward_cache_loader_helper_));
 }
 
