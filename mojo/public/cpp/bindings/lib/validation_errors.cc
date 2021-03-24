@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -177,6 +178,10 @@ SerializationWarningObserverForTesting::
     ~SerializationWarningObserverForTesting() {
   DCHECK(g_serialization_warning_observer == this);
   g_serialization_warning_observer = nullptr;
+}
+
+void RecordInvalidStringDeserialization() {
+  base::UmaHistogramBoolean("Mojo.InvalidUTF8String", false);
 }
 
 }  // namespace internal

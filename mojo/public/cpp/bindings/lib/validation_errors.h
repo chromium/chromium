@@ -151,6 +151,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
   DISALLOW_COPY_AND_ASSIGN(SerializationWarningObserverForTesting);
 };
 
+// Used to record that Deserialize() of a Mojo string failed because it was not
+// valid UTF-8.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void RecordInvalidStringDeserialization();
+
 }  // namespace internal
 }  // namespace mojo
 
