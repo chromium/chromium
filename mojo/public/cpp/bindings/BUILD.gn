@@ -195,6 +195,7 @@ component("bindings") {
     "pipe_control_message_proxy.h",
     "raw_ptr_impl_ref_traits.h",
     "receiver.h",
+    "receiver_set.cc",
     "receiver_set.h",
     "remote.h",
     "remote_set.h",
