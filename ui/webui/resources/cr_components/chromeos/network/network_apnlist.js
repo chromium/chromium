@@ -22,6 +22,11 @@ Polymer({
       observer: 'managedPropertiesChanged_',
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * The name property of the selected APN. If a name property is empty, the
      * accessPointName property will be used. We use 'name' so that multiple
@@ -332,7 +337,7 @@ Polymer({
    * @private
    */
   isDisabled_() {
-    return this.selectedApn_ === '';
+    return this.disabled || this.selectedApn_ === '';
   },
 
   /**

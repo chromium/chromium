@@ -60,4 +60,17 @@ suite('NetworkProxySection', function() {
     };
     assertTrue(allowSharedToggle.hidden);
   });
+
+  test('Disabled UI state', function() {
+    const allowSharedToggle = proxySection.$.allowShared;
+    const networkProxy = proxySection.$$('network-proxy');
+
+    assertFalse(allowSharedToggle.disabled);
+    assertTrue(networkProxy.editable);
+
+    proxySection.disabled = true;
+
+    assertTrue(allowSharedToggle.disabled);
+    assertFalse(networkProxy.editable);
+  });
 });

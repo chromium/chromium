@@ -65,7 +65,8 @@
       <cr-radio-group id="nameserverType" class="layout vertical"
           selected="[[nameserversType_]]"
           on-selected-changed="onTypeChange_"
-          aria-label="[[i18n('networkNameservers')]]">
+          aria-label="[[i18n('networkNameservers')]]"
+          disabled="[[disabled]]">
         <!-- Automatic nameservers -->
         <cr-radio-button name="[[nameserversTypeEnum_.AUTOMATIC]]"
           disabled="[[!canChangeConfigType_]]">

@@ -13,6 +13,12 @@ suite('NetworkNetworkApnlistTest', function() {
   /** @type {!NetworkApnlist|undefined} */
   let apnlist;
 
+  function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
   setup(function() {
     apnlist = document.createElement('network-apnlist');
     apnlist.managedProperties = {
@@ -46,5 +52,27 @@ suite('NetworkNetworkApnlistTest', function() {
     assertEquals(0, selectEl.selectedIndex);
     assertEquals('AP-name', selectEl.options.item(0).value);
     assertEquals('Other', selectEl.options.item(1).value);
+  });
+
+  test('Disabled UI state', async function() {
+    const selectEl = apnlist.$.selectApn;
+
+    // Select 'Other' option.
+    selectEl.value = 'Other';
+    selectEl.dispatchEvent(new Event('change'));
+    await flushAsync();
+
+    const propertyList = apnlist.$$('network-property-list-mojo');
+    const button = apnlist.$$('cr-button');
+
+    assertFalse(selectEl.disabled);
+    assertFalse(propertyList.disabled);
+    assertFalse(button.disabled);
+
+    apnlist.disabled = true;
+
+    assertTrue(selectEl.disabled);
+    assertTrue(propertyList.disabled);
+    assertTrue(button.disabled);
   });
 });

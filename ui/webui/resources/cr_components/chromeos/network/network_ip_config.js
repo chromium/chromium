@@ -101,6 +101,11 @@ Polymer({
       observer: 'managedPropertiesChanged_',
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * State of 'Configure IP Addresses Automatically'.
      * @private
@@ -189,11 +194,14 @@ Polymer({
 
   /**
    * Checks whether IP address config type can be changed.
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {?chromeos.networkConfig.mojom.ManagedProperties} managedProperties
    * @return {boolean}
    * @private
    */
   canChangeIPConfigType_(managedProperties) {
+    if (this.disabled || !managedProperties) {
+      return false;
+    }
     if (managedProperties.type ===
         chromeos.networkConfig.mojom.NetworkType.kCellular) {
       // Cellular IP config properties can not be changed.

@@ -19,7 +19,7 @@
       <div class="start">[[i18n('networkAccessPoint')]]</div>
       <select id="selectApn" class="md-select" on-change="onSelectApnChange_"
           value="[[selectedApn_]]"
-          disabled="[[isDisabled_(selectedApn_)]]"
+          disabled="[[isDisabled_(disabled, selectedApn_)]]"
           aria-label="[[i18n('networkAccessPoint')]]">
         <template is="dom-repeat" items="[[apnSelectList_]]">
           <option value="[[item.name]]">
@@ -33,9 +33,12 @@
       <div class="property-box single-column indented">
         <network-property-list-mojo on-property-change="onOtherApnChange_"
             fields="[[otherApnFields_]]" property-dict="[[otherApn_]]"
-            edit-field-types="[[otherApnEditTypes_]]" prefix="cellular.apn.">
+            edit-field-types="[[otherApnEditTypes_]]" prefix="cellular.apn."
+            disabled="[[disabled]]">
         </network-property-list-mojo>
-        <cr-button class="action-button" on-click="onSaveOtherTap_">
+        <cr-button class="action-button"
+            on-click="onSaveOtherTap_"
+            disabled="[[disabled]]">
           [[i18n('save')]]
         </cr-button>
       </div>

@@ -22,6 +22,11 @@ Polymer({
     /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: Object,
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Reflects prefs.settings.use_shared_proxies for data binding.
      * @private
