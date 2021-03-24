@@ -41,7 +41,8 @@ CreateSuggestionGroupsMap(
 }  // namespace
 
 const char kGoogleGIconResourceName[] = "google_g.png";
-const char kBookmarkIconResourceName[] = "bookmark.svg";
+const char kBookmarkIconResourceName[] =
+    "chrome://resources/images/icon_bookmark.svg";
 const char kCalculatorIconResourceName[] = "calculator.svg";
 const char kClockIconResourceName[] = "clock.svg";
 const char kDriveDocsIconResourceName[] = "drive_docs.svg";

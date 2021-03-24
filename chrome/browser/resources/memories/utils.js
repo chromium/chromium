@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 /**
  * @fileoverview This file provides shared utility functions used by the custom
@@ -16,4 +17,12 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
  */
 export function decodeMojoString16(str) {
   return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
+}
+
+/**
+ * @param {!Url} url
+ * @return {string} The domain name of the URL without the leading 'www.'.
+ */
+export function getHostnameFromUrl(url) {
+  return new URL(url.url).hostname.replace(/^(www\.)/, '');
 }

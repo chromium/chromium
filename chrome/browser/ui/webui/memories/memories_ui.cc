@@ -36,6 +36,9 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("memoryTitleDescription",
                     u"Based on previous web activity");
   source->AddString("topVisitsSectionHeader", u"From Chrome History");
+  source->AddString("relatedTabGroupsAndBookmarksSectionHeader",
+                    u"From tab groups and bookmarks");
+  source->AddString("tabGroupTileCaption", u"Recent tab group");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),

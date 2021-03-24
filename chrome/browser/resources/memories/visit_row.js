@@ -11,7 +11,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {decodeMojoString16} from './utils.js';
+import {decodeMojoString16, getHostnameFromUrl} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -93,7 +93,7 @@ class VisitRowElement extends PolymerElement {
    * @private
    */
   getHostnameFromUrl_(url) {
-    return new URL(url.url).hostname.replace(/^(www\.)/, '');
+    return getHostnameFromUrl(url);
   }
 
   /**

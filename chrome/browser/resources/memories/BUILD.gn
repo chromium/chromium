@@ -41,9 +41,22 @@ js_library("memories") {
 
 js_library("memory_card") {
   deps = [
+    ":memory_tile",
+    ":page_favicon",
+    ":page_thumbnail",
     ":top_visit",
+    ":utils",
     "//components/memories/core:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//url/mojom:url_mojom_origin_webui_js",
+  ]
+}
+
+js_library("memory_tile") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
 
@@ -76,7 +89,10 @@ js_library("top_visit") {
 }
 
 js_library("utils") {
-  deps = [ "//mojo/public/mojom/base:base_webui_js" ]
+  deps = [
+    "//mojo/public/mojom/base:base_webui_js",
+    "//url/mojom:url_mojom_origin_webui_js",
+  ]
 }
 
 js_library("visit_row") {
@@ -94,6 +110,7 @@ html_to_js("web_components_local") {
   js_files = [
     "app.js",
     "memory_card.js",
+    "memory_tile.js",
     "page_favicon.js",
     "page_thumbnail.js",
     "shared_vars.js",
@@ -131,6 +148,7 @@ preprocess_if_expr("preprocess_gen") {
   in_files = [
     "app.js",
     "memory_card.js",
+    "memory_tile.js",
     "page_favicon.js",
     "page_thumbnail.js",
     "shared_vars.js",

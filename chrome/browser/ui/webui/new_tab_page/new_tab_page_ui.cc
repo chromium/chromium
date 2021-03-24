@@ -256,7 +256,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   static constexpr webui::ResourcePath kImages[] = {
       {omnibox::kGoogleGIconResourceName,
        IDR_WEBUI_IMAGES_200_LOGO_GOOGLEG_PNG},
-      {omnibox::kBookmarkIconResourceName, IDR_LOCAL_NTP_ICONS_BOOKMARK},
       {omnibox::kCalculatorIconResourceName, IDR_LOCAL_NTP_ICONS_CALCULATOR},
       {omnibox::kClockIconResourceName, IDR_LOCAL_NTP_ICONS_CLOCK},
       {omnibox::kDriveDocsIconResourceName, IDR_LOCAL_NTP_ICONS_DRIVE_DOCS},

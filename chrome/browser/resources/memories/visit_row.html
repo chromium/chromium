@@ -5,12 +5,12 @@
     position: relative;
   }
 
-  .header {
+  #header {
     display: flex;
     justify-content: space-between;
   }
 
-  .start-justtified {
+  #start-justtified {
     color: inherit;
     display: flex;
     overflow: hidden;
@@ -18,7 +18,7 @@
     z-index: 1;
   }
 
-  .end-justified {
+  #end-justified {
     display: flex;
     flex-shrink: 0;
   }
@@ -31,37 +31,37 @@
   }
 
   :host([is-top-visit]) page-favicon {
-    background-color: var(--google-grey-refresh-100);
-    border-radius: 8px;
+    background-color: var(--image-background-color);
+    border-radius: var(--image-border-radius);
   }
 
-  .title {
+  #title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .hostname,
-  .separator,
-  .timestamp {
+  #hostname,
+  #separator,
+  #timestamp {
     flex-shrink: 0;
     margin-inline-start: 8px;
   }
 
-  .hostname,
-  .timestamp {
+  #hostname,
+  #timestamp {
     color: var(--cr-secondary-text-color);
   }
 </style>
-<div class="header">
-  <a class="start-justtified" href="[[visit.url.url]]" on-click="onClick_">
+<div id="header">
+  <a id="start-justtified" href="[[visit.url.url]]" on-click="onClick_">
     <page-favicon url="[[visit.url]]"></page-favicon>
-    <span class="title">[[decodeMojoString16_(visit.pageTitle)]]</span>
-    <span class="separator">–</span>
-    <span class="hostname">[[getHostnameFromUrl_(visit.url)]]</span>
+    <span id="title">[[decodeMojoString16_(visit.pageTitle)]]</span>
+    <span id="separator">–</span>
+    <span id="hostname">[[getHostnameFromUrl_(visit.url)]]</span>
   </a>
-  <div class="end-justified">
-    <div class="timestamp">[[getTimeOfVisit_(visit)]]</div>
+  <div id="end-justified">
+    <div id="timestamp">[[getTimeOfVisit_(visit)]]</div>
     <cr-icon-button id="action" class="icon-more-vert"
         hidden="[[visit.relatedVisits.length]]">
     </cr-icon-button>
