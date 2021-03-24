@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 307 tests; 180 PASS, 127 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 307 tests; 195 PASS, 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -13,7 +13,7 @@ PASS codec's timestamp
 PASS codec's type
 PASS codec's id
 FAIL inbound-rtp's receiverId assert_true: Is receiverId present expected true got false
-FAIL inbound-rtp's remoteId assert_true: Is remoteId present expected true got false
+PASS inbound-rtp's remoteId
 PASS inbound-rtp's framesDecoded
 PASS inbound-rtp's keyFramesDecoded
 PASS inbound-rtp's frameWidth
@@ -157,18 +157,18 @@ PASS remote-inbound-rtp's codecId
 PASS remote-inbound-rtp's timestamp
 PASS remote-inbound-rtp's type
 PASS remote-inbound-rtp's id
-FAIL remote-outbound-rtp's localId assert_true: Is localId present expected true got false
-FAIL remote-outbound-rtp's remoteTimestamp assert_true: Is remoteTimestamp present expected true got false
-FAIL remote-outbound-rtp's reportsSent assert_true: Is reportsSent present expected true got false
-FAIL remote-outbound-rtp's packetsSent assert_true: Is packetsSent present expected true got false
-FAIL remote-outbound-rtp's bytesSent assert_true: Is bytesSent present expected true got false
-FAIL remote-outbound-rtp's ssrc assert_true: Is ssrc present expected true got false
-FAIL remote-outbound-rtp's kind assert_true: Is kind present expected true got false
-FAIL remote-outbound-rtp's transportId assert_true: Is transportId present expected true got false
-FAIL remote-outbound-rtp's codecId assert_true: Is codecId present expected true got false
-FAIL remote-outbound-rtp's timestamp assert_true: Is timestamp present expected true got false
-FAIL remote-outbound-rtp's type assert_true: Is type present expected true got false
-FAIL remote-outbound-rtp's id assert_true: Is id present expected true got false
+PASS remote-outbound-rtp's localId
+PASS remote-outbound-rtp's remoteTimestamp
+PASS remote-outbound-rtp's reportsSent
+PASS remote-outbound-rtp's packetsSent
+PASS remote-outbound-rtp's bytesSent
+PASS remote-outbound-rtp's ssrc
+PASS remote-outbound-rtp's kind
+PASS remote-outbound-rtp's transportId
+PASS remote-outbound-rtp's codecId
+PASS remote-outbound-rtp's timestamp
+PASS remote-outbound-rtp's type
+PASS remote-outbound-rtp's id
 FAIL csrc's contributorSsrc assert_true: Is contributorSsrc present expected true got false
 FAIL csrc's inboundRtpStreamId assert_true: Is inboundRtpStreamId present expected true got false
 FAIL csrc's packetsContributedTo assert_true: Is packetsContributedTo present expected true got false
@@ -279,7 +279,7 @@ PASS candidate-pair's timestamp
 PASS candidate-pair's type
 PASS candidate-pair's id
 PASS local-candidate's transportId
-FAIL local-candidate's address assert_true: Is address present expected true got false
+PASS local-candidate's address
 PASS local-candidate's port
 PASS local-candidate's protocol
 PASS local-candidate's candidateType
@@ -290,7 +290,7 @@ PASS local-candidate's timestamp
 PASS local-candidate's type
 PASS local-candidate's id
 PASS remote-candidate's transportId
-FAIL remote-candidate's address assert_true: Is address present expected true got false
+PASS remote-candidate's address
 PASS remote-candidate's port
 PASS remote-candidate's protocol
 PASS remote-candidate's candidateType

@@ -241,6 +241,7 @@ addRTCStatsToWhitelist(
 let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   localId: 'string',
   remoteTimestamp: 'number',
+  reportsSent: 'number',
 });
 // TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
 addRTCStatsToWhitelist(
