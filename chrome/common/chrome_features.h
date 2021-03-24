@@ -111,6 +111,8 @@ extern const base::FeatureParam<std::string> kPrivacySandboxSettingsURL;
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCpuAffinityRestrictToLittleCores;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPowerSchedulerThrottleIdle;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

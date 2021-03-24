@@ -18,6 +18,7 @@ include_rules = [
   "+components/js_injection",
   "+components/network_session_configurator/common",
   "+components/metrics",
+  "+components/power_scheduler",
   "+components/prefs",
   "+components/services/heap_profiling/public",
   "+components/url_formatter",

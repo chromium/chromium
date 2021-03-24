@@ -264,8 +264,6 @@ source_set("common") {
 
   if (is_android) {
     sources += [
-      "android/cpu_affinity.cc",
-      "android/cpu_affinity.h",
       "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/gin_java_bridge_errors.cc",

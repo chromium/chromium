@@ -42,6 +42,7 @@ source_set("renderer") {
     "//components/js_injection/common",
     "//components/js_injection/renderer",
     "//components/page_load_metrics/renderer",
+    "//components/power_scheduler",
     "//components/printing/common",
     "//components/printing/renderer",
     "//components/resources",

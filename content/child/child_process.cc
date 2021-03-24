@@ -31,7 +31,7 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "content/common/android/cpu_affinity.h"
+#include "components/power_scheduler/power_scheduler.h"
 #endif
 
 namespace content {
@@ -94,7 +94,7 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   // For child processes, this requires allowing of the sched_setaffinity()
   // syscall in the sandbox (baseline_policy_android.cc). When this call is
   // removed, the sandbox allowlist should be updated too.
-  SetupCpuAffinityPollingOnce();
+  power_scheduler::PowerScheduler::GetInstance()->Setup();
 #endif
 
   // We can't recover from failing to start the IO thread.

@@ -40,6 +40,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/metrics/unsent_log_store_metrics.h"
+#include "components/power_scheduler/power_scheduler.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -52,7 +53,6 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/cpu_affinity.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -396,7 +396,8 @@ void AwMainDelegate::PostFieldTrialInitialization() {
       base::FeatureList::IsEnabled(
           android_webview::features::
               kWebViewCpuAffinityRestrictToLittleCores)) {
-    content::EnforceProcessCpuAffinity(base::CpuAffinityMode::kLittleCoresOnly);
+    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+        power_scheduler::SchedulingPolicy::kLittleCoresOnly);
   }
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)

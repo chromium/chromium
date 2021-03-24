@@ -14,6 +14,13 @@ component("power_scheduler") {
     "traced_power_mode.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "power_scheduler.cc",
+      "power_scheduler.h",
+    ]
+  }
+
   defines = [ "IS_POWER_SCHEDULER_IMPL" ]
 
   deps = [ "//base" ]

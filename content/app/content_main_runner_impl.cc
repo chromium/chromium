@@ -169,9 +169,9 @@
 
 #if defined(OS_ANDROID)
 #include "base/system/sys_info.h"
+#include "components/power_scheduler/power_scheduler.h"
 #include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"
-#include "content/common/android/cpu_affinity.h"
 #endif
 
 namespace content {
@@ -1021,7 +1021,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     // For child processes, this requires allowing of the
     // sched_setaffinity() syscall in the sandbox (baseline_policy_android.cc).
     // When this call is removed, the sandbox allowlist should be updated too.
-    SetupCpuAffinityPollingOnce();
+    power_scheduler::PowerScheduler::GetInstance()->Setup();
 #endif
 
     if (should_start_minimal_browser)

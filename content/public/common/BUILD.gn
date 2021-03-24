@@ -245,7 +245,6 @@ source_set("common_sources") {
   }
 
   if (is_android) {
-    sources += [ "cpu_affinity.h" ]
     deps += [ "//content/public/android:jni" ]
   }
 
