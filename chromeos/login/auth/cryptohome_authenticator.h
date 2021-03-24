@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
 #include "chromeos/login/auth/authenticator.h"
+#include "chromeos/login/auth/safe_mode_delegate.h"
 #include "chromeos/login/auth/test_attempt_state.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
@@ -102,6 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   };
 
   CryptohomeAuthenticator(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                          std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
                           AuthStatusConsumer* consumer);
 
   // Authenticator overrides.
@@ -175,18 +177,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
  protected:
   ~CryptohomeAuthenticator() override;
 
-  using IsOwnerCallback = base::OnceCallback<void(bool is_owner)>;
-
-  // Method to be implemented in child. Return |true| if device is running
-  // in safe mode.
-  virtual bool IsSafeMode() = 0;
-
-  // Method to be implemented in child. Have to call |callback| with boolean
-  // parameter that indicates if user in |context| can act as an owner in
-  // safe mode.
-  virtual void CheckSafeModeOwnership(const UserContext& context,
-                                      IsOwnerCallback callback) = 0;
-
  private:
   friend class CryptohomeAuthenticatorTest;
   FRIEND_TEST_ALL_PREFIXES(CryptohomeAuthenticatorTest,
@@ -246,6 +236,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void ResolveLoginCompletionStatus();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
 
   std::unique_ptr<AuthAttemptState> current_state_;
   bool migrate_attempted_;

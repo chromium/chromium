@@ -66,6 +66,7 @@ component("auth") {
     "login_performer.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
+    "safe_mode_delegate.h",
     "saml_password_attributes.cc",
     "saml_password_attributes.h",
     "stub_authenticator.cc",

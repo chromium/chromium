@@ -983,6 +983,8 @@ source_set("chromeos") {
     "../ash/login/auth/chrome_cryptohome_authenticator.h",
     "../ash/login/auth/chrome_login_performer.cc",
     "../ash/login/auth/chrome_login_performer.h",
+    "../ash/login/auth/chrome_safe_mode_delegate.cc",
+    "../ash/login/auth/chrome_safe_mode_delegate.h",
     "../ash/login/challenge_response_auth_keys_loader.cc",
     "../ash/login/challenge_response_auth_keys_loader.h",
     "../ash/login/chrome_restart_request.cc",

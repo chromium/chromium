@@ -561,9 +561,11 @@ void Remove(const base::WeakPtr<AuthAttemptState>& attempt,
 
 CryptohomeAuthenticator::CryptohomeAuthenticator(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
     AuthStatusConsumer* consumer)
     : Authenticator(consumer),
       task_runner_(std::move(task_runner)),
+      safe_mode_delegate_(std::move(safe_mode_delegate)),
       migrate_attempted_(false),
       remove_attempted_(false),
       resync_attempted_(false),
@@ -798,14 +800,14 @@ bool CryptohomeAuthenticator::VerifyOwner() {
   if (owner_is_verified_)
     return true;
   // Check if policy data is fine and continue in safe mode if needed.
-  if (!IsSafeMode()) {
+  if (!safe_mode_delegate_->IsSafeMode()) {
     // Now we can continue with the login and report mount success.
     user_can_login_ = true;
     owner_is_verified_ = true;
     return true;
   }
 
-  CheckSafeModeOwnership(
+  safe_mode_delegate_->CheckSafeModeOwnership(
       current_state_->user_context,
       base::BindOnce(&CryptohomeAuthenticator::OnOwnershipChecked, this));
   return false;

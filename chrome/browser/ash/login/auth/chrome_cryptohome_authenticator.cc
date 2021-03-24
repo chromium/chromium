@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -18,30 +19,10 @@ namespace chromeos {
 
 ChromeCryptohomeAuthenticator::ChromeCryptohomeAuthenticator(
     AuthStatusConsumer* consumer)
-    : CryptohomeAuthenticator(base::ThreadTaskRunnerHandle::Get(), consumer) {}
+    : CryptohomeAuthenticator(base::ThreadTaskRunnerHandle::Get(),
+                              std::make_unique<ChromeSafeModeDelegate>(),
+                              consumer) {}
 
 ChromeCryptohomeAuthenticator::~ChromeCryptohomeAuthenticator() {}
-
-bool ChromeCryptohomeAuthenticator::IsSafeMode() {
-  bool is_safe_mode = false;
-  CrosSettings::Get()->GetBoolean(kPolicyMissingMitigationMode, &is_safe_mode);
-  return is_safe_mode;
-}
-
-void ChromeCryptohomeAuthenticator::CheckSafeModeOwnership(
-    const UserContext& context,
-    IsOwnerCallback callback) {
-  // `IsOwnerForSafeModeAsync` expects logged in state to be
-  // LOGGED_IN_SAFE_MODE.
-  if (LoginState::IsInitialized()) {
-    LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_SAFE_MODE,
-                                        LoginState::LOGGED_IN_USER_NONE);
-  }
-
-  OwnerSettingsServiceAsh::IsOwnerForSafeModeAsync(
-      context.GetUserIDHash(),
-      OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil(),
-      std::move(callback));
-}
 
 }  // namespace chromeos
