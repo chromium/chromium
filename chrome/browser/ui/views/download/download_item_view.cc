@@ -702,7 +702,10 @@ void DownloadItemView::SetMode(Mode mode) {
     announce_accessible_alert_soon_ = true;
     if (danger_type == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
       UpdateAccessibleAlert(l10n_util::GetStringFUTF16(
-          IDS_PROMPT_APP_DEEP_SCANNING_ACCESSIBLE_ALERT, unelided_filename));
+          base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning)
+              ? IDS_PROMPT_DEEP_SCANNING_ACCESSIBLE_ALERT
+              : IDS_PROMPT_APP_DEEP_SCANNING_ACCESSIBLE_ALERT,
+          unelided_filename));
     } else {
       size_t ignore;
       UpdateAccessibleAlert(model_->GetWarningText(unelided_filename, &ignore));

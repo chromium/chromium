@@ -1816,6 +1816,10 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when Chrome recommends uploading the file for additional scanning">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
       </message>
+        <message name="IDS_PROMPT_DEEP_SCANNING"
+        desc="Message shown in the download shelf for all Advanced Protection and Enhanced Safe Browsing users when Chrome recommends uploading the file for additional scanning.">
+        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google for scanning?
+      </message>
       <message name="IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is uncommon.">
         This file is not commonly downloaded and may be dangerous.
@@ -2079,14 +2083,28 @@ are declared in tools/grit/grit_rule.gni.
       <if expr="is_macosx">
         <then>
           <message name="IDS_PROMPT_APP_DEEP_SCANNING_ACCESSIBLE_ALERT"
-                   desc="The title of a download notification inidcating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
+                   desc="The title of a download notification indicating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
             <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
           </message>
         </then>
         <else>
           <message name="IDS_PROMPT_APP_DEEP_SCANNING_ACCESSIBLE_ALERT"
-                   desc="The title of a download notification inidcating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
+                   desc="The title of a download notification indicating that the file may be malicious, and the Advanced Protection Program recommends sending the file to Google. This message is for screen reader users">
             <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning? Press Shift+F6 to cycle to the downloads bar area.
+          </message>
+        </else>
+      </if>
+      <if expr="is_macosx">
+        <then>
+          <message name="IDS_PROMPT_DEEP_SCANNING_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification indicating that the file may be malicious and Safe Browsing recommends sending the file to Google. This message is for screen reader users">
+            <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> may be dangerous. Send to Google for scanning?
+          </message>
+        </then>
+        <else>
+          <message name="IDS_PROMPT_DEEP_SCANNING_ACCESSIBLE_ALERT"
+                   desc="The title of a download notification indicating that the file may be malicious and Safe Browsing recommends sending the file to Google. This message is for screen reader users">
+            <ph name="FILE_NAME">$1<ex>file.exe</ex></ph> may be dangerous. Send to Google for scanning? Press Shift+F6 to cycle to the downloads bar area.
           </message>
         </else>
       </if>
@@ -11057,8 +11075,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_DEEP_SCANNING_INFO_DIALOG_TITLE" desc="Title shown in tab modal dialog when the user opens a download that recommends deep scanning">
       Scan file before opening?
     </message>
-    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the user opens a download that recommends deep scanning">
+    <message name="IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the user opens a download that recommends deep scanning">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
+    </message>
+    <message name="IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE" desc="Message shown in tab modal dialog when the user opens a download that recommends deep scanning">
+        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Safe Browsing for scanning?
     </message>
     <message name="IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON" desc="The text on the accept button in tab modal dialog when the user opens a download that recommends deep scanning">
       Send

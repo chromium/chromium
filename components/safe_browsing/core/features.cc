@@ -62,7 +62,7 @@ const base::Feature kPasswordProtectionReferringAppEnabledAndroid{
     "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionForSignedInUsers{
+const base::Feature kPasswordProtectionForSignedInUsers {
   "SafeBrowsingPasswordProtectionForSignedInUsers",
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -70,6 +70,9 @@ const base::Feature kPasswordProtectionForSignedInUsers{
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+const base::Feature kPromptEsbForDeepScanning{
+    "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingEnterpriseCsd{
     "SafeBrowsingEnterpriseCsd", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/features.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,8 +35,8 @@
 
 using base::TimeDelta;
 using download::DownloadItem;
-using safe_browsing::DownloadFileType;
 using offline_items_collection::FailState;
+using safe_browsing::DownloadFileType;
 
 namespace {
 
@@ -281,8 +283,11 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       return l10n_util::GetStringFUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED, filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      return l10n_util::GetStringFUTF16(IDS_PROMPT_APP_DEEP_SCANNING, filename,
-                                        offset);
+      return l10n_util::GetStringFUTF16(
+          base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning)
+              ? IDS_PROMPT_DEEP_SCANNING
+              : IDS_PROMPT_APP_DEEP_SCANNING,
+          filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
