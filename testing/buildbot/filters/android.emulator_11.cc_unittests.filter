@@ -4,6 +4,4 @@
 -P/OopClearPixelTest.*
 -P/OopImagePixelTest.*
 -P/OopPathPixelTest.*
--P/OopRecordFilterPixelTest.*
--P/OopRecordShaderPixelTest.*
 -P/OopTextBlobPixelTest.*
