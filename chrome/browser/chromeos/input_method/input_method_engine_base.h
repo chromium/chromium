@@ -128,9 +128,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
       Profile* profile);
 
   // IMEEngineHandlerInterface overrides.
-  void FocusIn(const ui::IMEEngineHandlerInterface::InputContext& input_context)
-      override;
-  void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
   void Reset() override;

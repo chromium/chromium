@@ -74,6 +74,30 @@ InputMethodEngine::InputMethodEngine() = default;
 
 InputMethodEngine::~InputMethodEngine() = default;
 
+void InputMethodEngine::FocusIn(
+    const ui::IMEEngineHandlerInterface::InputContext& input_context) {
+  current_input_type_ = input_context.type;
+
+  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
+    return;
+
+  context_id_ = next_context_id_;
+  ++next_context_id_;
+
+  observer_->OnFocus(context_id_, input_context);
+}
+
+void InputMethodEngine::FocusOut() {
+  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
+    return;
+
+  current_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
+
+  int context_id = context_id_;
+  context_id_ = -1;
+  observer_->OnBlur(context_id);
+}
+
 void InputMethodEngine::Enable(const std::string& component_id) {
   InputMethodEngineBase::Enable(component_id);
   EnableInputView();

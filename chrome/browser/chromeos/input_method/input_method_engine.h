@@ -100,6 +100,9 @@ class InputMethodEngine : public InputMethodEngineBase,
   bool IsActive() const override;
 
   // ui::IMEEngineHandlerInterface overrides.
+  void FocusIn(const ui::IMEEngineHandlerInterface::InputContext& input_context)
+      override;
+  void FocusOut() override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
   void AssistiveWindowButtonClicked(
