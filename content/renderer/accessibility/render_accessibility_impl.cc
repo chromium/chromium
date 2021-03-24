@@ -593,7 +593,7 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
     return false;
 
   if (event.event_type == ax::mojom::Event::kTextSelectionChanged &&
-      !obj.IsNativeTextControl()) {
+      !obj.IsNativeTextField()) {
     // Selection changes on non-native text controls cause no change to the
     // control node's data.
     //

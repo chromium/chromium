@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -1292,7 +1293,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   SerializeSparseAttributes(node_data);
 
-  if (Element* element = this->GetElement()) {
+  if (Element* element = GetElement()) {
     if (const AtomicString& aria_role =
             GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
       TruncateAndAddStringAttribute(node_data,
@@ -1307,26 +1308,24 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       }
     }
 
-    if (IsEditable()) {
-      if (IsNativeTextControl()) {
-        // Selection offsets are only used for plain text controls, (input of a
-        // text field type, and textarea). Rich editable areas, such as
-        // contenteditables, use AXTreeData.
-        //
-        // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
-        const auto ax_selection =
-            AXSelection::FromCurrentSelection(ToTextControl(*element));
-        int start = ax_selection.Base().IsTextPosition()
-                        ? ax_selection.Base().TextOffset()
-                        : ax_selection.Base().ChildIndex();
-        int end = ax_selection.Extent().IsTextPosition()
-                      ? ax_selection.Extent().TextOffset()
-                      : ax_selection.Extent().ChildIndex();
-        node_data->AddIntAttribute(
-            ax::mojom::blink::IntAttribute::kTextSelStart, start);
-        node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelEnd,
-                                   end);
-      }
+    if (IsNativeTextField()) {
+      // Selection offsets are only used for plain text controls, (input of a
+      // text field type, and textarea). Rich editable areas, such as
+      // contenteditables, use AXTreeData.
+      //
+      // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
+      const auto ax_selection =
+          AXSelection::FromCurrentSelection(ToTextControl(*element));
+      int start = ax_selection.Base().IsTextPosition()
+                      ? ax_selection.Base().TextOffset()
+                      : ax_selection.Base().ChildIndex();
+      int end = ax_selection.Extent().IsTextPosition()
+                    ? ax_selection.Extent().TextOffset()
+                    : ax_selection.Extent().ChildIndex();
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelStart,
+                                 start);
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelEnd,
+                                 end);
     }
   }
 
@@ -1730,16 +1729,16 @@ ax::mojom::blink::Role AXObject::RoleValue() const {
   return role_;
 }
 
-bool AXObject::IsARIATextControl() const {
-  if (IsNativeTextControl())
+bool AXObject::IsAnchor() const {
+  return IsLink() && !IsNativeImage();
+}
+
+bool AXObject::IsARIATextField() const {
+  if (IsNativeTextField())
     return false;  // Native role supercedes the ARIA one.
   return AriaRoleAttribute() == ax::mojom::blink::Role::kTextField ||
          AriaRoleAttribute() == ax::mojom::blink::Role::kSearchBox ||
          AriaRoleAttribute() == ax::mojom::blink::Role::kTextFieldWithComboBox;
-}
-
-bool AXObject::IsAnchor() const {
-  return IsLink() && !IsNativeImage();
 }
 
 bool AXObject::IsButton() const {
@@ -1952,24 +1951,29 @@ bool AXObject::IsNativeSpinButton() const {
   return false;
 }
 
-bool AXObject::IsNativeTextControl() const {
-  return false;
+bool AXObject::IsNativeTextField() const {
+  return blink::IsTextControl(GetNode());
 }
 
-bool AXObject::IsNonNativeTextControl() const {
-  return false;
+bool AXObject::IsNonNativeTextField() const {
+  // Consivably, an <input type=text> or a <textarea> might also have the
+  // contenteditable attribute applied. In such cases, the <input> or <textarea>
+  // tags should supercede.
+  if (IsNativeTextField())
+    return false;
+  return HasContentEditableAttributeSet() || IsARIATextField();
 }
 
 bool AXObject::IsPasswordField() const {
-  return false;
+  auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
+  return input_element && input_element->type() == input_type_names::kPassword;
 }
 
 bool AXObject::IsPasswordFieldAndShouldHideValue() const {
-  Settings* settings = GetDocument()->GetSettings();
-  if (!settings || settings->GetAccessibilityPasswordValuesEnabled())
+  if (!IsPasswordField())
     return false;
-
-  return IsPasswordField();
+  const Settings* settings = GetDocument()->GetSettings();
+  return settings && !settings->GetAccessibilityPasswordValuesEnabled();
 }
 
 bool AXObject::IsPresentational() const {
@@ -1996,6 +2000,12 @@ bool AXObject::IsRangeValueSupported() const {
     return CanSetFocusAttribute();
   }
   return ui::IsRangeValueSupported(RoleValue());
+}
+
+bool AXObject::IsTextField() const {
+  if (IsDetached())
+    return false;
+  return IsNativeTextField() || IsNonNativeTextField();
 }
 
 bool AXObject::IsClickable() const {
@@ -2538,7 +2548,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
 
 const AXObject* AXObject::GetNativeTextControlAncestor(
     int max_levels_to_check) const {
-  if (IsNativeTextControl())
+  if (IsNativeTextField())
     return this;
 
   if (max_levels_to_check == 0)
@@ -2774,7 +2784,7 @@ bool AXObject::IsARIAControlledByTextboxWithActiveDescendant() const {
     return false;
 
   const AXObject* focused_object = AXObjectCache().GetOrCreate(focused_element);
-  if (!focused_object || !focused_object->IsTextControl())
+  if (!focused_object || !focused_object->IsTextField())
     return false;
 
   if (!focused_object->GetAOMPropertyOrARIAAttribute(
@@ -3254,6 +3264,12 @@ void AXObject::TextCharacterOffsets(Vector<int>&) const {}
 void AXObject::GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const {}
 
+int AXObject::TextLength() const {
+  if (IsNativeTextField())
+    return GetValueForControl().length();
+  return 0;
+}
+
 int AXObject::TextOffsetInFormattingContext(int offset) const {
   DCHECK_GE(offset, 0);
   return offset;
@@ -3270,7 +3286,7 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
     return ax::mojom::blink::DefaultActionVerb::kNone;
 
   // TODO(dmazzoni): Ensure that combo box text field is handled here.
-  if (IsTextControl())
+  if (IsTextField())
     return ax::mojom::blink::DefaultActionVerb::kActivate;
 
   if (IsCheckable()) {
@@ -3557,7 +3573,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // ax::mojom::blink::Role::kComboBoxMenuButton:
   //   <div tabindex=0 role="combobox">Select</div>
   if (role == ax::mojom::blink::Role::kComboBoxGrouping) {
-    if (IsNativeTextControl())
+    if (IsNativeTextField())
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
     else if (GetElement() && GetElement()->SupportsFocus())
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
@@ -4772,7 +4788,7 @@ bool AXObject::OnNativeClickAction() {
   if (!element && GetNode())
     element = GetNode()->parentElement();
 
-  if (IsTextControl())
+  if (IsTextField())
     return OnNativeFocusAction();
 
   if (element) {

@@ -429,8 +429,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Check object role or purpose.
   ax::mojom::blink::Role RoleValue() const;
-  bool IsARIATextControl() const;
   bool IsAnchor() const;
+
+  // Returns true if this object is an ARIA text field, i.e. it is neither an
+  // <input> nor a <textarea>, but it has an ARIA role of textbox, searchbox or
+  // (on certain platforms) combobox.
+  bool IsARIATextField() const;
+
   bool IsButton() const;
   bool IsCanvas() const;
   bool IsCheckboxOrRadio() const;
@@ -449,13 +454,24 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsMeter() const;
   virtual bool IsNativeImage() const;
   virtual bool IsNativeSpinButton() const;
+
   // Returns true if this object is an input element of a text field type, such
   // as type="text" or type="tel", or a textarea.
-  virtual bool IsNativeTextControl() const;
-  // Returns true if this object is a contenteditable or has role=textbox.
-  virtual bool IsNonNativeTextControl() const;
-  virtual bool IsPasswordField() const;
+  bool IsNativeTextField() const;
+
+  // Returns true if this object is not an <input> or a <textarea>, and is
+  // either a contenteditable, or has role=textbox role=searchbox or
+  // role=combobox.
+  bool IsNonNativeTextField() const;
+
+  // Returns true if this object is a text field that is used for entering
+  // passwords, i.e. <input type=password>.
+  bool IsPasswordField() const;
+
+  // Returns true if this object is a text field that is used for entering
+  // passwords, but its input should be masked from the user.
   bool IsPasswordFieldAndShouldHideValue() const;
+
   bool IsPresentational() const;
   bool IsRangeValueSupported() const;
   bool IsScrollbar() const {
@@ -466,7 +482,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     return RoleValue() == ax::mojom::blink::Role::kSpinButton;
   }
   bool IsTabItem() const { return RoleValue() == ax::mojom::blink::Role::kTab; }
-  virtual bool IsTextControl() const { return false; }
+
+  // This object is a text field. This is any widget in which the user should be
+  // able to enter and edit text.
+  //
+  // Examples include <input type="text">, <input type="password">, <textarea>,
+  // <div contenteditable="true">, <div role="textbox">, <div role="searchbox">
+  // and <div role="combobox">. Note that when an ARIA role that indicates that
+  // the widget is editable is used, such as "role=textbox", the element doesn't
+  // need to be contenteditable for this method to return true, as in theory
+  // JavaScript could be used to implement editing functionality. In practice,
+  // this situation should be rare.
+  bool IsTextField() const;
+
   bool IsTextObject() const;
   bool IsTree() const { return RoleValue() == ax::mojom::blink::Role::kTree; }
   bool IsWebArea() const {
@@ -718,7 +746,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const;
 
-  virtual int TextLength() const { return 0; }
+  // For all inline text fields and native text fields: Returns the length of
+  // the inline's text or the field's value respectively.
+  virtual int TextLength() const;
 
   // Supported on layout inline, layout text, layout replaced, and layout block
   // flow, provided that they are at inline-level, i.e. "display=inline" or

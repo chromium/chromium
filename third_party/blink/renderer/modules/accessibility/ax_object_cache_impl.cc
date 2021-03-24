@@ -2401,7 +2401,7 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
     // Role won't change on edits, so avoid invalidation so that object is not
     // destroyed during editing.
     if (AXObject* obj = Get(element)) {
-      if (!obj->IsTextControl())
+      if (!obj->IsTextField())
         HandleRoleChangeWithCleanLayout(element);
     }
   } else if (attr_name == html_names::kAltAttr ||
@@ -2728,7 +2728,7 @@ bool AXObjectCacheImpl::NodeIsTextControl(const Node* node) {
     return false;
 
   const AXObject* ax_object = GetOrCreate(const_cast<Node*>(node));
-  return ax_object && ax_object->IsTextControl();
+  return ax_object && ax_object->IsTextField();
 }
 
 bool IsNodeAriaVisible(Node* node) {
@@ -2944,7 +2944,7 @@ void AXObjectCacheImpl::HandleEditableTextContentChanged(Node* node) {
   if (!obj)
     return;
 
-  while (obj && !obj->IsNativeTextControl() && !obj->IsNonNativeTextControl())
+  while (obj && !obj->IsTextField())
     obj = obj->ParentObject();
   PostNotification(obj, ax::mojom::Event::kValueChanged);
 }

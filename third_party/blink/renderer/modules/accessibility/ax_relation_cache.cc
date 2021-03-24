@@ -121,8 +121,10 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (!owner->CanHaveChildren())
     return false;
 
-  // No aria-owns in editable controlsm otherwise wreaks havoc.
-  if (owner->IsNativeTextControl() || owner->HasContentEditableAttributeSet())
+  // An aria-owns is disallowed on editable roots, such as <input>, <textarea>
+  // and content editables, otherwise the result would be unworkable and totally
+  // unexpected on the browser side.
+  if (owner->IsEditableRoot())
     return false;
 
   // Images can only use <img usemap> to "own" <area> children.

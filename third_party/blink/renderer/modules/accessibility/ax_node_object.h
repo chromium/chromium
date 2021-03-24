@@ -73,7 +73,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AccessibilityChildrenFromAOMProperty(AOMRelationListProperty,
                                             AXObject::AXObjectVector&) const;
 
-  bool IsTextControl() const override;
   Element* MenuItemElementForMenu() const;
   Element* MouseButtonListener() const;
   AXObject* CorrespondingControlAXObjectForLabelElement() const;
@@ -104,10 +103,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsLoaded() const override;
   bool IsMultiSelectable() const override;
   bool IsNativeImage() const final;
-  bool IsNativeTextControl() const final;
-  bool IsNonNativeTextControl() const final;
   bool IsOffScreen() const override;
-  bool IsPasswordField() const final;
   bool IsProgressIndicator() const override;
   bool IsRichlyEditable() const override;
   bool IsSlider() const override;
@@ -158,7 +154,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
 
   String ImageDataUrl(const IntSize& max_size) const final;
-  int TextLength() const override;
   int TextOffsetInFormattingContext(int offset) const override;
 
   // Object attributes.

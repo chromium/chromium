@@ -264,19 +264,18 @@ bool AXSelection::IsValid() const {
   // boundaries, replaced elements, CSS user-select, etc.
   //
 
-  if (base_.IsTextPosition() &&
-      base_.ContainerObject()->IsNativeTextControl() &&
+  if (base_.IsTextPosition() && base_.ContainerObject()->IsNativeTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         extent_.IsTextPosition() &&
-        extent_.ContainerObject()->IsNativeTextControl())) {
+        extent_.ContainerObject()->IsNativeTextField())) {
     return false;
   }
 
   if (extent_.IsTextPosition() &&
-      extent_.ContainerObject()->IsNativeTextControl() &&
+      extent_.ContainerObject()->IsNativeTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         base_.IsTextPosition() &&
-        base_.ContainerObject()->IsNativeTextControl())) {
+        base_.ContainerObject()->IsNativeTextField())) {
     return false;
   }
 

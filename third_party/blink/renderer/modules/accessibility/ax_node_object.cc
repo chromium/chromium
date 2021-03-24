@@ -424,10 +424,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (IsA<HTMLLegendElement>(node))
     return kIncludeObject;
 
-  // Anything that is content editable should not be ignored.
-  // However, one cannot just call node->hasEditableStyle() since that will ask
-  // if its parents are also editable. Only the top level content editable
-  // region should be exposed.
+  // Anything that is an editable root should not be ignored. However, one
+  // cannot just call `AXObject::IsEditable()` since that will include the
+  // contents of an editable region too. Only the editable root should always be
+  // exposed.
+  //
+  // TODO(nektar): Switch to using `IsEditableRoot()` once lifecycle failures
+  // are resolved.
   if (HasContentEditableAttributeSet())
     return kIncludeObject;
 
@@ -1155,18 +1158,6 @@ bool AXNodeObject::HasContentEditableAttributeSet() const {
          EqualIgnoringASCIICase(content_editable_value, "true");
 }
 
-bool AXNodeObject::IsTextControl() const {
-  if (!GetNode())
-    return false;
-
-  if (IsNativeTextControl() || HasContentEditableAttributeSet() ||
-      IsARIATextControl()) {
-    return true;
-  }
-
-  return false;
-}
-
 static Element* SiblingWithAriaRole(String role, Node* node) {
   Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
   if (!parent)
@@ -1285,11 +1276,11 @@ bool AXNodeObject::ComputeIsEditableRoot() const {
   Node* node = GetNode();
   if (!node)
     return false;
-  if (IsNativeTextControl())
+  if (IsNativeTextField())
     return true;
   if (IsRootEditableElement(*node)) {
     // Editable roots created by the user agent are handled by
-    // |IsNativeTextControl| above.
+    // |IsNativeTextField| above.
     ShadowRoot* root = node->ContainingShadowRoot();
     return !root || !root->IsUserAgent();
   }
@@ -1311,7 +1302,7 @@ bool AXNodeObject::IsImageButton() const {
 }
 
 bool AXNodeObject::IsInputImage() const {
-  auto* html_input_element = DynamicTo<HTMLInputElement>(this->GetNode());
+  auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
   if (html_input_element && RoleValue() == ax::mojom::blink::Role::kButton)
     return html_input_element->type() == input_type_names::kImage;
 
@@ -1384,41 +1375,11 @@ bool AXNodeObject::IsNativeImage() const {
   return false;
 }
 
-bool AXNodeObject::IsNativeTextControl() const {
-  return blink::IsTextControl(GetNode());
-}
-
-bool AXNodeObject::IsNonNativeTextControl() const {
-  if (IsNativeTextControl())
-    return false;
-
-  if (HasContentEditableAttributeSet())
-    return true;
-
-  if (IsARIATextControl())
-    return true;
-
-  return false;
-}
-
 bool AXNodeObject::IsOffScreen() const {
   if (IsDetached())
     return false;
   DCHECK(GetNode());
   return DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode());
-}
-
-bool AXNodeObject::IsPasswordField() const {
-  auto* html_input_element = DynamicTo<HTMLInputElement>(this->GetNode());
-  if (!html_input_element)
-    return false;
-
-  ax::mojom::blink::Role aria_role = AriaRoleAttribute();
-  if (aria_role != ax::mojom::blink::Role::kTextField &&
-      aria_role != ax::mojom::blink::Role::kUnknown)
-    return false;
-
-  return html_input_element->type() == input_type_names::kPassword;
 }
 
 bool AXNodeObject::IsProgressIndicator() const {
@@ -1434,7 +1395,7 @@ bool AXNodeObject::IsRichlyEditable() const {
 }
 
 bool AXNodeObject::IsEditable() const {
-  if (IsNativeTextControl())
+  if (IsNativeTextField())
     return true;
 
   // Support editable states in canvas fallback content.
@@ -1475,7 +1436,7 @@ bool AXNodeObject::IsClickable() const {
   if (node->HasAnyEventListeners(event_util::MouseButtonEventTypes()))
     return true;
 
-  return IsTextControl() || AXObject::IsClickable();
+  return IsTextField() || AXObject::IsClickable();
 }
 
 bool AXNodeObject::IsFocused() const {
@@ -1825,7 +1786,7 @@ String AXNodeObject::AutoComplete() const {
       WebAXAutofillState::kAutocompleteAvailable)
     return "list";
 
-  if (IsNativeTextControl() || IsARIATextControl()) {
+  if (IsNativeTextField() || IsARIATextField()) {
     const AtomicString& aria_auto_complete =
         GetAOMPropertyOrARIAAttribute(AOMStringProperty::kAutocomplete)
             .LowerASCII();
@@ -2256,12 +2217,6 @@ const AtomicString& AXNodeObject::AccessKey() const {
   return element->FastGetAttribute(html_names::kAccesskeyAttr);
 }
 
-int AXNodeObject::TextLength() const {
-  if (!IsTextControl())
-    return -1;
-  return SlowGetValueForControlIncludingContentEditable().length();
-}
-
 RGBA32 AXNodeObject::ColorValue() const {
   auto* input = DynamicTo<HTMLInputElement>(GetNode());
   if (!input || !IsColorWell())
@@ -2663,7 +2618,7 @@ String AXNodeObject::GetValueForControl() const {
     return select_element->InnerElement().innerText();
   }
 
-  if (IsNativeTextControl()) {
+  if (IsNativeTextField()) {
     // This is an "<input type=text>" or a "<textarea>": We should not simply
     // return the "value" attribute because it might be sanitized in some input
     // control types, e.g. email fields. If we do that, then "selectionStart"
@@ -2748,7 +2703,7 @@ String AXNodeObject::GetValueForControl() const {
 }
 
 String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
-  if (HasContentEditableAttributeSet() || IsARIATextControl()) {
+  if (IsNonNativeTextField()) {
     Element* element = GetElement();
     return element ? element->GetInnerTextWithoutUpdate() : String();
   }
@@ -4780,7 +4735,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Also check for aria-placeholder.
-  if (IsTextControl()) {
+  if (IsTextField()) {
     name_from = ax::mojom::blink::NameFrom::kPlaceholder;
     if (name_sources) {
       name_sources->push_back(NameSource(*found_text_alternative,
@@ -5394,7 +5349,7 @@ String AXNodeObject::PlaceholderFromNativeAttribute() const {
 
 String AXNodeObject::GetValueContributionToName() const {
   if (CanSetValueAttribute()) {
-    if (IsTextControl())
+    if (IsTextField())
       return SlowGetValueForControlIncludingContentEditable();
 
     if (IsRangeValueSupported()) {
