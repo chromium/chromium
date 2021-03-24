@@ -40,6 +40,8 @@ component("userdataauth") {
     "fake_userdataauth_client.h",
     "install_attributes_client.cc",
     "install_attributes_client.h",
+    "install_attributes_util.cc",
+    "install_attributes_util.h",
     "userdataauth_client.cc",
     "userdataauth_client.h",
   ]
