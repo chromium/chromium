@@ -1228,27 +1228,6 @@
             ]
         }
     ],
-    "CLSM90Improvements": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "CLSM90Improvements"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS": [
         {
             "platforms": [
