@@ -4,15 +4,13 @@
 
 #include "ipc/message_mojom_traits.h"
 
-#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
-
 namespace mojo {
 
 // static
-mojo_base::BigBufferView
-StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::buffer(
+base::span<const uint8_t>
+StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::bytes(
     IPC::MessageView& view) {
-  return view.TakeBufferView();
+  return view.bytes();
 }
 
 // static
@@ -26,14 +24,14 @@ StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::handles(
 bool StructTraits<IPC::mojom::MessageDataView, IPC::MessageView>::Read(
     IPC::mojom::MessageDataView data,
     IPC::MessageView* out) {
-  mojo_base::BigBufferView buffer_view;
-  if (!data.ReadBuffer(&buffer_view))
-    return false;
+  mojo::ArrayDataView<uint8_t> bytes;
+  data.GetBytesDataView(&bytes);
+
   base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles;
   if (!data.ReadHandles(&handles))
     return false;
 
-  *out = IPC::MessageView(std::move(buffer_view), std::move(handles));
+  *out = IPC::MessageView(bytes, std::move(handles));
   return true;
 }
 
