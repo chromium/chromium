@@ -1352,6 +1352,8 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
             switches::kForceOverlayFullscreenVideo)) {
       discard_transparency = false;
     }
+    if (web_test_runtime_flags().dump_drag_image())
+      discard_transparency = false;
 
     gfx::PNGCodec::ColorFormat pixel_format;
     switch (image.info().colorType()) {
