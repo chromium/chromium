@@ -30,6 +30,8 @@ class ASH_EXPORT SessionStateAnimator {
     ANIMATION_RAISE_TO_SCREEN,
     ANIMATION_GRAYSCALE_BRIGHTNESS,
     ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
+    // Pseudo animation type to copy layer.
+    ANIMATION_COPY_LAYER,
   };
 
   // Constants for determining animation speed.

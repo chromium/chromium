@@ -10,11 +10,11 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/utility/layer_copy_animator.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
 #include "base/barrier_closure.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window_event_dispatcher.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -91,11 +91,10 @@ void HideWindow(aura::Window* window,
   }
 }
 
-// Animates |window| to identity transform and full opacity over |duration|.
-void TransformWindowToBaseState(aura::Window* window,
-                                base::TimeDelta duration,
-                                ui::LayerAnimationObserver* observer) {
-  ui::Layer* layer = window->layer();
+// Animates |layer| to identity transform and full opacity over |duration|.
+void TransformLayerToBaseState(ui::Layer* layer,
+                               base::TimeDelta duration,
+                               ui::LayerAnimationObserver* observer) {
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
 
   // Animate to target values.
@@ -106,6 +105,7 @@ void TransformWindowToBaseState(aura::Window* window,
   settings.SetTweenType(gfx::Tween::EASE_OUT);
   layer->SetTransform(gfx::Transform());
 
+  // TODO(oshima): TweenType can't be changed per property.
   settings.SetTweenType(gfx::Tween::EASE_IN_OUT);
   layer->SetOpacity(1.0f);
 
@@ -121,23 +121,6 @@ void TransformWindowToBaseState(aura::Window* window,
     sequence->AddObserver(observer);
     layer->GetAnimator()->ScheduleAnimation(sequence);
   }
-}
-
-void ShowWindow(aura::Window* window,
-                base::TimeDelta duration,
-                bool above,
-                ui::LayerAnimationObserver* observer) {
-  ui::Layer* layer = window->layer();
-  ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-
-  // Set initial state of animation
-  settings.SetPreemptionStrategy(
-      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  settings.SetTransitionDuration(base::TimeDelta());
-  SetTransformForScaleAnimation(
-      layer, above ? LAYER_SCALE_ANIMATION_ABOVE : LAYER_SCALE_ANIMATION_BELOW);
-
-  TransformWindowToBaseState(window, duration, observer);
 }
 
 // Starts grayscale/brightness animation for |window| over |duration|. Target
@@ -248,6 +231,8 @@ bool IsLayerAnimated(ui::Layer* layer,
       if (layer->GetTargetOpacity() < 0.9999)
         return false;
       break;
+    case SessionStateAnimator::ANIMATION_COPY_LAYER:
+      return true;
   }
   return true;
 }
@@ -300,6 +285,34 @@ void GetContainersInRootWindow(int container_mask,
     containers->push_back(Shell::GetContainer(
         root_window, kShellWindowId_LockScreenRelatedContainersContainer));
   }
+}
+
+void ShowWindow(aura::Window* window,
+                base::TimeDelta duration,
+                bool above,
+                ui::LayerAnimationObserver* observer) {
+  if (window->children().empty()) {
+    window->layer()->SetTransform(gfx::Transform());
+    window->layer()->SetOpacity(1.f);
+    return;
+  }
+  auto* animator = LayerCopyAnimator::Get(window);
+  if (!animator || animator->animation_requested())
+    animator = new LayerCopyAnimator(window);
+
+  auto animation_callback = [](base::TimeDelta duration, bool above,
+                               ui::Layer* animating_layer,
+                               ui::LayerAnimationObserver* observer) {
+    DCHECK(animating_layer->parent());
+    // Set initial state of animation
+    SetTransformForScaleAnimation(
+        animating_layer,
+        above ? LAYER_SCALE_ANIMATION_ABOVE : LAYER_SCALE_ANIMATION_BELOW);
+    animating_layer->SetOpacity(0.f);
+    TransformLayerToBaseState(animating_layer, duration, observer);
+  };
+  animator->MaybeStartAnimation(
+      observer, base::BindOnce(animation_callback, duration, above));
 }
 
 }  // namespace
@@ -496,7 +509,7 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
       ShowWindow(window, duration, true, observer);
       break;
     case ANIMATION_UNDO_LIFT:
-      TransformWindowToBaseState(window, duration, observer);
+      TransformLayerToBaseState(window->layer(), duration, observer);
       break;
     case ANIMATION_RAISE_TO_SCREEN:
       ShowWindow(window, duration, false, observer);
@@ -508,6 +521,10 @@ void SessionStateAnimatorImpl::RunAnimationForWindow(
     case ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS:
       StartGrayscaleBrightnessAnimationForWindow(
           window, 0.0, duration, gfx::Tween::EASE_IN_OUT, observer);
+      break;
+    case ANIMATION_COPY_LAYER:
+      if (!window->children().empty())
+        new LayerCopyAnimator(window);
       break;
   }
 }
