@@ -74,12 +74,19 @@ public class AccountInfoServiceTest {
                 .thenReturn(mAccountTrackerServiceMock);
         when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentityManagerMock);
-        mService = AccountInfoService.get(mIdentityManagerMock);
+        AccountInfoService.init(mIdentityManagerMock);
+        mService = AccountInfoService.get();
     }
 
     @After
     public void tearDown() {
         AccountInfoService.resetForTests();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testGetInstanceBeforeInitialization() {
+        AccountInfoService.resetForTests();
+        AccountInfoService.get();
     }
 
     @Test

@@ -22,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.signin.services.AccountInfoService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
@@ -127,6 +128,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
         mIdentityManager.addObserver(this);
 
+        AccountInfoService.init(mIdentityManager);
+
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
 
@@ -140,6 +143,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @VisibleForTesting
     @CalledByNative
     void destroy() {
+        AccountInfoService.get().destroy();
         mIdentityManager.removeObserver(this);
         mNativeSigninManagerAndroid = 0;
     }

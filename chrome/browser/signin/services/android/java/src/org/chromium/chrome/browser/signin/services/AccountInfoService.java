@@ -51,10 +51,11 @@ public final class AccountInfoService implements IdentityManager.Observer {
     /**
      * Initializes the singleton object.
      */
-    @GuardedBy("LOCK")
-    private static void init(IdentityManager identityManager) {
-        sInstance = new AccountInfoService(identityManager);
-        identityManager.addObserver(sInstance);
+    public static void init(IdentityManager identityManager) {
+        synchronized (LOCK) {
+            sInstance = new AccountInfoService(identityManager);
+            identityManager.addObserver(sInstance);
+        }
     }
 
     /**
@@ -66,19 +67,18 @@ public final class AccountInfoService implements IdentityManager.Observer {
 
     /**
      * Gets the singleton instance.
-     * TODO(crbug/1187512): Separate the init() from get()
      */
-    public static AccountInfoService get(IdentityManager identityManager) {
+    public static AccountInfoService get() {
         synchronized (LOCK) {
             if (sInstance == null) {
-                init(identityManager);
+                throw new RuntimeException("The AccountInfoService is not yet initialized!");
             }
             return sInstance;
         }
     }
 
     @VisibleForTesting
-    static void resetForTests() {
+    public static void resetForTests() {
         synchronized (LOCK) {
             sInstance = null;
         }

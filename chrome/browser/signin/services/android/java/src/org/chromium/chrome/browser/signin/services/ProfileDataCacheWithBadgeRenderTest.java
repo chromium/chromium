@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
-
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
@@ -18,6 +16,7 @@ import android.widget.ImageView;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,7 +27,6 @@ import org.mockito.Mock;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -57,12 +55,6 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
             new AccountManagerTestRule(new FakeProfileDataSource());
 
     @Mock
-    private Profile mProfileMock;
-
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
-
-    @Mock
     private ProfileDataCache.Observer mObserver;
 
     private static final String TEST_ACCOUNT_NAME = "test@example.com";
@@ -77,11 +69,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
     @Before
     public void setUp() {
         initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
-        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
-                .thenReturn(mIdentityManager);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-
+        AccountInfoService.init(mIdentityManager);
         final ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
                 TEST_ACCOUNT_NAME, createAvatar(), "Full Name", "Given Name");
         mAccountManagerTestRule.addAccount(profileData);
@@ -94,6 +82,11 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             activity.setContentView(mContentView);
         });
+    }
+
+    @After
+    public void tearDown() {
+        AccountInfoService.resetForTests();
     }
 
     @Test

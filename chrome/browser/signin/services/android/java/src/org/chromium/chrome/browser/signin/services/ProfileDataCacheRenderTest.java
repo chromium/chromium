@@ -139,7 +139,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         when(mIdentityServicesProviderMock.getAccountTrackerService(mProfileMock))
                 .thenReturn(mAccountTrackerServiceMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-
+        AccountInfoService.init(mIdentityManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
             mContentView = new FrameLayout(activity);
@@ -156,6 +156,7 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
 
     @After
     public void tearDown() {
+        AccountInfoService.resetForTests();
         IdentityServicesProvider.setInstanceForTests(null);
         Profile.setLastUsedProfileForTesting(null);
     }

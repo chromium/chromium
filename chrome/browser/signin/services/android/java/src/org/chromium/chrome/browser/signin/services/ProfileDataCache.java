@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
@@ -111,9 +110,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
         mProfileDataSource = AccountManagerFacadeProvider.getInstance().getProfileDataSource();
-        mAccountInfoService =
-                AccountInfoService.get(IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile()));
+        mAccountInfoService = AccountInfoService.get();
     }
 
     /**
