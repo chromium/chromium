@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/generated_colors_info.h"
@@ -42,6 +43,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "content/public/browser/url_data_source.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -283,6 +285,8 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(
           &ProfilePickerHandler::HandleRecordSignInPromoImpression,
           base::Unretained(this)));
+  Profile* profile = Profile::FromWebUI(web_ui());
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 }
 
 void ProfilePickerHandler::OnJavascriptAllowed() {

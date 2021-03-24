@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -337,6 +338,8 @@ void AboutHandler::RegisterMessages() {
   content::URLDataSource::Add(profile_,
                               std::make_unique<chromeos::ImageSource>());
 #endif
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<ThemeSource>(profile_));
 }
 
 void AboutHandler::OnJavascriptAllowed() {
