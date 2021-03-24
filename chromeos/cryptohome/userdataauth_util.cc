@@ -6,7 +6,10 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/cryptohome/cryptohome_util.h"
 #include "components/device_event_log/device_event_log.h"
+
+using google::protobuf::RepeatedPtrField;
 
 namespace user_data_auth {
 
@@ -46,6 +49,12 @@ template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const base::Optional<MigrateKeyReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const base::Optional<GetKeyDataReply>&);
+
+std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
+    const base::Optional<GetKeyDataReply>& reply) {
+  const RepeatedPtrField<cryptohome::KeyData>& key_data = reply->key_data();
+  return cryptohome::RepeatedKeyDataToKeyDefinitions(key_data);
+}
 
 // TODO(crbug.com/797848): Finish testing this method.
 cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
