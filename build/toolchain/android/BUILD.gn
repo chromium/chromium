@@ -55,9 +55,8 @@ template("android_clang_toolchain") {
     ar = "$_prefix/llvm-ar"
     ld = cxx
     readelf = _tool_prefix + "readelf"
-    nm = _tool_prefix + "nm"
-    strip = rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip",
-                        root_build_dir)
+    nm = "$_prefix/llvm-nm"
+    strip = "$_prefix/llvm-strip"
     if (_use_debug_fission) {
       dwp = _tool_prefix + "dwp"
     }
