@@ -80,23 +80,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
      */
     public abstract void reportStartupMode(int startupMode);
 
-    /**
-     * Returns an affix identifying a given task type in names of memory histograms specific to that
-     * task type. Adding an affix here causes Memory.BackgroundTask.[affix].* histograms to be
-     * emitted. They still need to be added to histograms.xml.
-     * @param taskId The task type.
-     * @return A string with the affix, without separators added, or null if there is no affix
-     * defined for that task type.
-     */
-    public static String toMemoryHistogramAffixFromTaskId(int taskId) {
-        switch (taskId) {
-            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
-                return "OfflinePrefetch";
-            default:
-                return null;
-        }
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static int toUmaEnumValueFromTaskId(int taskId) {
         switch (taskId) {

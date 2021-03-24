@@ -95,6 +95,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.Browser.PrivateMemoryFootprint" units="MiB"
     expires_after="2021-08-01">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -110,6 +113,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.Browser.PrivateSwapFootprint" units="MiB"
     expires_after="2021-09-15">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -124,6 +130,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Memory.BackgroundTask.Browser.ResidentSet"
     units="MiB" expires_after="2021-08-01">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -138,6 +147,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.Browser.SharedMemoryFootprint" units="MiB"
     expires_after="2021-09-15">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -152,6 +164,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.OfflinePrefetch.Browser.PrivateMemoryFootprint"
     units="MiB" expires_after="2021-03-28">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -169,6 +184,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.OfflinePrefetch.Browser.PrivateSwapFootprint"
     units="MiB" expires_after="2021-09-15">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -186,6 +204,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.OfflinePrefetch.Browser.ResidentSet"
     units="MiB" expires_after="2021-09-15">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -202,6 +223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.BackgroundTask.OfflinePrefetch.Browser.SharedMemoryFootprint"
     units="MiB" expires_after="2021-09-15">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BrowserRunningMode" -->
 
   <owner>hanxi@chromium.org</owner>
