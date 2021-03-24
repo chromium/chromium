@@ -906,6 +906,7 @@ _CONFIG = [
             'media::PIXEL_FORMAT_Y16',
             'media::VideoFrame',
             'viz::RasterContextProvider',
+            'viz::TransferableResource',
         ],
     },
     {

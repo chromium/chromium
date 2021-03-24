@@ -17,6 +17,7 @@ namespace blink {
 class GPUCanvasContext;
 class GPUDevice;
 class GPUTexture;
+class StaticBitmapImage;
 
 class GPUSwapChain : public DawnObjectImpl,
                      public WebGPUSwapBufferProvider::Client {
@@ -35,6 +36,12 @@ class GPUSwapChain : public DawnObjectImpl,
   void Neuter();
   cc::Layer* CcLayer();
   void SetFilterQuality(SkFilterQuality);
+
+  // Returns a StaticBitmapImage backed by a texture containing the current
+  // contents of the front buffer. This is done without any pixel copies. The
+  // texture in the ImageBitmap is from the active ContextProvider on the
+  // WebGPUSwapBufferProvider.
+  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
   // gpu_swap_chain.idl
   GPUTexture* getCurrentTexture();

@@ -63,7 +63,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
   // OffscreenCanvas-specific methods
   void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
   bool PushFrame() final { return false; }
-  ImageBitmap* TransferToImageBitmap(ScriptState*) final { return nullptr; }
+  ImageBitmap* TransferToImageBitmap(ScriptState*) final;
 
   // gpu_canvas_context.idl
   GPUSwapChain* configureSwapChain(const GPUSwapChainDescriptor* descriptor,

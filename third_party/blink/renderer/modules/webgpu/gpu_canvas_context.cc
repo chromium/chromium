@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/offscreen_rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain_descriptor.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
@@ -84,6 +85,12 @@ void GPUCanvasContext::SetFilterQuality(SkFilterQuality filter_quality) {
 void GPUCanvasContext::SetOffscreenCanvasGetContextResult(
     OffscreenRenderingContext& result) {
   result.SetGPUCanvasContext(this);
+}
+
+ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
+    ScriptState* script_state) {
+  return MakeGarbageCollected<ImageBitmap>(
+      swapchain_->TransferToStaticBitmapImage());
 }
 
 // gpu_canvas_context.idl
