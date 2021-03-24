@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/crostini/crostini_low_disk_notification.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -929,6 +930,8 @@ class CrostiniManager : public KeyedService,
 
   std::unique_ptr<guest_os::GuestOsStabilityMonitor>
       guest_os_stability_monitor_;
+
+  std::unique_ptr<CrostiniLowDiskNotification> low_disk_notifier_;
 
   std::unique_ptr<CrostiniUpgradeAvailableNotification>
       upgrade_available_notification_;

@@ -4835,6 +4835,24 @@
   <message name="IDS_CROSTINI_RECOVERY_RESTART_BUTTON" desc="Label for the dialog button when Linux will be restarted after a Chrome crash.">
     Restart Linux
   </message>
+
+  <!-- Crostini low disk space notification -->
+  <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are low on disk space.">
+    Linux is low on disk space
+  </message>
+  <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_MESSAGE" desc="Notification text warning users that they are low on disk space.">
+    Free up disk space or resize the Linux disk in Settings
+  </message>
+  <message name="IDS_CROSTINI_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are critically low on disk space.">
+    Linux disk space critically low
+  </message>
+  <message name="IDS_CROSTINI_CRITICALLY_LOW_DISK_NOTIFICATION_MESSAGE" desc="Notification text warning users that they are critically low on disk space.">
+    Linux apps may become unresponsive.
+  </message>
+  <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_BUTTON" desc="Button on the low disk notification to open storage management.">
+    Resize Linux disk
+  </message>
+
   <!-- Time limit notification -->
   <message name="IDS_SCREEN_TIME_NOTIFICATION_TITLE" desc="The title of the notification when screen usage limit reaches before locking the device.">
     Almost time for a break

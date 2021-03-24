@@ -107,6 +107,10 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_file_watch_triggered_signal_connected_;
   }
 
+  bool IsLowDiskSpaceTriggeredSignalConnected() override {
+    return is_low_disk_space_triggered_signal_connected_;
+  }
+
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
@@ -747,6 +751,14 @@ class CiceroneClientImpl : public CiceroneClient {
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    cicerone_proxy_->ConnectToSignal(
+        vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kLowDiskSpaceTriggeredSignal,
+        base::BindRepeating(&CiceroneClientImpl::OnLowDiskSpaceTriggeredSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
@@ -973,6 +985,18 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
+  void OnLowDiskSpaceTriggeredSignal(dbus::Signal* signal) {
+    vm_tools::cicerone::LowDiskSpaceTriggeredSignal proto;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.OnLowDiskSpaceTriggered(proto);
+    }
+  }
+
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool is_connected) {
@@ -1021,6 +1045,9 @@ class CiceroneClientImpl : public CiceroneClient {
       is_start_lxd_progress_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kFileWatchTriggeredSignal) {
       is_file_watch_triggered_signal_connected_ = is_connected;
+    } else if (signal_name ==
+               vm_tools::cicerone::kLowDiskSpaceTriggeredSignal) {
+      is_low_disk_space_triggered_signal_connected_ = is_connected;
     } else {
       NOTREACHED();
     }
@@ -1046,6 +1073,7 @@ class CiceroneClientImpl : public CiceroneClient {
   bool is_upgrade_container_progress_signal_connected_ = false;
   bool is_start_lxd_progress_signal_connected_ = false;
   bool is_file_watch_triggered_signal_connected_ = false;
+  bool is_low_disk_space_triggered_signal_connected_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -136,6 +136,10 @@ bool FakeCiceroneClient::IsFileWatchTriggeredSignalConnected() {
   return is_file_watch_triggered_signal_connected_;
 }
 
+bool FakeCiceroneClient::IsLowDiskSpaceTriggeredSignalConnected() {
+  return is_low_disk_space_triggered_signal_connected_;
+}
+
 // Currently no tests need to change the output of this method. If you want to
 // add one, make it return a variable like the above examples.
 bool FakeCiceroneClient::IsPendingAppListUpdatesSignalConnected() {

@@ -1094,6 +1094,7 @@ CrostiniManager::CrostiniManager(Profile* profile)
   guest_os_stability_monitor_ =
       std::make_unique<guest_os::GuestOsStabilityMonitor>(
           kCrostiniStabilityHistogram);
+  low_disk_notifier_ = std::make_unique<CrostiniLowDiskNotification>();
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -1119,9 +1120,10 @@ void CrostiniManager::RemoveDBusObservers() {
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   }
-  // GuestOsStabilityMonitor needs to be destructed here so it can unregister
-  // itself from the DBus clients that may no longer exist later.
+  // GuestOsStabilityMonitor and LowDiskNotifier need to be destructed here so
+  // they can unregister from DBus clients that may no longer exist later.
   guest_os_stability_monitor_.reset();
+  low_disk_notifier_.reset();
 }
 
 // static

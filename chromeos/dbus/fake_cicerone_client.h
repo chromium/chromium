@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   bool IsUpgradeContainerProgressSignalConnected() override;
   bool IsStartLxdProgressSignalConnected() override;
   bool IsFileWatchTriggeredSignalConnected() override;
+  bool IsLowDiskSpaceTriggeredSignalConnected() override;
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       DBusMethodCallback<vm_tools::cicerone::LaunchContainerApplicationResponse>
@@ -198,6 +199,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   }
   void set_file_watch_triggered_signal_connected(bool connected) {
     is_file_watch_triggered_signal_connected_ = connected;
+  }
+  void set_low_disk_space_triggered_signal_connected(bool connected) {
+    is_low_disk_space_triggered_signal_connected_ = connected;
   }
   void set_launch_container_application_response(
       const vm_tools::cicerone::LaunchContainerApplicationResponse&
@@ -401,6 +405,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
   bool is_upgrade_container_progress_signal_connected_ = true;
   bool is_start_lxd_progress_signal_connected_ = true;
   bool is_file_watch_triggered_signal_connected_ = true;
+  bool is_low_disk_space_triggered_signal_connected_ = true;
 
   std::string last_container_username_;
 
