@@ -1139,9 +1139,6 @@ crbug.com/1171616 external/wpt/css/css-tables/height-distribution/percentage-siz
 # Composited background painting leaves gaps.
 crbug.com/958381 fast/table/border-collapsing/composited-cell-collapsed-border.html [ Failure ]
 crbug.com/958381 fast/table/border-collapsing/composited-row-collapsed-border.html [ Failure ]
-crbug.com/958381 paint/invalidation/table/collapsed-border-cell-change-width-composited-cell.html [ Failure ]
-crbug.com/958381 paint/invalidation/table/collapsed-border-cell-change-width-composited-row.html [ Failure ]
-crbug.com/958381 paint/invalidation/table/collapsed-border-cell-change-width-composited-section.html [ Failure ]
 
 # Rowspanned cell overflows TD visible rect.
 crbug.com/958381 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Failure ]
