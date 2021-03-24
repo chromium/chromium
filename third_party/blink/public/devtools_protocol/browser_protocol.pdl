@@ -5104,6 +5104,22 @@ domain Network
       # Errors occurred while handling the signed exchagne.
       optional array of SignedExchangeError errors
 
+  # List of content encodings supported by the backend.
+  experimental type ContentEncoding extends string
+    enum
+      deflate
+      gzip
+      br
+
+  # Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
+  experimental command setAcceptedEncodings
+    parameters
+      # List of accepted content encodings.
+      array of ContentEncoding encodings
+
+  # Clears accepted encodings set by setAcceptedEncodings
+  experimental command clearAcceptedEncodingsOverride
+
   # Tells whether clearing browser cache is supported.
   deprecated command canClearBrowserCache
     returns

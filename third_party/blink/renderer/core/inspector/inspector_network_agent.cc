@@ -657,6 +657,31 @@ String IPAddressToString(const net::IPAddress& address) {
   return "[" + unbracketed + "]";
 }
 
+namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
+
+base::Optional<String> AcceptedEncodingFromProtocol(
+    const protocol::Network::ContentEncoding& encoding) {
+  base::Optional<String> result;
+  if (ContentEncodingEnum::Gzip == encoding ||
+      ContentEncodingEnum::Br == encoding ||
+      ContentEncodingEnum::Deflate == encoding) {
+    result = encoding;
+  }
+  return result;
+}
+
+using SourceTypeEnum = net::SourceStream::SourceType;
+SourceTypeEnum SourceTypeFromString(const String& type) {
+  if (type == ContentEncodingEnum::Gzip)
+    return SourceTypeEnum::TYPE_GZIP;
+  if (type == ContentEncodingEnum::Deflate)
+    return SourceTypeEnum::TYPE_DEFLATE;
+  if (type == ContentEncodingEnum::Br)
+    return SourceTypeEnum::TYPE_BROTLI;
+  NOTREACHED();
+  return SourceTypeEnum::TYPE_UNKNOWN;
+}
+
 }  // namespace
 
 void InspectorNetworkAgent::Restore() {
@@ -1209,6 +1234,20 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     if (!stack_id.IsNull()) {
       request.SetDevToolsStackId(stack_id);
     }
+  }
+  if (!accepted_encodings_.IsEmpty()) {
+    scoped_refptr<
+        base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
+        accepted_stream_types = request.GetDevToolsAcceptedStreamTypes();
+    if (!accepted_stream_types) {
+      accepted_stream_types = base::MakeRefCounted<base::RefCountedData<
+          base::flat_set<net::SourceStream::SourceType>>>();
+    }
+    if (!accepted_encodings_.Get("none")) {
+      for (auto key : accepted_encodings_.Keys())
+        accepted_stream_types->data.insert(SourceTypeFromString(key));
+    }
+    request.SetDevToolsAcceptedStreamTypes(std::move(accepted_stream_types));
   }
 }
 
@@ -1771,6 +1810,7 @@ Response InspectorNetworkAgent::disable() {
   instrumenting_agents_->RemoveInspectorNetworkAgent(this);
   agent_state_.ClearAllFields();
   resources_data_->Clear();
+  clearAcceptedEncodingsOverride();
   return Response::Success();
 }
 
@@ -1892,6 +1932,36 @@ Response InspectorNetworkAgent::canClearBrowserCache(bool* result) {
 
 Response InspectorNetworkAgent::canClearBrowserCookies(bool* result) {
   *result = true;
+  return Response::Success();
+}
+
+Response InspectorNetworkAgent::setAcceptedEncodings(
+    std::unique_ptr<protocol::Array<protocol::Network::ContentEncoding>>
+        encodings) {
+  HashSet<String> accepted_encodings;
+  for (const protocol::Network::ContentEncoding& encoding : *encodings) {
+    base::Optional<String> value = AcceptedEncodingFromProtocol(encoding);
+    if (!value) {
+      return Response::InvalidParams("Unknown encoding type: " +
+                                     encoding.Utf8());
+    }
+    accepted_encodings.insert(value.value());
+  }
+  // If invoked with an empty list, it means none of the encodings should be
+  // accepted. See InspectorNetworkAgent::PrepareRequest.
+  if (accepted_encodings.IsEmpty())
+    accepted_encodings.insert("none");
+
+  // Set the inspector state.
+  accepted_encodings_.Clear();
+  for (auto encoding : accepted_encodings)
+    accepted_encodings_.Set(encoding, true);
+
+  return Response::Success();
+}
+
+Response InspectorNetworkAgent::clearAcceptedEncodingsOverride() {
+  accepted_encodings_.Clear();
   return Response::Success();
 }
 
@@ -2133,7 +2203,9 @@ InspectorNetworkAgent::InspectorNetworkAgent(
                          /*default_value=*/kDefaultTotalBufferSize),
       resource_buffer_size_(&agent_state_,
                             /*default_value=*/kDefaultResourceBufferSize),
-      max_post_data_size_(&agent_state_, /*default_value=*/0) {
+      max_post_data_size_(&agent_state_, /*default_value=*/0),
+      accepted_encodings_(&agent_state_,
+                          /*default_value=*/false) {
   DCHECK((IsMainThread() && !worker_global_scope_) ||
          (!IsMainThread() && worker_global_scope_));
 }

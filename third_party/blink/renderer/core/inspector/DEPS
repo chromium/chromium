@@ -29,4 +29,7 @@ specific_include_rules = {
   "inspector_contrast.h": [
     "+cc/base/rtree.h",
   ],
+  "inspector_network_agent.h": [
+    "+net/filter/source_stream.h",
+  ],
 }

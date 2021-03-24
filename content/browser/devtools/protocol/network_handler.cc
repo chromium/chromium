@@ -883,6 +883,19 @@ BuildProtocolAssociatedCookies(const net::CookieAccessResultList& net_list) {
   return protocol_list;
 }
 
+using SourceTypeEnum = net::SourceStream::SourceType;
+namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
+base::Optional<SourceTypeEnum> SourceTypeFromProtocol(
+    const protocol::Network::ContentEncoding& encoding) {
+  if (ContentEncodingEnum::Gzip == encoding)
+    return SourceTypeEnum::TYPE_GZIP;
+  if (ContentEncodingEnum::Br == encoding)
+    return SourceTypeEnum::TYPE_BROTLI;
+  if (ContentEncodingEnum::Deflate == encoding)
+    return SourceTypeEnum::TYPE_DEFLATE;
+  return base::nullopt;
+}
+
 }  // namespace
 
 class BackgroundSyncRestorer {
@@ -1225,11 +1238,31 @@ Response NetworkHandler::Disable() {
   url_loader_interceptor_.reset();
   SetNetworkConditions(nullptr);
   extra_headers_.clear();
+  ClearAcceptedEncodingsOverride();
   return Response::FallThrough();
 }
 
 Response NetworkHandler::SetCacheDisabled(bool cache_disabled) {
   cache_disabled_ = cache_disabled;
+  return Response::FallThrough();
+}
+
+Response NetworkHandler::SetAcceptedEncodings(
+    std::unique_ptr<Array<Network::ContentEncoding>> encodings) {
+  std::set<net::SourceStream::SourceType> accepted_stream_types;
+  for (auto encoding : *encodings) {
+    auto type = SourceTypeFromProtocol(encoding);
+    if (!type)
+      return Response::InvalidParams("Unknown encoding type: " + encoding);
+    accepted_stream_types.insert(type.value());
+  }
+  accepted_stream_types_ = std::move(accepted_stream_types);
+
+  return Response::FallThrough();
+}
+
+Response NetworkHandler::ClearAcceptedEncodingsOverride() {
+  accepted_stream_types_ = base::nullopt;
   return Response::FallThrough();
 }
 
@@ -2431,13 +2464,23 @@ bool NetworkHandler::MaybeCreateProxyForInterception(
              intercepting_factory);
 }
 
-void NetworkHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
-                                    bool* skip_service_worker,
-                                    bool* disable_cache) {
+void NetworkHandler::ApplyOverrides(
+    net::HttpRequestHeaders* headers,
+    bool* skip_service_worker,
+    bool* disable_cache,
+    base::Optional<std::vector<net::SourceStream::SourceType>>*
+        accepted_stream_types) {
   for (auto& entry : extra_headers_)
     headers->SetHeader(entry.first, entry.second);
   *skip_service_worker |= bypass_service_worker_;
   *disable_cache |= cache_disabled_;
+  if (!accepted_stream_types_)
+    return;
+  if (!*accepted_stream_types)
+    *accepted_stream_types = std::vector<net::SourceStream::SourceType>();
+  (*accepted_stream_types)
+      ->insert((*accepted_stream_types)->end(), accepted_stream_types_->begin(),
+               accepted_stream_types_->end());
 }
 
 void NetworkHandler::RequestIntercepted(

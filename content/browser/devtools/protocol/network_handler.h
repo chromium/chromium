@@ -93,6 +93,11 @@ class NetworkHandler : public DevToolsDomainHandler,
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
+  Response SetAcceptedEncodings(
+      std::unique_ptr<Array<Network::ContentEncoding>> encodings) override;
+
+  Response ClearAcceptedEncodingsOverride() override;
+
   void ClearBrowserCache(
       std::unique_ptr<ClearBrowserCacheCallback> callback) override;
 
@@ -170,9 +175,12 @@ class NetworkHandler : public DevToolsDomainHandler,
       bool is_download,
       network::mojom::URLLoaderFactoryOverride* intercepting_factory);
 
-  void ApplyOverrides(net::HttpRequestHeaders* headers,
-                      bool* skip_service_worker,
-                      bool* disable_cache);
+  void ApplyOverrides(
+      net::HttpRequestHeaders* headers,
+      bool* skip_service_worker,
+      bool* disable_cache,
+      base::Optional<std::vector<net::SourceStream::SourceType>>*
+          accepted_stream_types);
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,
@@ -282,6 +290,8 @@ class NetworkHandler : public DevToolsDomainHandler,
            std::unique_ptr<LoadNetworkResourceCallback>,
            base::UniquePtrComparator>
       loaders_;
+  base::Optional<std::set<net::SourceStream::SourceType>>
+      accepted_stream_types_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkHandler);

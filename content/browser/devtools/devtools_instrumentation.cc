@@ -413,7 +413,7 @@ void ApplyNetworkRequestOverrides(
       continue;
     *report_raw_headers = true;
     network->ApplyOverrides(&headers, &begin_params->skip_service_worker,
-                            &disable_cache);
+                            &disable_cache, devtools_accepted_stream_types);
   }
 
   for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host))
