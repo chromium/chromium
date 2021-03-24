@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -35,6 +34,10 @@ namespace {
 class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  public:
   ArcExternalProtocolDialogTestUtils() = default;
+  ArcExternalProtocolDialogTestUtils(
+      const ArcExternalProtocolDialogTestUtils&) = delete;
+  ArcExternalProtocolDialogTestUtils& operator=(
+      const ArcExternalProtocolDialogTestUtils&) = delete;
 
   void SetUp() override {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
@@ -101,8 +104,6 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
   arc::FakeIntentHelperInstance intent_helper_;
   ArcAppTest arc_test_;
   std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcExternalProtocolDialogTestUtils);
 };
 
 const char* kChromePackageName =

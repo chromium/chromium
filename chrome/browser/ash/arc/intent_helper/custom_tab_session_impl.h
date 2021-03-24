@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -36,6 +35,8 @@ class CustomTabSessionImpl : public arc::mojom::CustomTabSession,
   friend class CustomTabSessionImplTest;
   CustomTabSessionImpl(std::unique_ptr<arc::CustomTab> custom_tab,
                        Browser* browser);
+  CustomTabSessionImpl(const CustomTabSessionImpl&) = delete;
+  CustomTabSessionImpl& operator=(const CustomTabSessionImpl&) = delete;
   ~CustomTabSessionImpl() override;
 
   void Bind(mojo::PendingRemote<arc::mojom::CustomTabSession>* remote);
@@ -66,8 +67,6 @@ class CustomTabSessionImpl : public arc::mojom::CustomTabSession,
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CustomTabSessionImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomTabSessionImpl);
 };
 
 #endif  // CHROME_BROWSER_ASH_ARC_INTENT_HELPER_CUSTOM_TAB_SESSION_IMPL_H_

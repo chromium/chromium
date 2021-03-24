@@ -42,6 +42,8 @@ class LinkHandlerModel {
       content::BrowserContext* context,
       const GURL& link_url);
 
+  LinkHandlerModel(const LinkHandlerModel&) = delete;
+  LinkHandlerModel& operator=(const LinkHandlerModel&) = delete;
   ~LinkHandlerModel();
 
   void AddObserver(Observer* observer);
@@ -80,8 +82,6 @@ class LinkHandlerModel {
   ArcIntentHelperBridge::ActivityToIconsMap icons_;
 
   base::WeakPtrFactory<LinkHandlerModel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LinkHandlerModel);
 };
 
 }  // namespace arc

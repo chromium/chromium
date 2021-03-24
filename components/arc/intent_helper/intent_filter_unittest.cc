@@ -23,6 +23,8 @@ constexpr char kPackageName[] = "default.package.name";
 class IntentFilterBuilder {
  public:
   IntentFilterBuilder() = default;
+  IntentFilterBuilder(const IntentFilterBuilder&) = delete;
+  IntentFilterBuilder& operator=(const IntentFilterBuilder&) = delete;
 
   IntentFilterBuilder& authority(const std::string& host) {
     return authority(host, -1);
@@ -50,8 +52,6 @@ class IntentFilterBuilder {
  private:
   std::vector<IntentFilter::AuthorityEntry> authorities_;
   std::vector<IntentFilter::PatternMatcher> paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentFilterBuilder);
 };
 
 }  // namespace

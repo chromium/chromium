@@ -4,7 +4,6 @@
 
 #include "components/arc/intent_helper/link_handler_model.h"
 
-#include <string>
 #include <utility>
 
 #include "base/bind.h"

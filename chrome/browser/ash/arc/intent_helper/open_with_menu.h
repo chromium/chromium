@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -34,7 +33,9 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
   class SubMenuDelegate : public ui::SimpleMenuModel::Delegate {
    public:
     explicit SubMenuDelegate(OpenWithMenu* parent) : parent_(parent) {}
-    ~SubMenuDelegate() override {}
+    SubMenuDelegate(const SubMenuDelegate&) = delete;
+    SubMenuDelegate& operator=(const SubMenuDelegate&) = delete;
+    ~SubMenuDelegate() override = default;
 
     bool IsCommandIdChecked(int command_id) const override;
     bool IsCommandIdEnabled(int command_id) const override;
@@ -42,12 +43,12 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
 
    private:
     OpenWithMenu* const parent_;
-
-    DISALLOW_COPY_AND_ASSIGN(SubMenuDelegate);
   };
 
   OpenWithMenu(content::BrowserContext* context,
                RenderViewContextMenuProxy* proxy);
+  OpenWithMenu(const OpenWithMenu&) = delete;
+  OpenWithMenu& operator=(const OpenWithMenu&) = delete;
   ~OpenWithMenu() override;
 
   // RenderViewContextMenuObserver overrides:
@@ -90,8 +91,6 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
   OpenWithMenu::HandlerMap handlers_;
   // A submenu passed to Chrome side.
   std::unique_ptr<ui::MenuModel> submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenWithMenu);
 };
 
 }  // namespace arc

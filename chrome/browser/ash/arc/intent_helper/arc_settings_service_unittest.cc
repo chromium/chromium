@@ -47,6 +47,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   ArcSettingsServiceTest()
       : user_manager_enabler_(
             std::make_unique<chromeos::FakeChromeUserManager>()) {}
+  ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
+  ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
   ~ArcSettingsServiceTest() override = default;
 
   // BrowserWithTestWindowTest:
@@ -146,8 +148,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   FakeIntentHelperInstance intent_helper_instance_;
   FakeBackupSettingsInstance backup_settings_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceTest);
 };
 
 }  // namespace

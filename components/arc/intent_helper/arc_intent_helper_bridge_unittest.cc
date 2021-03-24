@@ -36,6 +36,8 @@ IntentFilter GetIntentFilter(const std::string& host,
 class ArcIntentHelperTest : public testing::Test {
  protected:
   ArcIntentHelperTest() = default;
+  ArcIntentHelperTest(const ArcIntentHelperTest&) = delete;
+  ArcIntentHelperTest& operator=(const ArcIntentHelperTest&) = delete;
 
   class TestOpenUrlDelegate : public OpenUrlDelegate {
    public:
@@ -81,8 +83,6 @@ class ArcIntentHelperTest : public testing::Test {
     test_open_url_delegate_.reset();
     arc_bridge_service_.reset();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ArcIntentHelperTest);
 };
 
 // Tests if IsIntentHelperPackage works as expected. Probably too trivial

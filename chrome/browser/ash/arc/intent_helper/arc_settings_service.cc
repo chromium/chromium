@@ -137,6 +137,8 @@ class ArcSettingsServiceImpl
  public:
   ArcSettingsServiceImpl(Profile* profile,
                          ArcBridgeService* arc_bridge_service);
+  ArcSettingsServiceImpl(const ArcSettingsServiceImpl&) = delete;
+  ArcSettingsServiceImpl& operator=(const ArcSettingsServiceImpl&) = delete;
   ~ArcSettingsServiceImpl() override;
 
   // Called when a Chrome pref we have registered an observer for has changed.
@@ -244,8 +246,6 @@ class ArcSettingsServiceImpl
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
   GURL dhcp_wpad_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceImpl);
 };
 
 ArcSettingsServiceImpl::ArcSettingsServiceImpl(

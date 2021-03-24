@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/image/image.h"
@@ -23,6 +22,9 @@ namespace arc {
 class StartSmartSelectionActionMenu : public RenderViewContextMenuObserver {
  public:
   explicit StartSmartSelectionActionMenu(RenderViewContextMenuProxy* proxy);
+  StartSmartSelectionActionMenu(const StartSmartSelectionActionMenu&) = delete;
+  StartSmartSelectionActionMenu& operator=(
+      const StartSmartSelectionActionMenu&) = delete;
   ~StartSmartSelectionActionMenu() override;
 
   // RenderViewContextMenuObserver overrides:
@@ -46,8 +48,6 @@ class StartSmartSelectionActionMenu : public RenderViewContextMenuObserver {
   std::vector<mojom::TextSelectionActionPtr> actions_;
 
   base::WeakPtrFactory<StartSmartSelectionActionMenu> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StartSmartSelectionActionMenu);
 };
 
 }  // namespace arc

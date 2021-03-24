@@ -218,6 +218,8 @@ void RunUntilIdle() {
 class ArcSettingsServiceTest : public InProcessBrowserTest {
  public:
   ArcSettingsServiceTest() = default;
+  ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
+  ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
 
   // InProcessBrowserTest:
   ~ArcSettingsServiceTest() override = default;
@@ -340,8 +342,6 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, BackupRestorePolicyTest) {

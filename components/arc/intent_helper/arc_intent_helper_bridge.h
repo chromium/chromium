@@ -68,6 +68,8 @@ class ArcIntentHelperBridge : public KeyedService,
 
   ArcIntentHelperBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+  ArcIntentHelperBridge(const ArcIntentHelperBridge&) = delete;
+  ArcIntentHelperBridge& operator=(const ArcIntentHelperBridge&) = delete;
   ~ArcIntentHelperBridge() override;
 
   // mojom::IntentHelperHost
@@ -184,8 +186,6 @@ class ArcIntentHelperBridge : public KeyedService,
   std::vector<IntentFilter> deleted_preferred_apps_;
 
   std::unique_ptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcIntentHelperBridge);
 };
 
 }  // namespace arc

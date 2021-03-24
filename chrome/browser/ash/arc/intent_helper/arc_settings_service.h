@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
@@ -36,6 +35,8 @@ class ArcSettingsService
 
   ArcSettingsService(content::BrowserContext* context,
                      ArcBridgeService* bridge_service);
+  ArcSettingsService(const ArcSettingsService&) = delete;
+  ArcSettingsService& operator=(const ArcSettingsService&) = delete;
   ~ArcSettingsService() override;
 
   // ConnectionObserver<mojom::IntentHelperInstance>
@@ -53,8 +54,6 @@ class ArcSettingsService
   Profile* const profile_;
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
   std::unique_ptr<ArcSettingsServiceImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSettingsService);
 };
 
 }  // namespace arc
