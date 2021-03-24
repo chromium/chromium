@@ -149,7 +149,6 @@
           android:layout_height="56dp"
           android:layout_width="56dp"
           android:layout_margin="12dp"
-          android:scaleType="fitCenter"
           app:srcCompat="@drawable/fre_product_logo"
           android:background="@drawable/circle_white"
           android:layout_gravity="bottom|end"

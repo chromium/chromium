@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -857,6 +860,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private static class KirbyTouchListener implements View.OnTouchListener, View.OnLongClickListener {
         private boolean mIsMoving;
+        private float mDownX;
+        private float mDownY;
         private final RootUiCoordinator mRootUiCoordinator;
 
         KirbyTouchListener(RootUiCoordinator rootUiCoordinator) {
@@ -882,12 +887,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 view.setY(motionEvent.getRawY() - view.getContext().getResources()
                     .getDimensionPixelSize(R.dimen.status_indicator_min_height) - view.getContext().getResources()
                     .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size) - view.getHeight()/2);
-                mIsMoving = true;
+                if (Math.abs(mDownX - motionEvent.getRawX()) > view.getWidth()/2 || Math.abs(mDownY - motionEvent.getRawY())> view.getWidth()/2) {
+                    mIsMoving = true;
+                }
                 return true;
             } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                 return mIsMoving;
             } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 mIsMoving = false;
+                mDownX = motionEvent.getRawX();
+                mDownY = motionEvent.getRawY();
             }
             return false;
         }
@@ -912,6 +921,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 view.setVisibility(View.INVISIBLE);
             }
         });
+        Bitmap bMap = BitmapFactory.decodeResource(getResources(), R.drawable.fre_product_logo);
+        int size = getResources().getDimensionPixelSize(R.dimen.toolbar_button_width)*32/48;
+        Bitmap bMapScaled = Bitmap.createScaledBitmap(bMap, size, size, true);
+        ImageView image = (ImageView) findViewById(R.id.kirby);
+        image.setImageBitmap(bMapScaled);
         KirbyTouchListener listener = new KirbyTouchListener(mRootUiCoordinator);
         mContentContainer.findViewById(R.id.kirby).setOnLongClickListener(listener);
         mContentContainer.findViewById(R.id.kirby).setOnTouchListener(listener);
