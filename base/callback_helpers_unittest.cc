@@ -231,9 +231,43 @@ TEST(CallbackHelpersTest, SplitOnceCallback_SecondCallback) {
   std::move(split.second).Run(&count);
   EXPECT_EQ(1, count);
 
-#if GTEST_HAS_DEATH_TEST
   EXPECT_CHECK_DEATH(std::move(split.first).Run(&count));
-#endif  // GTEST_HAS_DEATH_TEST
+}
+
+TEST(CallbackHelpersTest, SplitSplitOnceCallback_FirstSplit) {
+  int count = 0;
+  base::OnceCallback<void(int*)> cb =
+      base::BindOnce([](int* count) { ++*count; });
+
+  auto split = base::SplitOnceCallback(std::move(cb));
+  base::OnceCallback<void(int*)> cb1 = std::move(split.first);
+  split = base::SplitOnceCallback(std::move(split.second));
+  base::OnceCallback<void(int*)> cb2 = std::move(split.first);
+  base::OnceCallback<void(int*)> cb3 = std::move(split.second);
+
+  EXPECT_EQ(0, count);
+  std::move(cb1).Run(&count);
+  EXPECT_EQ(1, count);
+
+  EXPECT_CHECK_DEATH(std::move(cb3).Run(&count));
+}
+
+TEST(CallbackHelpersTest, SplitSplitOnceCallback_SecondSplit) {
+  int count = 0;
+  base::OnceCallback<void(int*)> cb =
+      base::BindOnce([](int* count) { ++*count; });
+
+  auto split = base::SplitOnceCallback(std::move(cb));
+  base::OnceCallback<void(int*)> cb1 = std::move(split.first);
+  split = base::SplitOnceCallback(std::move(split.second));
+  base::OnceCallback<void(int*)> cb2 = std::move(split.first);
+  base::OnceCallback<void(int*)> cb3 = std::move(split.second);
+
+  EXPECT_EQ(0, count);
+  std::move(cb2).Run(&count);
+  EXPECT_EQ(1, count);
+
+  EXPECT_CHECK_DEATH(std::move(cb1).Run(&count));
 }
 
 }  // namespace
