@@ -1495,7 +1495,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   if (ShouldSwapBrowsingInstancesForDynamicIsolation(
           render_frame_host_.get(),
           UrlInfo(destination_effective_url,
-                  destination_url_info.origin_requests_isolation),
+                  destination_url_info.origin_isolation_request),
           cross_origin_isolated_info)) {
     return ShouldSwapBrowsingInstance::kYes_ForceSwap;
   }
@@ -1982,12 +1982,12 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // in a new BrowsingInstance, since the scripting relationships would
     // have been broken anyway if there were no error. Otherwise, we keep it
     // in the same BrowsingInstance to preserve scripting relationships after
-    // reloads. In UrlInfo below we use 'false' for |origin_requests_isolation|
-    // since error pages cannot request origin isolation.
+    // reloads. In UrlInfo below we use kNone for OriginIsolationRequest since
+    // error pages cannot request origin isolation.
     AppendReason(reason, "DetermineSiteInstanceForURL => error-instance");
     return SiteInstanceDescriptor(
         UrlInfo(GURL(kUnreachableWebDataURL),
-                false /* origin_requests_isolation */),
+                UrlInfo::OriginIsolationRequest::kNone),
         force_browsing_instance_swap ? SiteInstanceRelation::UNRELATED
                                      : SiteInstanceRelation::RELATED,
         cross_origin_isolated_info);

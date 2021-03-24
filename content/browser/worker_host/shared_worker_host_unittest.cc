@@ -53,10 +53,8 @@ class SharedWorkerHostTest : public testing::Test {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         &mock_render_process_host_factory_);
-    site_instance_ = SiteInstanceImpl::CreateForUrlInfo(
-        &browser_context_,
-        UrlInfo(kWorkerUrl, /*origin_requests_isolation=*/false),
-        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+    site_instance_ =
+        SiteInstanceImpl::CreateForTesting(&browser_context_, kWorkerUrl);
     RenderProcessHost* rph = site_instance_->GetProcess();
 
     std::vector<std::unique_ptr<MockRenderProcessHost>>* processes =

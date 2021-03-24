@@ -4819,4 +4819,437 @@ IN_PROC_BROWSER_TEST_F(WildcardOriginIsolationTest, SubFrameNavigation) {
       DepictFrameTree(*root));
 }
 
+// Helper class for testing site isolation triggered by
+// Cross-Origin-Opener-Policy headers.  These tests disable strict site
+// isolation by default, so that we can check whether a site becomes isolated
+// due to COOP on both desktop and Android.
+class COOPIsolationTest : public IsolatedOriginTestBase {
+ public:
+  // Note: the COOP header is only populated for HTTPS.
+  COOPIsolationTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSiteIsolationForCrossOriginOpenerPolicy);
+  }
+
+  ~COOPIsolationTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+
+    // This is necessary to use HTTPS with arbitrary hostnames.
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->StartAcceptingConnections();
+
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+
+    original_client_ = SetBrowserClientForTesting(&browser_client_);
+  }
+
+  void TearDownOnMainThread() override {
+    SetBrowserClientForTesting(original_client_);
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  // A custom ContentBrowserClient to turn off strict site isolation, since
+  // COOP isolation only matters in environments like Android where it
+  // is not used.  Note that kSitePerProcess is a higher-layer feature, so we
+  // can't just disable it here.
+  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+   public:
+    bool ShouldEnableStrictSiteIsolation() override { return false; }
+  };
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  net::EmbeddedTestServer https_server_;
+
+  NoSiteIsolationContentBrowserClient browser_client_;
+  ContentBrowserClient* original_client_ = nullptr;
+};
+
+// Check that a main frame navigation to a COOP site (with no subsequent user
+// gesture) triggers isolation for that site within the current
+// BrowsingInstance.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
+  GURL no_coop_url = https_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), no_coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+  scoped_refptr<SiteInstance> first_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_FALSE(first_instance->RequiresDedicatedProcess());
+
+  // Navigate to a b.com URL with COOP, swapping BrowsingInstances.
+  GURL coop_url = https_server()->GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // The b.com COOP page should trigger the isolation heuristic and require a
+  // dedicated process locked to b.com.
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto lock = policy->GetProcessLock(coop_instance->GetProcess()->GetID());
+  EXPECT_TRUE(lock.is_locked_to_site());
+  EXPECT_EQ(ProcessLockFromUrl("https://b.com"), lock);
+
+  // Check that a cross-site subframe in a non-isolated site becomes an OOPIF
+  // in a new, non-isolated SiteInstance.
+  ASSERT_TRUE(ExecuteScript(shell(),
+                            "var iframe = document.createElement('iframe');"
+                            "iframe.id = 'child';"
+                            "document.body.appendChild(iframe);"));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+  GURL c_url(https_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(coop_instance, child_instance);
+  EXPECT_NE(coop_instance->GetProcess(), child_instance->GetProcess());
+  EXPECT_FALSE(child_instance->RequiresDedicatedProcess());
+
+  // Navigating the subframe back to b.com should bring it back to the parent
+  // SiteInstance.
+  GURL b_url(https_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", b_url));
+  child_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(coop_instance, child_instance);
+
+  // Create a new window, forcing a new BrowsingInstance, and check that b.com
+  // is *not* isolated in it.  Since b.com in `coop_instance`'s
+  // BrowsingInstance hasn't received a user gesture, the COOP isolation does
+  // not apply to other BrowsingInstances.
+  Shell* new_shell = CreateBrowser();
+  GURL no_coop_b_url = https_server()->GetURL("b.com", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(new_shell, no_coop_b_url));
+  SiteInstanceImpl* new_instance = static_cast<SiteInstanceImpl*>(
+      new_shell->web_contents()->GetMainFrame()->GetSiteInstance());
+  EXPECT_FALSE(new_instance->RequiresDedicatedProcess());
+}
+
+// Verify that the same-origin-allow-popups COOP header value triggers
+// isolation, and that this behaves sanely with window.open().
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
+  // Navigate to a coop.com URL with COOP.
+  GURL coop_url = https_server()->GetURL(
+      "coop.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin-allow-popups");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(
+      web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups);
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // The coop.com COOP page should trigger the isolation heuristic and require
+  // a dedicated process locked to coop.com.
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto lock = policy->GetProcessLock(coop_instance->GetProcess()->GetID());
+  EXPECT_TRUE(lock.is_locked_to_site());
+  EXPECT_EQ(ProcessLockFromUrl("https://coop.com"), lock);
+
+  // Open a non-COOP same-site URL in a popup, which should stay in the same
+  // BrowsingInstance because of same-origin-allow-popups.  Verify that the
+  // popup ends up in the same SiteInstance as the opener (which requires a
+  // dedicated process).
+  GURL popup_url(https_server()->GetURL("coop.com", "/title1.html"));
+  Shell* popup = OpenPopup(shell(), popup_url, "");
+  RenderFrameHostImpl* popup_rfh =
+      static_cast<RenderFrameHostImpl*>(popup->web_contents()->GetMainFrame());
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+  EXPECT_EQ(popup_rfh->GetSiteInstance(), coop_instance);
+
+  // Navigate the popup to another non-isolated site, staying in the same
+  // BrowsingInstance, and verify that it swaps to a new non-isolated
+  // SiteInstance.  The non-isolated site has a child which is same-origin with
+  // the COOP page; verify that it's placed in the same SiteInstance as the
+  // COOP page, as they are allowed to synchronously script each other.
+  GURL a_url(https_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a.com(coop.com)"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, a_url));
+  SiteInstanceImpl* new_instance = static_cast<SiteInstanceImpl*>(
+      popup->web_contents()->GetMainFrame()->GetSiteInstance());
+  EXPECT_FALSE(new_instance->RequiresDedicatedProcess());
+  EXPECT_NE(new_instance, coop_instance);
+  FrameTreeNode* popup_child =
+      static_cast<WebContentsImpl*>(popup->web_contents())
+          ->GetFrameTree()
+          ->root()
+          ->child_at(0);
+  EXPECT_EQ(popup_child->current_frame_host()->GetSiteInstance(),
+            coop_instance);
+
+  // Navigate the popup to coop.com again, staying in the same
+  // BrowsingInstance, and verify that it goes back to the opener's
+  // SiteInstance.
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, popup_url));
+  EXPECT_EQ(popup->web_contents()->GetMainFrame()->GetSiteInstance(),
+            coop_instance);
+}
+
+// Verify that COOP isolation applies at a site (and not origin) granularity.
+//
+// Isolating sites rather than origins may seem counterintuitive, considering
+// the COOP header value that triggers isolation is "same-origin".  However,
+// process isolation granularity that we can infer from COOP is quite different
+// from what that actual COOP value controls. The COOP "same-origin" value
+// specifies when to sever opener relationships and create a new
+// BrowsingInstance; a COOP "same-origin" main frame document may only stay in
+// the same BrowsingInstance as other same-origin COOP documents.  However,
+// this does not apply to iframes, and it's possible to have a
+// foo.bar.coop.com(baz.coop.com) hierarchy where the main frame has COOP
+// "same-origin" but both frames set document.domain to coop.com and
+// synchronously script each other (*).  Hence, in this case, we must isolate
+// the coop.com site and place the two frames in the same process. This test
+// covers that precise scenario.
+//
+// (*) In the future, COOP may disallow document.domain, in which case we may
+// need to revisit this.  See https://github.com/whatwg/html/issues/6177.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteGranularity) {
+  // Navigate to a URL with COOP, where the origin doesn't match the site.
+  GURL coop_url = https_server()->GetURL(
+      "foo.bar.coop.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  // Ensure that the process lock is for the site, not origin.
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto lock = policy->GetProcessLock(coop_instance->GetProcess()->GetID());
+  EXPECT_TRUE(lock.is_locked_to_site());
+  EXPECT_EQ(ProcessLockFromUrl("https://coop.com"), lock);
+
+  // Check that a same-site cross-origin subframe stays in the same
+  // SiteInstance and process.
+  ASSERT_TRUE(ExecuteScript(shell(),
+                            "var iframe = document.createElement('iframe');"
+                            "iframe.id = 'child';"
+                            "document.body.appendChild(iframe);"));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+  GURL c_url(https_server()->GetURL("baz.coop.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(coop_instance, child_instance);
+
+  // Check that ChildProcessSecurityPolicy considers coop.com (and not its
+  // subdomain) to be the matching isolated origin for `coop_url`.
+  url::Origin matching_isolated_origin;
+  policy->GetMatchingProcessIsolatedOrigin(
+      coop_instance->GetIsolationContext(), url::Origin::Create(GURL(coop_url)),
+      false /* origin_requests_isolation */, &matching_isolated_origin);
+  EXPECT_EQ(matching_isolated_origin,
+            url::Origin::Create(GURL("https://coop.com")));
+}
+
+// Verify that COOP isolation applies when both COOP and COEP headers are set
+// (i.e., for a cross-origin-isolated page).  This results in a different COOP
+// header value (kSameOriginPlusCoep) which should still trigger isolation.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndCOEP) {
+  // Navigate to a URL with COOP + COEP.
+  GURL coop_url = https_server()->GetURL(
+      "coop.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin&"
+      "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep);
+
+  // Make sure that site isolation for coop.com was triggered and that the
+  // navigation ended up in a site-locked process.
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto lock = policy->GetProcessLock(coop_instance->GetProcess()->GetID());
+  EXPECT_TRUE(lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_TRUE(lock.is_locked_to_site());
+  EXPECT_TRUE(
+      lock.MatchesOrigin(url::Origin::Create(GURL("https://coop.com"))));
+}
+
+// Check that when a site triggers both COOP isolation and OriginAgentCluster,
+// both mechanisms take effect.  This test uses a URL with default ports so
+// that we can exercise the site URL being the same with both COOP and OAC.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndOriginAgentClusterNoPorts) {
+  // Since the embedded test server only works for URLs with non-default ports,
+  // use a URLLoaderInterceptor to mimic port-free operation.  This allows
+  // checking the site URL being identical for both COOP and OAC isolation,
+  // since otherwise OAC would include ports in the site URL.  The interceptor
+  // below returns COOP and OAC headers for any page on foo.com, and returns a
+  // simple test page without any headers for a.foo.com and b.foo.com.
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "foo.com") {
+          const std::string headers =
+              "HTTP/1.1 200 OK\n"
+              "Content-Type: text/html\n"
+              "Origin-Agent-Cluster: ?1\n"
+              "Cross-Origin-Opener-Policy: same-origin\n";
+          URLLoaderInterceptor::WriteResponse(
+              "content/test/data" + params->url_request.url.path(),
+              params->client.get(), &headers, base::Optional<net::SSLInfo>());
+          return true;
+        } else if (params->url_request.url.host() == "a.foo.com" ||
+                   params->url_request.url.host() == "b.foo.com") {
+          URLLoaderInterceptor::WriteResponse("content/test/data/title1.html",
+                                              params->client.get());
+          return true;
+        }
+        // Not handled by us.
+        return false;
+      }));
+
+  // Navigate to a URL with with COOP and OriginAgentCluster headers, embedding
+  // two iframes at a.foo.com and b.foo.com.
+  GURL coop_oac_url(
+      "https://foo.com/cross_site_iframe_factory.html?"
+      "foo.com(a.foo.com,b.foo.com)");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_oac_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child1 = root->child_at(0);
+  FrameTreeNode* child2 = root->child_at(1);
+
+  // The two subframes should end up in the same SiteInstance, different from
+  // the main frame's SiteInstance.  Both SiteInstances should be in a process
+  // dedicated to foo.com, but the main frame's process should be for
+  // origin-keyed foo.com (strictly foo.com excluding subdomains) due to
+  // Origin-Agent-Cluster, whereas the subframe process should be for
+  // site-keyed foo.com.
+  SiteInstanceImpl* main_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  SiteInstanceImpl* child_instance =
+      child1->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(child_instance, child2->current_frame_host()->GetSiteInstance());
+  EXPECT_NE(child_instance, main_instance);
+
+  EXPECT_TRUE(main_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(child_instance->RequiresDedicatedProcess());
+
+  EXPECT_TRUE(main_instance->GetSiteInfo().is_origin_keyed());
+  EXPECT_FALSE(child_instance->GetSiteInfo().is_origin_keyed());
+  EXPECT_EQ(main_instance->GetSiteInfo().site_url(),
+            child_instance->GetSiteInfo().site_url());
+  EXPECT_EQ(main_instance->GetSiteInfo().process_lock_url(),
+            child_instance->GetSiteInfo().process_lock_url());
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto main_lock = policy->GetProcessLock(main_instance->GetProcess()->GetID());
+  auto child_lock =
+      policy->GetProcessLock(child_instance->GetProcess()->GetID());
+  EXPECT_TRUE(main_lock.is_locked_to_site());
+  EXPECT_TRUE(child_lock.is_locked_to_site());
+  EXPECT_TRUE(main_lock.is_origin_keyed());
+  EXPECT_FALSE(child_lock.is_origin_keyed());
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  EXPECT_TRUE(main_lock.MatchesOrigin(foo_origin));
+  EXPECT_TRUE(child_lock.MatchesOrigin(foo_origin));
+}
+
+// Check that when a site triggers both COOP isolation and OriginAgentCluster,
+// both mechanisms take effect.  Similar to the test above, but starts on a URL
+// where the origin doesn't match the site.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest,
+                       COOPAndOriginAgentClusterOnSubdomain) {
+  // Navigate to a URL with with COOP and OriginAgentCluster headers.
+  GURL coop_oac_url = https_server()->GetURL(
+      "oac.coop.com",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin&"
+      "Origin-Agent-Cluster: ?1");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_oac_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+
+  // Add a subframe and navigate to foo.coop.com.
+  ASSERT_TRUE(ExecuteScript(shell(),
+                            "var iframe = document.createElement('iframe');"
+                            "iframe.id = 'child';"
+                            "document.body.appendChild(iframe);"));
+  FrameTreeNode* child = root->child_at(0);
+  GURL child_url(https_server()->GetURL("foo.coop.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", child_url));
+
+  // The subframe should end up in a different SiteInstance from the main
+  // frame's SiteInstance.  The main frame's SiteInstance should be in an
+  // origin-keyed process locked to oac.foo.com, whereas the child's
+  // SiteInstance should be in a site-keyed process locked to foo.com.
+  SiteInstanceImpl* main_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(child_instance, main_instance);
+
+  EXPECT_TRUE(main_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(child_instance->RequiresDedicatedProcess());
+
+  EXPECT_TRUE(main_instance->GetSiteInfo().is_origin_keyed());
+  EXPECT_FALSE(child_instance->GetSiteInfo().is_origin_keyed());
+  EXPECT_NE(main_instance->GetSiteInfo().site_url(),
+            child_instance->GetSiteInfo().site_url());
+  EXPECT_NE(main_instance->GetSiteInfo().process_lock_url(),
+            child_instance->GetSiteInfo().process_lock_url());
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto main_lock = policy->GetProcessLock(main_instance->GetProcess()->GetID());
+  auto child_lock =
+      policy->GetProcessLock(child_instance->GetProcess()->GetID());
+  EXPECT_TRUE(main_lock.is_locked_to_site());
+  EXPECT_TRUE(child_lock.is_locked_to_site());
+  EXPECT_TRUE(main_lock.is_origin_keyed());
+  EXPECT_FALSE(child_lock.is_origin_keyed());
+  auto oac_coop_origin = url::Origin::Create(coop_oac_url);
+  auto coop_origin = url::Origin::Create(GURL("https://coop.com"));
+  EXPECT_TRUE(main_lock.MatchesOrigin(oac_coop_origin));
+  EXPECT_TRUE(child_lock.MatchesOrigin(coop_origin));
+}
+
+// Verify that if strict site isolation is in place, COOP isolation does not
+// add redundant isolated origins to ChildProcessSecurityPolicy.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteAlreadyRequiresDedicatedProcess) {
+  // Enable --site-per-process and navigate to a COOP-enabled document.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  GURL coop_url = https_server()->GetURL(
+      "coop.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // The SiteInstance should require a dedicated process, but
+  // ChildProcessSecurityPolicy shouldn't have added an isolated origin
+  // for coop.com.
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto origins = policy->GetIsolatedOrigins(
+      ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
+  EXPECT_EQ(0U, origins.size());
+  EXPECT_FALSE(policy->IsIsolatedOrigin(coop_instance->GetIsolationContext(),
+                                        url::Origin::Create(coop_url),
+                                        false /* origin_requests_isolation */));
+}
+
 }  // namespace content

@@ -135,7 +135,7 @@ class SiteInstanceTest : public testing::Test {
                      const GURL& url) {
     return SiteInfo::Create(
                isolation_context,
-               UrlInfo(url, false /* origin_requests_isolation */),
+               UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
                CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated())
         .site_url();
   }
@@ -207,8 +207,8 @@ class SiteInstanceTest : public testing::Test {
                          const GURL& url2) {
     return SiteInstanceImpl::IsSameSite(
         IsolationContext(context),
-        UrlInfo(url1, false /* origin_requests_isolation */),
-        UrlInfo(url2, false /* origin_requests_isolation */),
+        UrlInfo(url1, UrlInfo::OriginIsolationRequest::kNone),
+        UrlInfo(url2, UrlInfo::OriginIsolationRequest::kNone),
         /*should_compare_effective_urls=*/true);
   }
 

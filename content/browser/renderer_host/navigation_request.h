@@ -266,6 +266,13 @@ class CONTENT_EXPORT NavigationRequest
   void DetermineOriginAgentClusterEndResult(bool is_requested);
   void ProcessOriginAgentClusterEndResult();
 
+  // Returns true if this navigation's COOP header implies that the destination
+  // site of this navigation should be site-isolated.  In addition to checking
+  // for eligible COOP header values, this function also verifies other
+  // criteria, such as whether this feature is enabled on the device (e.g.,
+  // above memory threshold) or whether the site is already isolated.
+  bool ShouldRequestSiteIsolationForCOOP();
+
   // NavigationHandle implementation:
   int64_t GetNavigationId() override;
   ukm::SourceId GetNextPageUkmSourceId() override;

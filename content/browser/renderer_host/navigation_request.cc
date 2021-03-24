@@ -2446,15 +2446,90 @@ void NavigationRequest::ProcessOriginAgentClusterEndResult() {
             origin.Serialize().c_str()));
 }
 
+bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
+  // Don't isolate if the master COOP isolation feature is turned off.  The
+  // feature is expected to only be needed on platforms where strict site
+  // isolation isn't used, such as Android.
+  if (!base::FeatureList::IsEnabled(
+          features::kSiteIsolationForCrossOriginOpenerPolicy)) {
+    return false;
+  }
+
+  // COOP headers are only served once a response is available.
+  if (state_ < WILL_PROCESS_RESPONSE)
+    return false;
+
+  // COOP isolation can only be triggered from main frames.  COOP headers
+  // aren't honored in subframes.
+  if (!IsInMainFrame())
+    return false;
+
+  // Don't apply COOP isolation if site isolation has been disabled (e.g., due
+  // to memory thresholds).
+  if (!SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
+    return false;
+
+  // Check the COOP header value. All same-origin values are considered to be
+  // an implicit hint for site isolation.
+  bool should_header_value_trigger_isolation = false;
+  switch (coop_status_.current_coop().value) {
+    case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
+    case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+    case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+      should_header_value_trigger_isolation = true;
+      break;
+    case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
+      should_header_value_trigger_isolation = false;
+      break;
+      // Don't handle the default case on purpose to force a compiler error if
+      // new COOP values are added, so that they are explicitly handled here.
+  }
+  if (!should_header_value_trigger_isolation)
+    return false;
+
+  // There's no need for additional isolation if the site already requires a
+  // dedicated process (e.g., if the site was isolated via other isolation
+  // mechanisms or from a prior visit to the site with COOP headers).
+  //
+  // Note: we can use `site_info_` here, since that has been assigned at
+  // request start time and updated by redirects, but it is not (currently)
+  // recomputed when response is received, so it does not include the COOP
+  // isolation request (which would cause RequiresDedicatedProcess to return
+  // true regardless of prior isolation). If we ever decide to update
+  // `site_info_` at response time, we should revisit this and ensure that we
+  // call RequiresDedicatedProcess on a SiteInfo that does not already have an
+  // isolation request (enforced by DCHECK below).
+  DCHECK(!site_info_.does_site_request_dedicated_process_for_coop());
+  if (site_info_.RequiresDedicatedProcess(
+          GetStartingSiteInstance()->GetIsolationContext())) {
+    return false;
+  }
+
+  return true;
+}
+
 UrlInfo NavigationRequest::GetUrlInfo() {
+  // Compute the isolation request flags.  Note that multiple requests could be
+  // active simultaneously for the same navigation.
+  uint32_t isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
+
+  if (IsOptInIsolationRequested())
+    isolation_flags |= UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
+
+  if (ShouldRequestSiteIsolationForCOOP())
+    isolation_flags |= UrlInfo::OriginIsolationRequest::kCOOP;
+
+  auto isolation_request =
+      static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
+
   // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
   if (GetWebBundleURL().is_valid()) {
     return UrlInfo(
-        GetURL(), IsOptInIsolationRequested(),
+        GetURL(), isolation_request,
         url::Origin::Resolve(GetURL(), url::Origin::Create(GetWebBundleURL())));
-  } else {
-    return UrlInfo(GetURL(), IsOptInIsolationRequested());
   }
+
+  return UrlInfo(GetURL(), isolation_request);
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {

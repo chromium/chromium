@@ -303,7 +303,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
     } else {
       site_instance = SiteInstanceImpl::CreateForUrlInfo(
           partition->browser_context(),
-          UrlInfo(instance.url(), /*origin_requests_isolation=*/false),
+          UrlInfo(instance.url(), UrlInfo::OriginIsolationRequest::kNone),
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
     }
   }

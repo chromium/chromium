@@ -696,6 +696,14 @@ const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebOTPAssertionFeaturePolicy{
     "WebOTPAssertionFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to isolate sites of documents that specify an eligible
+// Cross-Origin-Opener-Policy header.  Note that this is only intended to be
+// used on Android, which does not use strict site isolation. See
+// https://crbug.com/1018656.
+const base::Feature kSiteIsolationForCrossOriginOpenerPolicy{
+    "SiteIsolationForCrossOriginOpenerPolicy",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.
 // This feature is only consulted in site-per-process mode.

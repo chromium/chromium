@@ -39,8 +39,8 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   static bool IsErrorPageIsolationEnabled(bool in_main_frame);
 
   // Returns true if isolated origins may be added at runtime in response
-  // to hints such as users typing in a password or (in the future) an origin
-  // opting itself into isolation via a header.
+  // to hints such as users typing in a password or sites serving headers like
+  // Cross-Origin-Opener-Policy.
   static bool AreDynamicIsolatedOriginsEnabled();
 
   // Returns true if isolated origins preloaded with the browser should be

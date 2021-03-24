@@ -28,54 +28,87 @@ class RenderProcessHostFactory;
 class StoragePartitionImpl;
 
 // This struct is used to package a GURL together with extra state required to
-// make SiteInstance/process allocation decisions, e.g. whether the url's origin
-// is requesting isolation as determined by response headers in the
-// corresponding navigation request. The extra state is generally most relevant
-// when navigation to the URL is in progress, since once placed into a
-// SiteInstance, the extra state will be available via SiteInfo. Otherwise, most
-// callsites requiring a UrlInfo can create with a GURL, specifying false for
-// |origin_requests_isolation|. Some examples of where passing false for
-// |origin_requests_isolation| is safe are:
+// make SiteInstance/process allocation decisions, e.g. whether the url's
+// origin or site is requesting isolation as determined by response headers in
+// the corresponding NavigationRequest. The extra state is generally most
+// relevant when navigation to the URL is in progress, since once placed into a
+// SiteInstance, the extra state will be available via SiteInfo. Otherwise,
+// most callsites requiring a UrlInfo can create with a GURL, specifying kNone
+// for |origin_isolation_request|. Some examples of where passing kNone for
+// |origin_isolation_request| is safe are:
 // * at DidCommitNavigation time, since at that point the SiteInstance has
 //   already been picked and the navigation can be considered finished,
 // * before a response is received (the only way to request isolation is via
 //   response headers), and
 // * outside of a navigation.
 //
-// If UrlInfo::origin_requests_isolation is false, that does *not* imply that
-// the URL will not be origin-isolated, and vice versa.  The origin isolation
+// If UrlInfo::origin_isolation_request is kNone, that does *not* imply that
+// the URL's origin will not be isolated, and vice versa.  The isolation
 // decision involves both response headers and consistency within a
 // BrowsingInstance, and once we decide on the isolation outcome for an origin,
-// it won't change for the lifetime of the BrowsingInstance.  To check whether
-// or not a frame is origin-isolated, see SiteInfo::is_origin_keyed() on its
-// SiteInstance.
+// it won't change for the lifetime of the BrowsingInstance.
+//
+// To check whether a frame ends up in a site-isolated process, use
+// SiteInfo::RequiresDedicatedProcess() on its SiteInstance's SiteInfo.  To
+// check whether a frame ends up being origin-isolated (e.g., due to the
+// Origin-Agent-Cluster header), use SiteInfo::is_origin_keyed().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
 struct CONTENT_EXPORT UrlInfo {
  public:
+  // Bitmask representing one or more isolation requests.
+  enum OriginIsolationRequest {
+    // No isolated has been requested.
+    kNone = 0,
+    // The Origin-Agent-Cluster header is requesting origin-keyed isolation for
+    // `url`'s origin.
+    kOriginAgentCluster = (1 << 0),
+    // The Cross-Origin-Opener-Policy header has triggered a hint to turn on
+    // site isolation for `url`'s site.
+    kCOOP = (1 << 1)
+  };
+
   UrlInfo() = default;  // Needed for inclusion in SiteInstanceDescriptor.
-  UrlInfo(const GURL& url_in, bool origin_requests_isolation_in)
+  UrlInfo(const GURL& url_in,
+          OriginIsolationRequest origin_isolation_request_in)
       : url(url_in),
-        origin_requests_isolation(origin_requests_isolation_in),
+        origin_isolation_request(origin_isolation_request_in),
         origin(url::Origin::Create(url_in)) {}
   UrlInfo(const GURL& url_in,
-          bool origin_requests_isolation_in,
+          OriginIsolationRequest origin_isolation_request_in,
           const url::Origin& origin_in)
       : url(url_in),
-        origin_requests_isolation(origin_requests_isolation_in),
+        origin_isolation_request(origin_isolation_request_in),
         origin(origin_in) {}
   static inline UrlInfo CreateForTesting(const GURL& url_in) {
     // Used to convert GURL to UrlInfo in tests where opt-in isolation is not
     // being tested.
-    return UrlInfo(url_in, false);
+    return UrlInfo(url_in, OriginIsolationRequest::kNone);
+  }
+
+  // Returns whether this UrlInfo is requesting origin-keyed isolation for
+  // `url`'s origin due to the OriginAgentCluster header.
+  bool requests_origin_agent_cluster_isolation() const {
+    return (origin_isolation_request &
+            OriginIsolationRequest::kOriginAgentCluster);
+  }
+
+  // Returns whether this UrlInfo is requesting isolation in response to the
+  // Cross-Origin-Opener-Policy header.
+  bool requests_coop_isolation() const {
+    return (origin_isolation_request & OriginIsolationRequest::kCOOP);
   }
 
   GURL url;
-  // This flag is only relevant (1) during a navigation request, (2) up to the
-  // point where the origin is placed into a SiteInstance, thus determining the
-  // opt-in isolation status of the origin. Other than these cases, this should
-  // be set to false.
-  bool origin_requests_isolation;
+
+  // This field indicates whether the URL is requesting additional process
+  // isolation during the current navigation (e.g., via OriginAgentCluster or
+  // COOP response headers).  If URL did not request any isolation, this will
+  // be set to kNone. This field is only relevant (1) during a navigation
+  // request, (2) up to the point where the origin is placed into a
+  // SiteInstance.  Other than these cases, this should be set to kNone.
+  OriginIsolationRequest origin_isolation_request;
+
   // If |url| represents a resource inside another resource (e.g. a resource
   // with a urn: URL in WebBundle), origin of the original resource. Otherwise,
   // this is just the origin of |url|.
@@ -176,7 +209,8 @@ class CONTENT_EXPORT SiteInfo {
            const GURL& process_lock_url,
            bool is_origin_keyed,
            const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
-           bool is_guest = false);
+           bool is_guest = false,
+           bool does_site_request_dedicated_process_for_coop = false);
   SiteInfo();
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -236,6 +270,12 @@ class CONTENT_EXPORT SiteInfo {
 
   bool is_guest() const { return is_guest_; }
   bool is_error_page() const;
+
+  // See comments on `does_site_request_dedicated_process_for_coop_` for more
+  // details.
+  bool does_site_request_dedicated_process_for_coop() const {
+    return does_site_request_dedicated_process_for_coop_;
+  }
 
   // Returns true if the site_url() is empty.
   bool is_empty() const { return site_url().possibly_invalid_spec().empty(); }
@@ -340,6 +380,10 @@ class CONTENT_EXPORT SiteInfo {
 
   // Indicates this SiteInfo is for a <webview> guest.
   bool is_guest_ = false;
+
+  // Indicates that there is a request to require a dedicated process for this
+  // SiteInfo due to a hint from the Cross-Origin-Opener-Policy header.
+  bool does_site_request_dedicated_process_for_coop_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

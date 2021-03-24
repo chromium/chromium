@@ -5927,9 +5927,9 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
 
   // Verify that if this RenderFrameHost is for a WebUI it is not committing a
   // URL which is not allowed in a WebUI process. As we are at the commit stage,
-  // set |origin_requests_isolation| = false.
+  // set |origin_isolation_request| to kNone.
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, UrlInfo(url, false /* origin_requests_isolation */, origin),
+          this, UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
           /* is_renderer_initiated_check */ true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -5967,7 +5967,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(url, false /* origin_requests_isolation */, origin),
+      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
       GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
@@ -8485,14 +8485,14 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
 }
 
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
-  // Since |url| has already committed, |origin_requests_isolation| below should
-  // be set to false.
+  // Since |url| has already committed, |origin_isolation_request| below should
+  // be set to kNone.
   SiteInfo site_info =
       url.is_empty()
           ? SiteInfo()
           : SiteInfo::Create(
                 GetSiteInstance()->GetIsolationContext(),
-                UrlInfo(url, false /* origin_requests_isolation */),
+                UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
                 GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
 
   if (last_committed_site_info_ == site_info)

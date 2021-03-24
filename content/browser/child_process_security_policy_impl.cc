@@ -1681,22 +1681,22 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         //
         // At this point, any origin opt-in isolation requests should be
         // complete, so to avoid the possibility of opting something set
-        // |origin_requests_isolation| = false below. Note: We might need to
-        // revisit this if CanAccessDataForOrigin() needs to be called while a
-        // SiteInstance is being determined for a navigation, i.e. during
-        // GetSiteInstanceForNavigationRequest().  If this happens, we'd need to
-        // plumb UrlInfo::origin_requests_isolation value from the ongoing
-        // NavigationRequest into here. Also, we would likely need to attach the
-        // BrowsingInstanceID to UrlInfo once the SiteInstance has been
+        // |origin_isolation_request| to kNone below.  Note: We might need
+        // to revisit this if CanAccessDataForOrigin() needs to be called while
+        // a SiteInstance is being determined for a navigation, i.e. during
+        // GetSiteInstanceForNavigationRequest().  If this happens, we'd need
+        // to plumb UrlInfo::origin_isolation_request value from the ongoing
+        // NavigationRequest into here. Also, we would likely need to attach
+        // the BrowsingInstanceID to UrlInfo once the SiteInstance has been
         // determined in case the RenderProcess has multiple BrowsingInstances
         // in it.
-        // TODO(acolwell): Provide a way for callers, that know
-        // their request's require COOP/COEP handling, to pass in their
-        // COOP/COEP information so it can be used here instead of the values in
+        // TODO(acolwell): Provide a way for callers, that know their request's
+        // require COOP/COEP handling, to pass in their COOP/COEP information
+        // so it can be used here instead of the values in
         // |actual_process_lock|.
         expected_process_lock = ProcessLock::Create(
             isolation_context,
-            UrlInfo(url, false /* origin_requests_isolation */),
+            UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
             actual_process_lock.coop_coep_cross_origin_isolated_info());
 
         if (actual_process_lock.is_locked_to_site()) {
@@ -1777,11 +1777,11 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
               return true;
           }
 
-          // See the ProcessLock::Create() call above regarding why we
-          // pass 'false' for |origin_requests_isolation| below.
+          // See the ProcessLock::Create() call above regarding why we pass
+          // kNone for |origin_isolation_request| below.
           SiteInfo site_info = SiteInfo::Create(
               isolation_context,
-              UrlInfo(url, false /* origin_requests_isolation */),
+              UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
               actual_process_lock.coop_coep_cross_origin_isolated_info());
 
           // A process that's not locked to any site can only access data from
