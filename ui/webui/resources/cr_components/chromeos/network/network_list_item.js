@@ -17,6 +17,17 @@ Polymer({
   ],
 
   properties: {
+    /**
+     * Dims the UI, disables click and keyboard event handlers.
+     * @private
+     */
+    disabled_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+      observer: 'disabledChanged_',
+    },
+
     /** @type {!NetworkList.NetworkListItemType|undefined} */
     item: {
       type: Object,
@@ -494,8 +505,9 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  isSubpageButtonVisible_(networkState, showButtons) {
-    return !!networkState && showButtons && !this.shouldShowUnlockButton_();
+  isSubpageButtonVisible_(networkState, showButtons, disabled_) {
+    return !!networkState && showButtons && !disabled_ &&
+        !this.shouldShowUnlockButton_();
   },
 
   /**
@@ -538,14 +550,19 @@ Polymer({
    * @private
    */
   onSelected_(event) {
-    if (this.isSubpageButtonVisible_(this.networkState, this.showButtons) &&
+    if (this.disabled_) {
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (this.isSubpageButtonVisible_(
+            this.networkState, this.showButtons, this.disabled_) &&
         this.$$('#subpage-button') === this.shadowRoot.activeElement) {
       this.fireShowDetails_(event);
     } else if (this.isESimPendingProfile_) {
       this.onInstallButtonClick_(event);
     } else if (this.shouldShowUnlockButton_()) {
       this.onUnlockButtonClick_();
-    } else if (this.item.hasOwnProperty('customItemName')) {
+    } else if (this.item && this.item.hasOwnProperty('customItemName')) {
       this.fire('custom-item-selected', this.item);
     } else {
       this.fire('selected', this.item);
@@ -607,6 +624,9 @@ Polymer({
    * @private
    */
   onInstallButtonClick_(event) {
+    if (this.disabled_) {
+      return;
+    }
     this.fire('install-profile', {iccid: this.item.customData.iccid});
     // Stop click from propagating to 'onSelected_()' and firing event twice.
     event.stopPropagation();
@@ -676,5 +696,20 @@ Polymer({
    */
   getUnlockBtnA11yLabel_() {
     return this.i18n('networkListItemUnlockA11YLabel', this.getItemName_());
-  }
+  },
+
+  /**
+   * @param {boolean} newValue
+   * @param {boolean|undefined} oldValue
+   * @private
+   */
+  disabledChanged_(newValue, oldValue) {
+    if (!newValue && oldValue === undefined) {
+      return;
+    }
+    if (this.disabled_) {
+      this.blur();
+    }
+    this.setAttribute('aria-disabled', !!this.disabled_);
+  },
 });

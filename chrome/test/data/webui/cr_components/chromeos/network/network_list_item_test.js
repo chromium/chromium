@@ -19,6 +19,7 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
+// #import {keyDownOn, move} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // clang-format on
 
 suite('NetworkListItemTest', function() {
@@ -26,6 +27,8 @@ suite('NetworkListItemTest', function() {
   let listItem;
   let mojom;
   let eSimManagerRemote = null;
+
+  let eventTriggered;
 
   setup(function() {
     loadTimeData.overrideValues({
@@ -36,6 +39,8 @@ suite('NetworkListItemTest', function() {
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
     listItem = document.createElement('network-list-item');
+    setEventListeners();
+    eventTriggered = false;
     document.body.appendChild(listItem);
     Polymer.dom.flush();
   });
@@ -49,10 +54,29 @@ suite('NetworkListItemTest', function() {
     return networkState;
   }
 
+  function setEventListeners() {
+    listItem.addEventListener('show-detail', (event) => {
+      eventTriggered = true;
+    });
+    listItem.addEventListener('custom-item-selected', (event) => {
+      eventTriggered = true;
+    });
+    listItem.addEventListener('install-profile', (event) => {
+      eventTriggered = true;
+    });
+    listItem.addEventListener('selected', (event) => {
+      eventTriggered = true;
+    });
+  }
+
   function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
+  }
+
+  function enter() {
+    keyDownOn(listItem.$$('#divOuter'), 0, [], 'Enter');
   }
 
   test('Network icon visibility', function() {
@@ -223,4 +247,58 @@ suite('NetworkListItemTest', function() {
     assertTrue(!!networkStateText);
     assertEquals(networkStateLockedText, networkStateText.textContent.trim());
   });
+
+  test('Network disabled, Pending eSIM, install button visible', async () => {
+    const itemName = 'Item Name';
+    const itemSubtitle = 'Item Subtitle';
+    listItem.item = {
+      customItemType: NetworkList.CustomItemType.ESIM_PENDING_PROFILE,
+      customItemName: itemName,
+      customItemSubtitle: itemSubtitle,
+      polymerIcon: 'network:cellular-0',
+      showBeforeNetworksList: false,
+      customData: {
+        iccid: 'iccid',
+      },
+    };
+    listItem.disabled_ = true;
+    await flushAsync();
+
+    let installButton = listItem.$$('#installButton');
+    assertTrue(!!installButton);
+    assertTrue(installButton.disabled);
+
+    installButton.click();
+    await flushAsync();
+    assertFalse(eventTriggered);
+
+    listItem.$$('#divOuter').click();
+    await flushAsync();
+    assertFalse(eventTriggered);
+
+    enter();
+    await flushAsync();
+    assertFalse(eventTriggered);
+  });
+
+  test(
+      'Network disabled, no arrow and enter and click does not fire events',
+      async () => {
+        listItem.disabled_ = true;
+        listItem.showButtons = true;
+        listItem.networkState =
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, name);
+        await flushAsync();
+
+        let arrow = listItem.$$('#subpage-button');
+        assertFalse(!!arrow);
+
+        listItem.$$('#divOuter').click();
+        await flushAsync();
+        assertFalse(eventTriggered);
+
+        enter();
+        await flushAsync();
+        assertFalse(eventTriggered);
+      });
 });
