@@ -604,19 +604,6 @@ const char*
         ShelfButtonPressedMetricTracker::
             kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
-class ShelfViewTextDirectionTest : public ShelfViewTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  ShelfViewTextDirectionTest() : scoped_locale_(GetParam() ? "he" : "") {}
-  virtual ~ShelfViewTextDirectionTest() = default;
-
- private:
-  // Restores locale to the default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewTextDirectionTest);
-};
-
 class ShelfViewDragToPinTest : public ShelfViewTest {
  public:
   ShelfViewDragToPinTest() {
@@ -2274,10 +2261,7 @@ TEST_P(ShelfViewVisibleBoundsTest, ItemsAreInBounds) {
   CheckAllItemsAreInBounds();
 }
 
-INSTANTIATE_TEST_SUITE_P(LtrRtl, ShelfViewTextDirectionTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(VisibleBounds,
-                         ShelfViewVisibleBoundsTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(LtrRtl, ShelfViewVisibleBoundsTest, testing::Bool());
 
 namespace {
 
