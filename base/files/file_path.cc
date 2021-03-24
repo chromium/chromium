@@ -288,6 +288,16 @@ bool FilePath::AppendRelativePath(const FilePath& child,
   }
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 
+  // The first 2 components for network paths are [<2-Separators>, <hostname>].
+  // Use case-insensitive comparison for the hostname.
+  // https://tools.ietf.org/html/rfc3986#section-3.2.2
+  if (IsNetwork() && parent_components.size() > 1) {
+    if (*parent_comp++ != *child_comp++ ||
+        !base::EqualsCaseInsensitiveASCII(*parent_comp++, *child_comp++)) {
+      return false;
+    }
+  }
+
   while (parent_comp != parent_components.end()) {
     if (*parent_comp != *child_comp)
       return false;
@@ -541,6 +551,11 @@ FilePath FilePath::AppendASCII(StringPiece component) const {
 
 bool FilePath::IsAbsolute() const {
   return IsPathAbsolute(path_);
+}
+
+bool FilePath::IsNetwork() const {
+  return path_.length() > 1 && FilePath::IsSeparator(path_[0]) &&
+         FilePath::IsSeparator(path_[1]);
 }
 
 bool FilePath::EndsWithSeparator() const {

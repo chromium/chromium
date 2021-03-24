@@ -13,7 +13,7 @@
 // Encoding          unspecified*     UTF-16
 // Separator         /                \, tolerant of /
 // Drive letters     no               case-insensitive A-Z followed by :
-// Alternate root    // (surprise!)   \\, for UNC paths
+// Alternate root    // (surprise!)   \\ (2 Separators), for UNC paths
 //
 // * The encoding need not be specified on POSIX systems, although some
 //   POSIX-compliant systems do specify an encoding.  Mac OS X uses UTF-8.
@@ -339,6 +339,10 @@ class BASE_EXPORT FilePath {
   // a separator character, or with two separator characters.  On POSIX
   // platforms, an absolute path begins with a separator character.
   bool IsAbsolute() const;
+
+  // Returns true if this FilePath is a network path which starts with 2 path
+  // separators. See class documentation for 'Alternate root'.
+  bool IsNetwork() const;
 
   // Returns true if the patch ends with a path separator character.
   bool EndsWithSeparator() const WARN_UNUSED_RESULT;

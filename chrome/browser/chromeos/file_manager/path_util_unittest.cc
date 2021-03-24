@@ -478,6 +478,13 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_FALSE(ConvertPathInsideVMToFileSystemURL(
       profile_.get(), base::FilePath("/path/not/under/mount"), vm_mount,
       /*map_crostini_home=*/false, &url));
+
+  // Special case for PluginVM case-insensitive hostname matching.
+  EXPECT_TRUE(ConvertPathInsideVMToFileSystemURL(
+      profile_.get(), base::FilePath("//chromeos/MyFiles/path/in/pluginvm"),
+      base::FilePath("//ChromeOS"), /*map_crostini_home=*/false, &url));
+  EXPECT_EQ("Downloads-testing_profile-hash/path/in/pluginvm",
+            url.virtual_path().value());
 }
 
 TEST_F(FileManagerPathUtilTest, ExtractMountNameFileSystemNameFullPath) {
