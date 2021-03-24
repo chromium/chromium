@@ -2915,21 +2915,24 @@ void LocalFrame::UpdateBrowserControlsState(
 }
 
 void LocalFrame::UpdateWindowControlsOverlay(
-    const gfx::Rect& window_controls_overlay_rect,
-    const gfx::Insets& insets) {
+    const gfx::Rect& window_controls_overlay_rect) {
   is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
   window_controls_overlay_rect_ = window_controls_overlay_rect;
 
   DocumentStyleEnvironmentVariables& vars =
       GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(insets.top()));
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(insets.left()));
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(insets.bottom()));
-  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(insets.right()));
+  vars.SetVariable(
+      UADefinedVariable::kTitlebarAreaX,
+      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.x()));
+  vars.SetVariable(
+      UADefinedVariable::kTitlebarAreaY,
+      StyleEnvironmentVariables::FormatPx(window_controls_overlay_rect_.y()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaWidth,
+                   StyleEnvironmentVariables::FormatPx(
+                       window_controls_overlay_rect_.width()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaHeight,
+                   StyleEnvironmentVariables::FormatPx(
+                       window_controls_overlay_rect_.height()));
 
   auto* window_controls_overlay =
       WindowControlsOverlay::FromIfExists(*DomWindow()->navigator());

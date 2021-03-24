@@ -4468,8 +4468,8 @@ class WebContentsImplBrowserTestWindowControlsOverlay
     WebContentsImplBrowserTest::SetUp();
   }
 
-  void ValidateTitlebarAreaInsetValue(const std::string& name,
-                                      const std::string& expected_result) {
+  void ValidateTitlebarAreaCSSValue(const std::string& name,
+                                    const std::string& expected_result) {
     SCOPED_TRACE(name);
 
     EXPECT_EQ(
@@ -4491,87 +4491,78 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   auto* web_contents = shell()->web_contents();
 
   GURL url(
-      "data:text/html,<body><div id=target style=\"margin-left: "
-      "env(titlebar-area-inset-left);margin-right: "
-      "env(titlebar-area-inset-right);margin-top: "
-      "env(titlebar-area-inset-top);margin-bottom: "
-      "env(titlebar-area-inset-bottom);\"></div></body>");
+      "data:text/html,<body><div id=target style=\"position=absolute;"
+      "left: env(titlebar-area-x, 50px);"
+      "top: env(titlebar-area-y, 50px);"
+      "width: env(titlebar-area-width, 50px);"
+      "height: env(titlebar-area-height, 50px);\"></div></body>");
 
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // initial state with no visible bounds and empty rect
+  // In the initial state, the overlay is not visible and the bounding rect is
+  // empty.
   int empty_rect_value = 0;
 
   EXPECT_EQ(false,
             EvalJs(web_contents, "navigator.windowControlsOverlay.visible"));
-
   EXPECT_EQ(
       empty_rect_value,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().x"));
-
   EXPECT_EQ(
       empty_rect_value,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().y"));
-
   EXPECT_EQ(
       empty_rect_value,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().width"));
-
   EXPECT_EQ(
       empty_rect_value,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().height"));
 
-  ValidateTitlebarAreaInsetValue("margin-left", "0px");
-  ValidateTitlebarAreaInsetValue("margin-right", "0px");
-  ValidateTitlebarAreaInsetValue("margin-top", "0px");
-  ValidateTitlebarAreaInsetValue("margin-bottom", "0px");
+  // When the overlay is not visble, the environment variables should be
+  // undefined, and the the fallback value of 50px should be used.
+  ValidateTitlebarAreaCSSValue("left", "50px");
+  ValidateTitlebarAreaCSSValue("top", "50px");
+  ValidateTitlebarAreaCSSValue("width", "50px");
+  ValidateTitlebarAreaCSSValue("height", "50px");
+
+  // Update bounds and ensure that JS APIs and CSS variables are updated.
+  const int new_x = 1;
+  const int new_y = 2;
+  const int new_width = 3;
+  const int new_height = 4;
 
   gfx::Rect bounding_client_rect =
-      gfx::Rect(2 /*x*/, 2 /*y*/, 2 /*width*/, 2 /*height*/);
+      gfx::Rect(new_x, new_y, new_width, new_height);
 
-  gfx::Insets insets =
-      gfx::Insets(2 /*top*/, 2 /*left*/, 2 /*bottom*/, 2 /*right*/);
-
-  web_contents->UpdateWindowControlsOverlay(bounding_client_rect, insets);
-
-  // information about the bounds should be updated
-  int new_x = 2;
-  int new_y = 2;
-  int new_width = 2;
-  int new_height = 2;
+  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
 
   EXPECT_EQ(true,
             EvalJs(web_contents, "navigator.windowControlsOverlay.visible"));
-
   EXPECT_EQ(
       new_x,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().x"));
-
   EXPECT_EQ(
       new_y,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().y"));
-
   EXPECT_EQ(
       new_width,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().width"));
-
   EXPECT_EQ(
       new_height,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().height"));
 
-  // check if the css environment variables were updated with the inset values
-  ValidateTitlebarAreaInsetValue("margin-left", "2px");
-  ValidateTitlebarAreaInsetValue("margin-right", "2px");
-  ValidateTitlebarAreaInsetValue("margin-top", "2px");
-  ValidateTitlebarAreaInsetValue("margin-bottom", "2px");
+  ValidateTitlebarAreaCSSValue("left", "1px");
+  ValidateTitlebarAreaCSSValue("top", "2px");
+  ValidateTitlebarAreaCSSValue("width", "3px");
+  ValidateTitlebarAreaCSSValue("height", "4px");
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
@@ -4595,16 +4586,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   // controls overlay bounds are updated.
   EXPECT_EQ(0, EvalJs(web_contents, "geometrychangeCount"));
 
-  // information about the bounds should be updated
-  int x = 2;
-  int y = 2;
-  int width = 2;
-  int height = 2;
+  // Information about the bounds should be updated.
+  const int x = 2;
+  const int y = 2;
+  const int width = 2;
+  const int height = 2;
 
   gfx::Rect bounding_client_rect = gfx::Rect(x, y, width, height);
-  gfx::Insets insets = gfx::Insets(0, 0, 0, 0);
 
-  web_contents->UpdateWindowControlsOverlay(bounding_client_rect, insets);
+  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
 
   // Expect the "geometrychange" event to have fired once.
   EXPECT_EQ(1, EvalJs(web_contents, "geometrychangeCount"));

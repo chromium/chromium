@@ -115,18 +115,18 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     case UADefinedVariable::kFoldHeight:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
       return "fold-height";
-    case UADefinedVariable::kTitlebarAreaInsetTop:
+    case UADefinedVariable::kTitlebarAreaX:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
-      return "titlebar-area-inset-top";
-    case UADefinedVariable::kTitlebarAreaInsetLeft:
+      return "titlebar-area-x";
+    case UADefinedVariable::kTitlebarAreaY:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
-      return "titlebar-area-inset-left";
-    case UADefinedVariable::kTitlebarAreaInsetRight:
+      return "titlebar-area-y";
+    case UADefinedVariable::kTitlebarAreaWidth:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
-      return "titlebar-area-inset-right";
-    case UADefinedVariable::kTitlebarAreaInsetBottom:
+      return "titlebar-area-width";
+    case UADefinedVariable::kTitlebarAreaHeight:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled());
-      return "titlebar-area-inset-bottom";
+      return "titlebar-area-height";
     default:
       break;
   }

@@ -50,15 +50,15 @@ enum class UADefinedVariable {
   kFoldWidth,
   kFoldHeight,
 
-  // The title bar area inset are four environment variables that define a
-  // rectangle by its top, right, bottom, and left insets from the edge of the
-  // viewport, intended for desktop pwas with window controls overlay.
+  // The title bar area variables are four environment variables that define a
+  // rectangle by its x and y position as well as its width and height. They are
+  // intended for desktop PWAs that use the window controls overlay.
   // Explainer:
-  // https://github.com/WICG/window-controls-overlay/blob/master/explainer.md
-  kTitlebarAreaInsetTop,
-  kTitlebarAreaInsetLeft,
-  kTitlebarAreaInsetBottom,
-  kTitlebarAreaInsetRight
+  // https://github.com/WICG/window-controls-overlay/blob/main/explainer.md
+  kTitlebarAreaX,
+  kTitlebarAreaY,
+  kTitlebarAreaWidth,
+  kTitlebarAreaHeight
 };
 
 // StyleEnvironmentVariables stores user agent and user defined CSS environment

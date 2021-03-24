@@ -1181,11 +1181,9 @@ class WebContents : public PageNavigator,
   // reliable favicon-related state.
   virtual const std::vector<blink::mojom::FaviconURLPtr>& GetFaviconURLs() = 0;
 
-  // Intended for desktop pwas with manifest entry of window-controls-overlay,
-  // This sends the available title bar area bounds and the insets to the
-  // renderer process.
-  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect,
-                                           const gfx::Insets& insets) = 0;
+  // Intended for desktop PWAs with manifest entry of window-controls-overlay,
+  // This sends the available title bar area bounds to the renderer process.
+  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
 
   // Whether the WebContents has an active player that is effectively
   // fullscreen. That means that the video is either fullscreen or it is the

@@ -544,8 +544,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const std::vector<blink::mojom::FaviconURLPtr>& GetFaviconURLs() override;
   void Resize(const gfx::Rect& new_bounds) override;
   gfx::Size GetSize() override;
-  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect,
-                                   const gfx::Insets& insets) override;
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
 #if defined(OS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() override;
   WebContentsAndroid* GetWebContentsAndroid();
