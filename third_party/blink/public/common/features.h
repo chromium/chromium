@@ -365,6 +365,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 
 BLINK_COMMON_EXPORT extern const base::Feature kCLSM90Improvements;
 
+BLINK_COMMON_EXPORT extern const base::Feature kCompositeAfterPaint;
+
 }  // namespace features
 }  // namespace blink
 

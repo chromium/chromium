@@ -893,5 +893,9 @@ const base::FeatureParam<std::string>
 const base::Feature kCLSM90Improvements{"CLSM90Improvements",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// New compositing algorithm. See renderer/core/paint/README.md.
+const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
