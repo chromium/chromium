@@ -204,5 +204,8 @@ only add the bot once the CL is finalized.
 When combined with the [`Owners-Override`](#owners_override) power, sheriffs can
 effectively revert and reland on their own.
 
+Rubber Stamper never provides OWNERS approval, by design. It's intended to be
+used by those who have owners in the directory modified or who are sheriffs.
+
 Changes not supported by `Rubber Stamper` still need a +1 from another
 committer.
