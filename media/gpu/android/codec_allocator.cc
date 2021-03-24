@@ -54,6 +54,9 @@ scoped_refptr<base::SequencedTaskRunner> CreateCodecTaskRunner() {
 }  // namespace
 
 // static
+constexpr gfx::Size CodecAllocator::kMinHardwareResolution;
+
+// static
 CodecAllocator* CodecAllocator::GetInstance(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   static base::NoDestructor<CodecAllocator> allocator(
