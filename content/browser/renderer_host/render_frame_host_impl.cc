@@ -7921,9 +7921,7 @@ void RenderFrameHostImpl::CancelPrerendering() {
 }
 
 void RenderFrameHostImpl::ActivateForPrerendering() {
-  // TODO(crbug.com/1174506): Temporary until we understand the cause of the
-  // crash. Return to DCHECKs after the bug is fixed.
-  CHECK(blink::features::IsPrerender2Enabled());
+  DCHECK(blink::features::IsPrerender2Enabled());
 
   // RenderFrameHostManager will swap the RenderFrameHostImpl and set the new
   // one to kActive for the MPArch case.
