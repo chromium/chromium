@@ -28,11 +28,11 @@ ColorMixer& AddMixerForDarkMode(ColorProvider* provider, bool high_contrast) {
                     {kColorAlertHighSeverity, gfx::kGoogleRed300},
                     {kColorAlertLowSeverity, gfx::kGoogleGreen300},
                     {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
+                    {kColorItemHighlight, gfx::kGoogleBlue400},
                     {kColorMidground, gfx::kGoogleGrey800},
                     {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
                     {kColorPrimaryForeground, gfx::kGoogleGrey200},
                     {kColorSecondaryForeground, gfx::kGoogleGrey500},
-                    {kColorTextSelectionBackground, gfx::kGoogleBlue800},
                 }});
   return mixer;
 }
@@ -45,11 +45,11 @@ ColorMixer& AddMixerForLightMode(ColorProvider* provider, bool high_contrast) {
                     {kColorAlertHighSeverity, gfx::kGoogleRed600},
                     {kColorAlertLowSeverity, gfx::kGoogleGreen700},
                     {kColorAlertMediumSeverity, gfx::kGoogleYellow700},
+                    {kColorItemHighlight, gfx::kGoogleBlue500},
                     {kColorMidground, gfx::kGoogleGrey300},
                     {kColorPrimaryBackground, SK_ColorWHITE},
                     {kColorPrimaryForeground, gfx::kGoogleGrey900},
                     {kColorSecondaryForeground, gfx::kGoogleGrey700},
-                    {kColorTextSelectionBackground, gfx::kGoogleBlue200},
                 }});
 
   return mixer;
@@ -73,11 +73,16 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
   mixer[kColorEndpointForeground] =
       GetColorWithMaxContrast(kColorPrimaryBackground);
   mixer[kColorItemSelectionBackground] =
-      BlendForMinContrastWithSelf(kColorPrimaryBackground, 1.67f);
+      AlphaBlend(kColorAccent, kColorPrimaryBackground, 0x3C);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
   mixer[kColorSubtleAccent] = AlphaBlend(kColorAccent, kColorPrimaryBackground,
                                          gfx::kGoogleGreyAlpha400);
   mixer[kColorSubtleEmphasisBackground] =
       BlendTowardMaxContrast(kColorPrimaryBackground, gfx::kGoogleGreyAlpha100);
+  mixer[kColorTextSelectionBackground] = AlphaBlend(
+      kColorAccent, kColorPrimaryBackground, gfx::kGoogleGreyAlpha500);
   mixer[kColorTextSelectionForeground] =
       GetColorWithMaxContrast(kColorTextSelectionBackground);
 }

@@ -27,8 +27,8 @@ constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
     ui::kColorMenuItemForeground,
     ui::kColorMenuSeparator,
     ui::kColorTableBackgroundAlternate,
-    ui::kColorTextfieldSelectionBackground,
-    ui::kColorTextSelectionBackground});
+    ui::kColorTableGroupingIndicator,
+    ui::kColorTextfieldSelectionBackground});
 // clang-format on
 }
 
@@ -41,6 +41,10 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetNative,
                 {
+                    {kColorItemHighlight,
+                     SkColorSetA(skia::NSSystemColorToSkColor(
+                                     [NSColor keyboardFocusIndicatorColor]),
+                                 0x66)},
                     {kColorTextSelectionBackground,
                      skia::NSSystemColorToSkColor(
                          [NSColor selectedTextBackgroundColor])},
@@ -62,10 +66,6 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer.AddSet(
       {kColorSetNative,
        {
-           {kColorFocusableBorderFocused,
-            SkColorSetA(skia::NSSystemColorToSkColor(
-                            [NSColor keyboardFocusIndicatorColor]),
-                        0x66)},
            {kColorMenuBorder, SkColorSetA(SK_ColorBLACK, 0x60)},
            {kColorMenuItemForegroundDisabled,
             skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])},

@@ -198,6 +198,7 @@ base::Optional<SkColor> NativeThemeMac::GetOSColor(
           [NSColor selectedTextBackgroundColor]);
 
     case kColorId_FocusedBorderColor:
+    case kColorId_TableGroupingIndicatorColor:
       return SkColorSetA(
           skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
           0x66);

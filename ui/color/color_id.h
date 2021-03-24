@@ -20,7 +20,9 @@
   E_CPONLY(kColorDisabledForeground) \
   E_CPONLY(kColorEndpointBackground) \
   E_CPONLY(kColorEndpointForeground) \
+  E_CPONLY(kColorItemHighlight) \
   E_CPONLY(kColorItemSelectionBackground) \
+  E_CPONLY(kColorMenuSelectionBackground) \
   E_CPONLY(kColorMidground) \
   E_CPONLY(kColorPrimaryBackground) \
   E_CPONLY(kColorPrimaryForeground) \
