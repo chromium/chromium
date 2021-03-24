@@ -6,6 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -13,12 +15,45 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
+
+namespace {
+
+constexpr char kInjectionSucceededMessage[] = "injection succeeded";
+
+class BlockedActionWaiter
+    : public extensions::ExtensionActionRunner::TestObserver {
+ public:
+  explicit BlockedActionWaiter(extensions::ExtensionActionRunner* runner)
+      : runner_(runner), run_loop_(std::make_unique<base::RunLoop>()) {
+    runner_->set_observer_for_testing(this);
+  }
+  BlockedActionWaiter(const BlockedActionWaiter&) = delete;
+  BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
+  ~BlockedActionWaiter() { runner_->set_observer_for_testing(nullptr); }
+
+  void WaitAndReset() {
+    run_loop_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+ private:
+  // ExtensionActionRunner::TestObserver:
+  void OnBlockedActionAdded() override { run_loop_->Quit(); }
+
+  extensions::ExtensionActionRunner* runner_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+}  // namespace
 
 class ExtensionsToolbarContainerBrowserTest
     : public ExtensionsToolbarBrowserTest {
@@ -220,4 +255,202 @@ IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarContainerBrowserTest,
   gfx::ImageSkia icon = extension_views[0]->GetIconForTest();
   // Force the image to try and load a representation.
   icon.GetRepresentation(2.0);
+}
+
+class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
+    : public ExtensionsToolbarContainerBrowserTest {
+ public:
+  enum class ContentScriptRunLocation {
+    DOCUMENT_START,
+    DOCUMENT_IDLE,
+  };
+
+  ExtensionsToolbarRuntimeHostPermissionsBrowserTest() = default;
+  ExtensionsToolbarRuntimeHostPermissionsBrowserTest(
+      const ExtensionsToolbarRuntimeHostPermissionsBrowserTest&) = delete;
+  ExtensionsToolbarRuntimeHostPermissionsBrowserTest& operator=(
+      const ExtensionsToolbarRuntimeHostPermissionsBrowserTest&) = delete;
+  ~ExtensionsToolbarRuntimeHostPermissionsBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionsToolbarContainerBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void LoadAllUrlsExtension(ContentScriptRunLocation run_location) {
+    std::string run_location_str;
+    switch (run_location) {
+      case ContentScriptRunLocation::DOCUMENT_START:
+        run_location_str = "document_start";
+        break;
+      case ContentScriptRunLocation::DOCUMENT_IDLE:
+        run_location_str = "document_idle";
+        break;
+    }
+    extension_dir_.WriteManifest(base::StringPrintf(R"({
+             "name": "All Urls Extension",
+             "description": "Runs a content script everywhere",
+             "manifest_version": 2,
+             "version": "0.1",
+             "content_scripts": [{
+               "matches": ["<all_urls>"],
+               "js": ["script.js"],
+               "run_at": "%s"
+             }]
+           })",
+                                                    run_location_str.c_str()));
+    extension_dir_.WriteFile(
+        FILE_PATH_LITERAL("script.js"),
+        base::StringPrintf("chrome.test.sendMessage('%s');",
+                           kInjectionSucceededMessage));
+
+    extension_ = extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
+        extension_dir_.UnpackedPath());
+    ASSERT_TRUE(extension_);
+    AppendExtension(extension_);
+    extensions::ScriptingPermissionsModifier(profile(), extension_)
+        .SetWithholdHostPermissions(true);
+  }
+
+  const extensions::Extension* extension() const { return extension_.get(); }
+
+  extensions::ExtensionContextMenuModel* GetExtensionContextMenu() {
+    ToolbarActionViewController* const controller =
+        GetExtensionsToolbarContainer()->GetActionForId(extension_->id());
+    return static_cast<extensions::ExtensionContextMenuModel*>(
+        controller->GetContextMenu());
+  }
+
+ private:
+  extensions::TestExtensionDir extension_dir_;
+  scoped_refptr<const extensions::Extension> extension_;
+};
+
+// Tests page access modifications through the context menu which require a page
+// refresh.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
+                       ContextMenuPageAccess_RefreshRequired) {
+  LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_START);
+
+  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
+                                                  false /* will_reply */);
+  injection_listener.set_extension_id(extension()->id());
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  extensions::ExtensionActionRunner* runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  BlockedActionWaiter blocked_action_waiter(runner);
+  {
+    content::TestNavigationObserver observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+
+  // Access to |url| should have been withheld.
+  blocked_action_waiter.WaitAndReset();
+  EXPECT_TRUE(runner->WantsToRun(extension()));
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension());
+  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(injection_listener.was_satisfied());
+
+  extensions::ExtensionContextMenuModel* extension_menu =
+      GetExtensionContextMenu();
+  ASSERT_TRUE(extension_menu);
+
+  // Allow the extension to run on this site. This should show a refresh page
+  // bubble. Accept the bubble.
+  {
+    content::TestNavigationObserver observer(web_contents);
+    runner->set_default_bubble_close_action_for_testing(
+        std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
+            ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE));
+    extension_menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE,
+        0 /* event_flags */);
+    observer.WaitForNavigationFinished();
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+
+  // The extension should have injected and the extension should no longer want
+  // to run.
+  ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
+  injection_listener.Reset();
+  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(runner->WantsToRun(extension()));
+
+  // Now navigate to a different host. The extension should have blocked
+  // actions.
+  {
+    url = embedded_test_server()->GetURL("abc.com", "/title1.html");
+    content::TestNavigationObserver observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+  blocked_action_waiter.WaitAndReset();
+  EXPECT_TRUE(runner->WantsToRun(extension()));
+  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(injection_listener.was_satisfied());
+
+  // Allow the extension to run on all sites this time. This should again show a
+  // refresh bubble. Dismiss it.
+  runner->set_default_bubble_close_action_for_testing(
+      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
+          ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_USER_ACTION));
+  extension_menu->ExecuteCommand(
+      extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES,
+      0 /* event_flags */);
+
+  // Permissions to the extension shouldn't have been granted, and the extension
+  // should still be in wants-to-run state.
+  EXPECT_TRUE(runner->WantsToRun(extension()));
+  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(injection_listener.was_satisfied());
+}
+
+// Tests page access modifications through the context menu which don't require
+// a page refresh.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
+                       ContextMenuPageAccess_RefreshNotRequired) {
+  LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_IDLE);
+  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
+                                                  false /* will_reply */);
+  injection_listener.set_extension_id(extension()->id());
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  extensions::ExtensionActionRunner* runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  BlockedActionWaiter blocked_action_waiter(runner);
+  {
+    content::TestNavigationObserver observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(observer.last_navigation_succeeded());
+  }
+
+  // Access to |url| should have been withheld.
+  blocked_action_waiter.WaitAndReset();
+  EXPECT_TRUE(runner->WantsToRun(extension()));
+  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
+                                                                extension());
+  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(injection_listener.was_satisfied());
+
+  extensions::ExtensionContextMenuModel* extension_menu =
+      GetExtensionContextMenu();
+  ASSERT_TRUE(extension_menu);
+
+  // Allow the extension to run on this site. Since the blocked actions don't
+  // require a refresh, the permission should be granted and the page actions
+  // should run.
+  extension_menu->ExecuteCommand(
+      extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE,
+      0 /* event_flags */);
+  ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
+  EXPECT_FALSE(runner->WantsToRun(extension()));
+  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
 }
