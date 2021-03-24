@@ -290,9 +290,6 @@
       status: "stable",
     },
     {
-      name: "BlockHTMLParserOnStyleSheets",
-    },
-    {
       name: "BlockingDownloadsInSandbox",
       status: "stable",
     },

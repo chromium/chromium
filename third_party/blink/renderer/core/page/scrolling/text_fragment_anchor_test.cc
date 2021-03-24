@@ -924,37 +924,12 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   mojom::blink::ScrollType scroll_type = GetParam();
 
-  if (!RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
-    GetDocument().View()->LayoutViewport()->ScrollBy(ScrollOffset(0, 100),
-                                                     scroll_type);
-    // Set the target text to visible and change its position to cause a layout
-    // and invoke the fragment anchor in the next begin frame.
-    css_request.Complete("p { visibility: visible; top: 1001px; }");
-    img_request.Complete("");
-  } else {
-    // Set the target text to visible and change its position to cause a layout
-    // and invoke the fragment anchor in the next begin frame.
-    css_request.Complete("p { visibility: visible; top: 1001px; }");
-    RunPendingTasks();
-    Compositor().BeginFrame();
-    Element& p = *GetDocument().getElementById("text");
-
-    // We should have invoked the fragment and scrolled the <p> into view, but
-    // load should not yet be complete due to the image.
-    EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
-    ASSERT_FALSE(GetDocument().IsLoadCompleted());
-
-    // Before invoking again, perform a user scroll. This should abort future
-    // scrolls during fragment invocation.
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(ScrollOffset(0, 0),
-                                                            scroll_type);
-    ASSERT_FALSE(ViewportRect().Contains(BoundingRectInFrame(p)));
-
-    img_request.Complete("");
-    RunPendingTasks();
-    ASSERT_TRUE(GetDocument().IsLoadCompleted());
-  }
-
+  GetDocument().View()->LayoutViewport()->ScrollBy(ScrollOffset(0, 100),
+                                                   scroll_type);
+  // Set the target text to visible and change its position to cause a layout
+  // and invoke the fragment anchor in the next begin frame.
+  css_request.Complete("p { visibility: visible; top: 1001px; }");
+  img_request.Complete("");
   RunAsyncMatchingTasks();
 
   // Render two frames to handle the async step added by the beforematch event.

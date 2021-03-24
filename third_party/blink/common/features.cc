@@ -568,9 +568,6 @@ const base::Feature kWebviewAccelerateSmallCanvases{
 const base::Feature kDiscardCodeCacheAfterFirstUse{
     "DiscardCodeCacheAfterFirstUse", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBlockHTMLParserOnStyleSheets{
-    "BlockHTMLParserOnStyleSheets", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill switch for the new <link disabled> behavior.
 // TODO(crbug.com/1087043): Remove this once the feature has
 // landed and no compat issues are reported.

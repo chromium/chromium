@@ -358,11 +358,6 @@ TEST_F(DocumentLoadingRenderingTest,
 
 TEST_F(DocumentLoadingRenderingTest,
        ShouldContinuePaintingWhenSheetsStartedAfterBody) {
-  // HaveRenderBlockingResourcesLoaded being tested here is always true with
-  // ScopedBlockHTMLParserOnStyleSheets enabled. Remove this test when the flag
-  // is removed.
-  ScopedBlockHTMLParserOnStyleSheetsForTest scoped_feature(false);
-
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
                                           "text/css");

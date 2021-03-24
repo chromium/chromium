@@ -347,10 +347,6 @@ TEST_F(LocalFrameViewTest,
 // activate synchronously while rendering is blocked waiting on a stylesheet.
 // See https://crbug.com/851338.
 TEST_F(SimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
-  // Style-sheets are parser-blocking, not render-blocking when
-  // BlockHTMLParserOnStyleSheets is enabled.
-  ScopedBlockHTMLParserOnStyleSheetsForTest scope(false);
-
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_resource("https://example.com/sheet.css",
                                      "text/css");

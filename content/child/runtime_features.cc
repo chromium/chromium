@@ -352,8 +352,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kAudioWorkletRealtimeThread},
           {"BlockCredentialedSubresources",
            features::kBlockCredentialedSubresources},
-          {"BlockHTMLParserOnStyleSheets",
-           blink::features::kBlockHTMLParserOnStyleSheets},
           {"COLRV1Fonts", blink::features::kCOLRV1Fonts},
           {"CompositeAfterPaint", blink::features::kCompositeAfterPaint},
           {"ComputePressure", blink::features::kComputePressure},

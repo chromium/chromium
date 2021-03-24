@@ -244,10 +244,6 @@ bool TextFragmentAnchor::Invoke() {
   frame_->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextFragment());
 
-  // TODO(bokan): Once BlockHTMLParserOnStyleSheets is launched, there won't be
-  // a way for the user to scroll before we invoke and scroll the anchor. We
-  // should confirm if we can remove tracking this after that point or if we
-  // need a replacement metric.
   if (user_scrolled_ && !did_scroll_into_view_)
     metrics_->ScrollCancelled();
 

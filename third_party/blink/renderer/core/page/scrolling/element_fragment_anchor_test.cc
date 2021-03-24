@@ -231,34 +231,20 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
                                      "text/css");
   LoadURL("https://example.com/test.html#anchor");
 
-  if (!RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
-    main_resource.Complete(R"HTML(
+  main_resource.Complete(R"HTML(
         <!DOCTYPE html>
         <link rel="stylesheet" type="text/css" href="sheet.css">
         <div style="height: 1000px;"></div>
         <input id="anchor">Bottom of the page</input>
       )HTML");
 
-    // We're still waiting on the stylesheet to load so the load event shouldn't
-    // yet dispatch and parsing is deferred. This will install the anchor.
-    ASSERT_FALSE(GetDocument().IsLoadCompleted());
-    ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
-    ASSERT_TRUE(static_cast<ElementFragmentAnchor*>(
-                    GetDocument().View()->GetFragmentAnchor())
-                    ->anchor_node_);
-  } else {
-    main_resource.Complete(R"HTML(
-        <!DOCTYPE html>
-        <div style="height: 1000px;"></div>
-        <input id="anchor">Bottom of the page</input>
-        <link rel="stylesheet" type="text/css" href="sheet.css">
-      )HTML");
-
-    // We're still waiting on the stylesheet to load so the load event shouldn't
-    // yet dispatch and parsing is deferred. This will install the anchor.
-    ASSERT_FALSE(GetDocument().IsLoadCompleted());
-    ASSERT_FALSE(GetDocument().View()->GetFragmentAnchor());
-  }
+  // We're still waiting on the stylesheet to load so the load event shouldn't
+  // yet dispatch and parsing is deferred. This will install the anchor.
+  ASSERT_FALSE(GetDocument().IsLoadCompleted());
+  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
+  ASSERT_TRUE(static_cast<ElementFragmentAnchor*>(
+                  GetDocument().View()->GetFragmentAnchor())
+                  ->anchor_node_);
 
   // Remove the fragment anchor from the DOM and perform GC.
   GetDocument().getElementById("anchor")->remove();
@@ -271,18 +257,12 @@ TEST_F(ElementFragmentAnchorTest, AnchorRemovedBeforeBeginFrameCrash) {
   css_resource.Complete("");
   test::RunPendingTasks();
 
-  if (!RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
-    // We should still have a fragment anchor but its node pointer should be
-    // gone since it's a WeakMember.
-    ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
-    ASSERT_FALSE(static_cast<ElementFragmentAnchor*>(
-                     GetDocument().View()->GetFragmentAnchor())
-                     ->anchor_node_);
-  } else {
-    // The fragment shouldn't have installed since the targeted element was
-    // removed.
-    ASSERT_FALSE(GetDocument().View()->GetFragmentAnchor());
-  }
+  // We should still have a fragment anchor but its node pointer should be
+  // gone since it's a WeakMember.
+  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
+  ASSERT_FALSE(static_cast<ElementFragmentAnchor*>(
+                   GetDocument().View()->GetFragmentAnchor())
+                   ->anchor_node_);
 
   // We'd normally focus the fragment during BeginFrame. Make sure we don't
   // crash since it's been GC'd.

@@ -195,9 +195,6 @@ TEST_F(WebMeaningfulLayoutsTest,
 // A pending stylesheet in the head is render-blocking and will be considered
 // a pending stylesheet if a layout is triggered before it loads.
 TEST_F(WebMeaningfulLayoutsTest, LayoutWithPendingRenderBlockingStylesheet) {
-  // Render-blocking stylesheets is not a concept when the parser is blocked.
-  ScopedBlockHTMLParserOnStyleSheetsForTest scope(false);
-
   SimRequest main_resource("https://example.com/index.html", "text/html");
   SimSubresourceRequest style_resource("https://example.com/style.css",
                                        "text/css");

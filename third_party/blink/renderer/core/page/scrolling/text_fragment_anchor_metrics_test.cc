@@ -839,12 +839,6 @@ INSTANTIATE_TEST_SUITE_P(
 // Test that the ScrollCancelled metric gets reported when a user scroll cancels
 // the scroll into view.
 TEST_P(TextFragmentAnchorScrollMetricsTest, ScrollCancelled) {
-  // This test isn't relevant with this flag enabled. When it's enabled,
-  // there's no way to block rendering and the fragment is installed and
-  // invoked as soon as parsing finishes which means the user cannot scroll
-  // before this point.
-  ScopedBlockHTMLParserOnStyleSheetsForTest block_parser(false);
-
   SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
   SimSubresourceRequest css_request("https://example.com/test.css", "text/css");
   LoadURL("https://example.com/test.html#:~:text=test");

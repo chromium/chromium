@@ -582,8 +582,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // (parser-inserted scripts may not run until all pending stylesheets have
   // loaded). See:
   // https://html.spec.whatwg.org/multipage/semantics.html#interactions-of-styling-and-scripting
-  // Once the BlockHTMLParserOnStyleSheets flag has shipped, this is the same
-  // as pending_parser_blocking_stylesheets_.
   int pending_script_blocking_stylesheets_{0};
 
   // Tracks the number of currently loading top-level stylesheets which block

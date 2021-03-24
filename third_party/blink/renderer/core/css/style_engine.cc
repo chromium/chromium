@@ -248,8 +248,7 @@ void StyleEngine::AddPendingSheet(StyleEngineContext& context) {
 
   context.AddingPendingSheet(GetDocument());
 
-  if (context.AddedPendingSheetBeforeBody() &&
-      !RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
+  if (context.AddedPendingSheetBeforeBody()) {
     pending_render_blocking_stylesheets_++;
   } else {
     pending_parser_blocking_stylesheets_++;
@@ -263,8 +262,7 @@ void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node,
   if (style_sheet_candidate_node.isConnected())
     SetNeedsActiveStyleUpdate(style_sheet_candidate_node.GetTreeScope());
 
-  if (context.AddedPendingSheetBeforeBody() &&
-      !RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
+  if (context.AddedPendingSheetBeforeBody()) {
     DCHECK_GT(pending_render_blocking_stylesheets_, 0);
     pending_render_blocking_stylesheets_--;
   } else {
