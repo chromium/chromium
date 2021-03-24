@@ -186,7 +186,7 @@ std::u16string FormatNotificationTitle(const ShareTarget& share_target,
   std::u16string attachments =
       GetAttachmentsString(share_target, use_capitalized_attachments);
 
-  std::u16string device_name = base::ASCIIToUTF16(share_target.device_name);
+  std::u16string device_name = base::UTF8ToUTF16(share_target.device_name);
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
 
@@ -238,7 +238,7 @@ std::u16string GetConnectionRequestNotificationMessage(
     const TransferMetadata& transfer_metadata) {
   std::u16string attachments =
       GetAttachmentsString(share_target, /*use_capitalized_attachments=*/false);
-  std::u16string device_name = base::ASCIIToUTF16(share_target.device_name);
+  std::u16string device_name = base::UTF8ToUTF16(share_target.device_name);
 
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
@@ -889,7 +889,7 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
           share_target.is_incoming
               ? IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED
               : IDS_NEARBY_NOTIFICATION_RECEIVER_CANCELLED),
-      {base::ASCIIToUTF16(share_target.device_name)}, /*offsets=*/nullptr));
+      {base::UTF8ToUTF16(share_target.device_name)}, /*offsets=*/nullptr));
 
   delegate_map_.erase(kNearbyNotificationId);
 

@@ -438,6 +438,19 @@ TEST_F(NearbyNotificationManagerTest, ShowProgress_UpdatesProgress) {
   EXPECT_EQ(progress, notification.progress());
 }
 
+TEST_F(NearbyNotificationManagerTest, ShowProgress_DeviceNameEncoding) {
+  ShareTarget share_target;
+  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  TransferMetadata transfer_metadata =
+      TransferMetadataBuilder().set_progress(75.0).build();
+
+  manager()->ShowProgress(share_target, transfer_metadata);
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  std::string title = base::UTF16ToUTF8(notifications[0].title());
+  EXPECT_TRUE(title.find(share_target.device_name) != std::string::npos);
+}
+
 TEST_P(NearbyNotificationManagerAttachmentsTest, ShowProgress) {
   const AttachmentsTestParamInternal& param = std::get<0>(GetParam());
   bool is_incoming = std::get<1>(GetParam());
@@ -646,6 +659,19 @@ INSTANTIATE_TEST_SUITE_P(
                         TransferMetadata::Status::kAwaitingRemoteAcceptance),
         testing::Bool()));
 
+TEST_F(NearbyNotificationManagerTest,
+       ShowConnectionRequest_DeviceNameEncoding) {
+  ShareTarget share_target;
+  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+
+  manager()->ShowConnectionRequest(share_target,
+                                   TransferMetadataBuilder().build());
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  std::string message = base::UTF16ToUTF8(notifications[0].message());
+  EXPECT_TRUE(message.find(share_target.device_name) != std::string::npos);
+}
+
 TEST_F(NearbyNotificationManagerTest, ShowOnboarding_ShowsNotification) {
   manager()->ShowOnboarding();
 
@@ -691,6 +717,37 @@ TEST_F(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {
   EXPECT_EQ(0u, notification.buttons().size());
 }
 
+TEST_F(NearbyNotificationManagerTest, ShowSuccess_DeviceNameEncoding) {
+  ShareTarget share_target;
+  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+
+  manager()->ShowSuccess(share_target);
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  std::string title = base::UTF16ToUTF8(notifications[0].title());
+  EXPECT_TRUE(title.find(share_target.device_name) != std::string::npos);
+}
+
+TEST_F(NearbyNotificationManagerTest, ShowCancelled_ShowsNotification) {
+  ShareTarget share_target;
+  manager()->ShowCancelled(share_target);
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+}
+
+TEST_F(NearbyNotificationManagerTest, ShowCancelled_DeviceNameEncoding) {
+  ShareTarget share_target;
+  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+
+  manager()->ShowCancelled(share_target);
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  std::string title = base::UTF16ToUTF8(notifications[0].title());
+  EXPECT_TRUE(title.find(share_target.device_name) != std::string::npos);
+}
+
 TEST_F(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
   manager()->ShowFailure(ShareTarget(), TransferMetadataBuilder().build());
 
@@ -710,6 +767,17 @@ TEST_F(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
   EXPECT_EQ(0u, notification.buttons().size());
+}
+
+TEST_F(NearbyNotificationManagerTest, ShowFailure_DeviceNameEncoding) {
+  ShareTarget share_target;
+  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+
+  manager()->ShowFailure(share_target, TransferMetadataBuilder().build());
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  std::string title = base::UTF16ToUTF8(notifications[0].title());
+  EXPECT_TRUE(title.find(share_target.device_name) != std::string::npos);
 }
 
 TEST_F(NearbyNotificationManagerTest,
