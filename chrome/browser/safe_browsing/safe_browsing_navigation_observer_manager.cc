@@ -551,8 +551,7 @@ SafeBrowsingNavigationObserverManager::
 
 void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
     content::WebContents* source_web_contents,
-    int source_render_process_id,
-    int source_render_frame_id,
+    content::RenderFrameHost* source_render_frame_host,
     const GURL& target_url,
     ui::PageTransition page_transition,
     content::WebContents* target_web_contents,
@@ -560,8 +559,6 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
   DCHECK(source_web_contents);
   DCHECK(target_web_contents);
 
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      source_render_process_id, source_render_frame_id);
   // Remove the "#" at the end of URL, since it does not point to any actual
   // page fragment ID.
   GURL cleaned_target_url =
@@ -569,19 +566,20 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
 
   std::unique_ptr<NavigationEvent> nav_event =
       std::make_unique<NavigationEvent>();
-  if (rfh) {
+  if (source_render_frame_host) {
     nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
-        rfh->GetLastCommittedURL());
+        source_render_frame_host->GetLastCommittedURL());
+    nav_event->source_main_frame_url =
+        SafeBrowsingNavigationObserverManager::ClearURLRef(
+            source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
   }
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(source_web_contents);
-  nav_event->source_main_frame_url =
-      SafeBrowsingNavigationObserverManager::ClearURLRef(
-          source_web_contents->GetLastCommittedURL());
   nav_event->original_request_url = cleaned_target_url;
   nav_event->target_tab_id =
       sessions::SessionTabHelper::IdForTab(target_web_contents);
-  nav_event->frame_id = rfh ? rfh->GetFrameTreeNodeId()
+  nav_event->frame_id = source_render_frame_host
+                            ? source_render_frame_host->GetFrameTreeNodeId()
                             : content::RenderFrameHost::kNoFrameTreeNodeId;
   nav_event->maybe_launched_by_external_application =
       ui::PageTransitionCoreTypeIs(page_transition,

@@ -259,8 +259,7 @@ class SafeBrowsingNavigationObserverManager
   // Records the creation of a new WebContents by |source_web_contents|. This is
   // used to detect cross-frame and cross-tab navigations.
   void RecordNewWebContents(content::WebContents* source_web_contents,
-                            int source_render_process_id,
-                            int source_render_frame_id,
+                            content::RenderFrameHost* source_render_frame_host,
                             const GURL& target_url,
                             ui::PageTransition page_transition,
                             content::WebContents* target_web_contents,

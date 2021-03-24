@@ -153,8 +153,7 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
       content::WebContents* initiator_contents =
           content::WebContents::FromRenderFrameHost(initiator_frame_host);
       manager_->RecordNewWebContents(
-          initiator_contents, initiator_frame_host->GetProcess()->GetID(),
-          initiator_frame_host->GetRoutingID(), navigation_handle->GetURL(),
+          initiator_contents, initiator_frame_host, navigation_handle->GetURL(),
           navigation_handle->GetPageTransition(), web_contents(),
           navigation_handle->IsRendererInitiated());
     }
@@ -214,7 +213,9 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   } else {
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            navigation_handle->GetWebContents()->GetLastCommittedURL());
+            navigation_handle->GetParentFrame()
+                ->GetMainFrame()
+                ->GetLastCommittedURL());
   }
 
   std::unique_ptr<NavigationEvent> pending_nav_event =
@@ -295,10 +296,8 @@ void SafeBrowsingNavigationObserver::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  manager_->RecordNewWebContents(
-      web_contents(), source_render_frame_host->GetProcess()->GetID(),
-      source_render_frame_host->GetRoutingID(), url, transition, new_contents,
-      renderer_initiated);
+  manager_->RecordNewWebContents(web_contents(), source_render_frame_host, url,
+                                 transition, new_contents, renderer_initiated);
 }
 
 void SafeBrowsingNavigationObserver::OnContentSettingChanged(
