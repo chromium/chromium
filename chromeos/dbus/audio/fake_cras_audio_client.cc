@@ -157,7 +157,7 @@ void FakeCrasAudioClient::GetNumberOfInputStreamsWithPermission(
 
 void FakeCrasAudioClient::GetDeprioritizeBtWbsMic(
     DBusMethodCallback<bool> callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(false);
 }
 
 void FakeCrasAudioClient::SetOutputNodeVolume(uint64_t node_id,
