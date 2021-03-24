@@ -11,7 +11,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 

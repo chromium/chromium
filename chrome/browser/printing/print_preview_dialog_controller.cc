@@ -49,7 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/print_spooler/print_session_impl.h"
+#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 #endif
 
 using content::NavigationController;

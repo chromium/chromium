@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"

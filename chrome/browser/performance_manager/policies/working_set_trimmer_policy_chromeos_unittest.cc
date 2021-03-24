@@ -8,8 +8,8 @@
 
 #include "base/memory/memory_pressure_listener.h"
 
-#include "chrome/browser/chromeos/arc/process/arc_process.h"
-#include "chrome/browser/chromeos/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/arc/process/arc_process.h"
+#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"

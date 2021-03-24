@@ -23,7 +23,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "components/arc/mojom/app.mojom.h"

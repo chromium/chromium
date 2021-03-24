@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
