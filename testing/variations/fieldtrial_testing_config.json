@@ -7072,6 +7072,21 @@
             ]
         }
     ],
+    "VisualFeaturesInPasswordProtectionAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VisualFeaturesInPasswordProtectionAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "VizForWebView": [
         {
             "platforms": [
