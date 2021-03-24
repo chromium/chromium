@@ -330,7 +330,8 @@ std::vector<std::unique_ptr<Attachment>> CreateTextAttachments(
   std::vector<std::unique_ptr<Attachment>> attachments;
   for (auto& text : texts) {
     attachments.push_back(std::make_unique<TextAttachment>(
-        TextAttachment::Type::kText, std::move(text)));
+        TextAttachment::Type::kText, std::move(text), /*title=*/base::nullopt,
+        /*mime_type=*/base::nullopt));
   }
   return attachments;
 }

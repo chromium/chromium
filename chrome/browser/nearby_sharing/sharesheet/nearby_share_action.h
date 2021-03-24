@@ -47,9 +47,21 @@ class NearbyShareAction : public sharesheet::ShareAction,
                           const GURL& target_url,
                           content::WebContents* new_contents) override;
 
+  static std::vector<std::unique_ptr<Attachment>> CreateAttachmentsFromIntent(
+      Profile* profile,
+      apps::mojom::IntentPtr intent);
+
+  void SetNearbyShareDisabledByPolicyForTesting(bool disabled) {
+    nearby_share_disabled_by_policy_for_testing_ = disabled;
+  }
+
  private:
+  bool IsNearbyShareDisabledByPolicy();
+
   sharesheet::SharesheetController* controller_ = nullptr;
   nearby_share::NearbyShareDialogUI* nearby_ui_ = nullptr;
+  base::Optional<bool> nearby_share_disabled_by_policy_for_testing_ =
+      base::nullopt;
   views::WebView* web_view_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };

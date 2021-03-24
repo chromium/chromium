@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
+#include "components/drive/drive_api_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -94,11 +95,17 @@ std::string GetTextTitle(const std::string& text_body,
 
 }  // namespace
 
-TextAttachment::TextAttachment(Type type, std::string text_body)
+TextAttachment::TextAttachment(Type type,
+                               std::string text_body,
+                               base::Optional<std::string> text_title,
+                               base::Optional<std::string> mime_type)
     : Attachment(Attachment::Family::kText, text_body.size()),
       type_(type),
-      text_title_(GetTextTitle(text_body, type)),
-      text_body_(std::move(text_body)) {}
+      text_title_(text_title && !text_title->empty()
+                      ? *text_title
+                      : GetTextTitle(text_body, type)),
+      text_body_(std::move(text_body)),
+      mime_type_(mime_type ? *mime_type : std::string()) {}
 
 TextAttachment::TextAttachment(int64_t id,
                                Type type,
@@ -129,7 +136,15 @@ const std::string& TextAttachment::GetDescription() const {
 nearby_share::mojom::ShareType TextAttachment::GetShareType() const {
   switch (type()) {
     case TextAttachment::Type::kUrl:
-      return nearby_share::mojom::ShareType::kUrl;
+      if (mime_type_ == drive::util::kGoogleDocumentMimeType) {
+        return nearby_share::mojom::ShareType::kGoogleDocsFile;
+      } else if (mime_type_ == drive::util::kGoogleSpreadsheetMimeType) {
+        return nearby_share::mojom::ShareType::kGoogleSheetsFile;
+      } else if (mime_type_ == drive::util::kGooglePresentationMimeType) {
+        return nearby_share::mojom::ShareType::kGoogleSlidesFile;
+      } else {
+        return nearby_share::mojom::ShareType::kUrl;
+      }
     case TextAttachment::Type::kAddress:
       return nearby_share::mojom::ShareType::kAddress;
     case TextAttachment::Type::kPhoneNumber:
