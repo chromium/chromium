@@ -116,7 +116,17 @@ let calculateHitMatrix = function(ray_vector, plane_normal, point) {
   return hitMatrix;
 }
 
-// single plane hit test - doesn't take into account the plane's polygon
+// Single plane hit test - doesn't take into account the plane's polygon
+// |frame| - XRFrame, |ray| - XRRay, |plane| - XRPlane, |frameOfReference| - XRSpace
+// Returns null if the hit test did not hit the |plane|.
+// If the |ray| lies on the |plane|, there are infinite intersection points &
+// we will return an object containing the plane only.
+// If the |ray| intersects with the |plane|, we will return an object containing
+// the distance along the plane as `distance`, the |plane| & |ray| as `plane` and `ray`,
+// the intersection point (in |frameOfReference| coordinates as `point`,
+// and relative to plane pose as `point_on_plane`),
+// hit test pose in |frameOfReference| as `hitMatrix`,
+// and |plane|'s pose in |frameOfReference| as `pose_matrix`.
 function hitTestPlane(frame, ray, plane, frameOfReference) {
   const plane_pose = frame.getPose(plane.planeSpace, frameOfReference);
   if(!plane_pose) {
@@ -178,6 +188,7 @@ function hitTestPlane(frame, ray, plane, frameOfReference) {
 }
 
 // multiple planes hit test
+// |frame| - XRFRame, |ray| - XRRay, |frameOfReference| - XRSpace
 export function hitTest(frame, ray, frameOfReference) {
   const planes = frame.detectedPlanes;
 

@@ -17,7 +17,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class XRSession;
 class XRSpace;
 
@@ -42,14 +41,18 @@ class XRPlane : public ScriptWrappable {
   HeapVector<Member<DOMPointReadOnly>> polygon() const;
   double lastChangedTime() const;
 
-  ScriptPromise createAnchor(ScriptState* script_state,
-                             ExceptionState& exception_state);
-
   // Updates plane data from passed in |plane_data|. The resulting instance
   // should be equivalent to the instance that would be create by calling
   // XRPlane(plane_data).
   void Update(const device::mojom::blink::XRPlaneData& plane_data,
               double timestamp);
+
+  bool IsStationary() const {
+    // Plane objects are not considered stationary since their pose may vary
+    // dramatically from frame to frame (it depends on the plane boundary,
+    // drastic changes in plane boundary will cause the pose to change a lot).
+    return false;
+  }
 
   void Trace(Visitor* visitor) const override;
 

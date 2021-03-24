@@ -43,6 +43,15 @@ const char kSpacesSequenceTooLarge[] =
 
 const char kMismatchedBufferSizes[] = "Buffer sizes must be equal";
 
+base::Optional<uint64_t> GetPlaneId(
+    const device::mojom::blink::XRNativeOriginInformation& native_origin) {
+  if (native_origin.is_plane_id()) {
+    return native_origin.get_plane_id();
+  }
+
+  return base::nullopt;
+}
+
 }  // namespace
 
 constexpr char XRFrame::kInactiveFrame[];
@@ -317,6 +326,7 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
   }
 
   DVLOG(3) << __func__ << ": space->ToString()=" << space->ToString();
+  auto maybe_plane_id = GetPlaneId(*maybe_native_origin);
 
   // The passed in space may be an offset space, we need to transform the pose
   // to account for origin-offset:
@@ -335,17 +345,20 @@ ScriptPromise XRFrame::createAnchor(ScriptState* script_state,
   if (space->IsStationary()) {
     // Space is considered stationary, no adjustments are needed.
     return session_->CreateAnchorHelper(script_state, native_origin_from_anchor,
-                                        *maybe_native_origin, exception_state);
+                                        *maybe_native_origin, maybe_plane_id,
+                                        exception_state);
   }
 
-  return CreateAnchorFromNonStationarySpace(
-      script_state, native_origin_from_anchor, space, exception_state);
+  return CreateAnchorFromNonStationarySpace(script_state,
+                                            native_origin_from_anchor, space,
+                                            maybe_plane_id, exception_state);
 }
 
 ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
     ScriptState* script_state,
     const blink::TransformationMatrix& native_origin_from_anchor,
     XRSpace* space,
+    base::Optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
@@ -386,7 +399,8 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
   // Conversion done, make the adjusted call:
   return session_->CreateAnchorHelper(
       script_state, stationary_space_from_anchor,
-      reference_space_information->native_origin, exception_state);
+      reference_space_information->native_origin, maybe_plane_id,
+      exception_state);
 }
 
 HeapVector<Member<XRImageTrackingResult>> XRFrame::getImageTrackingResults(

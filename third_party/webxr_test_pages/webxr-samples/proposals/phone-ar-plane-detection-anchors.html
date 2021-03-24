@@ -346,29 +346,23 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       // Creates new anchor for object and places it there.
-      function addARObjectAt(frame, plane, pose, space) {
+      function addARObjectAt(frame, pose, space) {
         console.debug("Creating anchor", pose, space);
-        if(plane != null) {
-          plane.createAnchor(pose, space).then(onCreateAnchor);
-        } else {
-          frame.createAnchor(pose, space).then(onCreateAnchor);
-        }
+        frame.createAnchor(pose, space).then(onCreateAnchor);
       }
 
       function onSelect(event) {
         if (useReticle.checked && arObject.visible) {
           // If we're using the reticle then we've already got a mesh positioned
-          // at the latest hit point and we should just use it's matrix to save
+          // at the latest hit point and we should just use its matrix to save
           // an unnecessary requestHitTest call.
           addARObjectAt(event.frame,
-                        arObject.plane,
                         new XRRigidTransform(arObject.hitPoint),
                         arObject.space);
         } else {
           if(!event.frame.detectedPlanes) {
             console.log("No planes detected, placing an anchor at origin.");
             addARObjectAt(event.frame,
-                          null,
                           new XRRigidTransform({x : 0, y : 0, z : 0, w : 1}),
                           xrRefSpace);
             return;
@@ -380,7 +374,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           // this event to fire off a new hit test.
           let inputPose = event.frame.getPose(event.inputSource.targetRaySpace, xrRefSpace);
           if (inputPose) {
-            let targetRay = new XRRay(inputPose.transform);
+            const targetRay = new XRRay(inputPose.transform);
+            // Note: this is a plane-based, JS-side hit test:
             const hitTestResults = hitTest(event.frame, targetRay, xrRefSpace);
             const hitTestFiltered = filterHitTestResults(hitTestResults,
                                                          extendPlanesEnabled.checked,
@@ -388,15 +383,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                                                          enlargedPlanesEnabled.checked);
 
             if (hitTestFiltered.length) {
-              let hitResult = hitTestFiltered[0];
+              const hitResult = hitTestFiltered[0];
               addARObjectAt(event.frame,
-                            hitResult.plane,
                             new XRRigidTransform(hitResult.point_on_plane),
                             hitResult.plane.planeSpace);
             } else {
               console.log("Missed everything, placing an anchor at origin.");
               addARObjectAt(event.frame,
-                            null,
                             new XRRigidTransform({x : 0, y : 0, z : 0, w: 1}),
                             xrRefSpace);
             }
@@ -571,7 +564,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           if(hitTestFiltered && hitTestFiltered.length > 0) {
             // Reticle position is always up-to-date wrt the hittest result.
-            let hitResult = hitTestFiltered[0];
+            const hitResult = hitTestFiltered[0];
             arObject.visible = true;
             arObject.matrix = hitResult.hitMatrix;
 

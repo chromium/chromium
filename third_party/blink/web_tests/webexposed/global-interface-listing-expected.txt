@@ -13303,7 +13303,6 @@ interface XRPlane
     getter planeSpace
     getter polygon
     method constructor
-    method createAnchor
 interface XRPlaneSet
     attribute @@toStringTag
     getter size

@@ -20,7 +20,4 @@ interface XRPlane {
     readonly attribute FrozenArray<DOMPointReadOnly> polygon;
     readonly attribute XRPlaneOrientation? orientation;
     readonly attribute DOMHighResTimeStamp lastChangedTime;
-
-    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebXRAnchors]
-    Promise<XRAnchor> createAnchor();
 };
