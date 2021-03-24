@@ -74,8 +74,8 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
-extern const char kCOLRV1FontsName[] = "COLR v1 Fonts";
-extern const char kCOLRV1FontsDescription[] =
+const char kCOLRV1FontsName[] = "COLR v1 Fonts";
+const char kCOLRV1FontsDescription[] =
     "Display COLR v1 color gradient vector fonts.";
 
 const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
@@ -676,17 +676,16 @@ const char kDesktopPWAsAppIconShortcutsMenuDescription[] =
     "Enable installed PWAs to include a menu of shortcuts associated with the "
     "app icon in the taskbar on Windows, or the dock on macOS or Linux.";
 
-extern const char kDesktopPWAsAttentionBadgingCrOSName[] =
+const char kDesktopPWAsAttentionBadgingCrOSName[] =
     "Desktop PWAs Attention Badging";
-extern const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
+const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
     "Enable attention badging for PWA icons in the shelf and launcher.";
-extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
+const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
     "for Badging API and notifications";
-extern const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
+const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
     "for Badging API, or notifications for apps not using Badging API";
-extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] =
-    "for Badging API only";
-extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
+const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "for Badging API only";
+const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
     "for notifications only";
 
 const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
@@ -1033,9 +1032,9 @@ const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "Predicts the scroll amount after the vsync time to more closely match "
     "when the frame is visible.";
 
-extern const char kEnableRestrictedWebApisName[] =
+const char kEnableRestrictedWebApisName[] =
     "Enable the restriced web APIs for high-trusted apps.";
-extern const char kEnableRestrictedWebApisDescription[] =
+const char kEnableRestrictedWebApisDescription[] =
     "Enable the restricted web APIs for dev trial. This will be replaced with "
     "permission policies to control the capabilities afterwards.";
 
@@ -1540,8 +1539,8 @@ const char kOmniboxAssistantVoiceSearchDescription[] =
     "When enabled, use Assistant for omnibox voice query recognition instead of"
     " Android's built-in voice recognition service. Only works on Android.";
 
-extern const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
-extern const char kOmniboxBookmarkPathsDescription[] =
+const char kOmniboxBookmarkPathsName[] = "Omnibox Bookmark Paths";
+const char kOmniboxBookmarkPathsDescription[] =
     "Allows inputs to match with bookmark paths. E.g. 'planets jupiter' can "
     "suggest a bookmark titled 'Jupiter' with URL "
     "'en.wikipedia.org/wiki/Jupiter' located in a path containing 'planet.'";
@@ -2169,9 +2168,8 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-extern const char kShowPerformanceMetricsHudName[] =
-    "Show performance metrics in HUD";
-extern const char kShowPerformanceMetricsHudDescription[] =
+const char kShowPerformanceMetricsHudName[] = "Show performance metrics in HUD";
+const char kShowPerformanceMetricsHudDescription[] =
     "Display the performance metrics of current page in a heads up display on "
     "the page.";
 
@@ -3278,8 +3276,8 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
-extern const char kThemeRefactorAndroidName[] = "Theme refactor on Android";
-extern const char kThemeRefactorAndroidDescription[] =
+const char kThemeRefactorAndroidName[] = "Theme refactor on Android";
+const char kThemeRefactorAndroidDescription[] =
     "Enables the theme refactoring on Android.";
 
 const char kToolbarIphAndroidName[] = "Enable Toolbar IPH on Android";
@@ -3399,9 +3397,9 @@ const char kXsurfaceMetricsReportingDescription[] =
 
 #else  // !defined(OS_ANDROID)
 
-extern const char kAllowAllSitesToInitiateMirroringName[] =
+const char kAllowAllSitesToInitiateMirroringName[] =
     "Allow all sites to initiate mirroring";
-extern const char kAllowAllSitesToInitiateMirroringDescription[] =
+const char kAllowAllSitesToInitiateMirroringDescription[] =
     "When enabled, allows all websites to request to initiate tab mirroring "
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
@@ -3609,9 +3607,9 @@ const char kElasticOverscrollWinDescription[] =
     "Enables Elastic Overscrolling for Windows on touchscreens and precision "
     "touchpads.";
 
-extern const char kEnableIncognitoShortcutOnDesktopName[] =
+const char kEnableIncognitoShortcutOnDesktopName[] =
     "Enable Incognito Desktop Shortcut";
-extern const char kEnableIncognitoShortcutOnDesktopDescription[] =
+const char kEnableIncognitoShortcutOnDesktopDescription[] =
     "Enables users to create a desktop shortcut for incognito mode.";
 
 const char kEnableMediaFoundationVideoCaptureName[] =
@@ -4092,9 +4090,9 @@ const char kEnhancedClipboardDescription[] =
     "history. Selecting something from the menu will result in a paste to the "
     "active window.";
 
-extern const char kEnhancedClipboardNudgeSessionResetName[] =
+const char kEnhancedClipboardNudgeSessionResetName[] =
     "Enable resetting enhanced clipboard nudge data";
-extern const char kEnhancedClipboardNudgeSessionResetDescription[] =
+const char kEnhancedClipboardNudgeSessionResetDescription[] =
     "When enabled, this will reset the clipboard nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
@@ -4373,8 +4371,8 @@ const char kForceSpectreVariant2MitigationDescription[] =
     "override #spectre-variant2-mitigation and any system-level setting that "
     "disables Spectre variant 2 mitigation.";
 
-extern const char kFiltersInRecentsName[] = "Enable filters in Recents";
-extern const char kFiltersInRecentsDescription[] =
+const char kFiltersInRecentsName[] = "Enable filters in Recents";
+const char kFiltersInRecentsDescription[] =
     "Enable file-type filters (Audio, Images, Videos) in Files App Recents "
     "view.";
 

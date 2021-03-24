@@ -183,9 +183,6 @@ extern const char kAutofillProfileServerValidationDescription[];
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 
-extern const char kShelfAppScalingName[];
-extern const char kShelfAppScalingDescription[];
-
 extern const char kAutofillRichMetadataQueriesName[];
 extern const char kAutofillRichMetadataQueriesDescription[];
 
@@ -387,12 +384,6 @@ extern const char
 
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
-
-extern const char kEnableDeferAllScriptName[];
-extern const char kEnableDeferAllScriptDescription[];
-
-extern const char kEnableDeferAllScriptWithoutOptimizationHintsName[];
-extern const char kEnableDeferAllScriptWithoutOptimizationHintsDescription[];
 
 extern const char kEnableSaveDataName[];
 extern const char kEnableSaveDataDescription[];
@@ -666,9 +657,6 @@ extern const char kExperimentalAccessibilityLabelsDescription[];
 
 extern const char kExperimentalExtensionApisName[];
 extern const char kExperimentalExtensionApisDescription[];
-
-extern const char kExperimentalFlingAnimationName[];
-extern const char kExperimentalFlingAnimationDescription[];
 
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
@@ -1390,9 +1378,6 @@ extern const char kTopChromeTouchUiDescription[];
 extern const char kThreadedScrollingName[];
 extern const char kThreadedScrollingDescription[];
 
-extern const char kTouchAdjustmentName[];
-extern const char kTouchAdjustmentDescription[];
-
 extern const char kTouchDragDropName[];
 extern const char kTouchDragDropDescription[];
 
@@ -1886,9 +1871,6 @@ extern const char kSafeBrowsingUseLocalBlacklistsV2Description[];
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 
-extern const char kShoppingAssistName[];
-extern const char kShoppingAssistDescription[];
-
 extern const char kSiteIsolationForPasswordSitesName[];
 extern const char kSiteIsolationForPasswordSitesDescription[];
 
@@ -2378,9 +2360,6 @@ extern const char kEnableAutoSelectDescription[];
 extern const char kEnableBackgroundBlurName[];
 extern const char kEnableBackgroundBlurDescription[];
 
-extern const char kDragToSnapInClamshellModeName[];
-extern const char kDragToSnapInClamshellModeDescription[];
-
 extern const char kEnhancedClipboardName[];
 extern const char kEnhancedClipboardDescription[];
 
@@ -2431,9 +2410,6 @@ extern const char kEnablePalmOnToolTypePalmDescription[];
 
 extern const char kEnablePalmSuppressionName[];
 extern const char kEnablePalmSuppressionDescription[];
-
-extern const char kEnableParentalControlsSettingsName[];
-extern const char kEnableParentalControlsSettingsDescription[];
 
 extern const char kEnablePlayStoreSearchName[];
 extern const char kEnablePlayStoreSearchDescription[];
@@ -2506,9 +2482,6 @@ extern const char kExoPointerLockDescription[];
 
 extern const char kExoLockNotificationName[];
 extern const char kExoLockNotificationDescription[];
-
-extern const char kExperimentalAccessibilityChromeVoxTutorialName[];
-extern const char kExperimentalAccessibilityChromeVoxTutorialDescription[];
 
 extern const char kExperimentalAccessibilityDictationExtensionName[];
 extern const char kExperimentalAccessibilityDictationExtensionDescription[];
