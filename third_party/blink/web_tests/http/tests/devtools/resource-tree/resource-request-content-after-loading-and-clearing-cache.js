@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests resource content is correctly loaded if Resource.requestContent was called before network request was finished. https://bugs.webkit.org/show_bug.cgi?id=90153\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.addStylesheetTag('resources/styles-initial.css');
   TestRunner.addResult('Adding dynamic script: ');

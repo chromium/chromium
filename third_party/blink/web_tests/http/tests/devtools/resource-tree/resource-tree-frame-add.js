@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests resource tree model on iframe addition, compares resource tree against golden. Every line is important.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.addStylesheetTag('resources/styles-initial.css');

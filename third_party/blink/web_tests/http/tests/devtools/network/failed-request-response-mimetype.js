@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.showPanel('network');
 

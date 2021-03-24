@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests single resource search in inspector page agent.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests resource tree model on crafted iframe addition (will time out on failure).\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   TestRunner.addSniffer(TestRunner.resourceTreeModel, '_frameAttached', TestRunner.completeTest);
   TestRunner.evaluateInPage(`

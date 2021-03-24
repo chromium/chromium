@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests resources panel shows several resources with the same url if they were loaded with inspector already opened.\n`);
   await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   TestRunner.addSniffer(Resources.FrameTreeElement.prototype, 'appendResource', onResource, true);
   TestRunner.evaluateInPageAnonymously(`

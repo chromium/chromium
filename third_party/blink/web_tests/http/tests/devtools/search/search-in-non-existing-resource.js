@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests single resource search in inspector page agent with non existing resource url does not cause a crash.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe('resources/search.html');

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests static content provider search.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 

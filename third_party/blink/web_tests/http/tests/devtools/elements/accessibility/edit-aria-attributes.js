@@ -5,7 +5,8 @@
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
   await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('accessibility_test_runner');
+  await TestRunner.loadModule('panels/accessibility');
+  await TestRunner.loadTestModule('accessibility_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="inspected" role="checkbox" aria-checked="true">ARIA checkbox</button>
