@@ -7,6 +7,7 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/paint/paint_image.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
@@ -141,7 +142,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   v8::Persistent<v8::Object> scriptable_receiver_;
   PostMessageSender post_message_sender_;
 
-  sk_sp<SkImage> snapshot_;
+  cc::PaintImage snapshot_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

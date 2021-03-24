@@ -187,7 +187,7 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   canvas->clipRect(invalidate_rect);
 
   // Paint with the plugin's background color if the snapshot is not ready.
-  if (!snapshot_) {
+  if (snapshot_.GetSkImageInfo().isEmpty()) {
     cc::PaintFlags flags;
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setColor(GetBackgroundColor());
@@ -202,13 +202,7 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     origin.Scale(device_scale());
   }
 
-  cc::PaintImage snapshot =
-      cc::PaintImageBuilder::WithDefault()
-          .set_image(snapshot_, cc::PaintImage::GetNextContentId())
-          .set_id(cc::PaintImage::GetNextId())
-          .TakePaintImage();
-
-  canvas->drawImage(snapshot, origin.x(), origin.y());
+  canvas->drawImage(snapshot_, origin.x(), origin.y());
 }
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
@@ -374,7 +368,11 @@ void PdfViewWebPlugin::OnMessage(const base::Value& message) {
 }
 
 void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
-  snapshot_ = std::move(snapshot);
+  snapshot_ =
+      cc::PaintImageBuilder::WithDefault()
+          .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
+          .set_id(cc::PaintImage::GetNextId())
+          .TakePaintImage();
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
