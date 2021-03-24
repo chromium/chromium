@@ -58,16 +58,6 @@ TEST(GeometryConversionsTest, PPRectFromRect) {
   EXPECT_EQ(pp_c_rect.size.height, 3);
 }
 
-TEST(GeometryConversionsTest, RectFFromPPFloatRect) {
-  gfx::RectF rect =
-      RectFFromPPFloatRect(pp::FloatRect(-1.0f, 2.1f, 3.2f, 4.3f));
-  EXPECT_EQ(rect, gfx::RectF(-1.0f, 2.1f, 3.2f, 4.3f));
-
-  rect =
-      RectFFromPPFloatRect(PP_MakeFloatRectFromXYWH(2.9f, -1.8f, 4.7f, 3.6f));
-  EXPECT_EQ(rect, gfx::RectF(2.9f, -1.8f, 4.7f, 3.6f));
-}
-
 TEST(GeometryConversionsTest, PPFloatRectFromRectF) {
   pp::FloatRect pp_cpp_rect =
       PPFloatRectFromRectF(gfx::RectF(-1.1f, 2.3f, 3.5f, 4.7f));

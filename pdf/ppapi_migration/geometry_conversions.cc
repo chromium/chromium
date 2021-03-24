@@ -33,11 +33,6 @@ PP_Rect PPRectFromRect(const gfx::Rect& rect) {
   return PP_MakeRectFromXYWH(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
-gfx::RectF RectFFromPPFloatRect(const PP_FloatRect& pp_rect) {
-  return gfx::RectF(pp_rect.point.x, pp_rect.point.y, pp_rect.size.width,
-                    pp_rect.size.height);
-}
-
 PP_FloatRect PPFloatRectFromRectF(const gfx::RectF& rect) {
   return PP_MakeFloatRectFromXYWH(rect.x(), rect.y(), rect.width(),
                                   rect.height());
