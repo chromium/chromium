@@ -1596,11 +1596,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
 // Tests whether a attempted submission of a malicious credentials gets blocked.
 // This simulates a case which is described in http://crbug.com/571580.
-//
-// Disabled due to flakiness: https://crbug.com/1030579.
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerBrowserTest,
-    DISABLED_NoPromptForSeperateLoginFormWhenSwitchingFromHttpsToHttp) {
+    NoPromptForSeparateLoginFormWhenSwitchingFromHttpsToHttp) {
   std::string path = "/password/password_form.html";
   GURL https_url(https_test_server().GetURL(path));
   ASSERT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
@@ -1619,9 +1617,8 @@ IN_PROC_BROWSER_TEST_F(
   redirect_observer.SetPathToWaitFor("/password/redirect.html");
   redirect_observer.Wait();
 
-  WaitForPasswordStore();
   BubbleObserver prompt_observer(WebContents());
-  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.WaitForAutomaticSavePrompt();
 
   // Normally the redirect happens to done.html. Here an attack is simulated
   // that hijacks the redirect to a attacker controlled page.
@@ -1655,16 +1652,6 @@ IN_PROC_BROWSER_TEST_F(
   // Wait for password store and check that credentials are stored.
   WaitForPasswordStore();
   CheckThatCredentialsStored("user", "password");
-
-  // Password store clearing is required because there are 2 test iterations.
-  // TODO(https://crbug.com/831123): Remove store clearing when the old parser
-  // is gone and there is only one iteration in this test.
-  scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          PasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
-  password_store->Clear();
 }
 
 // Tests that after HTTP -> HTTPS migration the credential is autofilled.
@@ -2376,15 +2363,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
 // Check that a password form in an iframe of same origin will not be
 // filled in until user interact with the iframe.
-//
-// Disabled due to flakiness: https://crbug.com/1030579.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       DISABLED_SameOriginIframeAutoFillTest) {
+                       SameOriginIframeAutoFillTest) {
   // Visit the sign-up form to store a password for autofill later
   NavigateToFile("/password/password_form_in_same_origin_iframe.html");
   NavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  BubbleObserver prompt_observer(WebContents());
 
   std::string submit =
       "var ifrmDoc = document.getElementById('iframe').contentDocument;"
@@ -2393,7 +2377,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "ifrmDoc.getElementById('input_submit_button').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
   observer.Wait();
-  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  BubbleObserver prompt_observer(WebContents());
+  prompt_observer.WaitForAutomaticSavePrompt();
   prompt_observer.AcceptSavePrompt();
 
   // Visit the form again
@@ -2406,26 +2391,28 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   CheckElementValue("iframe", "password_field", "");
 
   // Simulate the user interaction in the iframe which should trigger autofill.
-  // Click in the middle of the frame to avoid the border.
+  // Click in the middle of the username to avoid the border.
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
       RenderFrameHost(),
-      "var iframeRect = document.getElementById("
-      "'iframe').getBoundingClientRect();"));
-  int y;
+      "var usernameRect = document.getElementById("
+      "'iframe').contentDocument.getElementById('username_field')"
+      ".getBoundingClientRect();"));
+  int y = 0;
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
       RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.top +"
-      "iframeRect.bottom) / 2);",
+      "window.domAutomationController.send(usernameRect.top + "
+      "usernameRect.bottom);",
       &y));
-  int x;
+  int x = 0;
   ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
       RenderFrameHost(),
-      "window.domAutomationController.send((iframeRect.left + iframeRect.right)"
-      "/ 2);",
+      "window.domAutomationController.send(usernameRect.left + "
+      "usernameRect.right);",
       &x));
 
-  content::SimulateMouseClickAt(
-      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+  content::SimulateMouseClickAt(WebContents(), 0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(x / 2, y / 2));
   // Verify username and password have been autofilled
   WaitForElementValue("iframe", "username_field", "temp");
   WaitForElementValue("iframe", "password_field", "pa55w0rd");
