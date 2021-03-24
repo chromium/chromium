@@ -17,6 +17,24 @@ extern const char kDefaultBrowserFullscreenPromoCTAExperimentOpenLinksParam[];
 // The feature parameter to indicate the switch arm.
 extern const char kDefaultBrowserFullscreenPromoCTAExperimentSwitchParam[];
 
+// Indicates if the tailored variant "Built for iOS" is enabled. It is not
+// mutually exclusive with other tailored promos.
+extern const char kDefaultPromoTailoredVariantIOSParam[];
+
+// Indicates if the tailored variant "Stay Safe With Google Chrome" is enabled.
+// It is not mutually exclusive with other tailored promos.
+extern const char kDefaultPromoTailoredVariantSafeParam[];
+
+// Indicates if the tailored variant "All Your Tabs In One Browser" is enabled.
+// It is not mutually exclusive with other tailored promos.
+extern const char kDefaultPromoTailoredVariantTabsParam[];
+
+// Indicates the timeout duration for the non-modal promo.
+extern const char kDefaultPromoNonModalTimeoutParam[];
+
+// Indicates if the instructions for the non-modal promo are enabled.
+extern const char kDefaultPromoNonModalInstructionsParam[];
+
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
 // browser. Before logging the current activity, this method will also clear all
@@ -44,6 +62,27 @@ bool IsInCTAOpenLinksGroup();
 
 // Returns true if the user is in the CTA experiment in the switch group.
 bool IsInCTASwitchGroup();
+
+// Returns true if non modals default browser promos are enabled.
+bool NonModalPromosEnabled();
+
+// Returns the timeout for non modals.
+double NonModalPromosTimeout();
+
+// Returns true if instructions for non modals should be shown.
+bool NonModalPromosInstructionsEnabled();
+
+// Returns true if tailored default browser promo variant "Built for iOS" is
+// enabled.
+bool IOSTailoredPromoEnabled();
+
+// Returns true if tailored default browser promo variant "Stay Safe With Google
+// Chrome" is enabled.
+bool SafeTailoredPromoEnabled();
+
+// Returns true if tailored default browser promo variant "All Your Tabs In One
+// Browser" is enabled.
+bool TabsTailoredPromoEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.

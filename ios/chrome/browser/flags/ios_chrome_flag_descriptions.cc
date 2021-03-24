@@ -114,6 +114,15 @@ const char kDefaultBrowserSettingsDescription[] =
     "When enabled, adds a button in the settings to allow changing the default "
     "browser in the Settings.app.";
 
+const char kDefaultPromoNonModalName[] = "Default Browser Non-Modal Promo";
+const char kDefaultPromoNonModalDescription[] =
+    "When enabled non-modal default browser promos can be triggered.";
+
+const char kDefaultPromoTailoredName[] =
+    "Default Browser Tailored Fullscreen Promo";
+const char kDefaultPromoTailoredDescription[] =
+    "When enabled the selected tailored fullscreen promo can be triggered.";
+
 const char kDefaultToDesktopOnIPadName[] = "Request desktop version by default";
 const char kDefaultToDesktopOnIPadDescription[] =
     "By default, on iPad, the desktop version of the web sites will be "

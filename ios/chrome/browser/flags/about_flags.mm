@@ -206,6 +206,50 @@ const FeatureEntry::FeatureVariation
          base::size(kDefaultBrowserFullscreenPromoCTAExperimentOpenLinks),
          nullptr}};
 
+const FeatureEntry::FeatureParam kDefaultPromoTailoredIOS[] = {
+    {kDefaultPromoTailoredVariantIOSParam, "true"}};
+const FeatureEntry::FeatureParam kDefaultPromoTailoredSafe[] = {
+    {kDefaultPromoTailoredVariantSafeParam, "true"}};
+const FeatureEntry::FeatureParam kDefaultPromoTailoredTabs[] = {
+    {kDefaultPromoTailoredVariantTabsParam, "true"}};
+const FeatureEntry::FeatureVariation kDefaultPromoTailoredVariations[] = {
+    {"Built for iOS", kDefaultPromoTailoredIOS,
+     base::size(kDefaultPromoTailoredIOS), nullptr},
+    {"Stay Safe With Google Chrome", kDefaultPromoTailoredSafe,
+     base::size(kDefaultPromoTailoredSafe), nullptr},
+    {"All Your Tabs In One Browser", kDefaultPromoTailoredTabs,
+     base::size(kDefaultPromoTailoredTabs), nullptr},
+};
+
+const FeatureEntry::FeatureParam
+    kDefaultPromoNonModalShortTimeoutWithInstructions[] = {
+        {kDefaultPromoNonModalTimeoutParam, "15"},
+        {kDefaultPromoNonModalInstructionsParam, "true"}};
+const FeatureEntry::FeatureParam
+    kDefaultPromoNonModalLongTimeoutWithInstructions[] = {
+        {kDefaultPromoNonModalTimeoutParam, "45"},
+        {kDefaultPromoNonModalInstructionsParam, "true"}};
+const FeatureEntry::FeatureParam
+    kDefaultPromoNonModalShortTimeoutWithoutInstructions[] = {
+        {kDefaultPromoNonModalTimeoutParam, "15"}};
+const FeatureEntry::FeatureParam
+    kDefaultPromoNonModalLongTimeoutWithoutInstructions[] = {
+        {kDefaultPromoNonModalTimeoutParam, "45"}};
+const FeatureEntry::FeatureVariation kDefaultPromoNonModalVariations[] = {
+    {"Short timeout, with instructions",
+     kDefaultPromoNonModalShortTimeoutWithInstructions,
+     base::size(kDefaultPromoNonModalShortTimeoutWithInstructions), nullptr},
+    {"Long timeout, with instructions",
+     kDefaultPromoNonModalLongTimeoutWithInstructions,
+     base::size(kDefaultPromoNonModalLongTimeoutWithInstructions), nullptr},
+    {"Short timeout, without instructions",
+     kDefaultPromoNonModalShortTimeoutWithoutInstructions,
+     base::size(kDefaultPromoNonModalShortTimeoutWithoutInstructions), nullptr},
+    {"Long timeout, without instructions",
+     kDefaultPromoNonModalLongTimeoutWithoutInstructions,
+     base::size(kDefaultPromoNonModalLongTimeoutWithoutInstructions), nullptr},
+};
+
 const FeatureEntry::FeatureParam kDiscoverFeedInNtpEnableNativeUI[] = {
     {kDiscoverFeedIsNativeUIEnabled, "true"}};
 const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
@@ -651,6 +695,18 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kFillingAcrossAffiliatedWebsites)},
+    {"default-browser-promo-non-modal",
+     flag_descriptions::kDefaultPromoNonModalName,
+     flag_descriptions::kDefaultPromoNonModalDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultPromoNonModal,
+                                    kDefaultPromoNonModalVariations,
+                                    "DefaultPromoNonModal")},
+    {"default-browser-promo-tailored",
+     flag_descriptions::kDefaultPromoTailoredName,
+     flag_descriptions::kDefaultPromoTailoredDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultPromoTailored,
+                                    kDefaultPromoTailoredVariations,
+                                    "DefaultPromoTailored")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

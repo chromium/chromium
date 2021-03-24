@@ -110,6 +110,15 @@ extern const char kDefaultBrowserFullscreenPromoCTAExperimentDescription[];
 extern const char kDefaultBrowserSettingsName[];
 extern const char kDefaultBrowserSettingsDescription[];
 
+// Title and description for the flag to show tailored fullscreen default
+// browser promos.
+extern const char kDefaultPromoTailoredName[];
+extern const char kDefaultPromoTailoredDescription[];
+
+// Title and description for the flag to show non modal default browser promos.
+extern const char kDefaultPromoNonModalName[];
+extern const char kDefaultPromoNonModalDescription[];
+
 // Title and description for the flag to request the desktop version of web site
 // by default on iPad
 extern const char kDefaultToDesktopOnIPadName[];

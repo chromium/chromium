@@ -879,13 +879,23 @@
   },
   {
     "name": "default-browser-fullscreen-promo-cta-experiment",
-    "owners": [ "javierrobles", "bling-team@google.com" ],
-    "expiry_milestone": 92
+    "owners": [ "javierrobles", "bling-flags@google.com" ],
+    "expiry_milestone": 93
   },
   {
     "name": "default-browser-fullscreen-promo-experiment",
-    "owners": [ "thegreenfrog", "bling-team@google.com" ],
-    "expiry_milestone": 91
+    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
+    "name": "default-browser-promo-non-modal",
+    "owners": [ "javierrobles", "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
+    "name": "default-browser-promo-tailored",
+    "owners": [ "javierrobles", "bling-flags@google.com" ],
+    "expiry_milestone": 94
   },
   {
     "name": "default-browser-setting",
