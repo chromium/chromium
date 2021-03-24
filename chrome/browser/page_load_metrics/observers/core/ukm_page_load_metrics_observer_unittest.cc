@@ -2287,3 +2287,33 @@ TEST_F(CLSUkmPageLoadMetricsObserverTest, BeforeInputOrScroll_Main) {
 TEST_F(CLSUkmPageLoadMetricsObserverTest, BeforeInputOrScroll_Sub) {
   RunBeforeInputOrScrollCase(true);
 }
+
+TEST_F(UkmPageLoadMetricsObserverTest, BucketWithOffsetAndUnit) {
+  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(500, 500, 10));
+
+  // large num
+  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(501, 500, 10));
+  EXPECT_EQ(510, internal::BucketWithOffsetAndUnit(510, 500, 10));
+  EXPECT_EQ(520, internal::BucketWithOffsetAndUnit(525, 500, 10));
+  EXPECT_EQ(540, internal::BucketWithOffsetAndUnit(550, 500, 10));
+  EXPECT_EQ(820, internal::BucketWithOffsetAndUnit(1000, 500, 10));
+  EXPECT_EQ(1780, internal::BucketWithOffsetAndUnit(2000, 500, 10));
+
+  // small num
+  EXPECT_EQ(500, internal::BucketWithOffsetAndUnit(499, 500, 10));
+  EXPECT_EQ(490, internal::BucketWithOffsetAndUnit(490, 500, 10));
+  EXPECT_EQ(480, internal::BucketWithOffsetAndUnit(475, 500, 10));
+  EXPECT_EQ(460, internal::BucketWithOffsetAndUnit(450, 500, 10));
+  EXPECT_EQ(180, internal::BucketWithOffsetAndUnit(100, 500, 10));
+  EXPECT_EQ(180, internal::BucketWithOffsetAndUnit(0, 500, 10));
+
+  // different offset
+  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1000, 1000, 10));
+  EXPECT_EQ(1010, internal::BucketWithOffsetAndUnit(1010, 1000, 10));
+  EXPECT_EQ(1080, internal::BucketWithOffsetAndUnit(1100, 1000, 10));
+
+  // different unit
+  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1000, 1000, 100));
+  EXPECT_EQ(1000, internal::BucketWithOffsetAndUnit(1010, 1000, 100));
+  EXPECT_EQ(1100, internal::BucketWithOffsetAndUnit(1100, 1000, 100));
+}

@@ -56,6 +56,20 @@
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
+namespace internal {
+
+int BucketWithOffsetAndUnit(int num, int offset, int unit) {
+  // Bucketing raw number with `offset` centered.
+  const int grid = (num - offset) / unit;
+  const int bucketed =
+      grid == 0 ? 0
+                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
+                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
+  return bucketed * unit + offset;
+}
+
+}  // namespace internal
+
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
@@ -126,16 +140,6 @@ int SiteInstanceRenderProcessAssignmentToInt(
       return 3;
   }
   return 0;
-}
-
-int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
-  // Bucketing raw number with `offset` centered.
-  const int grid = (num - offset) / unit;
-  const int bucketed =
-      grid == 0 ? 0
-                : grid > 0 ? std::pow(2, static_cast<int>(std::log2(grid)))
-                           : -std::pow(2, static_cast<int>(std::log2(-grid)));
-  return bucketed * unit + offset;
 }
 
 }  // namespace
@@ -1135,8 +1139,8 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
         ukm::GetExponentialBucketMin(mf.viewport_initial_scale_x10, 1.2));
   }
   if (mf.viewport_hardcoded_width != -1) {
-    builder.SetViewportHardcodedWidth(
-        BucketWithOffsetAndUnit(mf.viewport_hardcoded_width, 500, 10));
+    builder.SetViewportHardcodedWidth(internal::BucketWithOffsetAndUnit(
+        mf.viewport_hardcoded_width, 500, 10));
   }
   if (mf.text_content_outside_viewport_percentage != -1) {
     builder.SetTextContentOutsideViewportPercentage(
