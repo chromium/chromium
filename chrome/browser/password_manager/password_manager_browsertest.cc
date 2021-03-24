@@ -3368,15 +3368,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ReattachWebContents) {
                                   TabStripModel::ADD_ACTIVE);
 }
 
-// Flaky on Linux and Windows.  http://crbug.com/1022531
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_FillWhenFormWithHiddenUsername \
-  DISABLED_FillWhenFormWithHiddenUsername
-#else
-#define MAYBE_FillWhenFormWithHiddenUsername FillWhenFormWithHiddenUsername
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       MAYBE_FillWhenFormWithHiddenUsername) {
+                       FillWhenFormWithHiddenUsername) {
   // At first let us save a credential to the password store.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -3386,14 +3379,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
-  signin_form.action = embedded_test_server()->base_url();
   signin_form.username_value = u"current_username";
   signin_form.password_value = u"current_username_password";
   password_store->AddLogin(signin_form);
   signin_form.username_value = u"last_used_username";
   signin_form.password_value = u"last_used_password";
+  signin_form.date_last_used = base::Time::Now();
   password_store->AddLogin(signin_form);
-  WaitForPasswordStore();
 
   NavigateToFile("/password/hidden_username.html");
 
