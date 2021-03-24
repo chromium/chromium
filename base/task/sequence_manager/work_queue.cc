@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/work_queue.h"
 
 #include "base/debug/alias.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "build/build_config.h"
@@ -12,12 +13,10 @@
 #ifdef OS_MAC
 extern "C" void V8RecordReplayRegisterPointer(void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" size_t V8RecordReplayPointerId(void* ptr);
 #else
 static void V8RecordReplayRegisterPointer(void* ptr) {}
 static void V8RecordReplayUnregisterPointer(void* ptr) {}
-static void V8RecordReplayAssert(const char* format, ...) {}
 static size_t V8RecordReplayPointerId(void* ptr) { return 0; }
 #endif
 
@@ -30,7 +29,7 @@ WorkQueue::WorkQueue(TaskQueueImpl* task_queue,
                      QueueType queue_type)
     : task_queue_(task_queue), name_(name), queue_type_(queue_type) {
   V8RecordReplayRegisterPointer(this);
-  V8RecordReplayAssert("WorkQueue::WorkQueue %lu", V8RecordReplayPointerId(this));
+  recordreplay::Assert("WorkQueue::WorkQueue %lu", V8RecordReplayPointerId(this));
 }
 
 Value WorkQueue::AsValue(TimeTicks now) const {
@@ -70,7 +69,7 @@ bool WorkQueue::BlockedByFence() const {
 
 bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
   if (tasks_.empty() || BlockedByFence()) {
-    V8RecordReplayAssert("WorkQueue::GetFrontTaskEnqueueOrder #1 %lu",
+    recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #1 %lu",
                          V8RecordReplayPointerId((void*)this));
     return false;
   }
@@ -79,13 +78,13 @@ bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
       << task_queue_->GetName() << " : " << work_queue_sets_->GetName() << " : "
       << name_;
   *enqueue_order = tasks_.front().enqueue_order();
-  V8RecordReplayAssert("WorkQueue::GetFrontTaskEnqueueOrder #2 %lu %lu",
+  recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #2 %lu %lu",
                        V8RecordReplayPointerId((void*)this), (size_t)*enqueue_order);
   return true;
 }
 
 void WorkQueue::Push(Task task) {
-  V8RecordReplayAssert("WorkQueue::Push %lu %lu",
+  recordreplay::Assert("WorkQueue::Push %lu %lu",
                        V8RecordReplayPointerId(this), (size_t)task.enqueue_order());
 
   bool was_empty = tasks_.empty();
@@ -116,7 +115,7 @@ WorkQueue::TaskPusher::TaskPusher(TaskPusher&& other)
 }
 
 void WorkQueue::TaskPusher::Push(Task* task) {
-  V8RecordReplayAssert("WorkQueue::TaskPusher::Push %lu %lu",
+  recordreplay::Assert("WorkQueue::TaskPusher::Push %lu %lu",
                        V8RecordReplayPointerId(work_queue_),
                        (size_t)task->enqueue_order());
 
@@ -148,7 +147,7 @@ WorkQueue::TaskPusher WorkQueue::CreateTaskPusher() {
 }
 
 void WorkQueue::PushNonNestableTaskToFront(Task task) {
-  V8RecordReplayAssert("WorkQueue::PushNonNestableTaskToFront %lu %lu",
+  recordreplay::Assert("WorkQueue::PushNonNestableTaskToFront %lu %lu",
                        V8RecordReplayPointerId(this),
                        (size_t)task.enqueue_order());
 
@@ -201,16 +200,16 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   DCHECK(work_queue_sets_);
   DCHECK(!tasks_.empty());
 
-  V8RecordReplayAssert("WorkQueue::TakeTaskFromWorkQueue Start %lu",
+  recordreplay::Assert("WorkQueue::TakeTaskFromWorkQueue Start %lu",
                        V8RecordReplayPointerId(this));
 
   Task pending_task = std::move(tasks_.front());
   tasks_.pop_front();
   // NB immediate tasks have a different pipeline to delayed ones.
-  V8RecordReplayAssert("WorkQueue::TakeTaskFromWorkQueue #0 %d", tasks_.empty());
+  recordreplay::Assert("WorkQueue::TakeTaskFromWorkQueue #0 %d", tasks_.empty());
   if (tasks_.empty()) {
     // NB delayed tasks are inserted via Push, no don't need to reload those.
-    V8RecordReplayAssert("WorkQueue::TakeTaskFromWorkQueue #1 %d", queue_type_);
+    recordreplay::Assert("WorkQueue::TakeTaskFromWorkQueue #1 %d", queue_type_);
     if (queue_type_ == QueueType::kImmediate) {
       // Short-circuit the queue reload so that OnPopMinQueueInSet does the
       // right thing.
@@ -233,7 +232,7 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
 #endif
   task_queue_->TraceQueueSize();
 
-  V8RecordReplayAssert("WorkQueue::TakeTaskFromWorkQueue Done");
+  recordreplay::Assert("WorkQueue::TakeTaskFromWorkQueue Done");
   return pending_task;
 }
 
@@ -268,7 +267,7 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
       break;
     tasks_.pop_front();
     task_removed = true;
-    V8RecordReplayAssert("WorkQueue::RemoveAllCanceledTasksFromFront #1");
+    recordreplay::Assert("WorkQueue::RemoveAllCanceledTasksFromFront #1");
   }
   if (task_removed) {
     if (tasks_.empty()) {

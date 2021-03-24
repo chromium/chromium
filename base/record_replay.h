@@ -10,7 +10,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace base {
 namespace recordreplay {
 
 void SetRecordingOrReplaying(void* handle);
@@ -55,6 +54,5 @@ int PointerId(void* ptr);
 void* IdPointer(int id);
 
 } // namespace recordreplay
-} // namespace base
 
 #endif // BASE_RECORD_REPLAY_H_

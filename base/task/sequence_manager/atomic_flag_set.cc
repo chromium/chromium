@@ -9,14 +9,13 @@
 #include "base/bits.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/record_replay.h"
 
 #ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
 extern "C" void V8RecordReplayOrderedLock(int lock);
 extern "C" void V8RecordReplayOrderedUnlock(int lock);
 #else
-static void V8RecordReplayAssert(const char* format, ...) {}
 static size_t V8RecordReplayCreateOrderedLock(const char* name) { return 0; }
 static void V8RecordReplayOrderedLock(int lock) {}
 static void V8RecordReplayOrderedUnlock(int lock) {}
@@ -127,7 +126,7 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
 void AtomicFlagSet::RunActiveCallbacks() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks Start");
+  recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks Start");
 
   for (Group* iter = alloc_list_head_.get(); iter; iter = iter->next.get()) {
     // Acquire semantics are required to guarantee that all memory side-effects
@@ -140,7 +139,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
         &iter->flags, size_t{0}, std::memory_order_acquire);
     }
 
-    V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks #1 %lu", active_flags);
+    recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #1 %lu", active_flags);
 
     // This is O(number of bits set).
     while (active_flags) {
@@ -150,7 +149,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
       iter->flag_callbacks[index].Run();
     }
 
-    V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks #2");
+    recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #2");
   }
 }
 

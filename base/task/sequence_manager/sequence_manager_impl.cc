@@ -19,6 +19,7 @@
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/real_time_domain.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_impl.h"
@@ -33,10 +34,8 @@
 #include "build/build_config.h"
 
 #ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
 extern "C" void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes);
 #else
-static void V8RecordReplayAssert(const char* format, ...) {}
 static inline void V8RecordReplayBytes(const char* why, void* ptr, size_t nbytes) {}
 #endif
 
@@ -599,7 +598,7 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
   CHECK(Validate());
 
-  V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl Start");
+  recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl Start");
 
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
@@ -607,7 +606,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
 
   ReloadEmptyWorkQueues();
 
-  V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #1");
+  recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #1");
 
   LazyNow lazy_now(controller_->GetClock());
   MoveReadyDelayedTasksToWorkQueues(&lazy_now);
@@ -620,12 +619,12 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
   }
 
   while (true) {
-    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #2");
+    recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #2");
 
     internal::WorkQueue* work_queue =
         main_thread_only().selector.SelectWorkQueueToService(option);
 
-    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #3");
+    recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #3");
 
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
         TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"), "SequenceManager",
@@ -634,13 +633,13 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
                                             /* force_verbose */ false));
 
     if (!work_queue) {
-      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #4");
+      recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #4");
       return nullptr;
     }
 
     // If the head task was canceled, remove it and run the selector again.
     if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront())) {
-      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #5");
+      recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #5");
       continue;
     }
 
@@ -651,7 +650,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
       // the additional delay should not be a problem.
       // Note because we don't delete queues while nested, it's perfectly OK to
       // store the raw pointer for |queue| here.
-      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #6");
+      recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #6");
       internal::TaskQueueImpl::DeferredNonNestableTask deferred_task{
           work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),
           work_queue->queue_type()};
@@ -662,7 +661,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
 
     if (UNLIKELY(!ShouldRunTaskOfPriority(
             work_queue->task_queue()->GetQueuePriority()))) {
-      V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #7");
+      recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #7");
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                    "SequenceManager.YieldToNative");
       return nullptr;
@@ -672,7 +671,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
     LogTaskDebugInfo(work_queue);
 #endif  // DCHECK_IS_ON() && !defined(OS_NACL)
 
-    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #8");
+    recordreplay::Assert("SequenceManagerImpl::SelectNextTaskImpl #8");
 
     main_thread_only().task_execution_stack.emplace_back(
         work_queue->TakeTaskFromWorkQueue(), work_queue->task_queue(),
@@ -712,7 +711,7 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask Start");
+  recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask Start");
 
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
@@ -720,10 +719,10 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
     // work to be done. However we may want to yield to native work if it is
     // more important.
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
-      V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #1");
+      recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask #1");
       return GetDelayTillNextDelayedTask(lazy_now, option);
     }
-    V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #2");
+    recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask #2");
     return TimeDelta();
   }
 
@@ -735,10 +734,10 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
-      V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #3");
+      recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask #3");
       return GetDelayTillNextDelayedTask(lazy_now, option);
     }
-    V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #4");
+    recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask #4");
     return TimeDelta();
   }
 
@@ -747,7 +746,7 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
   // DelayTillNextTask will return TimeDelta>() if the delayed task is due to
   // run now.
   TimeDelta rv = GetDelayTillNextDelayedTask(lazy_now, option);
-  V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #5 %.2f", rv.InSecondsF());
+  recordreplay::Assert("SequenceManagerImpl::DelayTillNextTask #5 %.2f", rv.InSecondsF());
   return rv;
 }
 

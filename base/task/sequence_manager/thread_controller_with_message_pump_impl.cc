@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
+#include "base/record_replay.h"
 #include "base/threading/hang_watcher.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
@@ -20,12 +21,6 @@
 #include "base/message_loop/message_pump_mac.h"
 #elif defined(OS_ANDROID)
 #include "base/message_loop/message_pump_android.h"
-#endif
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
 #endif
 
 namespace base {
@@ -263,7 +258,7 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork Start");
+  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWork Start");
 
   MaybeStartHangWatchScopeEnabled();
 
@@ -278,7 +273,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
       ShouldScheduleWork::kScheduleImmediate) {
     // Need to run new work immediately, but due to the contract of DoWork
     // we only need to return a null TimeTicks to ensure that happens.
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #1");
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWork #1");
     return MessagePump::Delegate::NextWorkInfo();
   }
 
@@ -286,7 +281,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   // special-casing here avoids unnecessarily sampling Now() when out of work.
   if (delay_till_next_task.is_max()) {
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #2");
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWork #2");
     return {TimeTicks::Max()};
   }
 
@@ -304,12 +299,12 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
         main_thread_only().quit_runloop_after;
     // If we've passed |quit_runloop_after| there's no more work to do.
     if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
-      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #3");
+      recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWork #3");
       return {TimeTicks::Max()};
     }
   }
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #4");
+  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWork #4");
   return {CapAtOneDay(main_thread_only().next_delayed_do_work,
                       &continuation_lazy_now),
           continuation_lazy_now.Now()};
@@ -320,31 +315,31 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::DoWork");
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Start");
+  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Start");
 
   if (!main_thread_only().task_execution_allowed) {
     // Broadcast in a trace event that application tasks were disallowed. This
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
     if (main_thread_only().quit_runloop_after == TimeTicks::Max()) {
-      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #1");
+      recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #1");
       return TimeDelta::Max();
     }
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #2");
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #2");
     return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
   }
 
   DCHECK(main_thread_only().task_source);
 
   for (int i = 0; i < main_thread_only().work_batch_size; i++) {
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3");
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3");
     const SequencedTaskSource::SelectTaskOption select_task_option =
         power_monitor_.IsProcessInPowerSuspendState()
             ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
             : SequencedTaskSource::SelectTaskOption::kDefault;
     Task* task =
         main_thread_only().task_source->SelectNextTask(select_task_option);
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #4 %d", !!task);
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #4 %d", !!task);
     if (!task)
       break;
 
@@ -364,7 +359,7 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       // See https://crbug.com/681863 and https://crbug.com/874982
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
-      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #5");
+      recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #5");
 
       {
         // Trace events should finish before we call DidRunTask to ensure that
@@ -373,7 +368,7 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
         task_annotator_.RunTask("SequenceManager RunTask", task);
       }
 
-      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #6");
+      recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #6");
 
       // This processes microtasks, hence all scoped operations above must end
       // after it.
@@ -384,13 +379,13 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // When Quit() is called we must stop running the batch because the caller
     // expects per-task granularity.
     if (main_thread_only().quit_pending) {
-      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #7");
+      recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #7");
       break;
     }
   }
 
   if (main_thread_only().quit_pending) {
-    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #8");
+    recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #8");
     return TimeDelta::Max();
   }
 
@@ -403,14 +398,14 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
           ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
           : SequencedTaskSource::SelectTaskOption::kDefault;
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl 8.1 %d",
+  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl 8.1 %d",
                        select_task_option);
 
   TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
       continuation_lazy_now, select_task_option);
   DCHECK_GE(do_work_delay, TimeDelta());
 
-  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Done %.2f",
+  recordreplay::Assert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Done %.2f",
                        do_work_delay.InSecondsF());
   return do_work_delay;
 }

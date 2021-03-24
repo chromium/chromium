@@ -4,13 +4,8 @@
 
 #include "base/task/sequence_manager/real_time_domain.h"
 
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
-
-#ifdef OS_MAC
-extern "C" void V8RecordReplayAssert(const char* format, ...);
-#else
-static void V8RecordReplayAssert(const char* format, ...) {}
-#endif
 
 namespace base {
 namespace sequence_manager {
@@ -31,25 +26,25 @@ TimeTicks RealTimeDomain::Now() const {
 }
 
 Optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  V8RecordReplayAssert("RealTimeDomain::DelayTillNextTask Start");
+  recordreplay::Assert("RealTimeDomain::DelayTillNextTask Start");
 
   Optional<TimeTicks> next_run_time = NextScheduledRunTime();
   if (!next_run_time) {
-    V8RecordReplayAssert("RealTimeDomain::DelayTillNextTask #1");
+    recordreplay::Assert("RealTimeDomain::DelayTillNextTask #1");
     return nullopt;
   }
 
   TimeTicks now = lazy_now->Now();
   if (now >= next_run_time) {
     // Overdue work needs to be run immediately.
-    V8RecordReplayAssert("RealTimeDomain::DelayTillNextTask #2");
+    recordreplay::Assert("RealTimeDomain::DelayTillNextTask #2");
     return TimeDelta();
   }
 
   TimeDelta delay = *next_run_time - now;
   TRACE_EVENT1("sequence_manager", "RealTimeDomain::DelayTillNextTask",
                "delay_ms", delay.InMillisecondsF());
-  V8RecordReplayAssert("RealTimeDomain::DelayTillNextTask Done %.2f", delay.InSecondsF());
+  recordreplay::Assert("RealTimeDomain::DelayTillNextTask Done %.2f", delay.InSecondsF());
   return delay;
 }
 
