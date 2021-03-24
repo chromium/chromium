@@ -21,14 +21,42 @@
 namespace content {
 namespace {
 
-class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
+enum PrerenderTestType {
+  kWebContents,
+  kMPArch,
+};
+
+std::string ToString(const testing::TestParamInfo<PrerenderTestType>& info) {
+  switch (info.param) {
+    case PrerenderTestType::kWebContents:
+      return "WebContents";
+    case PrerenderTestType::kMPArch:
+      return "MPArch";
+  }
+}
+
+class PrerenderProcessorTest
+    : public RenderViewHostImplTestHarness,
+      public testing::WithParamInterface<PrerenderTestType> {
  public:
+  PrerenderProcessorTest() {
+    std::map<std::string, std::string> parameters;
+    switch (GetParam()) {
+      case kWebContents:
+        parameters["implementation"] = "webcontents";
+        break;
+      case kMPArch:
+        parameters["implementation"] = "mparch";
+        break;
+    }
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kPrerender2, parameters);
+  }
+
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
     browser_context_ = std::make_unique<TestBrowserContext>();
-
     web_contents_ = TestWebContents::Create(
         browser_context_.get(),
         SiteInstanceImpl::Create(browser_context_.get()));
@@ -39,6 +67,15 @@ class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
     web_contents_.reset();
     browser_context_.reset();
     RenderViewHostImplTestHarness::TearDown();
+  }
+
+  bool IsMPArchActive() const {
+    switch (GetParam()) {
+      case kWebContents:
+        return false;
+      case kMPArch:
+        return true;
+    }
   }
 
   RenderFrameHostImpl* GetRenderFrameHost() {
@@ -73,7 +110,7 @@ class PrerenderProcessorTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestWebContents> web_contents_;
 };
 
-TEST_F(PrerenderProcessorTest, StartCancel) {
+TEST_P(PrerenderProcessorTest, StartCancel) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -98,7 +135,7 @@ TEST_F(PrerenderProcessorTest, StartCancel) {
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-TEST_F(PrerenderProcessorTest, StartDisconnect) {
+TEST_P(PrerenderProcessorTest, StartDisconnect) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -124,7 +161,7 @@ TEST_F(PrerenderProcessorTest, StartDisconnect) {
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-TEST_F(PrerenderProcessorTest, CancelOnDestruction) {
+TEST_P(PrerenderProcessorTest, CancelOnDestruction) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -156,7 +193,13 @@ TEST_F(PrerenderProcessorTest, CancelOnDestruction) {
   EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
-TEST_F(PrerenderProcessorTest, StartTwice) {
+TEST_P(PrerenderProcessorTest, StartTwice) {
+  // This test hits an assertion with the MPArch.
+  // TODO(https://crbug.com/1190020): Enable this test for the MPArch after
+  // https://crbug.com/1170619 is fixed.
+  if (IsMPArchActive())
+    return;
+
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -194,7 +237,7 @@ TEST_F(PrerenderProcessorTest, StartTwice) {
   EXPECT_EQ(bad_message_error, "PP_START_TWICE");
 }
 
-TEST_F(PrerenderProcessorTest, CancelBeforeStart) {
+TEST_P(PrerenderProcessorTest, CancelBeforeStart) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
 
   mojo::Remote<blink::mojom::PrerenderProcessor> remote;
@@ -225,7 +268,7 @@ TEST_F(PrerenderProcessorTest, CancelBeforeStart) {
 // Tests that prerendering a cross-origin URL is aborted. Cross-origin
 // prerendering is not supported for now, but we plan to support it later
 // (https://crbug.com/1176054).
-TEST_F(PrerenderProcessorTest, CrossOrigin) {
+TEST_P(PrerenderProcessorTest, CrossOrigin) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -257,7 +300,7 @@ TEST_F(PrerenderProcessorTest, CrossOrigin) {
 // Tests that prerendering triggered by <link rel=next> is aborted. This trigger
 // is not supported for now, but we may want to support it if NoStatePrefetch
 // re-enables it again. See https://crbug.com/1161545.
-TEST_F(PrerenderProcessorTest, RelTypeNext) {
+TEST_P(PrerenderProcessorTest, RelTypeNext) {
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
@@ -296,6 +339,11 @@ TEST_F(PrerenderProcessorTest, RelTypeNext) {
   remote.FlushForTesting();
   EXPECT_TRUE(bad_message_error.empty());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderProcessorTest,
+                         testing::Values(kWebContents, kMPArch),
+                         ToString);
 
 }  // namespace
 }  // namespace content
