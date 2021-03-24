@@ -5,13 +5,6 @@
 source_set("geolocation") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "CLLocation+OmniboxGeolocation.h",
-    "CLLocation+OmniboxGeolocation.mm",
-    "CLLocation+XGeoHeader.h",
-    "CLLocation+XGeoHeader.mm",
-    "location_manager+Testing.h",
-    "location_manager.h",
-    "location_manager.mm",
     "omnibox_geolocation_authorization_alert.h",
     "omnibox_geolocation_authorization_alert.mm",
     "omnibox_geolocation_config.h",
@@ -36,25 +29,10 @@ source_set("geolocation") {
   frameworks = [ "CoreLocation.framework" ]
 }
 
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "test_location_manager.h",
-    "test_location_manager.mm",
-  ]
-  deps = [
-    ":geolocation",
-    "//base",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "CLLocation+XGeoHeaderTest.mm",
-    "location_manager_unittest.mm",
     "omnibox_geolocation_controller_unittest.mm",
     "omnibox_geolocation_local_state_unittest.mm",
   ]

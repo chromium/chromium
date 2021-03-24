@@ -17,8 +17,6 @@
 #include "components/version_info/version_info.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/geolocation/CLLocation+OmniboxGeolocation.h"
-#import "ios/chrome/browser/geolocation/CLLocation+XGeoHeader.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_authorization_alert.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller+Testing.h"

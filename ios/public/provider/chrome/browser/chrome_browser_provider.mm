@@ -66,11 +66,6 @@ ChromeBrowserProvider::GetChromeTrustedVaultService() {
   return nullptr;
 }
 
-GeolocationUpdaterProvider*
-ChromeBrowserProvider::GetGeolocationUpdaterProvider() {
-  return nullptr;
-}
-
 std::string ChromeBrowserProvider::GetRiskData() {
   return std::string();
 }

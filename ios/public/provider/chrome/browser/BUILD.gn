@@ -11,8 +11,6 @@ source_set("browser") {
     "browser_url_rewriter_provider.mm",
     "chrome_browser_provider.h",
     "chrome_browser_provider.mm",
-    "geolocation_updater_provider.h",
-    "geolocation_updater_provider.mm",
     "overrides_provider.h",
     "overrides_provider.mm",
     "text_zoom_provider.h",
