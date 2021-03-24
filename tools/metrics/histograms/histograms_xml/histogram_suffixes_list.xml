@@ -7839,6 +7839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="LocalSearchService.DailySearch"/>
   <affected-histogram name="LocalSearchService.NumberDocuments"/>
   <affected-histogram name="LocalSearchService.NumberResults"/>
+  <affected-histogram name="LocalSearchService.NumberSearchPerformedDone"/>
   <affected-histogram name="LocalSearchService.ResponseStatus"/>
   <affected-histogram name="LocalSearchService.SearchLatency"/>
 </histogram_suffixes>
