@@ -80,8 +80,8 @@ enum Subpage {
   // Note: Value 502 was for deprecated kAmbientModePhotos. Do not reuse.
   kAmbientModeGooglePhotosAlbum = 503,
   kAmbientModeArtGalleryAlbum = 504,
-  kWallpaper = 505,
-  kWallpaperImages = 506,
+  // 505 was used for kWallpaper. Do not reuse.
+  // 506 was used for kWallpaperImages. Do not reuse.
 
   // Search and Assistant section.
   kAssistant = 600,
@@ -188,8 +188,6 @@ const string kPowerSubpagePath = "power";
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";
 const string kChangePictureSubpagePath = "changePicture";
-const string kWallpaperSubpagePath = "wallpaper";
-const string kWallpaperImagesSubpagePath = "wallpaper/images";
 const string kAmbientModeSubpagePath = "ambientMode";
 const string kAmbientModeGooglePhotosAlbumSubpagePath =
     "ambientMode/photos?topicSource=0";
