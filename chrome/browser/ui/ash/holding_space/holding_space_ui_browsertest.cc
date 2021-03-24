@@ -858,6 +858,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies that the holding space tray does not appear on the lock screen.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
   ASSERT_TRUE(IsShowingInShelf());
   RequestAndAwaitLockScreen();
   ASSERT_FALSE(IsShowingInShelf());

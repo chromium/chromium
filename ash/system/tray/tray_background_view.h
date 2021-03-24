@@ -170,13 +170,29 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   void StartVisibilityAnimation(bool visible);
 
+  // Updates status area widget by calling `UpdateCollapseState()` and
+  // `LogVisiblePodCountMetric()`.
+  void UpdateStatusArea(bool should_log_visible_pod_count);
+
+  // After hide animoation is finished/aborted/removed or interrupted by any
+  // function, we will need to do an update to the view's visibility and the
+  // view's status area widget state.
+  void OnVisibilityAnimationFinished(bool should_log_visible_pod_count);
+
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  // In some cases, we expect the layer's visibility to be set to false right
+  // away when the layer is replaced. See
+  // `OverviewButtonTrayTest.HideAnimationAlwaysCompletesOnDelete` test as an
+  // example. We use `::wm::RecreateLayers(root_window)` to create fresh layers
+  // for the window. If we don't override this method, the old layer and its
+  // child layers will still be there until all the animation finished.
+  std::unique_ptr<ui::Layer> RecreateLayer() override;
 
   // ui::ImplicitAnimationObserver:
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}

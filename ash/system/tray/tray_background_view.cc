@@ -237,11 +237,10 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
   StartVisibilityAnimation(GetEffectiveVisibility());
 
   // We need to update which trays overflow after showing or hiding a tray.
-  auto* status_area_widget = shelf_->GetStatusAreaWidget();
-  if (status_area_widget) {
-    status_area_widget->UpdateCollapseState();
-    status_area_widget->LogVisiblePodCountMetric();
-  }
+  // If the hide animation is still playing, we do the `UpdateStatusArea(bool
+  // should_log_visible_pod_count)` when the animation is finished.
+  if (!layer()->GetAnimator()->is_animating() || visible_preferred_)
+    UpdateStatusArea(true /*should_log_visible_pod_count*/);
 }
 
 void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
@@ -265,6 +264,23 @@ void TrayBackgroundView::StartVisibilityAnimation(bool visible) {
       FadeInAnimation();
   } else {
     HideAnimation();
+  }
+}
+
+void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
+  auto* status_area_widget = shelf_->GetStatusAreaWidget();
+  if (status_area_widget) {
+    status_area_widget->UpdateCollapseState();
+    if (should_log_visible_pod_count)
+      status_area_widget->LogVisiblePodCountMetric();
+  }
+}
+
+void TrayBackgroundView::OnVisibilityAnimationFinished(
+    bool should_log_visible_pod_count) {
+  if (!visible_preferred_) {
+    views::View::SetVisible(false);
+    UpdateStatusArea(should_log_visible_pod_count);
   }
 }
 
@@ -294,6 +310,13 @@ void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void TrayBackgroundView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
+}
+
+std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
+  if (layer()->GetAnimator()->is_animating())
+    OnVisibilityAnimationFinished(false /*should_log_visible_pod_count*/);
+
+  return views::View::RecreateLayer();
 }
 
 std::unique_ptr<views::InkDropRipple> TrayBackgroundView::CreateInkDropRipple()
@@ -375,13 +398,18 @@ void TrayBackgroundView::UpdateBackground() {
 
 void TrayBackgroundView::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
-  if (!visible_preferred_)
-    views::View::SetVisible(false);
+  OnVisibilityAnimationFinished(true /*should_log_visible_pod_count*/);
+}
+
+void TrayBackgroundView::OnLayerAnimationAborted(
+    ui::LayerAnimationSequence* sequence) {
+  OnVisibilityAnimationFinished(true /*should_log_visible_pod_count*/);
 }
 
 void TrayBackgroundView::FadeInAnimation() {
   std::unique_ptr<ui::LayerAnimationSequence> fade_sequence =
       std::make_unique<ui::LayerAnimationSequence>();
+  fade_sequence->AddObserver(this);
   std::unique_ptr<ui::LayerAnimationElement> fade_in =
       ui::LayerAnimationElement::CreateOpacityElement(
           1.0f, kAnimationDurationForVisibilityMs);
@@ -477,6 +505,9 @@ void TrayBackgroundView::BounceInAnimation() {
   layer()->GetAnimator()->StartAnimation(sequence.release());
 }
 
+// Any visibility updates should be called after the hide animation is
+// finished, otherwise the view will disappear immediately without animation
+// once the view's visibility is set to false.
 void TrayBackgroundView::HideAnimation() {
   std::unique_ptr<ui::InterpolatedTransform> scale =
       std::make_unique<ui::InterpolatedScale>(
