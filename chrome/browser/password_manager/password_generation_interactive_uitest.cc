@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       DISABLED_PopupShownAndDismissed) {
+                       PopupShownAndDismissed) {
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
 
