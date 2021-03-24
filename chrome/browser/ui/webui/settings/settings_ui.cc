@@ -18,6 +18,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,6 +68,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/settings_resources.h"
 #include "chrome/grit/settings_resources_map.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -389,10 +391,14 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     auto* account_manager =
         factory->GetAccountManager(profile->GetPath().value());
     DCHECK(account_manager);
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile->GetPath().value());
+    DCHECK(account_manager_facade);
 
     web_ui()->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager, IdentityManagerFactory::GetForProfile(profile)));
+            account_manager, account_manager_facade,
+            IdentityManagerFactory::GetForProfile(profile)));
   }
 
   // MultideviceHandler is required in browser settings to show a special note

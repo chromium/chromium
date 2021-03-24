@@ -165,9 +165,13 @@ class AccountBuilder {
 
 AccountManagerUIHandler::AccountManagerUIHandler(
     AccountManager* account_manager,
+    account_manager::AccountManagerFacade* account_manager_facade,
     signin::IdentityManager* identity_manager)
-    : account_manager_(account_manager), identity_manager_(identity_manager) {
+    : account_manager_(account_manager),
+      account_manager_facade_(account_manager_facade),
+      identity_manager_(identity_manager) {
   DCHECK(account_manager_);
+  DCHECK(account_manager_facade_);
   DCHECK(identity_manager_);
 }
 
@@ -399,20 +403,20 @@ void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {
-  account_manager_observation_.Observe(account_manager_);
+  account_manager_facade_observation_.Observe(account_manager_facade_);
   identity_manager_observation_.Observe(identity_manager_);
 }
 
 void AccountManagerUIHandler::OnJavascriptDisallowed() {
-  account_manager_observation_.Reset();
+  account_manager_facade_observation_.Reset();
   identity_manager_observation_.Reset();
 }
 
-// |AccountManager::Observer| overrides. Note: We need to listen on
-// |AccountManager| in addition to |IdentityManager| because there is no
+// |AccountManagerFacade::Observer| overrides. Note: We need to listen on
+// |AccountManagerFacade| in addition to |IdentityManager| because there is no
 // guarantee that |AccountManager| (our source of truth) will have a newly added
 // account by the time |IdentityManager| has it.
-void AccountManagerUIHandler::OnTokenUpserted(
+void AccountManagerUIHandler::OnAccountUpserted(
     const ::account_manager::Account& account) {
   RefreshUI();
 }

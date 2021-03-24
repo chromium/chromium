@@ -10,6 +10,7 @@
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/test/bind.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -105,10 +107,14 @@ namespace settings {
 
 class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
  public:
-  TestingAccountManagerUIHandler(AccountManager* account_manager,
-                                 signin::IdentityManager* identity_manager,
-                                 content::WebUI* web_ui)
-      : AccountManagerUIHandler(account_manager, identity_manager) {
+  TestingAccountManagerUIHandler(
+      AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
+      signin::IdentityManager* identity_manager,
+      content::WebUI* web_ui)
+      : AccountManagerUIHandler(account_manager,
+                                account_manager_facade,
+                                identity_manager) {
     set_web_ui(web_ui);
   }
 
@@ -173,8 +179,11 @@ class AccountManagerUIHandlerTest
                                       GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
 
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile_->GetPath().value());
+
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
-        account_manager_, identity_manager_, &web_ui_);
+        account_manager_, account_manager_facade, identity_manager_, &web_ui_);
     handler_->SetProfileForTesting(profile_.get());
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();

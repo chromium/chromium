@@ -911,10 +911,10 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::ProfileInfoHandler>(profile()));
 
-  if (account_manager_) {
+  if (account_manager_facade_) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager_, identity_manager_));
+            account_manager_, account_manager_facade_, identity_manager_));
   }
 
   if (chromeos::features::IsSplitSettingsSyncEnabled())
