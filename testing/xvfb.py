@@ -36,7 +36,13 @@ def kill(proc, name, timeout_in_seconds=10):
   if not proc:
     return
 
-  proc.terminate()
+  # TODO(crbug.com/1189400): Either remove the SIGINT logic or make it more
+  # generic once it is determined whether SIGINT results in a cleaner shutdown
+  # than SIGTERM.
+  if name == 'weston':
+    proc.send_signal(signal.SIGINT)
+  else:
+    proc.terminate()
   thread = threading.Thread(target=proc.wait)
   thread.start()
 
