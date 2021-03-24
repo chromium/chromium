@@ -346,9 +346,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // lead to be calling it twice, and calling 'did' below once.
   notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
 
-  web::WebState* adjacent_web_state = nil;
+  web::WebState* parent_web_state = nullptr;
   if (params.append_to == kCurrentTab)
-    adjacent_web_state = browser_->GetWebStateList()->GetActiveWebState();
+    parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
 
   int insertion_index = TabInsertion::kPositionAutomatically;
   if (params.append_to == kSpecifiedIndex)
@@ -358,6 +358,15 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   auto openTab = ^{
     TabInsertionBrowserAgent* insertionAgent =
         TabInsertionBrowserAgent::FromBrowser(browser_);
+
+    web::WebState* adjacent_web_state = parent_web_state;
+    if (adjacent_web_state &&
+        adjacent_web_state !=
+            browser_->GetWebStateList()->GetActiveWebState()) {
+      // The active tab could have changed or be destroyed.
+      adjacent_web_state = nullptr;
+    }
+
     insertionAgent->InsertWebState(
         saved_params.web_params, adjacent_web_state, false, insertion_index,
         saved_params.in_background(), saved_params.inherit_opener);
