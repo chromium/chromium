@@ -67,7 +67,7 @@ void InitializeOneOffHelper(bool init_extensions) {
 
   GLImplementationParts impl = GLImplementationParts(allowed_impls[0]);
   if (use_software_gl) {
-    impl = gl::GetSoftwareGLImplementation();
+    impl = gl::GetLegacySoftwareGLImplementation();
 
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 #if defined(USE_OZONE)
@@ -78,7 +78,7 @@ void InitializeOneOffHelper(bool init_extensions) {
       // SwiftShader GL
       for (auto i : allowed_impls) {
         if (i == kGLImplementationEGLANGLE) {
-          impl = GLImplementationParts(ANGLEImplementation::kSwiftShader);
+          impl = gl::GetSoftwareGLImplementation();
           base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
               switches::kUseANGLE, kANGLEImplementationSwiftShaderName);
           break;

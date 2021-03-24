@@ -153,9 +153,6 @@ class BrowserTestBase : public testing::Test {
   // instead.
   void UseSoftwareCompositing();
 
-  // Returns true if the test will be using GL acceleration via a software GL.
-  bool UsingSoftwareGL() const;
-
   // Should be in PreRunTestOnMainThread, with the initial WebContents for the
   // main window. This allows the test harness to watch it for navigations so
   // that it can sync the host_resolver() rules to the out-of-process network

@@ -586,7 +586,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
   if (gl_use_swiftshader_ ||
-      gl::GetGLImplementationParts() == gl::GetSoftwareGLImplementation()) {
+      gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
     gpu_info_.software_rendering = true;
     watchdog_thread_ = nullptr;
     watchdog_init.SetGpuWatchdogPtr(nullptr);

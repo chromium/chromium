@@ -889,12 +889,6 @@ void BrowserTestBase::UseSoftwareCompositing() {
   use_software_compositing_ = true;
 }
 
-bool BrowserTestBase::UsingSoftwareGL() const {
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  return cmd->GetSwitchValueASCII(switches::kUseGL) ==
-         gl::GetGLImplementationGLName(gl::GetSoftwareGLImplementation());
-}
-
 void BrowserTestBase::SetInitialWebContents(WebContents* web_contents) {
   DCHECK(!initial_web_contents_);
   initial_web_contents_ = web_contents;

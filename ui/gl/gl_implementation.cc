@@ -173,8 +173,36 @@ GLImplementationParts GetNamedGLImplementation(const std::string& gl_name,
   return GLImplementationParts(kGLImplementationNone);
 }
 
-GLImplementationParts GetSoftwareGLImplementation() {
+GLImplementationParts GetLegacySoftwareGLImplementation() {
   return GLImplementationParts(kGLImplementationSwiftShaderGL);
+}
+
+GLImplementationParts GetSoftwareGLImplementation() {
+  return GLImplementationParts(ANGLEImplementation::kSwiftShader);
+}
+
+GLImplementationParts GetSoftwareGLForTestsImplementation() {
+  return GetLegacySoftwareGLImplementation();
+}
+
+bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
+  return (implementation == GetLegacySoftwareGLImplementation()) ||
+         (implementation == GetSoftwareGLImplementation());
+}
+
+void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
+                                      bool legacy_software_gl) {
+  if (legacy_software_gl) {
+    command_line->AppendSwitchASCII(
+        switches::kUseGL,
+        gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation()));
+  } else {
+    GLImplementationParts implementation = GetSoftwareGLImplementation();
+    command_line->AppendSwitchASCII(
+        switches::kUseGL, gl::GetGLImplementationGLName(implementation));
+    command_line->AppendSwitchASCII(
+        switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
+  }
 }
 
 const char* GetGLImplementationGLName(GLImplementationParts implementation) {

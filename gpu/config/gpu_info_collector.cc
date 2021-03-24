@@ -234,10 +234,16 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     return true;
   }
 
+  gl::GLImplementationParts implementation =
+      gl::GetNamedGLImplementation(use_gl, use_angle);
+
+  bool useSoftwareGLForTests =
+      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
   base::StringPiece software_gl_impl_name =
-      gl::GetGLImplementationGLName(gl::GetSoftwareGLImplementation());
-  if (use_gl == software_gl_impl_name ||
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
+      gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation());
+  if ((implementation == gl::GetLegacySoftwareGLImplementation()) ||
+      (useSoftwareGLForTests && (gl::GetLegacySoftwareGLImplementation() ==
+                                 gl::GetSoftwareGLForTestsImplementation()))) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -252,8 +258,10 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     gpu_info->gpu.driver_vendor = software_gl_impl_name.as_string();
 
     return true;
-  } else if (use_gl == gl::kGLImplementationANGLEName &&
-             use_angle == gl::kANGLEImplementationSwiftShaderName) {
+  } else if ((implementation == gl::GetSoftwareGLImplementation()) ||
+             (useSoftwareGLForTests &&
+              (gl::GetSoftwareGLImplementation() ==
+               gl::GetSoftwareGLForTestsImplementation()))) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;

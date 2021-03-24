@@ -83,7 +83,7 @@ GLImplementationParts GetRequestedGLImplementation(
 
   *fallback_to_software_gl = false;
   if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
-    impl = GetSoftwareGLImplementation();
+    impl = GetSoftwareGLForTestsImplementation();
   } else if (cmd->HasSwitch(switches::kUseGL)) {
     if (requested_implementation_gl_name == "any") {
       *fallback_to_software_gl = true;
@@ -165,13 +165,14 @@ bool InitializeStaticGLBindingsOneOff() {
 
 bool InitializeStaticGLBindingsImplementation(GLImplementationParts impl,
                                               bool fallback_to_software_gl) {
-  if (impl == GetSoftwareGLImplementation())
+  if (IsSoftwareGLImplementation(impl))
     fallback_to_software_gl = false;
 
   bool initialized = InitializeStaticGLBindings(impl);
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
-    initialized = InitializeStaticGLBindings(GetSoftwareGLImplementation());
+    initialized =
+        InitializeStaticGLBindings(GetLegacySoftwareGLImplementation());
   }
   if (!initialized) {
     ShutdownGL(/*due_to_fallback*/ false);
@@ -183,14 +184,15 @@ bool InitializeStaticGLBindingsImplementation(GLImplementationParts impl,
 bool InitializeGLOneOffPlatformImplementation(bool fallback_to_software_gl,
                                               bool disable_gl_drawing,
                                               bool init_extensions) {
-  if (GetGLImplementationParts() == GetSoftwareGLImplementation())
+  if (IsSoftwareGLImplementation(GetGLImplementationParts()))
     fallback_to_software_gl = false;
 
   bool initialized = InitializeGLOneOffPlatform();
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
-    initialized = InitializeStaticGLBindings(GetSoftwareGLImplementation()) &&
-                  InitializeGLOneOffPlatform();
+    initialized =
+        InitializeStaticGLBindings(GetLegacySoftwareGLImplementation()) &&
+        InitializeGLOneOffPlatform();
   }
   if (initialized && init_extensions) {
     initialized = InitializeExtensionSettingsOneOffPlatform();
