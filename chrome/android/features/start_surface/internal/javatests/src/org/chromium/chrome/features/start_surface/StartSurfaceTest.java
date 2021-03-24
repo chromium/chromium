@@ -1970,7 +1970,6 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
             + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
-    @DisabledTest(message = "Failing/flaky on several bots, see crbug.com/1186218")
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
@@ -1990,7 +1989,7 @@ public class StartSurfaceTest {
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER));
         hideWatcher.waitForBehavior();
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
-        onView(withId(R.id.home_button)).perform(click());
+        pressHomePageButton();
 
         // MV tiles and carousel tab switcher should not show anymore.
         onViewWaiting(withId(R.id.start_tab_switcher_button));
