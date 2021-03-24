@@ -15,12 +15,6 @@ namespace gfx {
 class Rect;
 }
 
-namespace net {
-namespace test_server {
-class EmbeddedTestServer;
-}
-}  // namespace net
-
 namespace page_load_metrics {
 class PageLoadMetricsTestWaiter;
 }
@@ -33,7 +27,7 @@ int GetDocumentHeight(content::WebContents* web_contents);
 void CreateAndWaitForIframeAtRect(
     content::WebContents* web_contents,
     page_load_metrics::PageLoadMetricsTestWaiter* waiter,
-    net::test_server::EmbeddedTestServer* embedded_test_server,
+    const GURL& url,
     const gfx::Rect& rect);
 
 // Navigates to |url| in |web_contents| and waits for the first contentful

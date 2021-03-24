@@ -82,9 +82,12 @@ IN_PROC_BROWSER_TEST_F(
   int frame_width = 100;  // Ad density by height is independent of frame width.
   int frame_height = document_height * 0.45;
 
-  CreateAndWaitForIframeAtRect(web_contents, waiter.get(),
-                               embedded_test_server(),
-                               gfx::Rect(0, 0, frame_width, frame_height));
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  CreateAndWaitForIframeAtRect(
+      web_contents, waiter.get(),
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"),
+      gfx::Rect(0, 0, frame_width, frame_height));
 
   // Delete the page load metrics test waiter instead of reinitializing it
   // for the next page load.
@@ -130,9 +133,12 @@ IN_PROC_BROWSER_TEST_F(
   int frame_width = 100;  // Ad density by height is independent of frame width.
   int frame_height = document_height * 0.25;
 
-  CreateAndWaitForIframeAtRect(web_contents, waiter.get(),
-                               embedded_test_server(),
-                               gfx::Rect(0, 0, frame_width, frame_height));
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  CreateAndWaitForIframeAtRect(
+      web_contents, waiter.get(),
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"),
+      gfx::Rect(0, 0, frame_width, frame_height));
 
   // Delete the page load metrics test waiter instead of reinitializing it
   // for the next page load.
@@ -197,9 +203,12 @@ IN_PROC_BROWSER_TEST_F(
   int frame_width = 100;  // Ad density by height is independent of frame width.
   int frame_height = document_height * 0.45;
 
-  CreateAndWaitForIframeAtRect(web_contents, waiter.get(),
-                               embedded_test_server(),
-                               gfx::Rect(0, 0, frame_width, frame_height));
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  CreateAndWaitForIframeAtRect(
+      web_contents, waiter.get(),
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"),
+      gfx::Rect(0, 0, frame_width, frame_height));
 
   // Delete the page load metrics test waiter instead of reinitializing it
   // for the next page load.

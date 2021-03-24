@@ -9,7 +9,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -48,7 +47,7 @@ int GetDocumentHeight(content::WebContents* web_contents) {
 void CreateAndWaitForIframeAtRect(
     content::WebContents* web_contents,
     page_load_metrics::PageLoadMetricsTestWaiter* waiter,
-    net::test_server::EmbeddedTestServer* embedded_test_server,
+    const GURL& url,
     const gfx::Rect& rect) {
   // The intersections returned by the renderer are scaled to the device's
   // scale factor.
@@ -58,16 +57,12 @@ void CreateAndWaitForIframeAtRect(
   // Wait on these values.
   waiter->AddMainFrameIntersectionExpectation(scaled_rect);
 
-  // Create the frame with b.com as origin to not get caught by
-  // restricted ad tagging.
   EXPECT_TRUE(ExecJs(
       web_contents,
-      content::JsReplace(
-          "let frame = createAdIframeAtRect($1, $2, $3, $4); "
-          "frame.src = $5",
-          rect.x(), rect.y(), rect.width(), rect.height(),
-          embedded_test_server->GetURL("b.com", "/ads_observer/pixel.png")
-              .spec())));
+      content::JsReplace("let frame = createAdIframeAtRect($1, $2, $3, $4); "
+                         "frame.src = $5",
+                         rect.x(), rect.y(), rect.width(), rect.height(),
+                         url.spec())));
 
   waiter->Wait();
 }
