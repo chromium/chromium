@@ -142,8 +142,15 @@ const CGFloat kFavIconBorderWidth = 1.5;
   if (self) {
     if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
       _faviconContainerView = [[UIView alloc] init];
-      _faviconContainerView.layer.borderColor =
-          [UIColor colorNamed:kFaviconBackgroundColor].CGColor;
+      if (@available(iOS 13, *)) {
+        [self.traitCollection performAsCurrentTraitCollection:^{
+          _faviconContainerView.layer.borderColor =
+              [UIColor colorNamed:kFaviconBackgroundColor].CGColor;
+        }];
+      } else {
+        _faviconContainerView.layer.borderColor =
+            [UIColor colorNamed:kFaviconBackgroundColor].CGColor;
+      }
       _faviconContainerView.layer.borderWidth = kFavIconBorderWidth;
       _faviconContainerView.layer.cornerRadius = kFavIconCornerRadius;
       _faviconContainerView.layer.masksToBounds = YES;
@@ -335,6 +342,18 @@ const CGFloat kFavIconBorderWidth = 1.5;
 
 - (BOOL)isAccessibilityElement {
   return YES;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 13, *)) {
+    if ([self.traitCollection
+            hasDifferentColorAppearanceComparedToTraitCollection:
+                previousTraitCollection]) {
+      self.faviconContainerView.layer.borderColor =
+          [UIColor colorNamed:kFaviconBackgroundColor].CGColor;
+    }
+  }
 }
 
 @end
