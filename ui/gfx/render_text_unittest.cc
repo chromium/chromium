@@ -6234,6 +6234,17 @@ TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
   EXPECT_EQ(UTF8ToUTF16("x\ufffd\ufffd\ufffd"), render_text->GetDisplayText());
 }
 
+TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
+  // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"\uf8ff");
+#if defined(OS_APPLE)
+  EXPECT_EQ(UTF8ToUTF16("\uf8ff"), render_text->GetDisplayText());
+#else
+  EXPECT_EQ(UTF8ToUTF16("\ufffd"), render_text->GetDisplayText());
+#endif
+}
+
 TEST_F(RenderTextTest, InvalidSurrogateCharacterReplacement) {
   // Text with invalid surrogates (surrogates low 0xDC00 and high 0xD800).
   RenderText* render_text = GetRenderText();
