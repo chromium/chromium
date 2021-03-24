@@ -1084,7 +1084,7 @@
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'mac_upload_clang': 'release_bot',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials',
-      'mac-rel': 'gpu_tests_release_trybot_deterministic_mac_code_coverage',
+      'mac-rel': 'gpu_tests_release_trybot_deterministic_mac',
       'mac-arm64-rel': 'mac_arm64_release_trybot',
     },
 
@@ -2189,11 +2189,6 @@
     # macOS, remove this special case of gpu_tests_release_trybot.
     'gpu_tests_release_trybot_deterministic_mac': [
       'gpu_tests', 'release_trybot', 'mac_deterministic_build',
-    ],
-
-    'gpu_tests_release_trybot_deterministic_mac_code_coverage': [
-      'gpu_tests', 'release_trybot', 'mac_deterministic_build',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials': [
