@@ -1,0 +1,32 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++table
+++++++++row
+++++++++++cell name='Row1'
+++++++++++++staticText name='Row1'
+++++++++++++++inlineTextBox name='Row1'
+++++++++++cell name='Foo1'
+++++++++++++staticText name='Foo1'
+++++++++++++++inlineTextBox name='Foo1'
+++++++++row
+++++++++++cell name='Row2'
+++++++++++++staticText name='Row2'
+++++++++++++++inlineTextBox name='Row2'
+++++++++++cell name='Foo2'
+++++++++++++staticText name='Foo2'
+++++++++++++++inlineTextBox name='Foo2'
+++++++++row
+++++++++++cell name='Row3'
+++++++++++++staticText name='Row3'
+++++++++++++++inlineTextBox name='Row3'
+++++++++++cell name='Foo3'
+++++++++++++staticText name='Foo3'
+++++++++++++++inlineTextBox name='Foo3'
+++++++++row
+++++++++++cell name='Row4'
+++++++++++++staticText name='Row4'
+++++++++++++++inlineTextBox name='Row4'
+++++++++++cell name='Foo4'
+++++++++++++staticText name='Foo4'
+++++++++++++++inlineTextBox name='Foo4'
