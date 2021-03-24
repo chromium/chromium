@@ -969,8 +969,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
 }
 
 // TODO(crbug.com/985078): Fix on Mac.
+// TODO(crbug.com/1191782): Test is flaky.
 #if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchStateClearedBeforeActivation) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_TouchStateClearedBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
