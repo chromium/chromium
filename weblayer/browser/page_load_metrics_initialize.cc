@@ -4,6 +4,10 @@
 
 #include "weblayer/browser/page_load_metrics_initialize.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/bind.h"
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
