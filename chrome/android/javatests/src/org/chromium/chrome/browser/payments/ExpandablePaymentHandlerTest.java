@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
@@ -213,6 +214,7 @@ public class ExpandablePaymentHandlerTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1191988")
     @Feature({"Payments"})
     public void testSwipeDownCloseUI() throws Throwable {
         startDefaultServer();
