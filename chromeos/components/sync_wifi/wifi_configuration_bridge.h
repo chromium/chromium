@@ -37,6 +37,7 @@ class NetworkMetadataStore;
 namespace sync_wifi {
 
 const char kIsFirstRun[] = "sync_wifi.is_first_run";
+const char kHasFixedAutoconnect[] = "sync_wifi.has_fixed_autoconnect";
 
 class LocalNetworkCollector;
 class SyncedNetworkMetricsLogger;
@@ -121,6 +122,9 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   void OnNetworkConfiguredDelayComplete(const std::string& network_guid);
 
   bool IsLastUpdateFromSync(const std::string& network_guid);
+
+  void FixAutoconnect();
+  void OnFixAutoconnectComplete();
 
   // An in-memory list of the proto's that mirrors what is on the sync server.
   // This gets updated when changes are received from the server and after local

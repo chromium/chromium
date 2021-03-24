@@ -675,6 +675,25 @@ TEST_F(WifiConfigurationBridgeTest, LocalRemoved_BeforeInit) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(WifiConfigurationBridgeTest, FixAutoconnect) {
+  EXPECT_FALSE(local_network_collector()->has_fixed_autoconnect());
+
+  InitializeSyncStore();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(local_network_collector()->has_fixed_autoconnect());
+}
+
+TEST_F(WifiConfigurationBridgeTest, FixAutoconnect_AlreadyDone) {
+  network_test_helper()->user_prefs()->SetBoolean(kHasFixedAutoconnect, true);
+
+  EXPECT_FALSE(local_network_collector()->has_fixed_autoconnect());
+
+  InitializeSyncStore();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(local_network_collector()->has_fixed_autoconnect());
+}
 }  // namespace
 
 }  // namespace sync_wifi

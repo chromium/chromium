@@ -4,6 +4,7 @@
 
 #include "chromeos/components/sync_wifi/local_network_collector_impl.h"
 
+#include "base/barrier_closure.h"
 #include "base/guid.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
@@ -35,6 +36,14 @@ dbus::ObjectPath GetServicePathForGuid(const std::string& guid) {
   }
 
   return dbus::ObjectPath(state->path());
+}
+
+bool IsAutoconnectUnspecified(
+    const sync_pb::WifiConfigurationSpecifics& proto) {
+  return !proto.has_automatically_connect() ||
+         proto.automatically_connect() ==
+             sync_pb::
+                 WifiConfigurationSpecifics_AutomaticallyConnectOption_AUTOMATICALLY_CONNECT_UNSPECIFIED;
 }
 
 }  // namespace
@@ -335,6 +344,103 @@ void LocalNetworkCollectorImpl::OnGetNetworkList(
     std::move(after_networks_are_loaded_callback_queue_.front()).Run();
     after_networks_are_loaded_callback_queue_.pop();
   }
+}
+
+void LocalNetworkCollectorImpl::ExecuteAfterNetworksLoaded(
+    base::OnceClosure callback) {
+  if (is_mojo_networks_loaded_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  after_networks_are_loaded_callback_queue_.push(std::move(callback));
+}
+
+void LocalNetworkCollectorImpl::FixAutoconnect(
+    std::vector<sync_pb::WifiConfigurationSpecifics> protos,
+    base::OnceClosure callback) {
+  std::vector<std::string> guids_to_fix;
+  for (const sync_pb::WifiConfigurationSpecifics& proto : protos) {
+    // b/180854680 only affected networks with autoconnect unset/unspecified.
+    if (!IsAutoconnectUnspecified(proto)) {
+      continue;
+    }
+
+    network_config::mojom::NetworkStatePropertiesPtr network =
+        GetNetworkFromProto(proto);
+    if (!network) {
+      // A synced network that is shared could have been removed by another user
+      continue;
+    }
+
+    guids_to_fix.push_back(network->guid);
+  }
+
+  if (guids_to_fix.empty()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  fix_autoconnect_callback_ =
+      base::BarrierClosure(guids_to_fix.size(), std::move(callback));
+  for (const std::string& guid : guids_to_fix) {
+    cros_network_config_->GetManagedProperties(
+        guid,
+        base::BindOnce(&LocalNetworkCollectorImpl::EnableAutoconnectIfDisabled,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void LocalNetworkCollectorImpl::OnFixAutoconnectComplete(
+    bool success,
+    const std::string& error) {
+  if (!fix_autoconnect_callback_.is_null()) {
+    fix_autoconnect_callback_.Run();
+    return;
+  }
+
+  NOTREACHED();
+}
+
+network_config::mojom::NetworkStatePropertiesPtr
+LocalNetworkCollectorImpl::GetNetworkFromProto(
+    const sync_pb::WifiConfigurationSpecifics& proto) {
+  auto id = NetworkIdentifier::FromProto(proto);
+  network_config::mojom::NetworkStatePropertiesPtr network;
+  for (const network_config::mojom::NetworkStatePropertiesPtr& n :
+       mojo_networks_) {
+    if (id == NetworkIdentifier::FromMojoNetwork(n)) {
+      return n->Clone();
+    }
+  }
+  return nullptr;
+}
+
+void LocalNetworkCollectorImpl::EnableAutoconnectIfDisabled(
+    network_config::mojom::ManagedPropertiesPtr properties) {
+  if (!properties ||
+      properties->type != network_config::mojom::NetworkType::kWiFi) {
+    OnFixAutoconnectComplete(/*success=*/true, /*error=*/std::string());
+    return;
+  }
+  if (properties->type_properties->get_wifi()->auto_connect &&
+      properties->type_properties->get_wifi()->auto_connect->active_value) {
+    OnFixAutoconnectComplete(/*success=*/true, /*error=*/std::string());
+    return;
+  }
+
+  NET_LOG(EVENT) << "Fixing autoconnect for "
+                 << NetworkGuidId(properties->guid);
+  auto config = network_config::mojom::ConfigProperties::New();
+  config->type_config =
+      network_config::mojom::NetworkTypeConfigProperties::NewWifi(
+          network_config::mojom::WiFiConfigProperties::New());
+
+  config->auto_connect = network_config::mojom::AutoConnectConfig::New(true);
+  cros_network_config_->SetProperties(
+      properties->guid, std::move(config),
+      base::BindOnce(&LocalNetworkCollectorImpl::OnFixAutoconnectComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace sync_wifi
