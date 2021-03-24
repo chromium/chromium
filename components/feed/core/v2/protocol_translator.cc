@@ -139,8 +139,13 @@ bool TranslatePayload(base::Time now,
   switch (operation.payload_case()) {
     case feedwire::DataOperation::kFeature: {
       feedwire::Feature* feature = operation.mutable_feature();
-      result.stream_structure.set_allocated_parent_id(
-          feature->release_parent_id());
+      DCHECK(!result.stream_structure.has_parent_id());
+      if (feature->has_parent_id()) {
+        result.stream_structure.set_allocated_parent_id(
+            feature->release_parent_id());
+      } else if (feature->is_root()) {
+        result.stream_structure.set_is_root(true);
+      }
 
       if (!TranslateFeature(feature, result))
         return false;

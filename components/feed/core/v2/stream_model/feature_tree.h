@@ -58,8 +58,6 @@ struct StreamNode {
   StreamNode& operator=(const StreamNode&);
   // If true, this nodes has been removed and should be ignored.
   bool tombstoned = false;
-  // Whether this is a STREAM node.
-  bool is_stream = false;
   // Whether this node has a parent.
   bool has_parent = false;
   // If this node has content, this identifies it.

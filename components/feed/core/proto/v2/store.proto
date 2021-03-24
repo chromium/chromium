@@ -143,6 +143,8 @@ message StreamStructure {
   Type type = 4;
   // Set iff type=CONTENT
   ContentInfo content_info = 5;
+  // Is this the root of the stream?
+  bool is_root = 6;
 }
 
 message DataOperation {

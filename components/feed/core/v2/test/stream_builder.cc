@@ -50,6 +50,7 @@ feedstore::StreamStructure MakeStream(int id_number) {
   feedstore::StreamStructure result;
   result.set_type(feedstore::StreamStructure::STREAM);
   result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
+  result.set_is_root(true);
   *result.mutable_content_id() = MakeRootId(id_number);
   return result;
 }
