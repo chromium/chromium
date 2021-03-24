@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/optimization_target_model_executor.h"
 
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/content/browser/base_model_executor.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -161,6 +162,7 @@ TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedWrongTarget) {
 }
 
 TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedCorrectTarget) {
+  base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
@@ -168,10 +170,18 @@ TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedCorrectTarget) {
       /*model_metadata=*/base::nullopt);
 
   EXPECT_TRUE(model_executor()->HasLoadedModel());
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      optimization_guide::ModelExecutorLoadingState::
+          kModelFileValidAndMemoryMapped,
+      1);
 }
 
 TEST_F(OptimizationTargetModelExecutorTest,
        ExecuteReturnsImmediatelyIfNoModelLoaded) {
+  base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
@@ -185,9 +195,15 @@ TEST_F(OptimizationTargetModelExecutorTest,
           run_loop.get()),
       std::vector<float>{1, 1, 1});
   run_loop->Run();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      0);
 }
 
 TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
+  base::HistogramTester histogram_tester;
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
@@ -214,11 +230,17 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
             for (size_t i = 0; i < expected_output.size(); i++)
               EXPECT_NEAR(expected_output[i], output.value()[i], 1e-5);
 
+
             run_loop->Quit();
           },
           run_loop.get()),
       input);
   run_loop->Run();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
 }
 
 TEST_F(OptimizationTargetModelExecutorTest,

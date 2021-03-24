@@ -21,6 +21,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="OptimizationTarget">
+  <variant name="LanguageDetection"/>
+  <variant name="PageTopics"/>
+  <variant name="PainfulPageLoad"/>
+</variants>
+
 <variants name="PageTextDumpEvent">
   <variant name="FinishedLoad" summary="finished load"/>
   <variant name="FirstLayout" summary="first layout"/>
@@ -276,6 +282,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     target is valid or not. Recorded when prediction models are loaded into
     memory by the prediction manager.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutor.ModelLoadingResult.{OptimizationTarget}"
+    units="ModelExecutorLoadingState" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the result of a loading a model with a provided file for
+    {OptimizationTarget}. Recorded once per model load attempt for
+    {OptimizationTarget}.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutor.TaskExecutionLatency.{OptimizationTarget}"
+    units="ms" expires_after="M94">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the execution latency for the {OptimizationTarget} model run by the
+    model executor from when the task is posted from execution complete.
+    Recorded once per {OptimizationTarget} model execution attempt.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"

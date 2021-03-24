@@ -8,10 +8,13 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -20,6 +23,52 @@
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 
 namespace optimization_guide {
+
+// The state of the model file needed for execution.
+//
+// Keep in sync with ModelExecutorLoadingState in enums.xml.
+enum class ModelExecutorLoadingState {
+  // The model state is not known.
+  kUnknown = 0,
+  // The provided model file was not valid.
+  kModelFileInvalid = 1,
+  // The model is memory-mapped and available for
+  // use with TFLite.
+  kModelFileValidAndMemoryMapped = 2,
+
+  // New values above this line.
+  kMaxValue = kModelFileValidAndMemoryMapped,
+};
+
+namespace {
+
+// Util class for recording the result of loading the detection model. The
+// result is recorded when it goes out of scope and its destructor is called.
+class ScopedModelExecutorLoadingResultRecorder {
+ public:
+  ScopedModelExecutorLoadingResultRecorder(
+      proto::OptimizationTarget optimization_target,
+      ModelExecutorLoadingState model_loading_state)
+      : optimization_target_(optimization_target),
+        model_loading_state_(model_loading_state) {}
+  ~ScopedModelExecutorLoadingResultRecorder() {
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target_),
+        model_loading_state_);
+  }
+
+  void set_model_loading_state(ModelExecutorLoadingState model_executor_state) {
+    model_loading_state_ = model_executor_state;
+  }
+
+ private:
+  proto::OptimizationTarget optimization_target_;
+  ModelExecutorLoadingState model_loading_state_;
+};
+
+}  // namespace
 
 template <class OutputType, class... InputTypes>
 class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
@@ -64,7 +113,8 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
         base::BindOnce(&OptimizationTargetModelExecutor::SendForExecution,
                        base::Unretained(this), input...),
         base::BindOnce(&OptimizationTargetModelExecutor::OnExecutionCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       base::TimeTicks::Now()));
   }
 
   // OptimizationTargetModelObserver:
@@ -119,6 +169,8 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   void LoadModelFile(const base::Optional<proto::Any>& model_metadata,
                      const base::FilePath& file_path) {
     DCHECK(model_execution_task_runner_->RunsTasksInCurrentSequence());
+    ScopedModelExecutorLoadingResultRecorder scoped_model_loading_recorder(
+        optimization_target_, ModelExecutorLoadingState::kModelFileInvalid);
 
     // We received a new model file. Reset any loaded models.
     loaded_model_.reset();
@@ -134,6 +186,9 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     supported_features_for_loaded_model_ = model_metadata;
 
     loaded_model_ = BuildModelExecutionTask(model_fb_.get());
+    if (loaded_model_)
+      scoped_model_loading_recorder.set_model_loading_state(
+          ModelExecutorLoadingState::kModelFileValidAndMemoryMapped);
   }
 
   base::Optional<OutputType> SendForExecution(InputTypes... args) {
@@ -146,9 +201,23 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   }
 
   void OnExecutionCompleted(ExecutionCallback callback,
+                            base::TimeTicks model_execute_start_time,
                             base::Optional<OutputType> output) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+    if (!output) {
+      std::move(callback).Run(output);
+      return;
+    }
+
+    base::TimeDelta execution_time =
+        base::TimeTicks::Now() - model_execute_start_time;
+
+    base::UmaHistogramMediumTimes(
+        "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target_),
+        execution_time);
     std::move(callback).Run(output);
   }
 

@@ -51899,6 +51899,13 @@ Called by update_use_counter_css.py.-->
   </int>
 </enum>
 
+<enum name="ModelExecutorLoadingState">
+  <summary>Result of loading a model for execution</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid Model File"/>
+  <int value="2" label="Model File Memory Mapped and Valid"/>
+</enum>
+
 <enum name="ModuleBlocklistCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open the file"/>
