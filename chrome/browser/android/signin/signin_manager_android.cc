@@ -240,10 +240,9 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
   user_policy_signin_service_->FetchPolicyForSignedInUser(
       AccountIdFromAccountInfo(account), credentials.dm_token,
       credentials.client_id, url_loader_factory,
-      base::AdaptCallbackForRepeating(
-          base::BindOnce([](base::OnceCallback<void()> callback,
-                            bool success) { std::move(callback).Run(); },
-                         std::move(policy_callback))));
+      base::BindOnce([](base::OnceCallback<void()> callback,
+                        bool success) { std::move(callback).Run(); },
+                     std::move(policy_callback)));
 }
 
 void SigninManagerAndroid::IsAccountManaged(
