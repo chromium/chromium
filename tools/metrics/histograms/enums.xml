@@ -46986,6 +46986,7 @@ from previous Chrome versions.
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
+  <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="908302031"
@@ -47963,6 +47964,7 @@ from previous Chrome versions.
   <int value="1792609232" label="NTPShortcuts:enabled"/>
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
+  <int value="1793434695" label="VideoPlayerAppHidden:enabled"/>
   <int value="1794057460" label="AutofillProfileClientValidation:enabled"/>
   <int value="1794586887"
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:enabled"/>

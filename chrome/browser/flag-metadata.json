@@ -3383,6 +3383,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "media-app-video",
+    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "media-history",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 88

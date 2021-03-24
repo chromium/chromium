@@ -31,6 +31,14 @@ constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
     // done for "local" files, so the extension list is needed in addition to
     // the "image/*" wildcard above. The MIME type is never sent to the web app.
     {"image/tiff", ".arw,.cr2,.dng,.nef,.nrw,.orf,.raf,.rw2"},
+
+    // More video formats; building on the video/* wildcard which doesn't
+    // actually catch very much due to hard-coded maps in Chromium. Again, the
+    // MIME type doesn't really matter. "video/mpeg" is used a catchall for
+    // unknown mime types.
+    {"video/ogg", ".ogv,.ogx,.ogm"},
+    {"video/webm", ".webm"},
+    {"video/mpeg", ".3gp,.avi,.m4v,.mkv,.mov,.mp4,.mpeg,.mpeg4,.mpg,.mpg4"},
 };
 
 using AcceptMap = decltype(blink::Manifest::FileHandler::accept);

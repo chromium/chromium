@@ -2669,6 +2669,9 @@ extern const char kMediaAppDisplayExifDescription[];
 extern const char kMediaAppPdfInInkName[];
 extern const char kMediaAppPdfInInkDescription[];
 
+extern const char kMediaAppVideoName[];
+extern const char kMediaAppVideoDescription[];
+
 extern const char kMediaSessionNotificationsName[];
 extern const char kMediaSessionNotificationsDescription[];
 

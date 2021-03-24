@@ -4543,6 +4543,11 @@ const char kMediaAppPdfInInkName[] = "Media App Pdf in Ink";
 const char kMediaAppPdfInInkDescription[] =
     "Enables loading PDFs into Ink in chrome://media-app";
 
+const char kMediaAppVideoName[] = "Media App Handles Video";
+const char kMediaAppVideoDescription[] =
+    "Use chrome://media-app as the default handler for video. Hides the "
+    "deprecated VideoPlayer chrome app as a file handler.";
+
 const char kMediaSessionNotificationsName[] = "Media session notifications";
 const char kMediaSessionNotificationsDescription[] =
     "Shows notifications for media sessions showing the currently playing "
