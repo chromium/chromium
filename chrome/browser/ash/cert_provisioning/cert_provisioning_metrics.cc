@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_metrics.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
 namespace chromeos {
 namespace cert_provisioning {

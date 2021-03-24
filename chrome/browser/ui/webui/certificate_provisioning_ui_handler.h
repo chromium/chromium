@@ -11,7 +11,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;

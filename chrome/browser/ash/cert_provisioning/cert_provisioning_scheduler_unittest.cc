@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_test_helpers.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_worker.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
+#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_worker.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -255,7 +255,6 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
       &platform_keys_service_,
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
-
 
   // The policy is empty, so no workers should be created yet.
   FastForwardBy(TimeDelta::FromSeconds(1));
@@ -796,7 +795,6 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
         &platform_keys_service_,
         network_state_test_helper_.network_state_handler(),
         MakeFakeInvalidationFactory());
-
 
     FastForwardBy(TimeDelta::FromSeconds(1));
 

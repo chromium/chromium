@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler_user_service.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

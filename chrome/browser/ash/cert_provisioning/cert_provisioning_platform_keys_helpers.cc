@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 

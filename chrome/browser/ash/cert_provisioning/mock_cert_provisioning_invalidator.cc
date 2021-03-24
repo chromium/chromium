@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
+#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_invalidator.h"
 
 namespace chromeos {
 namespace cert_provisioning {

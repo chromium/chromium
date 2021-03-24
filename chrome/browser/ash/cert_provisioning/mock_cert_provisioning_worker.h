@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
-#define CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
+#ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
+#define CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_invalidator.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
+#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_invalidator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
@@ -92,4 +92,4 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
 }  // namespace cert_provisioning
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_
+#endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_

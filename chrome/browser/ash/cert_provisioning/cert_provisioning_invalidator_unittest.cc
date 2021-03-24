@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_invalidator.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
