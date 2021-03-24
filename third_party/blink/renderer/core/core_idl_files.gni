@@ -54,6 +54,7 @@ core_interface_idl_files_core_only =
                     "aom/accessible_node_list.idl",
                     "aom/computed_accessible_node.idl",
                     "app_history/app_history.idl",
+                    "app_history/app_history_entry.idl",
                     "app_history/app_history_navigate_event.idl",
                     "clipboard/data_transfer.idl",
                     "clipboard/data_transfer_item_list.idl",

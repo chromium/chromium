@@ -231,9 +231,15 @@ interface AnimationTimeline
     method constructor
 interface AppHistory : EventTarget
     attribute @@toStringTag
+    getter current
     getter onnavigate
     method constructor
     setter onnavigate
+interface AppHistoryEntry : EventTarget
+    attribute @@toStringTag
+    getter sameDocument
+    getter url
+    method constructor
 interface AppHistoryNavigateEvent : Event
     attribute @@toStringTag
     getter canRespond

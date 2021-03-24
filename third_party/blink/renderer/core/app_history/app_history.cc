@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 
+#include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event_init.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -26,6 +27,16 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
+
+void AppHistory::UpdateForCommit(WebFrameLoadType type, HistoryItem* item) {
+  if (!current_ || type != WebFrameLoadType::kReplaceCurrentItem)
+    current_ = MakeGarbageCollected<AppHistoryEntry>(GetSupplementable());
+  current_->SetItem(item);
+}
+
+AppHistoryEntry* AppHistory::current() const {
+  return GetSupplementable()->GetFrame() ? current_ : nullptr;
+}
 
 bool AppHistory::DispatchNavigateEvent(const KURL& url,
                                        HTMLFormElement* form,
@@ -64,6 +75,7 @@ const AtomicString& AppHistory::InterfaceName() const {
 void AppHistory::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(current_);
 }
 
 }  // namespace blink

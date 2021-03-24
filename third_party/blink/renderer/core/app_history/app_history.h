@@ -15,7 +15,9 @@
 
 namespace blink {
 
+class AppHistoryEntry;
 class HTMLFormElement;
+class HistoryItem;
 class KURL;
 class SerializedScriptValue;
 
@@ -32,6 +34,11 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   static AppHistory* appHistory(LocalDOMWindow&);
   explicit AppHistory(LocalDOMWindow&);
   ~AppHistory() final = default;
+
+  void UpdateForCommit(WebFrameLoadType, HistoryItem*);
+
+  // Web-exposed:
+  AppHistoryEntry* current() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(navigate, kNavigate)
 
@@ -50,6 +57,9 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   }
 
   void Trace(Visitor*) const final;
+
+ private:
+  Member<AppHistoryEntry> current_;
 };
 
 }  // namespace blink

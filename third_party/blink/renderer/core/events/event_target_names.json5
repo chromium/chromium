@@ -11,6 +11,7 @@
     "AccessibleNode",
     "Animation",
     "AppHistory",
+    "AppHistoryEntry",
     "Clipboard",
     "EditContext",
     "FontFaceSet",

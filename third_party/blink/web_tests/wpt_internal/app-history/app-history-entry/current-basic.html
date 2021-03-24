@@ -1,0 +1,22 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_not_equals(appHistory.current, null);
+  assert_equals(appHistory.current.url, location.href);
+  assert_true(appHistory.current.sameDocument);
+
+  let first_entry = appHistory.current;
+  history.replaceState(1, "", "#1");
+  assert_equals(appHistory.current, first_entry);
+  assert_equals(appHistory.current.url, location.href);
+  assert_true(appHistory.current.sameDocument);
+
+
+  history.pushState(2, "", "#2");
+  assert_not_equals(appHistory.current, first_entry);
+  assert_equals(appHistory.current.url, location.href);
+  assert_true(appHistory.current.sameDocument);
+}, "Basic tests for appHistory.current");
+</script>
