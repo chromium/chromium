@@ -28,7 +28,6 @@
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -205,7 +204,6 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   StrictMock<MockableFakeAttestationFlow> mock_attestation_flow_;
-  chromeos::FakeCryptohomeClient cryptohome_client_;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>
       system_token_key_permissions_manager_;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>

@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
