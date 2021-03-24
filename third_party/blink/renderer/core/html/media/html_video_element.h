@@ -130,7 +130,6 @@ class CORE_EXPORT HTMLVideoElement final
                                   ExceptionState&) override;
 
   // WebMediaPlayerClient implementation.
-  void OnBecamePersistentVideo(bool) final;
   void OnRequestVideoFrameCallback() final;
 
   bool IsPersistent() const;

@@ -7,7 +7,6 @@
 #include "content/browser/media/media_browsertest.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

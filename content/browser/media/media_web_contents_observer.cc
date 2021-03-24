@@ -18,11 +18,8 @@
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "ipc/ipc_message_macros.h"
-#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
@@ -266,19 +263,10 @@ void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
 void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   if (!fullscreen_player_)
     return;
-  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    // The message is sent to the renderer even though the video is already the
-    // fullscreen element itself. It will eventually be handled by Blink.
-    GetMediaPlayerRemote(*fullscreen_player_)->SetPersistentState(value);
-  } else {
-    auto* render_frame_host =
-        RenderFrameHost::FromID(fullscreen_player_->frame_routing_id);
-    DCHECK(render_frame_host);
 
-    render_frame_host->Send(new MediaPlayerDelegateMsg_BecamePersistentVideo(
-        render_frame_host->GetRoutingID(), fullscreen_player_->delegate_id,
-        value));
-  }
+  // The message is sent to the renderer even though the video is already the
+  // fullscreen element itself. It will eventually be handled by Blink.
+  GetMediaPlayerRemote(*fullscreen_player_)->SetPersistentState(value);
 }
 
 bool MediaWebContentsObserver::IsPlayerActive(
@@ -629,17 +617,8 @@ void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {
   use_after_free_checker_.check();
 
-  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    GetMediaPlayerRemote(*fullscreen_player_)
-        ->SetPowerExperimentState(is_starting);
-  } else {
-    auto* render_frame_host = RenderFrameHost::FromID(id.frame_routing_id);
-    DCHECK(render_frame_host);
-
-    render_frame_host->Send(
-        new MediaPlayerDelegateMsg_NotifyPowerExperimentState(
-            render_frame_host->GetRoutingID(), id.delegate_id, is_starting));
-  }
+  GetMediaPlayerRemote(*fullscreen_player_)
+      ->SetPowerExperimentState(is_starting);
 }
 
 base::WeakPtr<MediaWebContentsObserver>

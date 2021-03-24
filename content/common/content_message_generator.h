@@ -11,11 +11,6 @@
 #ifndef CONTENT_COMMON_FRAME_MESSAGES_H_
 #error "Failed to include content/common/frame_messages.h"
 #endif
-#undef CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_
-#include "content/common/media/media_player_delegate_messages.h"
-#ifndef CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_
-#error "Failed to include content/common/media/media_player_delegate_messages.h"
-#endif
 #include "media/media_buildflags.h"
 
 #if defined(OS_ANDROID)

@@ -41,19 +41,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
     // Players should typically respond by releasing resources, for example by
     // discarding their decoders.
     virtual void OnIdleTimeout() = 0;
-
-    // Called to control audio ducking. Output volume should be set to
-    // |player_volume| * |multiplier|. The range of |multiplier| is [0, 1],
-    // where 1 indicates normal (non-ducked) playback.
-    virtual void OnVolumeMultiplierUpdate(double multiplier) = 0;
-
-    // Called to set as the persistent video. A persistent video should hide its
-    // controls and go fullscreen.
-    virtual void OnBecamePersistentVideo(bool value) = 0;
-
-    // Notify the player that it is now eligible to start recording power
-    // measurements if |state| is true, else it is no longer eligible.
-    virtual void OnPowerExperimentState(bool state) {}
   };
 
   // Returns true if the host frame is hidden or closed.

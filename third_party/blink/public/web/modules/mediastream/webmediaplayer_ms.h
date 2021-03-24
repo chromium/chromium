@@ -173,8 +173,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void OnFrameHidden() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
-  void OnVolumeMultiplierUpdate(double multiplier) override;
-  void OnBecamePersistentVideo(bool value) override;
 
   void OnFirstFrameReceived(media::VideoRotation video_rotation,
                             bool is_opaque);

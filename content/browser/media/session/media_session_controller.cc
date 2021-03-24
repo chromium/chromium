@@ -9,13 +9,11 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/base/media_content_type.h"
-#include "media/base/media_switches.h"
 
 namespace content {
 
@@ -85,20 +83,11 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
                                                    double volume_multiplier) {
   DCHECK_EQ(player_id_, player_id);
 
-  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    auto* observer = web_contents_->media_web_contents_observer();
-    // The MediaPlayer mojo interface may not be available in tests.
-    if (!observer->IsMediaPlayerRemoteAvailable(id_))
-      return;
-    observer->GetMediaPlayerRemote(id_)->SetVolumeMultiplier(volume_multiplier);
-  } else {
-    auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
-    if (!render_frame_host)
-      return;
-
-    render_frame_host->Send(new MediaPlayerDelegateMsg_UpdateVolumeMultiplier(
-        render_frame_host->GetRoutingID(), id_.delegate_id, volume_multiplier));
-  }
+  auto* observer = web_contents_->media_web_contents_observer();
+  // The MediaPlayer mojo interface may not be available in tests.
+  if (!observer->IsMediaPlayerRemoteAvailable(id_))
+    return;
+  observer->GetMediaPlayerRemote(id_)->SetVolumeMultiplier(volume_multiplier);
 }
 
 void MediaSessionController::OnEnterPictureInPicture(int player_id) {

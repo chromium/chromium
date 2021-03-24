@@ -555,7 +555,6 @@ class WebMediaPlayerMSTest
   void MediaSourceOpened(WebMediaSource*) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}
-  void OnBecamePersistentVideo(bool) override {}
   bool WasAlwaysMuted() override { return false; }
   bool HasSelectedVideoTrack() override { return false; }
   WebMediaPlayer::TrackId GetSelectedVideoTrackId() override {

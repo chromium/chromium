@@ -1127,14 +1127,6 @@ void WebMediaPlayerMS::SetVolumeMultiplier(double multiplier) {
   // TODO(perkj, magjed): See TODO in OnPlay().
 }
 
-void WebMediaPlayerMS::OnVolumeMultiplierUpdate(double multiplier) {
-  SetVolumeMultiplier(multiplier);
-}
-
-void WebMediaPlayerMS::OnBecamePersistentVideo(bool value) {
-  get_client()->OnBecamePersistentVideo(value);
-}
-
 void WebMediaPlayerMS::ActivateSurfaceLayerForVideo() {
   // Note that we might or might not already be in VideoLayer mode.
   DCHECK(!bridge_);

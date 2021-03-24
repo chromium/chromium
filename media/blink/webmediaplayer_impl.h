@@ -218,9 +218,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void OnFrameHidden() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
-  void OnVolumeMultiplierUpdate(double multiplier) override;
-  void OnBecamePersistentVideo(bool value) override;
-  void OnPowerExperimentState(bool state) override;
   void RequestRemotePlaybackDisabled(bool disabled) override;
 
 #if defined(OS_ANDROID)

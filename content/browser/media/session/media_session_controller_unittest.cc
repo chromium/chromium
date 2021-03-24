@@ -5,17 +5,14 @@
 #include <memory>
 #include <tuple>
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
 #include "content/browser/media/session/media_session_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/test/mock_agent_scheduling_group_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/audio/audio_device_description.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -239,8 +236,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   void SetVolumeMultiplier(double multiplier) {
     controller_->OnSetVolumeMultiplier(controller_->get_player_id_for_testing(),
                                        multiplier);
-    if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface))
-      media_player_receiver_->WaitUntilVolumeChanged();
+    media_player_receiver_->WaitUntilVolumeChanged();
   }
 
   // Helpers to check the results of using the basic controls.
@@ -268,27 +264,6 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   bool ReceivedMessageVolume(double expected_volume_multiplier) {
     return expected_volume_multiplier ==
            media_player_receiver_->received_volume_multiplier();
-  }
-
-  // Legacy IPC-based helpers to check the results of using the basic controls.
-  // TODO: Remove these ones as more legacy IPC messages get migrated to mojo.
-  template <typename T>
-  bool ReceivedMessageVolumeMultiplierUpdate(double expected_multiplier) {
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(T::ID);
-    if (!msg)
-      return false;
-
-    std::tuple<int, double> result;
-    if (!T::Read(msg, &result))
-      return false;
-
-    EXPECT_EQ(id_.delegate_id, std::get<0>(result));
-    if (id_.delegate_id != std::get<0>(result))
-      return false;
-
-    EXPECT_EQ(expected_multiplier, std::get<1>(result));
-    test_sink().ClearMessages();
-    return expected_multiplier == std::get<1>(result);
   }
 
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
@@ -339,31 +314,7 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
   EXPECT_FALSE(media_session()->IsControllable());
 }
 
-TEST_F(MediaSessionControllerTest, VolumeMultiplierWithIPC) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      media::kUseMediaPlayerMojoInterface);
-
-  controller_->SetMetadata(true, false, media::MediaContentType::Persistent);
-  ASSERT_TRUE(controller_->OnPlaybackStarted());
-  EXPECT_TRUE(media_session()->IsActive());
-  EXPECT_TRUE(media_session()->IsControllable());
-
-  // Upon creation of the MediaSession the default multiplier will be sent.
-  EXPECT_TRUE(ReceivedMessageVolumeMultiplierUpdate<
-              MediaPlayerDelegateMsg_UpdateVolumeMultiplier>(1.0));
-
-  // Verify a different volume multiplier is sent.
-  const double kTestMultiplier = 0.5;
-  SetVolumeMultiplier(kTestMultiplier);
-  EXPECT_TRUE(ReceivedMessageVolumeMultiplierUpdate<
-              MediaPlayerDelegateMsg_UpdateVolumeMultiplier>(kTestMultiplier));
-}
-
-TEST_F(MediaSessionControllerTest, VolumeMultiplierWithMojo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseMediaPlayerMojoInterface);
-
+TEST_F(MediaSessionControllerTest, VolumeMultiplier) {
   controller_->SetMetadata(true, false, media::MediaContentType::Persistent);
   ASSERT_TRUE(controller_->OnPlaybackStarted());
   EXPECT_TRUE(media_session()->IsActive());

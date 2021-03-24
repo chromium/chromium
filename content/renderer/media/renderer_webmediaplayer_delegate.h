@@ -62,7 +62,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // content::RenderFrameObserver overrides.
   void WasHidden() override;
   void WasShown() override;
-  bool OnMessageReceived(const IPC::Message& msg) override;
   void OnDestruct() override;
 
   // Zeros out |idle_cleanup_interval_|, sets |idle_timeout_| to |idle_timeout|,
@@ -80,10 +79,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   friend class RendererWebMediaPlayerDelegateTest;
 
  private:
-  void OnMediaDelegateVolumeMultiplierUpdate(int player_id, double multiplier);
-  void OnMediaDelegateBecamePersistentVideo(int player_id, bool value);
-  void OnMediaDelegatePowerExperimentState(int player_id, bool state);
-
   // Schedules UpdateTask() to run soon.
   void ScheduleUpdateTask();
 

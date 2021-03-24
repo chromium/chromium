@@ -274,10 +274,6 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
 
 // TODO(zqzhang): this callback could be used to hide native controls instead of
 // using a settings. See `HTMLMediaElement::onMediaControlsEnabledChange`.
-void HTMLVideoElement::OnBecamePersistentVideo(bool value) {
-  SetPersistentStateInternal(value);
-}
-
 void HTMLVideoElement::SetPersistentState(bool persistent) {
   SetPersistentStateInternal(persistent);
   if (GetWebMediaPlayer())

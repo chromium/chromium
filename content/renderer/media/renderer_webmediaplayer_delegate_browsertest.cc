@@ -10,10 +10,8 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/media/renderer_webmediaplayer_delegate.h"
@@ -44,9 +42,6 @@ class MockWebMediaPlayerDelegateObserver
   MOCK_METHOD0(OnFrameHidden, void());
   MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(OnIdleTimeout, void());
-  MOCK_METHOD1(OnVolumeMultiplierUpdate, void(double));
-  MOCK_METHOD1(OnBecamePersistentVideo, void(bool));
-  MOCK_METHOD0(OnPictureInPictureModeEnded, void());
 };
 
 class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
@@ -97,28 +92,6 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegateTest);
 };
-
-// TODO(crbug.com/1039252) : Remove TC after a period of stability of the mojo
-// migration.
-TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      media::kUseMediaPlayerMojoInterface);
-
-  const int delegate_id = delegate_manager_->AddObserver(&observer_1_);
-
-  EXPECT_CALL(observer_1_, OnFrameHidden());
-  delegate_manager_->WasHidden();
-
-  EXPECT_CALL(observer_1_, OnFrameShown());
-  delegate_manager_->WasShown();
-
-  const double kTestMultiplier = 0.5;
-  EXPECT_CALL(observer_1_, OnVolumeMultiplierUpdate(kTestMultiplier));
-  MediaPlayerDelegateMsg_UpdateVolumeMultiplier volume_msg(0, delegate_id,
-                                                           kTestMultiplier);
-  delegate_manager_->OnMessageReceived(volume_msg);
-}
 
 TEST_F(RendererWebMediaPlayerDelegateTest, TheTimerIsInitiallyStopped) {
   ASSERT_FALSE(delegate_manager_->IsIdleCleanupTimerRunningForTesting());

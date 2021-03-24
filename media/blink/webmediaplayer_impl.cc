@@ -2518,19 +2518,6 @@ void WebMediaPlayerImpl::SetPowerExperimentState(bool state) {
     power_status_helper_->UpdatePowerExperimentState(state);
 }
 
-void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
-  SetVolumeMultiplier(multiplier);
-}
-
-void WebMediaPlayerImpl::OnBecamePersistentVideo(bool value) {
-  client_->OnBecamePersistentVideo(value);
-  SetPersistentState(value);
-}
-
-void WebMediaPlayerImpl::OnPowerExperimentState(bool state) {
-  SetPowerExperimentState(state);
-}
-
 void WebMediaPlayerImpl::ScheduleRestart() {
   // TODO(watk): All restart logic should be moved into PipelineController.
   if (pipeline_controller_->IsPipelineRunning() &&
