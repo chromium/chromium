@@ -49,8 +49,7 @@
 namespace content {
 
 namespace {
-// TODO(crbug.com/1181248): Rename to IsRendererPasteAllowed.
-bool IsClipboardPasteAllowed(
+bool IsRendererPasteAllowed(
     const GlobalFrameRoutingId& render_frame_routing_id_) {
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
@@ -202,7 +201,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
 
 void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -239,7 +238,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
                                  ReadHtmlCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::u16string(), GURL(), 0, 0);
     return;
   }
@@ -269,7 +268,7 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
                                 ReadSvgCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::u16string());
     return;
   }
@@ -291,7 +290,7 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::string());
     return;
   }
@@ -314,7 +313,7 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
 
 void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(SkBitmap());
     return;
   }
@@ -347,7 +346,7 @@ void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::move(result));
     return;
   }
@@ -402,7 +401,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const std::u16string& type,
                                        ReadCustomDataCallback callback) {
-  if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
     std::move(callback).Run(std::u16string());
     return;
   }
