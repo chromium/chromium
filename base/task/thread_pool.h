@@ -8,6 +8,24 @@
 #include <memory>
 #include <utility>
 
+namespace base {
+// TODO(gab): thread_pool.h should include task_traits.h but it can't during the
+// migration because task_traits.h has to include thread_pool.h to get the old
+// base::ThreadPool() trait constructor and that would create a circular
+// dependency. Some of the includes below result in an extended version of this
+// circular dependency. These forward-declarations are temporarily required for
+// the duration of the migration.
+enum class TaskPriority : uint8_t;
+enum class TaskShutdownBehavior : uint8_t;
+enum class ThreadPolicy : uint8_t;
+struct MayBlock;
+struct WithBaseSyncPrimitives;
+class TaskTraits;
+// UpdateableSequencedTaskRunner is part of this dance too because
+// updateable_sequenced_task_runner.h includes task_traits.h
+class UpdateableSequencedTaskRunner;
+}  // namespace base
+
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -18,10 +36,8 @@
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
-#include "base/task/task_traits.h"
 #include "base/task_runner.h"
 #include "base/time/time.h"
-#include "base/updateable_sequenced_task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -67,9 +83,13 @@ namespace base {
 // violated. For tests, use base::test::TaskEnvironment.
 class BASE_EXPORT ThreadPool {
  public:
-  // base::ThreadPool is a static API. See base::ThreadPoolInstance for the
-  // actual instance.
-  ThreadPool() = delete;
+  // base::ThreadPool is meant to be a static API. Do not use this constructor
+  // in new code! It is a temporary hack to support the old base::ThreadPool()
+  // trait during the migration to static base::ThreadPool:: APIs.
+  // Tasks and task runners with this trait will run in the thread pool,
+  // concurrently with tasks on other task runners. If you need mutual exclusion
+  // between tasks, see base::ThreadPool::CreateSequencedTaskRunner.
+  ThreadPool() = default;
 
   // Equivalent to calling PostTask with default TaskTraits.
   static bool PostTask(const Location& from_here, OnceClosure task);

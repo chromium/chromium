@@ -326,9 +326,10 @@ scoped_refptr<X11Cursor> XCursorLoader::LoadCursor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cursor = base::MakeRefCounted<X11Cursor>();
   if (SupportsCreateCursor()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
+    base::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        {base::ThreadPool(), base::MayBlock(),
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(ReadCursorImages, names, rm_xcursor_theme_,
                        GetPreferredCursorSize()),
         base::BindOnce(&XCursorLoader::LoadCursorImpl,

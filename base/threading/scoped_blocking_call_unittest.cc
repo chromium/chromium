@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/test/bind.h"

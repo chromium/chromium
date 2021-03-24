@@ -49,7 +49,8 @@ TEST(PostJobTest, TaskIds) {
   size_t concurrent_array[kNumConcurrentThreads] = {0};
   std::atomic_size_t remaining_tasks{kNumTasksToRun};
   base::JobHandle handle = base::PostJob(
-      FROM_HERE, {}, BindLambdaForTesting([&](base::JobDelegate* job) {
+      FROM_HERE, {base::ThreadPool()},
+      BindLambdaForTesting([&](base::JobDelegate* job) {
         uint8_t id = job->GetTaskId();
         size_t& slot = concurrent_array[id];
         slot++;

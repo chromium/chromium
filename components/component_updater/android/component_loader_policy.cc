@@ -120,9 +120,10 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(ReadManifestFromFd, manifest_fd),
       base::BindOnce(&AndroidComponentLoaderPolicy::NotifyNewVersion,
                      base::Owned(this), fd_map));

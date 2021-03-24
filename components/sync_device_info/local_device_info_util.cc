@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -96,9 +95,10 @@ void GetLocalDeviceNameInfo(
       base::BindOnce(&OnHardwareInfoReady, name_info_ptr,
                      base::ScopedClosureRunner(done_closure)));
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&GetPersonalizableDeviceNameBlocking),
       base::BindOnce(&OnPersonalizableDeviceNameReady, name_info_ptr,
                      base::ScopedClosureRunner(done_closure)));

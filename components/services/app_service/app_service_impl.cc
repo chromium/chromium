@@ -110,7 +110,8 @@ AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
       should_write_preferred_apps_to_file_(false),
       writing_preferred_apps_(false),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       read_completed_for_testing_(std::move(read_completed_for_testing)),
       write_completed_for_testing_(std::move(write_completed_for_testing)) {

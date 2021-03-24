@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chromeos/dbus/missive/missive_client.h"

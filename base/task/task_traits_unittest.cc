@@ -31,7 +31,8 @@ TEST(TaskTraitsTest, TaskPriority) {
 }
 
 TEST(TaskTraitsTest, TaskShutdownBehavior) {
-  constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN};
+  constexpr TaskTraits traits = {ThreadPool(),
+                                 TaskShutdownBehavior::BLOCK_SHUTDOWN};
   EXPECT_EQ(TaskPriority::USER_BLOCKING, traits.priority());
   EXPECT_TRUE(traits.shutdown_behavior_set_explicitly());
   EXPECT_EQ(TaskShutdownBehavior::BLOCK_SHUTDOWN, traits.shutdown_behavior());

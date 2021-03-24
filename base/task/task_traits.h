@@ -18,6 +18,11 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 
+// TODO(gab): This is backwards, thread_pool.h should include task_traits.h
+// but it this is necessary to have it in this direction during the migration
+// from old code that used base::ThreadPool as a trait.
+#include "base/task/thread_pool.h"
+
 namespace base {
 
 class PostTaskAndroid;
@@ -204,6 +209,7 @@ class BASE_EXPORT TaskTraits {
     ValidTrait(ThreadPolicy);
     ValidTrait(MayBlock);
     ValidTrait(WithBaseSyncPrimitives);
+    ValidTrait(ThreadPool);
   };
 
   // Invoking this constructor without arguments produces default TaskTraits
@@ -262,7 +268,8 @@ class BASE_EXPORT TaskTraits {
                  : 0)),
         may_block_(trait_helpers::HasTrait<MayBlock, ArgTypes...>()),
         with_base_sync_primitives_(
-            trait_helpers::HasTrait<WithBaseSyncPrimitives, ArgTypes...>()) {}
+            trait_helpers::HasTrait<WithBaseSyncPrimitives, ArgTypes...>()),
+        use_thread_pool_(trait_helpers::HasTrait<ThreadPool, ArgTypes...>()) {}
 
   constexpr TaskTraits(const TaskTraits& other) = default;
   TaskTraits& operator=(const TaskTraits& other) = default;
@@ -314,10 +321,8 @@ class BASE_EXPORT TaskTraits {
     return with_base_sync_primitives_;
   }
 
-  // Returns true if tasks with these traits execute on the thread pool. This is
-  // a legacy trait which can now only be set privately by PostTaskAndroid.
-  // TODO(crbug.com/1026641): Get rid of this trait on the Java side as well.
-  bool use_thread_pool() const { return use_thread_pool_; }
+  // Returns true if tasks with these traits execute on the thread pool.
+  constexpr bool use_thread_pool() const { return use_thread_pool_; }
 
   uint8_t extension_id() const { return extension_.extension_id; }
 
@@ -352,7 +357,9 @@ class BASE_EXPORT TaskTraits {
     const bool has_extension =
         (extension_.extension_id !=
          TaskTraitsExtensionStorage::kInvalidExtensionId);
-    DCHECK(use_thread_pool_ ^ has_extension);
+    DCHECK(use_thread_pool_ ^ has_extension)
+        << "Traits must explicitly specify a destination (e.g. ThreadPool or a "
+           "named thread like BrowserThread)";
   }
 
   // This bit is set in |priority_|, |shutdown_behavior_| and |thread_policy_|
@@ -366,7 +373,7 @@ class BASE_EXPORT TaskTraits {
   uint8_t thread_policy_;
   bool may_block_;
   bool with_base_sync_primitives_;
-  bool use_thread_pool_ = false;
+  bool use_thread_pool_;
 };
 
 // Returns string literals for the enums defined in this file. These methods

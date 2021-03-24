@@ -762,7 +762,8 @@ void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
 UpdaterStatusProvider::UpdaterStatusProvider() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&UpdaterStatusProvider::FetchActiveDirectoryDomain),
       base::BindOnce(&UpdaterStatusProvider::OnDomainReceived,
                      weak_factory_.GetWeakPtr()));
