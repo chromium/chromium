@@ -45,9 +45,7 @@ PluginVmFeatures::~PluginVmFeatures() = default;
 //   * User should be affiliated.
 //   * PluginVmAllowed device policy should be set to true.
 //   * UserPluginVmAllowed user policy should be set to true.
-// * At least one of the following should be set:
-//   * PluginVmLicenseKey policy.
-//   * PluginVmUserId policy.
+//   * PluginVmUserId user policy should be set.
 bool PluginVmFeatures::IsAllowed(const Profile* profile, std::string* reason) {
   // Check that PluginVm feature is enabled.
   if (!base::FeatureList::IsEnabled(features::kPluginVm)) {
@@ -71,7 +69,7 @@ bool PluginVmFeatures::IsAllowed(const Profile* profile, std::string* reason) {
   }
 
   // Bypass other checks when a fake policy is set, or running linux-chromeos.
-  if (FakeLicenseKeyIsSet() || !base::SysInfo::IsRunningOnChromeOS())
+  if (FakePolicyIsSet() || !base::SysInfo::IsRunningOnChromeOS())
     return true;
 
   // Check that the device is enterprise enrolled.
@@ -113,8 +111,7 @@ bool PluginVmFeatures::IsAllowed(const Profile* profile, std::string* reason) {
     return false;
   }
 
-  if (GetPluginVmLicenseKey().empty() &&
-      GetPluginVmUserIdForProfile(profile).empty()) {
+  if (GetPluginVmUserIdForProfile(profile).empty()) {
     VLOG(1) << "Parallels require a license be set up in policy.";
     *reason = "License for the product is not set up in policy";
     return false;

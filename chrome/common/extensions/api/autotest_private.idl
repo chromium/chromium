@@ -758,10 +758,9 @@ namespace autotestPrivate {
     // Sets mock Plugin VM policy.
     // |imageUrl|: URL to the image to install.
     // |imageHash|: Hash for the provided image.
-    // |licenseKey|: License key for Plugin VM.
-    static void setPluginVMPolicy(DOMString imageUrl,
-                                  DOMString imageHash,
-                                  DOMString licenseKey);
+    // |ignored|: Deprecated, has no effect.
+    static void setPluginVMPolicy(DOMString imageUrl, DOMString imageHash,
+                                  optional DOMString ignored);
 
     // Shows the Plugin VM installer. Does not start installation.
     static void showPluginVMInstaller();
