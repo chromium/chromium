@@ -504,7 +504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCardUploadFeedback"
-    enum="AutofillCreditCardUploadFeedback" expires_after="2021-05-01">
+    enum="AutofillCreditCardUploadFeedback" expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1113,7 +1113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDecision"
-    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2021-05-01">
+    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2022-03-01">
   <owner>sujiezhu@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -1124,7 +1124,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogActiveDuration" units="ms"
-    expires_after="2021-05-01">
+    expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1133,7 +1133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogOffer"
-    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2021-05-01">
+    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1143,7 +1143,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.LocalCardMigrationDialogUserInteraction"
     enum="AutofillLocalCardMigrationDialogUserInteraction"
-    expires_after="2021-05-01">
+    expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1152,7 +1152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogUserSelectionPercentage"
-    units="%" expires_after="2021-05-01">
+    units="%" expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1161,7 +1161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationOrigin"
-    enum="LocalCardMigrationPrompt" expires_after="2021-05-01">
+    enum="LocalCardMigrationPrompt" expires_after="2022-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
