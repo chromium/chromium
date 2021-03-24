@@ -433,6 +433,11 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
+// Waits for the JavaScript query |javaScriptCondition| to return |boolValue|
+// YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
+// induced.
+- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts entirely and checks whether the

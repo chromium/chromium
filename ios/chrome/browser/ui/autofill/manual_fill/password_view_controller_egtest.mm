@@ -82,21 +82,6 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
                     grey_interactable(), nullptr);
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id value = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [value isEqual:@YES];
-  };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition =
-      [GREYCondition conditionWithName:condition_name block:verify_block];
-  return [condition waitWithTimeout:timeout];
-}
-
 }  // namespace
 
 // Integration Tests for Mannual Fallback Passwords View Controller.
@@ -605,7 +590,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
       stringWithFormat:
           @"window.frames[0].document.getElementById('%s').value === '%s'",
           kFormElementUsername, kExampleUsername];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 // Tests that an alert is shown when trying to fill a password in an unsecure
@@ -695,7 +680,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   NSString* javaScriptCondition =
       [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
                                  kFormElementPassword];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 @end

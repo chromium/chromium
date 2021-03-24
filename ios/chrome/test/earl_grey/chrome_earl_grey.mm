@@ -1028,6 +1028,23 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
+- (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition {
+  auto verifyBlock = ^BOOL {
+    id value = [ChromeEarlGrey executeJavaScript:javaScriptCondition];
+    return [value isEqual:@YES];
+  };
+  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
+  NSString* conditionName = [NSString
+      stringWithFormat:@"Wait for JS condition: %@", javaScriptCondition];
+  GREYCondition* condition = [GREYCondition conditionWithName:conditionName
+                                                        block:verifyBlock];
+
+  NSString* errorString =
+      [NSString stringWithFormat:@"Failed waiting for condition '%@'",
+                                 javaScriptCondition];
+  EG_TEST_HELPER_ASSERT_TRUE([condition waitWithTimeout:timeout], errorString);
+}
+
 #pragma mark - SignIn Utilities (EG2)
 
 - (void)signOutAndClearIdentities {

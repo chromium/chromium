@@ -76,21 +76,6 @@ id<GREYMatcher> NotSecureWebsiteAlert() {
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id value = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [value isEqual:@YES];
-  };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition = [GREYCondition conditionWithName:condition_name
-                                                        block:verify_block];
-  return [condition waitWithTimeout:timeout];
-}
-
 // Waits for the keyboard to appear. Returns NO on timeout.
 BOOL WaitForKeyboardToAppear() {
   GREYCondition* waitForKeyboard = [GREYCondition
@@ -627,7 +612,7 @@ BOOL WaitForKeyboardToAppear() {
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
                        kFormElementUsername, result];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 @end

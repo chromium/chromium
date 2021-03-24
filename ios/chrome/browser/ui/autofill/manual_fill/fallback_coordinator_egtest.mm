@@ -48,21 +48,6 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
   return grey_buttonTitle(@"Underworld");
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id boolValue = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [boolValue isEqual:@YES];
-  };
-  //  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition = [GREYCondition conditionWithName:condition_name
-                                                        block:verify_block];
-  return [condition waitWithTimeout:kWaitForActionTimeout];
-}
-
 // Undocks and split the keyboard by swiping it up. Does nothing if already
 // undocked. Some devices, like iPhone or iPad Pro, do not allow undocking or
 // splitting, this returns NO if it is the case.
@@ -220,7 +205,7 @@ BOOL WaitForKeyboardToAppear() {
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"document.getElementById('%s').value === '%@'",
                        kFormElementName, name];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 // Tests that the manual fallback view concedes preference to the system picker

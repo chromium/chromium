@@ -130,6 +130,7 @@ bundle_data("http_server_bundle_data") {
     "data/http_server_files/redchair.usdz",
     "data/http_server_files/redirect_refresh.html",
     "data/http_server_files/simple_login_form.html",
+    "data/http_server_files/simple_signup_form.html",
     "data/http_server_files/single_page_wide.pdf",
     "data/http_server_files/state_operations.html",
     "data/http_server_files/state_operations.js",
