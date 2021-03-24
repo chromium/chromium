@@ -669,9 +669,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiRestoreDirectoryEntry) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest, RequestFileSystem_NotChromeOS) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "api_test/file_system/request_file_system_not_chromeos",
-      kFlagIgnoreManifestWarnings, kFlagNone))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/file_system/request_file_system_not_chromeos",
+       .launch_as_platform_app = true},
+      {.ignore_manifest_warnings = true}))
       << message_;
 }
 #endif

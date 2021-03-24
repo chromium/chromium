@@ -33,8 +33,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, Basics) {
                                mojom::ManifestLocation::kInternal));
   LoadExtension(base_dir.AppendASCII("simple_extension"));
 
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("developer/test", kFlagNone,
-                                          kFlagLoadAsComponent));
+  ASSERT_TRUE(RunExtensionTest({.name = "developer/test",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}));
 }
 
 // Tests opening the developer tools for an app window.

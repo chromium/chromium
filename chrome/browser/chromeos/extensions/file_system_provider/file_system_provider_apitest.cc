@@ -151,99 +151,115 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/mount",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/mount",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 // TODO(crbug.com/1167699): this test is flaky.
-IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, DISABLED_Unmount) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/unmount",
-                                          kFlagNone, kFlagLoadAsComponent))
+IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unmount) {
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/unmount",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, GetAll) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/get_all",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/get_all",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, GetMetadata) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/get_metadata",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/get_metadata",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ReadDirectory) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/read_directory",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/read_directory",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ReadFile) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/read_file",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/read_file",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, BigFile) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/big_file",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/big_file",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Evil) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/evil",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/evil",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, MimeType) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/mime_type",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/mime_type",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, CreateDirectory) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "file_system_provider/create_directory", kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/create_directory",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, DeleteEntry) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/delete_entry",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/delete_entry",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, CreateFile) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/create_file",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/create_file",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, CopyEntry) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/copy_entry",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/copy_entry",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, MoveEntry) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/move_entry",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/move_entry",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Truncate) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/truncate",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/truncate",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, WriteFile) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/write_file",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/write_file",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -254,44 +270,51 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Extension) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Thumbnail) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/thumbnail",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/thumbnail",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, AddWatcher) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/add_watcher",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/add_watcher",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, RemoveWatcher) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/remove_watcher",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/remove_watcher",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Notify) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/notify",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/notify",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Configure) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/configure",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/configure",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, GetActions) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/get_actions",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/get_actions",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ExecuteAction) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("file_system_provider/execute_action",
-                                          kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/execute_action",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -305,8 +328,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_Extension) {
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_App) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "file_system_provider/unresponsive_app", kFlagNone, kFlagLoadAsComponent))
+  ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/unresponsive_app",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 

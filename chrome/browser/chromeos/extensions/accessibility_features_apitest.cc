@@ -58,7 +58,7 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
 
   // Returns the path of the extension that should be used in a parameterized
   // test.
-  std::string GetTestExtensionPath() const {
+  const char* GetTestExtensionPath() const {
     if (GetParam())
       return kTestExtensionPathMofifyPermission;
     return kTestExtensionPathReadPermission;
@@ -221,8 +221,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
-  EXPECT_FALSE(RunPlatformAppTestWithFlags(GetTestExtensionPath(), "{}",
-                                           kFlagNone, kFlagLoadAsComponent))
+  EXPECT_FALSE(RunExtensionTest({.name = GetTestExtensionPath(),
+                                 .custom_arg = "{}",
+                                 .load_as_component = true,
+                                 .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -259,9 +261,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(GetTestExtensionPath(),
-                                          test_arg.c_str(), kFlagNone,
-                                          kFlagLoadAsComponent))
+  EXPECT_TRUE(RunExtensionTest({.name = GetTestExtensionPath(),
+                                .custom_arg = test_arg.c_str(),
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}))
       << message_;
 }
 

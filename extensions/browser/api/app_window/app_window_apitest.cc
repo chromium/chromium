@@ -159,11 +159,12 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledNoPermissions) {
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(
-      "platform_apps/windows_api_alpha_enabled/in_stable",
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_alpha_enabled/in_stable",
+       .launch_as_platform_app = true},
       // Ignore manifest warnings because the extension will not load at all
       // in stable.
-      kFlagIgnoreManifestWarnings, kFlagNone))
+      {.ignore_manifest_warnings = true}))
       << message_;
 }
 
@@ -187,9 +188,10 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
        .load_as_component = true}))
       << message_;
 
-  EXPECT_TRUE(RunPlatformAppTestWithFlags(
-      "platform_apps/windows_api_ime/has_permissions_platform_app",
-      kFlagIgnoreManifestWarnings, kFlagNone))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_ime/has_permissions_platform_app",
+       .launch_as_platform_app = true},
+      {.ignore_manifest_warnings = true}))
       << message_;
 }
 

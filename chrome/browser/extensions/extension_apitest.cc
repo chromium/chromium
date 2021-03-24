@@ -191,27 +191,8 @@ bool ExtensionApiTest::RunPlatformAppTest(const std::string& extension_name) {
 
 bool ExtensionApiTest::RunPlatformAppTestWithArg(
     const std::string& extension_name, const char* custom_arg) {
-  return RunPlatformAppTestWithFlags(extension_name, custom_arg, kFlagNone,
-                                     kFlagNone);
-}
-
-bool ExtensionApiTest::RunPlatformAppTestWithFlags(
-    const std::string& extension_name,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              browser_test_flags,
-                              api_test_flags | kFlagLaunchPlatformApp);
-}
-
-bool ExtensionApiTest::RunPlatformAppTestWithFlags(
-    const std::string& extension_name,
-    const char* custom_arg,
-    int browser_test_flags,
-    int api_test_flags) {
   return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              browser_test_flags,
-                              api_test_flags | kFlagLaunchPlatformApp);
+                              kFlagNone, kFlagLaunchPlatformApp);
 }
 
 bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
