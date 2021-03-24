@@ -463,6 +463,29 @@ fuzzer_test("wayland_buffer_fuzzer") {
   ]
 }
 
+source_set("ui_test_support") {
+  testonly = true
+  sources = [
+    "emulate/wayland_input_emulate.cc",
+    "emulate/wayland_input_emulate.h",
+    "test/wayland_ozone_ui_controls_test_helper.cc",
+    "test/wayland_ozone_ui_controls_test_helper.h",
+  ]
+
+  deps = [
+    ":wayland_proxy",
+    "//base",
+    "//third_party/wayland-protocols:weston_test",
+    "//ui/base:test_support",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:test_support",
+    "//ui/events/types:headers",
+    "//ui/gfx",
+    "//ui/platform_window/common",
+  ]
+}
+
 component("wayland_proxy") {
   visibility = []
   visibility += [

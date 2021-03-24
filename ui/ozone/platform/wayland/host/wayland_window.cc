@@ -33,6 +33,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
@@ -547,6 +548,10 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     LOG(ERROR) << "Failed to create wl_surface";
     return false;
   }
+
+  // Update visual size in tests immediately if the test config is set.
+  // Otherwise, such tests as interactive_ui_tests fail.
+  set_update_visual_size_immediately(UseTestConfigForPlatformWindows());
 
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale

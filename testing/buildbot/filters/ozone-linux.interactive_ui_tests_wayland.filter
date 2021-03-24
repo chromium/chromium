@@ -1,6 +1,62 @@
-# TODO(https://crbug.com/1134495): 
-# Will be enabled after input emulation lands (https://crrev.com/c/2726705)
-# For now, all the tests are disabled as their initialization fails because of the
-# lack of the input emulation. It's easier to disable them via a filter instead of
-# keeping a separate list of gtests.
--*
+# Failing interactive ui tests
+-AppWindowTest.InitAlwaysOnTopToFullscreen
+-AppWindowTest.InitFullscreenAndAlwaysOnTop
+-AppWindowTest.InitFullscreenToAlwaysOnTop
+-AppWindowTest.RuntimeAlwaysOnTopToFullscreen
+-AppWindowTest.RuntimeFullscreenToAlwaysOnTop
+-BookmarkBarViewTest10.KeyEvents
+-BookmarkBarViewTest12.CloseWithModalDialog
+-BookmarkBarViewTest13.ClickOnContextMenuSeparator
+-BookmarkBarViewTest15.MenuStaysVisibleAfterDelete
+-BookmarkBarViewTest17.ContextMenus3
+-BookmarkBarViewTest21.ContextMenusForEmptyFolder
+-BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
+-BookmarkBarViewTest23.ContextMenusKeyboard
+-BookmarkBarViewTest4.ContextMenus
+-BookmarkBarViewTest5.DND
+-BookmarkBarViewTest6.OpenMenuOnClickAndHold
+-BookmarkBarViewTest7.DNDToDifferentMenu
+-BookmarkBarViewTest8.DNDBackToOriginatingMenu
+-BookmarkBarViewTest9.ScrollButtonScrolls
+-BrowserCommandControllerInteractiveTest.ShortcutsShouldTakeEffectInBrowserFullscreen
+-BrowserFocusTest.BackgroundBrowserDontStealFocus
+-ChromeVisibilityObserverInteractiveTest.VisibilityTest
+-CrossSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
+-CrossSiteSubframe/DragAndDropBrowserTest.DragStartInFrame/0
+-DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
+-DesktopWindowTreeHostLinuxTest.CaptureEventForwarding
+-DesktopWindowTreeHostLinuxTest.Deactivate
+-DesktopWindowTreeHostLinuxTest.InputMethodFocus
+-DevToolsManagerDelegateTest.ShowMinimizedWindow
+-ExtensionApiTest.WindowOpenFocus
+-ExtensionsToolbarInteractiveUiTest.DoubleClickToolbarActionToClose
+-KeyboardLockInteractiveBrowserTest.ActiveWithSomeKeysLocked
+-MediaDialogViewBrowserTest.PictureInPicture
+-MediaDialogViewBrowserTest.PlayingSessionAlwaysDisplayFirst
+-MenuItemViewTestInsert02.InsertItem02
+-MenuItemViewTestInsert10.InsertItem10
+-MenuItemViewTestInsert12.InsertItem12
+-MenuItemViewTestInsert22.InsertItem22
+-MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
+-MenuViewDragAndDropTestTestInMenuDrag.TestInMenuDrag
+-NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
+-OmniboxViewViewsTest.SelectionClipboard
+-OmniboxViewViewsTest.TextElideStatus
+-PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
+-PopupBlockerBrowserTest.ModalPopUnder
+-SameSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
+-SameSiteSubframe/DragAndDropBrowserTest.DragStartInFrame/0
+-SessionRestoreInteractiveTest.RestoreMinimizedWindow
+-SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
+-StartupBrowserCreatorTest.LastUsedProfileActivated
+-TabDragCaptureLostTest.ReleaseCaptureOnDrag
+-TabDragging/DetachToBrowserTabDragControllerTest*
+-TabMetricsLoggerTest.CreateWindowFeaturesTestMultipleWindows
+-TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
+-ToolbarActionViewInteractiveUITest.ActivateOverflowedToolbarActionWithKeyboard
+-ToolbarActionViewInteractiveUITest.DoubleClickToolbarActionToClose
+-ToolbarActionViewInteractiveUITest.TestClickingOnOverflowedAction
+-WebAuthFocusTest.Focus
+-WidgetInputMethodInteractiveTest.Activation
+-WidgetInputMethodInteractiveTest.OneWindow
+-WidgetInputMethodInteractiveTest.TwoWindows
