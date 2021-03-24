@@ -146,9 +146,7 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
           &CanvasRenderingContext2D::TryRestoreContextEvent),
       should_prune_local_font_cache_(false),
       random_generator_((uint32_t)base::RandUint64()),
-      bernoulli_distribution_(kRasterMetricProbability),
-      ukm_recorder_(canvas->GetDocument().UkmRecorder()),
-      ukm_source_id_(canvas->GetDocument().UkmSourceID()) {
+      bernoulli_distribution_(kRasterMetricProbability) {
   if (canvas->GetDocument().GetSettings() &&
       canvas->GetDocument().GetSettings()->GetAntialiasedClips2dCanvasEnabled())
     clip_antialiasing_ = kAntiAliased;
