@@ -66,6 +66,8 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_TAB_SEARCH, u"Search tabs..."},
       {IDC_SELECT_NEXT_TAB, u"Next tab"},
       {IDC_SELECT_PREVIOUS_TAB, u"Previous tab"},
+      {IDC_MOVE_TAB_NEXT, u"Move tab forward"},
+      {IDC_MOVE_TAB_PREVIOUS, u"Move tab backward"},
   };
   CommandSource::CommandResults results;
   FuzzyFinder finder(input);
