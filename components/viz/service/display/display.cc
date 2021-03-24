@@ -31,6 +31,7 @@
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_null.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
@@ -531,10 +532,7 @@ void Display::InitializeRenderer(bool enable_shared_images) {
         current_task_runner_);
     resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->capabilities().skips_draw) {
-    // We use DisplayResourceProviderGL because the actual resources are gpu
-    // backed.
-    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        output_surface_->context_provider(), enable_shared_images);
+    auto resource_provider = std::make_unique<DisplayResourceProviderNull>();
     renderer_ = std::make_unique<NullRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get());
