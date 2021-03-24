@@ -73,8 +73,6 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             WPT_BINARY,
             "--venv=" + SRC_DIR,
             "--skip-venv-setup",
-            # TODO(crbug.com/1166741): We should be running WPT under Python 3.
-            "--py3",
             "run",
             "chrome"
         ] + self.options.test_list + [

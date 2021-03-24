@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import abc
 import argparse
+import importlib
 import json
 import logging
 import multiprocessing
@@ -16,13 +17,12 @@ import sys
 import threading
 import time
 import traceback
-from six.moves import urllib
+import urllib
 import uuid
 from collections import defaultdict, OrderedDict
 from itertools import chain, product
 
 from localpaths import repo_root
-from six.moves import reload_module
 
 from manifest.sourcefile import read_script_metadata, js_meta_re, parse_variants
 from wptserve import server as wptserve, handlers
@@ -227,6 +227,22 @@ fetch_tests_from_worker(new Worker("%(path)s%(query)s"));
 """
 
 
+class WorkerModulesHandler(HtmlWrapperHandler):
+    global_type = "dedicatedworker-module"
+    path_replace = [(".any.worker-module.html", ".any.js", ".any.worker-module.js"),
+                    (".worker.html", ".worker.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new Worker("%(path)s%(query)s", { type: "module" }));
+</script>
+"""
+
+
 class WindowHandler(HtmlWrapperHandler):
     path_replace = [(".window.html", ".window.js")]
     wrapper = """<!doctype html>
@@ -275,6 +291,21 @@ fetch_tests_from_worker(new SharedWorker("%(path)s%(query)s"));
 """
 
 
+class SharedWorkerModulesHandler(HtmlWrapperHandler):
+    global_type = "sharedworker-module"
+    path_replace = [(".any.sharedworker-module.html", ".any.js", ".any.worker-module.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+fetch_tests_from_worker(new SharedWorker("%(path)s%(query)s", { type: "module" }));
+</script>
+"""
+
+
 class ServiceWorkersHandler(HtmlWrapperHandler):
     global_type = "serviceworker"
     path_replace = [(".any.serviceworker.html", ".any.js", ".any.worker.js")]
@@ -296,8 +327,54 @@ class ServiceWorkersHandler(HtmlWrapperHandler):
 """
 
 
-class AnyWorkerHandler(WrapperHandler):
+class ServiceWorkerModulesHandler(HtmlWrapperHandler):
+    global_type = "serviceworker-module"
+    path_replace = [(".any.serviceworker-module.html",
+                     ".any.js", ".any.worker-module.js")]
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div id=log></div>
+<script>
+(async function() {
+  const scope = 'does/not/exist';
+  let reg = await navigator.serviceWorker.getRegistration(scope);
+  if (reg) await reg.unregister();
+  reg = await navigator.serviceWorker.register(
+    "%(path)s%(query)s",
+    { scope, type: 'module' },
+  );
+  fetch_tests_from_worker(reg.installing);
+})();
+</script>
+"""
+
+
+class BaseWorkerHandler(WrapperHandler):
     headers = [('Content-Type', 'text/javascript')]
+
+    def _meta_replacement(self, key, value):
+        return None
+
+    @abc.abstractmethod
+    def _create_script_import(self, attribute):
+        # Take attribute (a string URL to a JS script) and return JS source to import the script
+        # into the worker.
+        pass
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            attribute = value.replace("\\", "\\\\").replace('"', '\\"')
+            return self._create_script_import(attribute)
+        if key == "title":
+            value = value.replace("\\", "\\\\").replace('"', '\\"')
+            return 'self.META_TITLE = "%s";' % value
+        return None
+
+
+class ClassicWorkerHandler(BaseWorkerHandler):
     path_replace = [(".any.worker.js", ".any.js")]
     wrapper = """%(meta)s
 self.GLOBAL = {
@@ -310,17 +387,25 @@ importScripts("%(path)s");
 done();
 """
 
-    def _meta_replacement(self, key, value):
-        return None
+    def _create_script_import(self, attribute):
+        return 'importScripts("%s")' % attribute
 
-    def _script_replacement(self, key, value):
-        if key == "script":
-            attribute = value.replace("\\", "\\\\").replace('"', '\\"')
-            return 'importScripts("%s")' % attribute
-        if key == "title":
-            value = value.replace("\\", "\\\\").replace('"', '\\"')
-            return 'self.META_TITLE = "%s";' % value
-        return None
+
+class ModuleWorkerHandler(BaseWorkerHandler):
+    path_replace = [(".any.worker-module.js", ".any.js")]
+    wrapper = """%(meta)s
+self.GLOBAL = {
+  isWindow: function() { return false; },
+  isWorker: function() { return true; },
+};
+import "/resources/testharness.js";
+%(script)s
+import "%(path)s";
+done();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'import "%s";' % attribute
 
 
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
@@ -368,11 +453,15 @@ class RoutesBuilder(object):
 
         routes = [
             ("GET", "*.worker.html", WorkersHandler),
+            ("GET", "*.worker-module.html", WorkerModulesHandler),
             ("GET", "*.window.html", WindowHandler),
             ("GET", "*.any.html", AnyHtmlHandler),
             ("GET", "*.any.sharedworker.html", SharedWorkersHandler),
+            ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
-            ("GET", "*.any.worker.js", AnyWorkerHandler),
+            ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
+            ("GET", "*.any.worker.js", ClassicWorkerHandler),
+            ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("GET", "/.well-known/origin-policy", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
@@ -697,7 +786,7 @@ def release_mozlog_lock():
 def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we have the global lock
     # in the logging module unlocked
-    reload_module(logging)
+    importlib.reload(logging)
     release_mozlog_lock()
     try:
         return WebSocketDaemon(host,
@@ -713,7 +802,7 @@ def start_ws_server(host, port, paths, routes, bind_address, config, **kwargs):
 def start_wss_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we have the global lock
     # in the logging module unlocked
-    reload_module(logging)
+    importlib.reload(logging)
     release_mozlog_lock()
     try:
         return WebSocketDaemon(host,
@@ -771,7 +860,7 @@ class QuicTransportDaemon(object):
 def start_quic_transport_server(host, port, paths, routes, bind_address, config, **kwargs):
     # Ensure that when we start this in a new process we have the global lock
     # in the logging module unlocked
-    reload_module(logging)
+    importlib.reload(logging)
     release_mozlog_lock()
     try:
         return QuicTransportDaemon(host,

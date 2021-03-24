@@ -138,15 +138,39 @@ wheel: <
 
 # Used by:
 #   chrome/test/chromedriver/test/run_webdriver_tests.py
+wheel: <
+  name: "infra/python/wheels/iniconfig-py3"
+  version: "version:1.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/packaging-py2_py3"
+  version: "version:16.8"
+>
+
+wheel: <
+  name: "infra/python/wheels/pyparsing-py2_py3"
+  version: "version:2.2.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/toml-py3"
+  version: "version:0.10.1"
+>
 
 wheel <
-  name: "infra/python/wheels/pytest-py2_py3"
-  version: "version:4.1.1"
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:6.2.2"
+>
+
+wheel <
+  name: "infra/python/wheels/pytest-asyncio-py3"
+  version: "version:0.14.0"
 >
 
 wheel <
   name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:18.2.0"
+  version: "version:20.3.0"
 >
 
 wheel <
@@ -160,8 +184,8 @@ wheel <
 >
 
 wheel <
-  name: "infra/python/wheels/pluggy-py2_py3"
-  version: "version:0.8.1"
+  name: "infra/python/wheels/pluggy-py3"
+  version: "version:0.13.1"
 >
 
 wheel <

@@ -40,7 +40,14 @@ from blinkpy.w3c.common import CHROMIUM_WPT_DIR
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 
-WD_CLIENT_PATH = 'third_party/wpt_tools/wpt/tools/webdriver'
+WPT_TOOLS_PATH = 'third_party/wpt_tools/wpt/tools'
+WPT_TOOLS_ABSPATH = os.path.join(SRC_DIR, WPT_TOOLS_PATH)
+sys.path.insert(0, WPT_TOOLS_ABSPATH)
+# Importing localpaths allows us to use vendored-in dependencies from the
+# wpt_tools/wpt/tools/third_party directory.
+import localpaths  # noqa: F401
+
+WD_CLIENT_PATH = os.path.join(WPT_TOOLS_PATH, 'webdriver')
 WEBDRIVER_CLIENT_ABS_PATH = os.path.join(SRC_DIR, WD_CLIENT_PATH)
 
 

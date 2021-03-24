@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import threading
 import traceback
-from six.moves.queue import Empty
+from queue import Empty
 from collections import namedtuple
 
 from mozlog import structuredlog, capture
@@ -339,6 +339,7 @@ class TestRunnerManager(threading.Thread):
 
         self.test_count = 0
         self.unexpected_count = 0
+        self.unexpected_pass_count = 0
 
         # This may not really be what we want
         self.daemon = True
@@ -361,7 +362,8 @@ class TestRunnerManager(threading.Thread):
         spins."""
         self.recording.set(["testrunner", "startup"])
         self.logger = structuredlog.StructuredLogger(self.suite_name)
-        with self.browser_cls(self.logger, **self.browser_kwargs) as browser:
+        with self.browser_cls(self.logger, remote_queue=self.command_queue,
+                              **self.browser_kwargs) as browser:
             self.browser = BrowserManager(self.logger,
                                           browser,
                                           self.command_queue,
@@ -614,6 +616,9 @@ class TestRunnerManager(threading.Thread):
             return
         if self.timer is not None:
             self.timer.cancel()
+
+        self.browser.browser.maybe_parse_tombstone()
+
         # Write the result of each subtest
         file_result, test_results = results
         subtest_unexpected = False
@@ -634,6 +639,11 @@ class TestRunnerManager(threading.Thread):
                 self.unexpected_count += 1
                 self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
                 subtest_unexpected = True
+
+            is_unexpected_pass = is_unexpected and result.status == "PASS"
+            if is_unexpected_pass:
+                self.unexpected_pass_count += 1
+
             self.logger.test_status(test.id,
                                     result.name,
                                     result.status,
@@ -666,6 +676,10 @@ class TestRunnerManager(threading.Thread):
         if is_unexpected:
             self.unexpected_count += 1
             self.logger.debug("Unexpected count in this thread %i" % self.unexpected_count)
+
+        is_unexpected_pass = is_unexpected and status == "OK"
+        if is_unexpected_pass:
+            self.unexpected_pass_count += 1
 
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
@@ -775,14 +789,19 @@ class TestRunnerManager(threading.Thread):
             # This might leak a file handle from the queue
             self.logger.warning("Forcibly terminating runner process")
             self.test_runner_proc.terminate()
+            self.logger.debug("After terminating runner process")
 
             # Multiprocessing queues are backed by operating system pipes. If
             # the pipe in the child process had buffered data at the time of
             # forced termination, the queue is no longer in a usable state
             # (subsequent attempts to retrieve items may block indefinitely).
             # Discard the potentially-corrupted queue and create a new one.
+            self.logger.debug("Recreating command queue")
+            self.command_queue.cancel_join_thread()
             self.command_queue.close()
             self.command_queue = mp.Queue()
+            self.logger.debug("Recreating remote queue")
+            self.remote_queue.cancel_join_thread()
             self.remote_queue.close()
             self.remote_queue = mp.Queue()
         else:
@@ -925,3 +944,6 @@ class ManagerGroup(object):
 
     def unexpected_count(self):
         return sum(manager.unexpected_count for manager in self.pool)
+
+    def unexpected_pass_count(self):
+        return sum(manager.unexpected_pass_count for manager in self.pool)

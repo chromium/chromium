@@ -8,9 +8,8 @@ import traceback
 import socket
 import sys
 from abc import ABCMeta, abstractmethod
-from six import text_type
-from six.moves.http_client import HTTPConnection
-from six.moves.urllib.parse import urljoin, urlsplit, urlunsplit
+from http.client import HTTPConnection
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 from .actions import actions
 from .protocol import Protocol, BaseProtocolPart
@@ -287,9 +286,9 @@ class TestExecutor(object):
         """Run a particular test.
 
         :param test: The test to run"""
-        if test.environment != self.last_environment:
-            self.on_environment_change(test.environment)
         try:
+            if test.environment != self.last_environment:
+                self.on_environment_change(test.environment)
             result = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
@@ -333,7 +332,7 @@ class TestExecutor(object):
             status = e.status
         else:
             status = "INTERNAL-ERROR"
-        message = text_type(getattr(e, "message", ""))
+        message = str(getattr(e, "message", ""))
         if message:
             message += "\n"
         message += exception_string
