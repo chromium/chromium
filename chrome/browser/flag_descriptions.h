@@ -1862,9 +1862,6 @@ extern const char kRequestDesktopSiteForTabletsDescription[];
 extern const char kSafeBrowsingClientSideDetectionAndroidName[];
 extern const char kSafeBrowsingClientSideDetectionAndroidDescription[];
 
-extern const char kSafeBrowsingEnhancedProtectionAndroidName[];
-extern const char kSafeBrowsingEnhancedProtectionAndroidDescription[];
-
 extern const char kEnhancedProtectionPromoAndroidName[];
 extern const char kEnhancedProtectionPromoAndroidDescription[];
 

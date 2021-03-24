@@ -78,9 +78,7 @@ TEST_F(RealTimePolicyEngineTest,
 
 TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_DisabledOffTheRecord) {
-  base::test::ScopedFeatureList feature_list;
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  feature_list.InitAndEnableFeature(kEnhancedProtection);
   EXPECT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ true));
 }
 
@@ -99,31 +97,18 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformFullURLLookup_EnabledUserOptin) {
 TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_EnhancedProtection) {
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kEnhancedProtection);
-    ASSERT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kEnhancedProtection);
-    ASSERT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-  }
+  ASSERT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
 }
 
 TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_RTLookupForEpEnabled_WithTokenDisabled) {
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kEnhancedProtection);
-    EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
-    EXPECT_TRUE(CanPerformFullURLLookupWithToken(
-        /* is_off_the_record */ false,
-        base::BindOnce(&AreTokenFetchesEnabledInClient,
-                       /*expected_ep_enabled_value=*/true,
-                       /*return_value=*/true)));
-  }
+  EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
+  EXPECT_TRUE(CanPerformFullURLLookupWithToken(
+      /* is_off_the_record */ false,
+      base::BindOnce(&AreTokenFetchesEnabledInClient,
+                     /*expected_ep_enabled_value=*/true,
+                     /*return_value=*/true)));
 }
 
 TEST_F(
@@ -158,7 +143,7 @@ TEST_F(
     TestCanPerformFullURLLookupWithToken_ClientControlledWithEnhancedProtection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /* enabled_features */ {kEnhancedProtection},
+      /* enabled_features */ {},
       /* disabled_features */ {kRealTimeUrlLookupEnabledWithToken});
 
   // Enhanced protection is not enabled and the Finch feature is disabled: token

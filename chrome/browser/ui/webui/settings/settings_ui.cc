@@ -260,10 +260,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                    prefs::kSigninAllowed));
 
   html_source->AddBoolean(
-      "safeBrowsingEnhancedEnabled",
-      base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
-
-  html_source->AddBoolean(
       "editPasswordsInSettings",
       base::FeatureList::IsEnabled(
           password_manager::features::kEditPasswordsInSettings));

@@ -45,9 +45,6 @@ extern const base::Feature kClientSideDetectionModelVersion;
 // protection users.
 extern const base::Feature kDownloadRequestWithToken;
 
-// Enable Chrome Safe Browsing enhanced protection.
-extern const base::Feature kEnhancedProtection;
-
 // Controls whether the limited list size experiment is enabled. This experiment
 // limits the number of entries stored in each Safe Browsing list.
 extern const base::Feature kLimitedListSizeForIOS;

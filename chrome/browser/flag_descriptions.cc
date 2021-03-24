@@ -3228,14 +3228,6 @@ const char kSafeBrowsingClientSideDetectionAndroidName[] =
 const char kSafeBrowsingClientSideDetectionAndroidDescription[] =
     "Enable DOM feature collection on Safe Browsing pings on Android";
 
-const char kSafeBrowsingEnhancedProtectionAndroidName[] =
-    "Safe Browsing Enhanced Protection on Android";
-const char kSafeBrowsingEnhancedProtectionAndroidDescription[] =
-    "A new Safe Browsing mode for faster, proactive protection against "
-    "dangerous websites, downloads, and extensions. To enable enhanced "
-    "protection from the settings page, please enable "
-    "safe-browsing-security-section-ui-android and this flag together.";
-
 const char kEnhancedProtectionPromoAndroidName[] =
     "Enable enhanced protection promo card on Android on the New Tab Page";
 const char kEnhancedProtectionPromoAndroidDescription[] =

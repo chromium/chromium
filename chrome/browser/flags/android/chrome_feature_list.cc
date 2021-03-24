@@ -298,7 +298,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesLocalOrdering,
     &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
-    &safe_browsing::kEnhancedProtection,
     &signin::kMobileIdentityConsistency,
     &signin::kMobileIdentityConsistencyVar,
     &switches::kDeprecateMenagerieAPI,

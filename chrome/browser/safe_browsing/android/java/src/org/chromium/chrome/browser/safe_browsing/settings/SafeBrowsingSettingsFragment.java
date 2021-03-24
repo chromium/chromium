@@ -13,7 +13,6 @@ import androidx.preference.Preference;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
@@ -82,8 +81,6 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
 
         mSafeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         mSafeBrowsingPreference.init(SafeBrowsingBridge.getSafeBrowsingState(),
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED),
                 mAccessPoint);
         mSafeBrowsingPreference.setSafeBrowsingModeDetailsRequestedListener(this);
         mSafeBrowsingPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);

@@ -81,15 +81,6 @@ Polymer({
     },
 
     /** @private */
-    safeBrowsingEnhancedEnabled_: {
-      type: Boolean,
-      readOnly: true,
-      value: function() {
-        return loadTimeData.getBoolean('safeBrowsingEnhancedEnabled');
-      },
-    },
-
-    /** @private */
     enableSecurityKeysSubpage_: {
       type: Boolean,
       readOnly: true,

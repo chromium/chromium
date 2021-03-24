@@ -202,9 +202,6 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
 }
 
 TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(safe_browsing::kEnhancedProtection);
-
   SetSBState(safe_browsing::ENHANCED_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();

@@ -54,7 +54,6 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
     private RadioButtonWithDescription mNoProtection;
     private @SafeBrowsingState int mSafeBrowsingState;
-    private boolean mIsEnhancedProtectionEnabled;
     private @SettingsAccessPoint int mAccessPoint;
     private OnSafeBrowsingModeDetailsRequested mSafeBrowsingModeDetailsRequestedListener;
     private ManagedPreferenceDelegate mManagedPrefDelegate;
@@ -67,22 +66,17 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     /**
      * Set Safe Browsing state and Enhanced Protection state. Called before onBindViewHolder.
      * @param safeBrowsingState The current Safe Browsing state.
-     * @param isEnhancedProtectionEnabled Whether to show the Enhanced Protection button.
      * @param accessPoint Where this preference was triggered to be created.
      */
-    public void init(@SafeBrowsingState int safeBrowsingState, boolean isEnhancedProtectionEnabled,
-            @SettingsAccessPoint int accessPoint) {
+    public void init(
+            @SafeBrowsingState int safeBrowsingState, @SettingsAccessPoint int accessPoint) {
         mSafeBrowsingState = safeBrowsingState;
-        mIsEnhancedProtectionEnabled = isEnhancedProtectionEnabled;
         mAccessPoint = accessPoint;
-        assert ((mSafeBrowsingState != SafeBrowsingState.ENHANCED_PROTECTION)
-                || mIsEnhancedProtectionEnabled)
-            : "Safe Browsing state shouldn't be enhanced protection when the flag is disabled.";
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (mIsEnhancedProtectionEnabled && checkedId == mEnhancedProtection.getId()) {
+        if (checkedId == mEnhancedProtection.getId()) {
             mSafeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
         } else if (checkedId == mStandardProtection.getId()) {
             mSafeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
@@ -97,16 +91,14 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        if (mIsEnhancedProtectionEnabled) {
-            mEnhancedProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
-                    R.id.enhanced_protection);
-            if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
-                mEnhancedProtection.setBackgroundColor(ContextCompat.getColor(
-                        getContext(), R.color.preference_highlighted_bg_color));
-            }
-            mEnhancedProtection.setVisibility(View.VISIBLE);
-            mEnhancedProtection.setAuxButtonClickedListener(this);
+        mEnhancedProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
+                R.id.enhanced_protection);
+        if (mAccessPoint == SettingsAccessPoint.SURFACE_EXPLORER_PROMO_SLINGER) {
+            mEnhancedProtection.setBackgroundColor(
+                    ContextCompat.getColor(getContext(), R.color.preference_highlighted_bg_color));
         }
+        mEnhancedProtection.setVisibility(View.VISIBLE);
+        mEnhancedProtection.setAuxButtonClickedListener(this);
         mStandardProtection = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
                 R.id.standard_protection);
         mStandardProtection.setAuxButtonClickedListener(this);
@@ -121,9 +113,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
         // enabled to disclose information.
         if (mManagedPrefDelegate.isPreferenceClickDisabledByPolicy(this)) {
             groupLayout.setEnabled(false);
-            if (mIsEnhancedProtectionEnabled) {
-                mEnhancedProtection.setAuxButtonEnabled(true);
-            }
+            mEnhancedProtection.setAuxButtonEnabled(true);
             mStandardProtection.setAuxButtonEnabled(true);
         }
     }
@@ -132,7 +122,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
     public void onAuxButtonClicked(int clickedButtonId) {
         assert mSafeBrowsingModeDetailsRequestedListener
                 != null : "The listener should be set if the aux button is clickable.";
-        if (mIsEnhancedProtectionEnabled && clickedButtonId == mEnhancedProtection.getId()) {
+        if (clickedButtonId == mEnhancedProtection.getId()) {
             mSafeBrowsingModeDetailsRequestedListener.onSafeBrowsingModeDetailsRequested(
                     SafeBrowsingState.ENHANCED_PROTECTION);
         } else if (clickedButtonId == mStandardProtection.getId()) {
@@ -168,12 +158,7 @@ public class RadioButtonGroupSafeBrowsingPreference extends Preference
      */
     public void setCheckedState(@SafeBrowsingState int checkedState) {
         mSafeBrowsingState = checkedState;
-        assert ((checkedState != SafeBrowsingState.ENHANCED_PROTECTION)
-                || mIsEnhancedProtectionEnabled)
-            : "Checked state shouldn't be enhanced protection when the flag is disabled.";
-        if (mIsEnhancedProtectionEnabled) {
-            mEnhancedProtection.setChecked(checkedState == SafeBrowsingState.ENHANCED_PROTECTION);
-        }
+        mEnhancedProtection.setChecked(checkedState == SafeBrowsingState.ENHANCED_PROTECTION);
         mStandardProtection.setChecked(checkedState == SafeBrowsingState.STANDARD_PROTECTION);
         mNoProtection.setChecked(checkedState == SafeBrowsingState.NO_SAFE_BROWSING);
     }

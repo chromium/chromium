@@ -69,9 +69,6 @@ class AndroidTelemetryServiceTest : public testing::Test {
 
     telemetry_service_ =
         std::make_unique<AndroidTelemetryService>(sb_service_.get(), profile());
-
-    scoped_feature_list_.InitAndEnableFeature(
-        safe_browsing::kEnhancedProtection);
   }
 
   void TearDown() override {

@@ -55,9 +55,6 @@ const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
 const base::Feature kDownloadRequestWithToken{
     "SafeBrowsingDownloadRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnhancedProtection{"SafeBrowsingEnhancedProtection",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -137,7 +134,6 @@ constexpr struct {
     {&kClientSideDetectionForAndroid, true},
     {&kDelayedWarnings, true},
     {&kDownloadRequestWithToken, true},
-    {&kEnhancedProtection, true},
     {&kLimitedListSizeForIOS, true},
     {&kPasswordProtectionReferringAppEnabledAndroid, true},
     {&kPasswordProtectionForSignedInUsers, true},

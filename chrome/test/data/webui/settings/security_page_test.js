@@ -29,7 +29,6 @@ suite('CrSettingsSecurityPageTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
-      safeBrowsingEnhancedEnabled: true,
     });
   });
 
@@ -571,7 +570,6 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      safeBrowsingEnhancedEnabled: false,
     });
   });
 
@@ -600,10 +598,6 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
 
   teardown(function() {
     page.remove();
-  });
-
-  test('EnhancedHiddenWhenDisbled', function() {
-    assertFalse(isChildVisible(page, '#safeBrowsingEnhanced'));
   });
 
   test('ManageSecurityKeysSubpageHidden', function() {

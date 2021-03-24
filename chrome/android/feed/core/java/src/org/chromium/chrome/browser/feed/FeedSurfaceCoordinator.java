@@ -551,9 +551,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     private boolean isEnhancedProtectionPromoEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD);
     }
 
     @VisibleForTesting
