@@ -2423,6 +2423,7 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-line-break-suppression-002.html [
 crbug.com/27659 external/wpt/css/css-ruby/ruby-line-break-suppression-003.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-line-breaking-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-line-breaking-003.html [ Failure ]
+crbug.com/27659 external/wpt/css/css-ruby/ruby-text-collapse.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-whitespace-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-whitespace-002.html [ Failure ]
 
@@ -2534,7 +2535,6 @@ crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-001.h
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start-rtl.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-ruby/ruby-text-collapse.html [ Failure ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/extended-payload-length.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 external/wpt/websockets/binary/001.html?wpt_flags=h2 [ Timeout ]
