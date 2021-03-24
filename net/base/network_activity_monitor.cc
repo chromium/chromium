@@ -25,17 +25,13 @@ NetworkActivityMonitor* NetworkActivityMonitor::GetInstance() {
 }
 
 void NetworkActivityMonitor::IncrementBytesReceived(uint64_t bytes_received) {
-  base::TimeTicks now = base::TimeTicks::Now();
   base::AutoLock lock(lock_);
   bytes_received_ += bytes_received;
-  last_received_ticks_ = now;
 }
 
 void NetworkActivityMonitor::IncrementBytesSent(uint64_t bytes_sent) {
-  base::TimeTicks now = base::TimeTicks::Now();
   base::AutoLock lock(lock_);
   bytes_sent_ += bytes_sent;
-  last_sent_ticks_ = now;
 }
 
 uint64_t NetworkActivityMonitor::GetBytesReceived() const {
@@ -46,18 +42,6 @@ uint64_t NetworkActivityMonitor::GetBytesReceived() const {
 uint64_t NetworkActivityMonitor::GetBytesSent() const {
   base::AutoLock lock(lock_);
   return bytes_sent_;
-}
-
-base::TimeDelta NetworkActivityMonitor::GetTimeSinceLastReceived() const {
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::AutoLock lock(lock_);
-  return now - last_received_ticks_;
-}
-
-base::TimeDelta NetworkActivityMonitor::GetTimeSinceLastSent() const {
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::AutoLock lock(lock_);
-  return now - last_sent_ticks_;
 }
 
 }  // namespace net

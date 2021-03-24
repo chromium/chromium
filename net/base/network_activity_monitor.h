@@ -9,7 +9,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -45,9 +44,6 @@ class NET_EXPORT_PRIVATE NetworkActivityMonitor {
   uint64_t GetBytesReceived() const;
   uint64_t GetBytesSent() const;
 
-  base::TimeDelta GetTimeSinceLastReceived() const;
-  base::TimeDelta GetTimeSinceLastSent() const;
-
  private:
   friend class test::NetworkActivityMonitorPeer;
 
@@ -60,9 +56,6 @@ class NET_EXPORT_PRIVATE NetworkActivityMonitor {
 
   uint64_t bytes_received_;
   uint64_t bytes_sent_;
-
-  base::TimeTicks last_received_ticks_;
-  base::TimeTicks last_sent_ticks_;
 };
 
 }  // namespace net
