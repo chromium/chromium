@@ -3634,7 +3634,7 @@
   },
   {
     "name": "ntp-repeatable-queries",
-    "owners": [ "aee", "mahmadi", "ramyan", "tiborg" ],
+    "owners": [ "aee", "mahmadi", "tiborg" ],
     "expiry_milestone": 89
   },
   {
