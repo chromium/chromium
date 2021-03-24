@@ -467,8 +467,9 @@ public class UrlOverridingTest {
                 ChromeTabbedActivity.class, Stage.CREATED, () -> context.startActivity(intent));
         mActivityTestRule.setActivity(activity);
 
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1)));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         CriteriaHelper.pollUiThread(
                 () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
@@ -487,8 +488,9 @@ public class UrlOverridingTest {
         AsyncInitializationActivity.interceptMoveTaskToBackForTesting();
         context.startActivity(intent);
 
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1)));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         CriteriaHelper.pollUiThread(
                 () -> AsyncInitializationActivity.wasMoveTaskToBackInterceptedForTesting());
     }
