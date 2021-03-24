@@ -113,6 +113,10 @@ int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {
 int ConfigurableStorageDelegate::GetMaxConversionsPerOrigin() const {
   return max_conversions_per_origin_;
 }
+ConversionStorage::Delegate::RateLimitConfig
+ConfigurableStorageDelegate::GetRateLimits() const {
+  return rate_limits_;
+}
 
 ConversionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
@@ -220,12 +224,17 @@ ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetImpressionId(
+    base::Optional<int64_t> impression_id) {
+  impression_id_ = impression_id;
+  return *this;
+}
+
 StorableImpression ImpressionBuilder::Build() const {
-  return StorableImpression(impression_data_, impression_origin_,
-                            conversion_origin_, reporting_origin_,
-                            impression_time_,
-                            impression_time_ + expiry_ /* expiry_time */,
-                            base::nullopt /* impression_id */);
+  return StorableImpression(
+      impression_data_, impression_origin_, conversion_origin_,
+      reporting_origin_, impression_time_,
+      impression_time_ + expiry_ /* expiry_time */, impression_id_);
 }
 
 StorableConversion DefaultConversion() {

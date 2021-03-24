@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 3;
+const int kCurrentVersionNumber = 4;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_3.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_4.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -244,6 +244,44 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
     ASSERT_EQ(0, s.ColumnInt(0));
     ASSERT_EQ(true, s.ColumnBool(1));
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion3ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_3.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_FALSE(db.DoesTableExist("rate_limits"));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("conversions"));
+    EXPECT_TRUE(db.DoesTableExist("impressions"));
+    EXPECT_TRUE(db.DoesTableExist("meta"));
+    EXPECT_TRUE(db.DoesTableExist("rate_limits"));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
   }
 
   // DB migration histograms should be recorded.

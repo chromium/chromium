@@ -40,7 +40,7 @@ class ConversionStorageSql;
 //
 // Add a new test to `conversion_storage_sql_migration_unittest.cc` named
 // "MigrateVersionNToCurrent" where N is the previous database version. Update
-// `ConversionStorageSqlMigrationTest::GetCurrentSchema()` to use the sql file
+// `ConversionStorageSqlMigrationsTest::GetCurrentSchema()` to use the sql file
 // generated above.
 
 // Friended helper class which updates the an existing sql database of
@@ -59,6 +59,9 @@ class ConversionStorageSqlMigrations {
                                 sql::Database* db,
                                 sql::MetaTable* meta_table);
   static bool MigrateToVersion3(ConversionStorageSql* conversion_storage,
+                                sql::Database* db,
+                                sql::MetaTable* meta_table);
+  static bool MigrateToVersion4(ConversionStorageSql* conversion_storage,
                                 sql::Database* db,
                                 sql::MetaTable* meta_table);
 };

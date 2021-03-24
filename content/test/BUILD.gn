@@ -1846,6 +1846,7 @@ test("content_unittests") {
     "../browser/conversions/conversion_storage_sql_migrations_unittest.cc",
     "../browser/conversions/conversion_storage_sql_unittest.cc",
     "../browser/conversions/conversion_storage_unittest.cc",
+    "../browser/conversions/rate_limit_table_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
     "../browser/devtools/devtools_http_handler_unittest.cc",

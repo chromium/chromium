@@ -84,6 +84,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int GetMaxConversionsPerImpression() const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
+  RateLimitConfig GetRateLimits() const override;
 
   void set_max_conversions_per_impression(int max) {
     max_conversions_per_impression_ = max;
@@ -96,6 +97,8 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   void set_max_conversions_per_origin(int max) {
     max_conversions_per_origin_ = max;
   }
+
+  void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
 
   void set_report_time_ms(int report_time_ms) {
     report_time_ms_ = report_time_ms;
@@ -110,6 +113,11 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int max_conversions_per_impression_ = INT_MAX;
   int max_impressions_per_origin_ = INT_MAX;
   int max_conversions_per_origin_ = INT_MAX;
+
+  RateLimitConfig rate_limits_ = {
+      .time_window = base::TimeDelta::Max(),
+      .max_attributions_per_window = INT_MAX,
+  };
 
   int report_time_ms_ = 0;
 
@@ -196,6 +204,8 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetReportingOrigin(const url::Origin& origin);
 
+  ImpressionBuilder& SetImpressionId(base::Optional<int64_t> impression_id);
+
   StorableImpression Build() const;
 
  private:
@@ -205,6 +215,7 @@ class ImpressionBuilder {
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
+  base::Optional<int64_t> impression_id_;
 };
 
 // Returns a StorableConversion with default data which matches the default

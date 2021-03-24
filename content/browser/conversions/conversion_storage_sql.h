@@ -14,6 +14,7 @@
 #include "base/time/clock.h"
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/conversion_storage.h"
+#include "content/browser/conversions/rate_limit_table.h"
 #include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -135,6 +136,11 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   //  - could not be opened
   //  - table/index initialization failed
   std::unique_ptr<sql::Database> db_;
+
+  // Table which stores timestamps of sent reports, and checks if new reports
+  // can be created given API rate limits. The underlying table is created in
+  // |db_|, but only accessed within |RateLimitTable|.
+  RateLimitTable rate_limit_table_;
 
   sql::MetaTable meta_table_;
 

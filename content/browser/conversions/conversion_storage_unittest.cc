@@ -847,4 +847,25 @@ TEST_F(ConversionStorageTest, DeleteAllNullDeleteBegin) {
   EXPECT_TRUE(storage()->GetConversionsToReport(base::Time::Max()).empty());
 }
 
+TEST_F(ConversionStorageTest, MaxAttributionReportsBetweenSites) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_attributions_per_window = 2,
+  });
+
+  auto impression = ImpressionBuilder(clock()->Now()).Build();
+  auto conversion = DefaultConversion();
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_EQ(1, storage()->MaybeCreateAndStoreConversionReports(conversion));
+  EXPECT_EQ(0, storage()->MaybeCreateAndStoreConversionReports(conversion));
+
+  ConversionReport expected_report = GetExpectedReport(impression, conversion);
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(base::Time::Max());
+  EXPECT_TRUE(ReportsEqual({expected_report, expected_report}, actual_reports));
+}
+
 }  // namespace content

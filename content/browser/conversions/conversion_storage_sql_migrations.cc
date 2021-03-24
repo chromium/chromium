@@ -29,6 +29,10 @@ bool ConversionStorageSqlMigrations::UpgradeSchema(
     if (!MigrateToVersion3(conversion_storage, db, meta_table))
       return false;
   }
+  if (meta_table->GetVersionNumber() == 3) {
+    if (!MigrateToVersion4(conversion_storage, db, meta_table))
+      return false;
+  }
   // Add similar if () blocks for new versions here.
 
   base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
@@ -40,7 +44,7 @@ bool ConversionStorageSqlMigrations::MigrateToVersion2(
     ConversionStorageSql* conversion_storage,
     sql::Database* db,
     sql::MetaTable* meta_table) {
-  // Wrap each migration in it's own transaction. This results in smaller
+  // Wrap each migration in its own transaction. This results in smaller
   // transactions, so it's less likely that a transaction's buffer will need to
   // spill to disk. Also, if the database grows a lot and Chrome stops (user
   // quit, process kill, etc.) during the migration process, per-migration
@@ -239,6 +243,23 @@ bool ConversionStorageSqlMigrations::MigrateToVersion3(
     return false;
 
   meta_table->SetVersionNumber(3);
+  return transaction.Commit();
+}
+
+bool ConversionStorageSqlMigrations::MigrateToVersion4(
+    ConversionStorageSql* conversion_storage,
+    sql::Database* db,
+    sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  if (!conversion_storage->rate_limit_table_.CreateTable(db))
+    return false;
+
+  meta_table->SetVersionNumber(4);
   return transaction.Commit();
 }
 

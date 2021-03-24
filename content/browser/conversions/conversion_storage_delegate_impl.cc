@@ -45,6 +45,15 @@ int ConversionStorageDelegateImpl::GetMaxConversionsPerOrigin() const {
   return 1024;
 }
 
+ConversionStorage::Delegate::RateLimitConfig
+ConversionStorageDelegateImpl::GetRateLimits() const {
+  // TODO(csharrison): Finalize max_attributions_per_window value.
+  return {
+      .time_window = base::TimeDelta::FromDays(30),
+      .max_attributions_per_window = 100,
+  };
+}
+
 base::Time ConversionStorageDelegateImpl::GetReportTimeForConversion(
     const ConversionReport& report) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
