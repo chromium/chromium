@@ -10,6 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
@@ -76,14 +77,6 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     if (!base::Contains(fake_full_restore_file_, window))
       return -1;
     return fake_full_restore_file_.at(window).activation_index;
-  }
-
-  // Returns the sibling the |window| should be stacked below.
-  // TODO(chinsenj): Remove this later when widgets restore stacking order.
-  aura::Window* GetSiblingToStackBelow(FullRestoreController* controller,
-                                       aura::Window* window,
-                                       aura::Window* parent) {
-    return controller->GetSiblingToStackBelow(window, parent);
   }
 
   // Mocks creating a widget that is launched from full restore service.
@@ -348,87 +341,63 @@ TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
   EXPECT_TRUE(widget->CanActivate());
 }
 
-// Tests that the right sibling is returned for determining stacking order.
-// TODO(chinsenj): Currently this only tests the stacking logic. In the future
-// this should be integrated with WidgetBuilder/CreateTestFullRestoredWidget.
+// Tests that widgets are restored to their proper stacking order, even if they
+// are restored out-of-order.
+// TODO(chinsenj): Add another test for stcking with multiple
+// desks/displays/parents.
 TEST_F(FullRestoreControllerTest, Stacking) {
-  // Create the parent window and add a child which has not been restored.
-  auto parent_window = CreateTestWindow();
+  // Create a window that is a child of the active desk's container.
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
   auto non_restored_sibling = CreateTestWindow();
-  parent_window->AddChild(non_restored_sibling.get());
+  auto siblings = desk_container->children();
+  EXPECT_EQ(1u, siblings.size());
+  EXPECT_EQ(non_restored_sibling.get(), siblings[0]);
 
-  // Create windows that will be restored and set their activation indices.
-  auto window_1 = CreateTestWindow();
-  auto window_2 = CreateTestWindow();
-  auto window_3 = CreateTestWindow();
-  auto window_4 = CreateTestWindow();
-  auto window_5 = CreateTestWindow();
-  window_1->SetProperty(full_restore::kActivationIndexKey, 5);
-  window_2->SetProperty(full_restore::kActivationIndexKey, 4);
-  window_3->SetProperty(full_restore::kActivationIndexKey, 3);
-  window_4->SetProperty(full_restore::kActivationIndexKey, 2);
-  window_5->SetProperty(full_restore::kActivationIndexKey, 1);
-
-  // Simulate restoring windows out-of-order, starting with |window_4|. Restored
-  // windows should be placed below non-restored windows so |window_4| should be
+  // Simulate restoring windows out-of-order, starting with `widget_4`. Restored
+  // windows should be placed below non-restored windows so `widget_4` should be
   // placed at the bottom.
-  auto* controller = FullRestoreController::Get();
-  auto* target_window =
-      GetSiblingToStackBelow(controller, window_4.get(), parent_window.get());
-  EXPECT_EQ(non_restored_sibling.get(), target_window);
-  parent_window->AddChild(window_4.get());
-  parent_window->StackChildBelow(window_4.get(), target_window);
-  auto siblings = parent_window->children();
+  auto* widget_4 = CreateTestFullRestoredWidget(4);
+  EXPECT_EQ(desk_container, widget_4->GetNativeWindow()->parent());
+  siblings = desk_container->children();
   EXPECT_EQ(2u, siblings.size());
-  EXPECT_EQ(window_4.get(), siblings[0]);
+  EXPECT_EQ(widget_4->GetNativeWindow(), siblings[0]);
 
-  // Insert |window_2| now. It should be stacked below |window_4|.
-  target_window =
-      GetSiblingToStackBelow(controller, window_2.get(), parent_window.get());
-  EXPECT_EQ(window_4.get(), target_window);
-  parent_window->AddChild(window_2.get());
-  parent_window->StackChildBelow(window_2.get(), target_window);
-  siblings = parent_window->children();
+  // Restore `widget_2` now. It should be stacked above `widget_4`.
+  auto* widget_2 = CreateTestFullRestoredWidget(2);
+  EXPECT_EQ(desk_container, widget_2->GetNativeWindow()->parent());
+  siblings = desk_container->children();
   EXPECT_EQ(3u, siblings.size());
-  EXPECT_EQ(window_2.get(), siblings[0]);
+  EXPECT_EQ(widget_2->GetNativeWindow(), siblings[1]);
 
-  // Insert |window_3| now. It should be stacked below |window_4|.
-  target_window =
-      GetSiblingToStackBelow(controller, window_3.get(), parent_window.get());
-  EXPECT_EQ(window_4.get(), target_window);
-  parent_window->AddChild(window_3.get());
-  parent_window->StackChildBelow(window_3.get(), target_window);
-  siblings = parent_window->children();
+  // Restore `widget_3` now. It should be stacked above `widget_4`.
+  auto* widget_3 = CreateTestFullRestoredWidget(3);
+  EXPECT_EQ(desk_container, widget_3->GetNativeWindow()->parent());
+  siblings = desk_container->children();
   EXPECT_EQ(4u, siblings.size());
-  EXPECT_EQ(window_3.get(), siblings[1]);
+  EXPECT_EQ(widget_3->GetNativeWindow(), siblings[1]);
 
-  // Insert |window_1| now. It should be stacked below |window_2|.
-  target_window =
-      GetSiblingToStackBelow(controller, window_1.get(), parent_window.get());
-  EXPECT_EQ(window_2.get(), target_window);
-  parent_window->AddChild(window_1.get());
-  parent_window->StackChildBelow(window_1.get(), target_window);
-  siblings = parent_window->children();
+  // Restore `widget_1` now. It should be stacked above `widget_2`.
+  auto* widget_1 = CreateTestFullRestoredWidget(1);
+  EXPECT_EQ(desk_container, widget_1->GetNativeWindow()->parent());
+  siblings = desk_container->children();
   EXPECT_EQ(5u, siblings.size());
-  EXPECT_EQ(window_1.get(), siblings[0]);
+  EXPECT_EQ(widget_1->GetNativeWindow(), siblings[3]);
 
-  // Insert |window_5| now. It should be stacked below |non_restored_sibling|
-  // and above all the other restored windows.
-  target_window =
-      GetSiblingToStackBelow(controller, window_5.get(), parent_window.get());
-  EXPECT_EQ(non_restored_sibling.get(), target_window);
-  parent_window->AddChild(window_5.get());
-  parent_window->StackChildBelow(window_5.get(), target_window);
+  // Restore `widget_5` now.
+  auto* widget_5 = CreateTestFullRestoredWidget(5);
+  EXPECT_EQ(desk_container, widget_5->GetNativeWindow()->parent());
+  siblings = desk_container->children();
+  EXPECT_EQ(6u, siblings.size());
 
   // Check the final order of the siblings.
-  siblings = parent_window->children();
   EXPECT_EQ(6u, siblings.size());
-  EXPECT_EQ(window_1.get(), siblings[0]);
-  EXPECT_EQ(window_2.get(), siblings[1]);
-  EXPECT_EQ(window_3.get(), siblings[2]);
-  EXPECT_EQ(window_4.get(), siblings[3]);
-  EXPECT_EQ(window_5.get(), siblings[4]);
   EXPECT_EQ(non_restored_sibling.get(), siblings[5]);
+  EXPECT_EQ(widget_1->GetNativeWindow(), siblings[4]);
+  EXPECT_EQ(widget_2->GetNativeWindow(), siblings[3]);
+  EXPECT_EQ(widget_3->GetNativeWindow(), siblings[2]);
+  EXPECT_EQ(widget_4->GetNativeWindow(), siblings[1]);
+  EXPECT_EQ(widget_5->GetNativeWindow(), siblings[0]);
 }
 
 }  // namespace ash

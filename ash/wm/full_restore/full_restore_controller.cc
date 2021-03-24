@@ -53,6 +53,55 @@ constexpr ShellWindowId kAppParentContainers[5] = {
 constexpr AppType kSupportedAppTypes[2] = {AppType::BROWSER,
                                            AppType::CHROME_APP};
 
+// Returns the sibling of `window` that `window` should be stacked below based
+// on restored activation indices. Returns nullptr if `window` does not need
+// to be moved in the z-ordering. Should be called after `window` is added as
+// a child of its parent.
+aura::Window* GetSiblingToStackBelow(aura::Window* window) {
+  DCHECK(window->parent());
+  auto siblings = window->parent()->children();
+#if DCHECK_IS_ON()
+  // Verify that the activation keys are descending and that non-restored
+  // windows are all at the end.
+  for (int i = 0; i < int{siblings.size()} - 2; ++i) {
+    int32_t* current_activation_key =
+        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
+    size_t next_index = i + 1;
+    int32_t* next_activation_key =
+        siblings[next_index]->GetProperty(full_restore::kActivationIndexKey);
+
+    const bool descending_order =
+        current_activation_key &&
+        (!next_activation_key ||
+         *current_activation_key > *next_activation_key);
+    const bool both_null = !current_activation_key && !next_activation_key;
+
+    DCHECK(descending_order || both_null);
+  }
+
+  DCHECK_EQ(siblings.back(), window);
+#endif
+
+  int32_t* restore_activation_key =
+      window->GetProperty(full_restore::kActivationIndexKey);
+  DCHECK(restore_activation_key);
+
+  for (int i = 0; i < int{siblings.size()} - 1; ++i) {
+    int32_t* sibling_restore_activation_key =
+        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
+
+    if (!sibling_restore_activation_key ||
+        *restore_activation_key > *sibling_restore_activation_key) {
+      // Activation index is saved to match MRU order so lower means more
+      // recent/higher in stacking order. Also restored windows should be
+      // stacked below non-restored windows.
+      return siblings[i];
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 FullRestoreController::FullRestoreController() {
@@ -151,6 +200,11 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
                        widget->widget_delegate()->SetCanActivate(true);
                      },
                      window));
+
+  // Stack the window.
+  auto* target_sibling = GetSiblingToStackBelow(window);
+  if (target_sibling)
+    window->parent()->StackChildBelow(window, target_sibling);
 }
 
 void FullRestoreController::SaveAllWindows() {
@@ -218,52 +272,6 @@ void FullRestoreController::SaveWindowImpl(
 
   if (g_save_window_callback_for_testing)
     g_save_window_callback_for_testing.Run(window_info);
-}
-
-aura::Window* FullRestoreController::GetSiblingToStackBelow(
-    aura::Window* window,
-    aura::Window* parent) {
-  auto siblings = parent->children();
-#if DCHECK_IS_ON()
-  // Verify that the activation keys are descending and that non-restored
-  // windows are all at the end.
-  for (size_t i = 0; i < siblings.size() - 1; ++i) {
-    int32_t* current_activation_key =
-        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
-    size_t next_index = i + 1;
-    int32_t* next_activation_key =
-        siblings[next_index]->GetProperty(full_restore::kActivationIndexKey);
-
-    const bool descending_order =
-        current_activation_key &&
-        (!next_activation_key ||
-         *current_activation_key > *next_activation_key);
-    const bool both_null = !current_activation_key && !next_activation_key;
-
-    DCHECK(descending_order || both_null);
-  }
-#endif
-
-  int32_t* restore_activation_key =
-      window->GetProperty(full_restore::kActivationIndexKey);
-  if (!restore_activation_key)
-    return nullptr;
-
-  DCHECK(!base::Contains(siblings, window));
-  for (size_t i = 0; i < siblings.size(); ++i) {
-    int32_t* sibling_restore_activation_key =
-        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
-
-    if (!sibling_restore_activation_key ||
-        *restore_activation_key > *sibling_restore_activation_key) {
-      // Activation index is saved to match MRU order so lower means more
-      // recent/higher in stacking order. Also restored windows should be
-      // stacked below non-restored windows.
-      return siblings[i];
-    }
-  }
-
-  return nullptr;
 }
 
 void FullRestoreController::SetSaveWindowCallbackForTesting(
