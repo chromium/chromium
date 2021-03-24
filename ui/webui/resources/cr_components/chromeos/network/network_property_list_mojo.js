@@ -68,6 +68,11 @@ Polymer({
       observer: 'onAllFieldsReadOnlyChanged_',
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Whether any of the CrInputElements have been visibly focused since
      * |allFieldsReadOnly| becoming true.

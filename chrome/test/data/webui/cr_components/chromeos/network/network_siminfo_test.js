@@ -128,4 +128,20 @@ suite('NetworkSiminfoTest', function() {
         assertTrue(simLockButton.disabled);
         assertFalse(simLockButtonTooltip.hidden);
       });
+
+  test('Disabled UI state', function() {
+    const unlockPinButton = simInfo.$$('#unlockPinButton');
+    const changePinButton = simInfo.$$('#changePinButton');
+    const simLockButton = simInfo.$$('#simLockButton');
+
+    assertFalse(unlockPinButton.disabled);
+    assertFalse(changePinButton.disabled);
+    assertFalse(simLockButton.disabled);
+
+    simInfo.disabled = true;
+
+    assertTrue(unlockPinButton.disabled);
+    assertTrue(changePinButton.disabled);
+    assertTrue(simLockButton.disabled);
+  });
 });

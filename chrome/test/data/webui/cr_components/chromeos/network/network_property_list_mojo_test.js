@@ -135,4 +135,16 @@ suite('NetworkPropertyListMojoTest', function() {
         assertEquals('', window.getSelection().toString());
         assertNotEquals(crInput, propertyList.shadowRoot.activeElement);
       });
+
+  test('Disabled UI state', function() {
+    // Create editable property.
+    verifyEditableFieldTypes();
+
+    const input = propertyList.$$('cr-input');
+    assertFalse(input.disabled);
+
+    propertyList.disabled = true;
+
+    assertTrue(input.disabled);
+  });
 });

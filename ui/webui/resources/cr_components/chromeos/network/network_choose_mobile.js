@@ -25,6 +25,11 @@ Polymer({
       value: null,
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * The mojom.FoundNetworkProperties.networkId of the selected mobile
      * network.
@@ -111,7 +116,8 @@ Polymer({
    * @private
    */
   getEnableScanButton_(properties) {
-    return properties.connectionState ===
+    return !this.disabled &&
+        properties.connectionState ===
         chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
         !!this.deviceState && !this.deviceState.scanning;
   },
@@ -123,7 +129,7 @@ Polymer({
    */
   getEnableSelectNetwork_(properties) {
     return (
-        !!this.deviceState && !this.deviceState.scanning &&
+        !this.disabled && !!this.deviceState && !this.deviceState.scanning &&
         properties.connectionState ===
             chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected &&
         !!properties.typeProperties.cellular.foundNetworks &&

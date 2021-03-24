@@ -29,6 +29,11 @@ Polymer({
       value: null,
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Reflects deviceState.simLockStatus.lockEnabled for the
      * toggle button.
@@ -241,6 +246,14 @@ Polymer({
     }
 
     return this.deviceState.simLockStatus.lockEnabled && this.isActiveSim_;
-  }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isSimLockButtonDisabled_() {
+    return this.disabled || !this.isActiveSim_;
+  },
 });
 })();

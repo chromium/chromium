@@ -61,7 +61,9 @@
         <div class="error">[[i18n('networkSimCardLocked')]]</div>
       </div>
       <div class="separator"></div>
-      <cr-button id="unlockPinButton" on-click="onUnlockPinTap_">
+      <cr-button id="unlockPinButton"
+          on-click="onUnlockPinTap_"
+          disabled="[[disabled]]">
         [[i18n('networkSimUnlock')]]
       </cr-button>
     </div>
@@ -73,7 +75,8 @@
         [[i18n('networkSimLockEnable')]]
       </div>
       <cr-button id="changePinButton" on-click="onChangePinTap_"
-          hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]">
+          hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]"
+          disabled="[[disabled]]">
         [[i18n('networkSimChangePin')]]
       </cr-button>
       <template is="dom-if" if="[[!isActiveSim_]]" restamp>
@@ -87,7 +90,7 @@
         <div class="separator"></div>
       </template>
       <cr-toggle id="simLockButton"
-          disabled$="[[!isActiveSim_]]"
+          disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_)]]"
           on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
           aria-labelledby="simLockToggleLabel">
       </cr-toggle>
