@@ -3258,14 +3258,15 @@ bool LayoutObject::LocalToAncestorRectFastPath(
     MapCoordinatesFlags mode,
     PhysicalRect& result) const {
   NOT_DESTROYED();
-  if (!(mode & kUseGeometryMapperMode))
-    return false;
-  // No other modes are supported.
-  if (mode & (~kUseGeometryMapperMode))
+  MapCoordinatesFlags supported_mode =
+      kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor;
+  if (mode != supported_mode)
     return false;
 
-  if (!ancestor)
-    ancestor = View();
+  if (ancestor && ancestor != View())
+    return false;
+
+  ancestor = View();
 
   if (ancestor == this)
     return true;
@@ -3290,7 +3291,7 @@ bool LayoutObject::LocalToAncestorRectFastPath(
   if (property_container != ancestor) {
     GeometryMapper::SourceToDestinationRect(
         container_properties.Transform(),
-        ancestor->FirstFragment().LocalBorderBoxProperties().Transform(),
+        ancestor->FirstFragment().ContentsProperties().Transform(),
         mapping_rect);
   }
   mapping_rect.Move(-FloatSize(ancestor->FirstFragment().PaintOffset()));
