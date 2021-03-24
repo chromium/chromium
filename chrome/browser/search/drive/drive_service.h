@@ -34,6 +34,7 @@ class DriveService : public KeyedService {
   using GetFilesCallback = drive::mojom::DriveHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveFiles(GetFilesCallback callback);
+  std::string BuildRequestBody();
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
