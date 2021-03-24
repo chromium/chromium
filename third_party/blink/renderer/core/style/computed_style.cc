@@ -1236,11 +1236,13 @@ void ComputedStyle::ApplyMotionPathTransform(
     // TODO(ericwilligers): crbug.com/641245 Support <size> for ray paths.
     float float_distance = FloatValueForLength(distance, 0);
 
-    path_position.tangent_in_degrees = To<StyleRay>(*path).Angle() - 90;
-    path_position.point.SetX(float_distance *
-                             cos(deg2rad(path_position.tangent_in_degrees)));
-    path_position.point.SetY(float_distance *
-                             sin(deg2rad(path_position.tangent_in_degrees)));
+    // Use clampTo() to convert infinite values to min/max finite ones.
+    path_position.tangent_in_degrees =
+        clampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
+    float tangent_in_radians =
+        clampTo<float, float>(deg2rad(path_position.tangent_in_degrees));
+    path_position.point.SetX(float_distance * cos(tangent_in_radians));
+    path_position.point.SetY(float_distance * sin(tangent_in_radians));
   } else {
     float zoom = EffectiveZoom();
     const StylePath& motion_path = To<StylePath>(*path);
