@@ -398,6 +398,45 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
 }
 
+TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& tabs = profile_tabs->windows[0]->tabs;
+            ASSERT_EQ(1u, tabs.size());
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(1u, recently_closed_tabs.size());
+            ExpectRecentlyClosedTab(recently_closed_tabs[0].get(), kTabUrl2,
+                                    kTabName2);
+            tab_id = recently_closed_tabs[0]->tab_id;
+          });
+  handler()->GetProfileData(std::move(callback1));
+  handler()->OpenRecentlyClosedTab(tab_id);
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& tabs = profile_tabs->windows[0]->tabs;
+            ASSERT_EQ(2u, tabs.size());
+            ExpectNewTab(tabs[0].get(), kTabUrl1, kTabName1, 0);
+            ExpectNewTab(tabs[1].get(), kTabUrl2, kTabName2, 1);
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(0u, recently_closed_tabs.size());
+          });
+  handler()->GetProfileData(std::move(callback2));
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
 // TODO(crbug.com/1128855): Fix the test for Lacros build.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ShowFeedbackPage DISABLED_ShowFeedbackPage

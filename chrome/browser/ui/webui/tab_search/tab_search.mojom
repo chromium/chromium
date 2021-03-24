@@ -62,6 +62,9 @@ struct Tab {
 
 // Information about a recently closed tab.
 struct RecentlyClosedTab {
+  // The unique identifier of the tab.
+  int32 tab_id;
+
   // The title of the tab.
   string title;
 
@@ -117,6 +120,9 @@ interface PageHandler {
 
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
+
+  // Open a recently closed tab.
+  OpenRecentlyClosedTab(int32 tab_id);
 
   // Notify the backend that the UI is ready to be shown.
   ShowUI();

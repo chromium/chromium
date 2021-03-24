@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -172,6 +173,21 @@ void TabSearchPageHandler::SwitchToTab(
   details.browser->window()->Activate();
 }
 
+void TabSearchPageHandler::OpenRecentlyClosedTab(int32_t tab_id) {
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+  if (!tab_restore_service)
+    return;
+  Browser* active_browser = chrome::FindLastActive();
+  if (!active_browser)
+    return;
+  tab_restore_service->RestoreEntryById(
+      BrowserLiveTabContext::FindContextForWebContents(
+          active_browser->tab_strip_model()->GetActiveWebContents()),
+      SessionID::FromSerializedValue(tab_id),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
 void TabSearchPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder)
@@ -282,6 +298,7 @@ TabSearchPageHandler::GetRecentlyClosedTab(
   DCHECK(tab->navigations.size() > 0);
   sessions::SerializedNavigationEntry& entry =
       tab->navigations[tab->current_navigation_index];
+  recently_closed_tab->tab_id = tab->id.id();
   recently_closed_tab->title = base::UTF16ToUTF8(entry.title());
   recently_closed_tab->url = entry.original_request_url().spec();
   const base::Time last_active_time_ticks = entry.timestamp();
