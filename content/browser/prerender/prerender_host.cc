@@ -100,38 +100,9 @@ class PrerenderHost::MPArchPageHolder
         /*is_main_frame=*/true);
   }
 
-  // TODO(https://crbug.com/1176148): Mostly copied from ~WebContentsImpl. Move
-  // to ~FrameTree or some common place.
   ~MPArchPageHolder() override {
-    if (!frame_tree_)
-      return;
-    for (FrameTreeNode* node : frame_tree_->Nodes()) {
-      node->render_manager()->ClearRFHsPendingShutdown();
-      // TODO(https://crbug.com/1164280): Ban WebUI instance in Prerender pages.
-      node->render_manager()->ClearWebUIInstances();
-    }
-
-    GetMainFrame()->ResetChildren();
-    RenderFrameHostManager* root = frame_tree_->root()->render_manager();
-
-    root->ResetProxyHosts();
-
-    GetNavigationController().GetBackForwardCache().Shutdown();
-
-    root->current_frame_host()->RenderFrameDeleted();
-    root->current_frame_host()->ResetNavigationRequests();
-
-    frame_tree_->root()->ResetNavigationRequest(true);
-    if (root->speculative_frame_host()) {
-      root->speculative_frame_host()->DeleteRenderFrame(
-          mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
-      root->speculative_frame_host()->RenderFrameDeleted();
-      root->speculative_frame_host()->ResetNavigationRequests();
-    }
-
-    web_contents_.OnFrameTreeNodeDestroyed(frame_tree_->root());
-    web_contents_.RenderViewDeleted(
-        root->current_frame_host()->render_view_host());
+    if (frame_tree_)
+      frame_tree_->Shutdown();
   }
 
   // FrameTree::Delegate
@@ -238,6 +209,7 @@ class PrerenderHost::MPArchPageHolder
       }
     }
 
+    frame_tree_->Shutdown();
     frame_tree_.reset();
 
     return ActivateResult(FinalStatus::kActivated, std::move(page));

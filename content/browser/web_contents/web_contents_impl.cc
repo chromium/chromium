@@ -923,13 +923,6 @@ WebContentsImpl::~WebContentsImpl() {
     mouse_lock_widget_->RejectMouseLockOrUnlockIfNecessary(
         blink::mojom::PointerLockResult::kElementDestroyed);
 
-  for (FrameTreeNode* node : frame_tree_.Nodes()) {
-    // Delete all RFHs pending shutdown, which will lead the corresponding RVHs
-    // to be shutdown and be deleted as well.
-    node->render_manager()->ClearRFHsPendingShutdown();
-    node->render_manager()->ClearWebUIInstances();
-  }
-
   for (RenderWidgetHostImpl* widget : created_widgets_)
     widget->DetachDelegate();
   created_widgets_.clear();
@@ -942,30 +935,7 @@ WebContentsImpl::~WebContentsImpl() {
   color_chooser_.reset();
   find_request_manager_.reset();
 
-  // Destroy all subframes now. This notifies observers.
-  GetMainFrame()->ResetChildren();
-  GetRenderManager()->ResetProxyHosts();
-
-  // Manually call the observer methods for the root frame tree node. It is
-  // necessary to manually delete all objects tracking navigations
-  // (NavigationHandle, NavigationRequest) for observers to be properly
-  // notified of these navigations stopping before the WebContents is
-  // destroyed.
-  RenderFrameHostManager* root = GetRenderManager();
-
-  GetController().GetBackForwardCache().Shutdown();
-
-  root->current_frame_host()->RenderFrameDeleted();
-  root->current_frame_host()->ResetNavigationRequests();
-
-  // Do not update state as the WebContents is being destroyed.
-  frame_tree_.root()->ResetNavigationRequest(true);
-  if (root->speculative_frame_host()) {
-    root->speculative_frame_host()->DeleteRenderFrame(
-        mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
-    root->speculative_frame_host()->RenderFrameDeleted();
-    root->speculative_frame_host()->ResetNavigationRequests();
-  }
+  frame_tree_.Shutdown();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since
@@ -983,13 +953,6 @@ WebContentsImpl::~WebContentsImpl() {
       GetOuterWebContents()->OnAudioStateChanged();
   }
 
-  // Note that root->current_frame_host() can't be null at this point, since
-  // the root RenderFrameHostManager's destructor (which clears it) hasn't run
-  // yet.
-  observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
-                             root->current_frame_host());
-  observers_.NotifyObservers(&WebContentsObserver::RenderViewDeleted,
-                             root->current_frame_host()->render_view_host());
 #if defined(OS_ANDROID)
   // For simplicity, destroy the Java WebContents before we notify of the
   // destruction of the WebContents.

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"
@@ -128,6 +129,9 @@ FrameTree::FrameTree(
       load_progress_(0.0) {}
 
 FrameTree::~FrameTree() {
+#if DCHECK_IS_ON()
+  DCHECK(was_shut_down_);
+#endif
   delete root_;
   root_ = nullptr;
 }
@@ -639,6 +643,58 @@ bool FrameTree::HasNavigation() {
       return true;
   }
   return false;
+}
+
+void FrameTree::Shutdown() {
+#if DCHECK_IS_ON()
+  DCHECK(!was_shut_down_);
+  was_shut_down_ = true;
+#endif
+
+  RenderFrameHostManager* root_manager = root_->render_manager();
+
+  // If the page has been moved out due to MPArch activation do nothing.
+  // TODO(https://crbug.com/1176148): It might make sense to do some of the
+  // things here like delete RFHs pending shutdown.
+  if (!root_manager->current_frame_host())
+    return;
+
+  for (FrameTreeNode* node : Nodes()) {
+    // Delete all RFHs pending shutdown, which will lead the corresponding RVHs
+    // to be shutdown and be deleted as well.
+    node->render_manager()->ClearRFHsPendingShutdown();
+    // TODO(https://crbug.com/1164280): Ban WebUI instance in Prerender pages.
+    node->render_manager()->ClearWebUIInstances();
+  }
+
+  // Destroy all subframes now. This notifies observers.
+  root_manager->current_frame_host()->ResetChildren();
+  root_manager->ResetProxyHosts();
+
+  controller().GetBackForwardCache().Shutdown();
+
+  // Manually call the observer methods for the root FrameTreeNode. It is
+  // necessary to manually delete all objects tracking navigations
+  // (NavigationHandle, NavigationRequest) for observers to be properly
+  // notified of these navigations stopping before the WebContents is
+  // destroyed.
+
+  root_manager->current_frame_host()->RenderFrameDeleted();
+  root_manager->current_frame_host()->ResetNavigationRequests();
+
+  // Do not update state as the FrameTree::Delegate (possibly a WebContents) is
+  // being destroyed.
+  root_->ResetNavigationRequest(/*keep_state=*/true);
+  if (root_manager->speculative_frame_host()) {
+    root_manager->speculative_frame_host()->DeleteRenderFrame(
+        mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown);
+    root_manager->speculative_frame_host()->RenderFrameDeleted();
+    root_manager->speculative_frame_host()->ResetNavigationRequests();
+  }
+
+  manager_delegate_->OnFrameTreeNodeDestroyed(root_);
+  render_view_delegate_->RenderViewDeleted(
+      root_manager->current_frame_host()->render_view_host());
 }
 
 }  // namespace content

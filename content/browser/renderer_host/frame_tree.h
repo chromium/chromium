@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -376,6 +377,11 @@ class CONTENT_EXPORT FrameTree {
   // has an associated NavigationRequest.
   bool HasNavigation();
 
+  // Prepares this frame tree for destruction, cleaning up the internal state
+  // and firing the appropriate events like FrameDeleted.
+  // Must be called before FrameTree is destroyed.
+  void Shutdown();
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -436,6 +442,11 @@ class CONTENT_EXPORT FrameTree {
   // TODO(https://crbug.com/1174926): Make FrameTree::Type const once
   // WebContents-swap-based activation logic is removed.
   Type type_ = Type::kPrimary;
+
+#if DCHECK_IS_ON()
+  // Whether Shutdown() was called.
+  bool was_shut_down_ = false;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(FrameTree);
 };
