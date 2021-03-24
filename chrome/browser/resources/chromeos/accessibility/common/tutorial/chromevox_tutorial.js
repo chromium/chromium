@@ -293,7 +293,81 @@ Polymer({
           content: ['tutorial_learn_more'],
           medium: InteractionMedium.KEYBOARD,
           curriculums: [Curriculum.RESOURCES],
-        }
+        },
+
+        {
+          title: 'tutorial_touch_orientation_intro_title',
+          content: ['tutorial_touch_orientation_intro_text'],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_activate_title',
+          content: ['tutorial_touch_orientation_activate_text'],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_next_previous_item_title',
+          content: [
+            'tutorial_touch_orientation_next_item_text',
+            'tutorial_touch_orientation_previous_item_text',
+            'tutorial_touch_orientation_next_previous_continue_text'
+          ],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_touch_explore_title',
+          content: [
+            'tutorial_touch_orientation_touch_explore_text',
+            'tutorial_touch_orientation_touch_explore_more_text',
+            'tutorial_touch_orientation_touch_explore_efficiency_text',
+            'tutorial_touch_orientation_touch_explore_continue_text',
+          ],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_stop_speech_title',
+          content: [
+            'tutorial_touch_orientation_stop_spech_text',
+          ],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_menus_title',
+          content: ['tutorial_touch_orientation_menus_text'],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_next_previous_section_title',
+          content: [
+            'tutorial_touch_orientation_next_section_text',
+            'tutorial_touch_orientation_previous_section_text',
+          ],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
+
+        {
+          title: 'tutorial_touch_orientation_complete_title',
+          content: [
+            'tutorial_touch_orientation_complete_text',
+            'tutorial_touch_orientation_complete_help_center_text',
+            'tutorial_touch_orientation_complete_more_tutorials_text'
+          ],
+          medium: InteractionMedium.TOUCH,
+          curriculums: [Curriculum.TOUCH_ORIENTATION]
+        },
       ]
     }
   },

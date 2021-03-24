@@ -18,6 +18,7 @@ export const Curriculum = {
   COMMAND_REFERENCES: 'command_references',
   SOUNDS_AND_SETTINGS: 'sounds_and_settings',
   RESOURCES: 'resources',
+  TOUCH_ORIENTATION: 'touch_orientation',
 };
 
 /**

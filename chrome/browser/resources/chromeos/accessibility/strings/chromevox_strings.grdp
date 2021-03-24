@@ -3237,4 +3237,76 @@
   <message desc="A spoken announcement given in the tutorial if the user becomes inactive." name="IDS_CHROMEVOX_TUTORIAL_HINT_EXIT" is_accessibility_with_no_ui="true">
     Hint: Press Escape if you would like to exit this tutorial.
   </message>
+  <message desc="Title for the intro lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_INTRO_TITLE">
+    ChromeVox touch tutorial
+  </message>
+  <message desc="Text content for the intro lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_INTRO_TEXT">
+    Welcome to the ChromeVox tutorial. To exit this tutorial at any time, swipe from right to left with two fingers. To turn ChromeVox on or off at any time, press and hold both Volume buttons for five seconds. When you’re ready, double-tap the screen with one finger to move to the next lesson.
+  </message>
+  <message desc="Title for the activate item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_ACTIVATE_TITLE">
+    Activate an item
+  </message>
+  <message desc="Text content for the activate item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_ACTIVATE_TEXT">
+    Let's start with a few gestures you'll use regularly. If you reach an item you want to activate, double-tap the screen with one finger. To continue, double-tap now.
+  </message>
+  <message desc="Title for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_ITEM_TITLE">
+    Move to the next or previous item
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_ITEM_TEXT">
+    Next, you’ll learn how to move around the screen. You can swipe one finger from left to right to move to the next item. Try it now to move to the next step.
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_PREVIOUS_ITEM_TEXT">
+    You can also swipe one finger from right to left to move to the previous item. Try it now.
+  </message>
+  <message desc="Text content for the next/previous item lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_CONTINUE_TEXT">
+    Once you’ve had some practice, find the Next lesson button. Then double-tap to continue. 
+  </message>
+  <message desc="Title for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TITLE">
+    Explore by touch
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_TEXT">
+    You can also move around by dragging one finger around the screen. This is called exploring by touch. Try dragging your finger around to read the rest of this lesson.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_MORE_TEXT">
+    Exploring by touch can help you quickly get a sense of what's on the screen.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_EFFICIENCY_TEXT">
+    It can also be more efficient than swiping left and right with one finger.
+  </message>
+  <message desc="Text content for the touch explore lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_TOUCH_EXPLORE_CONTINUE_TEXT">
+    To continue, explore by touch to find the Next lesson button. Then double-tap to continue.
+  </message>
+  <message desc="Title for the stop speech lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_STOP_SPEECH_TITLE">
+    Stop speech
+  </message>
+  <message desc="Text content for the stop speech lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_STOP_SPECH_TEXT">
+    Tapping the screen with two fingers can be used to stop any current speech. This is useful if you don’t want ChromeVox to read something. To continue, tap the screen with two fingers.
+  </message>
+  <message desc="Title for the menus lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_MENUS_TITLE">
+    Access menus
+  </message>
+  <message desc="Text content for the menus lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_MENUS_TEXT">
+    Tapping the screen with four fingers will open and close the ChromeVox menus. These menus contain helpful information about commands and shortcuts. Once the menus are open, you can swipe with one finger to navigate through items, and double-tap to activate items. To continue, tap the screen with four fingers.
+  </message>
+  <message desc="Title for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_PREVIOUS_SECTION_TITLE">
+    Move to the next or previous section
+  </message>
+  <message desc="Text content for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_NEXT_SECTION_TEXT">
+    You can also move between sections of the screen. For example, you can move between the launcher, the shelf, and your Chrome tabs. To move to the next section, swipe from left to right with four fingers. Try it now to continue.
+  </message>
+  <message desc="Text content for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_PREVIOUS_SECTION_TEXT">
+    Similarly, swiping with four fingers from right to left can be used to move to the previous major element. Try it now!
+  </message>
+  <message desc="Title for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_TITLE">
+    Touch tutorial complete
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_TEXT">
+    Well done! You’ve learned the basics of ChromeVox touch. You can go through the tutorial again or exit this tutorial using the buttons below.
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_HELP_CENTER_TEXT">
+    For a full list of gestures, visit the help center.
+  </message>
+  <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_MORE_TUTORIALS_TEXT">
+    You can always view tutorials by opening the menus with a four-finger tap. Then activate the tutorial under the “ChromeVox” section.
+  </message>
 </grit-part>
