@@ -11,8 +11,8 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/debug_commands.h"
-#include "ash/accessibility/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/model/assistant_ui_model.h"

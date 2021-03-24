@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/accessibility/accessibility_panel_layout_manager.h"
+#include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/display/extended_mouse_warp_controller.h"

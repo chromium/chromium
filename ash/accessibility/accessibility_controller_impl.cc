@@ -11,10 +11,10 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/accessibility/accessibility_highlight_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
-#include "ash/accessibility/accessibility_panel_layout_manager.h"
-#include "ash/accessibility/point_scan_controller.h"
+#include "ash/accessibility/switch_access/point_scan_controller.h"
+#include "ash/accessibility/ui/accessibility_highlight_controller.h"
+#include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/autoclick/autoclick_controller.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/audio/sounds.h"

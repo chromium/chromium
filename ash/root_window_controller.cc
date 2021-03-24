@@ -9,9 +9,9 @@
 #include <queue>
 #include <vector>
 
-#include "ash/accessibility/accessibility_panel_layout_manager.h"
-#include "ash/accessibility/touch_exploration_controller.h"
-#include "ash/accessibility/touch_exploration_manager.h"
+#include "ash/accessibility/chromevox/touch_exploration_controller.h"
+#include "ash/accessibility/chromevox/touch_exploration_manager.h"
+#include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/constants/ash_features.h"

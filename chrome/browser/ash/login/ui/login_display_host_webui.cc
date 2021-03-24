@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/accessibility/focus_ring_controller.h"
+#include "ash/accessibility/ui/focus_ring_controller.h"
 #include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"

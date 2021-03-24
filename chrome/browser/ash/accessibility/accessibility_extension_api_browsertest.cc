@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accessibility/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"

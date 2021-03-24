@@ -15,7 +15,7 @@
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/exit_warning_handler.h"
-#include "ash/accessibility/accessibility_confirmation_dialog.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "base/compiler_specific.h"

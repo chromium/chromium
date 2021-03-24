@@ -5,8 +5,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/accessibility/accessibility_focus_ring_controller_impl.h"
-#include "ash/accessibility/accessibility_focus_ring_layer.h"
+#include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
