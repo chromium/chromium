@@ -34,7 +34,6 @@ config("internal_config") {
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
   if (is_posix || is_fuchsia) {
-    cflags_c = [ "-std=c99" ]
     defines += [ "_XOPEN_SOURCE=700" ]
   }
 }
