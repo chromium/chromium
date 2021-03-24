@@ -154,6 +154,8 @@ void PwaBottomSheetController::OnAddToHomescreen(
 
   install_triggered_ = true;
   app_banner_manager->Install(*a2hs_params_, std::move(a2hs_event_callback_));
+  app_banner_manager->TrackInstallPath(/* bottom_sheet= */ true,
+                                       a2hs_params_->install_source);
 }
 
 void PwaBottomSheetController::ShowBottomSheetInstaller(

@@ -24,6 +24,8 @@ source_set("browser") {
     "installable/installable_params.h",
     "installable/installable_task_queue.cc",
     "installable/installable_task_queue.h",
+    "pwa_install_path_tracker.cc",
+    "pwa_install_path_tracker.h",
     "webapps_client.cc",
     "webapps_client.h",
   ]
@@ -116,6 +118,7 @@ source_set("unit_tests") {
     "banners/app_banner_settings_helper_unittest.cc",
     "installable/installable_manager_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
+    "pwa_install_path_tracker_unittest.cc",
   ]
   deps = [
     ":browser",

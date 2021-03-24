@@ -111,6 +111,11 @@ void AddToHomescreenMediator::AddToHomescreen(
   if (params_->app_type == AddToHomescreenParams::AppType::SHORTCUT) {
     params_->shortcut_info->user_title =
         base::android::ConvertJavaStringToUTF16(env, j_user_title);
+  } else if (params_->app_type == AddToHomescreenParams::AppType::WEBAPK) {
+    AppBannerManager* app_banner_manager =
+        AppBannerManager::FromWebContents(GetWebContents());
+    app_banner_manager->TrackInstallPath(/* bottom_sheet= */ false,
+                                         params_->install_source);
   }
 
   AddToHomescreenInstaller::Install(GetWebContents(), *params_,

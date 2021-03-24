@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -97,6 +98,8 @@ public class AddToHomescreenTest {
     private static final String MASKABLE_MANIFEST_TEST_PAGE_PATH =
             "/chrome/test/data/banners/manifest_test_page.html?manifest=manifest_empty_name_short_name_maskable.json";
     private static final String MANIFEST_TEST_PAGE_TITLE = "Web app banner test page";
+
+    private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
 
     private static class TestShortcutHelperDelegate extends ShortcutHelper.Delegate {
         public String mRequestedShortcutTitle;
@@ -216,6 +219,9 @@ public class AddToHomescreenTest {
                 SECOND_WEBAPP_HTML, newLaunchIntent.getStringExtra(ShortcutHelper.EXTRA_URL));
         Assert.assertEquals(WEBAPP_ACTION_NAME, newLaunchIntent.getAction());
         Assert.assertEquals(mActivity.getPackageName(), newLaunchIntent.getPackage());
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -238,6 +244,9 @@ public class AddToHomescreenTest {
         addShortcutToTab(mTab, "", true);
 
         Assert.assertTrue(mShortcutHelperDelegate.mRequestedShortcutAdaptable);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -254,6 +263,9 @@ public class AddToHomescreenTest {
         Assert.assertEquals(mActivity.getPackageName(), launchIntent.getPackage());
         Assert.assertEquals(Intent.ACTION_VIEW, launchIntent.getAction());
         Assert.assertEquals(NORMAL_HTML, launchIntent.getDataString());
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -264,6 +276,9 @@ public class AddToHomescreenTest {
         loadUrl(WEBAPP_HTML, WEBAPP_TITLE);
         addShortcutToTab(mTab, "", true);
         Assert.assertEquals(WEBAPP_TITLE, mShortcutHelperDelegate.mRequestedShortcutTitle);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -274,6 +289,9 @@ public class AddToHomescreenTest {
         loadUrl(WEBAPP_HTML, WEBAPP_TITLE);
         addShortcutToTab(mTab, EDITED_WEBAPP_TITLE, true);
         Assert.assertEquals(EDITED_WEBAPP_TITLE, mShortcutHelperDelegate.mRequestedShortcutTitle);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -283,6 +301,9 @@ public class AddToHomescreenTest {
         loadUrl(META_APP_NAME_HTML, META_APP_NAME_PAGE_TITLE);
         addShortcutToTab(mTab, "", true);
         Assert.assertEquals(META_APP_NAME_TITLE, mShortcutHelperDelegate.mRequestedShortcutTitle);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -293,6 +314,9 @@ public class AddToHomescreenTest {
     public void testAddWebappShortcutWithEmptyPage() {
         Tab spawnedPopup = spawnPopupInBackground("");
         addShortcutToTab(spawnedPopup, "", false);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -324,6 +348,10 @@ public class AddToHomescreenTest {
         Bitmap splashImage = BitmapHelper.decodeBitmapFromString(dataStorageFactory.mSplashImage);
         Assert.assertEquals(idealSize, splashImage.getWidth());
         Assert.assertEquals(idealSize, splashImage.getHeight());
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        INSTALL_PATH_HISTOGRAM_NAME, /* kAppMenuInstall= */ 2));
     }
 
     /**
@@ -342,6 +370,10 @@ public class AddToHomescreenTest {
         // in the page) once the appinstalled event has been fired twice: once to test
         // addEventListener('appinstalled'), once to test onappinstalled attribute.
         new TabTitleObserver(mTab, "Got appinstalled: listener, attr").waitForTitleUpdate(3);
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        INSTALL_PATH_HISTOGRAM_NAME, /* kAppMenuInstall= */ 2));
     }
 
     private void loadUrl(String url, String expectedPageTitle) throws Exception {

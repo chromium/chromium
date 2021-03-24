@@ -77,12 +77,14 @@ void ChromeAppBannerManagerAndroid::ResetCurrentPageData() {
 }
 
 void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
-  if (MaybeShowInProductHelp() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          feature_engagement::kIPHPwaInstallAvailableFeature,
-          kIphReplacesToolbar, false)) {
-    DVLOG(2) << "Install infobar overridden by IPH, as per experiment.";
-    return;
+  if (MaybeShowInProductHelp()) {
+    TrackIphWasShown();
+    if (base::GetFieldTrialParamByFeatureAsBool(
+            feature_engagement::kIPHPwaInstallAvailableFeature,
+            kIphReplacesToolbar, false)) {
+      DVLOG(2) << "Install infobar overridden by IPH, as per experiment.";
+      return;
+    }
   }
 
   AppBannerManagerAndroid::MaybeShowAmbientBadge();

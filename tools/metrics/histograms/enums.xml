@@ -64420,6 +64420,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Required but not shown - grace exceeded"/>
 </enum>
 
+<enum name="PwaInstallPath">
+  <summary>The path taken by the user to reach install point for PWAs.</summary>
+  <int value="0" label="Unknown metric (error case)"/>
+  <int value="1" label="Install via Install modal (Ambient Badge)"/>
+  <int value="2" label="Install via Install modal (App menu)"/>
+  <int value="3" label="Install via Install modal (API)"/>
+  <int value="4" label="Install via BottomSheet (shown ambiently)"/>
+  <int value="5" label="Install via BottomSheet (App menu)"/>
+  <int value="6" label="Install via BottomSheet (API)"/>
+  <int value="7"
+      label="IPH shown, then install via Install modal (shown ambiently)"/>
+  <int value="8" label="IPH shown, then install via Install modal (App menu)"/>
+  <int value="9" label="IPH shown, then install via Install modal (API)"/>
+  <int value="10"
+      label="IPH shown, then install via BottomSheet (shown ambiently)"/>
+  <int value="11" label="IPH shown, then install via BottomSheet (App menu)"/>
+  <int value="12" label="IPH shown, then install via BottomSheet (API)"/>
+</enum>
+
 <enum name="QueryTilesGroupPruneReason">
   <int value="0" label="Expired"/>
   <int value="1" label="InvalidLocale"/>

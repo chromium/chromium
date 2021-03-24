@@ -463,6 +463,7 @@ void AppBannerManager::ResetCurrentPageData() {
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
+  install_path_tracker_.Reset();
 }
 
 void AppBannerManager::Terminate() {
@@ -534,6 +535,15 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
 
   for (Observer& observer : observer_list_)
     observer.OnInstallableWebAppStatusUpdated();
+}
+
+void AppBannerManager::TrackInstallPath(bool bottom_sheet,
+                                        WebappInstallSource install_source) {
+  install_path_tracker_.TrackInstallPath(bottom_sheet, install_source);
+}
+
+void AppBannerManager::TrackIphWasShown() {
+  install_path_tracker_.TrackIphWasShown();
 }
 
 void AppBannerManager::Stop(InstallableStatusCode code) {

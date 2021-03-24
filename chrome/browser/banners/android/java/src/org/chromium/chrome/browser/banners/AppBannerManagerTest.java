@@ -158,6 +158,8 @@ public class AppBannerManagerTest {
 
     private static final String INSTALL_ACTION = "INSTALL_ACTION";
 
+    private static final String INSTALL_PATH_HISTOGRAM_NAME = "WebApk.Install.PathToInstall";
+
     private class MockAppDetailsDelegate extends AppDetailsDelegate {
         private Observer mObserver;
         private AppData mAppData;
@@ -470,6 +472,10 @@ public class AppBannerManagerTest {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateInfobar= */ 3));
         });
 
         // Make sure that the splash screen icon was downloaded.
@@ -511,6 +517,10 @@ public class AppBannerManagerTest {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             "Webapp.Install.InstallEvent", 5 /* API_CUSTOM_TAB */));
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiatedInfobar= */ 3));
         });
 
         // Make sure that the splash screen icon was downloaded.
@@ -541,6 +551,9 @@ public class AppBannerManagerTest {
         new TabTitleObserver(
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -558,6 +571,9 @@ public class AppBannerManagerTest {
         new TabTitleObserver(
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -579,6 +595,9 @@ public class AppBannerManagerTest {
         new TabTitleObserver(mCustomTabActivityTestRule.getActivity().getActivityTab(),
                 "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -597,6 +616,9 @@ public class AppBannerManagerTest {
         // Ensure userChoice is resolved.
         new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -616,6 +638,9 @@ public class AppBannerManagerTest {
         // Ensure userChoice is resolved.
         new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -626,6 +651,9 @@ public class AppBannerManagerTest {
                 WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -641,6 +669,9 @@ public class AppBannerManagerTest {
                 WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -651,6 +682,9 @@ public class AppBannerManagerTest {
                 WebappTestPage.getServiceWorkerUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click"),
                 false);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -666,6 +700,9 @@ public class AppBannerManagerTest {
                 WebappTestPage.getServiceWorkerUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click"),
                 false);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -706,6 +743,9 @@ public class AppBannerManagerTest {
         AppBannerManager.setTimeDeltaForTesting(91);
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgeInfoBarAppears(mTabbedActivityTestRule);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -744,6 +784,9 @@ public class AppBannerManagerTest {
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM, "call_stashed_prompt_on_click"),
                 false);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -796,6 +839,9 @@ public class AppBannerManagerTest {
 
         waitUntilBottomSheetStatus(
                 mTabbedActivityTestRule, BottomSheetController.SheetState.HIDDEN);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -830,6 +876,10 @@ public class AppBannerManagerTest {
             Assert.assertEquals(1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             "Webapp.Install.InstallEvent", 4 /* API_BROWSER_TAB */));
+
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            INSTALL_PATH_HISTOGRAM_NAME, /* kApiInitiateBottomSheet= */ 6));
         });
     }
 
@@ -856,6 +906,9 @@ public class AppBannerManagerTest {
         new TabTitleObserver(
                 mTabbedActivityTestRule.getActivity().getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     @Test
@@ -888,6 +941,9 @@ public class AppBannerManagerTest {
         mOnEventCallback.waitForCallback(callCount, 1);
 
         assertThat(mTracker.getLastEvent(), is(EventConstants.PWA_INSTALL_MENU_SELECTED));
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
