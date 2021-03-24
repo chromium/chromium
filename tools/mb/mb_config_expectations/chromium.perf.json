@@ -57,6 +57,14 @@
       "use_goma": true
     }
   },
+  "chromecast-linux-builder-perf": {
+    "gn_args": {
+      "is_chromecast": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "chromeos-amd64-generic-lacros-builder-perf": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {

@@ -1063,6 +1063,39 @@
       }
     ]
   },
+  "chromecast-linux-builder-perf": {
+    "additional_compile_targets": [
+      "cast_shell"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chromecast",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chromecast",
+        "override_compile_targets": [
+          "resource_sizes_chromecast"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        }
+      }
+    ]
+  },
   "chromeos-amd64-generic-lacros-builder-perf": {
     "additional_compile_targets": [
       "chrome"

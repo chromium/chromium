@@ -1530,6 +1530,10 @@
     "label": "//chrome/android:resource_sizes_chrome_modern_public_minimal_apks",
     "type": "generated_script",
   },
+  "resource_sizes_chromecast": {
+    "label": "//chromecast:resource_sizes_chromecast",
+    "type": "generated_script",
+  },
   "resource_sizes_cronet_sample_apk": {
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
     "type": "generated_script",
