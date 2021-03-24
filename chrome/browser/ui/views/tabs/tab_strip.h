@@ -186,7 +186,9 @@ class TabStrip : public views::View,
   // changes. This should be called when the result of
   // |TabStripController::GetGroupTitle(group)| or
   // |TabStripController::GetGroupColorId(group)| changes.
-  void OnGroupVisualsChanged(const tab_groups::TabGroupId& group);
+  void OnGroupVisualsChanged(const tab_groups::TabGroupId& group,
+                             const tab_groups::TabGroupVisualData* old_visuals,
+                             const tab_groups::TabGroupVisualData* new_visuals);
 
   // Handles animations relating to toggling the collapsed state of a group.
   void ToggleTabGroup(const tab_groups::TabGroupId& group,
