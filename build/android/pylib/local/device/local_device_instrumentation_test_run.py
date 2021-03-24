@@ -107,6 +107,8 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     'Nexus 5X': [23],
+    # Android x86 emulator.
+    'Android SDK built for x86': [23],
 }
 
 _TEST_BATCH_MAX_GROUP_SIZE = 256
