@@ -29,6 +29,8 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
 
   source->SetDefaultResource(IDR_IOS_TRANSLATE_INTERNALS_HTML);
   source->UseStringsJs();
+  source->AddResourcePath("translate_internals.css",
+                          IDR_IOS_TRANSLATE_INTERNALS_CSS);
   source->AddResourcePath("translate_internals.js",
                           IDR_IOS_TRANSLATE_INTERNALS_JS);
 

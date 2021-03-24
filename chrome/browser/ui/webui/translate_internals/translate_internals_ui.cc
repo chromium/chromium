@@ -31,6 +31,8 @@ content::WebUIDataSource* CreateTranslateInternalsHTMLSource() {
 
   source->SetDefaultResource(IDR_TRANSLATE_INTERNALS_HTML);
   source->UseStringsJs();
+  source->AddResourcePath("translate_internals.css",
+                          IDR_TRANSLATE_INTERNALS_CSS);
   source->AddResourcePath("translate_internals.js", IDR_TRANSLATE_INTERNALS_JS);
 
   base::DictionaryValue langs;
