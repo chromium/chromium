@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
@@ -783,7 +784,16 @@ TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
-TEST_F(TriggerScriptCoordinatorTest, UrlChangeOutOfScheduleCheckPathMatch) {
+// Flaky on Android. crbug.com/1192012.
+#if defined(OS_ANDROID)
+#define MAYBE_UrlChangeOutOfScheduleCheckPathMatch \
+  DISABLED_UrlChangeOutOfScheduleCheckPathMatch
+#else
+#define MAYBE_UrlChangeOutOfScheduleCheckPathMatch \
+  UrlChangeOutOfScheduleCheckPathMatch
+#endif
+TEST_F(TriggerScriptCoordinatorTest,
+       MAYBE_UrlChangeOutOfScheduleCheckPathMatch) {
   GetTriggerScriptsResponseProto response;
   response.add_trigger_scripts()->mutable_trigger_condition()->set_path_pattern(
       ".*trigger_page.*");
@@ -976,7 +986,13 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   SimulateWebContentsInteractabilityChanged(/* interactable = */ true);
 }
 
-TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
+// Flaky on Android. crbug.com/1192012.
+#if defined(OS_ANDROID)
+#define MAYBE_OnboardingShownAndAccepted DISABLED_OnboardingShownAndAccepted
+#else
+#define MAYBE_OnboardingShownAndAccepted OnboardingShownAndAccepted
+#endif
+TEST_F(TriggerScriptCoordinatorTest, MAYBE_OnboardingShownAndAccepted) {
   GetTriggerScriptsResponseProto response;
   auto* script = response.add_trigger_scripts();
   script->set_trigger_ui_type(CART_RETURNING_USER);
@@ -1011,8 +1027,16 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
+// Flaky on Android. crbug.com/1192012.
+#if defined(OS_ANDROID)
+#define MAYBE_CancellingDialogOnboardingDoesNotStopTriggerScript \
+  DISABLED_CancellingDialogOnboardingDoesNotStopTriggerScript
+#else
+#define MAYBE_CancellingDialogOnboardingDoesNotStopTriggerScript \
+  CancellingDialogOnboardingDoesNotStopTriggerScript
+#endif
 TEST_F(TriggerScriptCoordinatorTest,
-       CancellingDialogOnboardingDoesNotStopTriggerScript) {
+       MAYBE_CancellingDialogOnboardingDoesNotStopTriggerScript) {
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ true);
 
   GetTriggerScriptsResponseProto response;
@@ -1067,8 +1091,16 @@ TEST_F(TriggerScriptCoordinatorTest,
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
+// Flaky on Android. crbug.com/1192012.
+#if defined(OS_ANDROID)
+#define MAYBE_RejectingBottomSheetOnboardingStopsTriggerScript \
+  DISABLED_RejectingBottomSheetOnboardingStopsTriggerScript
+#else
+#define MAYBE_RejectingBottomSheetOnboardingStopsTriggerScript \
+  RejectingBottomSheetOnboardingStopsTriggerScript
+#endif
 TEST_F(TriggerScriptCoordinatorTest,
-       RejectingBottomSheetOnboardingStopsTriggerScript) {
+       MAYBE_RejectingBottomSheetOnboardingStopsTriggerScript) {
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ false);
 
   GetTriggerScriptsResponseProto response;
