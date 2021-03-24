@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageDispatcherImpl.java",
     "java/src/org/chromium/components/messages/MessageQueueManager.java",
     "java/src/org/chromium/components/messages/MessageScopeChange.java",
+    "java/src/org/chromium/components/messages/MessageStateHandler.java",
     "java/src/org/chromium/components/messages/MessagesFactory.java",
     "java/src/org/chromium/components/messages/ScopeChangeController.java",
     "java/src/org/chromium/components/messages/ScopeKey.java",
