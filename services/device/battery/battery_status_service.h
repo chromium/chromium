@@ -22,7 +22,7 @@ class BatteryStatusService {
  public:
   typedef base::RepeatingCallback<void(const mojom::BatteryStatus&)>
       BatteryUpdateCallback;
-  typedef base::CallbackList<void(const mojom::BatteryStatus&)>
+  typedef base::RepeatingCallbackList<void(const mojom::BatteryStatus&)>
       BatteryUpdateCallbackList;
 
   // Returns the BatteryStatusService singleton.

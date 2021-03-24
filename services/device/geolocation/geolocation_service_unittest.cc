@@ -69,8 +69,8 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 #endif
 
     // Let the GeolocationImpl destruct earlier than GeolocationProviderImpl to
-    // make sure the base::CallbackList<> member in GeolocationProviderImpl is
-    // empty.
+    // make sure the base::RepeatingCallbackList<> member in
+    // GeolocationProviderImpl is empty.
     geolocation_.reset();
     GeolocationProviderImpl::GetInstance()
         ->clear_user_did_opt_into_location_services_for_testing();
