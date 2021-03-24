@@ -175,7 +175,7 @@ Polymer({
       case ContentSettingsTypes.WINDOW_PLACEMENT:
         return this.i18n('siteSettingsWindowPlacementMidSentence');
       case ContentSettingsTypes.FONT_ACCESS:
-        return this.i18n('fontsAccessMidSentence');
+        return this.i18n('siteSettingsFontAccessMidSentence');
       case ContentSettingsTypes.IDLE_DETECTION:
         return this.i18n('siteSettingsIdleDetectionMidSentence');
       default:
