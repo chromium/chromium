@@ -124,6 +124,8 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
     if (initial_params_.attribute_names[i] == "stream-url") {
       stream_url = initial_params_.attribute_values[i].Utf8();
+    } else if (initial_params_.attribute_names[i] == "full-frame") {
+      set_full_frame(true);
     } else if (initial_params_.attribute_names[i] == "background-color") {
       SkColor background_color;
       if (!base::StringToUint(initial_params_.attribute_values[i].Utf8(),

@@ -504,14 +504,6 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   CHECK(base::StartsWith(document_url_piece, kChromeExtension) ||
         is_print_preview_);
 
-  // Check if the plugin is full frame. This is passed in from JS.
-  for (uint32_t i = 0; i < argc; ++i) {
-    if (strcmp(argn[i], "full-frame") == 0) {
-      full_ = true;
-      break;
-    }
-  }
-
   // Allow the plugin to handle find requests.
   SetPluginToHandleFindRequests();
 
@@ -533,6 +525,8 @@ bool OutOfProcessInstance::Init(uint32_t argc,
       top_level_url = argv[i];
     } else if (strcmp(argn[i], "headers") == 0) {
       headers = argv[i];
+    } else if (strcmp(argn[i], "full-frame") == 0) {
+      set_full_frame(true);
     } else if (strcmp(argn[i], "background-color") == 0) {
       SkColor background_color;
       if (!base::StringToUint(argv[i], &background_color))
@@ -1002,7 +996,7 @@ void OutOfProcessInstance::FormDidOpen(int32_t result) {
 }
 
 std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
-  if (full_) {
+  if (full_frame()) {
     if (!did_call_start_loading_) {
       did_call_start_loading_ = true;
       pp::PDF::DidStartLoading(this);
@@ -1070,7 +1064,7 @@ void OutOfProcessInstance::DocumentLoadComplete() {
   if (accessibility_state() == AccessibilityState::kPending)
     LoadAccessibility();
 
-  if (!full_)
+  if (!full_frame())
     return;
 
   if (did_call_start_loading_) {
@@ -1291,7 +1285,7 @@ void OutOfProcessInstance::DocumentHasUnsupportedFeature(
   }
 
   // Since we use an info bar, only do this for full frame plugins..
-  if (!full_)
+  if (!full_frame())
     return;
 
   if (told_browser_about_unsupported_feature_)

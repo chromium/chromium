@@ -255,6 +255,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_url(const std::string& url) { url_ = url; }
 
+  bool full_frame() const { return full_frame_; }
+  void set_full_frame(bool full_frame) { full_frame_ = full_frame; }
+
   SkBitmap& mutable_image_data() { return image_data_; }
 
   const gfx::Rect& available_area() const { return available_area_; }
@@ -345,6 +348,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The URL of the PDF document.
   std::string url_;
+
+  // True if the plugin occupies the entire frame (not embedded).
+  bool full_frame_ = false;
 
   // Image data buffer for painting.
   SkBitmap image_data_;
