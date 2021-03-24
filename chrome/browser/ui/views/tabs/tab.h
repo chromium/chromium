@@ -185,8 +185,9 @@ class Tab : public gfx::AnimationDelegate,
   class TabCloseButtonObserver;
   friend class AlertIndicatorTest;
   friend class TabTest;
-  friend class TabStripTest;
-  FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibilityWhenStacked);
+  friend class TabStripTestBase;
+  FRIEND_TEST_ALL_PREFIXES(TabStripTestWithScrollingDisabled,
+                           TabCloseButtonVisibilityWhenStacked);
   FRIEND_TEST_ALL_PREFIXES(TabStripTest,
                            TabCloseButtonVisibilityWhenNotStacked);
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);

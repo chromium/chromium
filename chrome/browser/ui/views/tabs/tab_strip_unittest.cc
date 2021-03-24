@@ -8,11 +8,14 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -60,6 +63,17 @@ views::View* FindTabView(views::View* view) {
   return current;
 }
 
+struct TabStripUnittestParams {
+  const bool touch_ui;
+  const bool scrolling_enabled;
+};
+
+constexpr TabStripUnittestParams kTabStripUnittestParams[] = {
+    {false, true},
+    {false, false},
+    {true, false},
+    {true, true},
+};
 }  // namespace
 
 class TestTabStripObserver : public TabStripObserver {
@@ -94,16 +108,24 @@ class TestTabStripObserver : public TabStripObserver {
   int last_tab_moved_to_ = -1;
 };
 
-class TabStripTest : public ChromeViewsTestBase,
-                     public testing::WithParamInterface<bool> {
+// TabStripTestBase contains no test cases.
+class TabStripTestBase : public ChromeViewsTestBase {
  public:
-  TabStripTest()
-      : touch_ui_scoper_(GetParam()),
+  TabStripTestBase(bool touch_ui, bool scrolling_enabled)
+      : touch_ui_scoper_(touch_ui),
         animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
-  TabStripTest(const TabStripTest&) = delete;
-  TabStripTest& operator=(const TabStripTest&) = delete;
-  ~TabStripTest() override = default;
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
+    if (scrolling_enabled) {
+      scoped_feature_list_.InitWithFeatures({features::kScrollableTabStrip},
+                                            {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({},
+                                            {features::kScrollableTabStrip});
+    }
+  }
+  TabStripTestBase(const TabStripTestBase&) = delete;
+  TabStripTestBase& operator=(const TabStripTestBase&) = delete;
+  ~TabStripTestBase() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -268,6 +290,20 @@ class TabStripTest : public ChromeViewsTestBase,
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TabStripTest contains tests that will run with all permutations of touch ui
+// and scrolling enabled and disabled.
+class TabStripTest
+    : public TabStripTestBase,
+      public testing::WithParamInterface<TabStripUnittestParams> {
+ public:
+  TabStripTest()
+      : TabStripTestBase(GetParam().touch_ui, GetParam().scrolling_enabled) {}
+  TabStripTest(const TabStripTest&) = delete;
+  TabStripTest& operator=(const TabStripTest&) = delete;
+  ~TabStripTest() override = default;
 };
 
 TEST_P(TabStripTest, GetModelCount) {
@@ -415,241 +451,6 @@ TEST_P(TabStripTest, TabViewOrderWithGroups) {
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
   controller_->MoveTab(4, 3);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-}
-
-TEST_P(TabStripTest, VisibilityInOverflow) {
-  constexpr int kInitialWidth = 250;
-  SetMaxTabStripWidth(kInitialWidth);
-
-  // The first tab added to a reasonable-width strip should be visible.  If we
-  // add enough additional tabs, eventually one should be invisible due to
-  // overflow.
-  int invisible_tab_index = 0;
-  for (; invisible_tab_index < 100; ++invisible_tab_index) {
-    controller_->AddTab(invisible_tab_index, false);
-    CompleteAnimationAndLayout();
-    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
-      break;
-  }
-  EXPECT_GT(invisible_tab_index, 0);
-  EXPECT_LT(invisible_tab_index, 100);
-
-  // The tabs before the invisible tab should still be visible.
-  for (int i = 0; i < invisible_tab_index; ++i)
-    EXPECT_TRUE(tab_strip_->tab_at(i)->GetVisible());
-
-  // Enlarging the strip should result in the last tab becoming visible.
-  SetMaxTabStripWidth(kInitialWidth * 2);
-  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
-
-  // Shrinking it again should re-hide the last tab.
-  SetMaxTabStripWidth(kInitialWidth);
-  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
-
-  // Shrinking it still more should make more tabs invisible, though not all.
-  // All the invisible tabs should be at the end of the strip.
-  SetMaxTabStripWidth(kInitialWidth / 2);
-  int i = 0;
-  for (; i < invisible_tab_index; ++i) {
-    if (!tab_strip_->tab_at(i)->GetVisible())
-      break;
-  }
-  ASSERT_GT(i, 0);
-  EXPECT_LT(i, invisible_tab_index);
-  invisible_tab_index = i;
-  for (int i = invisible_tab_index + 1; i < tab_strip_->GetTabCount(); ++i)
-    EXPECT_FALSE(tab_strip_->tab_at(i)->GetVisible());
-
-  // When we're already in overflow, adding tabs at the beginning or end of
-  // the strip should not change how many tabs are visible.
-  controller_->AddTab(tab_strip_->GetTabCount(), false);
-  CompleteAnimationAndLayout();
-  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index - 1)->GetVisible());
-  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
-  controller_->AddTab(0, false);
-  CompleteAnimationAndLayout();
-  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index - 1)->GetVisible());
-  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
-
-  // If we remove enough tabs, all the tabs should be visible.
-  for (int i = tab_strip_->GetTabCount() - 1; i >= invisible_tab_index; --i)
-    controller_->RemoveTab(i);
-  CompleteAnimationAndLayout();
-  EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->GetVisible());
-}
-
-TEST_P(TabStripTest, GroupedTabSlotVisibility) {
-  constexpr int kInitialWidth = 250;
-  SetMaxTabStripWidth(kInitialWidth);
-
-  // The first tab added to a reasonable-width strip should be visible.  If we
-  // add enough additional tabs, eventually one should be invisible due to
-  // overflow.
-  int invisible_tab_index = 0;
-  for (; invisible_tab_index < 100; ++invisible_tab_index) {
-    controller_->AddTab(invisible_tab_index, false);
-    CompleteAnimationAndLayout();
-    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
-      break;
-  }
-  ASSERT_GT(invisible_tab_index, 0);
-  ASSERT_LT(invisible_tab_index, 100);
-
-  // The tabs before the invisible tab should still be visible.
-  for (int i = 0; i < invisible_tab_index; ++i)
-    ASSERT_TRUE(tab_strip_->tab_at(i)->GetVisible());
-
-  // The group header of an invisible tab should not be visible.
-  base::Optional<tab_groups::TabGroupId> group1 =
-      tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(invisible_tab_index, group1);
-  CompleteAnimationAndLayout();
-  ASSERT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
-  EXPECT_FALSE(tab_strip_->group_header(group1.value())->GetVisible());
-
-  // The group header of a visible tab should be visible when the group is
-  // expanded and collapsed.
-  base::Optional<tab_groups::TabGroupId> group2 =
-      tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(0, group2);
-  CompleteAnimationAndLayout();
-  ASSERT_FALSE(controller_->IsGroupCollapsed(group2.value()));
-  EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
-  controller_->ToggleTabGroupCollapsedState(
-      group2.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
-  ASSERT_TRUE(controller_->IsGroupCollapsed(group2.value()));
-  EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
-}
-
-// Creates a tab strip in stacked layout mode and verifies that as we move
-// across the strip at the top, middle, and bottom, events will target each tab
-// in order.
-TEST_P(TabStripTest, TabForEventWhenStacked) {
-  // This tabstrip width is chosen to make the tabstrip narrow enough to engage
-  // stacked tabs mode.
-  SetMaxTabStripWidth(197);
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  controller_->AddTab(2, false);
-  controller_->AddTab(3, false);
-  ASSERT_EQ(4, tab_strip_->GetTabCount());
-
-  // Switch to stacked layout mode and force a layout to ensure tabs stack.
-  tab_strip_->SetStackedLayout(true);
-  CompleteAnimationAndLayout();
-
-  gfx::Point p;
-  for (int y : {0, tab_strip_->height() / 2, tab_strip_->height() - 1}) {
-    p.set_y(y);
-    int previous_tab = -1;
-    for (int x = 0; x < tab_strip_->width(); ++x) {
-      p.set_x(x);
-      int tab = tab_strip_->GetModelIndexOf(FindTabForEvent(p));
-      if (tab == previous_tab)
-        continue;
-      if ((tab != -1) || (previous_tab != tab_strip_->GetTabCount() - 1))
-        EXPECT_EQ(previous_tab + 1, tab) << "p = " << p.ToString();
-      previous_tab = tab;
-    }
-  }
-}
-
-// Creates a tab strip in stacked layout mode and creates a group.
-TEST_P(TabStripTest, TabGroupCreatedWhenStacked) {
-  SetMaxTabStripWidth(250);
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  controller_->AddTab(2, false);
-  controller_->AddTab(3, false);
-  ASSERT_EQ(4, tab_strip_->GetTabCount());
-
-  // Switch to stacked layout mode and force a layout to ensure tabs stack.
-  tab_strip_->SetStackedLayout(true);
-  CompleteAnimationAndLayout();
-
-  // Create a tab group.
-  base::Optional<tab_groups::TabGroupId> group =
-      tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(0, group);
-  CompleteAnimationAndLayout();
-
-  // Expect the tabstrip to be taken out of stacked mode.
-  EXPECT_EQ(tab_strip_->stacked_layout(), false);
-}
-
-// Tests that the tab close buttons of non-active tabs are hidden when
-// the tabstrip is in stacked tab mode.
-TEST_P(TabStripTest, TabCloseButtonVisibilityWhenStacked) {
-  // Touch-optimized UI requires a larger width for tabs to show close buttons.
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  // The tabstrip width is chosen so that it is:
-  // a) narrow enough to enter stacked tabs mode, and
-  // b) wide enough for tabs to show close buttons when not stacked.
-  SetMaxTabStripWidth(touch_ui ? 389 : 293);
-
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, true);
-  controller_->AddTab(2, false);
-  ASSERT_EQ(3, tab_strip_->GetTabCount());
-
-  Tab* tab0 = tab_strip_->tab_at(0);
-  Tab* tab1 = tab_strip_->tab_at(1);
-  ASSERT_TRUE(tab1->IsActive());
-  Tab* tab2 = tab_strip_->tab_at(2);
-
-  // Ensure that all tab close buttons are initially visible.
-  EXPECT_TRUE(tab0->showing_close_button_);
-  EXPECT_TRUE(tab1->showing_close_button_);
-  EXPECT_TRUE(tab2->showing_close_button_);
-
-  // Enter stacked layout mode and verify this sets |touch_layout_|.
-  ASSERT_FALSE(touch_layout());
-  tab_strip_->SetStackedLayout(true);
-  ASSERT_TRUE(touch_layout());
-
-  // Only the close button of the active tab should be visible in stacked
-  // layout mode.
-  EXPECT_FALSE(tab0->showing_close_button_);
-  EXPECT_TRUE(tab1->showing_close_button_);
-  EXPECT_FALSE(tab2->showing_close_button_);
-
-  // An inactive tab added to the tabstrip should not show
-  // its tab close button.
-  controller_->AddTab(3, false);
-  Tab* tab3 = tab_strip_->tab_at(3);
-  EXPECT_FALSE(tab0->showing_close_button_);
-  EXPECT_TRUE(tab1->showing_close_button_);
-  EXPECT_FALSE(tab2->showing_close_button_);
-  EXPECT_FALSE(tab3->showing_close_button_);
-
-  // After switching tabs, the previously-active tab should have its
-  // tab close button hidden and the newly-active tab should show
-  // its tab close button.
-  tab_strip_->SelectTab(tab2, dummy_event_);
-  ASSERT_FALSE(tab1->IsActive());
-  ASSERT_TRUE(tab2->IsActive());
-  EXPECT_FALSE(tab0->showing_close_button_);
-  EXPECT_FALSE(tab1->showing_close_button_);
-  EXPECT_TRUE(tab2->showing_close_button_);
-  EXPECT_FALSE(tab3->showing_close_button_);
-
-  // After closing the active tab, the tab which becomes active should
-  // show its tab close button.
-  tab_strip_->CloseTab(tab1, CLOSE_TAB_FROM_TOUCH);
-  tab1 = nullptr;
-  ASSERT_TRUE(tab2->IsActive());
-  EXPECT_FALSE(tab0->showing_close_button_);
-  EXPECT_TRUE(tab2->showing_close_button_);
-  EXPECT_FALSE(tab3->showing_close_button_);
-
-  // All tab close buttons should be shown when disengaging stacked tab mode.
-  tab_strip_->SetStackedLayout(false);
-  ASSERT_FALSE(touch_layout());
-  EXPECT_TRUE(tab0->showing_close_button_);
-  EXPECT_TRUE(tab2->showing_close_button_);
-  EXPECT_TRUE(tab3->showing_close_button_);
 }
 
 // Tests that the tab close buttons of non-active tabs are hidden when
@@ -1310,10 +1111,11 @@ TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
   Tab* tab = tab_strip_->tab_at(0);
   const int initial_height = tab->height();
 
-  ui::TouchUiController::TouchUiScoperForTesting other_layout(!GetParam());
+  ui::TouchUiController::TouchUiScoperForTesting other_layout(
+      !GetParam().touch_ui);
 
   CompleteAnimationAndLayout();
-  if (GetParam()) {
+  if (GetParam().touch_ui) {
     // Touch -> normal.
     EXPECT_LT(tab->height(), initial_height);
   } else {
@@ -1479,4 +1281,261 @@ TEST_P(TabStripTest, DropIndexForDragLocationIsCorrect) {
                 group_header->bounds().right_center() + gfx::Vector2d(-1, 0))));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, TabStripTest, ::testing::Values(false, true));
+// TabStripTestWithScrollingDisabled contains tests that will run with scrolling
+// disabled.
+// TODO(http://crbug.com/951078) Remove these tests as well as tests in
+// TabStripTest with scrolling disabled once tab scrolling is fully launched.
+class TabStripTestWithScrollingDisabled
+    : public TabStripTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  TabStripTestWithScrollingDisabled() : TabStripTestBase(GetParam(), false) {}
+  TabStripTestWithScrollingDisabled(const TabStripTestWithScrollingDisabled&) =
+      delete;
+  TabStripTestWithScrollingDisabled& operator=(
+      const TabStripTestWithScrollingDisabled&) = delete;
+  ~TabStripTestWithScrollingDisabled() override = default;
+};
+
+TEST_P(TabStripTestWithScrollingDisabled, VisibilityInOverflow) {
+  constexpr int kInitialWidth = 250;
+  SetMaxTabStripWidth(kInitialWidth);
+
+  // The first tab added to a reasonable-width strip should be visible.  If we
+  // add enough additional tabs, eventually one should be invisible due to
+  // overflow.
+  int invisible_tab_index = 0;
+  for (; invisible_tab_index < 100; ++invisible_tab_index) {
+    controller_->AddTab(invisible_tab_index, false);
+    CompleteAnimationAndLayout();
+    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
+      break;
+  }
+  EXPECT_GT(invisible_tab_index, 0);
+  EXPECT_LT(invisible_tab_index, 100);
+
+  // The tabs before the invisible tab should still be visible.
+  for (int i = 0; i < invisible_tab_index; ++i)
+    EXPECT_TRUE(tab_strip_->tab_at(i)->GetVisible());
+
+  // Enlarging the strip should result in the last tab becoming visible.
+  SetMaxTabStripWidth(kInitialWidth * 2);
+  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
+
+  // Shrinking it again should re-hide the last tab.
+  SetMaxTabStripWidth(kInitialWidth);
+  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
+
+  // Shrinking it still more should make more tabs invisible, though not all.
+  // All the invisible tabs should be at the end of the strip.
+  SetMaxTabStripWidth(kInitialWidth / 2);
+  int i = 0;
+  for (; i < invisible_tab_index; ++i) {
+    if (!tab_strip_->tab_at(i)->GetVisible())
+      break;
+  }
+  ASSERT_GT(i, 0);
+  EXPECT_LT(i, invisible_tab_index);
+  invisible_tab_index = i;
+  for (int i = invisible_tab_index + 1; i < tab_strip_->GetTabCount(); ++i)
+    EXPECT_FALSE(tab_strip_->tab_at(i)->GetVisible());
+
+  // When we're already in overflow, adding tabs at the beginning or end of
+  // the strip should not change how many tabs are visible.
+  controller_->AddTab(tab_strip_->GetTabCount(), false);
+  CompleteAnimationAndLayout();
+  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index - 1)->GetVisible());
+  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
+  controller_->AddTab(0, false);
+  CompleteAnimationAndLayout();
+  EXPECT_TRUE(tab_strip_->tab_at(invisible_tab_index - 1)->GetVisible());
+  EXPECT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
+
+  // If we remove enough tabs, all the tabs should be visible.
+  for (int i = tab_strip_->GetTabCount() - 1; i >= invisible_tab_index; --i)
+    controller_->RemoveTab(i);
+  CompleteAnimationAndLayout();
+  EXPECT_TRUE(tab_strip_->tab_at(tab_strip_->GetTabCount() - 1)->GetVisible());
+}
+
+TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
+  constexpr int kInitialWidth = 250;
+  SetMaxTabStripWidth(kInitialWidth);
+
+  // The first tab added to a reasonable-width strip should be visible.  If we
+  // add enough additional tabs, eventually one should be invisible due to
+  // overflow.
+  int invisible_tab_index = 0;
+  for (; invisible_tab_index < 100; ++invisible_tab_index) {
+    controller_->AddTab(invisible_tab_index, false);
+    CompleteAnimationAndLayout();
+    if (!tab_strip_->tab_at(invisible_tab_index)->GetVisible())
+      break;
+  }
+  ASSERT_GT(invisible_tab_index, 0);
+  ASSERT_LT(invisible_tab_index, 100);
+
+  // The tabs before the invisible tab should still be visible.
+  for (int i = 0; i < invisible_tab_index; ++i)
+    ASSERT_TRUE(tab_strip_->tab_at(i)->GetVisible());
+
+  // The group header of an invisible tab should not be visible.
+  base::Optional<tab_groups::TabGroupId> group1 =
+      tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(invisible_tab_index, group1);
+  CompleteAnimationAndLayout();
+  ASSERT_FALSE(tab_strip_->tab_at(invisible_tab_index)->GetVisible());
+  EXPECT_FALSE(tab_strip_->group_header(group1.value())->GetVisible());
+
+  // The group header of a visible tab should be visible when the group is
+  // expanded and collapsed.
+  base::Optional<tab_groups::TabGroupId> group2 =
+      tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(0, group2);
+  CompleteAnimationAndLayout();
+  ASSERT_FALSE(controller_->IsGroupCollapsed(group2.value()));
+  EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
+  controller_->ToggleTabGroupCollapsedState(
+      group2.value(), ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
+  ASSERT_TRUE(controller_->IsGroupCollapsed(group2.value()));
+  EXPECT_TRUE(tab_strip_->group_header(group2.value())->GetVisible());
+}
+
+// Creates a tab strip in stacked layout mode and creates a group.
+TEST_P(TabStripTestWithScrollingDisabled, TabGroupCreatedWhenStacked) {
+  SetMaxTabStripWidth(250);
+
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
+  controller_->AddTab(2, false);
+  controller_->AddTab(3, false);
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
+
+  // Switch to stacked layout mode and force a layout to ensure tabs stack.
+  tab_strip_->SetStackedLayout(true);
+  CompleteAnimationAndLayout();
+
+  // Create a tab group.
+  base::Optional<tab_groups::TabGroupId> group =
+      tab_groups::TabGroupId::GenerateNew();
+  controller_->MoveTabIntoGroup(0, group);
+  CompleteAnimationAndLayout();
+
+  // Expect the tabstrip to be taken out of stacked mode.
+  EXPECT_EQ(tab_strip_->stacked_layout(), false);
+}
+
+// Tests that the tab close buttons of non-active tabs are hidden when
+// the tabstrip is in stacked tab mode.
+TEST_P(TabStripTestWithScrollingDisabled, TabCloseButtonVisibilityWhenStacked) {
+  // Touch-optimized UI requires a larger width for tabs to show close buttons.
+  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
+  // The tabstrip width is chosen so that it is:
+  // a) narrow enough to enter stacked tabs mode, and
+  // b) wide enough for tabs to show close buttons when not stacked.
+  SetMaxTabStripWidth(touch_ui ? 389 : 293);
+
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
+  controller_->AddTab(2, false);
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
+
+  Tab* tab0 = tab_strip_->tab_at(0);
+  Tab* tab1 = tab_strip_->tab_at(1);
+  ASSERT_TRUE(tab1->IsActive());
+  Tab* tab2 = tab_strip_->tab_at(2);
+
+  // Ensure that all tab close buttons are initially visible.
+  EXPECT_TRUE(tab0->showing_close_button_);
+  EXPECT_TRUE(tab1->showing_close_button_);
+  EXPECT_TRUE(tab2->showing_close_button_);
+
+  // Enter stacked layout mode and verify this sets |touch_layout_|.
+  ASSERT_FALSE(touch_layout());
+  tab_strip_->SetStackedLayout(true);
+  ASSERT_TRUE(touch_layout());
+
+  // Only the close button of the active tab should be visible in stacked
+  // layout mode.
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_TRUE(tab1->showing_close_button_);
+  EXPECT_FALSE(tab2->showing_close_button_);
+
+  // An inactive tab added to the tabstrip should not show
+  // its tab close button.
+  controller_->AddTab(3, false);
+  Tab* tab3 = tab_strip_->tab_at(3);
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_TRUE(tab1->showing_close_button_);
+  EXPECT_FALSE(tab2->showing_close_button_);
+  EXPECT_FALSE(tab3->showing_close_button_);
+
+  // After switching tabs, the previously-active tab should have its
+  // tab close button hidden and the newly-active tab should show
+  // its tab close button.
+  tab_strip_->SelectTab(tab2, dummy_event_);
+  ASSERT_FALSE(tab1->IsActive());
+  ASSERT_TRUE(tab2->IsActive());
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_FALSE(tab1->showing_close_button_);
+  EXPECT_TRUE(tab2->showing_close_button_);
+  EXPECT_FALSE(tab3->showing_close_button_);
+
+  // After closing the active tab, the tab which becomes active should
+  // show its tab close button.
+  tab_strip_->CloseTab(tab1, CLOSE_TAB_FROM_TOUCH);
+  tab1 = nullptr;
+  ASSERT_TRUE(tab2->IsActive());
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_TRUE(tab2->showing_close_button_);
+  EXPECT_FALSE(tab3->showing_close_button_);
+
+  // All tab close buttons should be shown when disengaging stacked tab mode.
+  tab_strip_->SetStackedLayout(false);
+  ASSERT_FALSE(touch_layout());
+  EXPECT_TRUE(tab0->showing_close_button_);
+  EXPECT_TRUE(tab2->showing_close_button_);
+  EXPECT_TRUE(tab3->showing_close_button_);
+}
+
+// Creates a tab strip in stacked layout mode and verifies that as we move
+// across the strip at the top, middle, and bottom, events will target each tab
+// in order.
+TEST_P(TabStripTestWithScrollingDisabled, TabForEventWhenStacked) {
+  // This tabstrip width is chosen to make the tabstrip narrow enough to engage
+  // stacked tabs mode.
+  SetMaxTabStripWidth(197);
+
+  controller_->AddTab(0, false);
+  controller_->AddTab(1, true);
+  controller_->AddTab(2, false);
+  controller_->AddTab(3, false);
+  ASSERT_EQ(4, tab_strip_->GetTabCount());
+
+  // Switch to stacked layout mode and force a layout to ensure tabs stack.
+  tab_strip_->SetStackedLayout(true);
+  CompleteAnimationAndLayout();
+
+  gfx::Point p;
+  for (int y : {0, tab_strip_->height() / 2, tab_strip_->height() - 1}) {
+    p.set_y(y);
+    int previous_tab = -1;
+    for (int x = 0; x < tab_strip_->width(); ++x) {
+      p.set_x(x);
+      int tab = tab_strip_->GetModelIndexOf(FindTabForEvent(p));
+      if (tab == previous_tab)
+        continue;
+      if ((tab != -1) || (previous_tab != tab_strip_->GetTabCount() - 1))
+        EXPECT_EQ(previous_tab + 1, tab) << "p = " << p.ToString();
+      previous_tab = tab;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabStripTest,
+                         ::testing::ValuesIn(kTabStripUnittestParams));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabStripTestWithScrollingDisabled,
+                         ::testing::Values(false, true));

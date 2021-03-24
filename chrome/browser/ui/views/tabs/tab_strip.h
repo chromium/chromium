@@ -364,7 +364,7 @@ class TabStrip : public views::View,
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
   friend class TabHoverCardBubbleViewBrowserTest;
   friend class TabHoverCardBubbleViewInteractiveUiTest;
-  friend class TabStripTest;
+  friend class TabStripTestBase;
   friend class TabStripRegionViewTestBase;
 
   class TabContextMenuController : public views::ContextMenuController {
