@@ -23,22 +23,6 @@
             android:orientation="vertical"
             app:layout_scrollFlags="scroll|snap">
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/scroll_component_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <include layout="@layout/fake_search_box_layout"/>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/trendy_terms_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="4dp"
-                android:visibility="gone">
-            </androidx.recyclerview.widget.RecyclerView>
-        </LinearLayout>
         <HorizontalScrollView android:id="@+id/mv_tiles_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,8 +76,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/tab_carousel_start_margin"
+            android:layout_marginBottom="16dp"
             android:visibility="gone"
             app:layout_scrollFlags="scroll"/>
+        <LinearLayout
+            android:id="@+id/scroll_component_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/fake_search_box_layout"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/trendy_terms_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone">
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- This incognito_description_container_layout_stub and the below tasks_surface_body

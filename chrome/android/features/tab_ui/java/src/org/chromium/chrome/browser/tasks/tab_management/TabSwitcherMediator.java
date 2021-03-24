@@ -809,8 +809,8 @@ class TabSwitcherMediator
      *  @return whether tabs should show in MRU order
      */
     static boolean isShowingTabsInMRUOrder() {
-        String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes");
+        // TODO(crbug.com/1076449): Support MRU mode in Instant start.
+        return true;
     }
 
     /**

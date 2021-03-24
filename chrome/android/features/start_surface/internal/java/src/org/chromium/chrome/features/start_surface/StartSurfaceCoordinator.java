@@ -153,10 +153,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         mParentTabSupplier = parentTabSupplier;
         mWindowAndroid = windowAndroid;
 
-        boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
-                || mSurfaceMode == SurfaceMode.OMNIBOX_ONLY
-                || mSurfaceMode == SurfaceMode.TRENDY_TERMS
-                || mSurfaceMode == SurfaceMode.NO_START_SURFACE;
+        boolean excludeMVTiles = true;
         boolean hasTrendyTerms = mSurfaceMode == SurfaceMode.TRENDY_TERMS;
         if (mSurfaceMode == SurfaceMode.NO_START_SURFACE) {
             // Create Tab switcher directly to save one layer in the view hierarchy.

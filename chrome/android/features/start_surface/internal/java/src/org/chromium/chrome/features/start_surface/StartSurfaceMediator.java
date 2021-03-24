@@ -30,6 +30,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.RESET_FEED_SURFACE_SCROLL_POSITION;
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
@@ -44,6 +45,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -715,6 +717,7 @@ class StartSurfaceMediator
     // Implements TabSwitcher.OverviewModeObserver.
     @Override
     public void startedShowing() {
+        ((Activity)mContext).findViewById(R.id.kirby_toolbar).setVisibility(View.INVISIBLE);
         for (StartSurface.OverviewModeObserver observer : mObservers) {
             observer.startedShowing();
         }
@@ -756,6 +759,9 @@ class StartSurfaceMediator
                 mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
             }
             setOverviewState(StartSurfaceState.NOT_SHOWN);
+            ((Activity)mContext).findViewById(R.id.kirby).setVisibility(View.VISIBLE);
+            ((Activity)mContext).findViewById(R.id.kirby_toolbar).setVisibility(View.VISIBLE);
+
             RecordUserAction.record("StartSurface.Hidden");
         }
         for (StartSurface.OverviewModeObserver observer : mObservers) {

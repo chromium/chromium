@@ -38,7 +38,7 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.START_SURFACE_ANDROID, "start_surface_variation", "");
     public static final BooleanCachedFieldTrialParameter START_SURFACE_EXCLUDE_MV_TILES =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "exclude_mv_tiles", false);
+                    ChromeFeatureList.START_SURFACE_ANDROID, "exclude_mv_tiles", true);
     public static final BooleanCachedFieldTrialParameter
             START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
                     new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
@@ -100,15 +100,14 @@ public class StartSurfaceConfiguration {
      * @return Whether the Start Surface is enabled.
      */
     public static boolean isStartSurfaceEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_ANDROID)
-                && !SysUtils.isLowEndDevice();
+        return true;
     }
 
     /**
      * @return Whether the Start Surface SinglePane is enabled.
      */
     public static boolean isStartSurfaceSinglePaneEnabled() {
-        return isStartSurfaceEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
+        return true;
     }
 
     /**
