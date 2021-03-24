@@ -206,6 +206,23 @@ export class StatsReport {
   }
 }
 
+// Shows a `DOMHighResTimeStamp` as a human readable date time.
+// The metric must be a time value in milliseconds with Unix epoch as time
+// origin.
+class DateCalculator {
+  constructor(metric) {
+    this.metric = metric;
+  }
+  getCalculatedMetricName() {
+    return '[' + this.metric + ']';
+  }
+  calculate(id, previousReport, currentReport) {
+    const timestamp = currentReport.get(id)[this.metric];
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  }
+}
+
 // Calculates the rate "delta accumulative / delta samples" and returns it. If
 // a rate cannot be calculated, such as the metric is missing in the current
 // or previous report, undefined is returned.
@@ -512,6 +529,16 @@ export class StatsRatesCalculator {
           jitterBufferDelay: new RateCalculator(
               'jitterBufferDelay', 'jitterBufferEmittedCount',
               CalculatorModifier.kMillisecondsFromSeconds),
+          lastPacketReceivedTimestamp: new DateCalculator(
+              'lastPacketReceivedTimestamp'),
+          estimatedPlayoutTimestamp: new DateCalculator(
+              'estimatedPlayoutTimestamp'),
+        },
+      },
+      {
+        type: 'remote-outbound-rtp',
+        metricCalculators: {
+          remoteTimestamp: new DateCalculator('remoteTimestamp'),
         },
       },
       {
