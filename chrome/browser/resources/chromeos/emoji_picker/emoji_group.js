@@ -21,11 +21,17 @@ class EmojiGroupComponent extends PolymerElement {
     return {
       /** @type {EmojiGroup} */
       data: {type: Object, readonly: true},
+      /** @type {Object<string,string>} */
+      preferred: {type: Object},
     };
   }
 
   constructor() {
     super();
+  }
+
+  getDisplayEmojiForEmoji(emoji) {
+    return this.preferred[emoji] || emoji;
   }
 }
 

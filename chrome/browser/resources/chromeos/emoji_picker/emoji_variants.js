@@ -66,6 +66,8 @@ export class EmojiVariants extends PolymerElement {
       baseEmoji: {type: Array},
       /** @private {boolean} */
       showSkinTones: {type: Boolean},
+      /** @private {boolean} */
+      showBaseEmoji: {type: Boolean}
     };
   }
 
@@ -81,17 +83,13 @@ export class EmojiVariants extends PolymerElement {
     // two people is 5x5 grid with 5 skin tones per person.
     const isTwoPeople = this.variants.length === 26 &&
         hasVariation(this.variants, SKIN_TONE_MEDIUM);
-
-    if (isFamily || isTwoPeople) {
-      // for these cases, the first variant is the generic one.
-      this.baseEmoji = this.variants[0].string;
-    } else {
-      this.baseEmoji = null;
-    }
+    this.showBaseEmoji = isFamily || isTwoPeople;
+    this.baseEmoji = this.variants[0].string;
     this.showSkinTones = isTwoPeople;
 
     // if we are showing a base emoji separately, omit it from the main grid.
-    const gridEmoji = this.baseEmoji ? this.variants.slice(1) : this.variants;
+    const gridEmoji =
+        this.showBaseEmoji ? this.variants.slice(1) : this.variants;
     const rowLengths = this.computeVariantRowLengths(gridEmoji);
     this.variantRows = partitionArray(gridEmoji, rowLengths);
 

@@ -67,7 +67,7 @@
 -->
 
 <div id="grid-base-emoji">
-  <template is="dom-if" if="[[baseEmoji]]">
+  <template is="dom-if" if="[[showBaseEmoji]]">
     <emoji-button emoji="[[baseEmoji]]"></emoji-button>
   </template>
 </div>
@@ -104,7 +104,8 @@
   <template is="dom-repeat" items="[[variantRows]]" as="row">
     <div class="variant-row">
       <template is="dom-repeat" items="[[row]]" as="emoji">
-        <emoji-button emoji="[[emoji.string]]" variant></emoji-button>
+        <emoji-button emoji="[[emoji.string]]" variant base="[[baseEmoji]]">
+        </emoji-button>
       </template>
     </div>
   </template>

@@ -112,6 +112,8 @@ export class EmojiPicker extends PolymerElement {
         type: Object,
         observer: 'onEmojiDataChanged',
       },
+      /** @private {Object<string,string>} */
+      preferenceMapping: {type: Object},
       /** @private {!EmojiGroup} */
       history: {type: Object},
       /** @private {!string} */
@@ -129,8 +131,10 @@ export class EmojiPicker extends PolymerElement {
     this.emojiData = [];
     this.history = {
       'group': 'Recently Used',
-      'emoji': makeRecentlyUsed(this.recentEmojiStore.data),
+      'emoji': makeRecentlyUsed(this.recentEmojiStore.data.history || []),
     };
+
+    this.preferenceMapping = this.recentEmojiStore.getPreferenceMapping();
 
     /** @private {?number} */
     this.scrollTimeout = null;
@@ -155,7 +159,8 @@ export class EmojiPicker extends PolymerElement {
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
         EMOJI_BUTTON_CLICK,
-        ev => this.insertEmoji(ev.detail.emoji, ev.detail.isVariant));
+        ev => this.insertEmoji(
+            ev.detail.emoji, ev.detail.isVariant, ev.detail.baseEmoji));
 
     // variant popup related handlers
     this.addEventListener(
@@ -195,11 +200,13 @@ export class EmojiPicker extends PolymerElement {
   /**
    * @param {!string} emoji
    */
-  insertEmoji(emoji, isVariant) {
+  insertEmoji(emoji, isVariant, baseEmoji) {
     this.$.message.textContent = emoji + ' inserted.';
     this.recentEmojiStore.bumpEmoji(emoji);
+    this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
     this.set(
-        ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
+        ['history', 'emoji'],
+        makeRecentlyUsed(this.recentEmojiStore.data.history));
 
     this.apiProxy_.insertEmoji(emoji, isVariant);
   }

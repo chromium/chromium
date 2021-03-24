@@ -169,12 +169,14 @@
     -->
     <div data-group="history">
       <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]"></emoji-group>
+        <emoji-group data="[[history]]" preferred="{}">
+        </emoji-group>
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
       <div data-group$="[[index]]">
-        <emoji-group data="[[item]]"></emoji-group>
+        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]">
+        </emoji-group>
       </div>
     </template>
   </div>
