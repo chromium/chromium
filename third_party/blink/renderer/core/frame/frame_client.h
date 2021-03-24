@@ -28,8 +28,6 @@ class CORE_EXPORT FrameClient : public GarbageCollected<FrameClient> {
   virtual void OnMainFrameIntersectionChanged(
       const IntRect& intersection_rect) {}
 
-  virtual base::UnguessableToken GetDevToolsFrameToken() const = 0;
-
   virtual ~FrameClient() = default;
 
   virtual void Trace(Visitor* visitor) const {}

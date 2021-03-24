@@ -67,7 +67,6 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyToReplaceFrame(
 
   std::unique_ptr<RenderFrameProxy> proxy(
       new RenderFrameProxy(agent_scheduling_group, routing_id));
-  proxy->devtools_frame_token_ = frame_to_replace->GetDevToolsFrameToken();
 
   // When a RenderFrame is replaced by a RenderProxy, the WebRemoteFrame should
   // always come from WebRemoteFrame::create and a call to WebFrame::swap must
@@ -102,7 +101,6 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
 
   std::unique_ptr<RenderFrameProxy> proxy(
       new RenderFrameProxy(agent_scheduling_group, routing_id));
-  proxy->devtools_frame_token_ = devtools_frame_token;
   RenderViewImpl* render_view = nullptr;
   blink::WebRemoteFrame* web_frame = nullptr;
 
@@ -115,7 +113,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     blink::WebView* web_view = render_view->GetWebView();
     web_frame = blink::WebRemoteFrame::CreateMainFrame(
         web_view, proxy.get(), proxy->blink_interface_registry_.get(),
-        proxy->GetRemoteAssociatedInterfaces(), frame_token, opener);
+        proxy->GetRemoteAssociatedInterfaces(), frame_token,
+        devtools_frame_token, opener);
     // Root frame proxy has no ancestors to point to their RenderWidget.
 
     // The WebRemoteFrame created here was already attached to the Page as its
@@ -131,7 +130,8 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
         replicated_state->frame_policy,
         replicated_state->frame_owner_element_type, proxy.get(),
         proxy->blink_interface_registry_.get(),
-        proxy->GetRemoteAssociatedInterfaces(), frame_token, opener);
+        proxy->GetRemoteAssociatedInterfaces(), frame_token,
+        devtools_frame_token, opener);
     render_view = parent->render_view();
   }
 
@@ -158,11 +158,11 @@ RenderFrameProxy* RenderFrameProxy::CreateProxyForPortal(
     const blink::WebElement& portal_element) {
   auto proxy = base::WrapUnique(
       new RenderFrameProxy(agent_scheduling_group, proxy_routing_id));
-  proxy->devtools_frame_token_ = devtools_frame_token;
   blink::WebRemoteFrame* web_frame = blink::WebRemoteFrame::CreateForPortal(
       blink::mojom::TreeScopeType::kDocument, proxy.get(),
       proxy->blink_interface_registry_.get(),
-      proxy->GetRemoteAssociatedInterfaces(), frame_token, portal_element);
+      proxy->GetRemoteAssociatedInterfaces(), frame_token, devtools_frame_token,
+      portal_element);
   proxy->Init(web_frame, parent->render_view());
   return proxy.release();
 }
@@ -368,10 +368,6 @@ void RenderFrameProxy::Navigate(
       &params->download_policy);
 
   GetFrameProxyHost()->OpenURL(std::move(params));
-}
-
-base::UnguessableToken RenderFrameProxy::GetDevToolsFrameToken() {
-  return devtools_frame_token_;
 }
 
 mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {

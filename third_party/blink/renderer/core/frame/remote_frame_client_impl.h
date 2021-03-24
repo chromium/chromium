@@ -20,7 +20,6 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   // FrameClient overrides:
   bool InShadowTree() const override;
   void Detached(FrameDetachType) override;
-  base::UnguessableToken GetDevToolsFrameToken() const override;
 
   // RemoteFrameClient overrides:
   void Navigate(

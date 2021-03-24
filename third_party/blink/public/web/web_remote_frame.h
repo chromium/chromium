@@ -50,6 +50,7 @@ class WebRemoteFrame : public WebFrame {
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener);
 
   // Also performs core initialization to associate the created remote frame
@@ -60,6 +61,7 @@ class WebRemoteFrame : public WebFrame {
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
       const WebElement& portal_element);
 
   // Specialized factory methods to allow the embedder to replicate the frame
@@ -82,15 +84,17 @@ class WebRemoteFrame : public WebFrame {
       WebFrame* opener,
       std::unique_ptr<WebPolicyContainer> policy_container) = 0;
 
-  virtual WebRemoteFrame* CreateRemoteChild(mojom::TreeScopeType,
-                                            const WebString& name,
-                                            const FramePolicy&,
-                                            mojom::FrameOwnerElementType,
-                                            WebRemoteFrameClient*,
-                                            InterfaceRegistry*,
-                                            AssociatedInterfaceProvider*,
-                                            const RemoteFrameToken& frame_token,
-                                            WebFrame* opener) = 0;
+  virtual WebRemoteFrame* CreateRemoteChild(
+      mojom::TreeScopeType,
+      const WebString& name,
+      const FramePolicy&,
+      mojom::FrameOwnerElementType,
+      WebRemoteFrameClient*,
+      InterfaceRegistry*,
+      AssociatedInterfaceProvider*,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      WebFrame* opener) = 0;
 
   // Set security origin replicated from another process.
   virtual void SetReplicatedOrigin(

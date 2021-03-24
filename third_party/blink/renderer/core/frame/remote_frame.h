@@ -62,7 +62,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
               WindowAgentFactory* inheriting_agent_factory,
               InterfaceRegistry*,
               AssociatedInterfaceProvider*,
-              WebFrameWidget* ancestor_widget);
+              WebFrameWidget* ancestor_widget,
+              const base::UnguessableToken& devtools_frame_token);
   ~RemoteFrame() override;
 
   // Frame overrides:

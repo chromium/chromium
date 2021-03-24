@@ -53,13 +53,6 @@ class WebRemoteFrameClient {
   // associated interfaces from the browser.
   virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
 
-  // Returns token to be used as a frame id in the devtools protocol.
-  // It is derived from the content's devtools_frame_token, is
-  // defined by the browser and passed into Blink upon frame creation.
-  virtual base::UnguessableToken GetDevToolsFrameToken() {
-    return base::UnguessableToken::Create();
-  }
-
  protected:
   virtual ~WebRemoteFrameClient() = default;
 };

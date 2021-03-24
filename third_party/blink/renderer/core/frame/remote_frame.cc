@@ -96,7 +96,8 @@ RemoteFrame::RemoteFrame(
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
-    WebFrameWidget* ancestor_widget)
+    WebFrameWidget* ancestor_widget,
+    const base::UnguessableToken& devtools_frame_token)
     : Frame(client,
             page,
             owner,
@@ -104,6 +105,7 @@ RemoteFrame::RemoteFrame(
             previous_sibling,
             insert_type,
             frame_token,
+            devtools_frame_token,
             MakeGarbageCollected<RemoteWindowProxyManager>(*this),
             inheriting_agent_factory),
       // TODO(samans): Investigate if it is safe to delay creation of this

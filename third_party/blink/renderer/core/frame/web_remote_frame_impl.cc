@@ -60,10 +60,11 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   return WebRemoteFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, associated_interface_provider,
-      frame_token, opener);
+      frame_token, devtools_frame_token, opener);
 }
 
 WebRemoteFrame* WebRemoteFrame::CreateForPortal(
@@ -72,10 +73,11 @@ WebRemoteFrame* WebRemoteFrame::CreateForPortal(
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     const WebElement& portal_element) {
-  return WebRemoteFrameImpl::CreateForPortal(scope, client, interface_registry,
-                                             associated_interface_provider,
-                                             frame_token, portal_element);
+  return WebRemoteFrameImpl::CreateForPortal(
+      scope, client, interface_registry, associated_interface_provider,
+      frame_token, devtools_frame_token, portal_element);
 }
 
 // static
@@ -85,6 +87,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   WebRemoteFrameImpl* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -101,7 +104,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       g_null_atom,
-      opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr);
+      opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
+      devtools_frame_token);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*frame)->SetOpenerDoNotNotify(opener_frame);
   return frame;
@@ -113,6 +117,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     const WebElement& portal_element) {
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -126,7 +131,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
   LocalFrame* host_frame = portal->GetDocument().GetFrame();
   frame->InitializeCoreFrame(*host_frame->GetPage(), portal, nullptr, nullptr,
                              FrameInsertType::kInsertInConstructor, g_null_atom,
-                             &host_frame->window_agent_factory());
+                             &host_frame->window_agent_factory(),
+                             devtools_frame_token);
 
   return frame;
 }
@@ -209,7 +215,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
     WebFrame* previous_sibling,
     FrameInsertType insert_type,
     const AtomicString& name,
-    WindowAgentFactory* window_agent_factory) {
+    WindowAgentFactory* window_agent_factory,
+    const base::UnguessableToken& devtools_frame_token) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
@@ -237,7 +244,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
       frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
       insert_type, GetRemoteFrameToken(), window_agent_factory,
-      interface_registry_, associated_interface_provider_, ancestor_widget));
+      interface_registry_, associated_interface_provider_, ancestor_widget,
+      devtools_frame_token));
 
   if (ancestor_widget)
     InitializeFrameVisualProperties(ancestor_widget, View());
@@ -255,6 +263,7 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     InterfaceRegistry* interface_registry,
     AssociatedInterfaceProvider* associated_interface_provider,
     const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener) {
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
@@ -270,7 +279,7 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
 
   child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this, LastChild(),
                              FrameInsertType::kInsertInConstructor, name,
-                             window_agent_factory);
+                             window_agent_factory, devtools_frame_token);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*child)->SetOpenerDoNotNotify(opener_frame);
   return child;

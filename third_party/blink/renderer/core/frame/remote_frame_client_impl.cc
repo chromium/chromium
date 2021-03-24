@@ -64,13 +64,6 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
   web_frame_->SetCoreFrame(nullptr);
 }
 
-base::UnguessableToken RemoteFrameClientImpl::GetDevToolsFrameToken() const {
-  if (web_frame_->Client()) {
-    return web_frame_->Client()->GetDevToolsFrameToken();
-  }
-  return base::UnguessableToken::Create();
-}
-
 void RemoteFrameClientImpl::Navigate(
     const ResourceRequest& request,
     bool should_replace_current_entry,

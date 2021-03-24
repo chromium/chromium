@@ -388,6 +388,7 @@ Frame::Frame(FrameClient* client,
              Frame* previous_sibling,
              FrameInsertType insert_type,
              const FrameToken& frame_token,
+             const base::UnguessableToken& devtools_frame_token,
              WindowProxyManager* window_proxy_manager,
              WindowAgentFactory* inheriting_agent_factory)
     : tree_node_(this),
@@ -402,7 +403,7 @@ Frame::Frame(FrameClient* client,
                                 ? inheriting_agent_factory
                                 : MakeGarbageCollected<WindowAgentFactory>()),
       is_loading_(false),
-      devtools_frame_token_(client->GetDevToolsFrameToken()),
+      devtools_frame_token_(devtools_frame_token),
       frame_token_(frame_token) {
   InstanceCounters::IncrementCounter(InstanceCounters::kFrameCounter);
   if (parent_ && insert_type == FrameInsertType::kInsertInConstructor) {
@@ -582,7 +583,7 @@ bool Frame::Swap(WebFrame* new_web_frame) {
     To<WebRemoteFrameImpl>(new_web_frame)
         ->InitializeCoreFrame(*page, owner, WebFrame::FromCoreFrame(parent_),
                               nullptr, FrameInsertType::kInsertLater, name,
-                              &window_agent_factory());
+                              &window_agent_factory(), devtools_frame_token_);
     // At this point, a `RemoteFrame` will have already updated
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` as appropriate, and
     // its `parent_` pointer is also populated.

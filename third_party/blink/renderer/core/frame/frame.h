@@ -383,6 +383,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
         Frame* previous_sibling,
         FrameInsertType insert_type,
         const FrameToken& frame_token,
+        const base::UnguessableToken& devtools_frame_token,
         WindowProxyManager*,
         WindowAgentFactory* inheriting_agent_factory);
 
@@ -478,6 +479,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // TODO(sashab): Investigate if this can be represented with m_lifecycle.
   bool is_loading_;
+  // Contains token to be used as a frame id in the devtools protocol.
   base::UnguessableToken devtools_frame_token_;
   base::Optional<std::string> trace_value_;
 

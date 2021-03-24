@@ -37,6 +37,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener);
   static WebRemoteFrameImpl* CreateForPortal(
       mojom::blink::TreeScopeType,
@@ -44,6 +45,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       InterfaceRegistry*,
       AssociatedInterfaceProvider*,
       const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
       const WebElement& portal_element);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
@@ -70,15 +72,17 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
-  WebRemoteFrame* CreateRemoteChild(mojom::blink::TreeScopeType,
-                                    const WebString& name,
-                                    const FramePolicy&,
-                                    mojom::FrameOwnerElementType,
-                                    WebRemoteFrameClient*,
-                                    InterfaceRegistry*,
-                                    AssociatedInterfaceProvider*,
-                                    const RemoteFrameToken& frame_token,
-                                    WebFrame* opener) override;
+  WebRemoteFrame* CreateRemoteChild(
+      mojom::blink::TreeScopeType,
+      const WebString& name,
+      const FramePolicy&,
+      mojom::FrameOwnerElementType,
+      WebRemoteFrameClient*,
+      InterfaceRegistry*,
+      AssociatedInterfaceProvider*,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      WebFrame* opener) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
@@ -113,7 +117,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
                            WebFrame* previous_sibling,
                            FrameInsertType,
                            const AtomicString& name,
-                           WindowAgentFactory*);
+                           WindowAgentFactory*,
+                           const base::UnguessableToken& devtools_frame_token);
   RemoteFrame* GetFrame() const { return frame_.Get(); }
 
   WebRemoteFrameClient* Client() const { return client_; }

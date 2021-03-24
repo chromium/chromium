@@ -153,7 +153,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       blink::CrossVariantMojoRemote<
           blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
           initiator_policy_container_keep_alive_handle) override;
-  base::UnguessableToken GetDevToolsFrameToken() override;
 
   void DidStartLoading();
 
@@ -187,11 +186,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       render_frame_proxy_receiver_{this};
 
   RenderViewImpl* render_view_ = nullptr;
-
-  // Contains token to be used as a frame id in the devtools protocol.
-  // It is derived from the content's devtools_frame_token, is
-  // defined by the browser and passed into Blink upon frame creation.
-  base::UnguessableToken devtools_frame_token_;
 
   service_manager::BinderRegistry binder_registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;
