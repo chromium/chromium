@@ -220,6 +220,9 @@ StoragePartition* BrowserContext::GetStoragePartition(
     BrowserContext* browser_context,
     SiteInstance* site_instance,
     bool can_create) {
+  if (site_instance)
+    DCHECK_EQ(browser_context, site_instance->GetBrowserContext());
+
   auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
   auto partition_config =
       site_instance_impl
