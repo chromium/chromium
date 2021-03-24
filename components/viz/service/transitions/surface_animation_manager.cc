@@ -91,8 +91,7 @@ SurfaceAnimationManager::SurfaceAnimationManager() = default;
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
 void SurfaceAnimationManager::SetDirectiveFinishedCallback(
-    SurfaceSavedFrame::TransitionDirectiveCompleteCallback
-        sequence_id_finished_callback) {
+    TransitionDirectiveCompleteCallback sequence_id_finished_callback) {
   sequence_id_finished_callback_ = std::move(sequence_id_finished_callback);
 }
 
@@ -155,9 +154,11 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
   if (!saved_frame || !saved_frame->IsValid())
     return false;
 
-  // Convert the texture result into a transferable resource.
+  // Take the save directive.
   save_directive_.emplace(saved_frame->directive());
-  animate_directive_sequence_id_.emplace(directive.sequence_id());
+  animate_directive_.emplace(directive);
+
+  // Convert the texture result into a transferable resource.
   saved_root_texture_.emplace(
       transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
 
@@ -192,10 +193,10 @@ void SurfaceAnimationManager::FinishAnimationIfNeeded() {
   DCHECK_EQ(state_, State::kAnimating);
   DCHECK(saved_root_texture_.has_value());
   DCHECK(save_directive_.has_value());
-  DCHECK(animate_directive_sequence_id_.has_value());
+  DCHECK(animate_directive_.has_value());
   if (!animator_.IsAnimating()) {
     state_ = State::kLastFrame;
-    sequence_id_finished_callback_.Run(*animate_directive_sequence_id_);
+    sequence_id_finished_callback_.Run(animate_directive_->sequence_id());
   }
 }
 
@@ -210,7 +211,7 @@ void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
   saved_root_texture_.reset();
 
   save_directive_.reset();
-  animate_directive_sequence_id_.reset();
+  animate_directive_.reset();
 }
 
 void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {

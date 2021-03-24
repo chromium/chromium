@@ -318,6 +318,25 @@ void Surface::RequestCopyOfOutputOnRootRenderPass(
       *active_frame_data_->frame.render_pass_list.back());
 }
 
+bool Surface::RequestCopyOfOutputOnActiveFrameRenderPassId(
+    std::unique_ptr<CopyOutputRequest> copy_request,
+    CompositorRenderPassId render_pass_id) {
+  TRACE_EVENT1("viz", "Surface::RequestCopyOfOurpurRenderPassId",
+               "has_active_frame_data", !!active_frame_data_);
+  if (!active_frame_data_)
+    return false;
+
+  // Find a render pass with a given id, and attach the copy output request on
+  // it.
+  for (auto& render_pass : active_frame_data_->frame.render_pass_list) {
+    if (render_pass->id == render_pass_id) {
+      RequestCopyOfOutputOnRenderPass(std::move(copy_request), *render_pass);
+      return true;
+    }
+  }
+  return false;
+}
+
 void Surface::OnActivationDependencyResolved(
     const SurfaceId& activation_dependency,
     SurfaceAllocationGroup* group) {

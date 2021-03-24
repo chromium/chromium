@@ -33,19 +33,22 @@ TransferableResource TransferableResourceTracker::ImportResource(
   // valid.
   CHECK(saved_frame->IsValid());
 
-  SurfaceSavedFrame::OutputCopyResult output_copy = *saved_frame->TakeResult();
+  // TODO(vmpstr): For now take only the root result. The remainder of the
+  // resources will be released here.
+  SurfaceSavedFrame::OutputCopyResult output_copy =
+      std::move(saved_frame->TakeResult()->root_result);
 
   TransferableResource resource;
   if (output_copy.is_software) {
     // TODO(vmpstr): This needs to be updated and tested in software. For
     // example, we don't currently have a release callback in software, although
     // tests do set one up.
-    resource = TransferableResource::MakeSoftware(output_copy.mailbox,
-                                                  output_copy.size, RGBA_8888);
+    resource = TransferableResource::MakeSoftware(
+        output_copy.mailbox, output_copy.rect.size(), RGBA_8888);
   } else {
     resource = TransferableResource::MakeGL(
         output_copy.mailbox, GL_LINEAR, GL_TEXTURE_2D, output_copy.sync_token,
-        output_copy.size,
+        output_copy.rect.size(),
         /*is_overlay_candidate=*/false);
   }
 

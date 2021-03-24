@@ -34,12 +34,14 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
     : public gfx::FloatAnimationCurve::Target,
       public gfx::TransformAnimationCurve::Target {
  public:
+  using TransitionDirectiveCompleteCallback =
+      base::RepeatingCallback<void(uint32_t)>;
+
   SurfaceAnimationManager();
   ~SurfaceAnimationManager() override;
 
   void SetDirectiveFinishedCallback(
-      SurfaceSavedFrame::TransitionDirectiveCompleteCallback
-          sequence_id_finished_callback);
+      TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
   // Process any new transitions on the compositor frame metadata. Note that
   // this keeps track of the latest processed sequence id and repeated calls
@@ -110,8 +112,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
 
   enum class State { kIdle, kAnimating, kLastFrame };
 
-  SurfaceSavedFrame::TransitionDirectiveCompleteCallback
-      sequence_id_finished_callback_;
+  TransitionDirectiveCompleteCallback sequence_id_finished_callback_;
 
   uint32_t last_processed_sequence_id_ = 0;
 
@@ -119,7 +120,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
 
   base::Optional<TransferableResource> saved_root_texture_;
   base::Optional<CompositorFrameTransitionDirective> save_directive_;
-  base::Optional<uint32_t> animate_directive_sequence_id_;
+  base::Optional<CompositorFrameTransitionDirective> animate_directive_;
 
   // TODO(vmpstr): if SurfaceAnimationManager ultimately manages multiple
   // animations, then the following should be encapsulated in a per-animation
