@@ -21,6 +21,7 @@
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/test_encryption_module.h"
+#include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
@@ -33,7 +34,6 @@
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 using ::testing::_;
 using ::testing::Between;
@@ -56,7 +56,7 @@ class SingleDecryptionContext {
  public:
   SingleDecryptionContext(
       const EncryptedRecord& encrypted_record,
-      scoped_refptr<Decryptor> decryptor,
+      scoped_refptr<test::Decryptor> decryptor,
       base::OnceCallback<void(StatusOr<base::StringPiece>)> response)
       : encrypted_record_(encrypted_record),
         decryptor_(decryptor),
@@ -122,7 +122,7 @@ class SingleDecryptionContext {
         shared_secret,
         base::BindOnce(
             [](SingleDecryptionContext* self,
-               StatusOr<Decryptor::Handle*> handle_result) {
+               StatusOr<test::Decryptor::Handle*> handle_result) {
               if (!handle_result.ok()) {
                 self->Respond(handle_result.status());
                 return;
@@ -136,11 +136,11 @@ class SingleDecryptionContext {
             base::Unretained(this)));
   }
 
-  void AddToRecord(Decryptor::Handle* handle) {
+  void AddToRecord(test::Decryptor::Handle* handle) {
     handle->AddToRecord(
         encrypted_record_.encrypted_wrapped_record(),
         base::BindOnce(
-            [](SingleDecryptionContext* self, Decryptor::Handle* handle,
+            [](SingleDecryptionContext* self, test::Decryptor::Handle* handle,
                Status status) {
               if (!status.ok()) {
                 self->Respond(status);
@@ -155,7 +155,7 @@ class SingleDecryptionContext {
             base::Unretained(this), base::Unretained(handle)));
   }
 
-  void CloseRecord(Decryptor::Handle* handle) {
+  void CloseRecord(test::Decryptor::Handle* handle) {
     handle->CloseRecord(base::BindOnce(
         [](SingleDecryptionContext* self,
            StatusOr<base::StringPiece> decryption_result) {
@@ -166,7 +166,7 @@ class SingleDecryptionContext {
 
  private:
   const EncryptedRecord encrypted_record_;
-  const scoped_refptr<Decryptor> decryptor_;
+  const scoped_refptr<test::Decryptor> decryptor_;
   base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
 };
 
@@ -184,7 +184,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   explicit MockUploadClient(
       LastRecordDigestMap* last_record_digest_map,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-      scoped_refptr<Decryptor> decryptor)
+      scoped_refptr<test::Decryptor> decryptor)
       : last_record_digest_map_(last_record_digest_map),
         sequenced_task_runner_(sequenced_task_runner),
         decryptor_(decryptor) {}
@@ -473,7 +473,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   LastRecordDigestMap* const last_record_digest_map_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
-  const scoped_refptr<Decryptor> decryptor_;
+  const scoped_refptr<test::Decryptor> decryptor_;
 
   Sequence test_encounter_sequence_;
   Sequence test_upload_sequence_;
@@ -491,9 +491,10 @@ class StorageTest
       scoped_feature_list_.InitFromCommandLine(
           {EncryptionModuleInterface::kEncryptedReporting}, {});
       // Generate signing key pair.
-      ED25519_keypair(signature_verification_public_key_, signing_private_key_);
+      test::GenerateSigningKeyPair(signing_private_key_,
+                                   signature_verification_public_key_);
       // Create decryption module.
-      auto decryptor_result = Decryptor::Create();
+      auto decryptor_result = test::Decryptor::Create();
       ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
       decryptor_ = std::move(decryptor_result.ValueOrDie());
       // First creation of Storage would need key delivered.
@@ -566,7 +567,7 @@ class StorageTest
       // Encryption enabled.
       options.set_signature_verification_public_key(std::string(
           reinterpret_cast<const char*>(signature_verification_public_key_),
-          ED25519_PUBLIC_KEY_LEN));
+          kKeySize));
     }
     return options;
   }
@@ -609,41 +610,42 @@ class StorageTest
   void GenerateAndDeliverKey(Storage* storage) {
     ASSERT_TRUE(decryptor_) << "Decryptor not created";
     // Generate new pair of private key and public value.
-    uint8_t private_key[X25519_PRIVATE_KEY_LEN];
+    uint8_t private_key[kKeySize];
     Encryptor::PublicKeyId public_key_id;
-    uint8_t public_value[X25519_PUBLIC_VALUE_LEN];
-    X25519_keypair(public_value, private_key);
+    uint8_t public_value[kKeySize];
+    test::GenerateEncryptionKeyPair(private_key, public_value);
     test::TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
     decryptor_->RecordKeyPair(
-        std::string(reinterpret_cast<const char*>(private_key),
-                    X25519_PRIVATE_KEY_LEN),
-        std::string(reinterpret_cast<const char*>(public_value),
-                    X25519_PUBLIC_VALUE_LEN),
+        std::string(reinterpret_cast<const char*>(private_key), kKeySize),
+        std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
     ASSERT_OK(prepare_key_result.status());
     public_key_id = prepare_key_result.ValueOrDie();
     // Deliver public key to storage.
     SignedEncryptionInfo signed_encryption_key;
-    signed_encryption_key.set_public_asymmetric_key(std::string(
-        reinterpret_cast<const char*>(public_value), X25519_PUBLIC_VALUE_LEN));
+    signed_encryption_key.set_public_asymmetric_key(
+        std::string(reinterpret_cast<const char*>(public_value), kKeySize));
     signed_encryption_key.set_public_key_id(public_key_id);
     // Sign public key.
-    uint8_t
-        value_to_sign[sizeof(Encryptor::PublicKeyId) + X25519_PUBLIC_VALUE_LEN];
+    uint8_t value_to_sign[sizeof(Encryptor::PublicKeyId) + kKeySize];
     memcpy(value_to_sign, &public_key_id, sizeof(Encryptor::PublicKeyId));
     memcpy(value_to_sign + sizeof(Encryptor::PublicKeyId), public_value,
-           X25519_PUBLIC_VALUE_LEN);
-    uint8_t signature[ED25519_SIGNATURE_LEN];
-    ASSERT_THAT(ED25519_sign(signature, value_to_sign, sizeof(value_to_sign),
-                             signing_private_key_),
-                Eq(1));
-    signed_encryption_key.set_signature(std::string(
-        reinterpret_cast<const char*>(signature), ED25519_SIGNATURE_LEN));
+           kKeySize);
+    uint8_t signature[kSignatureSize];
+    test::SignMessage(
+        signing_private_key_,
+        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
+                          sizeof(value_to_sign)),
+        signature);
+    signed_encryption_key.set_signature(
+        std::string(reinterpret_cast<const char*>(signature), kSignatureSize));
     // Double check signature.
-    ASSERT_THAT(ED25519_verify(value_to_sign, sizeof(value_to_sign), signature,
-                               signature_verification_public_key_),
-                Eq(1));
+    ASSERT_TRUE(VerifySignature(
+        signature_verification_public_key_,
+        base::StringPiece(reinterpret_cast<const char*>(value_to_sign),
+                          sizeof(value_to_sign)),
+        signature));
     storage->UpdateEncryptionKey(signed_encryption_key);
   }
 
@@ -657,11 +659,11 @@ class StorageTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  uint8_t signature_verification_public_key_[ED25519_PUBLIC_KEY_LEN];
-  uint8_t signing_private_key_[ED25519_PRIVATE_KEY_LEN];
+  uint8_t signature_verification_public_key_[kKeySize];
+  uint8_t signing_private_key_[kSignKeySize];
 
   base::ScopedTempDir location_;
-  scoped_refptr<Decryptor> decryptor_;
+  scoped_refptr<test::Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
   bool expect_to_need_key_{false};
 

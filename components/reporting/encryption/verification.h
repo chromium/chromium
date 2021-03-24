@@ -22,12 +22,11 @@ class SignatureVerifier {
   static base::StringPiece VerificationKey();
   static base::StringPiece VerificationKeyDev();
 
-  // Ed25519 |verification_public_key| must consist of ED25519_PUBLIC_KEY_LEN
-  // bytes.
+  // Ed25519 |verification_public_key| must consist of kKeySize bytes.
   explicit SignatureVerifier(base::StringPiece verification_public_key);
 
   // Actual verification - returns error status if provided |signature| does not
-  // match |message|. Signature must be ED25519_SIGNATURE_LEN bytes.
+  // match |message|. Signature must be kSignatureSize bytes.
   Status Verify(base::StringPiece message, base::StringPiece signature);
 
  private:

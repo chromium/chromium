@@ -16,6 +16,36 @@ static_library("encryption_module_interface") {
   ]
 }
 
+static_library("primitives") {
+  sources = [
+    "primitives.cc",
+    "primitives.h",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+    "//crypto:platform",
+    "//third_party/boringssl",
+  ]
+}
+
+static_library("testing_primitives") {
+  testonly = true
+  sources = [
+    "testing_primitives.cc",
+    "testing_primitives.h",
+  ]
+  deps = [
+    ":primitives",
+    "//base",
+    "//base/test:test_support",
+    "//crypto",
+    "//crypto:platform",
+    "//third_party/boringssl",
+  ]
+}
+
 static_library("encryption_module") {
   sources = [
     "encryption_module.cc",
@@ -36,28 +66,26 @@ static_library("encryption") {
     "encryption.h",
   ]
   deps = [
+    ":primitives",
     "//base",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
-    "//crypto",
-    "//crypto:platform",
-    "//third_party/boringssl",
   ]
 }
 
 static_library("decryption") {
+  testonly = true
   sources = [
     "decryption.cc",
     "decryption.h",
   ]
   deps = [
     ":encryption",
+    ":primitives",
+    ":testing_primitives",
     "//base",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
-    "//crypto",
-    "//crypto:platform",
-    "//third_party/boringssl",
   ]
 }
 
@@ -67,9 +95,9 @@ static_library("verification") {
     "verification.h",
   ]
   deps = [
+    ":primitives",
     "//base",
     "//components/reporting/util:status",
-    "//third_party/boringssl",
   ]
 }
 
@@ -84,6 +112,8 @@ static_library("test_support") {
     ":encryption",
     ":encryption_module",
     ":encryption_module_interface",
+    ":primitives",
+    ":testing_primitives",
     ":verification",
     "//base",
     "//base/test:test_support",
@@ -92,7 +122,6 @@ static_library("test_support") {
     "//components/reporting/util:status_macros",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/boringssl:boringssl",
   ]
 }
 
@@ -110,7 +139,9 @@ source_set("unit_tests") {
     ":encryption",
     ":encryption_module",
     ":encryption_module_interface",
+    ":primitives",
     ":test_support",
+    ":testing_primitives",
     ":verification",
     "//base",
     "//base/test:test_support",
@@ -120,6 +151,5 @@ source_set("unit_tests") {
     "//components/reporting/util:test_callbacks_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/boringssl:boringssl",
   ]
 }

@@ -5,7 +5,9 @@
 #include "components/reporting/encryption/decryption.h"
 
 #include <limits>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
@@ -18,15 +20,13 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "components/reporting/encryption/encryption.h"
+#include "components/reporting/encryption/primitives.h"
+#include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "crypto/aead.h"
-#include "crypto/openssl_util.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/hkdf.h"
 
 namespace reporting {
+namespace test {
 
 Decryptor::Handle::Handle(base::StringPiece shared_secret,
                           scoped_refptr<Decryptor> decryptor)
@@ -46,36 +46,20 @@ void Decryptor::Handle::CloseRecord(
   // Make sure the record self-destructs when returning from this method.
   const auto self_destruct = base::WrapUnique(this);
 
-  // Decrypt the data with symmetric key using AEAD interface.
-  crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-
   // Produce symmetric key from shared secret using HKDF.
   // Since the original keys were only used once, no salt and context is needed.
-  const auto out_symmetric_key = std::make_unique<uint8_t[]>(aead.KeyLength());
-  if (!HKDF(out_symmetric_key.get(), aead.KeyLength(), /*digest=*/EVP_sha256(),
-            reinterpret_cast<const uint8_t*>(shared_secret_.data()),
-            shared_secret_.size(),
-            /*salt=*/nullptr, /*salt_len=*/0,
-            /*info=*/nullptr, /*info_len=*/0)) {
+  uint8_t out_symmetric_key[kKeySize];
+  if (!ProduceSymmetricKey(
+          reinterpret_cast<const uint8_t*>(shared_secret_.data()),
+          out_symmetric_key)) {
     std::move(cb).Run(
         Status(error::INTERNAL, "Symmetric key extraction failed"));
     return;
   }
 
-  // Use the symmetric key for data decryption.
-  aead.Init(base::make_span(out_symmetric_key.get(), aead.KeyLength()));
-
-  // Decrypt collected record.
   std::string decrypted;
-  if (!aead.Open(
-          /*ciphertext=*/record_.substr(aead.NonceLength()),
-          /*nonce=*/record_.substr(0, aead.NonceLength()),
-          /*additional_data=*/std::string(),
-          /*plaintext=*/&decrypted)) {
-    std::move(cb).Run(Status(error::INTERNAL, "Failed to decrypt"));
-    return;
-  }
-  record_.clear();  // Free unused memory.
+  PerformSymmetricDecryption(out_symmetric_key, record_, &decrypted);
+  record_.clear();
 
   // Return decrypted record.
   std::move(cb).Run(decrypted);
@@ -90,31 +74,28 @@ StatusOr<std::string> Decryptor::DecryptSecret(
     base::StringPiece private_key,
     base::StringPiece peer_public_value) {
   // Verify the keys.
-  if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
-    return Status(
-        error::FAILED_PRECONDITION,
-        base::StrCat({"Private key size mismatch, expected=",
-                      base::NumberToString(X25519_PRIVATE_KEY_LEN),
-                      " actual=", base::NumberToString(private_key.size())}));
+  if (private_key.size() != kKeySize) {
+    return Status(error::FAILED_PRECONDITION,
+                  base::StrCat({"Private key size mismatch, expected=",
+                                base::NumberToString(kKeySize), " actual=",
+                                base::NumberToString(private_key.size())}));
   }
-  if (peer_public_value.size() != X25519_PUBLIC_VALUE_LEN) {
+  if (peer_public_value.size() != kKeySize) {
     return Status(
         error::FAILED_PRECONDITION,
         base::StrCat({"Public key size mismatch, expected=",
-                      base::NumberToString(X25519_PUBLIC_VALUE_LEN), " actual=",
+                      base::NumberToString(kKeySize), " actual=",
                       base::NumberToString(peer_public_value.size())}));
   }
 
   // Compute shared secret.
-  uint8_t out_shared_value[X25519_SHARED_KEY_LEN];
-  if (!X25519(out_shared_value,
-              reinterpret_cast<const uint8_t*>(private_key.data()),
-              reinterpret_cast<const uint8_t*>(peer_public_value.data()))) {
-    return Status(error::DATA_LOSS, "Curve25519 decryption failed");
-  }
+  uint8_t out_shared_value[kKeySize];
+  RestoreSharedSecret(
+      reinterpret_cast<const uint8_t*>(private_key.data()),
+      reinterpret_cast<const uint8_t*>(peer_public_value.data()),
+      out_shared_value);
 
-  return std::string(reinterpret_cast<const char*>(out_shared_value),
-                     X25519_SHARED_KEY_LEN);
+  return std::string(reinterpret_cast<const char*>(out_shared_value), kKeySize);
 }
 
 Decryptor::Decryptor()
@@ -138,20 +119,19 @@ void Decryptor::RecordKeyPair(
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
             StatusOr<Encryptor::PublicKeyId> result;
-            if (key_info.private_key.size() != X25519_PRIVATE_KEY_LEN) {
+            if (key_info.private_key.size() != kKeySize) {
               result = Status(
                   error::FAILED_PRECONDITION,
                   base::StrCat(
                       {"Private key size mismatch, expected=",
-                       base::NumberToString(X25519_PRIVATE_KEY_LEN), " actual=",
+                       base::NumberToString(kKeySize), " actual=",
                        base::NumberToString(key_info.private_key.size())}));
-            } else if (public_key.size() != X25519_PUBLIC_VALUE_LEN) {
+            } else if (public_key.size() != kKeySize) {
               result = Status(
                   error::FAILED_PRECONDITION,
-                  base::StrCat(
-                      {"Public key size mismatch, expected=",
-                       base::NumberToString(X25519_PUBLIC_VALUE_LEN),
-                       " actual=", base::NumberToString(public_key.size())}));
+                  base::StrCat({"Public key size mismatch, expected=",
+                                base::NumberToString(kKeySize), " actual=",
+                                base::NumberToString(public_key.size())}));
             } else {
               // Assign a random number to be public key id for testing purposes
               // only (in production it will be retrieved from the server as
@@ -196,7 +176,7 @@ void Decryptor::RetrieveMatchingPrivateKey(
             auto key_info_it = decryptor->keys_.find(public_key_id);
             if (key_info_it != decryptor->keys_.end()) {
               DCHECK_EQ(key_info_it->second.private_key.size(),
-                        static_cast<size_t>(X25519_PRIVATE_KEY_LEN));
+                        static_cast<size_t>(kKeySize));
             }
             // Schedule response on a generic thread pool.
             base::ThreadPool::PostTask(
@@ -216,9 +196,8 @@ void Decryptor::RetrieveMatchingPrivateKey(
 }
 
 StatusOr<scoped_refptr<Decryptor>> Decryptor::Create() {
-  // Make sure OpenSSL is initialized, in order to avoid data races later.
-  crypto::EnsureOpenSSLInit();
   return base::WrapRefCounted(new Decryptor());
 }
 
+}  // namespace test
 }  // namespace reporting

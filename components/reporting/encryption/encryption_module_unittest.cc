@@ -4,6 +4,11 @@
 
 #include "components/reporting/encryption/encryption_module.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
@@ -17,6 +22,8 @@
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
+#include "components/reporting/encryption/primitives.h"
+#include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -24,7 +31,9 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
+
+using ::testing::Eq;
+using ::testing::Ne;
 
 namespace reporting {
 namespace {
@@ -40,7 +49,7 @@ class EncryptionModuleTest : public ::testing::Test {
 
     encryption_module_ = EncryptionModule::Create();
 
-    auto decryptor_result = Decryptor::Create();
+    auto decryptor_result = test::Decryptor::Create();
     ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
     decryptor_ = std::move(decryptor_result.ValueOrDie());
   }
@@ -54,11 +63,12 @@ class EncryptionModuleTest : public ::testing::Test {
   StatusOr<std::string> DecryptSync(
       std::pair<std::string /*shared_secret*/, std::string /*encrypted_data*/>
           encrypted) {
-    test::TestEvent<StatusOr<Decryptor::Handle*>> open_decrypt;
+    test::TestEvent<StatusOr<test::Decryptor::Handle*>> open_decrypt;
     decryptor_->OpenRecord(encrypted.first, open_decrypt.cb());
     auto open_decrypt_result = open_decrypt.result();
     RETURN_IF_ERROR(open_decrypt_result.status());
-    Decryptor::Handle* const dec_handle = open_decrypt_result.ValueOrDie();
+    test::Decryptor::Handle* const dec_handle =
+        open_decrypt_result.ValueOrDie();
 
     test::TestEvent<Status> add_decrypt;
     dec_handle->AddToRecord(encrypted.second, add_decrypt.cb());
@@ -98,23 +108,20 @@ class EncryptionModuleTest : public ::testing::Test {
 
   Status AddNewKeyPair() {
     // Generate new pair of private key and public value.
-    uint8_t out_public_value[X25519_PUBLIC_VALUE_LEN];
-    uint8_t out_private_key[X25519_PRIVATE_KEY_LEN];
-    X25519_keypair(out_public_value, out_private_key);
+    uint8_t out_public_value[kKeySize];
+    uint8_t out_private_key[kKeySize];
+    test::GenerateEncryptionKeyPair(out_private_key, out_public_value);
 
     test::TestEvent<StatusOr<Encryptor::PublicKeyId>> record_keys;
     decryptor_->RecordKeyPair(
-        std::string(reinterpret_cast<const char*>(out_private_key),
-                    X25519_PRIVATE_KEY_LEN),
-        std::string(reinterpret_cast<const char*>(out_public_value),
-                    X25519_PUBLIC_VALUE_LEN),
+        std::string(reinterpret_cast<const char*>(out_private_key), kKeySize),
+        std::string(reinterpret_cast<const char*>(out_public_value), kKeySize),
         record_keys.cb());
     ASSIGN_OR_RETURN(Encryptor::PublicKeyId new_public_key_id,
                      record_keys.result());
     test::TestEvent<Status> set_public_key;
     encryption_module_->UpdateAsymmetricKey(
-        std::string(reinterpret_cast<const char*>(out_public_value),
-                    X25519_PUBLIC_VALUE_LEN),
+        std::string(reinterpret_cast<const char*>(out_public_value), kKeySize),
         new_public_key_id, set_public_key.cb());
     RETURN_IF_ERROR(set_public_key.result());
     return Status::StatusOK();
@@ -124,7 +131,7 @@ class EncryptionModuleTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   scoped_refptr<EncryptionModuleInterface> encryption_module_;
-  scoped_refptr<Decryptor> decryptor_;
+  scoped_refptr<test::Decryptor> decryptor_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -349,7 +356,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
    public:
     SingleDecryptionContext(
         const EncryptedRecord& encrypted_record,
-        scoped_refptr<Decryptor> decryptor,
+        scoped_refptr<test::Decryptor> decryptor,
         base::OnceCallback<void(StatusOr<base::StringPiece>)> response)
         : encrypted_record_(encrypted_record),
           decryptor_(decryptor),
@@ -416,7 +423,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
           shared_secret,
           base::BindOnce(
               [](SingleDecryptionContext* self,
-                 StatusOr<Decryptor::Handle*> handle_result) {
+                 StatusOr<test::Decryptor::Handle*> handle_result) {
                 if (!handle_result.ok()) {
                   self->Respond(handle_result.status());
                   return;
@@ -431,11 +438,11 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
               base::Unretained(this)));
     }
 
-    void AddToRecord(Decryptor::Handle* handle) {
+    void AddToRecord(test::Decryptor::Handle* handle) {
       handle->AddToRecord(
           encrypted_record_.encrypted_wrapped_record(),
           base::BindOnce(
-              [](SingleDecryptionContext* self, Decryptor::Handle* handle,
+              [](SingleDecryptionContext* self, test::Decryptor::Handle* handle,
                  Status status) {
                 if (!status.ok()) {
                   self->Respond(status);
@@ -450,7 +457,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
               base::Unretained(this), base::Unretained(handle)));
     }
 
-    void CloseRecord(Decryptor::Handle* handle) {
+    void CloseRecord(test::Decryptor::Handle* handle) {
       handle->CloseRecord(base::BindOnce(
           [](SingleDecryptionContext* self,
              StatusOr<base::StringPiece> decryption_result) {
@@ -461,7 +468,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
 
    private:
     const EncryptedRecord encrypted_record_;
-    const scoped_refptr<Decryptor> decryptor_;
+    const scoped_refptr<test::Decryptor> decryptor_;
     base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
   };
 
@@ -474,14 +481,13 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   std::vector<Encryptor::PublicKeyId> public_value_ids;
   for (size_t i = 0; i < 3; ++i) {
     // Generate new pair of private key and public value.
-    uint8_t out_public_value[X25519_PUBLIC_VALUE_LEN];
-    uint8_t out_private_key[X25519_PRIVATE_KEY_LEN];
-    X25519_keypair(out_public_value, out_private_key);
+    uint8_t out_public_value[kKeySize];
+    uint8_t out_private_key[kKeySize];
+    test::GenerateEncryptionKeyPair(out_private_key, out_public_value);
     private_key_strings.emplace_back(
-        reinterpret_cast<const char*>(out_private_key), X25519_PRIVATE_KEY_LEN);
+        reinterpret_cast<const char*>(out_private_key), kKeySize);
     public_value_strings.emplace_back(
-        reinterpret_cast<const char*>(out_public_value),
-        X25519_PUBLIC_VALUE_LEN);
+        reinterpret_cast<const char*>(out_public_value), kKeySize);
   }
 
   // Register all key pairs for decryption.
@@ -493,7 +499,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
         base::BindOnce(
             [](base::StringPiece private_key_string,
                base::StringPiece public_key_string,
-               scoped_refptr<Decryptor> decryptor,
+               scoped_refptr<test::Decryptor> decryptor,
                base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)>
                    done_cb) {
               decryptor->RecordKeyPair(private_key_string, public_key_string,

@@ -24,6 +24,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
+#include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -33,7 +34,6 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
-#include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace reporting {
@@ -226,19 +226,17 @@ class Storage::KeyInStorage {
   }
 
   Status VerifySignature(const SignedEncryptionInfo& signed_encryption_key) {
-    if (signed_encryption_key.public_asymmetric_key().size() !=
-        X25519_PUBLIC_VALUE_LEN) {
+    if (signed_encryption_key.public_asymmetric_key().size() != kKeySize) {
       return Status{error::FAILED_PRECONDITION, "Key size mismatch"};
     }
     char value_to_verify[sizeof(EncryptionModuleInterface::PublicKeyId) +
-                         X25519_PUBLIC_VALUE_LEN];
+                         kKeySize];
     const EncryptionModuleInterface::PublicKeyId public_key_id =
         signed_encryption_key.public_key_id();
     memcpy(value_to_verify, &public_key_id,
            sizeof(EncryptionModuleInterface::PublicKeyId));
     memcpy(value_to_verify + sizeof(EncryptionModuleInterface::PublicKeyId),
-           signed_encryption_key.public_asymmetric_key().data(),
-           X25519_PUBLIC_VALUE_LEN);
+           signed_encryption_key.public_asymmetric_key().data(), kKeySize);
     return verifier_.Verify(
         std::string(value_to_verify, sizeof(value_to_verify)),
         signed_encryption_key.signature());
