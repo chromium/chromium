@@ -27,6 +27,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/display/screen_base.h"
 #include "ui/display/test/test_screen.h"
@@ -48,6 +49,12 @@ const base::FilePath::CharType* kSimpleFile = FILE_PATH_LITERAL("simple.html");
 
 class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExclusiveAccessTest::SetUpCommandLine(command_line);
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 
   // Tests that actually make the browser fullscreen have been flaky when
   // run sharded, and so are restricted here to interactive ui tests.

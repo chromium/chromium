@@ -50,6 +50,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -115,6 +116,13 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         mouse_click_result_(false),
         first_click_(true) {
     GuestViewManager::set_factory_for_testing(&factory_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+    // Some bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   TestGuestViewManager* GetGuestViewManager() {

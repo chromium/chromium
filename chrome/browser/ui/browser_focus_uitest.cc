@@ -48,6 +48,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/test/ui_controls.h"
 
 namespace {
@@ -70,6 +71,13 @@ class BrowserFocusTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   bool IsViewFocused(ViewID vid) {

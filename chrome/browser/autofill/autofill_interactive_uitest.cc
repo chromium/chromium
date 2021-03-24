@@ -78,6 +78,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -312,6 +313,8 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutofillUiTest::SetUpCommandLine(command_line);
     cert_verifier_.SetUpCommandLine(command_line);
+    // Needed to allow input before commit on various builders.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
