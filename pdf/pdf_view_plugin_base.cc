@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
@@ -743,6 +744,40 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
   SetAccessibilityViewportInfo(viewport_info);
 }
 
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfHasAttachment {
+  kNo = 0,
+  kYes = 1,
+  kMaxValue = kYes,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfIsTagged {
+  kNo = 0,
+  kYes = 1,
+  kMaxValue = kYes,
+};
+
+}  // namespace
+
+void PdfViewPluginBase::RecordDocumentMetrics() {
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+  HistogramEnumeration("PDF.Version", document_metadata.version);
+  HistogramCustomCounts("PDF.PageCount", document_metadata.page_count, 1,
+                        1000000, 50);
+  HistogramEnumeration("PDF.HasAttachment", document_metadata.has_attachments
+                                                ? PdfHasAttachment::kYes
+                                                : PdfHasAttachment::kNo);
+  HistogramEnumeration("PDF.IsTagged", document_metadata.tagged
+                                           ? PdfIsTagged::kYes
+                                           : PdfIsTagged::kNo);
+  HistogramEnumeration("PDF.FormType", document_metadata.form_type);
+}
+
 void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;
@@ -1074,6 +1109,23 @@ void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
   reply.SetIntKey("width", bitmap.width());
   reply.SetIntKey("height", bitmap.height());
   SendMessage(std::move(reply));
+}
+
+template <typename T>
+void PdfViewPluginBase::HistogramEnumeration(const char* name, T sample) {
+  if (IsPrintPreview())
+    return;
+  base::UmaHistogramEnumeration(name, sample);
+}
+
+void PdfViewPluginBase::HistogramCustomCounts(const char* name,
+                                              int32_t sample,
+                                              int32_t min,
+                                              int32_t max,
+                                              uint32_t bucket_count) {
+  if (IsPrintPreview())
+    return;
+  base::UmaHistogramCustomCounts(name, sample, min, max, bucket_count);
 }
 
 }  // namespace chrome_pdf

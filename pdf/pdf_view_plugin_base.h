@@ -247,6 +247,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
+  // Records metrics about the document metadata.
+  void RecordDocumentMetrics();
+
   void set_url(const std::string& url) { url_ = url; }
 
   SkBitmap& mutable_image_data() { return image_data_; }
@@ -320,6 +323,19 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Sends the thumbnail image data.
   void SendThumbnail(base::Value reply, Thumbnail thumbnail);
+
+  // Adds a sample to an enumerated histogram and filter out print preview
+  // usage.
+  template <typename T>
+  void HistogramEnumeration(const char* name, T sample);
+
+  // Adds a sample to a custom counts histogram and filter out print preview
+  // usage.
+  void HistogramCustomCounts(const char* name,
+                             int32_t sample,
+                             int32_t min,
+                             int32_t max,
+                             uint32_t bucket_count);
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
