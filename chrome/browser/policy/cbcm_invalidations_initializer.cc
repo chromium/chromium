@@ -27,10 +27,12 @@ class MachineLevelDeviceAccountInitializerHelper
 
   // |policy_client| should be registered and outlive this object.
   MachineLevelDeviceAccountInitializerHelper(
+      const std::string& service_account_email,
       policy::CloudPolicyClient* policy_client,
       Callback callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : policy_client_(policy_client),
+      : service_account_email_(service_account_email),
+        policy_client_(policy_client),
         callback_(std::move(callback)),
         url_loader_factory_(url_loader_factory) {
     DCHECK(base::FeatureList::IsEnabled(
@@ -75,6 +77,10 @@ class MachineLevelDeviceAccountInitializerHelper
         policy::features::kCBCMPolicyInvalidations))
         << "DeviceAccountInitializer is active but CBCM service accounts "
            "are not enabled.";
+    // When the token is stored, the account init procedure is complete and
+    // it's now time to save the associated email address.
+    DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
+        service_account_email_);
     std::move(callback_).Run(true);
   }
 
@@ -111,6 +117,7 @@ class MachineLevelDeviceAccountInitializerHelper
     return url_loader_factory_;
   }
 
+  std::string service_account_email_;
   policy::CloudPolicyClient* policy_client_;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   Callback callback_;
@@ -134,24 +141,13 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
 
   // No need to get a refresh token if there is one present already.
   if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable()) {
-    if (account_initializer_helper_) {
-      // Bail out early if there's already an active account initializer,
-      // otherwise multiple auth requests might race to completion and attempt
-      // to initiate multiple invalidations service instances.
-      NOTREACHED() << "Trying to start an account initializer when there's "
-                      "already one. Please see crbug.com/1186159.";
-      return;
-    }
-
     // If this feature is enabled, we need to ensure the device service
     // account is initialized and fetch auth codes to exchange for a refresh
     // token. Creating this object starts that process and the callback will
     // be called from it whether it succeeds or not.
-    DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
-        account_email);
     account_initializer_helper_ =
         std::make_unique<MachineLevelDeviceAccountInitializerHelper>(
-            client,
+            account_email, client,
             base::BindOnce(&CBCMInvalidationsInitializer::AccountInitCallback,
                            base::Unretained(this), account_email),
             delegate_->GetURLLoaderFactory()

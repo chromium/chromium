@@ -27,6 +27,8 @@ namespace {
 
 static const char kRefreshToken[] = "refresh_token";
 static const char kServiceAccountEmail[] = "service_account@example.com";
+static const char kOtherServiceAccountEmail[] =
+    "other_service_account@example.com";
 static const char kDMToken[] = "dm_token";
 static const char kAuthCode[] = "auth_code";
 
@@ -188,6 +190,35 @@ TEST_F(CBCMInvalidationsInitializerTest,
   EXPECT_EQ(0, test_url_loader_factory()->NumPending());
 
   EXPECT_EQ(1, num_invalidations_started());
+}
+
+TEST_F(CBCMInvalidationsInitializerTest,
+       InvalidationsDontStartTwiceWhenTokenFetchRaces) {
+  CBCMInvalidationsInitializer initializer(this);
+
+  EXPECT_FALSE(IsInvalidationsServiceStarted());
+
+  initializer.OnServiceAccountSet(policy_client(), kServiceAccountEmail);
+  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
+  EXPECT_EQ(GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+            test_url_loader_factory()->GetPendingRequest(0)->request.url);
+
+  EXPECT_FALSE(IsInvalidationsServiceStarted());
+
+  // Trying to set the service account again when a request is already pending
+  // cancels the old request and starts a new one
+  initializer.OnServiceAccountSet(policy_client(), kOtherServiceAccountEmail);
+  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
+
+  EXPECT_FALSE(IsInvalidationsServiceStarted());
+
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+      MakeTokensFromAuthCodesResponse()));
+
+  EXPECT_EQ(1, num_invalidations_started());
+  EXPECT_EQ(CoreAccountId::FromEmail(kOtherServiceAccountEmail),
+            DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
 }
 
 }  // namespace policy
