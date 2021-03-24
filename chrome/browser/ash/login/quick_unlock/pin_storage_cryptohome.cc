@@ -258,6 +258,9 @@ void PinStorageCryptohome::CheckCryptohomePinKey(
       return;
     }
   }
+
+  can_authenticate_cache_[account_id] = false;
+  std::move(callback).Run(false);
 }
 
 void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
