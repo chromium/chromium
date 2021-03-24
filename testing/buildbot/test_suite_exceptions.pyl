@@ -1999,6 +1999,11 @@
           'shards': 4,
         }
       },
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.net_unittests.filter',
+        ],
+      },
       'android-marshmallow-x86-rel-non-cq': {
         # crbug.com/1046060
         'args': [
