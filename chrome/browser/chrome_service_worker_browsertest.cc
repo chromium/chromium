@@ -281,9 +281,11 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
   std::string RequestString(const std::string& url,
                             const std::string& mode,
-                            const std::string& credentials) const {
-    return base::StringPrintf("url:%s, mode:%s, credentials:%s\n", url.c_str(),
-                              mode.c_str(), credentials.c_str());
+                            const std::string& credentials,
+                            const std::string& destination) const {
+    return base::StringPrintf(
+        "url:%s, mode:%s, credentials:%s, destination:%s\n", url.c_str(),
+        mode.c_str(), credentials.c_str(), destination.c_str());
   }
 
   std::string GetURL(const std::string& relative_url) const {
@@ -292,32 +294,34 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
  private:
   void WriteServiceWorkerFetchTestFiles() {
-    WriteFile(FILE_PATH_LITERAL("sw.js"),
-              "this.onactivate = function(event) {"
-              "  event.waitUntil(self.clients.claim());"
-              "};"
-              "this.onfetch = function(event) {"
-              // Ignore the default favicon request. The default favicon request
-              // is sent after the page loading is finished, and we can't
-              // control the timing of the request. If the request is sent after
-              // clients.claim() is called, fetch event for the default favicon
-              // request is triggered and the tests become flaky. See
-              // https://crbug.com/912543.
-              "  if (event.request.url.endsWith('/favicon.ico')) {"
-              "    return;"
-              "  }"
-              "  event.respondWith("
-              "      self.clients.matchAll().then(function(clients) {"
-              "          clients.forEach(function(client) {"
-              "              client.postMessage("
-              "                'url:' + event.request.url + ', ' +"
-              "                'mode:' + event.request.mode + ', ' +"
-              "                'credentials:' + event.request.credentials"
-              "              );"
-              "            });"
-              "          return fetch(event.request);"
-              "        }));"
-              "};");
+    WriteFile(
+        FILE_PATH_LITERAL("sw.js"),
+        "this.onactivate = function(event) {"
+        "  event.waitUntil(self.clients.claim());"
+        "};"
+        "this.onfetch = function(event) {"
+        // Ignore the default favicon request. The default favicon request
+        // is sent after the page loading is finished, and we can't
+        // control the timing of the request. If the request is sent after
+        // clients.claim() is called, fetch event for the default favicon
+        // request is triggered and the tests become flaky. See
+        // https://crbug.com/912543.
+        "  if (event.request.url.endsWith('/favicon.ico')) {"
+        "    return;"
+        "  }"
+        "  event.respondWith("
+        "      self.clients.matchAll().then(function(clients) {"
+        "          clients.forEach(function(client) {"
+        "              client.postMessage("
+        "                'url:' + event.request.url + ', ' +"
+        "                'mode:' + event.request.mode + ', ' +"
+        "                'credentials:' + event.request.credentials + ', ' +"
+        "                'destination:' + event.request.destination"
+        "              );"
+        "            });"
+        "          return fetch(event.request);"
+        "        }));"
+        "};");
     WriteFile(FILE_PATH_LITERAL("test.html"),
               "<script>"
               "navigator.serviceWorker.register('./sw.js', {scope: './'})"
@@ -487,15 +491,16 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestSameOrigin) {
   // <link rel="manifest" href="manifest.json">
-  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "omit"),
+  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "omit", "manifest"),
             ExecuteManifestFetchTest("manifest.json", ""));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest,
                        ManifestSameOriginUseCredentials) {
   // <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
-  EXPECT_EQ(RequestString(GetURL("/manifest.json"), "cors", "include"),
-            ExecuteManifestFetchTest("manifest.json", "use-credentials"));
+  EXPECT_EQ(
+      RequestString(GetURL("/manifest.json"), "cors", "include", "manifest"),
+      ExecuteManifestFetchTest("manifest.json", "use-credentials"));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestOtherOrigin) {
@@ -503,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, ManifestOtherOrigin) {
   const std::string url = embedded_test_server()
                               ->GetURL("www.example.com", "/manifest.json")
                               .spec();
-  EXPECT_EQ(RequestString(url, "cors", "omit"),
+  EXPECT_EQ(RequestString(url, "cors", "omit", "manifest"),
             ExecuteManifestFetchTest(url, ""));
 }
 
@@ -514,14 +519,14 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest,
   const std::string url = embedded_test_server()
                               ->GetURL("www.example.com", "/manifest.json")
                               .spec();
-  EXPECT_EQ(RequestString(url, "cors", "include"),
+  EXPECT_EQ(RequestString(url, "cors", "include", "manifest"),
             ExecuteManifestFetchTest(url, "use-credentials"));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerLinkFetchTest, FaviconSameOrigin) {
   // <link rel="favicon" href="fav.png">
   CopyTestFile("favicon/icon.png", "fav.png");
-  EXPECT_EQ(RequestString(GetURL("/fav.png"), "no-cors", "include"),
+  EXPECT_EQ(RequestString(GetURL("/fav.png"), "no-cors", "include", "image"),
             ExecuteFaviconFetchTest("/fav.png"));
 }
 
@@ -564,7 +569,7 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
   }
 
   std::string GetNavigationRequestString(const std::string& fragment) const {
-    return RequestString(test_page_url_ + fragment, "navigate", "include");
+    return RequestString(test_page_url_ + fragment, "navigate", "include", "");
   }
 
   std::string ExecutePNACLUrlLoaderTest(const std::string& mode) {
