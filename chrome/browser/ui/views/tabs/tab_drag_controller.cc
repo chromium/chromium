@@ -2058,9 +2058,16 @@ Browser* TabDragController::CreateBrowserForDrag(
   // window is a maximized or fullscreen window since it will prevent window
   // moving/resizing on Chrome OS. See crbug.com/1023871 for details.
   create_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+
   // Don't copy the initial workspace since the *current* workspace might be
   // different and copying the workspace will move the tab to the initial one.
   create_params.initial_workspace = "";
+
+  // Don't copy the window name - the user's deliberately creating a new window,
+  // which should default to its own auto-generated name, not the same name as
+  // the previous window.
+  create_params.user_title = "";
+
   Browser* browser = Browser::Create(create_params);
   is_dragging_new_browser_ = true;
   // If the window is created maximized then the bounds we supplied are ignored.
