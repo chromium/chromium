@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 from os import path as os_path
-import platform
 import subprocess
 import sys
 import os
@@ -12,14 +11,15 @@ import os
 third_party_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 node_dir = os.path.join(third_party_dir, 'node')
 
-tsc = os.path.join(node_dir, 'node_modules', 'typescript', 'lib', 'tsc.js')
+try:
+  old_sys_path = sys.path
+  sys.path = [node_dir] + sys.path
 
-def get_node_binary_path():
-  return os_path.join(node_dir, *{
-    'Darwin': ('mac', 'node-darwin-x64', 'bin', 'node'),
-    'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
-    'Windows': ('win', 'node.exe'),
-  }[platform.system()])
+  from node import GetBinaryPath as get_node_binary_path
+finally:
+  sys.path = old_sys_path
+
+tsc = os.path.join(node_dir, 'node_modules', 'typescript', 'lib', 'tsc.js')
 
 def run_tsc_ignore_errors(args):
   cmd = [get_node_binary_path(), tsc] + args
