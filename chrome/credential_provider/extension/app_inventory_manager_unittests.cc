@@ -14,6 +14,7 @@
 #include "chrome/credential_provider/extension/app_inventory_manager.h"
 #include "chrome/credential_provider/extension/user_device_context.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
+#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gls_runner_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,11 +53,13 @@ base::string16 AppInventoryManagerBaseTest::CreateUser() {
 // string : The specified device resource ID.
 // bool : Whether a valid user sid is present.
 // bool : Whether app data is present or not.
+// bool : Whether mdm enrollment url is set or not.
+// bool : Whether device is enrolld or not.
 // string : The specified DM token.
 class AppInventoryManagerTest
     : public AppInventoryManagerBaseTest,
       public ::testing::WithParamInterface<
-          std::tuple<const wchar_t*, bool, bool, const wchar_t*>> {
+          std::tuple<const wchar_t*, bool, bool, bool, bool, const wchar_t*>> {
  public:
   AppInventoryManagerTest();
 
@@ -73,7 +76,9 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   const base::string16 device_resource_id(std::get<0>(GetParam()));
   bool has_valid_sid = std::get<1>(GetParam());
   bool has_app_data = std::get<2>(GetParam());
-  const base::string16 dm_token(std::get<3>(GetParam()));
+  bool has_mdm_url = std::get<3>(GetParam());
+  bool is_device_enrolled = std::get<4>(GetParam());
+  const std::wstring dm_token(std::get<5>(GetParam()));
 
   const char kAppDisplayName[] = "name";
   const char kAppDisplayVersion[] = "version";
@@ -100,7 +105,14 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   const wchar_t kAppDisplayVersionRegistryKey[] = L"DisplayVersion";
   const wchar_t kAppPublisherRegistryKey[] = L"Publisher";
 
-  base::string16 user_sid = L"invalid-user-sid";
+  if (has_mdm_url) {
+    ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L"https://mdm.com"));
+  }
+  GoogleMdmEnrolledStatusForTesting forced_enrollment_status(
+      is_device_enrolled);
+
+  std::wstring user_sid = L"invalid-user-sid";
+
   if (has_valid_sid) {
     // Create a fake user associated to a gaia id.
     CComBSTR sid_str;
@@ -165,7 +177,10 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   ASSERT_TRUE(SUCCEEDED(task->SetContext({context})));
   HRESULT status = task->Execute();
 
-  if (!has_valid_sid || device_resource_id.empty() || dm_token.empty()) {
+  if (!has_mdm_url || !is_device_enrolled) {
+    ASSERT_TRUE(SUCCEEDED(status));
+    ASSERT_EQ(fake_http_url_fetcher_factory()->requests_created(), 0uLL);
+  } else if (!has_valid_sid || device_resource_id.empty() || dm_token.empty()) {
     ASSERT_TRUE(FAILED(status));
     ASSERT_EQ(fake_http_url_fetcher_factory()->requests_created(), 0uLL);
   } else {
@@ -216,6 +231,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     AppInventoryManagerTest,
     ::testing::Combine(::testing::Values(L"", L"valid-device-resource-id"),
+                       ::testing::Bool(),
+                       ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Values(L"", L"valid-dm-token")));

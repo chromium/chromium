@@ -9,6 +9,7 @@
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
@@ -140,6 +141,12 @@ bool AppInventoryManager::UploadAppInventoryFromEsaFeatureEnabled() const {
 // |resource_id| for identifying the device entry in GEM database.
 HRESULT AppInventoryManager::UploadAppInventory(
     const extension::UserDeviceContext& context) {
+  if (!credential_provider::IsEnrolledWithGoogleMdm()) {
+    LOGFN(INFO)
+        << "Not uploading app data as device is not enrolled with Google MDM";
+    return S_OK;
+  }
+
   base::string16 obfuscated_user_id;
   HRESULT status = GetIdFromSid(context.user_sid.c_str(), &obfuscated_user_id);
   if (FAILED(status)) {

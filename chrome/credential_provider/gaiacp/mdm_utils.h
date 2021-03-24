@@ -77,6 +77,8 @@ HRESULT EnrollToGoogleMdmIfNeeded(const base::Value& properties);
 // Constructs the password lsa store key for the given |sid|.
 base::string16 GetUserPasswordLsaStoreKey(const base::string16& sid);
 
+// Returns true if the device is enrolled with Google MDM.
+bool IsEnrolledWithGoogleMdm();
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_MDM_UTILS_H_
