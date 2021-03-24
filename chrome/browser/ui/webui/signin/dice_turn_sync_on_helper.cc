@@ -598,8 +598,9 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
     }
     // No explicit action when the ui gets closed. If the embedder wants the
     // helper to abort sync in this case, it must redirect this action to
-    // ABORT_SYNC.
+    // ABORT_SYNC. For UI_CLOSED, also no final callback is sent.
     case LoginUIService::UI_CLOSED:
+      scoped_callback_runner_.ReplaceClosure(base::OnceClosure());
       break;
   }
   delete this;

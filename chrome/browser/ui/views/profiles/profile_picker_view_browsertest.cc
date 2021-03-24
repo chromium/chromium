@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -257,6 +259,23 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     return static_cast<Profile*>(web_contents()->GetBrowserContext());
   }
 
+  void SignIn(Profile* profile_being_created,
+              const std::string& email,
+              const std::string& given_name,
+              const std::string& hosted_domain = kNoHostedDomainFound) {
+    // Add an account - simulate a successful Gaia sign-in.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_being_created);
+    CoreAccountInfo core_account_info =
+        signin::MakeAccountAvailable(identity_manager, email);
+    ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
+        core_account_info.account_id));
+
+    AccountInfo account_info =
+        FillAccountInfo(core_account_info, given_name, hosted_domain);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+
  private:
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList feature_list_;
@@ -308,16 +327,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
@@ -358,16 +369,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_being_created);
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
 
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened.
@@ -401,16 +404,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
@@ -462,150 +457,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(new_browser->type(), Browser::TYPE_POPUP);
   WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
                     kURL);
-}
-
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      other_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              run_loop.Quit();
-            }
-          }),
-      std::u16string(), std::string());
-  run_loop.Run();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* other_entry =
-      storage.GetProfileAttributesWithPath(other_path);
-  ASSERT_NE(other_entry, nullptr);
-  // Fake sync is enabled in this profile with Joe's account.
-  other_entry->SetAuthInfo(std::string(), u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
-
-  Profile* profile_being_created = StartSigninFlow();
-
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  // The profile switch screen should be displayed.
-  WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/profile-switch"));
-  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
-
-  // Simulate clicking on the confirm switch button.
-  ProfilePickerHandler* handler = web_contents()
-                                      ->GetWebUI()
-                                      ->GetController()
-                                      ->GetAs<ProfilePickerUI>()
-                                      ->GetProfilePickerHandlerForTesting();
-  base::ListValue args;
-  args.Append(base::Value::ToUniquePtrValue(util::FilePathToValue(other_path)));
-  handler->HandleConfirmProfileSwitch(&args);
-
-  // Browser for a pre-existing profile is displayed.
-  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
-                    GURL("chrome://newtab/"));
-  EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-
-  // Profile creation shouldn't be finished.
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile_being_created->GetPath());
-  EXPECT_NE(entry, nullptr);
-  EXPECT_TRUE(entry->IsEphemeral());
-  EXPECT_TRUE(entry->IsOmitted());
-}
-
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      other_path,
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED) {
-              run_loop.Quit();
-            }
-          }),
-      std::u16string(), std::string());
-  run_loop.Run();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* other_entry =
-      storage.GetProfileAttributesWithPath(other_path);
-  ASSERT_NE(other_entry, nullptr);
-  // Fake sync is enabled in this profile with Joe's account.
-  other_entry->SetAuthInfo(std::string(), u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
-
-  Profile* profile_being_created = StartSigninFlow();
-  base::FilePath profile_being_created_path = profile_being_created->GetPath();
-
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  // The profile switch screen should be displayed.
-  WaitForLayoutWithoutToolbar();
-  WaitForFirstPaint(web_contents(),
-                    GURL("chrome://profile-picker/profile-switch"));
-  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
-
-  // Simulate clicking on the cancel button.
-  ProfilePickerHandler* handler = web_contents()
-                                      ->GetWebUI()
-                                      ->GetController()
-                                      ->GetAs<ProfilePickerUI>()
-                                      ->GetProfilePickerHandlerForTesting();
-  base::ListValue args;
-  handler->HandleCancelProfileSwitch(&args);
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-
-  // Only one browser should be displayed.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-
-  // The sign-in profile should be marked for deletion.
-  ProfileManager::IsProfileDirectoryMarkedForDeletion(
-      profile_being_created_path);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
@@ -705,20 +556,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
-      identity_manager, "joe.enterprise@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
   // Enterprise domain needed for this profile being detected as Work.
-  AccountInfo account_info =
-      FillAccountInfo(core_account_info, "Joe", "enterprise.com");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
 
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened.
@@ -763,20 +605,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
-      identity_manager, "joe.enterprise@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
   // Enterprise domain needed for this profile being detected as Work.
-  AccountInfo account_info =
-      FillAccountInfo(core_account_info, "Joe", "enterprise.com");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
 
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened and the enterprise dialog displayed.
@@ -831,20 +664,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
 
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
-  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
-      identity_manager, "joe.enterprise@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
-
   // Enterprise domain needed for this profile being detected as Work.
-  AccountInfo account_info =
-      FillAccountInfo(core_account_info, "Joe", "enterprise.com");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
 
   // Wait for the sign-in to propagate to the flow, resulting in new browser
   // getting opened.
@@ -877,6 +701,343 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // The color is not applied if the user enters settings.
   EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)
                    ->UsingAutogeneratedTheme());
+}
+
+class ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest
+    : public ProfilePickerEnterpriseCreationFlowBrowserTest {
+ public:
+  ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSignInProfileCreationEnterprise);
+  }
+
+  void ExpectEnterpriseScreenTypeAndProceed(
+      EnterpriseProfileWelcomeUI::ScreenType expected_type,
+      bool proceed) {
+    EnterpriseProfileWelcomeHandler* handler =
+        web_contents()
+            ->GetWebUI()
+            ->GetController()
+            ->GetAs<EnterpriseProfileWelcomeUI>()
+            ->GetHandlerForTesting();
+    EXPECT_EQ(handler->GetTypeForTesting(), expected_type);
+
+    // Simulate clicking on the next button.
+    handler->CallProceedCallbackForTesting(proceed);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfile) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  Profile* profile_being_created = StartSigninFlow();
+
+  // Consumer-looking gmail address avoids code that forces the sync service to
+  // actually start which would add overhead in mocking further stuff.
+  // Enterprise domain needed for this profile being detected as Work.
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
+
+  // Wait for the sign-in to propagate to the flow, resulting in enterprise
+  // welcome screen getting displayed.
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://enterprise-profile-welcome/"));
+
+  ExpectEnterpriseScreenTypeAndProceed(
+      /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
+          kEntepriseAccountSyncEnabled,
+      /*proceed=*/true);
+
+  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  // Simulate finishing the flow with "No, thanks".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://newtab/"));
+  WaitForPickerClosed();
+
+  // Check expectations when the profile creation flow is done.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_NE(entry->GetGAIAId(), std::string());
+  EXPECT_FALSE(entry->IsAuthenticated());
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileWithSyncDisabled) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  Profile* profile_being_created = StartSigninFlow();
+
+  // Set the device as managed in prefs.
+  syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
+  prefs.SetManagedForTest(true);
+  syncer::SyncService* sync_service =
+      ProfileSyncServiceFactory::GetForProfile(profile_being_created);
+
+  // Consumer-looking gmail address avoids code that forces the sync service to
+  // actually start which would add overhead in mocking further stuff.
+  // Enterprise domain needed for this profile being detected as Work.
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
+
+  // Wait for the sign-in to propagate to the flow, resulting in enterprise
+  // welcome screen getting displayed.
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://enterprise-profile-welcome/"));
+
+  ExpectEnterpriseScreenTypeAndProceed(
+      /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
+          kConsumerAccountSyncDisabled,
+      /*proceed=*/true);
+
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://newtab/"));
+  WaitForPickerClosed();
+
+  // Check expectations when the profile creation flow is done.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+
+  // Sync is disabled.
+  EXPECT_NE(entry->GetGAIAId(), std::string());
+  EXPECT_TRUE(entry->IsAuthenticated());
+  EXPECT_FALSE(sync_service->GetUserSettings()->IsSyncRequested());
+
+  EXPECT_EQ(ThemeServiceFactory::GetForProfile(profile_being_created)
+                ->GetAutogeneratedThemeColor(),
+            kProfileColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSettings) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  Profile* profile_being_created = StartSigninFlow();
+
+  // Consumer-looking gmail address avoids code that forces the sync service to
+  // actually start which would add overhead in mocking further stuff.
+  // Enterprise domain needed for this profile being detected as Work.
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
+
+  // Wait for the sign-in to propagate to the flow, resulting in enterprise
+  // welcome screen getting displayed.
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://enterprise-profile-welcome/"));
+
+  ExpectEnterpriseScreenTypeAndProceed(
+      /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
+          kEntepriseAccountSyncEnabled,
+      /*proceed=*/true);
+
+  WaitForFirstPaint(web_contents(), GURL("chrome://sync-confirmation/"));
+  // Simulate finishing the flow with "Configure sync".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
+
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://settings/syncSetup"));
+  WaitForPickerClosed();
+
+  // Check expectations when the profile creation flow is done.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
+  // Sync is technically enabled for the profile. Without SyncService, the
+  // difference between SYNC_WITH_DEFAULT_SETTINGS and CONFIGURE_SYNC_FIRST
+  // cannot be told.
+  EXPECT_NE(entry->GetGAIAId(), std::string());
+  EXPECT_TRUE(entry->IsAuthenticated());
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
+
+  // The color is not applied if the user enters settings.
+  EXPECT_FALSE(ThemeServiceFactory::GetForProfile(profile_being_created)
+                   ->UsingAutogeneratedTheme());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       Cancel) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  Profile* profile_being_created = StartSigninFlow();
+
+  // Consumer-looking gmail address avoids code that forces the sync service to
+  // actually start which would add overhead in mocking further stuff.
+  // Enterprise domain needed for this profile being detected as Work.
+  SignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
+         "enterprise.com");
+
+  // Wait for the sign-in to propagate to the flow, resulting in enterprise
+  // welcome screen getting displayed.
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://enterprise-profile-welcome/"));
+
+  ExpectEnterpriseScreenTypeAndProceed(
+      /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
+          kEntepriseAccountSyncEnabled,
+      /*proceed=*/false);
+
+  // As the profile creation flow was opened directly, the window is closed now.
+  WaitForPickerClosed();
+
+  // The profile entry is deleted
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  EXPECT_EQ(entry, nullptr);
+}
+
+// The switch screen tests are not related to enterprise but the functionality
+// is bundled in the same feature flag.
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Create a pre-existing profile syncing with the same account as the profile
+  // being created.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      other_path,
+      base::BindLambdaForTesting(
+          [&run_loop](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              run_loop.Quit();
+            }
+          }),
+      std::u16string(), std::string());
+  run_loop.Run();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  // Fake sync is enabled in this profile with Joe's account.
+  other_entry->SetAuthInfo(std::string(), u"joe.consumer@gmail.com",
+                           /*is_consented_primary_account=*/true);
+
+  Profile* profile_being_created = StartSigninFlow();
+
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
+
+  // The profile switch screen should be displayed.
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/profile-switch"));
+  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
+
+  // Simulate clicking on the confirm switch button.
+  ProfilePickerHandler* handler = web_contents()
+                                      ->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<ProfilePickerUI>()
+                                      ->GetProfilePickerHandlerForTesting();
+  base::ListValue args;
+  args.Append(base::Value::ToUniquePtrValue(util::FilePathToValue(other_path)));
+  handler->HandleConfirmProfileSwitch(&args);
+
+  // Browser for a pre-existing profile is displayed.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://newtab/"));
+  EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+
+  // Profile creation shouldn't be finished.
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile_being_created->GetPath());
+  EXPECT_NE(entry, nullptr);
+  EXPECT_TRUE(entry->IsEphemeral());
+  EXPECT_TRUE(entry->IsOmitted());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Create a pre-existing profile syncing with the same account as the profile
+  // being created.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      other_path,
+      base::BindLambdaForTesting(
+          [&run_loop](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED) {
+              run_loop.Quit();
+            }
+          }),
+      std::u16string(), std::string());
+  run_loop.Run();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  // Fake sync is enabled in this profile with Joe's account.
+  other_entry->SetAuthInfo(std::string(), u"joe.consumer@gmail.com",
+                           /*is_consented_primary_account=*/true);
+
+  Profile* profile_being_created = StartSigninFlow();
+  base::FilePath profile_being_created_path = profile_being_created->GetPath();
+
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
+
+  // The profile switch screen should be displayed.
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/profile-switch"));
+  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
+
+  // Simulate clicking on the cancel button.
+  ProfilePickerHandler* handler = web_contents()
+                                      ->GetWebUI()
+                                      ->GetController()
+                                      ->GetAs<ProfilePickerUI>()
+                                      ->GetProfilePickerHandlerForTesting();
+  base::ListValue args;
+  handler->HandleCancelProfileSwitch(&args);
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+
+  // Only one browser should be displayed.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  // The sign-in profile should be marked for deletion.
+  ProfileManager::IsProfileDirectoryMarkedForDeletion(
+      profile_being_created_path);
 }
 
 class ProfilePickerCreationFlowEphemeralProfileBrowserTest
@@ -944,7 +1105,7 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    ProfilePickerCreationFlowBrowserTest::SetUpInProcessBrowserTestFixture();
+    ProfilePickerCreationFlowBrowserTest::SetUpOnMainThread();
     if (GetTestPreCount() == 1) {
       // Only called in "PRE_" tests, to set a name to the starting profile.
       ProfileAttributesEntry* entry =
@@ -979,16 +1140,9 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsEphemeral());
   EXPECT_TRUE(entry->IsOmitted());
-  // Add an account - simulate a successful Gaia sign-in.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_being_created);
-  CoreAccountInfo core_account_info =
-      signin::MakeAccountAvailable(identity_manager, "joe.consumer@gmail.com");
-  ASSERT_TRUE(identity_manager->HasAccountWithRefreshToken(
-      core_account_info.account_id));
 
-  AccountInfo account_info = FillAccountInfo(core_account_info, "Joe");
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  // Simulate a successful Gaia sign-in.
+  SignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.

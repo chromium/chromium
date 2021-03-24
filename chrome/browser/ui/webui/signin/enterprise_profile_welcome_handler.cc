@@ -198,3 +198,14 @@ ProfileAttributesEntry* EnterpriseProfileWelcomeHandler::GetProfileEntry()
   DCHECK(entry);
   return entry;
 }
+
+EnterpriseProfileWelcomeUI::ScreenType
+EnterpriseProfileWelcomeHandler::GetTypeForTesting() {
+  return type_;
+}
+
+void EnterpriseProfileWelcomeHandler::CallProceedCallbackForTesting(
+    bool proceed) {
+  if (proceed_callback_)
+    std::move(proceed_callback_).Run(proceed);
+}

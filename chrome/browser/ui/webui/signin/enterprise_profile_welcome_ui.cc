@@ -42,10 +42,6 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
-
-  // TODO(crbug.com/1178494): Remove once the UI is used in the profile flow.
-  Initialize(ScreenType::kEntepriseAccountSyncEnabled, "chromium.org",
-             SK_ColorBLUE, base::DoNothing());
 }
 
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;
@@ -55,8 +51,15 @@ void EnterpriseProfileWelcomeUI::Initialize(
     const std::string& domain_name,
     SkColor profile_color,
     base::OnceCallback<void(bool)> proceed_callback) {
-  web_ui()->AddMessageHandler(std::make_unique<EnterpriseProfileWelcomeHandler>(
-      type, domain_name, profile_color, std::move(proceed_callback)));
+  auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
+      type, domain_name, profile_color, std::move(proceed_callback));
+  handler_ = handler.get();
+  web_ui()->AddMessageHandler(std::move(handler));
+}
+
+EnterpriseProfileWelcomeHandler*
+EnterpriseProfileWelcomeUI::GetHandlerForTesting() {
+  return handler_;
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseProfileWelcomeUI)

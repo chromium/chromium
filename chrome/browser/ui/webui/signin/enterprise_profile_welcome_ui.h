@@ -9,6 +9,8 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+class EnterpriseProfileWelcomeHandler;
+
 namespace content {
 class WebUI;
 }
@@ -35,7 +37,13 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
                   SkColor profile_color,
                   base::OnceCallback<void(bool)> proceed_callback);
 
+  // Allows tests to trigger page events.
+  EnterpriseProfileWelcomeHandler* GetHandlerForTesting();
+
  private:
+  // Stored for tests.
+  EnterpriseProfileWelcomeHandler* handler_ = nullptr;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

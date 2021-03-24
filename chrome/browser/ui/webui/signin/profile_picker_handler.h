@@ -37,10 +37,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
  private:
   friend class ProfilePickerHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerCreationFlowBrowserTest,
+      ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerCreationFlowBrowserTest,
+      ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
   void HandleMainViewInitialize(const base::ListValue* args);

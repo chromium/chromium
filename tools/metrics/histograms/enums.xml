@@ -63430,7 +63430,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="9" label="The SAML sign-in flow stated (with unclear outcome)."/>
   <int value="10" label="The flow got aborted before successful sign-in."/>
-  <int value="11" label="The flow got aborted after successful sign-in."/>
+  <int value="11"
+      label="The flow got aborted after sign-in (not in enterprise welcome)."/>
+  <int value="12"
+      label="The flow got aborted after sign-in (in enterprise welcome)."/>
 </enum>
 
 <enum name="ProfileAllAccountsCategories">

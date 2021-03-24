@@ -72,7 +72,8 @@ class ProfileMetrics {
     kSAML = 9,
     kAbortedBeforeSignIn = 10,
     kAbortedAfterSignIn = 11,
-    kMaxValue = kAbortedAfterSignIn,
+    kAbortedOnEnterpriseWelcome = 12,
+    kMaxValue = kAbortedOnEnterpriseWelcome,
   };
 
   enum ProfileDelete {

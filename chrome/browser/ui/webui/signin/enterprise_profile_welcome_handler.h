@@ -50,6 +50,10 @@ class EnterpriseProfileWelcomeHandler
   void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) override;
 
+  // Access to construction parameters for tests.
+  EnterpriseProfileWelcomeUI::ScreenType GetTypeForTesting();
+  void CallProceedCallbackForTesting(bool proceed);
+
  private:
   void HandleInitialized(const base::ListValue* args);
   void HandleProceed(const base::ListValue* args);

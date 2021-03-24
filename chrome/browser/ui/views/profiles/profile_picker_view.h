@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -111,6 +112,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // the sign-in flow.
     bool is_aborted = false;
 
+    // Email of the signed-in account.
+    std::string email;
+
     std::u16string name_for_signed_in_profile;
     base::OnceClosure on_profile_name_available;
 
@@ -150,6 +154,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void SwitchToSyncConfirmationFinished();
   // Switches the layout to the profile switch screen.
   void SwitchToProfileSwitch(const base::FilePath& profile_path);
+  // Switches the layout to the enterprise welcome screen.
+  void SwitchToEnterpriseProfileWelcome(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
+  void SwitchToEnterpriseProfileWelcomeFinished(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
 
   // views::WidgetDelegate:
   void WindowClosing() override;

@@ -295,6 +295,16 @@ void ProfilePicker::SwitchToProfileSwitch(const base::FilePath& profile_path) {
 }
 
 // static
+void ProfilePicker::SwitchToEnterpriseProfileWelcome(
+    EnterpriseProfileWelcomeUI::ScreenType type,
+    base::OnceCallback<void(bool)> proceed_callback) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->SwitchToEnterpriseProfileWelcome(
+        type, std::move(proceed_callback));
+  }
+}
+
+// static
 void ProfilePicker::ShowDialog(content::BrowserContext* browser_context,
                                const GURL& url,
                                const base::FilePath& profile_path) {
@@ -787,6 +797,34 @@ void ProfilePickerView::SwitchToProfileSwitch(
              /*enable_navigating_back=*/false);
 }
 
+void ProfilePickerView::SwitchToEnterpriseProfileWelcome(
+    EnterpriseProfileWelcomeUI::ScreenType type,
+    base::OnceCallback<void(bool)> proceed_callback) {
+  ShowScreen(sign_in_->contents.get(),
+             GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
+             /*show_toolbar=*/false,
+             /*enable_navigating_back=*/false,
+             /*navigation_finished_closure=*/
+             base::BindOnce(
+                 &ProfilePickerView::SwitchToEnterpriseProfileWelcomeFinished,
+                 // Unretained is enough as the callback is called by a member
+                 // of this class appearing after `sign_in_`.
+                 base::Unretained(this), type, std::move(proceed_callback)));
+}
+
+void ProfilePickerView::SwitchToEnterpriseProfileWelcomeFinished(
+    EnterpriseProfileWelcomeUI::ScreenType type,
+    base::OnceCallback<void(bool)> proceed_callback) {
+  // Initialize the WebUI page once we know it's committed.
+  EnterpriseProfileWelcomeUI* enterprise_profile_welcome_ui =
+      sign_in_->contents->GetWebUI()
+          ->GetController()
+          ->GetAs<EnterpriseProfileWelcomeUI>();
+  enterprise_profile_welcome_ui->Initialize(
+      type, gaia::ExtractDomainName(sign_in_->email), sign_in_->profile_color,
+      std::move(proceed_callback));
+}
+
 void ProfilePickerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
@@ -1037,6 +1075,7 @@ bool ProfilePickerView::GetSigningIn() const {
 void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK(!account_info.IsEmpty());
+  sign_in_->email = account_info.email;
 
   base::OnceClosure sync_consent_completed_closure = base::BindOnce(
       &ProfilePickerView::FinishSignedInCreationFlow,
@@ -1049,7 +1088,7 @@ void ProfilePickerView::OnRefreshTokenUpdatedForAccount(
   // in some cases (such as managed signed-in), there are further delays before
   // any follow-up UI is shown.
   ShowScreen(sign_in_->contents.get(), GURL(url::kAboutBlankURL),
-             /*show_toolbar=*/true, /*enable_navigating_back=*/false);
+             /*show_toolbar=*/false, /*enable_navigating_back=*/false);
 
   // Set up a timeout for extended account info (which cancels any existing
   // timeout closure).

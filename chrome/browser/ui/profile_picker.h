@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -89,6 +90,12 @@ class ProfilePicker {
   // Finishes the sign-in flow by moving to the sync confirmation screen. It
   // uses the same new profile created by `SwitchToSignIn()`.
   static void SwitchToSyncConfirmation();
+
+  // Finishes the sign-in flow by moving to the enterprise profile welcome
+  // screen. It uses the same new profile created by `SwitchToSignIn()`.
+  static void SwitchToEnterpriseProfileWelcome(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
 
   // When the sign-in flow cannot be completed because another profile at
   // `profile_path` is already syncing with a chosen account, shows the profile
