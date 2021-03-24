@@ -2153,16 +2153,19 @@ void UserSessionManager::RespectLocalePreferenceWrapper(
 
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  base::RepeatingClosure repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+
+  // RespectLocalePreference() will only invoke the callback on success. Split
+  // it here so we can invoke the callback separately on failure.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   locale_util::SwitchLanguageCallback locale_switched_callback(base::BindOnce(
-      &UserSessionManager::RunCallbackOnLocaleLoaded, repeating_callback,
+      &UserSessionManager::RunCallbackOnLocaleLoaded,
+      std::move(split_callback.first),
       base::Owned(new InputEventsBlocker)));  // Block UI events until
                                               // the ResourceBundle is
                                               // reloaded.
   if (!RespectLocalePreference(profile, user,
                                std::move(locale_switched_callback))) {
-    std::move(repeating_callback).Run();
+    std::move(split_callback.second).Run();
   }
 }
 

@@ -240,9 +240,8 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
   }
   auth_data_ = policy::DMAuth::NoAuth();
   chromeos::ProfileHelper::Get()->ClearSigninProfile(
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {

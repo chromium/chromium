@@ -140,18 +140,17 @@ void LoadPrivateKeyOnIOThread(const scoped_refptr<OwnerKeyUtil>& owner_key_util,
 
   crypto::EnsureNSSInit();
 
-  // TODO(crbug.com/1007635): Consider changing the
-  // `crypto::GetPrivateSlotForChromeOSUser()` signature so that, instead of
-  // returning the private slot when available synchronously, it always calls
-  // the callback. This would avoid needing `base::AdaptCallbackForRepeating()`.
-  auto continue_load_private_key_callback = base::AdaptCallbackForRepeating(
+  // GetPrivateSlotForChromeOSUser() will only invoke the callback if the
+  // private slot has not already been loaded. Split it here so we can invoke
+  // the callback separately if the private slot has already been loaded.
+  auto callback_split = base::SplitOnceCallback(
       base::BindOnce(&ContinueLoadPrivateKeyOnIOThread, owner_key_util,
                      username_hash, std::move(callback)));
-
   crypto::ScopedPK11Slot private_slot = crypto::GetPrivateSlotForChromeOSUser(
-      username_hash, continue_load_private_key_callback);
-  if (private_slot)
-    continue_load_private_key_callback.Run(std::move(private_slot));
+      username_hash, std::move(callback_split.first));
+  if (private_slot) {
+    std::move(callback_split.second).Run(std::move(private_slot));
+  }
 }
 
 bool DoesPrivateKeyExistAsyncHelper(
