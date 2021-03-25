@@ -1994,9 +1994,6 @@ crbug.com/849859 external/wpt/css/css-animations/Element-getAnimations-dynamic-c
 
 crbug.com/332189 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Pass Failure ]
 
-# Temporarily disabled for a DevTools-side refactoring
-crbug.com/1192000 http/tests/devtools/resource-har-conversion.js [ Pass Failure ]
-
 # Some control characters still not visible
 crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-001.html [ Failure ]
 crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-002.html [ Failure ]
