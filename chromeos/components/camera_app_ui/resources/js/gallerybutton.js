@@ -4,6 +4,7 @@
 
 import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
+import {reportError} from './error.js';
 import * as filesystem from './models/file_system.js';
 import {
   DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
@@ -14,6 +15,10 @@ import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {scaleImage, scaleVideo} from './thumbnailer.js';
+import {
+  ErrorLevel,
+  ErrorType,
+} from './type.js';
 
 /**
  * Width of thumbnail used by cover photo of gallery button.
@@ -61,10 +66,19 @@ class CoverPhoto {
   /**
    * Creates CoverPhoto objects from photo file.
    * @param {!FileAccessEntry} file
-   * @return {!Promise<!CoverPhoto>}
+   * @return {!Promise<?CoverPhoto>}
    */
   static async create(file) {
     const blob = await file.file();
+    if (blob.size === 0) {
+      reportError(
+          ErrorType.EMPTY_FILE,
+          ErrorLevel.ERROR,
+          new Error('The file to generate cover photo is empty'),
+      );
+      return null;
+    }
+
     const thumbnail = filesystem.hasVideoPrefix(file) ?
         await scaleVideo(blob, THUMBNAIL_WIDTH) :
         await scaleImage(blob, THUMBNAIL_WIDTH);
