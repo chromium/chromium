@@ -63,6 +63,10 @@ void ProcessIntermediateDumps(
   GetCrashpadClient().ProcessIntermediateDumps(annotations);
 }
 
+void StartProcesingPendingReports() {
+  GetCrashpadClient().StartProcesingPendingReports();
+}
+
 namespace internal {
 
 base::FilePath PlatformCrashpadInitialization(

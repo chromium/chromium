@@ -68,6 +68,7 @@ void DeleteAllReportsInDirectory(base::FilePath directory) {
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
   crash_reporter::ProcessIntermediateDumps();
+  crash_reporter::StartProcesingPendingReports();
 }
 
 // Callback for logging::SetLogMessageHandler
@@ -264,7 +265,14 @@ void CleanupCrashReports(BOOL after_upgrade) {
   }
 }
 
-int GetCrashReportCount() {
+void ProcessIntermediateReportsForSafeMode() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    crash_reporter::ProcessIntermediateDumps(
+        {{kUploadedInRecoveryMode, "yes"}});
+  }
+}
+
+int GetPendingCrashReportCount() {
   if (crash_reporter::IsCrashpadRunning()) {
     int count = 0;
     std::vector<crash_reporter::Report> reports;
@@ -291,14 +299,14 @@ int GetCrashReportCount() {
 
 void GetCrashReportCount(void (^callback)(int)) {
   if (crash_reporter::IsCrashpadRunning()) {
-    callback(GetCrashReportCount());
+    callback(GetPendingCrashReportCount());
   }
 
   [[BreakpadController sharedInstance] getCrashReportCount:callback];
 }
 
 bool HasReportToUpload() {
-  return GetCrashReportCount() > 0;
+  return GetPendingCrashReportCount() > 0;
 }
 
 // Records the current process uptime in the kUptimeAtRestoreInMs. This
@@ -346,8 +354,7 @@ void WillStartCrashRestoration() {
 
 void StartUploadingReportsInRecoveryMode() {
   if (crash_reporter::IsCrashpadRunning()) {
-    crash_reporter::ProcessIntermediateDumps(
-        {{kUploadedInRecoveryMode, "yes"}});
+    crash_reporter::StartProcesingPendingReports();
     return;
   }
 

@@ -187,6 +187,9 @@ void DumpProcessWithoutCrashing(task_t task_port);
 // upload.
 void ProcessIntermediateDumps(
     const std::map<std::string, std::string>& annotations = {});
+
+// Requests that the handler begin in-process uploading of any pending reports.
+void StartProcesingPendingReports();
 #endif
 
 #if defined(OS_ANDROID)

@@ -67,6 +67,11 @@ const NSTimeInterval kUploadTotalTime = 5;
 + (BOOL)hasSuggestions {
   if ([SafeModeViewController detectedThirdPartyMods])
     return YES;
+
+  static dispatch_once_t once_token = 0;
+  dispatch_once(&once_token, ^{
+    crash_helper::ProcessIntermediateReportsForSafeMode();
+  });
   return [SafeModeViewController hasReportToUpload];
 }
 
@@ -81,7 +86,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   // assume that the app may be in a state that is preventing crash report
   // uploads before crashing again.
   return crash_helper::UserEnabledUploading() &&
-         crash_helper::GetCrashReportCount() > 1;
+         crash_helper::GetPendingCrashReportCount() > 1;
 }
 
 // Return any jailbroken library that appears in SafeModeCrashingModulesConfig.
@@ -219,9 +224,9 @@ const NSTimeInterval kUploadTotalTime = 5;
   [self centerView:_startButton afterView:description];
   [_innerView addSubview:_startButton];
 
-  crash_helper::StartUploadingReportsInRecoveryMode();
   UIView* lastView = _startButton;
   if ([SafeModeViewController hasReportToUpload]) {
+    crash_helper::StartUploadingReportsInRecoveryMode();
 
     // If there are no jailbreak modifications, then present the "Sending crash
     // report..." UI.

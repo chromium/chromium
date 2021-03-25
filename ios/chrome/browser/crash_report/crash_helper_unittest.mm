@@ -89,10 +89,10 @@ TEST_F(BreakpadHelperTest, CrashReportUserApplicationStateAllKeys) {
 TEST_F(BreakpadHelperTest, GetCrashReportCount) {
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:kCrashReportCount];
 
-  // Verify that crash_helper::GetCrashReportCount() returns the
+  // Verify that crash_helper::GetPendingCrashReportCount() returns the
   // crash report count that we arranged to pass to the result block that was
   // passed to -[BreakpadController getCrashReportCount:].
-  EXPECT_EQ(kCrashReportCount, crash_helper::GetCrashReportCount());
+  EXPECT_EQ(kCrashReportCount, crash_helper::GetPendingCrashReportCount());
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
 
