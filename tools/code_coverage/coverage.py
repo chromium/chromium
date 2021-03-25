@@ -794,14 +794,21 @@ def _GetBinaryPathsFromTargets(targets, build_dir):
 
 def _GetCommandForWebTests(arguments):
   """Return command to run for blink web tests."""
+  cpu_count = multiprocessing.cpu_count()
+  if sys.platform == 'win32':
+    # TODO(crbug.com/1190269) - we can't use more than 56
+    # cores on Windows or Python3 may hang.
+    cpu_count = min(cpu_count, 56)
+  cpu_count = max(1, cpu_count // 2)
+
   command_list = [
       'python', 'testing/xvfb.py', 'python',
       'third_party/blink/tools/run_web_tests.py',
       '--additional-driver-flag=--no-sandbox',
       '--additional-env-var=LLVM_PROFILE_FILE=%s' %
       LLVM_PROFILE_FILE_PATH_SUBSTITUTION,
-      '--child-processes=%d' % max(1, int(multiprocessing.cpu_count() / 2)),
-      '--disable-breakpad', '--no-show-results', '--skip-failing-tests',
+      '--child-processes=%d' % cpu_count, '--disable-breakpad',
+      '--no-show-results', '--skip-failing-tests',
       '--target=%s' % os.path.basename(BUILD_DIR), '--time-out-ms=30000'
   ]
   if arguments.strip():

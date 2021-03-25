@@ -372,6 +372,11 @@ def ExtractEvents(regex, working_dir, csv_path):
   # Since multiprocessing accumulates all data in memory until the last task in
   # the pool has terminated, run it in batches to avoid swapping.
   batch_size = multiprocessing.cpu_count()
+  if sys.platform == 'win32':
+    # TODO(crbug.com/1190269) - we can't use more than 56
+    # cores on Windows or Python3 may hang.
+    batch_size = min(batch_size, 56)
+
   pool = multiprocessing.Pool(batch_size)
   with open(csv_path, 'w') as csv_file:
     writer = csv.writer(csv_file)

@@ -204,6 +204,12 @@ def _Shard(target_func, args, processes=None):
     processes = multiprocessing.cpu_count()
   # Seems optimal to have each process perform at least 2 tasks.
   processes = min(processes, len(args) // 2)
+
+  if sys.platform == 'win32':
+    # TODO(crbug.com/1190269) - we can't use more than 56
+    # cores on Windows or Python3 may hang.
+    processes = min(processes, 56)
+
   # Don't spin up processes unless there is enough work to merit doing so.
   if not ENABLE_MULTIPROCESSING or processes < 2:
     for result in map(target_func, args):

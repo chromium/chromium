@@ -105,7 +105,12 @@ class Executive(object):
         return sys.platform != 'win32'
 
     def cpu_count(self):
-        return multiprocessing.cpu_count()
+        cpu_count = multiprocessing.cpu_count()
+        if sys.platform == 'win32':
+            # TODO(crbug.com/1190269) - we can't use more than 56
+            # cores on Windows or Python3 may hang.
+            cpu_count = min(cpu_count, 56)
+        return cpu_count
 
     def kill_process(self, pid, kill_tree=True):
         """Attempts to kill the given pid.
@@ -474,8 +479,7 @@ class Executive(object):
     def map(self, thunk, arglist, processes=None):
         if sys.platform == 'win32' or len(arglist) == 1:
             return map(thunk, arglist)
-        pool = multiprocessing.Pool(
-            processes=(processes or multiprocessing.cpu_count()))
+        pool = multiprocessing.Pool(processes=(processes or self.cpu_count()))
         try:
             return pool.map(thunk, arglist)
         finally:
