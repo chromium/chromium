@@ -686,8 +686,8 @@
           "url": "https://oak.ct.letsencrypt.org/2023/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2020-08-18T00:00:00Z"
+            "usable": {
+              "timestamp": "2021-03-01T19:24:00Z"
             }
           },
           "temporal_interval": {
@@ -710,8 +710,8 @@
           "url": "https://ct.trustasia.com/log2020/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2020-08-18T00:00:00Z"
+            "retired": {
+              "timestamp": "2020-12-01T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -726,8 +726,8 @@
           "url": "https://ct.trustasia.com/log2021/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2020-08-18T00:00:00Z"
+            "retired": {
+              "timestamp": "2020-12-01T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -742,8 +742,8 @@
           "url": "https://ct.trustasia.com/log2022/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2020-08-18T00:00:00Z"
+            "usable": {
+              "timestamp": "2021-03-01T19:24:00Z"
             }
           },
           "temporal_interval": {
@@ -758,8 +758,8 @@
           "url": "https://ct.trustasia.com/log2023/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2020-08-18T00:00:00Z"
+            "usable": {
+              "timestamp": "2021-03-01T19:24:00Z"
             }
           },
           "temporal_interval": {
