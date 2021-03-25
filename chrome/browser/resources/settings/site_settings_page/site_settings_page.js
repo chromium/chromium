@@ -93,8 +93,10 @@ function getCategoryItemMap() {
       id: Id.BLUETOOTH_DEVICES,
       label: 'siteSettingsBluetoothDevices',
       icon: 'settings:bluetooth',
-      enabledLabel: 'siteSettingsBluetoothDevicesAsk',
-      disabledLabel: 'siteSettingsBluetoothDevicesBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsBluetoothDevicesAllowed' :
+                                      'siteSettingsBluetoothDevicesAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsBluetoothDevicesBlocked' :
+                                       'siteSettingsBluetoothDevicesBlock',
       shouldShow: () =>
           loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
     },
@@ -160,8 +162,10 @@ function getCategoryItemMap() {
       id: Id.IDLE_DETECTION,
       label: 'siteSettingsIdleDetection',
       icon: 'settings:devices',
-      enabledLabel: 'siteSettingsIdleDetectionAsk',
-      disabledLabel: 'siteSettingsIdleDetectionBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsHidDevicesAllowed' :
+                                      'siteSettingsIdleDetectionAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsHidDevicesBlocked' :
+                                       'siteSettingsIdleDetectionBlock',
     },
     {
       route: routes.SITE_SETTINGS_IMAGES,
@@ -225,8 +229,10 @@ function getCategoryItemMap() {
       id: Id.FONT_ACCESS,
       label: 'fonts',
       icon: 'settings:font-access',
-      enabledLabel: 'siteSettingsFontAccessAsk',
-      disabledLabel: 'siteSettingsFontAccessBlock',
+      enabledLabel: redesignEnabled ? 'siteSettingsFontsAllowed' :
+                                      'siteSettingsFontAccessAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsFontsBlocked' :
+                                       'siteSettingsFontAccessBlock',
       shouldShow: () =>
           loadTimeData.getBoolean('enableFontAccessContentSetting'),
     },
@@ -255,6 +261,8 @@ function getCategoryItemMap() {
       id: 'pdfDocuments',
       label: 'siteSettingsPdfDocuments',
       icon: 'settings:pdf',
+      enabledLabel: redesignEnabled ? 'siteSettingsPdfsAllowed' : '',
+      disabledLabel: redesignEnabled ? 'siteSettingsPdfsBlocked' : '',
     },
     {
       route: routes.SITE_SETTINGS_POPUPS,
@@ -271,14 +279,20 @@ function getCategoryItemMap() {
       id: Id.PROTECTED_CONTENT,
       label: 'siteSettingsProtectedContent',
       icon: 'settings:protected-content',
+      enabledLabel: redesignEnabled ? 'siteSettingsProtectedContentAllowed' :
+                                      '',
+      disabledLabel: redesignEnabled ? 'siteSettingsProtectedContentBlocked' :
+                                       '',
     },
     {
       route: routes.SITE_SETTINGS_HANDLERS,
       id: Id.PROTOCOL_HANDLERS,
       label: 'siteSettingsHandlers',
       icon: 'settings:protocol-handler',
-      enabledLabel: 'siteSettingsHandlersAsk',
-      disabledLabel: 'siteSettingsHandlersBlocked',
+      enabledLabel: redesignEnabled ? 'siteSettingsProtocolHandlersAllowed' :
+                                      'siteSettingsHandlersAsk',
+      disabledLabel: redesignEnabled ? 'siteSettingsProtocolHandlersBlocked' :
+                                       'siteSettingsHandlersBlocked',
       shouldShow: () => !loadTimeData.getBoolean('isGuest'),
     },
     {
