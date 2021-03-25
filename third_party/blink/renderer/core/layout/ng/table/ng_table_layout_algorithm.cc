@@ -656,6 +656,10 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
       row_offset += row.block_size;
     }
     fragment_borders_geometry->rows.push_back(row_offset);
+    // crbug.com/1179369 make sure dimensions of table_borders and
+    // fragment_borders_geometry are consistent.
+    DCHECK_LE(table_borders.EdgesPerRow() / 2,
+              fragment_borders_geometry->columns.size());
     container_builder_.SetTableCollapsedBorders(table_borders);
     container_builder_.SetTableCollapsedBordersGeometry(
         std::move(fragment_borders_geometry));

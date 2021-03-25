@@ -17,6 +17,12 @@ scoped_refptr<const NGTableBorders> NGTableNode::GetTableBorders() const {
   if (!table_borders) {
     table_borders = NGTableBorders::ComputeTableBorders(*this);
     layout_table->SetCachedTableBorders(table_borders.get());
+  } else {
+#if DCHECK_IS_ON()
+    // TODO(crbug.com/1191742) remove these DCHECKs as soon as bug is found.
+    auto duplicate_table_borders = NGTableBorders::ComputeTableBorders(*this);
+    DCHECK(*duplicate_table_borders == *table_borders);
+#endif
   }
   return table_borders;
 }

@@ -380,6 +380,26 @@ void NGTableBorders::ShowEdges() {
   LOG(INFO) << "\n" << DumpEdges().Utf8();
 }
 
+bool NGTableBorders::operator==(const NGTableBorders& other) const {
+  // Compare by traversal, because we must call edge comparsion function.
+  if (edges_.size() != other.edges_.size())
+    return false;
+  for (unsigned i = 0; i < edges_.size(); i++) {
+    if (edges_[i].edge_side != other.edges_[i].edge_side)
+      return false;
+    if (edges_[i].box_order != other.edges_[i].box_order)
+      return false;
+  }
+  return sections_ == other.sections_ &&
+         edges_per_row_ == other.edges_per_row_ &&
+         cached_table_border_ == other.cached_table_border_ &&
+         collapsed_visual_inline_start_ ==
+             other.collapsed_visual_inline_start_ &&
+         collapsed_visual_inline_end_ == other.collapsed_visual_inline_end_ &&
+         last_column_index_ == other.last_column_index_ &&
+         is_collapsed_ == other.is_collapsed_;
+}
+
 #endif
 
 NGBoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,

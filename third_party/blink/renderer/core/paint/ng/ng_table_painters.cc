@@ -452,7 +452,12 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     wtf_size_t table_row = edge.TableRow();
     wtf_size_t table_column = edge.TableColumn();
     if (edge.IsInlineAxis()) {
-      CHECK_LT(table_column + 1, collapsed_borders_geometry->columns.size());
+      // crbug.com/1179369 This crash has been observed, but we have no
+      // reproducible case.
+      if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
+        NOTREACHED();
+        continue;
+      }
       inline_start = collapsed_borders_geometry->columns[table_column];
       inline_size = collapsed_borders_geometry->columns[table_column + 1] -
                     collapsed_borders_geometry->columns[table_column];
