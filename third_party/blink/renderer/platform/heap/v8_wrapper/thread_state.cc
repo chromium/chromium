@@ -52,23 +52,10 @@ void ThreadState::DetachFromIsolate() {
   isolate_ = nullptr;
 }
 
-namespace {
-
-std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> CreateCustomSpaces() {
-  std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> spaces;
-  spaces.emplace_back(std::make_unique<HeapVectorBackingSpace>());
-  spaces.emplace_back(std::make_unique<HeapHashTableBackingSpace>());
-  spaces.emplace_back(std::make_unique<NodeSpace>());
-  spaces.emplace_back(std::make_unique<CSSValueSpace>());
-  return spaces;
-}
-
-}  // namespace
-
 ThreadState::ThreadState()
     : cpp_heap_(v8::CppHeap::Create(
           gin::V8Platform::Get(),
-          {CreateCustomSpaces(),
+          {CustomSpaces::CreateCustomSpaces(),
            v8::WrapperDescriptor(kV8DOMWrapperTypeIndex,
                                  kV8DOMWrapperObjectIndex,
                                  gin::GinEmbedder::kEmbedderBlink)})),

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_CUSTOM_SPACES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_CUSTOM_SPACES_H_
 
+#include <vector>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "v8/include/cppgc/custom-space.h"
 
@@ -38,6 +40,18 @@ class PLATFORM_EXPORT NodeSpace : public cppgc::CustomSpace<NodeSpace> {
 class PLATFORM_EXPORT CSSValueSpace : public cppgc::CustomSpace<CSSValueSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 3;
+};
+
+struct CustomSpaces {
+  static std::vector<std::unique_ptr<cppgc::CustomSpaceBase>>
+  CreateCustomSpaces() {
+    std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> spaces;
+    spaces.emplace_back(std::make_unique<HeapVectorBackingSpace>());
+    spaces.emplace_back(std::make_unique<HeapHashTableBackingSpace>());
+    spaces.emplace_back(std::make_unique<NodeSpace>());
+    spaces.emplace_back(std::make_unique<CSSValueSpace>());
+    return spaces;
+  }
 };
 
 }  // namespace blink
