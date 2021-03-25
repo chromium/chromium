@@ -2971,7 +2971,6 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // a navigation yet.
   DCHECK(!has_committed_any_navigation_);
   DCHECK(GetLastCommittedOrigin().opaque());
-  DCHECK(isolation_info_.IsEmpty());
 
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
