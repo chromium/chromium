@@ -19,8 +19,8 @@
   <message name="IDS_SETTINGS_CAPTIONS_PREFERENCES_SUBTITLE" desc="Section subtitle for Caption preferences. Disclaimer that not all apps and sites support the system caption style. Some apps and sites don't use the web captioning standard and have their own captioning platform.">
     Customize caption size and style for apps and sites that support this setting
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference. Text size will apply to captions and alo Live Caption when it's enabled.">
-    Text size (Also applies to Live Caption)
+  <message name="IDS_SETTINGS_CAPTIONS_TEXT_SIZE" desc="Name of the caption text size preference.">
+    Text size
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_TEXT_FONT" desc="Name of the caption text font preference.">
     Text font

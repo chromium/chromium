@@ -587,72 +587,253 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       UpdateCaptionTextSize) {
-  int textSize = 16;
-  int lineHeight = 24;
-  int bubbleHeight = 48;
-  int errorIconHeight = 20;
+                       UpdateCaptionStyleTextSize) {
+  int text_size = 16;
+  int line_height = 24;
+  int bubble_height = 48;
+  int error_icon_height = 20;
+  ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(base::nullopt);
   OnPartialTranscription("Hamsters' teeth never stop growing");
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
   // Set the text size to 200%.
-  ui::CaptionStyle caption_style;
   caption_style.text_size = "200%";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize * 2, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize * 2, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight * 2, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight * 2, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight * 2);
+  EXPECT_EQ(text_size * 2, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size * 2, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height * 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 2, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 2);
 
   // Set the text size to the empty string.
   caption_style.text_size = "";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
   // Set the text size to 50% !important.
   caption_style.text_size = "50% !important";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize / 2, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize / 2, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight / 2, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight / 2, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight / 2);
+  EXPECT_EQ(text_size / 2, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size / 2, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height / 2, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height / 2, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height / 2);
 
   // Set the text size to a bad string.
   caption_style.text_size = "Ostriches can run up to 45mph";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
 
-  // Set the caption style to nullopt.
-  GetController()->UpdateCaptionStyle(base::nullopt);
-  EXPECT_EQ(textSize, GetLabel()->font_list().GetFontSize());
-  EXPECT_EQ(textSize, GetTitle()->font_list().GetFontSize());
-  EXPECT_EQ(lineHeight, GetLabel()->GetLineHeight());
-  EXPECT_EQ(lineHeight, GetTitle()->GetLineHeight());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubbleHeight);
+  // Set the caption style to a floating point percent.
+  caption_style.text_size = "62.5%";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(text_size * 0.625, GetLabel()->font_list().GetFontSize());
+  EXPECT_EQ(text_size * 0.625, GetTitle()->font_list().GetFontSize());
+  EXPECT_EQ(line_height * 0.625, GetLabel()->GetLineHeight());
+  EXPECT_EQ(line_height * 0.625, GetTitle()->GetLineHeight());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 0.625);
 
   // Set the error message.
   caption_style.text_size = "50%";
   GetController()->UpdateCaptionStyle(caption_style);
   OnError();
-  EXPECT_EQ(lineHeight / 2, GetErrorText()->GetLineHeight());
-  EXPECT_EQ(errorIconHeight / 2, GetErrorIcon()->GetImageBounds().height());
-  EXPECT_GT(GetBubble()->GetPreferredSize().height(), lineHeight / 2);
+  EXPECT_EQ(line_height / 2, GetErrorText()->GetLineHeight());
+  EXPECT_EQ(error_icon_height / 2, GetErrorIcon()->GetImageBounds().height());
+  EXPECT_GT(GetBubble()->GetPreferredSize().height(), line_height / 2);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleFontFamily) {
+#if defined(OS_MAC) || defined(OS_WIN)
+  std::string default_font = "Roboto";
+#else
+  // Testing framework doesn't load all fonts, so Roboto is mapped to sans.
+  std::string default_font = "sans";
+#endif
+
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription("Koalas aren't bears: they are marsupials.");
+  EXPECT_EQ(default_font,
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to Helvetica.
+  caption_style.font_family = "Helvetica";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ("Helvetica",
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to the empty string.
+  caption_style.font_family = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_font,
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ(default_font,
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+
+  // Set the font family to Helvetica !important.
+  caption_style.font_family = "Helvetica !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ("Helvetica",
+            GetLabel()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetTitle()->font_list().GetPrimaryFont().GetFontName());
+  EXPECT_EQ("Helvetica",
+            GetErrorText()->font_list().GetPrimaryFont().GetFontName());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleTextColor) {
+  SkColor default_color = SK_ColorWHITE;
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription(
+      "Marsupials first evolved in South America about 100 million years ago.");
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to red.
+  caption_style.text_color = "rgba(255,0,0,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorRED, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorRED, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to the empty string.
+  caption_style.text_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to blue !important with 0.5 opacity.
+  caption_style.text_color = "rgba(0,0,255,0.5) !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetErrorText()->GetEnabledColor());
+
+  // Set the text color to a bad string.
+  caption_style.text_color = "green";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to green with spaces between the commas.
+  caption_style.text_color = "rgba(0, 255, 0, 1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SK_ColorGREEN, GetErrorText()->GetEnabledColor());
+
+  // Set the text color to magenta with 0 opacity.
+  caption_style.text_color = "rgba(255,0,255,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
+  EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       UpdateCaptionStyleBackgroundColor) {
+  SkColor default_color = SkColorSetA(gfx::kGoogleGrey900, 230);
+  ui::CaptionStyle caption_style;
+
+  GetController()->UpdateCaptionStyle(base::nullopt);
+  OnPartialTranscription("Most marsupials are nocturnal.");
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to red with 0.5 opacity.
+  caption_style.window_color = "rgba(255,0,0,0.5)";
+  caption_style.background_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SkColorSetA(SK_ColorRED, 127), GetBubble()->color());
+
+  // Set the background color to blue. When no window color is supplied, the
+  // background color is applied to the caption bubble color.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorBLUE, GetBubble()->color());
+
+  // Set both to the empty string.
+  caption_style.window_color = "";
+  caption_style.background_color = "";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to green and the background color to majenta. The
+  // window color is applied to the caption bubble.
+  caption_style.window_color = "rgba(0,255,0,1)";
+  caption_style.background_color = "rgba(255,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetBubble()->color());
+
+  // Set the window color to transparent and the background color to majenta.
+  // The non-transparent color is applied to the caption bubble.
+  caption_style.window_color = "rgba(0,255,0,0)";
+  caption_style.background_color = "rgba(255,0,255,1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorMAGENTA, GetBubble()->color());
+
+  // Set the window color to yellow and the background color to transparent.
+  // The non-transparent color is applied to the caption bubble.
+  caption_style.window_color = "rgba(255,255,0,1)";
+  caption_style.background_color = "rgba(0,0,0,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorYELLOW, GetBubble()->color());
+
+  // Set both to transparent.
+  caption_style.window_color = "rgba(255,0,0,0)";
+  caption_style.background_color = "rgba(0,255,0,0)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the background color to blue !important.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0,0,255,1.0) !important";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorBLUE, GetBubble()->color());
+
+  // Set the background color to a bad string.
+  caption_style.window_color = "";
+  caption_style.background_color = "green";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(default_color, GetBubble()->color());
+
+  // Set the window color to green with spaces between the commas.
+  caption_style.window_color = "";
+  caption_style.background_color = "rgba(0, 255, 0, 1)";
+  GetController()->UpdateCaptionStyle(caption_style);
+  EXPECT_EQ(SK_ColorGREEN, GetBubble()->color());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
