@@ -1077,7 +1077,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   system_apps.at(SystemAppType::SETTINGS).timer_info =
       SystemAppBackgroundTaskInfo();
   system_apps.at(SystemAppType::SETTINGS).timer_info->period =
-      base::TimeDelta::FromSeconds(30);
+      base::TimeDelta::FromSeconds(300);
   system_apps.at(SystemAppType::SETTINGS).timer_info->url = AppUrl1();
   system_apps.at(SystemAppType::SETTINGS).timer_info->open_immediately = true;
 
@@ -1105,17 +1105,17 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
 
   auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(121));
   EXPECT_EQ(1u, timers.size());
   EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(30), timers[0]->period_for_testing());
+  EXPECT_EQ(base::TimeDelta::FromSeconds(300), timers[0]->period_for_testing());
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 
   loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
 
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(30));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(300));
 
   EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
