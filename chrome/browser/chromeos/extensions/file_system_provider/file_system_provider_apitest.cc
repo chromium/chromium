@@ -157,7 +157,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
       << message_;
 }
 
-// TODO(crbug.com/1167699): this test is flaky.
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unmount) {
   ASSERT_TRUE(RunExtensionTest({.name = "file_system_provider/unmount",
                                 .load_as_component = true,

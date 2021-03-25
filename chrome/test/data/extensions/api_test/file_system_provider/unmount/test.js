@@ -78,15 +78,15 @@ function runTests() {
     // Tests if fileManagerPrivate.removeMount() for provided file systems emits
     // the onMountRequested() event with correct arguments.
     function requestUnmountSuccess() {
-      var onUnmountRequested = chrome.test.callbackPass(
-          function(options, onSuccess, onError) {
+      var onUnmountRequested = function(options, onSuccess, onError) {
         chrome.test.assertEq(SECOND_FILE_SYSTEM_ID, options.fileSystemId);
         // Not calling fileSystemProvider.unmount(), so the onMountCompleted
         // event will not be raised.
         chrome.fileSystemProvider.onUnmountRequested.removeListener(
             onUnmountRequested);
         onSuccess();
-      });
+        chrome.test.succeed();
+      };
 
       chrome.fileSystemProvider.onUnmountRequested.addListener(
           onUnmountRequested);
