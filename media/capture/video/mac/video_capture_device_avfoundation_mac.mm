@@ -733,7 +733,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // The lock is needed for |_scaledFrameTransformers| and |_frameReceiver|.
   _lock.AssertAcquired();
+  // References to any scaled pixel buffers need to be retained until after
+  // ReceiveExternalGpuMemoryBufferFrame().
+  std::vector<base::ScopedCFTypeRef<CVPixelBufferRef>> scaledPixelBuffers;
   std::vector<media::CapturedExternalVideoBuffer> scaledExternalBuffers;
+  scaledPixelBuffers.reserve(_scaledFrameTransformers.size());
   scaledExternalBuffers.reserve(_scaledFrameTransformers.size());
   for (auto& scaledFrameTransformer : _scaledFrameTransformers) {
     gfx::Size scaledFrameSize = scaledFrameTransformer->destination_size();
@@ -757,6 +761,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                  << scaledFrameSize.ToString();
       continue;
     }
+    scaledPixelBuffers.push_back(scaledPixelBuffer);
     IOSurfaceRef scaledIoSurface = CVPixelBufferGetIOSurface(scaledPixelBuffer);
     media::VideoCaptureFormat scaledCaptureFormat = captureFormat;
     scaledCaptureFormat.frame_size = scaledFrameSize;
