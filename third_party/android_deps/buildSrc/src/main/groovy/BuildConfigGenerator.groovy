@@ -7,6 +7,7 @@ import groovy.text.Template
 import groovy.transform.SourceURI
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
@@ -73,36 +74,43 @@ class BuildConfigGenerator extends DefaultTask {
      * to an absolute path before being used, as Groovy would base relative path where the script
      * is being executed.
      */
+    @Input
     String repositoryPath
 
     /**
      * Relative path to the Chromium source root from the build.gradle file.
      */
+    @Input
     String chromiumSourceRoot
 
     /**
      * Name of the cipd root package.
      */
+    @Input
     String cipdBucket
 
     /**
      * Skips license file import.
      */
+    @Input
     boolean skipLicenses
 
     /**
      * Array with visibility for targets which are not listed in build.gradle
      */
+    @Input
     String[] internalTargetVisibility
 
     /**
      * Whether to ignore DEPS file.
      */
+    @Input
     boolean ignoreDEPS
 
     /**
      * The URI of the file BuildConfigGenerator.groovy
      */
+    @Input
     @SourceURI
     URI sourceUri
 
@@ -136,7 +144,12 @@ class BuildConfigGenerator extends DefaultTask {
             if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency) != null) {
                 return
             }
-            logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
+
+            def dependencyForLogging = dependency.clone()
+            // jsonDump() throws StackOverflowError for ResolvedArtifact.
+            dependencyForLogging.artifact = null
+
+            logger.debug "Processing ${dependency.name}: \n${jsonDump(dependencyForLogging)}"
             def depDir = computeDepDir(dependency)
             def absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 

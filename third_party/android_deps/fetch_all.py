@@ -517,8 +517,8 @@ def main():
 
         subprojects = _ParseSubprojects(
             os.path.join(args.android_deps_dir, 'subprojects.txt'))
+        subproject_dirs = []
         if subprojects:
-            subproject_dirs = []
             for (index, subproject) in enumerate(subprojects):
                 subproject_dir = 'subproject{}'.format(index)
                 Copy(args.android_deps_dir, [subproject],
@@ -526,11 +526,11 @@ def main():
                      [os.path.join(subproject_dir, 'build.gradle')])
                 subproject_dirs.append(subproject_dir)
 
-            _GenerateSettingsGradle(
-                subproject_dirs,
-                os.path.join(args.android_deps_dir,
-                             'settings.gradle.template'),
-                os.path.join(build_android_deps_dir, 'settings.gradle'))
+        _GenerateSettingsGradle(
+            subproject_dirs,
+            os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
+                         'settings.gradle.template'),
+            os.path.join(build_android_deps_dir, 'settings.gradle'))
 
         if not args.ignore_vulnerabilities:
             report_dst = os.path.join(args.android_deps_dir,

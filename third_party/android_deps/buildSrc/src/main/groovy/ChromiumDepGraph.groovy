@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import groovy.transform.AutoClone
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.ArtifactRepository
@@ -698,6 +699,7 @@ class ChromiumDepGraph {
         throw new RuntimeException("Resolved POM but could not resolve ${url}")
     }
 
+    @AutoClone
     static class DependencyDescription {
         String id
         ResolvedArtifact artifact

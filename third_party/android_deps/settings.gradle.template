@@ -15,3 +15,5 @@ subprojectDirs.each { subprojectDir ->
 rootProject.children.each { prj ->
   prj.projectDir = new File(subprojects[prj.name])
 }
+
+enableFeaturePreview("VERSION_ORDERING_V2")
