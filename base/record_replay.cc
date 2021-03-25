@@ -21,6 +21,7 @@ extern "C" bool V8IsRecordingOrReplaying();
 extern "C" bool V8IsRecording();
 extern "C" bool V8IsReplaying();
 extern "C" void V8RecordReplayAssertVA(const char* format, va_list args);
+extern "C" void V8RecordReplayPrintVA(const char* format, va_list args);
 extern "C" uintptr_t V8RecordReplayValue(const char* why, uintptr_t value);
 extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
 extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
@@ -51,6 +52,15 @@ void Assert(const char* format, ...) {
   va_list ap;
   va_start(ap, format);
   V8RecordReplayAssertVA(format, ap);
+  va_end(ap);
+#endif
+}
+
+void Print(const char* format, ...) {
+#ifndef NACL_TC_REV
+  va_list ap;
+  va_start(ap, format);
+  V8RecordReplayPrintVA(format, ap);
   va_end(ap);
 #endif
 }
