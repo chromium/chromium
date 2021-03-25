@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/extensions/chrome_extension_test_notification_observer.h>
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
+
 #include "base/bind.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"

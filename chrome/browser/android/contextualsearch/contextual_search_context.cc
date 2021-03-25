@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/android/contextualsearch/contextual_search_context.h>
+#include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
