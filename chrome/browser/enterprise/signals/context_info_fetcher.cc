@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/version_info.h"
 #include "device_management_backend.pb.h"
@@ -59,32 +62,16 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
 }
 
 std::vector<std::string> ContextInfoFetcher::GetBrowserAffiliationIDs() {
-  const enterprise_management::PolicyData* browser_policy_data =
-      chrome::enterprise_util::GetBrowserPolicyData();
-
-  if (!browser_policy_data ||
-      browser_policy_data->device_affiliation_ids().empty()) {
-    return {};
-  }
-
-  const auto& affiliation_ids = browser_policy_data->device_affiliation_ids();
-  return std::vector<std::string>(affiliation_ids.begin(),
-                                  affiliation_ids.end());
+  auto ids =
+      g_browser_process->browser_policy_connector()->device_affiliation_ids();
+  return {ids.begin(), ids.end()};
 }
 
 std::vector<std::string> ContextInfoFetcher::GetProfileAffiliationIDs() {
-  const enterprise_management::PolicyData* profile_policy_data =
-      chrome::enterprise_util::GetProfilePolicyData(
-          Profile::FromBrowserContext(browser_context_));
-
-  if (!profile_policy_data ||
-      profile_policy_data->user_affiliation_ids().empty()) {
-    return {};
-  }
-
-  const auto& affiliation_ids = profile_policy_data->user_affiliation_ids();
-  return std::vector<std::string>(affiliation_ids.begin(),
-                                  affiliation_ids.end());
+  auto ids = Profile::FromBrowserContext(browser_context_)
+                 ->GetProfilePolicyConnector()
+                 ->user_affiliation_ids();
+  return {ids.begin(), ids.end()};
 }
 
 std::vector<std::string> ContextInfoFetcher::GetAnalysisConnectorProviders(

@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -77,6 +78,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   bool IsCommandLineSwitchSupported() const override;
 
   static void EnableCommandLineSupportForTesting();
+
+  virtual base::flat_set<std::string> device_affiliation_ids() const;
 
  protected:
   // BrowserPolicyConnectorBase::

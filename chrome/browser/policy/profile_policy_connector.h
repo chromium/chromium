@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -80,6 +81,10 @@ class ProfilePolicyConnector final {
   // policies to propagate. May be only called form tests.
   void TriggerProxiedPoliciesWaitTimeoutForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Returns affiliation IDs contained in the PolicyData corresponding to the
+  // profile.
+  base::flat_set<std::string> user_affiliation_ids() const;
 
  private:
   // Returns the policy store which is actually used.

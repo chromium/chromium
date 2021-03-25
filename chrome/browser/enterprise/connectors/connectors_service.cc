@@ -340,17 +340,8 @@ bool ConnectorsService::CanUseProfileDmToken() const {
   if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
     return true;
 
-  const enterprise_management::PolicyData* profile_policy =
-      chrome::enterprise_util::GetProfilePolicyData(
-          Profile::FromBrowserContext(context_));
-  const enterprise_management::PolicyData* browser_policy =
-      chrome::enterprise_util::GetBrowserPolicyData();
-
-  if (!profile_policy || !browser_policy)
-    return false;
-
-  return chrome::enterprise_util::IsProfileAffiliated(*profile_policy,
-                                                      *browser_policy);
+  return chrome::enterprise_util::IsProfileAffiliated(
+      Profile::FromBrowserContext(context_));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

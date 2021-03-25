@@ -570,15 +570,20 @@ BrowserPolicyConnectorChromeOS::CreateAttestationFlow() {
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
-chromeos::AffiliationIDSet
-BrowserPolicyConnectorChromeOS::GetDeviceAffiliationIDs() const {
-  chromeos::AffiliationIDSet affiliation_ids;
+base::flat_set<std::string>
+BrowserPolicyConnectorChromeOS::device_affiliation_ids() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy) {
-    affiliation_ids.insert(policy->device_affiliation_ids().begin(),
-                           policy->device_affiliation_ids().end());
+    const auto& ids = policy->device_affiliation_ids();
+    return {ids.begin(), ids.end()};
   }
-  return affiliation_ids;
+  return {};
+}
+
+chromeos::AffiliationIDSet
+BrowserPolicyConnectorChromeOS::GetDeviceAffiliationIDs() const {
+  base::flat_set<std::string> affiliation_ids = device_affiliation_ids();
+  return {affiliation_ids.begin(), affiliation_ids.end()};
 }
 
 const em::PolicyData* BrowserPolicyConnectorChromeOS::GetDevicePolicy() const {

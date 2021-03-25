@@ -316,6 +316,15 @@ void ProfilePolicyConnector::TriggerProxiedPoliciesWaitTimeoutForTesting() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+base::flat_set<std::string> ProfilePolicyConnector::user_affiliation_ids()
+    const {
+  auto* store = GetActualPolicyStore();
+  if (!store || !store->has_policy())
+    return {};
+  const auto& ids = store->policy()->user_affiliation_ids();
+  return {ids.begin(), ids.end()};
+}
+
 const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {
   if (policy_store_)
     return policy_store_;

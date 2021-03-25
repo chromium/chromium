@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -235,6 +236,9 @@ class BrowserPolicyConnectorChromeOS
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerDisconnected() override;
 
+  // TODO(crbug.com/1187628): Combine the following two functions into one to
+  // simplify the API.
+  base::flat_set<std::string> device_affiliation_ids() const override;
   chromeos::AffiliationIDSet GetDeviceAffiliationIDs() const;
 
   // BrowserPolicyConnector:

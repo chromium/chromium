@@ -155,6 +155,26 @@ void ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting() {
   command_line_enabled_for_testing = true;
 }
 
+base::flat_set<std::string>
+ChromeBrowserPolicyConnector::device_affiliation_ids() const {
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!machine_level_user_cloud_policy_manager_ ||
+      !machine_level_user_cloud_policy_manager_->IsClientRegistered() ||
+      !machine_level_user_cloud_policy_manager_->core() ||
+      !machine_level_user_cloud_policy_manager_->core()->store() ||
+      !machine_level_user_cloud_policy_manager_->core()->store()->policy()) {
+    return {};
+  }
+  const auto& ids = machine_level_user_cloud_policy_manager_->core()
+                        ->store()
+                        ->policy()
+                        ->device_affiliation_ids();
+  return {ids.begin(), ids.end()};
+#else
+  return {};
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
 ChromeBrowserPolicyConnector::CreatePolicyProviders() {
   auto providers = BrowserPolicyConnector::CreatePolicyProviders();
