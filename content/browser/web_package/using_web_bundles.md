@@ -2,6 +2,8 @@
 
 This document is for web developers who want to create [Web Bundles](https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html) that can be loaded with Chromium's experimental implementation.
 
+*NOTE*: This document describes about Web Bundles that contain entire web page(s). For [Subresource Loading with Web Bundles](https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md), see [subresource_loading_origin_trial.md](subresource_loading_origin_trial.md).
+
 [TOC]
 
 ## Creating Web Bundles
