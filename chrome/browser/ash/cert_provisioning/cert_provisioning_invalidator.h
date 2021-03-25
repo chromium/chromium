@@ -17,7 +17,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 enum class CertScope;
@@ -216,6 +216,6 @@ class CertProvisioningDeviceInvalidator
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_INVALIDATOR_H_

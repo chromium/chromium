@@ -8,7 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // The enum is used for UMA, the values should not be renumerated.
@@ -51,6 +51,6 @@ void RecordVerifiedAccessTime(CertScope scope, base::TimeDelta sample);
 void RecordCsrSignTime(CertScope scope, base::TimeDelta sample);
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_METRICS_H_

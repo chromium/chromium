@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 namespace {
@@ -244,4 +244,4 @@ bool CertProvisioningSerializer::DeserializeWorker(
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

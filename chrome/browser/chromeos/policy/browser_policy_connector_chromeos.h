@@ -198,7 +198,7 @@ class BrowserPolicyConnectorChromeOS
 
   // Return a pointer to the device-wide client certificate provisioning
   // scheduler. The callers do not take ownership of that pointer.
-  chromeos::cert_provisioning::CertProvisioningScheduler*
+  ash::cert_provisioning::CertProvisioningScheduler*
   GetDeviceCertProvisioningScheduler() {
     return device_cert_provisioning_scheduler_.get();
   }
@@ -316,7 +316,7 @@ class BrowserPolicyConnectorChromeOS
 
   // Manages provisioning of certificates from
   // RequiredClientCertificateForDevice device policy.
-  std::unique_ptr<chromeos::cert_provisioning::CertProvisioningScheduler>
+  std::unique_ptr<ash::cert_provisioning::CertProvisioningScheduler>
       device_cert_provisioning_scheduler_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorChromeOS> weak_ptr_factory_{this};

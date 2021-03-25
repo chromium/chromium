@@ -18,6 +18,9 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+// TODO(https://crbug.com/1164001): forward declare NetworkStateHandler
+// after //chromeos/network is moved to ash.
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -26,12 +29,9 @@ class PrefService;
 
 namespace policy {
 class CloudPolicyClient;
-}
+}  // namespace policy
 
-namespace chromeos {
-
-class NetworkStateHandler;
-
+namespace ash {
 namespace cert_provisioning {
 
 class CertProvisioningWorker;
@@ -258,6 +258,6 @@ class CertProvisioningSchedulerImpl
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_SCHEDULER_H_

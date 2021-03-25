@@ -15,7 +15,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // ========= CertIterator ======================================================
@@ -307,4 +307,4 @@ void CertDeleter::ReturnStatus(platform_keys::Status status) {
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

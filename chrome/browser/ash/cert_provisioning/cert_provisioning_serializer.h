@@ -10,7 +10,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 class CertProvisioningSerializer {
@@ -32,6 +32,6 @@ class CertProvisioningSerializer {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_SERIALIZER_H_

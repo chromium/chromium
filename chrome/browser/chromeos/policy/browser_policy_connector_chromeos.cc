@@ -509,7 +509,7 @@ void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected() {
     // to be non-null when this observer function has been called.
     CloudPolicyClient* cloud_policy_client =
         device_cloud_policy_manager_->core()->client();
-    device_cert_provisioning_scheduler_ = chromeos::cert_provisioning::
+    device_cert_provisioning_scheduler_ = ash::cert_provisioning::
         CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
             cloud_policy_client,
             affiliated_invalidation_service_provider_.get());

@@ -24,7 +24,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 namespace {
@@ -267,4 +267,4 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

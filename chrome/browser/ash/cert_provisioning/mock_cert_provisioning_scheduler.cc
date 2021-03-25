@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 MockCertProvisioningScheduler::MockCertProvisioningScheduler() = default;
 MockCertProvisioningScheduler::~MockCertProvisioningScheduler() = default;
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

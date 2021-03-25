@@ -14,7 +14,7 @@
 using testing::_;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // ================ MockCertProvisioningWorkerFactory ==========================
@@ -90,6 +90,6 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_WORKER_H_

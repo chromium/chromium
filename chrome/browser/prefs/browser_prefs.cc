@@ -769,7 +769,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ChromeOSMetricsProvider::RegisterPrefs(registry);
   chromeos::ArcKioskAppManager::RegisterPrefs(registry);
   ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
-  chromeos::cert_provisioning::RegisterLocalStatePrefs(registry);
+  ash::cert_provisioning::RegisterLocalStatePrefs(registry);
   chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(registry);
   chromeos::ChromeUserManagerImpl::RegisterPrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
@@ -1137,7 +1137,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   policy::SystemProxyManager::RegisterProfilePrefs(registry);
   RegisterChromeLauncherUserPrefs(registry);
   ::onc::RegisterProfilePrefs(registry);
-  chromeos::cert_provisioning::RegisterProfilePrefs(registry);
+  ash::cert_provisioning::RegisterProfilePrefs(registry);
   borealis::prefs::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

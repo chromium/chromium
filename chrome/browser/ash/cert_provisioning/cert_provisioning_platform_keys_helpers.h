@@ -11,15 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+// TODO(https://crbug.com/1164001): forward declare PlatformKeysService
+// after //chrom/browser/chromeos/platform_keys is moved to ash.
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
-namespace platform_keys {
-class PlatformKeysService;
-}  // namespace platform_keys
-}  // namespace chromeos
-
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // ========= CertIterator ======================================================
@@ -169,6 +166,6 @@ class CertDeleter {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_PLATFORM_KEYS_HELPERS_H_

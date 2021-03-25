@@ -12,7 +12,12 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
+// TODO(https://crbug.com/1164001): forward declare KeyPermissionsManager
+// after //chrom/browser/chromeos/platform_keys is moved to ash.
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
+// TODO(https://crbug.com/1164001): forward declare PlatformKeysService
+// after //chrom/browser/chromeos/platform_keys is moved to ash.
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
@@ -22,13 +27,7 @@
 class PrefRegistrySimple;
 class Profile;
 
-namespace chromeos {
-
-namespace platform_keys {
-class KeyPermissionsManager;
-class PlatformKeysService;
-}  // namespace platform_keys
-
+namespace ash {
 namespace cert_provisioning {
 
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
@@ -173,6 +172,6 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
     Profile* profile);
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_

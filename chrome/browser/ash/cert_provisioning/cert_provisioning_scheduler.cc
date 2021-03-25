@@ -34,7 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 namespace {
@@ -761,4 +761,4 @@ void CertProvisioningSchedulerImpl::NotifyObserversVisibleStateChanged() {
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

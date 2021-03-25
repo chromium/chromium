@@ -29,7 +29,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 namespace {
@@ -975,4 +975,4 @@ void CertProvisioningWorkerImpl::UnregisterFromInvalidationTopic() {
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

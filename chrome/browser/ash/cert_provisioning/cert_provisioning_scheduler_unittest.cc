@@ -38,7 +38,7 @@ using testing::ReturnRef;
 using testing::SaveArg;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 namespace {
 
@@ -1091,4 +1091,4 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
 
 }  // namespace
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

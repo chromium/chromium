@@ -144,4 +144,10 @@ class NetworkStateTestHelper {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when
+// //chromeos/network moved to ash
+namespace ash {
+using ::chromeos::NetworkStateTestHelper;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_TEST_HELPER_H_

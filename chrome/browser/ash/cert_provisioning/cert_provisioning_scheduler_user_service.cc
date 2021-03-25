@@ -11,7 +11,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // ================== CertProvisioningSchedulerUserService =====================
@@ -70,4 +70,4 @@ CertProvisioningSchedulerUserServiceFactory::BuildServiceInstanceFor(
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

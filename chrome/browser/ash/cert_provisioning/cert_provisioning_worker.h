@@ -20,11 +20,11 @@
 
 namespace policy {
 class CloudPolicyClient;
-}
+}  // namespace policy
 class Profile;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 class CertProvisioningInvalidator;
@@ -281,6 +281,6 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_WORKER_H_

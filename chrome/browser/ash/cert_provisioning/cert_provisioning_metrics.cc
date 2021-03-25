@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 #define CP_RESULT "ChromeOS.CertProvisioning.Result"
@@ -72,4 +72,4 @@ void RecordCsrSignTime(CertScope scope, base::TimeDelta sample) {
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

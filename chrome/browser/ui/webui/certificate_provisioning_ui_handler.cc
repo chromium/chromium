@@ -32,10 +32,11 @@ namespace {
 
 // Returns the per-user CertProvisioningScheduler for |user_profile|, if it has
 // any.
-CertProvisioningScheduler* GetCertProvisioningSchedulerForUser(
-    Profile* user_profile) {
-  CertProvisioningSchedulerUserService* user_service =
-      CertProvisioningSchedulerUserServiceFactory::GetForProfile(user_profile);
+ash::cert_provisioning::CertProvisioningScheduler*
+GetCertProvisioningSchedulerForUser(Profile* user_profile) {
+  ash::cert_provisioning::CertProvisioningSchedulerUserService* user_service =
+      ash::cert_provisioning::CertProvisioningSchedulerUserServiceFactory::
+          GetForProfile(user_profile);
   if (!user_service)
     return nullptr;
   return user_service->scheduler();
@@ -43,7 +44,8 @@ CertProvisioningScheduler* GetCertProvisioningSchedulerForUser(
 
 // Returns the per-device CertProvisioningScheduler, if it exists. No
 // affiliation check is done here.
-CertProvisioningScheduler* GetCertProvisioningSchedulerForDevice() {
+ash::cert_provisioning::CertProvisioningScheduler*
+GetCertProvisioningSchedulerForDevice() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   return connector->GetDeviceCertProvisioningScheduler();
@@ -51,8 +53,10 @@ CertProvisioningScheduler* GetCertProvisioningSchedulerForDevice() {
 
 // Returns localized representation for the state of a certificate provisioning
 // process.
-std::u16string GetProvisioningProcessStatus(CertProvisioningWorkerState state) {
-  using CertProvisioningWorkerState = CertProvisioningWorkerState;
+std::u16string GetProvisioningProcessStatus(
+    ash::cert_provisioning::CertProvisioningWorkerState state) {
+  using CertProvisioningWorkerState =
+      ash::cert_provisioning::CertProvisioningWorkerState;
   switch (state) {
     case CertProvisioningWorkerState ::kInitState:
       return l10n_util::GetStringUTF16(
@@ -106,7 +110,7 @@ base::Value CreateProvisioningProcessEntry(
     const std::string& cert_profile_id,
     const std::string& cert_profile_name,
     bool is_device_wide,
-    CertProvisioningWorkerState state,
+    ash::cert_provisioning::CertProvisioningWorkerState state,
     base::Time time_since_last_update,
     const std::string& public_key_spki_der) {
   base::Value entry(base::Value::Type::DICTIONARY);
@@ -130,10 +134,12 @@ base::Value CreateProvisioningProcessEntry(
 // |cert_provisioning_scheduler| and appends them to |list_to_append_to|.
 void CollectProvisioningProcesses(
     base::Value* list_to_append_to,
-    CertProvisioningScheduler* cert_provisioning_scheduler,
+    ash::cert_provisioning::CertProvisioningScheduler*
+        cert_provisioning_scheduler,
     bool is_device_wide) {
   for (const auto& worker_entry : cert_provisioning_scheduler->GetWorkers()) {
-    CertProvisioningWorker* worker = worker_entry.second.get();
+    ash::cert_provisioning::CertProvisioningWorker* worker =
+        worker_entry.second.get();
     list_to_append_to->Append(CreateProvisioningProcessEntry(
         worker_entry.first, worker->GetCertProfile().name, is_device_wide,
         worker->GetState(), worker->GetLastUpdateTime(),
@@ -141,11 +147,12 @@ void CollectProvisioningProcesses(
   }
   for (const auto& failed_worker_entry :
        cert_provisioning_scheduler->GetFailedCertProfileIds()) {
-    const FailedWorkerInfo& worker = failed_worker_entry.second;
+    const ash::cert_provisioning::FailedWorkerInfo& worker =
+        failed_worker_entry.second;
     list_to_append_to->Append(CreateProvisioningProcessEntry(
         failed_worker_entry.first, worker.cert_profile_name, is_device_wide,
-        CertProvisioningWorkerState::kFailed, worker.last_update_time,
-        worker.public_key));
+        ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
+        worker.last_update_time, worker.public_key));
   }
 }
 
@@ -161,8 +168,8 @@ CertificateProvisioningUiHandler::CreateForProfile(Profile* user_profile) {
 
 CertificateProvisioningUiHandler::CertificateProvisioningUiHandler(
     Profile* user_profile,
-    CertProvisioningScheduler* scheduler_for_user,
-    CertProvisioningScheduler* scheduler_for_device)
+    ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_user,
+    ash::cert_provisioning::CertProvisioningScheduler* scheduler_for_device)
     : scheduler_for_user_(scheduler_for_user),
       scheduler_for_device_(ShouldUseDeviceWideProcesses(user_profile)
                                 ? scheduler_for_device
@@ -242,7 +249,7 @@ void CertificateProvisioningUiHandler::
   if (device_wide.GetBool() && !scheduler_for_device_)
     return;
 
-  CertProvisioningScheduler* scheduler =
+  ash::cert_provisioning::CertProvisioningScheduler* scheduler =
       device_wide.GetBool() ? scheduler_for_device_ : scheduler_for_user_;
   if (!scheduler)
     return;

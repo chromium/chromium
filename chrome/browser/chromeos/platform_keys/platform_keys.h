@@ -168,7 +168,12 @@ struct ClientCertificateRequest {
 // //chrome/browser/chromeos/platform_keys moved to ash
 namespace ash {
 namespace platform_keys {
+using ::chromeos::platform_keys::GetSubjectPublicKeyInfo;
+using ::chromeos::platform_keys::HashAlgorithm;
+using ::chromeos::platform_keys::KeyAttributeType;
 using ::chromeos::platform_keys::Status;
+using ::chromeos::platform_keys::StatusToString;
+using ::chromeos::platform_keys::TokenId;
 }  // namespace platform_keys
 }  // namespace ash
 

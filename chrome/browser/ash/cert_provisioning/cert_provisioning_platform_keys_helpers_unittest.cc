@@ -31,7 +31,7 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Key;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 namespace {
 
@@ -409,4 +409,4 @@ TEST_F(CertProvisioningCertDeleterTest, PropogateError) {
 
 }  // namespace
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

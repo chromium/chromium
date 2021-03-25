@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 class MockCertProvisioningInvalidatorFactory
@@ -40,6 +40,6 @@ class MockCertProvisioningInvalidator : public CertProvisioningInvalidator {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_MOCK_CERT_PROVISIONING_INVALIDATOR_H_

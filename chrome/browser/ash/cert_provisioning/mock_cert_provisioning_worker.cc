@@ -10,7 +10,7 @@ using testing::_;
 using testing::Return;
 using testing::ReturnRef;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 // ================ MockCertProvisioningWorkerFactory ==========================
@@ -76,4 +76,4 @@ void MockCertProvisioningWorker::SetExpectations(
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

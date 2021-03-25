@@ -13,7 +13,7 @@
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 namespace internal {
 
@@ -200,4 +200,4 @@ INSTANTIATE_TEST_SUITE_P(CertProvisioningInvalidationHandlerTestInstance,
 
 }  // namespace internal
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

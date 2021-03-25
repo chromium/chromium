@@ -16,7 +16,7 @@ using base::test::RunOnceCallback;
 using testing::_;
 using testing::Invoke;
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 //================ CertificateHelperForTesting =================================
@@ -159,4 +159,4 @@ user_manager::User* ProfileHelperForTesting::GetUser() const {
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_invalidator.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 //============= MockCertProvisioningInvalidatorFactory =========================
@@ -28,4 +28,4 @@ MockCertProvisioningInvalidator::MockCertProvisioningInvalidator() = default;
 MockCertProvisioningInvalidator::~MockCertProvisioningInvalidator() = default;
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash

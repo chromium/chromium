@@ -11,7 +11,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 class CertProvisioningSchedulerUserService : public KeyedService {
@@ -44,6 +44,14 @@ class CertProvisioningSchedulerUserServiceFactory
       content::BrowserContext* context) const override;
 };
 
+}  // namespace cert_provisioning
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace cert_provisioning {
+using ::ash::cert_provisioning::CertProvisioningSchedulerUserServiceFactory;
 }  // namespace cert_provisioning
 }  // namespace chromeos
 

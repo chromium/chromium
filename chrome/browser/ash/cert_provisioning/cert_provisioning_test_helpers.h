@@ -15,9 +15,9 @@
 
 namespace user_manager {
 class User;
-}
+}  // namespace user_manager
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 //================ CertificateHelperForTesting =================================
@@ -93,6 +93,6 @@ class ProfileHelperForTesting {
 };
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_TEST_HELPERS_H_

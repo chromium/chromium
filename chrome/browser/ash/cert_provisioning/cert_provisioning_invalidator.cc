@@ -15,7 +15,7 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace cert_provisioning {
 
 namespace {
@@ -270,4 +270,4 @@ void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
 }
 
 }  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace ash
