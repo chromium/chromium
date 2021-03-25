@@ -96,6 +96,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
     /** The dropdown key that triggers the address editor to add a new billing address. */
     private static final String BILLING_ADDRESS_ADD_NEW = "add";
 
+    private static final int NICKNAME_MAX_LENGTH = 25;
+
     /** The web contents where the web payments API is invoked. */
     private final WebContents mWebContents;
 
@@ -141,6 +143,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
 
     private final Handler mHandler;
     private final EditorFieldValidator mCardNumberValidator;
+    private final EditorFieldValidator mCardNicknameValidator;
     private final EditorValueIconGenerator mCardIconGenerator;
     private final AsyncTask<Calendar> mCalendar;
 
@@ -156,6 +159,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
     private EditorFieldModel mYearField;
     @Nullable
     private EditorFieldModel mBillingAddressField;
+    @Nullable
+    private EditorFieldModel mNicknameField;
     @Nullable
     private EditorFieldModel mSaveCardCheckbox;
     @Nullable
@@ -255,6 +260,21 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             }
         };
 
+        mCardNicknameValidator = new EditorFieldValidator() {
+            @Override
+            public boolean isValid(@Nullable CharSequence value) {
+                // Digits are not allowed.
+                return value != null && !value.toString().matches(".*\\d.*");
+            }
+
+            @Override
+            public boolean isLengthMaximum(@Nullable CharSequence value) {
+                // Returning true here enables selection of the next field when max length is
+                // reached, which is not desired.
+                return false;
+            }
+        };
+
         mCardIconGenerator = value -> {
             if (value == null) return 0;
             CardIssuerNetwork cardNetworkInfo = mCardIssuerNetworks.get(
@@ -348,6 +368,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
      * [ card number                         ]
      * [ name on card                        ]
      * [ expiration month ][ expiration year ]
+     * [ card nickname                       ]
      * [ billing address dropdown            ]
      * [ save this card checkbox             ] <-- Shown only for new cards when not in incognito
      *                                             mode.
@@ -464,6 +485,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
      * [ card number              [ocr icon] ]
      * [ name on card                        ]
      * [ expiration month ][ expiration year ]
+     * [ card nickname                       ]
      */
     private void addLocalCardInputs(EditorModel editor, CreditCard card, Calendar calendar) {
         // Local card editor shows a card icon hint.
@@ -495,7 +517,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                     mCardIconGenerator,
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message),
                     mContext.getString(R.string.payments_card_number_invalid_validation_message),
-                    null /* value */);
+                    EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
             if (mCanScan) {
                 mNumberField.addActionIcon(R.drawable.ic_photo_camera,
                         R.string.autofill_scan_credit_card, (Runnable) () -> {
@@ -516,7 +538,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                     null /* suggestions */, null /* formatter */, null /* validator */,
                     null /* valueIconGenerator */,
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message),
-                    null /* invalidErrorMessage */, null /* value */);
+                    null /* invalidErrorMessage */, EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE,
+                    null /* value */);
         }
         mNameField.setValue(card.getName());
         editor.addField(mNameField);
@@ -573,6 +596,18 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             mYearField.setValue(mYearField.getDropdownKeyValues().get(0).getKey());
         }
         editor.addField(mYearField);
+
+        // Optional card nickname field.
+        if (mNicknameField == null) {
+            mNicknameField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_NONE,
+                    mContext.getString(R.string.autofill_credit_card_editor_nickname),
+                    null /* suggestions */, null /* formatter */, mCardNicknameValidator,
+                    null /* valueIconGenerator */, null /* requiredErrorMessage */,
+                    mContext.getString(R.string.autofill_credit_card_editor_invalid_nickname),
+                    NICKNAME_MAX_LENGTH, null /* value */);
+        }
+        mNicknameField.setValue(card.getNickname());
+        editor.addField(mNicknameField);
     }
 
     /** Builds the key-value pairs for the month dropdown. */
@@ -787,6 +822,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         card.setName(mNameField.getValue().toString());
         card.setMonth(mMonthField.getValue().toString());
         card.setYear(mYearField.getValue().toString());
+        card.setNickname(mNicknameField.getValue().toString());
 
         // Calculate the basic card issuer network, obfuscated number, and the icon for this card.
         // All of these depend on the card number. The issuer network is sent to the merchant

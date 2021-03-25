@@ -281,7 +281,7 @@ public class AddressEditor
                     mPhoneNumbers, mPhoneFormatter, mPhoneValidator, null /* valueIconGenerator */,
                     requiredErrorMessage,
                     mContext.getString(R.string.payments_phone_invalid_validation_message),
-                    null /* value */);
+                    EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
         }
 
         // Phone number field is cached, so its value needs to be updated for every new profile
@@ -297,7 +297,7 @@ public class AddressEditor
                         null /* suggestions */, null /* formatter */, null /* validator */,
                         null /* valueIconGenerator */, null /* requiredErrorMessage */,
                         mContext.getString(R.string.payments_email_invalid_validation_message),
-                        null /* value */);
+                        EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
             }
             // Retrieve and set the email address field.
             mEmailField.setValue(mProfile.getEmailAddress());

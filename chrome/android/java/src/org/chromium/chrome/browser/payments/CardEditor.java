@@ -501,7 +501,7 @@ public class CardEditor
                     mCardIconGenerator,
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message),
                     mContext.getString(R.string.payments_card_number_invalid_validation_message),
-                    null /* value */);
+                    EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
             if (mCanScan) {
                 mNumberField.addActionIcon(R.drawable.ic_photo_camera,
                         R.string.autofill_scan_credit_card, (Runnable) () -> {
@@ -522,7 +522,8 @@ public class CardEditor
                     null /* suggestions */, null /* formatter */, null /* validator */,
                     null /* valueIconGenerator */,
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message),
-                    null /* invalidErrorMessage */, null /* value */);
+                    null /* invalidErrorMessage */, EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE,
+                    null /* value */);
         }
         mNameField.setValue(card.getName());
         editor.addField(mNameField);
