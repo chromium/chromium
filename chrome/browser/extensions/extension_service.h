@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -732,8 +732,8 @@ class ExtensionService : public ExtensionServiceInterface,
   // Reports force-installed extension metrics to UMA.
   ForceInstalledMetrics force_installed_metrics_;
 
-  ScopedObserver<ProfileManager, ProfileManagerObserver>
-      profile_manager_observer_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;

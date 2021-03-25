@@ -12,7 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
@@ -246,8 +246,9 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Invoked when IdentityAPI is shut down.
   base::CallbackListSubscription identity_api_shutdown_subscription_;
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_identity_manager_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 
   // This class can be listening to account changes, but only for one type of
   // events at a time.

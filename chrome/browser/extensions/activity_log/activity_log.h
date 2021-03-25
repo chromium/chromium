@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log_policy.h"
@@ -207,9 +207,9 @@ class ActivityLog : public BrowserContextKeyedAPI,
 
   // Used to track whether the allowlisted extension is installed. If it's
   // added or removed, enabled_ may change.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // The number of active consumers of the activity log.
   // TODO(kelvinjiang): eliminate this flag if possible and use has_listeners_

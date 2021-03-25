@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
@@ -175,18 +175,20 @@ class PasswordCheckDelegate
   base::Time last_completed_weak_check_;
 
   // A scoped observer for |saved_passwords_presenter_|.
-  ScopedObserver<password_manager::SavedPasswordsPresenter,
-                 password_manager::SavedPasswordsPresenter::Observer>
+  base::ScopedObservation<password_manager::SavedPasswordsPresenter,
+                          password_manager::SavedPasswordsPresenter::Observer>
       observed_saved_passwords_presenter_{this};
 
   // A scoped observer for |insecure_credentials_manager_|.
-  ScopedObserver<password_manager::InsecureCredentialsManager,
-                 password_manager::InsecureCredentialsManager::Observer>
+  base::ScopedObservation<
+      password_manager::InsecureCredentialsManager,
+      password_manager::InsecureCredentialsManager::Observer>
       observed_insecure_credentials_manager_{this};
 
   // A scoped observer for the BulkLeakCheckService.
-  ScopedObserver<password_manager::BulkLeakCheckServiceInterface,
-                 password_manager::BulkLeakCheckServiceInterface::Observer>
+  base::ScopedObservation<
+      password_manager::BulkLeakCheckServiceInterface,
+      password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_bulk_leak_check_service_{this};
 
   // An id generator for insecure credentials. Required to match

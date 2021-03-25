@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -212,8 +212,8 @@ class InputImeAPI : public BrowserContextKeyedAPI,
   content::BrowserContext* const browser_context_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   std::unique_ptr<ui::IMEBridgeObserver> observer_;
 };

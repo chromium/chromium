@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -139,11 +140,10 @@ class ServiceWorkerConsoleObserver
     : public content::ServiceWorkerContextObserver {
  public:
   explicit ServiceWorkerConsoleObserver(
-      content::BrowserContext* browser_context)
-      : scoped_observer_(this) {
+      content::BrowserContext* browser_context) {
     content::StoragePartition* partition =
         content::BrowserContext::GetDefaultStoragePartition(browser_context);
-    scoped_observer_.Add(partition->GetServiceWorkerContext());
+    scoped_observation_.Observe(partition->GetServiceWorkerContext());
   }
   ~ServiceWorkerConsoleObserver() override = default;
 
@@ -167,9 +167,9 @@ class ServiceWorkerConsoleObserver
 
   base::RunLoop run_loop_;
   std::vector<Message> messages_;
-  ScopedObserver<content::ServiceWorkerContext,
-                 content::ServiceWorkerContextObserver>
-      scoped_observer_;
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserver>
+      scoped_observation_{this};
 };
 
 class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {

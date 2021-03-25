@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/common/extensions/api/downloads.h"
@@ -386,9 +386,9 @@ class ExtensionDownloadsEventRouter
   base::Time last_checked_removal_;
 
   // Listen to extension unloaded notifications.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDownloadsEventRouter);
 };

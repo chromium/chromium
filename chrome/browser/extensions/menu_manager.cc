@@ -312,11 +312,12 @@ const char MenuManager::kOnWebviewContextMenus[] =
 
 MenuManager::MenuManager(content::BrowserContext* context, StateStore* store)
     : browser_context_(context), store_(store) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
   Profile* profile = Profile::FromBrowserContext(context);
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
   if (profile->HasPrimaryOTRProfile())
-    observed_profiles_.Add(profile->GetPrimaryOTRProfile());
+    observed_profiles_.AddObservation(profile->GetPrimaryOTRProfile());
   if (store_)
     store_->RegisterKey(kContextMenusKey);
 }
@@ -879,11 +880,11 @@ void MenuManager::OnExtensionUnloaded(content::BrowserContext* browser_context,
 }
 
 void MenuManager::OnOffTheRecordProfileCreated(Profile* off_the_record) {
-  observed_profiles_.Add(off_the_record);
+  observed_profiles_.AddObservation(off_the_record);
 }
 
 void MenuManager::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
   if (profile->IsOffTheRecord())
     RemoveAllIncognitoContextItems();
 }

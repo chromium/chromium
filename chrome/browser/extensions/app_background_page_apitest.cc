@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -58,7 +58,8 @@ class BackgroundContentsCreationObserver
     : public BackgroundContentsServiceObserver {
  public:
   explicit BackgroundContentsCreationObserver(Profile* profile) {
-    observer_.Add(BackgroundContentsServiceFactory::GetForProfile(profile));
+    observation_.Observe(
+        BackgroundContentsServiceFactory::GetForProfile(profile));
   }
 
   ~BackgroundContentsCreationObserver() override = default;
@@ -74,8 +75,9 @@ class BackgroundContentsCreationObserver
   // The number of background contents that have been opened since creation.
   int opens_ = 0;
 
-  ScopedObserver<BackgroundContentsService, BackgroundContentsServiceObserver>
-      observer_{this};
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundContentsCreationObserver);
 };

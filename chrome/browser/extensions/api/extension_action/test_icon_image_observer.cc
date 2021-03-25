@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-TestIconImageObserver::TestIconImageObserver() : observer_(this) {}
+TestIconImageObserver::TestIconImageObserver() {}
 TestIconImageObserver::~TestIconImageObserver() = default;
 
 void TestIconImageObserver::Wait(IconImage* icon) {
@@ -19,7 +19,7 @@ void TestIconImageObserver::Wait(IconImage* icon) {
     // if it's for an extension that is buried in the menu). Force the icon to
     // load by requesting a bitmap.
     icon->image_skia().bitmap();
-    observer_.Add(icon);
+    observation_.Observe(icon);
     run_loop_.Run();
   }
 }

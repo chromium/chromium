@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSER_WINDOW_HELPER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -35,8 +35,8 @@ class ExtensionBrowserWindowHelper : public ExtensionRegistryObserver {
   // The associated browser. Must outlive this object.
   Browser* const browser_ = nullptr;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionBrowserWindowHelper);
 };

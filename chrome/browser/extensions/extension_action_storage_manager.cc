@@ -197,8 +197,10 @@ std::unique_ptr<base::DictionaryValue> DefaultsToValue(
 ExtensionActionStorageManager::ExtensionActionStorageManager(
     content::BrowserContext* context)
     : browser_context_(context) {
-  extension_action_observer_.Add(ExtensionActionAPI::Get(browser_context_));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_action_observation_.Observe(
+      ExtensionActionAPI::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   StateStore* store = GetStateStore();
   if (store)
@@ -241,7 +243,7 @@ void ExtensionActionStorageManager::OnExtensionActionUpdated(
 }
 
 void ExtensionActionStorageManager::OnExtensionActionAPIShuttingDown() {
-  extension_action_observer_.RemoveAll();
+  extension_action_observation_.Reset();
 }
 
 void ExtensionActionStorageManager::WriteToStorage(

@@ -541,7 +541,8 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
 
 InputImeAPI::InputImeAPI(content::BrowserContext* context)
     : browser_context_(context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   EventRouter* event_router = EventRouter::Get(browser_context_);
   event_router->RegisterObserver(this, input_ime::OnFocus::kEventName);
@@ -550,7 +551,7 @@ InputImeAPI::InputImeAPI(content::BrowserContext* context)
 InputImeAPI::~InputImeAPI() = default;
 
 void InputImeAPI::Shutdown() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   InputImeEventRouterFactory::GetInstance()->RemoveProfile(
       Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

@@ -142,7 +142,7 @@ SystemIndicatorManager::SystemIndicator::~SystemIndicator() = default;
 SystemIndicatorManager::SystemIndicatorManager(Profile* profile,
                                                StatusTray* status_tray)
     : profile_(profile), status_tray_(status_tray) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 SystemIndicatorManager::~SystemIndicatorManager() {

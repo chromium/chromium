@@ -20,7 +20,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -416,10 +417,11 @@ class MenuManager : public ProfileObserver,
   std::map<MenuItem::Id, MenuItem*> items_by_id_;
 
   // Listen to extension load, unloaded events.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 
   ExtensionIconManager icon_manager_;
 

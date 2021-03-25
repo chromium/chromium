@@ -380,7 +380,7 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
                             base::Unretained(this), registrar_.prefs()));
   }
   DCHECK(!profile_->IsOffTheRecord());
-  observed_profiles_.Add(profile_);
+  observed_profiles_.AddObservation(profile_);
   if (profile->HasPrimaryOTRProfile())
     OnOffTheRecordProfileCreated(profile->GetPrimaryOTRProfile());
   else
@@ -441,12 +441,12 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
 
 void PreferenceEventRouter::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
-  observed_profiles_.Add(off_the_record);
+  observed_profiles_.AddObservation(off_the_record);
   ObserveOffTheRecordPrefs(off_the_record->GetPrefs());
 }
 
 void PreferenceEventRouter::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
   if (profile->IsOffTheRecord()) {
     // The real PrefService is about to be destroyed so we must make sure we
     // get the "dummy" one.

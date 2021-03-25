@@ -101,8 +101,8 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
 
   // Listen for extension loads and install failures.
   status_ = kWaitingForExtensionLoads;
-  registry_observer_.Add(registry_);
-  collector_observer_.Add(InstallStageTracker::Get(profile_));
+  registry_observation_.Observe(registry_);
+  collector_observation_.Observe(InstallStageTracker::Get(profile_));
 
   const base::DictionaryValue* value =
       pref_service_->GetDictionary(pref_names::kInstallForceList);
@@ -133,7 +133,7 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
 }
 
 void ForceInstalledTracker::OnShutdown(ExtensionRegistry*) {
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
 }
 
 void ForceInstalledTracker::AddObserver(Observer* obs) {
@@ -298,8 +298,8 @@ void ForceInstalledTracker::MaybeNotifyObservers() {
     for (auto& obs : observers_)
       obs.OnForceInstalledExtensionsReady();
     status_ = kComplete;
-    registry_observer_.RemoveAll();
-    collector_observer_.RemoveAll();
+    registry_observation_.Reset();
+    collector_observation_.Reset();
     InstallStageTracker::Get(profile_)->Clear();
   }
 }

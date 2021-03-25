@@ -46,8 +46,7 @@ GaiaRemoteConsentFlow::GaiaRemoteConsentFlow(
       profile_(profile),
       account_id_(token_key.account_info.account_id),
       resolution_data_(resolution_data),
-      web_flow_started_(false),
-      scoped_observer_(this) {}
+      web_flow_started_(false) {}
 
 GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
   if (web_flow_)
@@ -94,7 +93,7 @@ void GaiaRemoteConsentFlow::OnSetAccountsComplete(
               base::BindRepeating(&GaiaRemoteConsentFlow::OnConsentResultSet,
                                   base::Unretained(this)));
 
-  scoped_observer_.Add(IdentityManagerFactory::GetForProfile(profile_));
+  scoped_observation_.Observe(IdentityManagerFactory::GetForProfile(profile_));
   web_flow_->Start();
   web_flow_started_ = true;
 }

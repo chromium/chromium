@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -235,8 +235,8 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   // Platform-specific implementation of closing the bubble.
   base::OnceClosure close_bubble_callback_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };

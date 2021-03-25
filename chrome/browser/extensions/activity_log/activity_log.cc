@@ -484,7 +484,7 @@ ActivityLog::ActivityLog(content::BrowserContext* context)
 
   observers_ = base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>();
 
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   CheckActive(true);  // use cached
   extension_system_->ready().Post(
       FROM_HERE, base::BindOnce(&ActivityLog::OnExtensionSystemReady,

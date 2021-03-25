@@ -67,7 +67,8 @@ ExternalInstallManager::ExternalInstallManager(
       extension_prefs_(ExtensionPrefs::Get(browser_context_)),
       currently_visible_install_alert_(nullptr) {
   DCHECK(browser_context_);
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_REMOVED,
                  content::Source<Profile>(profile));

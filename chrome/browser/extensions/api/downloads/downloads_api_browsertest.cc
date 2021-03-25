@@ -256,9 +256,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
 // Object waiting for a download open event.
 class DownloadOpenObserver : public download::DownloadItem::Observer {
  public:
-  explicit DownloadOpenObserver(download::DownloadItem* item)
-      : open_observer_(this), item_(item) {
-    open_observer_.Add(item);
+  explicit DownloadOpenObserver(download::DownloadItem* item) : item_(item) {
+    open_observation_.Observe(item);
   }
 
   ~DownloadOpenObserver() override = default;
@@ -279,12 +278,14 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   }
 
   void OnDownloadDestroyed(download::DownloadItem* item) override {
-    open_observer_.Remove(item);
+    DCHECK(open_observation_.IsObservingSource(item));
+    open_observation_.Reset();
     item_ = nullptr;
   }
 
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
-      open_observer_;
+  base::ScopedObservation<download::DownloadItem,
+                          download::DownloadItem::Observer>
+      open_observation_{this};
   download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
 

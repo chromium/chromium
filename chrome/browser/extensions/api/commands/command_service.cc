@@ -103,7 +103,7 @@ CommandService::CommandService(content::BrowserContext* context)
   ExtensionFunctionRegistry::GetInstance()
       .RegisterFunction<GetAllCommandsFunction>();
 
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 CommandService::~CommandService() {

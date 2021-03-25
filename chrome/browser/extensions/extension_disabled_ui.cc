@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,8 +113,8 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   content::NotificationRegistrar registrar_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDisabledGlobalError);
 };
@@ -128,7 +128,7 @@ ExtensionDisabledGlobalError::ExtensionDisabledGlobalError(
       extension_(extension),
       is_remote_install_(is_remote_install),
       user_response_(IGNORED) {
-  registry_observer_.Add(ExtensionRegistry::Get(service->profile()));
+  registry_observation_.Observe(ExtensionRegistry::Get(service->profile()));
   registrar_.Add(this, NOTIFICATION_EXTENSION_REMOVED,
                  content::Source<Profile>(service->profile()));
 }
@@ -306,7 +306,7 @@ void ExtensionDisabledGlobalError::OnExtensionLoaded(
 
 void ExtensionDisabledGlobalError::OnShutdown(ExtensionRegistry* registry) {
   DCHECK_EQ(ExtensionRegistry::Get(service_->profile()), registry);
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
 }
 
 void ExtensionDisabledGlobalError::RemoveGlobalError() {
@@ -314,7 +314,7 @@ void ExtensionDisabledGlobalError::RemoveGlobalError() {
       GlobalErrorServiceFactory::GetForProfile(service_->profile())
           ->RemoveGlobalError(this);
   registrar_.RemoveAll();
-  registry_observer_.RemoveAll();
+  registry_observation_.Reset();
   // Delete this object after any running tasks, so that the extension dialog
   // still has it as a delegate to finish the current tasks.
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, ptr.release());

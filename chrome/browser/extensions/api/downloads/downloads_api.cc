@@ -1605,7 +1605,7 @@ ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
     : profile_(profile), notifier_(manager, this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile_);
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   EventRouter* router = EventRouter::Get(profile_);
   if (router)
     router->RegisterObserver(this,

@@ -103,7 +103,7 @@ SignedInDevicesManager::SignedInDevicesManager(content::BrowserContext* context)
 
   // Register for unload event so we could clear all our listeners when
   // extensions have unloaded.
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 SignedInDevicesManager::~SignedInDevicesManager() = default;

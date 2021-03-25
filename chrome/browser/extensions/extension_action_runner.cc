@@ -69,7 +69,8 @@ ExtensionActionRunner::ExtensionActionRunner(content::WebContents* web_contents)
       ignore_active_tab_granted_(false),
       test_observer_(nullptr) {
   CHECK(web_contents);
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 ExtensionActionRunner::~ExtensionActionRunner() {

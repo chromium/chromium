@@ -203,7 +203,7 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   web_app_registrar_ = web_app_provider->registrar().AsWebAppRegistrar();
   web_app_sync_bridge_ =
       web_app_provider->registry_controller().AsWebAppSyncBridge();
-  app_registrar_observer_.Add(&web_app_provider->registrar());
+  app_registrar_observation_.Observe(&web_app_provider->registrar());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
 }
 
@@ -573,7 +573,7 @@ void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(
 }
 
 void ChromeAppSorting::OnAppRegistrarDestroyed() {
-  app_registrar_observer_.RemoveAll();
+  app_registrar_observation_.Reset();
 }
 
 syncer::StringOrdinal ChromeAppSorting::GetMinOrMaxAppLaunchOrdinalsOnPage(

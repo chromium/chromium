@@ -121,8 +121,8 @@ ExtensionSyncService::ExtensionSyncService(Profile* profile)
       system_(ExtensionSystem::Get(profile_)),
       ignore_updates_(false),
       flare_(sync_start_util::GetFlareForSyncableService(profile->GetPath())) {
-  registry_observer_.Add(ExtensionRegistry::Get(profile_));
-  prefs_observer_.Add(ExtensionPrefs::Get(profile_));
+  registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+  prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
 }
 
 ExtensionSyncService::~ExtensionSyncService() {

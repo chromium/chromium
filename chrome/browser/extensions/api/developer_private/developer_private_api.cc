@@ -345,15 +345,15 @@ DeveloperPrivateAPI::DeveloperPrivateAPI(content::BrowserContext* context)
 
 DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
     : profile_(profile), event_router_(EventRouter::Get(profile_)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
-  error_console_observer_.Add(ErrorConsole::Get(profile));
-  process_manager_observer_.Add(ProcessManager::Get(profile));
-  app_window_registry_observer_.Add(AppWindowRegistry::Get(profile));
-  warning_service_observer_.Add(WarningService::Get(profile));
-  extension_prefs_observer_.Add(ExtensionPrefs::Get(profile));
-  extension_management_observer_.Add(
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+  error_console_observation_.Observe(ErrorConsole::Get(profile));
+  process_manager_observation_.Observe(ProcessManager::Get(profile));
+  app_window_registry_observation_.Observe(AppWindowRegistry::Get(profile));
+  warning_service_observation_.Observe(WarningService::Get(profile));
+  extension_prefs_observation_.Observe(ExtensionPrefs::Get(profile));
+  extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
-  command_service_observer_.Add(CommandService::Get(profile));
+  command_service_observation_.Observe(CommandService::Get(profile));
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
   // callback on destruction.
@@ -986,8 +986,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
   // Balanced in ClearObservers(), which is called from the first observer
   // method to be called with the appropriate extension (or shutdown).
   AddRef();
-  error_reporter_observer_.Add(LoadErrorReporter::GetInstance());
-  registry_observer_.Add(ExtensionRegistry::Get(browser_context()));
+  error_reporter_observation_.Observe(LoadErrorReporter::GetInstance());
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context()));
 
   return RespondLater();
 }
@@ -1042,8 +1042,8 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
 }
 
 void DeveloperPrivateReloadFunction::ClearObservers() {
-  registry_observer_.RemoveAll();
-  error_reporter_observer_.RemoveAll();
+  registry_observation_.Reset();
+  error_reporter_observation_.Reset();
 
   Release();  // Balanced in Run().
 }

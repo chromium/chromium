@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,7 +60,7 @@ class StateStoreObserver : public StateStore::TestObserver {
  public:
   explicit StateStoreObserver(content::BrowserContext* context)
       : state_store_(extensions::ExtensionSystem::Get(context)->state_store()) {
-    observed_.Add(state_store_);
+    observed_.Observe(state_store_);
   }
 
   ~StateStoreObserver() final = default;
@@ -92,7 +93,7 @@ class StateStoreObserver : public StateStore::TestObserver {
   std::set<std::string> ids_with_writes_;
   std::string waiting_for_id_;
   base::RunLoop run_loop_;
-  ScopedObserver<StateStore, StateStore::TestObserver> observed_{this};
+  base::ScopedObservation<StateStore, StateStore::TestObserver> observed_{this};
 };
 
 constexpr char kPersistentExtensionId[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";

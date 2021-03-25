@@ -101,7 +101,8 @@ ExtensionMessageBubbleController::ExtensionMessageBubbleController(
       initialized_(false),
       is_highlighting_(false),
       is_active_bubble_(false) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_->profile()));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_->profile()));
   BrowserList::AddObserver(this);
 }
 
@@ -203,9 +204,9 @@ void ExtensionMessageBubbleController::OnShown(
   DCHECK(is_active_bubble_);
   delegate_->OnShown(GetExtensionIdList());
 
-  if (!extension_registry_observer_.IsObserving(
+  if (!extension_registry_observation_.IsObservingSource(
           ExtensionRegistry::Get(browser_->profile()))) {
-    extension_registry_observer_.Add(
+    extension_registry_observation_.Observe(
         ExtensionRegistry::Get(browser_->profile()));
   }
 }
@@ -217,7 +218,7 @@ void ExtensionMessageBubbleController::OnBubbleAction() {
   // registry observer is removed. Note, we do not remove the extension registry
   // observer in the cases of OnBubbleDismiss() and OnLinkedClicked() since they
   // do not result in extensions being unloaded.
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   DCHECK_EQ(ACTION_BOUNDARY, user_action_);
   user_action_ = ACTION_EXECUTE;
 
@@ -306,11 +307,12 @@ void ExtensionMessageBubbleController::OnShutdown(ExtensionRegistry* registry) {
   // It is possible that the extension registry is destroyed before the
   // controller. In such case, the controller should no longer observe the
   // registry.
-  extension_registry_observer_.Remove(registry);
+  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  extension_registry_observation_.Reset();
 }
 
 void ExtensionMessageBubbleController::OnBrowserRemoved(Browser* browser) {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   if (browser == browser_) {
     if (is_highlighting_) {
       model_->StopHighlighting();
@@ -361,7 +363,7 @@ void ExtensionMessageBubbleController::OnClose() {
     delegate_->OnAction();
   }
 
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
 }
 
 }  // namespace extensions

@@ -25,7 +25,7 @@ ChromeExtensionCookies::ChromeExtensionCookies(Profile* profile)
     : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
-  cookie_settings_observer_.Add(cookie_settings_.get());
+  cookie_settings_observation_.Observe(cookie_settings_.get());
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
   std::unique_ptr<content::CookieStoreConfig> creation_config;

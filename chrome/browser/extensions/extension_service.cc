@@ -434,7 +434,7 @@ ExtensionService::ExtensionService(Profile* profile,
                  content::NotificationService::AllBrowserContextsAndSources());
   // The ProfileManager may be null in unit tests.
   if (g_browser_process->profile_manager())
-    profile_manager_observer_.Add(g_browser_process->profile_manager());
+    profile_manager_observation_.Observe(g_browser_process->profile_manager());
 
   UpgradeDetector::GetInstance()->AddObserver(this);
 

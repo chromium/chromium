@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -97,8 +97,8 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // IOThread.
   std::unique_ptr<IOPart, content::BrowserThread::DeleteOnIOThread> io_part_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   base::WeakPtrFactory<VerifyTrustAPI> weak_factory_{this};
 

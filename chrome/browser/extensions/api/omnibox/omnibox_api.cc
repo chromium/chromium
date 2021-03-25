@@ -187,7 +187,7 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
 OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   if (url_service_) {
     template_url_subscription_ =
         url_service_->RegisterOnLoadedCallback(base::BindOnce(

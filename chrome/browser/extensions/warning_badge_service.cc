@@ -100,10 +100,9 @@ int ErrorBadge::GetMenuItemCommandID() {
 
 }  // namespace
 
-WarningBadgeService::WarningBadgeService(Profile* profile)
-    : profile_(profile), warning_service_observer_(this) {
+WarningBadgeService::WarningBadgeService(Profile* profile) : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  warning_service_observer_.Add(WarningService::Get(profile_));
+  warning_service_observation_.Observe(WarningService::Get(profile_));
 }
 
 WarningBadgeService::~WarningBadgeService() {

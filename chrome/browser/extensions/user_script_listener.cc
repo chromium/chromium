@@ -80,7 +80,8 @@ UserScriptListener::UserScriptListener() {
   if (g_browser_process->profile_manager()) {
     for (auto* profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
-      extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+      extension_registry_observations_.AddObservation(
+          ExtensionRegistry::Get(profile));
     }
   }
 
@@ -200,8 +201,8 @@ void UserScriptListener::Observe(int type,
     case chrome::NOTIFICATION_PROFILE_ADDED: {
       Profile* profile = content::Source<Profile>(source).ptr();
       auto* registry = ExtensionRegistry::Get(profile);
-      DCHECK(!extension_registry_observer_.IsObserving(registry));
-      extension_registry_observer_.Add(registry);
+      DCHECK(!extension_registry_observations_.IsObservingSource(registry));
+      extension_registry_observations_.AddObservation(registry);
 
       UserScriptManager* user_script_manager =
           ExtensionSystem::Get(profile)->user_script_manager();
@@ -209,8 +210,8 @@ void UserScriptListener::Observe(int type,
       if (user_script_manager) {
         UserScriptLoader* loader =
             user_script_manager->manifest_script_loader();
-        DCHECK(!user_script_loader_observer_.IsObserving(loader));
-        user_script_loader_observer_.Add(loader);
+        DCHECK(!user_script_loader_observations_.IsObservingSource(loader));
+        user_script_loader_observations_.AddObservation(loader);
       }
       break;
     }
@@ -257,7 +258,7 @@ void UserScriptListener::OnExtensionUnloaded(
 }
 
 void UserScriptListener::OnShutdown(ExtensionRegistry* registry) {
-  extension_registry_observer_.Remove(registry);
+  extension_registry_observations_.RemoveObservation(registry);
 }
 
 void UserScriptListener::OnScriptsLoaded(
@@ -267,7 +268,7 @@ void UserScriptListener::OnScriptsLoaded(
 }
 
 void UserScriptListener::OnUserScriptLoaderDestroyed(UserScriptLoader* loader) {
-  user_script_loader_observer_.Remove(loader);
+  user_script_loader_observations_.RemoveObservation(loader);
 }
 
 }  // namespace extensions

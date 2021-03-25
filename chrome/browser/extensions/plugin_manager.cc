@@ -31,7 +31,7 @@ namespace extensions {
 
 PluginManager::PluginManager(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 PluginManager::~PluginManager() {

@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/common/extensions/api/history.h"
 #include "components/history/core/browser/history_service.h"
@@ -51,8 +51,9 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
                      std::unique_ptr<base::ListValue> event_args);
 
   Profile* profile_;
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryEventRouter);
 };

@@ -134,7 +134,7 @@ ChromeRuntimeAPIDelegate::ChromeRuntimeAPIDelegate(
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
                  content::NotificationService::AllSources());
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser_context_));
 }
 

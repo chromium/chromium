@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
@@ -72,7 +72,7 @@ namespace {
 class LoadedIncognitoObserver : public ExtensionRegistryObserver {
  public:
   explicit LoadedIncognitoObserver(Profile* profile) : profile_(profile) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   }
 
   void Wait() {
@@ -91,8 +91,8 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
   }
 
   Profile* profile_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   std::unique_ptr<LazyBackgroundObserver> original_complete_;
   std::unique_ptr<LazyBackgroundObserver> incognito_complete_;
 };

@@ -116,10 +116,10 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
   extension_app_ = extension;
 
   if (extension_app_) {
-    registry_observer_.Add(
+    registry_observation_.Observe(
         ExtensionRegistry::Get(web_contents()->GetBrowserContext()));
   } else {
-    registry_observer_.RemoveAll();
+    registry_observation_.Reset();
   }
 
   UpdateExtensionAppIcon(extension_app_);

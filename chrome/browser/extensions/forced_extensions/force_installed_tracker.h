@@ -9,7 +9,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "components/policy/core/common/policy_service.h"
@@ -203,10 +203,10 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
   };
   Status status_ = kWaitingForPolicyService;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<InstallStageTracker, InstallStageTracker::Observer>
-      collector_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<InstallStageTracker, InstallStageTracker::Observer>
+      collector_observation_{this};
 
   base::ObserverList<Observer> observers_;
 };

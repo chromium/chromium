@@ -134,7 +134,7 @@ HistoryEventRouter::HistoryEventRouter(Profile* profile,
                                        history::HistoryService* history_service)
     : profile_(profile) {
   DCHECK(profile);
-  history_service_observer_.Add(history_service);
+  history_service_observation_.Observe(history_service);
 }
 
 HistoryEventRouter::~HistoryEventRouter() {

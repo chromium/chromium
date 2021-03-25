@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -832,8 +832,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
      public:
       UnloadedRegistryObserver(const base::FilePath& expected_path,
                                ExtensionRegistry* registry)
-          : expected_path_(expected_path), observer_(this) {
-        observer_.Add(registry);
+          : expected_path_(expected_path) {
+        observation_.Observe(registry);
       }
 
       void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -848,7 +848,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
      private:
       bool saw_unload_ = false;
       base::FilePath expected_path_;
-      ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+      base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+          observation_{this};
 
       DISALLOW_COPY_AND_ASSIGN(UnloadedRegistryObserver);
     };

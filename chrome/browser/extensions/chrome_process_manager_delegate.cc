@@ -139,7 +139,7 @@ void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {
 }
 
 void ChromeProcessManagerDelegate::OnProfileAdded(Profile* profile) {
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
 
   // The profile might have been initialized asynchronously (in parallel with
   // extension system startup). Now that initialization is complete the
@@ -149,11 +149,11 @@ void ChromeProcessManagerDelegate::OnProfileAdded(Profile* profile) {
 
 void ChromeProcessManagerDelegate::OnOffTheRecordProfileCreated(
     Profile* off_the_record_profile) {
-  observed_profiles_.Add(off_the_record_profile);
+  observed_profiles_.AddObservation(off_the_record_profile);
 }
 
 void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
 
   // Close background hosts when the last profile is closed so that they
   // have time to shutdown various objects on different threads. The
@@ -174,8 +174,8 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
     Profile* otr = profile->GetPrimaryOTRProfile();
     close_background_hosts(otr);
-    if (observed_profiles_.IsObserving(otr))
-      observed_profiles_.Remove(otr);
+    if (observed_profiles_.IsObservingSource(otr))
+      observed_profiles_.RemoveObservation(otr);
   }
 }
 

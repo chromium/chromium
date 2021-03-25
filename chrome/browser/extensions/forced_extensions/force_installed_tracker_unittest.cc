@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "extensions/common/extension.h"
@@ -25,7 +25,7 @@ class ForceInstalledTrackerTest : public ForceInstalledTestBase,
 
   void SetUp() override {
     ForceInstalledTestBase::SetUp();
-    scoped_observer_.Add(force_installed_tracker());
+    scoped_observation_.Observe(force_installed_tracker());
   }
 
   // ForceInstalledTracker::Observer overrides:
@@ -33,8 +33,9 @@ class ForceInstalledTrackerTest : public ForceInstalledTestBase,
   void OnForceInstalledExtensionsReady() override { ready_called_ = true; }
 
  protected:
-  ScopedObserver<ForceInstalledTracker, ForceInstalledTracker::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<ForceInstalledTracker,
+                          ForceInstalledTracker::Observer>
+      scoped_observation_{this};
   bool loaded_called_ = false;
   bool ready_called_ = false;
 };

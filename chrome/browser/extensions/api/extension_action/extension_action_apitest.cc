@@ -8,7 +8,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,8 +70,8 @@ class TestStateStoreObserver : public StateStore::TestObserver {
  public:
   TestStateStoreObserver(content::BrowserContext* context,
                          const std::string& extension_id)
-      : extension_id_(extension_id), scoped_observer_(this) {
-    scoped_observer_.Add(ExtensionSystem::Get(context)->state_store());
+      : extension_id_(extension_id) {
+    scoped_observation_.Observe(ExtensionSystem::Get(context)->state_store());
   }
   ~TestStateStoreObserver() override {}
 
@@ -90,7 +90,8 @@ class TestStateStoreObserver : public StateStore::TestObserver {
   std::string extension_id_;
   std::map<std::string, int> updated_values_;
 
-  ScopedObserver<StateStore, StateStore::TestObserver> scoped_observer_;
+  base::ScopedObservation<StateStore, StateStore::TestObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestStateStoreObserver);
 };

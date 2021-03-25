@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -116,7 +116,8 @@ class ChromeAppIconService : public KeyedService,
 
   IconMap icon_map_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
 
   base::WeakPtrFactory<ChromeAppIconService> weak_ptr_factory_{this};
 

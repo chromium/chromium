@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -149,9 +149,9 @@ class BrowsingDataRemoverFunction
   content::BrowsingDataFilterBuilder::Mode mode_ =
       content::BrowsingDataFilterBuilder::Mode::kPreserve;
   int pending_tasks_ = 0;
-  ScopedObserver<content::BrowsingDataRemover,
-                 content::BrowsingDataRemover::Observer>
-      observer_;
+  base::ScopedObservation<content::BrowsingDataRemover,
+                          content::BrowsingDataRemover::Observer>
+      observation_{this};
   std::unique_ptr<AccountReconcilor::ScopedSyncedDataDeletion>
       synced_data_deletion_;
 };

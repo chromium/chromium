@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
@@ -97,11 +97,11 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   AppWindowMap app_windows_;
 
   // Observed AppWindowRegistry.
-  ScopedObserver<AppWindowRegistry, AppWindowRegistry::Observer>
+  base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
       observed_app_registry_{this};
 
   // Observed WindowControllerList.
-  ScopedObserver<WindowControllerList, WindowControllerListObserver>
+  base::ScopedObservation<WindowControllerList, WindowControllerListObserver>
       observed_controller_list_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowsEventRouter);

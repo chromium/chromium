@@ -5,7 +5,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -97,7 +97,7 @@ class TestProcessManagerObserver : public ProcessManagerObserver {
     base::RunLoop run_loop;
     quit_ = run_loop.QuitClosure();
 
-    observer_.Add(process_manager);
+    observation_.Observe(process_manager);
     run_loop.Run();
   }
 
@@ -106,13 +106,14 @@ class TestProcessManagerObserver : public ProcessManagerObserver {
     if (extension_id != extension_id_) {
       return;
     }
-    observer_.RemoveAll();
+    observation_.Reset();
     extension_id_.clear();
     std::move(quit_).Run();
   }
 
   std::string extension_id_;
-  ScopedObserver<ProcessManager, ProcessManagerObserver> observer_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
+      this};
   base::OnceClosure quit_;
 
   DISALLOW_COPY_AND_ASSIGN(TestProcessManagerObserver);
@@ -227,8 +228,9 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 
   void WaitForNoKeepAlive() {
     ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
-    ScopedObserver<KeepAliveRegistry, KeepAliveStateObserver> observer(this);
-    observer.Add(KeepAliveRegistry::GetInstance());
+    base::ScopedObservation<KeepAliveRegistry, KeepAliveStateObserver> observer(
+        this);
+    observer.Observe(KeepAliveRegistry::GetInstance());
 
     // On Mac, the browser remains alive when no windows are open, so observing
     // the KeepAliveRegistry cannot detect when the native messaging keep-alive

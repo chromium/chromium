@@ -14,7 +14,8 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -191,11 +192,12 @@ class ErrorConsole : public KeyedService,
   // is dependent on ExtensionPrefs.
   ExtensionPrefs* prefs_;
 
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observations_{this};
   PrefChangeRegistrar pref_registrar_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ErrorConsole);
 };

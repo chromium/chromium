@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -159,8 +159,8 @@ class TabHelper : public content::WebContentsObserver,
 
   std::unique_ptr<ActiveTabPermissionGranter> active_tab_permission_granter_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   // Vend weak pointers that can be invalidated to stop in-progress loads.
   base::WeakPtrFactory<TabHelper> image_loader_ptr_factory_{this};

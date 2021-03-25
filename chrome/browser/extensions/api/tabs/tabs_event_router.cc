@@ -169,7 +169,7 @@ TabsEventRouter::TabsEventRouter(Profile* profile)
   BrowserList::AddObserver(this);
   browser_tab_strip_tracker_.Init();
 
-  tab_manager_scoped_observer_.Add(g_browser_process->GetTabManager());
+  tab_manager_scoped_observation_.Observe(g_browser_process->GetTabManager());
 }
 
 TabsEventRouter::~TabsEventRouter() {
@@ -619,7 +619,7 @@ void TabsEventRouter::DispatchTabUpdatedEvent(
 }
 
 void TabsEventRouter::RegisterForTabNotifications(WebContents* contents) {
-  favicon_scoped_observer_.Add(
+  favicon_scoped_observations_.AddObservation(
       favicon::ContentFaviconDriver::FromWebContents(contents));
 
   ZoomController::FromWebContents(contents)->AddObserver(this);
@@ -630,7 +630,7 @@ void TabsEventRouter::RegisterForTabNotifications(WebContents* contents) {
 }
 
 void TabsEventRouter::UnregisterForTabNotifications(WebContents* contents) {
-  favicon_scoped_observer_.Remove(
+  favicon_scoped_observations_.RemoveObservation(
       favicon::ContentFaviconDriver::FromWebContents(contents));
 
   ZoomController::FromWebContents(contents)->RemoveObserver(this);

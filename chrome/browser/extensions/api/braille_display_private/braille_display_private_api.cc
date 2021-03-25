@@ -45,7 +45,6 @@ class BrailleDisplayPrivateAPI::DefaultEventDelegate
 BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(
     content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
-      scoped_observer_(this),
       event_delegate_(new DefaultEventDelegate(this, profile_)) {}
 
 BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() {
@@ -103,16 +102,16 @@ void BrailleDisplayPrivateAPI::SetEventDelegateForTest(
 void BrailleDisplayPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
-  if (!scoped_observer_.IsObserving(braille_controller))
-    scoped_observer_.Add(braille_controller);
+  if (!scoped_observation_.IsObservingSource(braille_controller))
+    scoped_observation_.Observe(braille_controller);
 }
 
 void BrailleDisplayPrivateAPI::OnListenerRemoved(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
   if (!event_delegate_->HasListener() &&
-      scoped_observer_.IsObserving(braille_controller)) {
-    scoped_observer_.Remove(braille_controller);
+      scoped_observation_.IsObservingSource(braille_controller)) {
+    scoped_observation_.Reset();
   }
 }
 

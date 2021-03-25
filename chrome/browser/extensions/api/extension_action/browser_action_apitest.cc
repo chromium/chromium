@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
   class ExtensionHostDestructionObserver : public ExtensionHostObserver {
    public:
     explicit ExtensionHostDestructionObserver(ExtensionHost* host) {
-      host_observer_.Add(host);
+      host_observation_.Observe(host);
     }
     ExtensionHostDestructionObserver(
         const ExtensionHostDestructionObserver& other) = delete;
@@ -845,8 +845,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
     ~ExtensionHostDestructionObserver() override = default;
 
     void OnExtensionHostDestroyed(ExtensionHost* host) override {
-      ASSERT_TRUE(host_observer_.IsObserving(host));
-      host_observer_.Remove(host);
+      ASSERT_TRUE(host_observation_.IsObservingSource(host));
+      host_observation_.Reset();
       run_loop_.QuitWhenIdle();
     }
 
@@ -854,7 +854,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
 
    private:
     base::RunLoop run_loop_;
-    ScopedObserver<ExtensionHost, ExtensionHostObserver> host_observer_{this};
+    base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
+        host_observation_{this};
   };
 
   ExtensionHostDestructionObserver host_destroyed_observer(extension_host);

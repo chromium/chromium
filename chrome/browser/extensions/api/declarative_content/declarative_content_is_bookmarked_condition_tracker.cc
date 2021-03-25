@@ -151,7 +151,7 @@ DeclarativeContentIsBookmarkedConditionTracker::
       BookmarkModelFactory::GetForBrowserContext(context);
   // Can be null during unit test execution.
   if (bookmark_model)
-    scoped_bookmarks_observer_.Add(bookmark_model);
+    scoped_bookmarks_observation_.Observe(bookmark_model);
 }
 
 DeclarativeContentIsBookmarkedConditionTracker::

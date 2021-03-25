@@ -285,7 +285,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
 
   registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
                  content::Source<CrxInstaller>(nullptr));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
 void WebstoreInstaller::Start() {

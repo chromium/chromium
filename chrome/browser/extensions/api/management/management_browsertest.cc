@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
@@ -73,10 +74,9 @@ class ExtensionHostDestructionObserver
       : profile_(profile),
         extension_id_(extension_id),
         host_(extensions::ProcessManager::Get(profile)
-                  ->GetBackgroundHostForExtension(extension_id_)),
-        extension_host_observer_(this) {
+                  ->GetBackgroundHostForExtension(extension_id_)) {
     DCHECK(host_);
-    extension_host_observer_.Add(host_);
+    extension_host_observation_.Observe(host_);
   }
 
   void WaitForDestructionThenWaitForFirstLoad() {
@@ -90,7 +90,8 @@ class ExtensionHostDestructionObserver
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override {
     if (host == host_) {
-      extension_host_observer_.Remove(host_);
+      DCHECK(extension_host_observation_.IsObservingSource(host_));
+      extension_host_observation_.Reset();
       run_loop_.Quit();
     }
   }
@@ -100,8 +101,9 @@ class ExtensionHostDestructionObserver
   const extensions::ExtensionId extension_id_;
   extensions::ExtensionHost* const host_ = nullptr;
   base::RunLoop run_loop_;
-  ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
-      extension_host_observer_;
+  base::ScopedObservation<extensions::ExtensionHost,
+                          extensions::ExtensionHostObserver>
+      extension_host_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionHostDestructionObserver);
 };

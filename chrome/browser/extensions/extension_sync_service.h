@@ -12,7 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/sync_bundle.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -130,11 +130,12 @@ class ExtensionSyncService : public syncer::SyncableService,
 
   extensions::ExtensionSystem* system_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<extensions::ExtensionPrefs, extensions::ExtensionPrefsObserver>
-      prefs_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<extensions::ExtensionPrefs,
+                          extensions::ExtensionPrefsObserver>
+      prefs_observation_{this};
 
   // When this is set to true, any incoming updates (from the observers as well
   // as from explicit SyncExtensionChangeIfNeeded calls) are ignored. This is

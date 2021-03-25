@@ -10,7 +10,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -204,14 +205,15 @@ class TabsEventRouter : public TabStripModelObserver,
   // The main profile that owns this event router.
   Profile* profile_;
 
-  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
-      favicon_scoped_observer_{this};
+  base::ScopedMultiSourceObservation<favicon::FaviconDriver,
+                                     favicon::FaviconDriverObserver>
+      favicon_scoped_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
-  ScopedObserver<resource_coordinator::TabManager,
-                 resource_coordinator::TabLifecycleObserver>
-      tab_manager_scoped_observer_{this};
+  base::ScopedObservation<resource_coordinator::TabManager,
+                          resource_coordinator::TabLifecycleObserver>
+      tab_manager_scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TabsEventRouter);
 };

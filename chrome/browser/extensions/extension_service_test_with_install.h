@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -151,8 +151,8 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   FeatureSwitch::ScopedOverride override_external_install_prompt_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestWithInstall);
 };

@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -128,9 +128,9 @@ class ChromeExtensionCookies
 
   // Cookie config Chrome-side.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  ScopedObserver<content_settings::CookieSettings,
-                 content_settings::CookieSettings::Observer>
-      cookie_settings_observer_{this};
+  base::ScopedObservation<content_settings::CookieSettings,
+                          content_settings::CookieSettings::Observer>
+      cookie_settings_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionCookies);
 };

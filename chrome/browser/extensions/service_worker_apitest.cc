@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -123,9 +124,8 @@ class ErrorObserver : public ErrorConsole::Observer {
   ErrorObserver(size_t errors_expected, ErrorConsole* error_console)
       : errors_expected_(errors_expected),
         error_console_(error_console),
-        errors_observed_(0),
-        observer_(this) {
-    observer_.Add(error_console_);
+        errors_observed_(0) {
+    observation_.Observe(error_console_);
   }
 
   // ErrorConsole::Observer implementation.
@@ -147,7 +147,8 @@ class ErrorObserver : public ErrorConsole::Observer {
   size_t errors_expected_;
   ErrorConsole* error_console_;
   size_t errors_observed_;
-  ScopedObserver<ErrorConsole, ErrorConsole::Observer> observer_;
+  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
+      this};
   base::RunLoop run_loop_;
 };
 
@@ -2393,11 +2394,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLazyBackgroundTest, ConsoleLogging) {
    public:
     ConsoleMessageObserver(content::BrowserContext* browser_context,
                            const std::string& expected_message)
-        : expected_message_(base::UTF8ToUTF16(expected_message)),
-          scoped_observer_(this) {
+        : expected_message_(base::UTF8ToUTF16(expected_message)) {
       content::StoragePartition* partition =
           content::BrowserContext::GetDefaultStoragePartition(browser_context);
-      scoped_observer_.Add(partition->GetServiceWorkerContext());
+      scoped_observation_.Observe(partition->GetServiceWorkerContext());
     }
     ~ConsoleMessageObserver() override = default;
 
@@ -2413,15 +2413,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLazyBackgroundTest, ConsoleLogging) {
       // the expected messages we're verifying (they're uncommon enough).
       if (message.message != expected_message_)
         return;
-      scoped_observer_.RemoveAll();
+      scoped_observation_.Reset();
       run_loop_.QuitWhenIdle();
     }
 
     std::u16string expected_message_;
     base::RunLoop run_loop_;
-    ScopedObserver<content::ServiceWorkerContext,
-                   content::ServiceWorkerContextObserver>
-        scoped_observer_;
+    base::ScopedObservation<content::ServiceWorkerContext,
+                            content::ServiceWorkerContextObserver>
+        scoped_observation_{this};
 
     DISALLOW_COPY_AND_ASSIGN(ConsoleMessageObserver);
   };

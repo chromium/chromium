@@ -66,7 +66,7 @@ void ExtensionServiceTestWithInstall::InitializeExtensionService(
     const ExtensionServiceInitParams& params) {
   ExtensionServiceTestBase::InitializeExtensionService(params);
 
-  registry_observer_.Add(registry());
+  registry_observation_.Observe(registry());
 }
 
 // static

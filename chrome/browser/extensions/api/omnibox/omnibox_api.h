@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -132,8 +132,8 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   PendingExtensions pending_extensions_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;

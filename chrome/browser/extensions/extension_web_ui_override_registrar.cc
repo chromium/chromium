@@ -17,7 +17,7 @@ ExtensionWebUIOverrideRegistrar::ExtensionWebUIOverrideRegistrar(
     content::BrowserContext* context) {
   ExtensionWebUI::InitializeChromeURLOverrides(
       Profile::FromBrowserContext(context));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(context));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
   ExtensionSystem::Get(context)->ready().Post(
       FROM_HERE,
       base::BindOnce(&ExtensionWebUIOverrideRegistrar::OnExtensionSystemReady,

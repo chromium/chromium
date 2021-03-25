@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -157,8 +157,9 @@ class DeclarativeContentIsBookmarkedConditionTracker
   // are complete.
   int extensive_bookmark_changes_in_progress_;
 
-  ScopedObserver<bookmarks::BookmarkModel, bookmarks::BookmarkModelObserver>
-      scoped_bookmarks_observer_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_bookmarks_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeclarativeContentIsBookmarkedConditionTracker);
 };

@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "extensions/common/extension_id.h"
 
@@ -52,8 +52,8 @@ class TestExtensionActionAPIObserver : public ExtensionActionAPI::Observer {
   content::WebContents* last_web_contents_ = nullptr;
   ExtensionId extension_id_;
   base::RunLoop run_loop_;
-  ScopedObserver<ExtensionActionAPI, ExtensionActionAPI::Observer>
-      scoped_observer_;
+  base::ScopedObservation<ExtensionActionAPI, ExtensionActionAPI::Observer>
+      scoped_observation_{this};
 
   // An optional set of web contents to observe for extension action updates.
   std::set<content::WebContents*> contents_to_observe_;

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"
 
 namespace extensions {
@@ -32,7 +32,7 @@ class TestIconImageObserver : public IconImage::Observer {
   void OnExtensionIconImageChanged(IconImage* icon) override;
 
   base::RunLoop run_loop_;
-  ScopedObserver<IconImage, IconImage::Observer> observer_;
+  base::ScopedObservation<IconImage, IconImage::Observer> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestIconImageObserver);
 };

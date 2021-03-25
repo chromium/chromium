@@ -135,7 +135,7 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
     int tab_id,
     Profile* profile)
     : content::WebContentsObserver(web_contents), tab_id_(tab_id) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() {}

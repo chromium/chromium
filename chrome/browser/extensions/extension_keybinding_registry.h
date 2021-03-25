@@ -12,7 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -175,11 +175,11 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   EventTargets event_targets_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
-  ScopedObserver<CommandService, CommandService::Observer>
-      command_service_observer_{this};
+  base::ScopedObservation<CommandService, CommandService::Observer>
+      command_service_observation_{this};
 
   // Keeps track of whether shortcut handling is currently suspended. Shortcuts
   // are suspended briefly while capturing which shortcut to assign to an
