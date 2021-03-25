@@ -155,6 +155,40 @@ enum class PredictionModelDownloadStatus {
   kMaxValue = kFailedCrxInvalidPublisher,
 };
 
+// The state of the model file needed for execution.
+//
+// Keep in sync with ModelExecutorLoadingState in enums.xml.
+enum class ModelExecutorLoadingState {
+  // The model state is not known.
+  kUnknown = 0,
+  // The provided model file was not valid.
+  kModelFileInvalid = 1,
+  // The model is memory-mapped and available for
+  // use with TFLite.
+  kModelFileValidAndMemoryMapped = 2,
+
+  // New values above this line.
+  kMaxValue = kModelFileValidAndMemoryMapped,
+};
+
+// The status for the page content annotations being stored.
+//
+// Keep in sync with OptimizationGuidePageContentAnnotationsStorageStatus in
+// enums.xml.
+enum PageContentAnnotationsStorageStatus {
+  kUnknown = 0,
+  // The content annotations were requested to be stored in the History Service.
+  kSuccess = 1,
+  // There were no visits for the URL found in the History Service.
+  kNoVisitsForUrl = 2,
+  // The specific visit that we wanted to annotate could not be found in the
+  // History Service.
+  kSpecificVisitForUrlNotFound = 3,
+
+  // Add new values above this line.
+  kMaxValue = kSpecificVisitForUrlNotFound,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

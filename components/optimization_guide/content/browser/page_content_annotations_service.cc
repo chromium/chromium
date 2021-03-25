@@ -4,8 +4,10 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -15,10 +17,28 @@
 
 namespace optimization_guide {
 
-PageContentAnnotationsService::PageContentAnnotationsService(
-    OptimizationGuideDecider* optimization_guide_decider) {
-  DCHECK(optimization_guide_decider);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+namespace {
+
+void LogPageContentAnnotationsStorageStatus(
+    PageContentAnnotationsStorageStatus status) {
+  DCHECK_NE(status, PageContentAnnotationsStorageStatus::kUnknown);
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      status);
+}
+
+}  // namespace
+#endif
+
+PageContentAnnotationsService::PageContentAnnotationsService(
+    OptimizationGuideDecider* optimization_guide_decider,
+    history::HistoryService* history_service) {
+  DCHECK(optimization_guide_decider);
+  DCHECK(history_service);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  history_service_ = history_service;
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_decider);
 #endif
@@ -41,12 +61,45 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
     const base::Optional<history::VisitContentAnnotations>&
         content_annotations) {
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       content_annotations.has_value());
-  if (content_annotations) {
-    // TODO(crbug/1177102): Send annotations to store in history service.
+  if (!content_annotations)
+    return;
+
+  history_service_->QueryURL(
+      visit.url, /*want_visits=*/true,
+      base::BindOnce(&PageContentAnnotationsService::OnURLQueried,
+                     weak_ptr_factory_.GetWeakPtr(), visit,
+                     *content_annotations),
+      &history_service_task_tracker_);
+}
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void PageContentAnnotationsService::OnURLQueried(
+    const HistoryVisit& visit,
+    const history::VisitContentAnnotations& content_annotations,
+    history::QueryURLResult url_result) {
+  if (!url_result.success) {
+    LogPageContentAnnotationsStorageStatus(
+        PageContentAnnotationsStorageStatus::kNoVisitsForUrl);
+    return;
   }
+
+  bool did_store_content_annotations = false;
+  for (const auto& visit_for_url : url_result.visits) {
+    if (visit.nav_entry_timestamp != visit_for_url.visit_time)
+      continue;
+
+    history_service_->AddContentAnnotationsForVisit(visit_for_url.visit_id,
+                                                    content_annotations);
+
+    did_store_content_annotations = true;
+    break;
+  }
+  LogPageContentAnnotationsStorageStatus(
+      did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound);
 }
 #endif
 
@@ -63,7 +116,7 @@ PageContentAnnotationsService::GetPageTopicsModelVersion() const {
 HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
     content::WebContents* web_contents) {
   HistoryVisit visit = {
-      web_contents->GetController().GetLastCommittedEntry()->GetUniqueID(),
+      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
       web_contents->GetLastCommittedURL()};
   return visit;
 }

@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -17,23 +19,27 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace optimization_guide {
 
 class OptimizationGuideDecider;
 class PageContentAnnotationsModelManager;
 
-// The information used by HistoryService to identify a visit.
+// The information used by HistoryService to identify a visit to a URL.
 struct HistoryVisit {
-  // TODO(crbug/1177102): Add history::ContextID.
-  int nav_entry_id;
-  const GURL& url;
+  base::Time nav_entry_timestamp;
+  GURL url;
 };
 
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService {
  public:
   explicit PageContentAnnotationsService(
-      OptimizationGuideDecider* optimization_guide_decider);
+      OptimizationGuideDecider* optimization_guide_decider,
+      history::HistoryService* history_service);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
   PageContentAnnotationsService& operator=(
@@ -63,6 +69,18 @@ class PageContentAnnotationsService : public KeyedService {
       const HistoryVisit& visit,
       const base::Optional<history::VisitContentAnnotations>&
           content_annotations);
+
+  // Callback invoked when |history_service| has returned results for the visits
+  // to a URL.
+  void OnURLQueried(const HistoryVisit& visit,
+                    const history::VisitContentAnnotations& content_annotations,
+                    history::QueryURLResult url_result);
+
+  // The history service to write content annotations to. Not owned. Guaranteed
+  // to outlive |this|.
+  history::HistoryService* history_service_;
+  // The task tracker to keep track of tasks to query |history_service|.
+  base::CancelableTaskTracker history_service_task_tracker_;
 
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif

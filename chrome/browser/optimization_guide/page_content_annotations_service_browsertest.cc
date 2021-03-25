@@ -7,17 +7,23 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace {
 
@@ -56,6 +62,50 @@ int RetryForHistogramUntilCountReached(
 
 namespace optimization_guide {
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// A HistoryDBTask that retrieves content annotations.
+class GetContentAnnotationsTask : public history::HistoryDBTask {
+ public:
+  GetContentAnnotationsTask(
+      const GURL& url,
+      base::OnceCallback<void(
+          const base::Optional<history::VisitContentAnnotations>&)> callback)
+      : url_(url), callback_(std::move(callback)) {}
+  ~GetContentAnnotationsTask() override = default;
+
+  // history::HistoryDBTask:
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Get visits for URL.
+    const history::URLID url_id = db->GetRowForURL(url_, nullptr);
+    history::VisitVector visits;
+    if (!db->GetVisitsForURL(url_id, &visits))
+      return true;
+
+    // No visits for URL.
+    if (visits.empty())
+      return true;
+
+    stored_content_annotations_ =
+        db->GetContentAnnotationsForVisit(visits.at(0).visit_id);
+    return true;
+  }
+  void DoneRunOnMainThread() override {
+    std::move(callback_).Run(stored_content_annotations_);
+  }
+
+ private:
+  // The URL to get content annotations for.
+  const GURL url_;
+  // The callback to invoke when the database call has completed.
+  base::OnceCallback<void(
+      const base::Optional<history::VisitContentAnnotations>&)>
+      callback_;
+  // The content annotations that were stored for |url_|.
+  base::Optional<history::VisitContentAnnotations> stored_content_annotations_;
+};
+#endif
+
 class PageContentAnnotationsServiceDisabledBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -85,11 +135,14 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
 
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    base::HistogramTester histogram_tester;
 
     proto::Any any_metadata;
     any_metadata.set_type_url(
@@ -120,8 +173,50 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         ->OverrideTargetModelFileForTesting(
             proto::OPTIMIZATION_TARGET_PAGE_TOPICS, any_metadata,
             model_file_path);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    RetryForHistogramUntilCountReached(
+        histogram_tester,
+        "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics", 1);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
+        ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+#else
     base::RunLoop().RunUntilIdle();
+#endif
   }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  base::Optional<history::VisitContentAnnotations> GetContentAnnotationsForURL(
+      const GURL& url) {
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
+    if (!history_service)
+      return base::nullopt;
+
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    base::Optional<history::VisitContentAnnotations> got_content_annotations;
+
+    base::CancelableTaskTracker task_tracker;
+    history_service->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<GetContentAnnotationsTask>(
+            url, base::BindOnce(
+                     [](base::RunLoop* run_loop,
+                        base::Optional<history::VisitContentAnnotations>*
+                            out_content_annotations,
+                        const base::Optional<history::VisitContentAnnotations>&
+                            content_annotations) {
+                       *out_content_annotations = content_annotations;
+                       run_loop->Quit();
+                     },
+                     run_loop.get(), &got_content_annotations)),
+        &task_tracker);
+
+    run_loop->Run();
+    return got_content_annotations;
+  }
+#endif
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -147,16 +242,16 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
   RetryForHistogramUntilCountReached(
       histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
-      true, 1);
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      1);
 #endif
 
   PageContentAnnotationsService* service =
@@ -169,6 +264,61 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #else
   EXPECT_FALSE(service->GetPageTopicsModelVersion().has_value());
 #endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+
+  base::Optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_NE(-1.0, got_content_annotations->floc_protected_score);
+  EXPECT_FALSE(got_content_annotations->categories.empty());
+  EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
+#endif
 }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       NoVisitsForUrlInHistory) {
+  base::HistogramTester histogram_tester;
+
+  PageContentAnnotationsService* service =
+      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
+
+  HistoryVisit history_visit;
+  history_visit.url = GURL("https://probablynotarealurl.com/");
+  service->Annotate(history_visit, "sometext");
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", true,
+      1);
+
+  RetryForHistogramUntilCountReached(
+      histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus",
+      PageContentAnnotationsStorageStatus::kNoVisitsForUrl, 1);
+
+  EXPECT_FALSE(GetContentAnnotationsForURL(history_visit.url).has_value());
+}
+#endif
 
 }  // namespace optimization_guide

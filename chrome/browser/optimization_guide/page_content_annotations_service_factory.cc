@@ -4,9 +4,11 @@
 
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -31,6 +33,7 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
           "PageContentAnnotationsService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
@@ -42,13 +45,16 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(context);
-  // The optimization guide service must be available for the page content
-  // annotations service to work.
+  // The optimization guide and history services must be available for the page
+  // content annotations service to work.
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  if (optimization_guide_keyed_service) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
+  if (optimization_guide_keyed_service && history_service) {
     return new optimization_guide::PageContentAnnotationsService(
-        optimization_guide_keyed_service);
+        optimization_guide_keyed_service, history_service);
   }
   return nullptr;
 }

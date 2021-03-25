@@ -332,6 +332,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotated"
+    units="BooleanAnnotated" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the page content was annotated successfully, if submitted
+    for annotation. This will approximately be once a page load after the page
+    load has finished loading.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
+    enum="OptimizationGuidePageContentAnnotationsStorageStatus"
+    expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the status of whether the content annotations were stored in History
+    Service when the page content has been annotated successfully. This will
+    approximately be once a page load after the page load has finished loading.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageTextDump.AbandonedRequests"
     units="count" expires_after="M94">
   <owner>sophiechang@chromium.org</owner>

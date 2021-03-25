@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,22 +24,6 @@
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 
 namespace optimization_guide {
-
-// The state of the model file needed for execution.
-//
-// Keep in sync with ModelExecutorLoadingState in enums.xml.
-enum class ModelExecutorLoadingState {
-  // The model state is not known.
-  kUnknown = 0,
-  // The provided model file was not valid.
-  kModelFileInvalid = 1,
-  // The model is memory-mapped and available for
-  // use with TFLite.
-  kModelFileValidAndMemoryMapped = 2,
-
-  // New values above this line.
-  kMaxValue = kModelFileValidAndMemoryMapped,
-};
 
 namespace {
 

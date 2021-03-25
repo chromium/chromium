@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
@@ -36,8 +37,10 @@ class TestPageTextObserver : public PageTextObserver {
 class FakePageContentAnnotationsService : public PageContentAnnotationsService {
  public:
   explicit FakePageContentAnnotationsService(
-      OptimizationGuideDecider* optimization_guide_decider)
-      : PageContentAnnotationsService(optimization_guide_decider) {}
+      OptimizationGuideDecider* optimization_guide_decider,
+      history::HistoryService* history_service)
+      : PageContentAnnotationsService(optimization_guide_decider,
+                                      history_service) {}
   ~FakePageContentAnnotationsService() override = default;
 
   void Annotate(const HistoryVisit& visit, const std::string& text) override {
@@ -61,9 +64,10 @@ class PageContentAnnotationsWebContentsHelperTest
 
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
+    history_service_ = std::make_unique<history::HistoryService>();
     page_content_annotations_service_ =
         std::make_unique<FakePageContentAnnotationsService>(
-            optimization_guide_decider_.get());
+            optimization_guide_decider_.get(), history_service_.get());
 
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
@@ -104,6 +108,7 @@ class PageContentAnnotationsWebContentsHelperTest
 
  private:
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
+  std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
   TestPageTextObserver* page_text_observer_;

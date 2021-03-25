@@ -57431,6 +57431,23 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePageContentAnnotationsStorageStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">
+    The specific visit that we wanted to annotate content for was found in the
+    History Service and the content annotations for the visit were required to
+    be stored in the History Service.
+  </int>
+  <int value="2" label="No visits for URL found">
+    There were no visits found in the History Service for the URL that the
+    content annotations are associated with.
+  </int>
+  <int value="3" label="Specific visit for URL not found">
+    Visits for the URL the content annotations are for were found, but not the
+    specific visit we were annotating for.
+  </int>
+</enum>
+
 <enum name="OptimizationGuidePredictionManagerModelStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Model for target is available">
