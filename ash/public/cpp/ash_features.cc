@@ -12,6 +12,9 @@
 namespace ash {
 namespace features {
 
+const base::Feature kArcGhostWindow{"ArcGhostWindow",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAllowAmbientEQ{"AllowAmbientEQ",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -149,6 +152,11 @@ const base::Feature kShowDateInTrayButton{"ShowDateInTrayButton",
 const base::Feature kKeyboardBasedDisplayArrangementInSettings{
     "KeyboardBasedDisplayArrangementInSettings",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+bool IsArcGhostWindowEnabled() {
+  return base::FeatureList::IsEnabled(kFullRestore) &&
+         base::FeatureList::IsEnabled(kArcGhostWindow);
+}
 
 bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);

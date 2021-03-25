@@ -15,6 +15,10 @@ namespace features {
 // See https://crbug.com/1021193 for more details.
 ASH_PUBLIC_EXPORT extern const base::Feature kAllowAmbientEQ;
 
+// Enables the pre-load app window for ARC++ app during ARCVM booting stage on
+// full restore process.
+ASH_PUBLIC_EXPORT extern const base::Feature kArcGhostWindow;
+
 // Enables resize lock for ARC++ and puts restrictions on window resizing.
 // TODO(takise): Remove this after the feature is fully launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kArcResizeLock;
@@ -205,6 +209,8 @@ ASH_PUBLIC_EXPORT bool IsAllowAmbientEQEnabled();
 ASH_PUBLIC_EXPORT bool IsAltTabLimitedToActiveDesk();
 
 ASH_PUBLIC_EXPORT bool IsPerDeskShelfEnabled();
+
+ASH_PUBLIC_EXPORT bool IsArcGhostWindowEnabled();
 
 ASH_PUBLIC_EXPORT bool IsArcResizeLockEnabled();
 

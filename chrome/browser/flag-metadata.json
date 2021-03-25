@@ -170,6 +170,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "arc-ghost-window",
+    "owners": [ "sstan" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "arc-native-bridge-64bit-support-experiment",
     "owners": [ "jhorwich" ],
     // Used on ChromeOS to experimentally enable 64-bit ARC native-bridge

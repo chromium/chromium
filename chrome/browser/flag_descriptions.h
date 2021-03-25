@@ -2681,6 +2681,9 @@ extern const char kReleaseNotesNotificationDescription[];
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
+extern const char kArcGhostWindowName[];
+extern const char kArcGhostWindowDescription[];
+
 extern const char kArcResizeLockName[];
 extern const char kArcResizeLockDescription[];
 
