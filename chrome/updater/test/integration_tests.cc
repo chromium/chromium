@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <cstdlib>
 #include <memory>
 
@@ -27,8 +26,6 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/integration_test_commands.h"
-#include "chrome/updater/test/integration_test_commands_system.h"
-#include "chrome/updater/test/integration_test_commands_user.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test/test_app/constants.h"
@@ -47,11 +44,18 @@
 namespace updater {
 namespace test {
 
-class IntegrationTest
-    : public ::testing::TestWithParam<scoped_refptr<IntegrationTestCommands>> {
+// TODO(crbug.com/1096654): Enable tests for IntegrationTestCommandsSystem on
+// bots that support passwordless sudo.
+
+// TODO(crbug.com/1096654): Enable for system integration tests for Win.
+
+class IntegrationTest : public ::testing::Test {
+ public:
+  IntegrationTest() : test_commands_(CreateIntegrationTestCommands()) {}
+  ~IntegrationTest() override = default;
+
  protected:
   void SetUp() override {
-    test_commands_ = GetParam();
     Clean();
     ExpectClean();
     EnterTestMode(GURL("http://localhost:1234"));
@@ -66,49 +70,70 @@ class IntegrationTest
     ExpectClean();
     Clean();
   }
-  scoped_refptr<IntegrationTestCommands> test_commands_;
 
   void CopyLog() { test_commands_->CopyLog(); }
+
   void PrintLog() { test_commands_->PrintLog(); }
+
   void Install() { test_commands_->Install(); }
+
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
+
   void Uninstall() { test_commands_->Uninstall(); }
+
   void ExpectCandidateUninstalled() {
     test_commands_->ExpectCandidateUninstalled();
   }
+
   void Clean() { test_commands_->Clean(); }
+
   void ExpectClean() { test_commands_->ExpectClean(); }
+
   void EnterTestMode(const GURL& url) { test_commands_->EnterTestMode(url); }
+
   void ExpectVersionActive(const std::string& version) {
     test_commands_->ExpectVersionActive(version);
   }
+
   void ExpectVersionNotActive(const std::string& version) {
     test_commands_->ExpectVersionNotActive(version);
   }
+
   void ExpectActiveUpdater() { test_commands_->ExpectActiveUpdater(); }
+
   void SetupFakeUpdaterHigherVersion() {
     test_commands_->SetupFakeUpdaterHigherVersion();
   }
+
   void SetActive(const std::string& app_id) {
     test_commands_->SetActive(app_id);
   }
+
   void ExpectActive(const std::string& app_id) {
     test_commands_->ExpectActive(app_id);
   }
+
   void ExpectNotActive(const std::string& app_id) {
     test_commands_->ExpectNotActive(app_id);
   }
+
   void SetFakeExistenceCheckerPath(const std::string& app_id) {
     test_commands_->SetFakeExistenceCheckerPath(app_id);
   }
+
   void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
     test_commands_->ExpectAppUnregisteredExistenceCheckerPath(app_id);
   }
+
   void RegisterApp(const std::string& app_id) {
     test_commands_->RegisterApp(app_id);
   }
+
   void RegisterTestApp() { test_commands_->RegisterTestApp(); }
+
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
+
+  scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
   base::test::TaskEnvironment environment_;
@@ -120,7 +145,7 @@ class IntegrationTest
 // See crbug.com/1112527.
 #if defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
-TEST_P(IntegrationTest, InstallUninstall) {
+TEST_F(IntegrationTest, InstallUninstall) {
   Install();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -134,7 +159,7 @@ TEST_P(IntegrationTest, InstallUninstall) {
   Uninstall();
 }
 
-TEST_P(IntegrationTest, SelfUninstallOutdatedUpdater) {
+TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
   SetupFakeUpdaterHigherVersion();
@@ -159,7 +184,7 @@ TEST_P(IntegrationTest, SelfUninstallOutdatedUpdater) {
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1163524): Enable on Windows.
-TEST_P(IntegrationTest, RegisterTestApp) {
+TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -169,7 +194,7 @@ TEST_P(IntegrationTest, RegisterTestApp) {
 #endif  // OS_MAC
 
 // TODO(crbug.com/1163625): Failing on Mac 10.11.
-TEST_P(IntegrationTest, ReportsActive) {
+TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
   // Install, and RegisterApp cannot make progress until it shut downs and
@@ -214,7 +239,7 @@ TEST_P(IntegrationTest, ReportsActive) {
 #else
 #define MAYBE_UnregisterUninstalledApp UnregisterUninstalledApp
 #endif
-TEST_P(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
+TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -243,7 +268,7 @@ TEST_P(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
 #define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
   UninstallUpdaterWhenAllAppsUninstalled
 #endif
-TEST_P(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
+TEST_F(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -263,7 +288,7 @@ TEST_P(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
 #else
 #define MAYBE_UnregisterUnownedApp UnregisterUnownedApp
 #endif
-TEST_P(IntegrationTest, MAYBE_UnregisterUnownedApp) {
+TEST_F(IntegrationTest, MAYBE_UnregisterUnownedApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -296,21 +321,6 @@ TEST_P(IntegrationTest, MAYBE_UnregisterUnownedApp) {
 }
 
 #endif  // OS_MAC
-
-#if defined(OS_MAC)
-// TODO(crbug.com/1096654): Enable tests for IntegrationTestCommandsSystem on
-// bots that support passwordless sudo.
-INSTANTIATE_TEST_SUITE_P(IntegrationTestVariations,
-                         IntegrationTest,
-                         testing::Values(CreateIntegrationTestCommandsUser()));
-#endif
-
-#if defined(OS_WIN)
-// TODO(crbug.com/1096654): Enable for system.
-INSTANTIATE_TEST_SUITE_P(IntegrationTestVariations,
-                         IntegrationTest,
-                         testing::Values(CreateIntegrationTestCommandsUser()));
-#endif
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 

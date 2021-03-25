@@ -32,6 +32,7 @@ group("all") {
     deps = [
       ":updater",
       ":updater_tests",
+      ":updater_tests_system",
       "//chrome/updater/test/test_app",
     ]
   }
@@ -348,9 +349,7 @@ if (is_win || is_mac) {
       "tag_unittest.cc",
       "test/integration_test_commands.h",
       "test/integration_test_commands_system.cc",
-      "test/integration_test_commands_system.h",
       "test/integration_test_commands_user.cc",
-      "test/integration_test_commands_user.h",
       "test/integration_tests.cc",
       "test/integration_tests_impl.cc",
       "test/integration_tests_impl.h",
@@ -432,7 +431,33 @@ if (is_win || is_mac) {
   test("updater_tests") {
     testonly = true
 
-    sources = [ "run_all_unittests.cc" ]
+    sources = [
+      "run_all_unittests.cc",
+      "test/integration_test_commands_factory_user.cc",
+    ]
+
+    deps = [
+      ":updater_test_sources",
+      "//base/test:test_support",
+      "//chrome/common:constants",
+      "//testing/gtest",
+    ]
+
+    if (is_mac) {
+      data_deps = [
+        "//chrome/updater/mac:updater_bundle",
+        "//chrome/updater/test/test_app",
+      ]
+    }
+  }
+
+  test("updater_tests_system") {
+    testonly = true
+
+    sources = [
+      "run_all_unittests.cc",
+      "test/integration_test_commands_factory_system.cc",
+    ]
 
     deps = [
       ":updater_test_sources",
@@ -454,7 +479,10 @@ if (is_win || is_mac) {
   executable("updater_integration_tests_helper") {
     testonly = true
 
-    sources = [ "test/integration_tests_helper.cc" ]
+    sources = [
+      "test/integration_test_commands_factory_system.cc",
+      "test/integration_tests_helper.cc",
+    ]
 
     deps = [
       ":base",

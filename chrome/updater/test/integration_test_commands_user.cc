@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/test/integration_test_commands_user.h"
-
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -12,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
+#include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
