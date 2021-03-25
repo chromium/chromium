@@ -653,3 +653,10 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   session_controller_->SetSessionLengthLimit(off_hours_session_length_limit,
                                              off_hours_session_start_time);
 }
+
+void SessionControllerClientImpl::OnStateChanged() {
+  // Lacros is mutually exclusive with multi sign-in. If Lacros was running
+  // (or launching/terminating) and now is not (or vice-versa), we want to
+  // propagate this change to make multi sign-in unavailable or available.
+  SendSessionInfoIfChanged();
+}

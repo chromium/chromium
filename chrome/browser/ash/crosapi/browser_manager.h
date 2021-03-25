@@ -135,10 +135,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void SetDeviceAccountPolicy(const std::string& policy_blob);
 
  protected:
-  // Notifies Mojo connection to lacros-chrome has been disconnected.
-  void NotifyMojoDisconnected();
-
- private:
   enum class State {
     // Lacros is not initialized yet.
     // Lacros-chrome loading depends on user type, so it needs to wait
@@ -169,7 +165,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // Lacros-chrome is being terminated soon.
     TERMINATING,
   };
+  // Changes |state| value and potentitally notify observers of the change.
+  void SetState(State state);
 
+ private:
   struct BrowserServiceInfo {
     BrowserServiceInfo(mojo::RemoteSetElementId mojo_id,
                        mojom::BrowserService* service,

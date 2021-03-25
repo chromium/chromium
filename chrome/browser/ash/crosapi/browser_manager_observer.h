@@ -13,6 +13,8 @@ class BrowserManagerObserver : public base::CheckedObserver {
  public:
   // Invoked when the Mojo connection to lacros-chrome is disconnected.
   virtual void OnMojoDisconnected() {}
+  // Invoked when lacros-chrome state changes, without specifying the state.
+  virtual void OnStateChanged() {}
 };
 
 }  // namespace crosapi
