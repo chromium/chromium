@@ -455,6 +455,32 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
             receiver.GetResult()->response_info.bless_nonce);
 }
 
+TEST_F(FeedNetworkTest, TestHostOverrideWithPath) {
+  CallbackReceiver<QueryRequestResult> receiver;
+  profile_prefs().SetString(feed::prefs::kHostOverrideHost,
+                            "http://www.newhost.com/testpath");
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
+                                   receiver.Bind());
+
+  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
+  ASSERT_EQ("/testpath/httpservice/retry/TrellisClankService/FeedQuery",
+            GetPendingRequestURL().path());
+}
+
+TEST_F(FeedNetworkTest, TestHostOverrideWithPathTrailingSlash) {
+  CallbackReceiver<QueryRequestResult> receiver;
+  profile_prefs().SetString(feed::prefs::kHostOverrideHost,
+                            "http://www.newhost.com/testpath/");
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
+                                   receiver.Bind());
+
+  ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());
+  ASSERT_EQ("/testpath/httpservice/retry/TrellisClankService/FeedQuery",
+            GetPendingRequestURL().path());
+}
+
 TEST_F(FeedNetworkTest, SendApiRequest_UploadActions) {
   CallbackReceiver<FeedNetwork::ApiResult<feedwire::UploadActionsResponse>>
       receiver;

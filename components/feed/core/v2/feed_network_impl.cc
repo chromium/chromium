@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
@@ -448,6 +449,16 @@ void FeedNetworkImpl::SendQueryRequest(
       replacements.SetSchemeStr(override_host_url.scheme_piece());
       replacements.SetHostStr(override_host_url.host_piece());
       replacements.SetPortStr(override_host_url.port_piece());
+      // Allow the host override to also add a prefix for the path. Ignore
+      // trailing slashes if they are provided, as the path part of |url| will
+      // always include "/".
+      base::StringPiece trimmed_path_prefix = base::TrimString(
+          override_host_url.path_piece(), "/", base::TRIM_TRAILING);
+      std::string replacement_path =
+          base::StrCat({trimmed_path_prefix, url.path_piece()});
+
+      replacements.SetPathStr(replacement_path);
+
       url = url.ReplaceComponents(replacements);
       host_overridden = true;
     }
