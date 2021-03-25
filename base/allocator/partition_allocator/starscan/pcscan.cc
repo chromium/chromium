@@ -1484,7 +1484,7 @@ class PCScan::PCScanThread final {
   TaskHandle posted_task_;
 };
 
-constexpr size_t PCScan::QuarantineData::kQuarantineSizeMinLimit;
+constexpr intptr_t PCScan::QuarantineData::kQuarantineSizeMinLimit;
 
 void PCScan::QuarantineData::ResetAndAdvanceEpoch() {
   quarantine_size_ = limit_ - trigger_limit_.load(std::memory_order_relaxed);
@@ -1496,7 +1496,7 @@ void PCScan::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
   limit_ = std::max(kQuarantineSizeMinLimit,
-                    static_cast<size_t>(kQuarantineSizeFraction * heap_size));
+                    static_cast<intptr_t>(kQuarantineSizeFraction * heap_size));
   // Force a new scan on the next deallocation if the too many deallocations
   // accumulated during the current scan.
   const intptr_t old_trigger_limit =

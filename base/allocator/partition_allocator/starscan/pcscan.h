@@ -117,10 +117,10 @@ class BASE_EXPORT PCScan final {
     }
 
    private:
-    static constexpr size_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
+    static constexpr intptr_t kQuarantineSizeMinLimit = 1 * 1024 * 1024;
 
     // The next scan will be triggered after limit_ deallocations.
-    size_t limit_{kQuarantineSizeMinLimit};
+    intptr_t limit_{kQuarantineSizeMinLimit};
     // Deallocations decrement from this counter. When it reaches <=0 a scan
     // is triggered.
     std::atomic<intptr_t> trigger_limit_{limit_};
@@ -163,9 +163,10 @@ class BASE_EXPORT PCScan final {
 constexpr PCScan::QuarantineData::QuarantineData() = default;
 
 ALWAYS_INLINE bool PCScan::QuarantineData::Account(size_t size) {
-  intptr_t trigger_limit_before =
+  const intptr_t trigger_limit_before =
       trigger_limit_.fetch_sub(size, std::memory_order_relaxed);
-  intptr_t trigger_limit_after = trigger_limit_before - size;
+  const intptr_t trigger_limit_after =
+      trigger_limit_before - static_cast<intptr_t>(size);
   return trigger_limit_before >= 0 && trigger_limit_after < 0;
 }
 
