@@ -435,6 +435,12 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsOnboardingSurveyCycleEndTs,
+                              base::Time().ToInternalValue());
+
+  registry->RegisterBooleanPref(::prefs::kHatsOnboardingDeviceIsSelected,
+                                false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(

@@ -320,6 +320,9 @@ extern const base::Feature kHaTSDesktopDevToolsLayoutPanel;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSystem;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSystemOnboarding;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

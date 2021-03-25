@@ -481,6 +481,9 @@ const base::Feature kHappinessTrackingSurveysForDesktopSettingsPrivacy{
 // Enables or disables the Happiness Tracking System for the device.
 const base::Feature kHappinessTrackingSystem{"HappinessTrackingSystem",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for Onboarding Experience.
+const base::Feature kHappinessTrackingSystemOnboarding{
+    "HappinessTrackingOnboardingExperience", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

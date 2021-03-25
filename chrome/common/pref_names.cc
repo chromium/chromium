@@ -760,12 +760,22 @@ const char kUnifiedDesktopEnabledByDefault[] =
 const char kHatsLastInteractionTimestamp[] = "hats_last_interaction_timestamp";
 
 // An int64 pref. This is the timestamp that indicates the end of the most
-// recent survey cycle.
+// recent survey cycle (general survey).
 const char kHatsSurveyCycleEndTimestamp[] = "hats_survey_cycle_end_timestamp";
 
 // A boolean pref. Indicates if the device is selected for HaTS in the current
-// survey cycle.
+// survey cycle (general survey).
 const char kHatsDeviceIsSelected[] = "hats_device_is_selected";
+
+// An int64 pref. This is the timestamp that indicates the end of the Onboarding
+// Experience survey
+const char kHatsOnboardingSurveyCycleEndTs[] =
+    "hats_onboarding_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the HaTS Onboarding
+// Experience survey
+const char kHatsOnboardingDeviceIsSelected[] =
+    "hats_onboarding_device_is_selected";
 
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.

@@ -10,7 +10,7 @@
 namespace chromeos {
 
 namespace {
-constexpr int kMinDaysThreshold = 1;
+constexpr int kMinDaysThreshold = 0;  // HaTS Onboarding Experience is immediate
 }
 
 HatsConfig::HatsConfig(const base::Feature& feature,
@@ -29,6 +29,14 @@ const HatsConfig kHatsGeneralSurvey = {
     base::TimeDelta::FromDays(7),          // hatsNewDeviceThreshold
     prefs::kHatsDeviceIsSelected,          // hatsIsSelectedPrefName
     prefs::kHatsSurveyCycleEndTimestamp,   // hatsCycleEndTimestampPrefName
+};
+
+// Onboarding Experience Survey -- shown after completing the Onboarding Dialog
+const HatsConfig kHatsOnboardingSurvey = {
+    ::features::kHappinessTrackingSystemOnboarding,  // feature
+    base::TimeDelta::FromMinutes(30),                // hatsNewDeviceThreshold
+    prefs::kHatsOnboardingDeviceIsSelected,          // hatsIsSelectedPrefName
+    prefs::kHatsOnboardingSurveyCycleEndTs,  // hatsCycleEndTimestampPrefName
 };
 
 }  // namespace chromeos

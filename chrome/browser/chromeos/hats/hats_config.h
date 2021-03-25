@@ -39,6 +39,7 @@ struct HatsConfig {
 
 // CrOS HaTS configs are declared here and defined in hats_config.cc
 extern const HatsConfig kHatsGeneralSurvey;
+extern const HatsConfig kHatsOnboardingSurvey;
 
 }  // namespace chromeos
 #endif  // CHROME_BROWSER_CHROMEOS_HATS_HATS_CONFIG_H_
