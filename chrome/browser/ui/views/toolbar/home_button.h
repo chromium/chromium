@@ -29,7 +29,6 @@ class HomeButton : public ToolbarButton {
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
-  void UpdateIcon() override;
 
  private:
   Browser* const browser_;

@@ -43,6 +43,7 @@ MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
+  SetVectorIcons(kMediaToolbarButtonIcon, kMediaToolbarButtonTouchIcon);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
@@ -125,13 +126,6 @@ void MediaToolbarButtonView::Disable() {
 
   for (auto& observer : observers_)
     observer.OnMediaButtonDisabled();
-}
-
-void MediaToolbarButtonView::UpdateIcon() {
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  const gfx::VectorIcon& icon =
-      touch_ui ? kMediaToolbarButtonTouchIcon : kMediaToolbarButtonIcon;
-  UpdateIconsWithStandardColors(icon);
 }
 
 void MediaToolbarButtonView::ButtonPressed() {

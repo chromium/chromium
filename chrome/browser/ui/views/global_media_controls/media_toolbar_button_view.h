@@ -37,9 +37,6 @@ class MediaToolbarButtonView : public ToolbarButton,
   void Enable() override;
   void Disable() override;
 
-  // ToolbarButton implementation.
-  void UpdateIcon() override;
-
  private:
   void ButtonPressed();
 

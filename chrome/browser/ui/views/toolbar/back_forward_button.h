@@ -22,12 +22,6 @@ class BackForwardButton : public ToolbarButton {
   BackForwardButton(const BackForwardButton&) = delete;
   BackForwardButton& operator=(const BackForwardButton&) = delete;
   ~BackForwardButton() override;
-
-  // ToolbarButton:
-  void UpdateIcon() override;
-
- private:
-  Direction direction_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BACK_FORWARD_BUTTON_H_

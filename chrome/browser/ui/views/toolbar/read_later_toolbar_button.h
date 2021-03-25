@@ -20,9 +20,6 @@ class ReadLaterToolbarButton : public ToolbarButton {
   ReadLaterToolbarButton& operator=(const ReadLaterToolbarButton&) = delete;
   ~ReadLaterToolbarButton() override;
 
-  // ToolbarButton:
-  void OnThemeChanged() override;
-
  private:
   void ButtonPressed();
 

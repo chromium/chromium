@@ -222,6 +222,7 @@ class SimpleBackButton : public ToolbarButton {
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
+    SetVectorIcons(vector_icons::kBackArrowIcon, kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
     // Unlike toolbar buttons, this one should be focusable to make it
@@ -232,14 +233,6 @@ class SimpleBackButton : public ToolbarButton {
   SimpleBackButton(const SimpleBackButton&) = delete;
   SimpleBackButton& operator=(const SimpleBackButton&) = delete;
   ~SimpleBackButton() override = default;
-
-  // ToolbarButton:
-  void UpdateIcon() override {
-    const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-    const gfx::VectorIcon* image =
-        touch_ui ? &kBackArrowTouchIcon : &vector_icons::kBackArrowIcon;
-    UpdateIconsWithStandardColors(*image);
-  }
 };
 
 }  // namespace

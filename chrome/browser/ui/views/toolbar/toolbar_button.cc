@@ -320,6 +320,25 @@ void ToolbarButton::UpdateIconsWithColors(const gfx::VectorIcon& icon,
                 ui::ImageModel::FromVectorIcon(icon, disabled_color));
 }
 
+void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {
+  SetVectorIcons(icon, icon);
+}
+
+void ToolbarButton::SetVectorIcons(const gfx::VectorIcon& icon,
+                                   const gfx::VectorIcon& touch_icon) {
+  vector_icons_.emplace(VectorIcons{icon, touch_icon});
+  if (GetThemeProvider())
+    UpdateIcon();
+}
+
+void ToolbarButton::UpdateIcon() {
+  if (vector_icons_) {
+    UpdateIconsWithStandardColors(ui::TouchUiController::Get()->touch_ui()
+                                      ? vector_icons_->touch_icon
+                                      : vector_icons_->icon);
+  }
+}
+
 void ToolbarButton::UpdateIconsWithStandardColors(const gfx::VectorIcon& icon) {
   UpdateIconsWithColors(icon, GetForegroundColor(ButtonState::STATE_NORMAL),
                         GetForegroundColor(ButtonState::STATE_HOVERED),

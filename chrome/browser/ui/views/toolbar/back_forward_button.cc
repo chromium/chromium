@@ -24,18 +24,19 @@ BackForwardButton::BackForwardButton(Direction direction,
                         direction == Direction::kBack
                             ? BackForwardMenuModel::ModelType::kBackward
                             : BackForwardMenuModel::ModelType::kForward),
-                    browser->tab_strip_model()),
-      direction_(direction) {
+                    browser->tab_strip_model()) {
   SetHideInkDropWhenShowingContextMenu(false);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
-  if (direction_ == Direction::kBack) {
+  if (direction == Direction::kBack) {
+    SetVectorIcons(vector_icons::kBackArrowIcon, kBackArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     GetViewAccessibility().OverrideDescription(
         l10n_util::GetStringUTF8(IDS_ACCDESCRIPTION_BACK));
     SetID(VIEW_ID_BACK_BUTTON);
   } else {
+    SetVectorIcons(vector_icons::kForwardArrowIcon, kForwardArrowTouchIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
     SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
     GetViewAccessibility().OverrideDescription(
@@ -45,18 +46,6 @@ BackForwardButton::BackForwardButton(Direction direction,
 }
 
 BackForwardButton::~BackForwardButton() = default;
-
-void BackForwardButton::UpdateIcon() {
-  const gfx::VectorIcon* image = nullptr;
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  if (direction_ == Direction::kBack) {
-    image = touch_ui ? &kBackArrowTouchIcon : &vector_icons::kBackArrowIcon;
-  } else {
-    image =
-        touch_ui ? &kForwardArrowTouchIcon : &vector_icons::kForwardArrowIcon;
-  }
-  UpdateIconsWithStandardColors(*image);
-}
 
 BEGIN_METADATA(BackForwardButton, ToolbarButton)
 END_METADATA

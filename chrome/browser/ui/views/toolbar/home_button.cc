@@ -152,6 +152,7 @@ HomeButton::HomeButton(PressedCallback callback, Browser* browser)
     : ToolbarButton(std::move(callback)), browser_(browser) {
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
+  SetVectorIcons(kNavigateHomeIcon, kNavigateHomeTouchIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
   SetID(VIEW_ID_HOME_BUTTON);
@@ -196,13 +197,6 @@ ui::mojom::DragOperation HomeButton::OnPerformDrop(
     HomePageUndoBubble::ShowBubble(browser_, old_is_ntp, old_homepage, this);
   }
   return ui::mojom::DragOperation::kNone;
-}
-
-void HomeButton::UpdateIcon() {
-  const gfx::VectorIcon& home_image = ui::TouchUiController::Get()->touch_ui()
-                                          ? kNavigateHomeTouchIcon
-                                          : kNavigateHomeIcon;
-  UpdateIconsWithStandardColors(home_image);
 }
 
 BEGIN_METADATA(HomeButton, ToolbarButton)

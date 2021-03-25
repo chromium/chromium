@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -79,13 +80,23 @@ class ToolbarButton : public views::LabelButton,
   void ClearPendingMenu();
   bool IsMenuShowing() const;
 
+  // Sets the button's vector icon. This icon uses the default colors and are
+  // automatically updated on theme changes.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  // Sets an icon and touch-mode icon for this button.
+  // TODO(pbos): Investigate if touch-mode icons are just different-size ones
+  // that can be folded into the same .icon file as different CANVAS_DIMENSIONS.
+  void SetVectorIcons(const gfx::VectorIcon& icon,
+                      const gfx::VectorIcon& touch_icon);
+
   // Updates the images using the given icon and the default colors returned by
   // GetForegroundColor().
   void UpdateIconsWithStandardColors(const gfx::VectorIcon& icon);
 
   // Updates the icon images and colors as necessary. Should be called any time
   // icon state changes, e.g. in response to theme or touch mode changes.
-  virtual void UpdateIcon() {}
+  virtual void UpdateIcon();
 
   // Gets/Sets |layout_insets_|, see comment there.
   base::Optional<gfx::Insets> GetLayoutInsets() const;
@@ -220,6 +231,14 @@ class ToolbarButton : public views::LabelButton,
     gfx::SlideAnimation highlight_color_animation_;
   };
 
+  // TODO(pbos): See if VECTOR_ICON_TEMPLATE_CC can create constexpr VectorIcons
+  // so SetVectorIcon and friends can use constexpr to avoid potential lifetime
+  // problems if runtime-created gfx::VectorIcons were to become a thing.
+  struct VectorIcons {
+    const gfx::VectorIcon& icon;
+    const gfx::VectorIcon& touch_icon;
+  };
+
   void TouchUiChanged();
 
   // Clears the current highlight, i.e. it sets the label to an empty string and
@@ -268,6 +287,10 @@ class ToolbarButton : public views::LabelButton,
 
   // Menu runner to display drop down menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
+
+  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
+  // Reacts to theme changes using default colors.
+  base::Optional<VectorIcons> vector_icons_;
 
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
