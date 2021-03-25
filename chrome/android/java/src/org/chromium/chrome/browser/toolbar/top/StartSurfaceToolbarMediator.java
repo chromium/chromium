@@ -76,6 +76,7 @@ class StartSurfaceToolbarMediator {
     private int mOverviewModeState;
     private boolean mIsGoogleSearchEngine;
     private boolean mShouldShowStartSurfaceAsHomepage;
+    private boolean mHomepageEnabled;
 
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
@@ -108,6 +109,10 @@ class StartSurfaceToolbarMediator {
         mShowHomeButtonOnTabSwitcher = showHomeButtonOnTabSwitcher;
         if (mShowHomeButtonOnTabSwitcher) {
             mPropertyModel.set(HOMEPAGE_ENABLED_SUPPLIER, homepageEnabledSupplier);
+            homepageEnabledSupplier.addObserver(mCallbackController.makeCancelable((enabled) -> {
+                mHomepageEnabled = enabled;
+                updateHomeButtonVisibility();
+            }));
             mPropertyModel.set(
                     HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, homepageManagedByPolicySupplier);
             mPropertyModel.set(HOME_BUTTON_CLICK_HANDLER, homeButtonOnClickHandler);
@@ -353,7 +358,7 @@ class StartSurfaceToolbarMediator {
         // If start surface is not shown as the homepage, home button shouldn't be shown on tab
         // switcher page.
         mPropertyModel.set(HOME_BUTTON_IS_VISIBLE,
-                isShownTabswitcherState && !mPropertyModel.get(IS_INCOGNITO)
+                mHomepageEnabled && isShownTabswitcherState && !mPropertyModel.get(IS_INCOGNITO)
                         && mShowHomeButtonOnTabSwitcher && mShouldShowStartSurfaceAsHomepage);
     }
 
