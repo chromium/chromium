@@ -396,11 +396,11 @@ void Shelf::CreateHotseatWidget(aura::Window* container) {
           HotseatWidgetAnimationMetricsReporter::HotseatElementType::kWidget);
 }
 
-void Shelf::CreateStatusAreaWidget(aura::Window* status_container) {
-  DCHECK(status_container);
+void Shelf::CreateStatusAreaWidget(aura::Window* shelf_container) {
+  DCHECK(shelf_container);
   DCHECK(!status_area_widget_);
   status_area_widget_ =
-      std::make_unique<StatusAreaWidget>(status_container, this);
+      std::make_unique<StatusAreaWidget>(shelf_container, this);
   status_area_widget_->Initialize();
 }
 

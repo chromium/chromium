@@ -796,7 +796,7 @@ void ShelfWidget::UpdateLayout(bool animate) {
   hide_animation_observer_.reset();
   const float target_opacity = layout_manager->GetOpacity();
   if (GetLayer()->opacity() != target_opacity) {
-    if (target_opacity == 0) {
+    if (target_opacity == 0 && animate) {
       // On hide, set the opacity after the animation completes.
       hide_animation_observer_ =
           std::make_unique<HideAnimationObserver>(GetLayer());
