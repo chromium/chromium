@@ -17,6 +17,8 @@ class AudioFrameSerializationData;
 template <typename NativeFrameType>
 class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
  public:
+  using TransferFramesCB = CrossThreadFunction<void(NativeFrameType)>;
+
   FrameQueueUnderlyingSource(ScriptState*, wtf_size_t queue_size);
   ~FrameQueueUnderlyingSource() override = default;
 
@@ -43,14 +45,9 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   void QueueFrame(NativeFrameType media_frame);
 
   // Start or stop the delivery of frames via QueueFrame().
-  // Must be called on |main_trask_runner_|.
+  // Must be called on |realm_task_runner_|.
   virtual bool StartFrameDelivery() = 0;
   virtual void StopFrameDelivery() = 0;
-
-  // Temporary workaround for crbug.com/1182497. Marks blink::VideoFrames to be
-  // closed when cloned(), to prevent stalls when posting internally to a
-  // transferred stream.
-  void SetStreamWasTransferred() { stream_was_transferred_ = true; }
 
   bool IsPendingPullForTesting() const { return is_pending_pull_; }
   const Deque<NativeFrameType>& QueueForTesting() const { return queue_; }
@@ -59,22 +56,56 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   void Trace(Visitor*) const override;
 
  protected:
-  scoped_refptr<base::SequencedTaskRunner> GetSourceRunner() {
+  scoped_refptr<base::SequencedTaskRunner> GetRealmRunner() {
     return realm_task_runner_;
   }
 
+  // Starts transferring frames via |transfer_frames_cb|, guaranteeing frame
+  // ordering between frames received on |realm_task_runner_| and
+  // |transfer_task_runner|. QueueFrames() can still called until
+  // |transfer_done_cb| runs, at which point QueueFrames() should never be
+  // called again.
+  //
+  // Note:
+  // - This must be called on |realm_task_runner_|.
+  // - |transfer_done_cb| will be run on |transfer_task_runner|.
+  // - |transfer_task_runner| must be the task runner on which QueueFrame() is
+  //   normally called.
+  void TransferQueueFromRealmRunner(
+      TransferFramesCB transfer_frames_cb,
+      scoped_refptr<base::SequencedTaskRunner> transfer_task_runner,
+      CrossThreadOnceClosure transfer_done_cb);
+
  private:
+  void CloseController();
   void QueueFrameOnRealmTaskRunner(NativeFrameType media_frame);
   void ProcessPullRequest();
   void SendFrameToStream(NativeFrameType media_frame);
   ScriptWrappable* MakeBlinkFrame(NativeFrameType media_frame);
 
-  // Used when a stream endpoint was transferred to another realm, to
-  // automatically close frames as they are posted to the other stream.
-  bool stream_was_transferred_ = false;
+  // Used to make sure no new frames arrive via QueueFrameOnRealmTaskRunner().
+  void EnsureAllRealmRunnerFramesProcessed();
+  void OnAllRealmRunnerFrameProcessed();
+
+  // Must be called on the same task runner that calls QueueFrame() (most likely
+  // the IO thread). Transfers all frames in |pending_transfer_queue_| via
+  // |transfer_frames_cb|, and clears |transfer_frames_cb|.
+  // QueueFrame() should never be called after this.
+  void FinalizeQueueTransferOnTransferRunner();
 
   // Main task runner for the window or worker context.
   const scoped_refptr<base::SequencedTaskRunner> realm_task_runner_;
+
+  // Used when the queue is being transferred, to redirect frames that are in
+  // flight between QueueFrames() and QueueFrameOnRealmTaskRunner().
+  TransferFramesCB transfer_frames_cb_;
+  scoped_refptr<base::SequencedTaskRunner> transfer_task_runner_;
+  CrossThreadOnceClosure transfer_done_cb_;
+
+  // Accumulates frames received while we are transferring the queue.
+  Deque<NativeFrameType> pending_transfer_queue_;
+
+  bool queue_transferred_ = false;
 
   // An internal deque prior to the stream controller's queue. It acts as a ring
   // buffer and allows dropping old frames instead of new ones in case frames

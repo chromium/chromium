@@ -9,6 +9,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/mediastream/frame_queue_underlying_source.h"
+#include "third_party/blink/renderer/modules/mediastream/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -20,6 +21,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
     : public VideoFrameQueueUnderlyingSource,
       public MediaStreamVideoSink {
  public:
+  using CrossThreadFrameQueueSource =
+      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>;
+
   explicit MediaStreamVideoTrackUnderlyingSource(ScriptState*,
                                                  MediaStreamComponent*,
                                                  wtf_size_t queue_size);
@@ -36,14 +40,25 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   GetStreamTransferOptimizer();
 
  private:
+  scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner();
+
   // FrameQueueUnderlyingSource implementation.
   bool StartFrameDelivery() override;
   void StopFrameDelivery() override;
+
+  void OnSourceTransferStarted(scoped_refptr<base::SequencedTaskRunner>,
+                               TransferredVideoFrameQueueUnderlyingSource*);
 
   void OnFrameFromTrack(
       scoped_refptr<media::VideoFrame> media_frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_media_frames,
       base::TimeTicks estimated_capture_time);
+
+  scoped_refptr<base::SequencedTaskRunner> transferred_runner_;
+  CrossThreadFrameQueueSource transferred_source_;
+
+  // Only accessed on the IO runner.
+  bool was_transferred_ = false;
 
   const Member<MediaStreamComponent> track_;
 
