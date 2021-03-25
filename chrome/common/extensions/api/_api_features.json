@@ -834,6 +834,9 @@
   "tabs.insertCSS": {
     "max_manifest_version": 2
   },
+  "tabs.removeCSS": {
+    "max_manifest_version": 2
+  },
   "tabs.onActiveChanged": {
     "max_manifest_version": 2
   },

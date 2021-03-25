@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
          })";
   constexpr char kWorker[] =
       R"(chrome.tabs.onUpdated.addListener(
-             function listener(tabId, changeInfo, tab) {
+             async function listener(tabId, changeInfo, tab) {
            if (changeInfo.status != 'complete')
              return;
            let url = new URL(tab.url);
@@ -62,6 +62,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            // The tabs API equivalents of script injection are removed in MV3.
            chrome.test.assertEq(undefined, chrome.tabs.executeScript);
            chrome.test.assertEq(undefined, chrome.tabs.insertCSS);
+           chrome.test.assertEq(undefined, chrome.tabs.removeCSS);
 
            chrome.tabs.onUpdated.removeListener(listener);
 
@@ -69,18 +70,18 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
              document.title = 'My New Title';
              return document.title;
            }
-           chrome.scripting.executeScript(
-               {
-                 target: {tabId: tabId},
-                 function: injectedFunction,
-               },
-               (results) => {
-                 chrome.test.assertNoLastError();
-                 chrome.test.assertTrue(!!results);
-                 chrome.test.assertEq(1, results.length);
-                 chrome.test.assertEq('My New Title', results[0].result);
-                 chrome.test.notifyPass();
-               });
+           try {
+             const results = await chrome.scripting.executeScript({
+               target: {tabId: tabId},
+               function: injectedFunction,
+             });
+             chrome.test.assertTrue(!!results);
+             chrome.test.assertEq(1, results.length);
+             chrome.test.assertEq('My New Title', results[0].result);
+             chrome.test.notifyPass();
+           } catch(error) {
+             chrome.test.notifyFail('executeScript promise rejected');
+           }
          });
          chrome.test.sendMessage('ready');)";
 
