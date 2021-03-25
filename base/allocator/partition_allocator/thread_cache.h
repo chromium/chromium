@@ -213,7 +213,6 @@ class BASE_EXPORT ThreadCache {
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
   void SetShouldPurge();
-  void SetNotifiesRegistry(bool enabled);
   // Empties the cache.
   // The Partition lock must *not* be held when calling this.
   // Must be called from the thread this cache is for.
@@ -264,7 +263,6 @@ class BASE_EXPORT ThreadCache {
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
   ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
-  void HandleNonNormalMode();
   void ResetForTesting();
   static void SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
                               float multiplier);
