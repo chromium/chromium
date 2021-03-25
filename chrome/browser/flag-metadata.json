@@ -908,6 +908,12 @@
     "expiry_milestone": 92
   },
   {
+    "name": "deprecate-alt-click",
+    "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
+                "cros-peripherals@google.com"],
+    "expiry_milestone": 97
+  },
+  {
     "name": "deprecate-low-usage-codecs",
     "owners": [ "dalecurtis", "sweyn" ],
     "expiry_milestone": 92

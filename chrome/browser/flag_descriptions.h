@@ -531,6 +531,9 @@ extern const char kCrossOriginOpenerPolicyAccessReportingDescription[];
 extern const char kCrossOriginIsolatedName[];
 extern const char kCrossOriginIsolatedDescription[];
 
+extern const char kDeprecateAltClickName[];
+extern const char kDeprecateAltClickDescription[];
+
 extern const char kDiagnosticsAppName[];
 extern const char kDiagnosticsAppDescription[];
 

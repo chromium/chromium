@@ -117,6 +117,12 @@ extern const base::Feature kImprovedKeyboardShortcuts;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsImprovedKeyboardShortcutsEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kDeprecateAltClick;
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsDeprecateAltClickEnabled();
+
 #endif
 
 // Indicates whether DrmOverlayManager should used the synchronous API to

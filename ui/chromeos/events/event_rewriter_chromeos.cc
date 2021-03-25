@@ -1095,13 +1095,13 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
   *matched_mask = 0;
   *matched_alt_deprecation = false;
 
-  // TODO(crbug.com/1179893): When enabling the improved shortcut flag by
-  // default, decide whether to also enable the search click flag to allow opt
-  // out of just Search+Click.
+  // TODO(crbug.com/1179893): When enabling the deprecate alt click flag by
+  // default, decide whether kUseSearchClickForRightClick being disabled
+  // should be able to override it.
   const bool use_search_key =
       base::FeatureList::IsEnabled(
           ::chromeos::features::kUseSearchClickForRightClick) ||
-      ::features::IsImprovedKeyboardShortcutsEnabled();
+      ::features::IsDeprecateAltClickEnabled();
   if (use_search_key) {
     if (AreFlagsSet(flags, kSearchLeftButton)) {
       *matched_mask = kSearchLeftButton;

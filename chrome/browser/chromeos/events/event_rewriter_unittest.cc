@@ -3768,6 +3768,15 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick) {
   EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
+TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
+  // Enabling the kImprovedKeyboardShortcuts feature does not change alt+click
+  // behavior or create a notification.
+  scoped_feature_list_.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+  DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
+  EXPECT_EQ(message_center_.NotificationCount(), 0);
+}
+
 TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   scoped_feature_list_.InitAndEnableFeature(
       chromeos::features::kUseSearchClickForRightClick);
@@ -3775,17 +3784,16 @@ TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_SearchClickIsRightClick) {
   EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
-TEST_F(EventRewriterTest,
-       DontRewriteIfNotRewritten_SearchClickIsRightClick_New) {
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+TEST_F(EventRewriterTest, DontRewriteIfNotRewritten_AltClickDeprecated) {
+  // Pressing search+click with alt+click deprecated works, but does not
+  // generate a notification.
+  scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
 TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
-  scoped_feature_list_.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
+  scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
   std::vector<ui::InputDevice> touchpad_devices(1);

@@ -927,6 +927,12 @@ const char kCrossOriginIsolatedDescription[] =
     "only host documents using a compatible set of {Origin,COOP,COEP}, "
     "effectively isolating.";
 
+const char kDeprecateAltClickName[] =
+    "Enable Alt+Click deprecation notifications";
+const char kDeprecateAltClickDescription[] =
+    "Start providing notifications about Alt+Click deprecation and enable "
+    "Search+Click as an alternative.";
+
 const char kDiagnosticsAppName[] = "Diagnostics app";
 const char kDiagnosticsAppDescription[] =
     "Enables the Diagnostics app that allows Chrome OS users to be able to "

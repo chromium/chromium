@@ -66,6 +66,13 @@ bool IsImprovedKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
 
+const base::Feature kDeprecateAltClick = {"DeprecateAltClick",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsDeprecateAltClickEnabled() {
+  return base::FeatureList::IsEnabled(kDeprecateAltClick);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Update of the virtual keyboard settings UI as described in

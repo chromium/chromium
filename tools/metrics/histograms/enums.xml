@@ -46142,6 +46142,7 @@ from previous Chrome versions.
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
   <int value="112140177" label="DesktopPWAsUnifiedInstall:disabled"/>
+  <int value="114480372" label="DeprecateAltClick:enabled"/>
   <int value="114541256" label="HomepagePromoCard:disabled"/>
   <int value="114657517" label="SecurePaymentConfirmationDebug:disabled"/>
   <int value="115915570"
@@ -47818,6 +47819,7 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>
   <int value="1636962093" label="disable-material-design-ntp"/>
   <int value="1637615389" label="PrintServerScaling:enabled"/>
+  <int value="1638123293" label="DeprecateAltClick:disabled"/>
   <int value="1638582559" label="UpdatedCellularActivationUi:disabled"/>
   <int value="1638927687" label="AutofillRichMetadataQueries:disabled"/>
   <int value="1639190590" label="UseMessagesGoogleComDomain:enabled"/>
