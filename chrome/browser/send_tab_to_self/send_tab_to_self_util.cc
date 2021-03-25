@@ -52,8 +52,13 @@ bool ShouldOfferFeature(content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
+  content::NavigationEntry* navigation_entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  bool has_last_entry = (navigation_entry != nullptr);
+
   return IsUserSyncTypeActive(profile) && HasValidTargetDevice(profile) &&
-         AreContentRequirementsMet(web_contents->GetURL(), profile);
+         AreContentRequirementsMet(web_contents->GetURL(), profile) &&
+         has_last_entry;
 }
 
 bool ShouldOfferFeatureForLink(content::WebContents* web_contents,
