@@ -5,6 +5,7 @@
 #include "content/browser/conversions/conversion_storage_sql.h"
 
 #include <stdint.h>
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -182,7 +183,10 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
       conversion.conversion_destination();
   const std::string serialized_conversion_destination =
       conversion_destination.Serialize();
-  if (!HasCapacityForStoringConversion(serialized_conversion_destination))
+
+  int capacity =
+      GetCapacityForStoringConversion(serialized_conversion_destination);
+  if (capacity == 0)
     return 0;
 
   const url::Origin& reporting_origin = conversion.reporting_origin();
@@ -254,6 +258,11 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
 
   // Exit early if the last statement wasn't valid or if we have no new reports.
   if (!statement.Succeeded() || new_reports.empty())
+    return 0;
+
+  // Exit early if the number of new reports exceeds the capacity for storing
+  // conversions per impression.
+  if (static_cast<int>(new_reports.size()) > capacity)
     return 0;
 
   // Allow the delegate to make arbitrary changes to the new conversion reports
@@ -677,7 +686,7 @@ bool ConversionStorageSql::HasCapacityForStoringImpression(
   return count < delegate_->GetMaxImpressionsPerOrigin();
 }
 
-bool ConversionStorageSql::HasCapacityForStoringConversion(
+int ConversionStorageSql::GetCapacityForStoringConversion(
     const std::string& serialized_origin) {
   // This query should be reasonably optimized via conversion_destination_idx.
   // The conversion origin is the second column in a multi-column index where
@@ -695,8 +704,8 @@ bool ConversionStorageSql::HasCapacityForStoringConversion(
   statement.BindString(0, serialized_origin);
   if (!statement.Step())
     return false;
-  int64_t count = statement.ColumnInt64(0);
-  return count < delegate_->GetMaxConversionsPerOrigin();
+  int count = static_cast<int>(statement.ColumnInt64(0));
+  return std::max(0, delegate_->GetMaxConversionsPerOrigin() - count);
 }
 
 std::vector<StorableImpression> ConversionStorageSql::GetImpressions(

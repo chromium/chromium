@@ -95,7 +95,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   void ClearAllDataAllTime();
 
   bool HasCapacityForStoringImpression(const std::string& serialized_origin);
-  bool HasCapacityForStoringConversion(const std::string& serialized_origin);
+  int GetCapacityForStoringConversion(const std::string& serialized_origin);
 
   enum class ImpressionFilter { kAll, kOnlyActive };
 

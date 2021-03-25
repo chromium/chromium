@@ -597,12 +597,13 @@ TEST_F(ConversionStorageTest, MaxImpressionsPerOrigin) {
 }
 
 TEST_F(ConversionStorageTest, MaxConversionsPerOrigin) {
-  delegate()->set_max_conversions_per_origin(2);
+  delegate()->set_max_conversions_per_origin(3);
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
   EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
-  EXPECT_EQ(
-      1, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+      2, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
+  // Verify that MaxConversionsPerOrigin is enforced when there are multiple
+  // impressions for a single conversion.
   EXPECT_EQ(
       0, storage()->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 }
