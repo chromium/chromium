@@ -76,7 +76,7 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
 
   Client* client_for_testing() const { return client_.get(); }
 
-  bool IsOnBatteryPowerImpl() override;
+  bool IsOnBatteryPower() override;
 
   std::unique_ptr<Client> client_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

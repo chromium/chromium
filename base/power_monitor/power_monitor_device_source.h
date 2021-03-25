@@ -97,7 +97,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   // Platform-specific method to check whether the system is currently
   // running on battery power.  Returns true if running on batteries,
   // false otherwise.
-  bool IsOnBatteryPowerImpl() override;
+  bool IsOnBatteryPower() override;
 
 #if defined(OS_ANDROID)
   int GetRemainingBatteryCapacity() override;

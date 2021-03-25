@@ -29,7 +29,7 @@ void JNI_PowerMonitor_OnBatteryChargingChanged(JNIEnv* env) {
 
 }  // namespace android
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::Java_PowerMonitor_isBatteryPower(env);
 }

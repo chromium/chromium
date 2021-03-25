@@ -8,7 +8,7 @@
 
 namespace base {
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
 #if TARGET_IPHONE_SIMULATOR
   return false;
 #else

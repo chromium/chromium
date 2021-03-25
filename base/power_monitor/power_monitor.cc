@@ -15,7 +15,13 @@ namespace base {
 
 void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
   DCHECK(!IsInitialized());
-  GetInstance()->source_ = std::move(source);
+  PowerMonitor* power_monitor = GetInstance();
+  power_monitor->source_ = std::move(source);
+
+  // When a power source is associated with the power monitor, ensure the
+  // initial state is propagated to observers, if needed.
+  PowerMonitor::NotifyPowerStateChange(
+      PowerMonitor::Source()->IsOnBatteryPower());
 }
 
 bool PowerMonitor::IsInitialized() {
@@ -61,13 +67,24 @@ bool PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
   return power_monitor->is_system_suspended_;
 }
 
+// static
+bool PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
+    PowerStateObserver* obs) {
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
+  power_monitor->power_state_observers_->AddObserver(obs);
+  return power_monitor->on_battery_power_;
+}
+
 PowerMonitorSource* PowerMonitor::Source() {
   return GetInstance()->source_.get();
 }
 
 bool PowerMonitor::IsOnBatteryPower() {
   DCHECK(IsInitialized());
-  return GetInstance()->source_->IsOnBatteryPower();
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
+  return power_monitor->on_battery_power_;
 }
 
 void PowerMonitor::ShutdownForTesting() {
@@ -77,6 +94,10 @@ void PowerMonitor::ShutdownForTesting() {
   {
     AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
     power_monitor->is_system_suspended_ = false;
+  }
+  {
+    AutoLock auto_lock(power_monitor->on_battery_power_lock_);
+    power_monitor->on_battery_power_ = false;
   }
 }
 
@@ -97,16 +118,22 @@ void PowerMonitor::SetCurrentThermalState(
 #if defined(OS_ANDROID)
 int PowerMonitor::GetRemainingBatteryCapacity() {
   DCHECK(IsInitialized());
-  return GetInstance()->source_->GetRemainingBatteryCapacity();
+  return PowerMonitor::Source()->GetRemainingBatteryCapacity();
 }
 #endif  // defined(OS_ANDROID)
 
-void PowerMonitor::NotifyPowerStateChange(bool battery_in_use) {
+void PowerMonitor::NotifyPowerStateChange(bool on_battery_power) {
   DCHECK(IsInitialized());
-  DVLOG(1) << "PowerStateChange: " << (battery_in_use ? "On" : "Off")
+  DVLOG(1) << "PowerStateChange: " << (on_battery_power ? "On" : "Off")
            << " battery";
-  GetInstance()->power_state_observers_->Notify(
-      FROM_HERE, &PowerStateObserver::OnPowerStateChange, battery_in_use);
+
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->on_battery_power_lock_);
+  if (power_monitor->on_battery_power_ != on_battery_power) {
+    power_monitor->on_battery_power_ = on_battery_power;
+    GetInstance()->power_state_observers_->Notify(
+        FROM_HERE, &PowerStateObserver::OnPowerStateChange, on_battery_power);
+  }
 }
 
 void PowerMonitor::NotifySuspend() {

@@ -39,7 +39,7 @@ void PowerMonitorTestSource::GenerateResumeEvent() {
   RunLoop().RunUntilIdle();
 }
 
-bool PowerMonitorTestSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorTestSource::IsOnBatteryPower() {
   return test_on_battery_power_;
 }
 

@@ -27,6 +27,9 @@ class ScopedFakePowerMonitorSource {
   // Use this method to send a power suspend event.
   void Suspend();
 
+  // Use this method to change the power source (plugged or battery).
+  void SetOnBatteryPower(bool on_battery_power);
+
  private:
   // Owned by PowerMonitor.
   FakePowerMonitorSource* fake_power_monitor_source_ = nullptr;

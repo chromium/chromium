@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.PowerMonitor;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -232,6 +233,7 @@ public class NativePostTaskTest {
 
     private void startNativeScheduler() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        PowerMonitor.createForTests();
         ContentMain.start(/* startMinimalBrowser */ false);
         ThreadPoolTestHelpers.enableThreadPoolExecutionForTesting();
     }

@@ -30,9 +30,10 @@ class PowerModeArbiter::ChargingPowerModeVoter : base::PowerStateObserver {
   ChargingPowerModeVoter()
       : charging_voter_(PowerModeArbiter::GetInstance()->NewVoter(
             "PowerModeVoter.Charging")) {
-    base::PowerMonitor::AddPowerStateObserver(this);
+    const bool on_battery =
+        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
     if (base::PowerMonitor::IsInitialized())
-      OnPowerStateChange(base::PowerMonitor::IsOnBatteryPower());
+      OnPowerStateChange(on_battery);
   }
 
   ~ChargingPowerModeVoter() override {

@@ -113,7 +113,7 @@ TEST_F(PowerMonitorTest, ThermalThrottling) {
   PowerMonitor::RemovePowerThermalObserver(&observer);
 }
 
-TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
+TEST_F(PowerMonitorTest, AddPowerSuspendObserverBeforeAndAfterInitialization) {
   PowerMonitorTestObserver observer1;
   PowerMonitorTestObserver observer2;
 
@@ -135,9 +135,29 @@ TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
   source()->GenerateResumeEvent();
   EXPECT_EQ(observer1.resumes(), 1);
   EXPECT_EQ(observer2.resumes(), 1);
+}
 
-  PowerMonitor::RemovePowerSuspendObserver(&observer1);
-  PowerMonitor::RemovePowerSuspendObserver(&observer2);
+TEST_F(PowerMonitorTest, AddPowerStateObserverBeforeAndAfterInitialization) {
+  PowerMonitorTestObserver observer1;
+  PowerMonitorTestObserver observer2;
+
+  // An observer is added before the PowerMonitor initialization.
+  PowerMonitor::AddPowerStateObserver(&observer1);
+
+  PowerMonitorInitialize();
+
+  // An observer is added after the PowerMonitor initialization.
+  PowerMonitor::AddPowerStateObserver(&observer2);
+
+  // Simulate power state transitions (e.g. battery on/off).
+  EXPECT_EQ(observer1.power_state_changes(), 0);
+  EXPECT_EQ(observer2.power_state_changes(), 0);
+  source()->GeneratePowerStateEvent(true);
+  EXPECT_EQ(observer1.power_state_changes(), 1);
+  EXPECT_EQ(observer2.power_state_changes(), 1);
+  source()->GeneratePowerStateEvent(false);
+  EXPECT_EQ(observer1.power_state_changes(), 2);
+  EXPECT_EQ(observer2.power_state_changes(), 2);
 }
 
 TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
@@ -161,6 +181,29 @@ TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
 
   PowerMonitor::RemovePowerSuspendObserver(&observer1);
   PowerMonitor::RemovePowerSuspendObserver(&observer2);
+}
+
+TEST_F(PowerMonitorTest, PowerStateReturnedFromAddObserver) {
+  PowerMonitorTestObserver observer1;
+  PowerMonitorTestObserver observer2;
+
+  PowerMonitorInitialize();
+
+  // An observer is added before the on-battery notification.
+  EXPECT_FALSE(
+      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer1));
+
+  source()->GeneratePowerStateEvent(true);
+
+  // An observer is added after the on-battery notification.
+  EXPECT_TRUE(
+      PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(&observer2));
+
+  EXPECT_EQ(observer1.power_state_changes(), 1);
+  EXPECT_EQ(observer2.power_state_changes(), 0);
+
+  PowerMonitor::RemovePowerStateObserver(&observer1);
+  PowerMonitor::RemovePowerStateObserver(&observer2);
 }
 
 }  // namespace base

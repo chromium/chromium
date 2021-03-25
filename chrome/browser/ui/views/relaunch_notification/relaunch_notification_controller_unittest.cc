@@ -167,7 +167,7 @@ class FakeUpgradeDetector : public UpgradeDetector {
 class StubPowerMonitorSource : public base::PowerMonitorSource {
  public:
   // base::PowerMonitorSource:
-  bool IsOnBatteryPowerImpl() override { return false; }
+  bool IsOnBatteryPower() override { return false; }
 };
 
 }  // namespace

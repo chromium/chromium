@@ -55,9 +55,13 @@ class BASE_EXPORT PowerMonitor {
   // and reading the power state. The following code would be racy:
   //    AddOPowerSuspendbserver(...);
   //    if (PowerMonitor::IsSystemSuspended()) { ... }
+  //
   // Returns true if the system is currently suspended.
   static bool AddPowerSuspendObserverAndReturnSuspendedState(
       PowerSuspendObserver* observer);
+  // Returns true if the system is on-battery.
+  static bool AddPowerStateObserverAndReturnOnBatteryState(
+      PowerStateObserver* observer);
 
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.
@@ -94,7 +98,7 @@ class BASE_EXPORT PowerMonitor {
 
   static PowerMonitorSource* Source();
 
-  static void NotifyPowerStateChange(bool battery_in_use);
+  static void NotifyPowerStateChange(bool on_battery_power);
   static void NotifySuspend();
   static void NotifyResume();
   static void NotifyThermalStateChange(
@@ -104,6 +108,9 @@ class BASE_EXPORT PowerMonitor {
 
   bool is_system_suspended_ GUARDED_BY(is_system_suspended_lock_) = false;
   Lock is_system_suspended_lock_;
+
+  bool on_battery_power_ GUARDED_BY(on_battery_power_lock_) = false;
+  Lock on_battery_power_lock_;
 
   scoped_refptr<ObserverListThreadSafe<PowerStateObserver>>
       power_state_observers_;

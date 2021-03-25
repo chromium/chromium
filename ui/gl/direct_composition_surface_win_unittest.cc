@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -117,6 +118,9 @@ class DirectCompositionSurfaceTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    // These tests are assumed to run on battery.
+    fake_power_monitor_source_.SetOnBatteryPower(true);
+
     // Without this, the following check always fails.
     gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
     if (!QueryDirectCompositionDevice(QueryD3D11DeviceObjectFromANGLE())) {
@@ -170,6 +174,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
+  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
 };
 
 TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {

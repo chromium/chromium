@@ -23,7 +23,7 @@ void ProcessPowerEventHelper(PowerMonitorSource::PowerEvent event) {
   PowerMonitorSource::ProcessPowerEvent(event);
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   base::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
   if (!info)
     return false;

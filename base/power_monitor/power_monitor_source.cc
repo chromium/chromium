@@ -12,11 +12,6 @@ namespace base {
 PowerMonitorSource::PowerMonitorSource() = default;
 PowerMonitorSource::~PowerMonitorSource() = default;
 
-bool PowerMonitorSource::IsOnBatteryPower() {
-  AutoLock auto_lock(battery_lock_);
-  return on_battery_power_;
-}
-
 PowerThermalObserver::DeviceThermalState
 PowerMonitorSource::GetCurrentThermalState() {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
@@ -36,27 +31,10 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
   if (!PowerMonitor::IsInitialized())
     return;
 
-  PowerMonitorSource* source = PowerMonitor::Source();
-
-  // Suppress duplicate notifications.  Some platforms may
-  // send multiple notifications of the same event.
   switch (event_id) {
     case POWER_STATE_EVENT:
-      {
-        bool new_on_battery_power = source->IsOnBatteryPowerImpl();
-        bool changed = false;
-
-        {
-          AutoLock auto_lock(source->battery_lock_);
-          if (source->on_battery_power_ != new_on_battery_power) {
-              changed = true;
-              source->on_battery_power_ = new_on_battery_power;
-          }
-        }
-
-        if (changed)
-          PowerMonitor::NotifyPowerStateChange(new_on_battery_power);
-      }
+      PowerMonitor::NotifyPowerStateChange(
+          PowerMonitor::Source()->IsOnBatteryPower());
       break;
       case RESUME_EVENT:
         PowerMonitor::NotifyResume();
@@ -73,15 +51,6 @@ void PowerMonitorSource::ProcessThermalEvent(
   if (!PowerMonitor::IsInitialized())
     return;
   PowerMonitor::NotifyThermalStateChange(new_thermal_state);
-}
-
-void PowerMonitorSource::SetInitialOnBatteryPowerState(bool on_battery_power) {
-  // Must only be called before an initialized PowerMonitor exists, otherwise
-  // the caller should have just used a normal
-  // ProcessPowerEvent(POWER_STATE_EVENT) call.
-  DCHECK(!PowerMonitor::Source());
-  AutoLock auto_lock(battery_lock_);
-  on_battery_power_ = on_battery_power;
 }
 
 // static

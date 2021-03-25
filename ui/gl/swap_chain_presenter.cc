@@ -209,12 +209,9 @@ SwapChainPresenter::SwapChainPresenter(
       window_(window),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
-      is_on_battery_power_(true) {
-  if (base::PowerMonitor::IsInitialized()) {
-    is_on_battery_power_ = base::PowerMonitor::IsOnBatteryPower();
-    base::PowerMonitor::AddPowerStateObserver(this);
-  }
-}
+      is_on_battery_power_(
+          base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
+              this)) {}
 
 SwapChainPresenter::~SwapChainPresenter() {
   base::PowerMonitor::RemovePowerStateObserver(this);

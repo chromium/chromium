@@ -66,7 +66,7 @@ class TestPowerMonitorSource : public base::PowerMonitorSource {
 
   void Resume() { ProcessPowerEvent(RESUME_EVENT); }
 
-  bool IsOnBatteryPowerImpl() override { return false; }
+  bool IsOnBatteryPower() override { return false; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestPowerMonitorSource);

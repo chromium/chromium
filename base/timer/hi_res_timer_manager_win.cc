@@ -43,8 +43,9 @@ HighResolutionTimerManager::HighResolutionTimerManager()
   if (HighResolutionTimerAllowed()) {
     DCHECK(PowerMonitor::IsInitialized());
     PowerMonitor::AddPowerSuspendObserver(this);
-    PowerMonitor::AddPowerStateObserver(this);
-    UseHiResClock(!PowerMonitor::IsOnBatteryPower());
+    const bool on_battery =
+        PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+    UseHiResClock(!on_battery);
 
     // Start polling the high resolution timer usage.
     Time::ResetHighResolutionTimerUsage();

@@ -58,7 +58,7 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
 
 // Function to query the system to see if it is currently running on
 // battery power.  Returns true if running on battery.
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   SYSTEM_POWER_STATUS status;
   if (!GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";

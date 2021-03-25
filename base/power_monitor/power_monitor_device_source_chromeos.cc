@@ -33,7 +33,7 @@ void PowerMonitorDeviceSource::HandleSystemResumed() {
   ProcessPowerEvent(RESUME_EVENT);
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   return g_on_battery;
 }
 

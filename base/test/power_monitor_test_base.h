@@ -15,6 +15,7 @@ class PowerMonitorTestSource : public PowerMonitorSource {
   PowerMonitorTestSource();
   ~PowerMonitorTestSource() override;
   PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
+  bool IsOnBatteryPower() override;
 
   void GeneratePowerStateEvent(bool on_battery_power);
   void GenerateSuspendEvent();
@@ -23,8 +24,6 @@ class PowerMonitorTestSource : public PowerMonitorSource {
       PowerThermalObserver::DeviceThermalState new_thermal_state);
 
  protected:
-  bool IsOnBatteryPowerImpl() override;
-
   bool test_on_battery_power_ = false;
   PowerThermalObserver::DeviceThermalState current_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
