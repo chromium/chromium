@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -216,6 +217,7 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
       policy_prefs::kDlpRulesList,
       base::BindRepeating(&DlpRulesManagerImpl::OnPolicyUpdate,
                           base::Unretained(this)));
+  DlpReportingManager::Init();
   OnPolicyUpdate();
 }
 

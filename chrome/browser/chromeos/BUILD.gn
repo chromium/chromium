@@ -64,6 +64,7 @@ source_set("chromeos") {
     ":backdrop_wallpaper_proto",
     ":device_configuration_proto",
     ":device_policy_remover_generated",
+    ":dlp_policy_event_proto",
     ":key_permissions_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
@@ -2507,6 +2508,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_notification_helper.cc",
     "policy/dlp/dlp_notification_helper.h",
     "policy/dlp/dlp_policy_constants.h",
+    "policy/dlp/dlp_reporting_manager.cc",
+    "policy/dlp/dlp_reporting_manager.h",
     "policy/dlp/dlp_rules_manager.h",
     "policy/dlp/dlp_rules_manager_factory.cc",
     "policy/dlp/dlp_rules_manager_factory.h",
@@ -4002,6 +4005,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
     "policy/dlp/dlp_data_transfer_notifier_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
+    "policy/dlp/dlp_reporting_manager_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_rules_manager_test_utils.cc",
     "policy/dlp/dlp_rules_manager_test_utils.h",
@@ -4406,6 +4410,10 @@ proto_library("backdrop_wallpaper_proto") {
 proto_library("device_configuration_proto") {
   sources = [ "../ash/login/screens/recommend_apps/device_configuration.proto" ]
   generate_python = false
+}
+
+proto_library("dlp_policy_event_proto") {
+  sources = [ "policy/dlp/dlp_policy_event.proto" ]
 }
 
 proto_library("key_permissions_proto") {
