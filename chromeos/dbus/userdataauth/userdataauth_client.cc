@@ -364,7 +364,11 @@ void UserDataAuthClient::Initialize(dbus::Bus* bus) {
 
 // static
 void UserDataAuthClient::InitializeFake() {
-  new FakeUserDataAuthClient();
+  // Certain tests may create FakeUserDataAuthClient() before the browser starts
+  // to set parameters.
+  if (!FakeUserDataAuthClient::Get()) {
+    new FakeUserDataAuthClient();
+  }
 }
 
 // static
