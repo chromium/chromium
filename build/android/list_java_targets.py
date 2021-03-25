@@ -98,16 +98,20 @@ class _TargetEntry(object):
   def ninja_build_config_target(self):
     return self.ninja_target + '__build_config_crbug_908819'
 
+  @property
+  def build_config_path(self):
+    """Returns the filepath of the project's .build_config."""
+    ninja_target = self.ninja_target
+    # Support targets at the root level. e.g. //:foo
+    if ninja_target[0] == ':':
+      ninja_target = ninja_target[1:]
+    subpath = ninja_target.replace(':', os.path.sep) + '.build_config'
+    return os.path.join(constants.GetOutDirectory(), 'gen', subpath)
+
   def build_config(self):
     """Reads and returns the project's .build_config JSON."""
     if not self._build_config:
-      ninja_target = self.ninja_target
-      # Support targets at the root level. e.g. //:foo
-      if ninja_target[0] == ':':
-        ninja_target = ninja_target[1:]
-      subpath = ninja_target.replace(':', os.path.sep) + '.build_config'
-      path = os.path.join('gen', subpath)
-      with open(os.path.join(constants.GetOutDirectory(), path)) as jsonfile:
+      with open(self.build_config_path) as jsonfile:
         self._build_config = json.load(jsonfile)
     return self._build_config
 
@@ -141,6 +145,9 @@ def main():
   parser.add_argument('--print-types',
                       action='store_true',
                       help='Print type of each target')
+  parser.add_argument('--print-build-config-paths',
+                      action='store_true',
+                      help='Print path to the .build_config of each target')
   parser.add_argument('--build',
                       action='store_true',
                       help='Build all .build_config files.')
@@ -199,6 +206,8 @@ def main():
 
       if args.print_types:
         to_print = f'{to_print}: {e.get_type()}'
+      elif args.print_build_config_paths:
+        to_print = f'{to_print}: {e.build_config_path}'
 
       print(to_print)
 
