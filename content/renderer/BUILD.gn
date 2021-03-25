@@ -115,8 +115,6 @@ target(link_target_type, "renderer") {
     "navigation_state.h",
     "net_info_helper.cc",
     "net_info_helper.h",
-    "peripheral_content_heuristic.cc",
-    "peripheral_content_heuristic.h",
     "render_frame_impl.cc",
     "render_frame_impl.h",
     "render_frame_proxy.cc",
