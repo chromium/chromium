@@ -894,17 +894,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
       "});"));
   // Fill the password and click the button to submit the page. The API should
   // suppress the autofill password manager.
-  NavigationObserver form_submit_observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'autofill';"
       "document.getElementById('input_submit_button').click();"));
-  form_submit_observer.Wait();
 
-  WaitForPasswordStore();
   BubbleObserver prompt_observer(WebContents());
-  ASSERT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.WaitForAutomaticSavePrompt();
   prompt_observer.AcceptSavePrompt();
 
   WaitForPasswordStore();
