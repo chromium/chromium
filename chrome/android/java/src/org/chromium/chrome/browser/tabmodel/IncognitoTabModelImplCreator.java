@@ -65,21 +65,18 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     }
 
     private @NonNull Profile getOTRProfile() {
-        if (mWindowAndroidSupplier != null) {
-            Profile otrProfile =
-                    getNonPrimaryOTRProfileFromWindowAndroid(mWindowAndroidSupplier.get());
-
-            // TODO(crbug.com/1023759): PaymentHandlerActivity is an exceptional case that uses the
-            // primary OTR profile. PaymentHandlerActivity would use incognito CCT when the
-            // Incognito CCT flag is enabled by default in which case we would return the non
-            // primary OTR profile.
-            if (otrProfile == null) {
-                return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
-            }
-
-            return otrProfile;
+        // The |mWindowAndroidSupplier| is null only for {@link ChromeTabbedActivity} in which case
+        // we should return the primary OTR profile.
+        if (mWindowAndroidSupplier == null) {
+            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
         }
-        return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+
+        // The |mWindowAndroidSupplier| is not null only for {@link CustomTabActivity} where we
+        // support Incognito CCT which uses the non-primary OTR profile that is associated with the
+        // Activity's {@link WindowAndroid} instance.
+        Profile otrProfile = getNonPrimaryOTRProfileFromWindowAndroid(mWindowAndroidSupplier.get());
+        assert (otrProfile != null);
+        return otrProfile;
     }
 
     @Override
