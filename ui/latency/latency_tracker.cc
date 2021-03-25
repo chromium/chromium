@@ -60,12 +60,11 @@ LatencyTracker::LatencyTracker() = default;
 LatencyTracker::~LatencyTracker() = default;
 
 void LatencyTracker::OnGpuSwapBuffersCompleted(
-    const std::vector<ui::LatencyInfo>& latency_info,
+    std::vector<ui::LatencyInfo> latency_info,
     bool top_controls_visible_height_changed) {
   // Sort latency_info as they can be in incorrect order.
-  std::vector<ui::LatencyInfo> latency_infos(latency_info);
-  std::sort(latency_infos.begin(), latency_infos.end(), LatencyTraceIdCompare);
-  for (const auto& latency : latency_infos)
+  std::sort(latency_info.begin(), latency_info.end(), LatencyTraceIdCompare);
+  for (const auto& latency : latency_info)
     OnGpuSwapBuffersCompleted(latency, top_controls_visible_height_changed);
 }
 

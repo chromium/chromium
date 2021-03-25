@@ -189,7 +189,7 @@ void GLOutputSurface::OnGpuSwapBuffersCompleted(
 
   UpdateLatencyInfoOnSwap(params.swap_response, &latency_info);
   latency_tracker_.OnGpuSwapBuffersCompleted(
-      latency_info, top_controls_visible_height_changed);
+      std::move(latency_info), top_controls_visible_height_changed);
 
   if (needs_swap_size_notifications_)
     client_->DidSwapWithSize(pixel_size);
