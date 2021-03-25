@@ -219,7 +219,7 @@ void SpeechRecognitionServiceTest::LaunchService() {
           &is_multichannel_supported, run_loop.get()));
 
   run_loop->Run();
-  ASSERT_TRUE(is_multichannel_supported);
+  ASSERT_FALSE(is_multichannel_supported);
 }
 
 void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
