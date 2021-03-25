@@ -71,7 +71,6 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
   // user settings. See https://crbug.com/760720
   enum class Status {
     kSupported,
-    kUnsupportedPlatform,
     kUnsupportedKeySystem,
     kUnsupportedConfigs,
   };

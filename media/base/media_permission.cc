@@ -10,6 +10,4 @@ MediaPermission::MediaPermission() = default;
 
 MediaPermission::~MediaPermission() = default;
 
-void MediaPermission::NotifyUnsupportedPlatform() {}
-
 }  // namespace media

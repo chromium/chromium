@@ -144,16 +144,12 @@ void WebEncryptedMediaClientImpl::OnConfigSelected(
   // and kUnsupportedConfigs.
   const char kUnsupportedKeySystemOrConfigMessage[] =
       "Unsupported keySystem or supportedConfigurations.";
-  const char kUnsupportedPlatformMessage[] = "Unsupported platform.";
 
   // Handle unsupported cases first.
   switch (status) {
     case KeySystemConfigSelector::Status::kUnsupportedKeySystem:
     case KeySystemConfigSelector::Status::kUnsupportedConfigs:
       request.RequestNotSupported(kUnsupportedKeySystemOrConfigMessage);
-      return;
-    case KeySystemConfigSelector::Status::kUnsupportedPlatform:
-      request.RequestNotSupported(kUnsupportedPlatformMessage);
       return;
     case KeySystemConfigSelector::Status::kSupported:
       break;  // Handled below.

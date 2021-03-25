@@ -18,7 +18,6 @@ mojom("mojom") {
     "audio_output_stream.mojom",
     "audio_parameters.mojom",
     "audio_stream_factory.mojom",
-    "cdm_infobar_service.mojom",
     "cdm_service.mojom",
     "cdm_storage.mojom",
     "content_decryption_module.mojom",
