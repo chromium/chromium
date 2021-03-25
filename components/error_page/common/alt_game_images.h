@@ -17,11 +17,20 @@ extern const base::FeatureParam<std::string> kNetErrorAltGameModeKey;
 // Gets the value of kNetErrorAltGameMode.
 bool EnableAltGameMode();
 
-// Returns a data URL corresponding to the image ID and scale.
-std::string GetAltGameImage(int image_id, int scale);
+// Image loading result.
+struct AltGameImages {
+  std::string common_1x;
+  std::string specific_1x;
+  std::string common_2x;
+  std::string specific_2x;
 
-// Returns an image ID.
-int ChooseAltGame();
+  AltGameImages();
+  ~AltGameImages();
+};
+
+// Load images into |result| and game type into |choice|. Returns true on
+// success.
+bool GetAltGameImages(AltGameImages* result, int* choice);
 
 }  // namespace error_page
 
