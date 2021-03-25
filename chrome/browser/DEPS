@@ -13,6 +13,7 @@ include_rules = [
   "+chrome/android/native_j_unittests_jni_headers",
   "+chrome/android/chrome_jni_headers",
   "+chrome/android/features/autofill_assistant/jni_headers",
+  "+chrome/android/features/autofill_assistant/jni_headers_public",
   "+chrome/android/features/dev_ui",
   "+chrome/android/modules",
   "+chrome/android/test_support_jni_headers",

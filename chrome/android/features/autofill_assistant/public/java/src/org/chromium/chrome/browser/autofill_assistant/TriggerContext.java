@@ -10,23 +10,29 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Parameter class to pass into Autofill Assistant starting procedure.
+ * Describes the context of the trigger, which contains the script parameters along with some other
+ * optional parameters.
  */
-public class AutofillAssistantArguments {
+@JNINamespace("autofill_assistant")
+public class TriggerContext {
     /**
-     * Builder class for {@link AutofillAssistantArguments}.
+     * Builder class for {@link TriggerContext}.
      */
     public static class Builder {
-        private AutofillAssistantArguments mArguments;
+        private TriggerContext mTriggerContext;
 
-        private Builder(AutofillAssistantArguments arguments) {
-            mArguments = arguments;
+        private Builder(TriggerContext arguments) {
+            mTriggerContext = arguments;
         }
 
         public Builder fromBundle(@Nullable Bundle bundle) {
@@ -38,17 +44,15 @@ public class AutofillAssistantArguments {
                     }
                     if (key.startsWith(INTENT_SPECIAL_PREFIX)) {
                         if (key.equals(INTENT_SPECIAL_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
-                            mArguments.addExperimentIds(value.toString());
+                            mTriggerContext.addExperimentIds(value.toString());
                         }
                         // There are no other special parameters.
                     } else if (key.startsWith(INTENT_EXTRA_PREFIX)) {
                         if (key.equals(INTENT_EXTRA_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
-                            mArguments.addExperimentIds(value.toString());
+                            mTriggerContext.addExperimentIds(value.toString());
                         }
-                        mArguments.mAutofillAssistantParameters.put(
+                        mTriggerContext.mScriptParameters.put(
                                 key.substring(INTENT_EXTRA_PREFIX.length()), value);
-                    } else {
-                        mArguments.mIntentExtras.put(key, value);
                     }
                 }
             }
@@ -57,17 +61,27 @@ public class AutofillAssistantArguments {
         }
 
         public Builder withInitialUrl(String url) {
-            mArguments.mInitialUrl = url;
+            mTriggerContext.mInitialUrl = url;
+            return this;
+        }
+
+        public Builder withIsCustomTab(boolean isCustomTab) {
+            mTriggerContext.mIsCustomTab = isCustomTab;
+            return this;
+        }
+
+        public Builder withIsDirectAction(boolean isDirectAction) {
+            mTriggerContext.mIsDirectAction = isDirectAction;
             return this;
         }
 
         public Builder addParameter(String key, Object value) {
-            mArguments.mAutofillAssistantParameters.put(key, value);
+            mTriggerContext.mScriptParameters.put(key, value);
             return this;
         }
 
-        public AutofillAssistantArguments build() {
-            return mArguments;
+        public TriggerContext build() {
+            return mTriggerContext;
         }
     }
 
@@ -137,19 +151,19 @@ public class AutofillAssistantArguments {
      */
     private static final String PARAMETER_ORIGINAL_DEEPLINK = "ORIGINAL_DEEPLINK";
 
-    private Map<String, Object> mAutofillAssistantParameters;
-    private Map<String, Object> mIntentExtras;
-    private StringBuilder mExperimentIds;
+    private final Map<String, Object> mScriptParameters;
+    private final StringBuilder mExperimentIds;
     private String mInitialUrl;
+    private boolean mIsCustomTab;
+    private boolean mIsDirectAction;
 
-    private AutofillAssistantArguments() {
-        mAutofillAssistantParameters = new HashMap<>();
-        mIntentExtras = new HashMap<>();
+    private TriggerContext() {
+        mScriptParameters = new HashMap<>();
         mExperimentIds = new StringBuilder();
     }
 
     public static Builder newBuilder() {
-        return new Builder(new AutofillAssistantArguments());
+        return new Builder(new TriggerContext());
     }
 
     /**
@@ -167,7 +181,7 @@ public class AutofillAssistantArguments {
     }
 
     private boolean getBooleanParameter(String key) {
-        Object value = mAutofillAssistantParameters.get(key);
+        Object value = mScriptParameters.get(key);
         if (!(value instanceof Boolean)) { // Also catches null.
             if (value != null) {
                 Log.v(TAG, "Expected " + key + " to be boolean, but was " + value.toString());
@@ -180,7 +194,7 @@ public class AutofillAssistantArguments {
 
     @Nullable
     private String getStringParameter(String key) {
-        Object value = mAutofillAssistantParameters.get(key);
+        Object value = mScriptParameters.get(key);
         if (!(value instanceof String)) { // Also catches null.
             if (value != null) {
                 Log.v(TAG, "Expected " + key + " to be string, but was " + value.toString());
@@ -202,8 +216,8 @@ public class AutofillAssistantArguments {
     public Map<String, String> getParameters() {
         Map<String, String> map = new HashMap<>();
 
-        for (String key : mAutofillAssistantParameters.keySet()) {
-            map.put(key, decode(mAutofillAssistantParameters.get(key).toString()));
+        for (String key : mScriptParameters.keySet()) {
+            map.put(key, decode(mScriptParameters.get(key).toString()));
         }
 
         return map;
@@ -212,7 +226,7 @@ public class AutofillAssistantArguments {
     /** Returns whether all mandatory script parameters are set. */
     public boolean areMandatoryParametersSet() {
         if (!getBooleanParameter(PARAMETER_ENABLED)
-                || mAutofillAssistantParameters.get(PARAMETER_START_IMMEDIATELY) == null) {
+                || mScriptParameters.get(PARAMETER_START_IMMEDIATELY) == null) {
             return false;
         }
         if (!getBooleanParameter(PARAMETER_START_IMMEDIATELY)) {
@@ -264,5 +278,49 @@ public class AutofillAssistantArguments {
     /** Whether the caller requested a trigger script to start in any of the supported ways. */
     public boolean containsTriggerScript() {
         return requestsTriggerScript() || containsBase64TriggerScripts();
+    }
+
+    /**
+     *  Returns true if this trigger context is a valid autofill-assistant trigger context.
+     */
+    public boolean isValid() {
+        // Avoid JNI roundtrip for common case.
+        if (!getBooleanParameter(PARAMETER_ENABLED)) {
+            return false;
+        }
+
+        long nativeInstance = toNative();
+        // TODO(b/179648654): fetch MSBB status directly in native.
+        boolean isValid = TriggerContextJni.get().isValid(nativeInstance,
+                UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                        Profile.getLastUsedRegularProfile()),
+                AutofillAssistantPreferencesUtil.isProactiveHelpOn(),
+                (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
+                        != null));
+        TriggerContextJni.get().destroyNative(nativeInstance);
+
+        return isValid;
+    }
+
+    /**
+     * Creates a corresponding native trigger context. Note: the returned pointer is owning and
+     * must be freed with {@code destroyNative}!
+     */
+    public long toNative() {
+        // TODO(b/179648654): preserve type information in native.
+        Map<String, String> stringifiedParameters = getParameters();
+        return TriggerContextJni.get().createNative(mExperimentIds.toString(),
+                stringifiedParameters.keySet().toArray(new String[0]),
+                stringifiedParameters.values().toArray(new String[0]), mIsCustomTab,
+                mIsDirectAction, mInitialUrl);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long createNative(String experimentIds, String[] parameterKeys, String[] parameterValues,
+                boolean isCustomTab, boolean isDirectAction, String initialUrl);
+        void destroyNative(long triggerContext);
+        boolean isValid(long triggerContext, boolean msbbSetting, boolean proactiveHelpSetting,
+                boolean featureModuleInstalled);
     }
 }

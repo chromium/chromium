@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_REQUEST_TRIGGER_SCRIPT;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_STARTED_WITH_TRIGGER_SCRIPT;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments.PARAMETER_TRIGGER_SCRIPTS_BASE64;
+import static org.chromium.chrome.browser.autofill_assistant.TriggerContext.PARAMETER_REQUEST_TRIGGER_SCRIPT;
+import static org.chromium.chrome.browser.autofill_assistant.TriggerContext.PARAMETER_STARTED_WITH_TRIGGER_SCRIPT;
+import static org.chromium.chrome.browser.autofill_assistant.TriggerContext.PARAMETER_TRIGGER_SCRIPTS_BASE64;
 
 import android.content.Context;
 import android.text.TextUtils;

@@ -237,6 +237,10 @@ generate_jni("jni_headers") {
   split_name = "autofill_assistant"
 }
 
+generate_jni("jni_headers_public") {
+  sources = [ "public/java/src/org/chromium/chrome/browser/autofill_assistant/TriggerContext.java" ]
+}
+
 generate_jni("test_support_jni_headers") {
   testonly = true
   sources = [
@@ -310,6 +314,7 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTest.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/PasswordChangeFixtureTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/TestingAutofillAssistantModuleEntryProvider.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/TriggerContextTest.java",
   ]
 
   deps = [
@@ -325,6 +330,7 @@ android_library("test_java") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.password_manager;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantArguments;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
+import org.chromium.chrome.browser.autofill_assistant.TriggerContext;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -41,13 +41,13 @@ public class PasswordChangeLauncher {
             return;
         }
         AutofillAssistantFacade.start(activity,
-                AutofillAssistantArguments.newBuilder()
+                TriggerContext.newBuilder()
                         .withInitialUrl(origin.getSpec())
                         .addParameter(DEBUG_BUNDLE_ID, debugBundleId)
                         .addParameter(DEBUG_SOCKET_ID, debutSocketId)
                         .addParameter(PASSWORD_CHANGE_USERNAME_PARAMETER, username)
                         .addParameter(INTENT_PARAMETER, INTENT)
-                        .addParameter(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, true)
+                        .addParameter(TriggerContext.PARAMETER_START_IMMEDIATELY, true)
                         .build());
     }
 }

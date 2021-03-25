@@ -734,7 +734,7 @@ class AutofillAssistantUiTestUtil {
             String url, boolean startImmediately) {
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), url);
-        intent.putExtra(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, startImmediately);
+        intent.putExtra(TriggerContext.PARAMETER_START_IMMEDIATELY, startImmediately);
         return intent;
     }
 }

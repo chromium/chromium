@@ -701,6 +701,7 @@ group("jni_headers") {
   public_deps = [
     ":chrome_jni_headers",
     "//chrome/android/features/autofill_assistant:jni_headers",
+    "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/browser/android/browserservices/verification:jni_headers",
     "//chrome/browser/commerce/subscriptions/android:jni_headers",
