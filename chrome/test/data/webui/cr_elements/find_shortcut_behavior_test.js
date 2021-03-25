@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_behavior.m.js';
+import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';

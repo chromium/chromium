@@ -183,7 +183,7 @@ js_library("manager") {
     ":search_service",
     ":toolbar",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior.m",
+    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
