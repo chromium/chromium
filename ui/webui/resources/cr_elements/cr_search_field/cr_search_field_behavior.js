@@ -7,7 +7,7 @@
  * <settings-subpage-search> for a simple implementation.
  * @polymerBehavior
  */
-/* #export */ const CrSearchFieldBehavior = {
+export const CrSearchFieldBehavior = {
   properties: {
     label: {
       type: String,
@@ -139,7 +139,7 @@
 };
 
 /** @interface */
-/* #export */ class CrSearchFieldBehaviorInterface {
+export class CrSearchFieldBehaviorInterface {
   constructor() {
     /** @type {string} */
     this.label;
@@ -171,4 +171,3 @@
 
   onSearchTermInput() {}
 }
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

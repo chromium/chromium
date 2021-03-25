@@ -11,7 +11,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.m.js';
+import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.js';
 
 Polymer({
   is: 'cr-toolbar-search-field',

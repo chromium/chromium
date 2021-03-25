@@ -39,7 +39,10 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "cr_splitter/cr_splitter.js" ]
+  in_files = [
+    "cr_search_field/cr_search_field_behavior.js",
+    "cr_splitter/cr_splitter.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_polymer2") {
@@ -90,10 +93,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_radio_group/cr_radio_group.js",
     "cr_scrollable_behavior.html",
     "cr_scrollable_behavior.js",
-    "cr_search_field/cr_search_field_behavior.html",
-    "cr_search_field/cr_search_field_behavior.js",
-    "cr_search_field/cr_search_field.html",
-    "cr_search_field/cr_search_field.js",
     "cr_slider/cr_slider.html",
     "cr_slider/cr_slider.js",
     "cr_toast/cr_toast.html",
@@ -179,8 +178,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr_radio_button/cr_radio_button_style_css.m.js",
     "cr_radio_group/cr_radio_group.m.js",
     "cr_scrollable_behavior.m.js",
-    "cr_search_field/cr_search_field_behavior.m.js",
-    "cr_search_field/cr_search_field.m.js",
+    "cr_search_field/cr_search_field.js",
     "cr_slider/cr_slider.m.js",
     "cr_tabs/cr_tabs.js",
     "cr_toast/cr_toast_manager.m.js",
@@ -238,7 +236,6 @@ group("closure_compile") {
     "cr_profile_avatar_selector:closure_compile",
     "cr_radio_button:closure_compile",
     "cr_radio_group:closure_compile",
-    "cr_search_field:closure_compile",
     "cr_slider:closure_compile",
     "cr_splitter:closure_compile",
     "cr_toast:closure_compile",
@@ -412,7 +409,7 @@ group("polymer3_elements") {
     "cr_profile_avatar_selector:polymer3_elements",
     "cr_radio_button:polymer3_elements",
     "cr_radio_group:cr_radio_group_module",
-    "cr_search_field:polymer3_elements",
+    "cr_search_field:web_components",
     "cr_slider:cr_slider_module",
     "cr_tabs:web_components",
     "cr_toast:polymer3_elements",
