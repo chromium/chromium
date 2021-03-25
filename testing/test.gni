@@ -42,11 +42,18 @@ if (is_android) {
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
+#   override_board: (ash, optional) override the 'cros_board' used in
+#      generating the test runner script.
 template("test") {
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
            "is_xctest can be set only for iOS builds")
+  }
+  if (!is_chromeos_ash || cros_board == "") {
+    assert(
+        !defined(invoker.override_board),
+        "override_board can be set only for ChromeOS builds with target board")
   }
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -415,6 +422,11 @@ template("test") {
       generated_script = "$root_build_dir/bin/run_" + invoker.target_name
       test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
+
+      if (defined(invoker.override_board)) {
+        override_board = invoker.override_board
+      }
+
       data = [ "//testing/location_tags.json" ]
     }
 
