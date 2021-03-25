@@ -55,6 +55,9 @@ const char kChromeURLContentSecurityPolicyHeaderBase[] =
 const char kXFrameOptions[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeader[] = "DENY";
 
+const std::string kWebUIResources = "/ui/webui/resources";
+const char kWebUIResourcesHost[] = "resources";
+
 // Returns whether |url| passes some sanity checks and is a valid GURL.
 bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
@@ -80,6 +83,21 @@ void URLToRequestPath(const GURL& url, std::string* path) {
 
   if (offset < static_cast<int>(spec.size()))
     path->assign(spec.substr(offset));
+}
+
+// Checks for webui resources path inside the given |url| and return a
+// fixed one if needed, or the original one otherwise. In js modules,
+// The use of x/../../../../ui/webui/resources is mapped by webkit to
+// x/ui/webui/resources so to not go out of scope of the module.
+GURL RedirectWebUIResources(const GURL url) {
+  if (base::StartsWith(url.path(), kWebUIResources,
+                       base::CompareCase::SENSITIVE)) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(kWebUIResourcesHost);
+    replacements.SetPathStr(url.path().c_str() + kWebUIResources.size());
+    return url.ReplaceComponents(replacements);
+  }
+  return url;
 }
 
 }  // namespace
@@ -470,15 +488,17 @@ bool URLDataManagerIOSBackend::StartRequest(const net::URLRequest* request,
   if (!CheckURLIsValid(request->url()))
     return false;
 
-  URLDataSourceIOSImpl* source = GetDataSourceFromURL(request->url());
+  GURL url = RedirectWebUIResources(request->url());
+
+  URLDataSourceIOSImpl* source = GetDataSourceFromURL(url);
   if (!source)
     return false;
 
-  if (!source->source()->ShouldServiceRequest(request->url()))
+  if (!source->source()->ShouldServiceRequest(url))
     return false;
 
   std::string path;
-  URLToRequestPath(request->url(), &path);
+  URLToRequestPath(url, &path);
 
   // Save this request so we know where to send the data.
   RequestID request_id = next_request_id_++;

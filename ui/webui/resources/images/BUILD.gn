@@ -36,6 +36,13 @@ generate_grd("build_grdp") {
     "throbber_small.svg",
   ]
 
+  if (!is_android) {
+    input_files += [
+      "icon_copy_content.svg",
+      "open_in_new.svg",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     input_files += [
       "200-logo_googleg.png",
@@ -49,7 +56,6 @@ generate_grd("build_grdp") {
       "icon_bookmark.svg",
       "icon_cancel.svg",
       "icon_clear.svg",
-      "icon_copy_content.svg",
       "icon_delete_gray.svg",
       "icon_edit.svg",
       "icon_expand_less.svg",
@@ -59,7 +65,6 @@ generate_grd("build_grdp") {
       "icon_settings.svg",
       "icon_visibility_off.svg",
       "icon_visibility.svg",
-      "open_in_new.svg",
     ]
   }
   resource_path_prefix = "images"

@@ -22,12 +22,16 @@
 
 namespace {
 const char kOfflineHost[] = "offline";
+const char kChromeScheme[] = "chrome";
 }  // namespace
 
 @interface FakeSchemeTask : NSObject <WKURLSchemeTask>
 
 // Override from the protocol to have it readwrite.
 @property(nonatomic, readwrite, copy) NSURLRequest* request;
+
+// Response.
+@property(nonatomic, readwrite, copy) NSURLResponse* response;
 
 // The error received.
 @property(nonatomic, strong) NSError* error;
@@ -42,6 +46,7 @@ const char kOfflineHost[] = "offline";
 @synthesize request = _request;
 
 - (void)didReceiveResponse:(NSURLResponse*)response {
+  self.response = response;
 }
 
 - (void)didReceiveData:(NSData*)data {
@@ -56,6 +61,16 @@ const char kOfflineHost[] = "offline";
   self.error = error;
 }
 
+#pragma mark - test utils
+
+- (BOOL)responseHasMimetype:(NSString*)mimeType {
+  if (![self.response isKindOfClass:NSHTTPURLResponse.class])
+    return NO;
+  NSHTTPURLResponse* httpResponse =
+      static_cast<NSHTTPURLResponse*>(self.response);
+  return
+      [httpResponse.allHeaderFields[@"Content-Type"] containsString:mimeType];
+}
 @end
 
 namespace web {
@@ -63,7 +78,7 @@ namespace web {
 namespace {
 class FakeWebUIIOSControllerFactory : public WebUIIOSControllerFactory {
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {
-    if (!url.SchemeIs(kTestWebUIScheme))
+    if (!url.SchemeIs(kTestWebUIScheme) && !url.SchemeIs(kChromeScheme))
       return NSURLErrorUnsupportedURL;
     if (url.host() == kOfflineHost)
       return NSURLErrorNotConnectedToInternet;
@@ -225,4 +240,61 @@ TEST_F(CRWWebUISchemeManagerTest, StopTask) {
   EXPECT_FALSE(url_scheme_task.receivedData);
   EXPECT_FALSE(url_scheme_task.receivedError);
 }
+
+// Tests that proper mime-type is returned for a given chrome:// request.
+TEST_F(CRWWebUISchemeManagerTest, CheckMimetypeOfChromeScheme) {
+  CRWWebUISchemeHandler* scheme_handler = CreateSchemeHandler();
+  id web_view = OCMClassMock([WKWebView class]);
+  FakeSchemeTask* url_scheme_task = [[FakeSchemeTask alloc] init];
+
+  // Check javascript
+  NSMutableURLRequest* request = [NSMutableURLRequest
+      requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.js"]];
+  request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  url_scheme_task.request = request;
+  [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
+  RespondWithData(net::GURLWithNSURL(request.URL), "{}");
+
+  EXPECT_TRUE([url_scheme_task responseHasMimetype:@"text/javascript"]);
+  EXPECT_TRUE(url_scheme_task.receivedData);
+  EXPECT_FALSE(url_scheme_task.receivedError);
+
+  // Check css.
+  request = [NSMutableURLRequest
+      requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.css"]];
+  request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  url_scheme_task.request = request;
+  [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
+  RespondWithData(net::GURLWithNSURL(request.URL), "{}");
+
+  EXPECT_TRUE([url_scheme_task responseHasMimetype:@"text/css"]);
+  EXPECT_TRUE(url_scheme_task.receivedData);
+  EXPECT_FALSE(url_scheme_task.receivedError);
+
+  // Check svg.
+  request = [NSMutableURLRequest
+      requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.svg"]];
+  request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  url_scheme_task.request = request;
+  [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
+  RespondWithData(net::GURLWithNSURL(request.URL), "{}");
+
+  EXPECT_TRUE([url_scheme_task responseHasMimetype:@"image/svg+xml"]);
+  EXPECT_TRUE(url_scheme_task.receivedData);
+  EXPECT_FALSE(url_scheme_task.receivedError);
+
+  // Anything else, is 'html'.
+  request = [NSMutableURLRequest
+      requestWithURL:[NSURL
+                         URLWithString:@"chrome://clown/res/clown.anything"]];
+  request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  url_scheme_task.request = request;
+  [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
+  RespondWithData(net::GURLWithNSURL(request.URL), "{}");
+
+  EXPECT_TRUE([url_scheme_task responseHasMimetype:@"text/html"]);
+  EXPECT_TRUE(url_scheme_task.receivedData);
+  EXPECT_FALSE(url_scheme_task.receivedError);
+}
+
 }  // namespace web
