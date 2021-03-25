@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
   void ReturnProtobufMethodCallback(const ReplyType& reply,
                                     DBusMethodCallback<ReplyType> callback);
 
+  // Loads install attributes from the stub file.
+  bool LoadInstallAttributes();
+
   // FWMP related:
 
   // Number of times RemoveFirmwareManagementParameters() is called.

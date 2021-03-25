@@ -18,6 +18,11 @@
 namespace chromeos {
 
 namespace {
+
+// Buffer size for reading install attributes file. 16k should be plenty. The
+// file contains six attributes only (see InstallAttributes::LockDevice).
+constexpr size_t kInstallAttributesFileMaxSize = 16384;
+
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeInstallAttributesClient* g_instance = nullptr;
 
@@ -26,6 +31,13 @@ FakeInstallAttributesClient* g_instance = nullptr;
 FakeInstallAttributesClient::FakeInstallAttributesClient() {
   DCHECK(!g_instance);
   g_instance = this;
+
+  base::FilePath cache_path;
+  locked_ = base::PathService::Get(dbus_paths::FILE_INSTALL_ATTRIBUTES,
+                                   &cache_path) &&
+            base::PathExists(cache_path);
+  if (locked_)
+    LoadInstallAttributes();
 }
 
 FakeInstallAttributesClient::~FakeInstallAttributesClient() {
@@ -179,6 +191,35 @@ void FakeInstallAttributesClient::ReturnProtobufMethodCallback(
     DBusMethodCallback<ReplyType> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
+}
+
+bool FakeInstallAttributesClient::LoadInstallAttributes() {
+  base::FilePath cache_file;
+  const bool file_exists =
+      base::PathService::Get(dbus_paths::FILE_INSTALL_ATTRIBUTES,
+                             &cache_file) &&
+      base::PathExists(cache_file);
+  DCHECK(file_exists);
+  // Mostly copied from chrome/browser/chromeos/tpm/install_attributes.cc.
+  std::string file_blob;
+  if (!base::ReadFileToStringWithMaxSize(cache_file, &file_blob,
+                                         kInstallAttributesFileMaxSize)) {
+    PLOG(ERROR) << "Failed to read " << cache_file.value();
+    return false;
+  }
+
+  cryptohome::SerializedInstallAttributes install_attrs_proto;
+  if (!install_attrs_proto.ParseFromString(file_blob)) {
+    LOG(ERROR) << "Failed to parse install attributes cache.";
+    return false;
+  }
+
+  for (const auto& entry : install_attrs_proto.attributes()) {
+    install_attrs_[entry.name()].assign(
+        entry.value().data(), entry.value().data() + entry.value().size());
+  }
+
+  return true;
 }
 
 }  // namespace chromeos
