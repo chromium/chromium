@@ -297,7 +297,6 @@ source_set("common") {
       "mac/attributed_string_type_converters.mm",
       "mac/font_loader.h",
       "mac/font_loader.mm",
-      "sandbox_init_mac.cc",
     ]
     deps += [
       ":mac_helpers",

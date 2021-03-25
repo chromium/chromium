@@ -860,15 +860,10 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
           params.sandbox_info))
     return TerminateForFatalInitializationError();
 #elif defined(OS_MAC)
-  // Only the GPU process still runs the V1 sandbox.
-  bool v2_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      sandbox::switches::kSeatbeltClientName);
-
-  if (!v2_enabled && process_type == switches::kGpuProcess) {
-    if (!InitializeSandbox()) {
-      return TerminateForFatalInitializationError();
-    }
-  } else if (v2_enabled) {
+  if (!sandbox::policy::IsUnsandboxedSandboxType(
+          sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
+    // Verify that the sandbox was initialized prior to ContentMain using the
+    // SeatbeltExecServer.
     CHECK(sandbox::Seatbelt::IsSandboxed());
   }
 #endif
