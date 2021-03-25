@@ -270,18 +270,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadARModelState.USDZ"
-    enum="DownloadARModelState" expires_after="2021-05-08">
-  <owner>mahmadi@chromium.org</owner>
+    enum="DownloadARModelState" expires_after="2022-03-20">
+  <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Logged at different stages of downloading a USDZ MIME type AR model on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2021-09-12">
+    expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     The action that a user takes on a file after it has been successfully
     downloaded on iOS.
@@ -289,9 +291,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileNetError" enum="NetErrorCodes"
-    expires_after="2021-05-08">
-  <owner>ewannpv@chromium.org</owner>
-  <owner>mrefaat@chromium.org</owner>
+    expires_after="2022-03-20">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Positive net error codes that happen in the case of download content fetch
     failure.
@@ -310,9 +313,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2021-05-08">
+    enum="DownloadFileInBackground" expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Logged when the download is completed (successfully or not) or in-progress
     download was cancelled because of the app termination. This histogram
@@ -322,16 +326,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2021-07-26">
-  <owner>ewannpv@chromium.org</owner>
+    expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>Result when a user attempts to download a file on iOS.</summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2021-08-15">
-  <owner>ewannpv@chromium.org</owner>
+    expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Result when a user attempts to present the download UI on iOS. Looged when
     download is created.
@@ -339,9 +345,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2021-11-29">
-  <owner>ewannpv@chromium.org</owner>
+    enum="DownloadFileUIGoogleDrive" expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Result when the download UI is prexsented on iOS. Values indicate if Google
     Drive is installed and whether or not Install Google Drive promo was shown.
@@ -350,9 +357,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2021-08-15">
-  <owner>ewannpv@chromium.org</owner>
+    expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     MIME type of a download response. Logged when the download UI was offered by
     the browser to the user.
@@ -360,18 +368,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSDownloadPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2021-05-08">
-  <owner>ewannpv@chromium.org</owner>
+    enum="DownloadPassKitResult" expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     Recorded when a user attempts to download a PassKit file on iOS.
   </summary>
 </histogram>
 
 <histogram name="Download.IOSDownloadReplaced" enum="BooleanReplaced"
-    expires_after="2021-07-15">
-  <owner>ewannpv@chromium.org</owner>
+    expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
     The user discarded in-progress download and replaced with the new one. Only
     recorded after the user interacts with a dialog offering the choice between
@@ -381,17 +391,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.IOSPresentAddPassesDialogResult"
-    enum="PresentAddPassesDialogResult" expires_after="2021-05-01">
-  <owner>ewannpv@chromium.org</owner>
+    enum="PresentAddPassesDialogResult" expires_after="2022-03-20">
   <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>Result of an attempt to present Add Passes dialog on iOS.</summary>
 </histogram>
 
 <histogram name="Download.IOSPresentQLPreviewControllerResult"
-    enum="PresentQLPreviewController" expires_after="M81">
-  <owner>mahmadi@chromium.org</owner>
+    enum="PresentQLPreviewController" expires_after="2022-03-20">
+  <owner>sdefresne@chromium.org</owner>
+  <owner>ewannpv@chromium.com</owner>
+  <owner>mrefaat@chromium.com</owner>
   <summary>
-    Result of an attempt to present a USDZ MIME type AR model on iOS.
+    Result when a user attempts to present a USDZ MIME type AR model on iOS.
   </summary>
 </histogram>
 
