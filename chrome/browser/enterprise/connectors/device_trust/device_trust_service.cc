@@ -7,14 +7,11 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 
-namespace policy {
-
-using enterprise_connectors::kContextAwareAccessSignalsAllowlistPref;
+namespace enterprise_connectors {
 
 DeviceTrustService::DeviceTrustService() = default;
 
@@ -24,7 +21,10 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   key_pair_ = std::make_unique<DeviceTrustKeyPair>();
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
@@ -47,13 +47,15 @@ bool DeviceTrustService::IsEnabled() const {
 }
 
 void DeviceTrustService::OnPolicyUpdated() {
-  if (!key_pair_ || !reporter_) {
+  if (!reporter_) {
     return;
   }
 
   if (!first_report_sent_ &&
       IsEnabled()) {  // Policy enabled for the first time.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
     key_pair_->Init();
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
     reporter_->Init(
         base::BindRepeating(
             [](DeviceTrustService* self) { return self->IsEnabled(); },
@@ -73,7 +75,10 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
   }
 
   base::Value val(base::Value::Type::DICTIONARY);
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   val.SetStringKey("machine_attestion_key", key_pair_->ExportPEMPublicKey());
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   reporter_->SendReport(std::move(val), std::move(signal_report_callback_));
 }
@@ -98,4 +103,4 @@ void DeviceTrustService::SetSignalReportCallbackForTesting(
   signal_report_callback_ = std::move(cb);
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors

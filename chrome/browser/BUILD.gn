@@ -3541,8 +3541,6 @@ static_library("browser") {
       "enterprise/connectors/connectors_service.h",
       "enterprise/connectors/device_trust/device_trust_factory.cc",
       "enterprise/connectors/device_trust/device_trust_factory.h",
-      "enterprise/connectors/device_trust/device_trust_key_pair.cc",
-      "enterprise/connectors/device_trust/device_trust_key_pair.h",
       "enterprise/connectors/device_trust/device_trust_service.cc",
       "enterprise/connectors/device_trust/device_trust_service.h",
       "enterprise/connectors/device_trust/signal_reporter.cc",
@@ -5098,6 +5096,15 @@ static_library("browser") {
         "mac/install_updater.mm",
       ]
     }
+  }
+
+  if (is_linux || is_win || is_mac) {
+    sources += [
+      "enterprise/connectors/device_trust/device_trust_key_pair.cc",
+      "enterprise/connectors/device_trust/device_trust_key_pair.h",
+      "enterprise/connectors/device_trust/navigation_throttle.cc",
+      "enterprise/connectors/device_trust/navigation_throttle.h",
+    ]
   }
 
   if (is_linux || is_chromeos) {

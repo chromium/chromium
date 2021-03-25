@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace policy {
+namespace enterprise_connectors {
 
 // static
 DeviceTrustFactory* DeviceTrustFactory::GetInstance() {
@@ -36,4 +36,4 @@ KeyedService* DeviceTrustFactory::BuildServiceInstanceFor(
   return new DeviceTrustService(static_cast<Profile*>(context));
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors

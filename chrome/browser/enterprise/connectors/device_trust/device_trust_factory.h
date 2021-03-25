@@ -14,7 +14,7 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
-namespace policy {
+namespace enterprise_connectors {
 
 class DeviceTrustService;
 
@@ -35,6 +35,6 @@ class DeviceTrustFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace policy
+}  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_FACTORY_H_

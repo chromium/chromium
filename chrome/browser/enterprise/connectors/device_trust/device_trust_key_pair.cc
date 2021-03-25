@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "crypto/ec_signature_creator.h"
 
-namespace policy {
+namespace enterprise_connectors {
 
 namespace {
 
@@ -182,4 +182,4 @@ std::string DeviceTrustKeyPair::ExportPEMPublicKey() {
   return public_key;
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors

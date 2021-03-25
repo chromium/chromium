@@ -25,7 +25,8 @@ const base::Value origins[]{base::Value("example1.example.com"),
 
 }  // namespace
 
-namespace policy {
+namespace enterprise_connectors {
+
 class DeviceTrustServiceTest : public testing::Test {
  public:
   DeviceTrustServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -124,4 +125,4 @@ TEST_F(DeviceTrustServiceTest, StartWithNoPolicy) {
   EXPECT_TRUE(device_trust_service->IsEnabled());
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors

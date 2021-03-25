@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -14,6 +16,10 @@
 
 #include <memory>
 
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
 class KeyedService;
 class Profile;
 class PrefService;
@@ -21,7 +27,7 @@ namespace enterprise_connectors {
 class DeviceTrustSignalReporter;
 }
 
-namespace policy {
+namespace enterprise_connectors {
 
 class DeviceTrustService : public KeyedService {
  public:
@@ -52,7 +58,10 @@ class DeviceTrustService : public KeyedService {
   void OnSignalReported(bool success);
 
   PrefService* prefs_;
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::unique_ptr<DeviceTrustKeyPair> key_pair_;
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   PrefChangeRegistrar pref_observer_;
   bool first_report_sent_;
@@ -62,6 +71,6 @@ class DeviceTrustService : public KeyedService {
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 
-}  // namespace policy
+}  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_

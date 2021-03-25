@@ -4401,10 +4401,6 @@ test("unit_tests") {
     deps += [ "//chrome/services/speech/soda:unit_tests" ]
   }
 
-  if (is_win || is_linux || is_mac) {
-    sources += [ "../browser/enterprise/connectors/device_trust/device_trust_key_pair_unittest.cc" ]
-  }
-
   if (is_android) {
     sources += [
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
@@ -5820,7 +5816,7 @@ test("unit_tests") {
     sources += [ "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros || is_mac || is_win) {
+  if (is_linux || is_chromeos || is_mac || is_win) {
     sources += [
       "../browser/enterprise/connectors/device_trust/device_trust_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/mock_signal_reporter.cc",
@@ -5831,6 +5827,13 @@ test("unit_tests") {
       "../browser/enterprise/connectors/file_system/box_api_call_test_helper.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_test_helper.h",
       "../browser/enterprise/connectors/file_system/download_controller_unittest.cc",
+    ]
+  }
+
+  if (is_linux || is_mac || is_win) {
+    sources += [
+      "../browser/enterprise/connectors/device_trust/device_trust_key_pair_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
     ]
   }
 

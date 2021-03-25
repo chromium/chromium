@@ -9,7 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "crypto/ec_private_key.h"
 
-namespace policy {
+namespace enterprise_connectors {
 
 // This class provides functionality used in `DeviceTrustService` class to
 // enable Device Trust Connector.
@@ -66,6 +66,6 @@ class DeviceTrustKeyPair {
       const std::string& private_key_info_block);
 };
 
-}  // namespace policy
+}  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_

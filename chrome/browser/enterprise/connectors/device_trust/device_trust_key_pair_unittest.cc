@@ -12,8 +12,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-
-namespace policy {
+namespace enterprise_connectors {
 
 class DeviceTrustKeyPairTest : public testing::Test {
  public:
@@ -29,7 +28,7 @@ class DeviceTrustKeyPairTest : public testing::Test {
     testing::Test::TearDown();
   }
 
-  policy::DeviceTrustKeyPair key_;
+  DeviceTrustKeyPair key_;
 
  private:
   ScopedTestingLocalState local_state_;
@@ -47,4 +46,4 @@ TEST_F(DeviceTrustKeyPairTest, ExportPublicKey) {
   EXPECT_TRUE(base::EndsWith(public_key, "-----END PUBLIC KEY-----\n"));
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors
