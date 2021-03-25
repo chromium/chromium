@@ -772,6 +772,7 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
     HandledEventCallback handled_event = base::BindOnce(
         &WidgetInputHandlerManager::DidHandleInputEventSentToMain, this,
         std::move(callback));
+    recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor #1.1");
     input_event_queue_->HandleEvent(std::move(event), dispatch_type, ack_state,
                                     attribution, std::move(metrics),
                                     std::move(handled_event));

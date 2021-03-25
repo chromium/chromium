@@ -141,6 +141,8 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     void AddWorker(scoped_refptr<WorkerThread> worker) {
       if (!worker)
         return;
+      recordreplay::Assert("WorkerContainer::AddWorker %lu",
+                           recordreplay::PointerId(worker.get()));
       if (!first_worker_)
         first_worker_ = std::move(worker);
       else
@@ -150,9 +152,14 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     template <typename Action>
     void ForEachWorker(Action action) {
       if (first_worker_) {
+        recordreplay::Assert("WorkerContainer::ForEachWorker #1 %lu",
+                             recordreplay::PointerId(first_worker_.get()));
         action(first_worker_.get());
-        for (scoped_refptr<WorkerThread> worker : additional_workers_)
+        for (scoped_refptr<WorkerThread> worker : additional_workers_) {
+          recordreplay::Assert("WorkerContainer::ForEachWorker #2 %lu",
+                               recordreplay::PointerId(worker.get()));
           action(worker.get());
+        }
       } else {
         DCHECK(additional_workers_.empty());
       }

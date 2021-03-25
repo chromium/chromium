@@ -29,8 +29,6 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-#include <dlfcn.h>
-
 namespace {
 
 #if !defined(OS_NACL_NONSFI)

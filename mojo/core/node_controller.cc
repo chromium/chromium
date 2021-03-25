@@ -150,7 +150,13 @@ NodeController::~NodeController() = default;
 NodeController::NodeController(Core* core)
     : core_(core),
       name_(GetRandomNodeName()),
-      node_(new ports::Node(name_, this)) {
+      node_(new ports::Node(name_, this)),
+      peers_lock_("NodeController.peers_lock_"),
+      reserved_ports_lock_("NodeController.reserved_ports_lock_"),
+      pending_port_merges_lock_("NodeController.pending_port_merges_lock_"),
+      inviter_lock_("NodeController.inviter_lock_"),
+      broker_lock_("NodeController.broker_lock_"),
+      shutdown_lock_("NodeController.shutdown_lock_") {
   DVLOG(1) << "Initializing node " << name_;
 }
 

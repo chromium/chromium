@@ -429,7 +429,7 @@ void NodeChannel::Introduce(const ports::NodeName& name,
 }
 
 void NodeChannel::SendChannelMessage(Channel::MessagePtr message) {
-  recordreplay::Assert("NodeChannel::SendChannelMessage Done");
+  recordreplay::Assert("NodeChannel::SendChannelMessage Start");
   WriteChannelMessage(std::move(message));
   recordreplay::Assert("NodeChannel::SendChannelMessage Done");
 }
@@ -667,8 +667,10 @@ void NodeChannel::OnChannelMessage(const void* payload,
     }
 
     case MessageType::INTRODUCE: {
+      recordreplay::Assert("NodeChannel::OnChannelMessage #3");
       IntroductionData data;
       if (GetMessagePayload(payload, payload_size, &data)) {
+        recordreplay::Assert("NodeChannel::OnChannelMessage #4");
         if (handles.size() > 1) {
           DLOG(ERROR) << "Dropping invalid introduction message.";
           break;
@@ -679,8 +681,10 @@ void NodeChannel::OnChannelMessage(const void* payload,
 
         delegate_->OnIntroduce(remote_node_name_, data.name,
                                std::move(channel_handle));
+        recordreplay::Assert("NodeChannel::OnChannelMessage #5");
         return;
       }
+      recordreplay::Assert("NodeChannel::OnChannelMessage #6");
       break;
     }
 

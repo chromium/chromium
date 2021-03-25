@@ -88,8 +88,6 @@
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
 
-#include <dlfcn.h>
-
 namespace blink {
 
 static void ReportFatalErrorInMainThread(const char* location,

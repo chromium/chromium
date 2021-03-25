@@ -521,6 +521,8 @@ void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
 
+  recordreplay::Assert("TileManager::DidFinishRunningAllTileTasks %d", has_pending_queries);
+
   has_scheduled_tile_tasks_ = false;
   has_pending_queries_ = has_pending_queries;
 
@@ -1494,6 +1496,9 @@ void TileManager::CheckRasterFinishedQueries() {
     has_pending_queries_ =
         pending_raster_queries_->CheckRasterFinishedQueries();
   }
+
+  recordreplay::Assert("TileManager::CheckRasterFinishedQueries #1 %d", has_pending_queries_);
+
   if (has_pending_queries_)
     ScheduleCheckRasterFinishedQueries();
 }
@@ -1533,13 +1538,19 @@ void TileManager::IssueSignals() {
     }
   }
 
+  recordreplay::Assert("TileManager::IssueSignals #1 %d %d",
+                       signals_.all_tile_tasks_completed,
+                       signals_.did_notify_all_tile_tasks_completed);
+
   // All tile tasks completed.
   if (signals_.all_tile_tasks_completed &&
       !signals_.did_notify_all_tile_tasks_completed) {
+    recordreplay::Assert("TileManager::IssueSignals #2 %d", has_scheduled_tile_tasks_);
     if (!has_scheduled_tile_tasks_) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - all tile tasks completed");
 
+      recordreplay::Assert("TileManager::IssueSignals #3 %d", has_pending_queries_);
       if (has_pending_queries_)
         ScheduleCheckRasterFinishedQueries();
 

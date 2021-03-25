@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -263,6 +264,7 @@ MainThreadEventQueue::MainThreadEventQueue(
       needs_low_latency_(false),
       needs_unbuffered_input_for_debugger_(false),
       allow_raf_aligned_input_(allow_raf_aligned_input),
+      shared_state_lock_("MainThreadEventQueue.shared_state_lock_"),
       main_task_runner_(main_task_runner),
       main_thread_scheduler_(main_thread_scheduler) {
   raf_fallback_timer_ = std::make_unique<base::OneShotTimer>();
@@ -281,6 +283,8 @@ void MainThreadEventQueue::HandleEvent(
     const WebInputEventAttribution& attribution,
     std::unique_ptr<cc::EventMetrics> metrics,
     HandledEventCallback callback) {
+  recordreplay::Assert("MainThreadEventQueue::HandleEvent Start");
+
   TRACE_EVENT2("input", "MainThreadEventQueue::HandleEvent", "dispatch_type",
                original_dispatch_type, "event_type", event->Event().GetType());
   DCHECK(original_dispatch_type == DispatchType::kBlocking ||
@@ -359,8 +363,10 @@ void MainThreadEventQueue::HandleEvent(
               WebInputEvent::Type::kPointerRawUpdate,
               static_cast<const WebMouseEvent&>(event->Event())),
           event->latency_info());
+      recordreplay::Assert("MainThreadEventQueue::HandleEvent #1");
       QueueEvent(QueuedWebInputEvent::CreateForRawEvent(
           std::move(raw_event), attribution, metrics.get()));
+      recordreplay::Assert("MainThreadEventQueue::HandleEvent #2");
     } else if (event->Event().GetType() == WebInputEvent::Type::kTouchMove) {
       const WebTouchEvent& touch_event =
           static_cast<const WebTouchEvent&>(event->Event());
@@ -372,8 +378,10 @@ void MainThreadEventQueue::HandleEvent(
               event->latency_info());
           raw_event->EventPointer()->SetType(
               WebInputEvent::Type::kPointerRawUpdate);
+          recordreplay::Assert("MainThreadEventQueue::HandleEvent #3");
           QueueEvent(QueuedWebInputEvent::CreateForRawEvent(
               std::move(raw_event), attribution, metrics.get()));
+          recordreplay::Assert("MainThreadEventQueue::HandleEvent #4");
         }
       }
     }
@@ -390,12 +398,16 @@ void MainThreadEventQueue::HandleEvent(
       IsForwardedAndSchedulerKnown(ack_result), attribution,
       std::move(metrics));
 
+  recordreplay::Assert("MainThreadEventQueue::HandleEvent #5");
   QueueEvent(std::move(queued_event));
+  recordreplay::Assert("MainThreadEventQueue::HandleEvent #6");
 
   if (callback) {
     std::move(callback).Run(ack_result, cloned_latency_info, nullptr,
                             base::nullopt);
   }
+
+  recordreplay::Assert("MainThreadEventQueue::HandleEvent Done");
 }
 
 void MainThreadEventQueue::QueueClosure(base::OnceClosure closure) {

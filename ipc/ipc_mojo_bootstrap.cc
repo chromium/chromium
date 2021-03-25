@@ -1064,6 +1064,7 @@ class ChannelAssociatedGroupController
 
   DISALLOW_COPY_AND_ASSIGN(ChannelAssociatedGroupController);
 };
+
 bool ControllerMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

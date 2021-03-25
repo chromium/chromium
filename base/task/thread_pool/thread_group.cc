@@ -75,8 +75,13 @@ ThreadGroup::ThreadGroup(TrackedRef<TaskTracker> task_tracker,
                          ThreadGroup* predecessor_thread_group)
     : task_tracker_(std::move(task_tracker)),
       delegate_(std::move(delegate)),
-      lock_(predecessor_thread_group ? &predecessor_thread_group->lock_
-                                     : nullptr) {
+      lock_("ThreadGroup.lock_"
+            // We ought to have a CheckedLock ctor that takes both an ordered
+            // name and a predecessor, but since we don't support debug builds
+            // when recording/replaying currently it doesn't seem worth the
+            // hassle.
+            /*predecessor_thread_group ? &predecessor_thread_group->lock_
+                                       : nullptr*/) {
   DCHECK(task_tracker_);
 }
 

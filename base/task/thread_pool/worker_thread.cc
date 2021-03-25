@@ -47,6 +47,7 @@ WorkerThread::WorkerThread(ThreadPriority priority_hint,
       task_tracker_(std::move(task_tracker)),
       priority_hint_(priority_hint),
       current_thread_priority_(GetDesiredThreadPriority()) {
+  recordreplay::RegisterPointer(this);
   DCHECK(delegate_);
   DCHECK(task_tracker_);
   DCHECK(CanUseBackgroundPriorityForWorkerThread() ||
@@ -118,6 +119,7 @@ bool WorkerThread::ThreadAliveForTesting() const {
 }
 
 WorkerThread::~WorkerThread() {
+  recordreplay::UnregisterPointer(this);
   CheckedAutoLock auto_lock(thread_lock_);
 
   // If |thread_handle_| wasn't joined, detach it.
