@@ -1709,6 +1709,9 @@
   <message name="IDS_NETWORK_LIST_ITEM_DOWNLOAD" desc="Text for the button displayed for pending eSIM profiles that installs the profile when pressed.">
     Download
   </message>
+  <message name="IDS_NETWORK_LIST_ITEM_DOWNLOAD_A11Y_LABEL" desc="A11Y label for the button displayed for pending eSIM profiles that installs the profile when pressed. Includes profile name">
+    Download, <ph name="PROFILE_NAME">$1<ex>Cellular</ex></ph>
+  </message>
   <message name="IDS_NETWORK_LIST_ITEM_UNLOCK" desc="Text for the button displayed for locked cellular networks that opens a dialog to unlock the network when pressed ">
     Unlock
   </message>

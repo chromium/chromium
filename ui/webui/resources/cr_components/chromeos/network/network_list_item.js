@@ -710,6 +710,14 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getInstallBtnA11yLabel_() {
+    return this.i18n('networkListItemDownloadA11yLabel', this.getItemName_());
+  },
+
+  /**
    * @param {boolean} newValue
    * @param {boolean|undefined} oldValue
    * @private

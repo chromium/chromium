@@ -184,7 +184,7 @@
         </template>
         <template is="dom-if" if="[[isESimPendingProfile_]]" restamp>
           <cr-button id="installButton"
-              aria-label$="[[getItemName_(item)]], [[i18n('networkListItemDownload')]]"
+              aria-label$="[[getInstallBtnA11yLabel_(item)]]"
               on-click="onInstallButtonClick_"
               disabled="[[disabled_]]">
             <iron-icon icon="network:download"></iron-icon>
