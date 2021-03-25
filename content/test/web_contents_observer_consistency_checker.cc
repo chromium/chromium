@@ -26,7 +26,7 @@ namespace {
 const char kWebContentsObserverConsistencyCheckerKey[] =
     "WebContentsObserverConsistencyChecker";
 
-using LifecycleState = RenderFrameHostImpl::LifecycleState;
+using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
 GlobalRoutingID GetRoutingPair(RenderFrameHost* host) {
   if (!host)
@@ -139,8 +139,8 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   }
 
   auto* new_host_impl = static_cast<RenderFrameHostImpl*>(new_host);
-  CHECK(new_host_impl->lifecycle_state() == LifecycleState::kActive ||
-        new_host_impl->lifecycle_state() == LifecycleState::kPrerendering);
+  CHECK(new_host_impl->lifecycle_state() == LifecycleStateImpl::kActive ||
+        new_host_impl->lifecycle_state() == LifecycleStateImpl::kPrerendering);
   EnsureStableParentValue(new_host);
   if (new_host->GetParent()) {
     AssertRenderFrameExists(new_host->GetParent());
@@ -248,8 +248,8 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   if (navigation_handle->HasCommitted()) {
     RenderFrameHostImpl* new_rfh = static_cast<RenderFrameHostImpl*>(
         navigation_handle->GetRenderFrameHost());
-    CHECK(new_rfh->lifecycle_state() == LifecycleState::kActive ||
-          new_rfh->lifecycle_state() == LifecycleState::kPrerendering);
+    CHECK(new_rfh->lifecycle_state() == LifecycleStateImpl::kActive ||
+          new_rfh->lifecycle_state() == LifecycleStateImpl::kPrerendering);
   }
 
   CHECK(!navigation_handle->HasCommitted() ||

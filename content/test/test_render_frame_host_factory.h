@@ -37,7 +37,7 @@ class TestRenderFrameHostFactory : public RenderFrameHostFactory {
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleState lifecycle_state) override;
+      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestRenderFrameHostFactory);

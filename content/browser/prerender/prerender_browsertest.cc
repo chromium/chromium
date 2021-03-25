@@ -180,7 +180,7 @@ class PrerenderBrowserTest
     : public ContentBrowserTest,
       public testing::WithParamInterface<PrerenderBrowserTestType> {
  public:
-  using LifecycleState = RenderFrameHostImpl::LifecycleState;
+  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
   PrerenderBrowserTest() {
     std::map<std::string, std::string> parameters;
@@ -364,7 +364,7 @@ class PrerenderBrowserTest
     EXPECT_EQ(initiator_render_frame_host->frame_tree()->type(),
               FrameTree::Type::kPrimary);
     EXPECT_EQ(initiator_render_frame_host->lifecycle_state(),
-              LifecycleState::kActive);
+              LifecycleStateImpl::kActive);
 
     // Start a prerender.
     AddPrerender(prerender_url);
@@ -380,10 +380,10 @@ class PrerenderBrowserTest
         prerendered_render_frame_host->GetFramesInSubtree();
     for (auto* frame : frames) {
       auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-      // All the subframes should be in LifecycleState::kPrerendering state
+      // All the subframes should be in LifecycleStateImpl::kPrerendering state
       // before activation.
       EXPECT_EQ(rfhi->lifecycle_state(),
-                RenderFrameHostImpl::LifecycleState::kPrerendering);
+                RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
       EXPECT_EQ(rfhi->frame_tree()->type(), FrameTree::Type::kPrerender);
     }
 
@@ -399,10 +399,10 @@ class PrerenderBrowserTest
     frames = navigated_render_frame_host->GetFramesInSubtree();
     for (auto* frame : frames) {
       auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-      // All the subframes should be transitioned to LifecycleState::kActive
+      // All the subframes should be transitioned to LifecycleStateImpl::kActive
       // state after activation.
       EXPECT_EQ(rfhi->lifecycle_state(),
-                RenderFrameHostImpl::LifecycleState::kActive);
+                RenderFrameHostImpl::LifecycleStateImpl::kActive);
       EXPECT_FALSE(rfhi->frame_tree()->is_prerendering());
     }
   }
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   for (auto* frame : frames) {
     auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
     EXPECT_TRUE(rfhi->frame_tree()->is_prerendering());
-    EXPECT_EQ(rfhi->lifecycle_state(), LifecycleState::kPrerendering);
+    EXPECT_EQ(rfhi->lifecycle_state(), LifecycleStateImpl::kPrerendering);
 
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         rfhi->browser_interface_broker_receiver_for_testing();
@@ -1358,7 +1358,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  EXPECT_EQ(current_frame_host()->lifecycle_state(), LifecycleState::kActive);
+  EXPECT_EQ(current_frame_host()->lifecycle_state(),
+            LifecycleStateImpl::kActive);
 
   // Start a prerender.
   AddPrerender(kPrerenderingUrl1);
@@ -1374,8 +1375,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
 
   // Both rfh_a and rfh_b lifecycle state's should be kPrerendering.
-  EXPECT_EQ(LifecycleState::kPrerendering, rfh_a->lifecycle_state());
-  EXPECT_EQ(LifecycleState::kPrerendering, rfh_b->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_a->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_b->lifecycle_state());
 
   // Navigate same-origin from the prerendered page.
   NavigatePrerenderedPage(*prerender_host, kPrerenderingUrl2);
@@ -1388,15 +1389,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   RenderFrameHostImpl* rfh_d = rfh_c->child_at(0)->current_frame_host();
 
   // Both rfh_c and rfh_d lifecycle state's should be kPrerendering.
-  EXPECT_EQ(LifecycleState::kPrerendering, rfh_c->lifecycle_state());
-  EXPECT_EQ(LifecycleState::kPrerendering, rfh_d->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_c->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kPrerendering, rfh_d->lifecycle_state());
 
   // Activate the prerendered page.
   NavigatePrimaryPage(kPrerenderingUrl1);
 
   // Both rfh_c and rfh_d lifecycle state's should be kActive after activation.
-  EXPECT_EQ(LifecycleState::kActive, rfh_c->lifecycle_state());
-  EXPECT_EQ(LifecycleState::kActive, rfh_d->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_c->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_d->lifecycle_state());
 }
 
 // Tests that prerendering is gated behind CSP:prefetch-src
@@ -1767,12 +1768,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
   EXPECT_EQ(prerendered_render_frame_host->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kPrerendering);
+            RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
   EXPECT_TRUE(prerendered_render_frame_host->IsInactiveAndDisallowActivation());
 
   // The prerender host for the URL should be destroyed as
   // RenderFrameHost::IsInactiveAndDisallowActivation cancels prerendering in
-  // LifecycleState::kPrerendering state.
+  // LifecycleStateImpl::kPrerendering state.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   // Cancelling the prerendering disables the activation. The navigation

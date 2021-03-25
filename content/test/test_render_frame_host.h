@@ -61,7 +61,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                       int32_t routing_id,
                       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                       const blink::LocalFrameToken& frame_token,
-                      LifecycleState lifecyle_state);
+                      LifecycleStateImpl lifecycle_state);
   ~TestRenderFrameHost() override;
 
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)

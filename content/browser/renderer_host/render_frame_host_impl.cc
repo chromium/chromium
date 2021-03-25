@@ -747,22 +747,23 @@ DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
 
-// Returns the string corresponding to LifecycleState, used for logging crash
-// keys.
-const char* LifecycleStateToString(RenderFrameHostImpl::LifecycleState state) {
-  using LifecycleState = RenderFrameHostImpl::LifecycleState;
+// Returns the string corresponding to LifecycleStateImpl, used for logging
+// crash keys.
+const char* LifecycleStateImplToString(
+    RenderFrameHostImpl::LifecycleStateImpl state) {
+  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
   switch (state) {
-    case LifecycleState::kSpeculative:
+    case LifecycleStateImpl::kSpeculative:
       return "Speculative";
-    case LifecycleState::kPrerendering:
+    case LifecycleStateImpl::kPrerendering:
       return "Prerendering";
-    case LifecycleState::kActive:
+    case LifecycleStateImpl::kActive:
       return "Active";
-    case LifecycleState::kInBackForwardCache:
+    case LifecycleStateImpl::kInBackForwardCache:
       return "InBackForwardCache";
-    case LifecycleState::kRunningUnloadHandlers:
+    case LifecycleStateImpl::kRunningUnloadHandlers:
       return "RunningUnloadHandlers";
-    case LifecycleState::kReadyToBeDeleted:
+    case LifecycleStateImpl::kReadyToBeDeleted:
       return "ReadyToDeleted";
   }
 }
@@ -1063,7 +1064,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation_of_main_frame,
-    LifecycleState lifecycle_state)
+    LifecycleStateImpl lifecycle_state)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
@@ -1090,9 +1091,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
       lifecycle_state_(lifecycle_state) {
   DCHECK(delegate_);
-  DCHECK(lifecycle_state_ == LifecycleState::kSpeculative ||
-         lifecycle_state_ == LifecycleState::kPrerendering ||
-         lifecycle_state_ == LifecycleState::kActive);
+  DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
+         lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
+         lifecycle_state_ == LifecycleStateImpl::kActive);
   // Only main frames have `waiting_for_init_` set.
   DCHECK(!waiting_for_init_ || !parent_);
 
@@ -1135,7 +1136,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // cannot use DidCommitProvisionalLoad to set the policy container, since we
   // could run into a race condition. Hence we need to set the policy container
   // immediately when creating the RenderFrameHost here.
-  if (lifecycle_state_ != LifecycleState::kSpeculative) {
+  if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
@@ -1276,16 +1277,16 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    mojom::FrameNavigationControl::UnloadFrame message for the RenderFrame
   //    to replace itself with a RenderFrameProxy and release its associated
   //    resources. |lifecycle_state_| is advanced to
-  //    LifeCycleState::kRunningUnloadHandlers to track that this IPC is in
+  //    LifecycleStateImpl::kRunningUnloadHandlers to track that this IPC is in
   //    flight.
   // 3. The RenderFrame can be detached, as part of removing a subtree (due to
   //    navigation, unload, or DOM mutation). In this case, the browser sends
   //    a mojom::FrameNavigationControl::Delete message for the RenderFrame
   //    to detach itself and release its associated resources. If the subframe
   //    contains an unload handler, |lifecycle_state_| is advanced to
-  //    LifeCycleState::kRunningUnloadHandlers to track that the detach is in
-  //    progress; otherwise, it is advanced directly to
-  //    LifeCycleState::kReadyToBeDeleted.
+  //    LifecycleStateImpl::kRunningUnloadHandlers to track that the detach is
+  //    in progress; otherwise, it is advanced directly to
+  //    LifecycleStateImpl::kReadyToBeDeleted.
   //
   // For BackForwardCache or Prerender case:
   //
@@ -1335,7 +1336,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // being deleted, since it must have already been unset.
   if (was_created && render_view_host_->GetMainFrame() != this) {
     CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
-          lifecycle_state() == LifecycleState::kPrerendering);
+          lifecycle_state() == LifecycleStateImpl::kPrerendering);
   }
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
@@ -1405,8 +1406,8 @@ void RenderFrameHostImpl::AudioContextPlaybackStopped(int audio_context_id) {
 void RenderFrameHostImpl::DidEnterBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::EnterBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kActive);
-  SetLifecycleState(LifecycleState::kInBackForwardCache);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
+  SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
   // Pages in the back-forward cache are automatically evicted after a certain
   // time.
   if (!GetParent())
@@ -1434,7 +1435,7 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
 void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::LeaveBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kInBackForwardCache);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
   if (back_forward_cache_eviction_timer_.IsRunning())
     back_forward_cache_eviction_timer_.Stop();
   for (auto& child : children_)
@@ -1673,7 +1674,7 @@ const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() {
 
 const net::HttpResponseHeaders* RenderFrameHostImpl::GetLastResponseHeaders() {
   // This shouldn't be called before committing the document.
-  DCHECK_NE(lifecycle_state_, LifecycleState::kSpeculative);
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   return last_response_head_.get() ? last_response_head_->headers.get()
                                    : nullptr;
 }
@@ -2246,7 +2247,7 @@ void RenderFrameHostImpl::RenderProcessExited(
   if (IsPendingDeletion()) {
     // If the process has died, we don't need to wait for the ACK. Complete the
     // deletion immediately.
-    SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
     DCHECK(children_.empty());
     PendingDeletionCheckCompleted();
     // |this| is deleted. Don't add any more code at this point in the function.
@@ -2448,11 +2449,11 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     GetMojomFrameInRenderer()->Delete(intent);
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
-      DCHECK_NE(lifecycle_state(), LifecycleState::kSpeculative);
+      DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
       // Documents from the page in the BackForwardCache don't run their unload
       // handlers, even if they have one. As a result, this should never delay
       // process shutdown.
-      DCHECK_NE(lifecycle_state(), LifecycleState::kInBackForwardCache);
+      DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
 
       // If this document has unload handlers (and isn't speculative or in the
       // back-forward cache), ensure that they have a chance to execute by
@@ -2472,9 +2473,9 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     }
   }
 
-  LifecycleState lifecycle_state = wait_for_unload_handlers
-                                       ? LifecycleState::kRunningUnloadHandlers
-                                       : LifecycleState::kReadyToBeDeleted;
+  LifecycleStateImpl lifecycle_state =
+      wait_for_unload_handlers ? LifecycleStateImpl::kRunningUnloadHandlers
+                               : LifecycleStateImpl::kReadyToBeDeleted;
   SetLifecycleState(lifecycle_state);
 }
 
@@ -2738,7 +2739,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
   // Only active and prerendered documents are allowed to create child
   // frames.
-  if (lifecycle_state_ != LifecycleState::kPrerendering) {
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
     // The RenderFrame corresponding to this host sent an IPC message to create
     // a child, but by the time we get here, it's possible for the
     // RenderFrameHost to become inactive. Ignore such messages.
@@ -3070,7 +3071,7 @@ void RenderFrameHostImpl::SetLastCommittedUrl(const GURL& url) {
 }
 
 void RenderFrameHostImpl::Detach() {
-  if (lifecycle_state() == LifecycleState::kSpeculative)
+  if (lifecycle_state() == LifecycleStateImpl::kSpeculative)
     return;
 
   if (!parent_) {
@@ -3099,15 +3100,15 @@ void RenderFrameHostImpl::Detach() {
     // deletion and is waiting on one of its children to run its unload
     // handler. While running it, it can request its parent to detach itself.
     // See test: SitePerProcessBrowserTest.PartialUnloadHandler.
-    if (lifecycle_state_ != LifecycleState::kReadyToBeDeleted)
-      SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    if (lifecycle_state() != LifecycleStateImpl::kReadyToBeDeleted)
+      SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
     PendingDeletionCheckCompleted();  // Can delete |this|.
     return;
   }
 
   // This frame is being removed by the renderer, and it has already executed
   // its unload handler.
-  SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
 
   // Before completing the removal, we still need to wait for all of its
   // descendant frames to execute unload handlers. Start executing those
@@ -3139,7 +3140,7 @@ void RenderFrameHostImpl::DidFocusFrame() {
   // For RenderFrameHost in BackForwardCache, it is safe to ignore this IPC as
   // there is a renderer side check (see Document::IsFocusedAllowed) which
   // returns false.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   delegate_->SetFocusedFrame(frame_tree_node_, GetSiteInstance());
@@ -3173,7 +3174,7 @@ void RenderFrameHostImpl::OnSchedulerTrackedFeatureUsed(
 
 bool RenderFrameHostImpl::IsFrozen() {
   // TODO(crbug.com/1081920): Account for non-bfcache freezing here as well.
-  return lifecycle_state_ == LifecycleState::kInBackForwardCache;
+  return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
 }
 
 void RenderFrameHostImpl::DidCommitProvisionalLoad(
@@ -3231,7 +3232,7 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // If this is called when the frame is in Prerendering, do not cancel
   // Prerendering as prerendered frames can be navigated, including
   // same-document navigations like push/replaceState.
-  if (lifecycle_state() != LifecycleState::kPrerendering &&
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering &&
       IsInactiveAndDisallowActivation()) {
     return;
   }
@@ -3339,7 +3340,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   is_waiting_for_unload_ack_ = true;
 
   if (proxy) {
-    SetLifecycleState(LifecycleState::kRunningUnloadHandlers);
+    SetLifecycleState(LifecycleStateImpl::kRunningUnloadHandlers);
     if (IsRenderFrameCreated()) {
       GetMojomFrameInRenderer()->Unload(
           proxy->GetRoutingID(), is_loading,
@@ -3358,7 +3359,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
     // local<->local swap. Hence, there is no need to send
     // mojom::FrameNavigationControl::Unload here. It can be marked at
     // completed.
-    SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
   }
 
   if (web_ui())
@@ -3571,8 +3572,8 @@ void RenderFrameHostImpl::OnUnloadACK() {
   if (do_not_delete_for_testing_)
     return;
 
-  DCHECK_EQ(LifecycleState::kRunningUnloadHandlers, lifecycle_state_);
-  SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+  DCHECK_EQ(LifecycleStateImpl::kRunningUnloadHandlers, lifecycle_state());
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
   PendingDeletionCheckCompleted();  // Can delete |this|.
 }
 
@@ -3670,7 +3671,7 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // Don't show the dialog if it's triggered on a non-active RenderFrameHost.
   // This happens when the RenderFrameHost is pending deletion or in the
   // back-forward cache.
-  if (lifecycle_state_ != LifecycleState::kActive) {
+  if (lifecycle_state() != LifecycleStateImpl::kActive) {
     std::move(ipc_response_callback).Run(true, std::u16string());
     return;
   }
@@ -3917,7 +3918,7 @@ void RenderFrameHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("process", GetProcess());
   dict.Add("routing_id", GetRoutingID());
-  dict.Add("lifecycle_state", LifecycleStateToString(lifecycle_state_));
+  dict.Add("lifecycle_state", LifecycleStateImplToString(lifecycle_state()));
   dict.Add("origin", GetLastCommittedOrigin());
   dict.Add("url", GetLastCommittedURL());
   dict.Add("frame_tree_node_id", frame_tree_node_->frame_tree_node_id());
@@ -4425,7 +4426,7 @@ void RenderFrameHostImpl::DispatchLoad() {
 
   // Only active and prerendered documents are allowed to dispatch load events
   // to the parent.
-  if (lifecycle_state() != LifecycleState::kPrerendering) {
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
     // Don't forward the load event to the parent on behalf of inactive
     // RenderFrameHost. This can happen in a race where this inactive
     // RenderFrameHost finishes loading just after the frame navigates away.
@@ -4434,8 +4435,8 @@ void RenderFrameHostImpl::DispatchLoad() {
       return;
   }
 
-  DCHECK(lifecycle_state() == LifecycleState::kActive ||
-         lifecycle_state() == LifecycleState::kPrerendering);
+  DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
   // Only frames with an out-of-process parent frame should be sending this
   // message.
@@ -4484,7 +4485,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
   // Only update FindInPageResult on active RenderFrameHost. Note that, it is
   // safe to ignore this call for BackForwardCache, as we terminate the
   // FindInPage session once the page enters BackForwardCache.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -4503,7 +4504,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
   // Only update FindInPageTermination on active RenderFrameHost. Note that, it
   // is safe to ignore this call for BackForwardCache, as we terminate the
   // FindInPage session once the page enters BackForwardCache.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -4527,7 +4528,7 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
     blink::mojom::ResourceTimingInfoPtr timing) {
   // Only active and prerendered documents are allowed to forward the resource
   // timing information to the parent.
-  if (lifecycle_state() != LifecycleState::kPrerendering) {
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
     // Don't forward the resource timing of the parent on behalf of inactive
     // RenderFrameHost. This can happen in a race where this RenderFrameHost
     // finishes loading just after the frame navigates away. See
@@ -4536,8 +4537,8 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
       return;
   }
 
-  DCHECK(lifecycle_state() == LifecycleState::kActive ||
-         lifecycle_state() == LifecycleState::kPrerendering);
+  DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
   RenderFrameProxyHost* proxy =
       frame_tree_node()->render_manager()->GetProxyToParent();
@@ -4592,17 +4593,17 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
                "render_frame_host", this);
 
   switch (lifecycle_state_) {
-    case LifecycleState::kRunningUnloadHandlers:
-    case LifecycleState::kReadyToBeDeleted:
+    case LifecycleStateImpl::kRunningUnloadHandlers:
+    case LifecycleStateImpl::kReadyToBeDeleted:
       return true;
-    case LifecycleState::kInBackForwardCache:
+    case LifecycleStateImpl::kInBackForwardCache:
       EvictFromBackForwardCacheWithReason(
           BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
       return true;
-    case LifecycleState::kPrerendering:
+    case LifecycleStateImpl::kPrerendering:
       CancelPrerendering();
       return true;
-    case LifecycleState::kSpeculative:
+    case LifecycleStateImpl::kSpeculative:
       // We do not expect speculative RenderFrameHosts to generate events that
       // require an active/inactive check. Don't crash the browser process in
       // case it comes from a compromised renderer, but kill the renderer to
@@ -4610,7 +4611,7 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
       bad_message::ReceivedBadMessage(
           GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
       return false;
-    case LifecycleState::kActive:
+    case LifecycleStateImpl::kActive:
       return false;
   }
 }
@@ -4906,7 +4907,7 @@ void RenderFrameHostImpl::UpdateUserActivationState(
   // Don't update UserActivationState for non-active RenderFrameHost. In case
   // of BackForwardCache, this is only called for tests and it is safe to ignore
   // such requests.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   frame_tree_node_->UpdateUserActivationState(update_type, notification_type);
@@ -5667,7 +5668,7 @@ void RenderFrameHostImpl::BeginNavigation(
 
   // Only active and prerendered documents are allowed to start navigation in
   // their frame.
-  if (lifecycle_state_ != LifecycleState::kPrerendering) {
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
     // If this is reached in case the RenderFrameHost is in BackForwardCache
     // evict the document from BackForwardCache.
     if (IsInactiveAndDisallowActivation())
@@ -6234,9 +6235,10 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
         // and deleted immediately, without waiting for unload handlers.
         bool wait_for_unload_handlers =
             child->has_unload_handlers() && !child->IsInBackForwardCache();
-        LifecycleState child_lifecycle_state =
-            wait_for_unload_handlers ? LifecycleState::kRunningUnloadHandlers
-                                     : LifecycleState::kReadyToBeDeleted;
+        LifecycleStateImpl child_lifecycle_state =
+            wait_for_unload_handlers
+                ? LifecycleStateImpl::kRunningUnloadHandlers
+                : LifecycleStateImpl::kReadyToBeDeleted;
         child->SetLifecycleState(child_lifecycle_state);
       }
 
@@ -6246,7 +6248,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
 }
 
 void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
-  if (lifecycle_state_ == LifecycleState::kReadyToBeDeleted &&
+  if (lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted &&
       children_.empty()) {
     if (is_waiting_for_unload_ack_)
       OnUnloaded();
@@ -7367,8 +7369,8 @@ bool RenderFrameHostImpl::IsCurrent() {
   if (has_pending_lifecycle_state_update_)
     return false;
 
-  // Only documents in the kActive lifecycle state are considered current.
-  return lifecycle_state_ == LifecycleState::kActive;
+  // Only documents in the LifecycleStateImpl::kActive are considered current.
+  return lifecycle_state() == LifecycleStateImpl::kActive;
 }
 
 size_t RenderFrameHostImpl::GetProxyCount() {
@@ -7926,8 +7928,8 @@ void RenderFrameHostImpl::ActivateForPrerendering() {
   // one to kActive for the MPArch case.
   if (blink::features::IsPrerenderWebContentsEnabled()) {
     // Update the |lifecycle_state_| to kActive on activation.
-    DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
-    SetLifecycleState(LifecycleState::kActive);
+    DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kPrerendering);
+    SetLifecycleState(LifecycleStateImpl::kActive);
   }
 
   // TODO(https://crbug.com/1186796): Loosen the policies of the mojo capability
@@ -8961,7 +8963,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();
 
-    if (lifecycle_state() != LifecycleState::kSpeculative &&
+    if (lifecycle_state() != LifecycleStateImpl::kSpeculative &&
         !committed_speculative_rfh_before_navigation_commit_) {
       // Clear all the user data associated with the non-speculative
       // RenderFrameHost because the navigation has created a new document.
@@ -10165,7 +10167,7 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("lifecycle_state",
                                           base::debug::CrashKeySize::Size32),
-      LifecycleStateToString(lifecycle_state_));
+      LifecycleStateImplToString(lifecycle_state()));
 
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("is_current",
@@ -10339,12 +10341,12 @@ RenderFrameHostImpl::GetWebAuthRequestSecurityChecker() {
 }
 
 bool RenderFrameHostImpl::IsInBackForwardCache() {
-  return lifecycle_state_ == LifecycleState::kInBackForwardCache;
+  return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
 }
 
 bool RenderFrameHostImpl::IsPendingDeletion() {
-  return lifecycle_state_ == LifecycleState::kRunningUnloadHandlers ||
-         lifecycle_state_ == LifecycleState::kReadyToBeDeleted;
+  return lifecycle_state() == LifecycleStateImpl::kRunningUnloadHandlers ||
+         lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted;
 }
 
 void RenderFrameHostImpl::SetLifecycleStateToActive() {
@@ -10353,7 +10355,7 @@ void RenderFrameHostImpl::SetLifecycleStateToActive() {
   // called from RenderFrameHostManager::SetRenderFrameHost which happens after
   // commit.
   if (IsInBackForwardCache() ||
-      lifecycle_state_ == LifecycleState::kPrerendering) {
+      lifecycle_state() == LifecycleStateImpl::kPrerendering) {
     for (auto& child : children_) {
       DCHECK_EQ(lifecycle_state_,
                 child->current_frame_host()->lifecycle_state_);
@@ -10361,25 +10363,25 @@ void RenderFrameHostImpl::SetLifecycleStateToActive() {
     }
   }
 
-  SetLifecycleState(LifecycleState::kActive);
+  SetLifecycleState(LifecycleStateImpl::kActive);
 }
 
 void RenderFrameHostImpl::SetLifecycleStateToPrerendering() {
-  // Update the |lifecycle_state_| to kPrerendering on navigation commit when a
-  // speculative RenderFrameHost is created for navigation inside prerendered
-  // frame tree. This should happen before activation.
+  // Update the |lifecycle_state_| to kPrerendering on navigation commit
+  // when a speculative RenderFrameHost is created for navigation inside
+  // prerendered frame tree. This should happen before activation.
   DCHECK(frame_tree()->is_prerendering());
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   DCHECK(children_.empty());
-  SetLifecycleState(LifecycleState::kPrerendering);
+  SetLifecycleState(LifecycleStateImpl::kPrerendering);
 }
 
-void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
-  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleState",
+void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
+  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleStateImpl",
                "render_frame_host", this, "new_state",
-               LifecycleStateToString(state));
+               LifecycleStateImplToString(state));
 #if DCHECK_IS_ON()
-  static const base::NoDestructor<StateTransitions<LifecycleState>>
+  static const base::NoDestructor<StateTransitions<LifecycleStateImpl>>
       allowed_transitions(
           // For a graph of state transitions, see
           // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/render-frame-host-lifecycle-state.png
@@ -10387,40 +10389,43 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
 
           // RenderFrameHost is only set speculative during its creation and no
           // transitions happen to this state during its lifetime.
-          StateTransitions<LifecycleState>({
-              {LifecycleState::kSpeculative,
-               {LifecycleState::kActive, LifecycleState::kPrerendering,
-                LifecycleState::kReadyToBeDeleted}},
+          StateTransitions<LifecycleStateImpl>({
+              {LifecycleStateImpl::kSpeculative,
+               {LifecycleStateImpl::kActive, LifecycleStateImpl::kPrerendering,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kPrerendering,
-               {LifecycleState::kActive, LifecycleState::kRunningUnloadHandlers,
-                LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kPrerendering,
+               {LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kRunningUnloadHandlers,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kActive,
-               {LifecycleState::kInBackForwardCache,
-                LifecycleState::kRunningUnloadHandlers,
-                LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kActive,
+               {LifecycleStateImpl::kInBackForwardCache,
+                LifecycleStateImpl::kRunningUnloadHandlers,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kInBackForwardCache,
-               {LifecycleState::kActive, LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kInBackForwardCache,
+               {LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kRunningUnloadHandlers,
-               {LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kRunningUnloadHandlers,
+               {LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kReadyToBeDeleted, {}},
+              {LifecycleStateImpl::kReadyToBeDeleted, {}},
           }));
-  DCHECK_STATE_TRANSITION(allowed_transitions, /*old_state=*/lifecycle_state_,
+  DCHECK_STATE_TRANSITION(allowed_transitions,
+                          /*old_state=*/lifecycle_state_,
                           /*new_state*/ state);
 #endif  // DCHECK_IS_ON()
 
-  LifecycleState old_state = lifecycle_state_;
+  LifecycleStateImpl old_state = lifecycle_state_;
   lifecycle_state_ = state;
 
   // Unset the |has_pending_lifecycle_state_update_| value once the
-  // LifecycleState is updated.
+  // LifecycleStateImpl is updated.
   if (has_pending_lifecycle_state_update_) {
     DCHECK(IsInBackForwardCache() || IsPendingDeletion() ||
-           old_state == LifecycleState::kPrerendering)
+           old_state == LifecycleStateImpl::kPrerendering)
         << "Transitioned to unexpected state with resetting "
            "|has_pending_lifecycle_state_update_|\n ";
     has_pending_lifecycle_state_update_ = false;
@@ -10624,7 +10629,7 @@ void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
 
 void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
     scoped_refptr<PolicyContainerHost> policy_container_host) {
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   DCHECK(!policy_container_host_);
   SetPolicyContainerHost(std::move(policy_container_host));
 }
@@ -10667,7 +10672,7 @@ void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {
   // active insecure content, such as a script or iframe, the top-level origin
   // gets marked as insecure and that applies to any navigation entry using the
   // same renderer process with that same top-level origin.
-  if (lifecycle_state() != LifecycleState::kSpeculative &&
+  if (lifecycle_state() != LifecycleStateImpl::kSpeculative &&
       IsInactiveAndDisallowActivation()) {
     return;
   }
@@ -10683,8 +10688,8 @@ void RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors() {
 }
 
 std::ostream& operator<<(std::ostream& o,
-                         const RenderFrameHostImpl::LifecycleState& s) {
-  return o << LifecycleStateToString(s);
+                         const RenderFrameHostImpl::LifecycleStateImpl& s) {
+  return o << LifecycleStateImplToString(s);
 }
 
 }  // namespace content

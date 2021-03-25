@@ -25,7 +25,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation,
-    RenderFrameHostImpl::LifecycleState lifecycle_state) {
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
   if (factory_) {
     return factory_->CreateRenderFrameHost(
         site_instance, std::move(render_view_host), delegate, frame_tree,

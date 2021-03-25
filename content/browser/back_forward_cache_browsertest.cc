@@ -5497,9 +5497,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestSkipSameSiteUnload,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 }
 
-// Sub-frame doesn't transition from LifecycleState::kInBackForwardCache to
-// LifecycleState::kRunningUnloadHandlers even when the sub-frame having unload
-// handlers is being evicted from BackForwardCache.
+// Sub-frame doesn't transition from LifecycleStateImpl::kInBackForwardCache to
+// LifecycleStateImpl::kRunningUnloadHandlers even when the sub-frame having
+// unload handlers is being evicted from BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithUnloadHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(embedded_test_server()->GetURL(
@@ -8225,38 +8225,38 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CheckIsCurrent) {
   EXPECT_FALSE(rfh_b->IsCurrent());
 }
 
-// Test that LifecycleState is updated correctly when page enters and restores
-// back from BackForwardCache.
+// Test that LifecycleStateImpl is updated correctly when page enters and
+// restores back from BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        CheckLifecycleStateTransition) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
 
-  // 1) Navigate to A and check the LifecycleState of A.
+  // 1) Navigate to A and check the LifecycleStateImpl of A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
 
-  // 2) Navigate to B, now A enters BackForwardCache. Check the LifecycleState
-  // of both RenderFrameHost A and B.
+  // 2) Navigate to B, now A enters BackForwardCache. Check the
+  // LifecycleStateImpl of both RenderFrameHost A and B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   RenderFrameHostImpl* rfh_b = current_frame_host();
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kInBackForwardCache,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
             rfh_a->lifecycle_state());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
 
-  // 3) Go back to A and check again the LifecycleState of both RenderFrameHost
-  // A and B.
+  // 3) Go back to A and check again the LifecycleStateImpl of both
+  // RenderFrameHost A and B.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
-  EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kInBackForwardCache,
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
             rfh_b->lifecycle_state());
 }
 

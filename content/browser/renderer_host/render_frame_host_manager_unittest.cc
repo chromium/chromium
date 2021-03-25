@@ -1868,9 +1868,9 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   EXPECT_EQ(host1, GetPendingFrameHost(iframe1));
   EXPECT_EQ(host2, GetPendingFrameHost(iframe2));
   EXPECT_EQ(GetPendingFrameHost(iframe1)->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kSpeculative);
+            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
   EXPECT_EQ(GetPendingFrameHost(iframe2)->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kSpeculative);
+            RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
   EXPECT_NE(GetPendingFrameHost(iframe1), GetPendingFrameHost(iframe2));
   EXPECT_EQ(GetPendingFrameHost(iframe1)->GetSiteInstance(),
             GetPendingFrameHost(iframe2)->GetSiteInstance());
@@ -3260,7 +3260,7 @@ TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(initial_rfh, main_test_rfh());
   ASSERT_FALSE(delete_observer.deleted());
   EXPECT_NE(initial_rfh->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kActive);
+            RenderFrameHostImpl::LifecycleStateImpl::kActive);
   EXPECT_TRUE(initial_rfh->IsPendingDeletion());
 
   // The initial RFH receives a BeginNavigation IPC. The navigation should not
@@ -3315,7 +3315,7 @@ TEST_P(RenderFrameHostManagerTestWithBackForwardCache,
   EXPECT_NE(initial_rfh, main_test_rfh());
   ASSERT_FALSE(delete_observer.deleted());
   EXPECT_NE(initial_rfh->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kActive);
+            RenderFrameHostImpl::LifecycleStateImpl::kActive);
   EXPECT_TRUE(initial_rfh->IsInBackForwardCache());
 
   // The initial RFH receives a BeginNavigation IPC. The navigation should not

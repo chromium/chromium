@@ -706,8 +706,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Return true if Unload() was called on the frame or one of its ancestors.
   // If true, this corresponds either to unload handlers running for this
-  // RenderFrameHost (LifecycleState::kRunningUnloadHandlers) or when this
-  // RenderFrameHost is ready to be deleted (LifecycleState::kReadyToBeDeleted).
+  // RenderFrameHost (LifecycleStateImpl::kRunningUnloadHandlers) or when this
+  // RenderFrameHost is ready to be deleted
+  // (LifecycleStateImpl::kReadyToBeDeleted).
   bool IsPendingDeletion();
 
   // Returns a pending same-document navigation request in this frame that has
@@ -778,7 +779,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Defines different states the RenderFrameHost can be in during its lifetime
   // i.e., from point of creation to deletion. See |SetLifecycleState|.
-  enum class LifecycleState {
+  enum class LifecycleStateImpl {
     // This state corresponds to when a speculative RenderFrameHost is created
     // for an ongoing navigation (to new URL) but hasn't been swapped in the
     // frame tree yet, mainly created for performance optimization. The frame
@@ -871,15 +872,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // kInBackForwardCache or kRunningUnloadHandlers states.
     kReadyToBeDeleted,
   };
-  LifecycleState lifecycle_state() const { return lifecycle_state_; }
+  LifecycleStateImpl lifecycle_state() const { return lifecycle_state_; }
   void SetLifecycleStateToActive();
   void SetLifecycleStateToPrerendering();
 
-  // Sets |has_pending_lifecycle_state_update_| to true for this RenderFrameHost
-  // and its children. Called when this RenderFrameHost stops being the current
-  // one in the RenderFrameHostManager, but its new LifecycleState is not
-  // immediately determined. This boolean is reset when this RenderFrameHost
-  // enters the back-forward-cache or the pending deletion list.
+  // Sets |has_pending_lifecycle_state_update_| to true for this
+  // RenderFrameHost and its children. Called when this RenderFrameHost stops
+  // being the current one in the RenderFrameHostManager, but its new
+  // LifecycleStateImpl is not immediately determined. This boolean is reset
+  // when this RenderFrameHost enters the back-forward-cache or the pending
+  // deletion list.
   void SetHasPendingLifecycleStateUpdate();
 
   enum class BeforeUnloadType {
@@ -2019,7 +2021,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                       const blink::LocalFrameToken& frame_token,
                       bool renderer_initiated_creation_of_main_frame,
-                      LifecycleState lifecycle_state);
+                      LifecycleStateImpl lifecycle_state);
 
   // The SendCommit* functions below are wrappers for commit calls
   // made to mojom::NavigationClient.
@@ -2708,8 +2710,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   }
 
   // Updates the |lifecycle_state_|. Called when there is a change in the
-  // RenderFrameHost LifecycleState.
-  void SetLifecycleState(LifecycleState state);
+  // RenderFrameHost LifecycleStateImpl.
+  void SetLifecycleState(LifecycleStateImpl state);
 
   void BindReportingObserver(
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -3070,9 +3072,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // content.
   bool should_virtual_keyboard_overlay_content_ = false;
 
-  // If true, then this RenderFrameHost is waiting to update its LifecycleState.
-  // Happens when the old RenderFrameHost is waiting to either enter
-  // BackForwardCache or PendingDeletion. In this case, the old
+  // If true, then this RenderFrameHost is waiting to update its
+  // LifecycleStateImpl. Happens when the old RenderFrameHost is waiting to
+  // either enter BackForwardCache or PendingDeletion. In this case, the old
   // RenderFrameHost's lifecycle state remains in kActive. During this period,
   // the RenderFrameHost is no longer the current one. The flag is again
   // updated once the lifecycle state changes.
@@ -3452,7 +3454,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Tracks the state of |this| RenderFrameHost from the point it is created to
   // when it gets deleted.
-  LifecycleState lifecycle_state_;
+  LifecycleStateImpl lifecycle_state_;
 
   // If true, RenderFrameHost should not be actually deleted and should be left
   // stuck in pending deletion.
@@ -3538,7 +3540,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 // Used when DCHECK_STATE_TRANSITION triggers.
 CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& o,
-    const RenderFrameHostImpl::LifecycleState& s);
+    const RenderFrameHostImpl::LifecycleStateImpl& s);
 
 }  // namespace content
 

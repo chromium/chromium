@@ -65,7 +65,7 @@ TestRenderFrameHost::TestRenderFrameHost(
     int32_t routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
-    RenderFrameHostImpl::LifecycleState lifecyle_state)
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state)
     : RenderFrameHostImpl(site_instance,
                           std::move(render_view_host),
                           delegate,
@@ -75,7 +75,7 @@ TestRenderFrameHost::TestRenderFrameHost(
                           std::move(frame_remote),
                           frame_token,
                           /*renderer_initiated_creation=*/false,
-                          lifecyle_state),
+                          lifecycle_state),
       child_creation_observer_(delegate ? delegate->GetAsWebContents()
                                         : nullptr),
       simulate_history_list_was_cleared_(false),

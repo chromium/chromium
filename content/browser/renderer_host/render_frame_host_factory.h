@@ -41,7 +41,7 @@ class CONTENT_EXPORT RenderFrameHostFactory {
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleState lifecycle_state);
+      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
 
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() { return !!factory_; }
@@ -62,7 +62,7 @@ class CONTENT_EXPORT RenderFrameHostFactory {
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleState lifecycle_state) = 0;
+      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) = 0;
 
   // Registers a factory to be called when new RenderFrameHostImpls are created.
   // We have only one global factory, so there must be no factory registered

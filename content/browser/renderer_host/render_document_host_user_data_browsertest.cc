@@ -566,9 +566,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // 5) Check RDHUD objects |data_a| and |data_b| are not cleared when rfh_a and
   // rfh_b are in pending deletion state.
   EXPECT_EQ(rfh_a->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers);
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_EQ(rfh_b->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers);
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_TRUE(data_a);
   EXPECT_TRUE(data_b);
 

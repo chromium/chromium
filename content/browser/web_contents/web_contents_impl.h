@@ -772,8 +772,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SavableResourceLinksError(RenderFrameHostImpl* source) override;
   void RenderFrameHostStateChanged(
       RenderFrameHostImpl* render_frame_host,
-      RenderFrameHostImpl::LifecycleState old_state,
-      RenderFrameHostImpl::LifecycleState new_state) override;
+      RenderFrameHostImpl::LifecycleStateImpl old_state,
+      RenderFrameHostImpl::LifecycleStateImpl new_state) override;
   void SetWindowRect(const gfx::Rect& new_bounds) override;
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
