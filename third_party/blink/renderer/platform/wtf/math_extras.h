@@ -61,71 +61,71 @@ constexpr double kTwoPiDouble = kPiDouble * 2.0;
 constexpr float kTwoPiFloat = kPiFloat * 2.0f;
 
 constexpr double deg2rad(double d) {
-  return d * kPiDouble / 180.0;
+  return d * (kPiDouble / 180.0);
 }
 constexpr double rad2deg(double r) {
-  return r * 180.0 / kPiDouble;
+  return r * (180.0 / kPiDouble);
 }
 constexpr double deg2grad(double d) {
-  return d * 400.0 / 360.0;
+  return d * (400.0 / 360.0);
 }
 constexpr double grad2deg(double g) {
-  return g * 360.0 / 400.0;
+  return g * (360.0 / 400.0);
 }
 constexpr double turn2deg(double t) {
   return t * 360.0;
 }
 constexpr double deg2turn(double d) {
-  return d / 360.0;
+  return d * (1.0 / 360.0);
 }
 constexpr double rad2grad(double r) {
-  return r * 200.0 / kPiDouble;
+  return r * (200.0 / kPiDouble);
 }
 constexpr double grad2rad(double g) {
-  return g * kPiDouble / 200.0;
+  return g * (kPiDouble / 200.0);
 }
 constexpr double turn2grad(double t) {
   return t * 400;
 }
 constexpr double grad2turn(double g) {
-  return g / 400;
+  return g * (1.0 / 400.0);
 }
 constexpr double rad2turn(double r) {
-  return r / kTwoPiDouble;
+  return r * (1.0 / kTwoPiDouble);
 }
 constexpr double turn2rad(double t) {
   return t * kTwoPiDouble;
 }
 
 constexpr float deg2rad(float d) {
-  return d * kPiFloat / 180.0f;
+  return d * (kPiFloat / 180.0f);
 }
 constexpr float rad2deg(float r) {
-  return r * 180.0f / kPiFloat;
+  return r * (180.0f / kPiFloat);
 }
 constexpr float deg2grad(float d) {
-  return d * 400.0f / 360.0f;
+  return d * (400.0f / 360.0f);
 }
 constexpr float grad2deg(float g) {
-  return g * 360.0f / 400.0f;
+  return g * (360.0f / 400.0f);
 }
 constexpr float turn2deg(float t) {
   return t * 360.0f;
 }
 constexpr float deg2turn(float d) {
-  return d / 360.0f;
+  return d * (1.0f / 360.0f);
 }
 constexpr float rad2grad(float r) {
-  return r * 200.0f / kPiFloat;
+  return r * (200.0f / kPiFloat);
 }
 constexpr float grad2rad(float g) {
-  return g * kPiFloat / 200.0f;
+  return g * (kPiFloat / 200.0f);
 }
 constexpr float turn2grad(float t) {
   return t * 400;
 }
 constexpr float grad2turn(float g) {
-  return g / 400;
+  return g * (1.0f / 400.0f);
 }
 
 // clampTo() is implemented by templated helper classes (to allow for partial
