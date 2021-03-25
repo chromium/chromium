@@ -350,9 +350,11 @@ class DidFinishRunningAllTilesTask : public TileTask {
   void RunOnWorkerThread() override {
     TRACE_EVENT0("cc", "TaskSetFinishedTaskImpl::RunOnWorkerThread");
     bool has_pending_queries = false;
+    recordreplay::Assert("DidFinishRunningAllTilesTask::RunOnWorkerThread Start %d", !!pending_raster_queries_);
     if (pending_raster_queries_) {
       has_pending_queries =
           pending_raster_queries_->CheckRasterFinishedQueries();
+      recordreplay::Assert("DidFinishRunningAllTilesTask::RunOnWorkerThread #1 %d", has_pending_queries);
     }
     task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(completion_cb_),
                                                      has_pending_queries));

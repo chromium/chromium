@@ -21,7 +21,8 @@ RasterQueryQueue::RasterQueryQueue(
     viz::RasterContextProvider* const worker_context_provider,
     bool oop_rasterization_enabled)
     : worker_context_provider_(worker_context_provider),
-      oop_rasterization_enabled_(oop_rasterization_enabled) {}
+      oop_rasterization_enabled_(oop_rasterization_enabled),
+      pending_raster_queries_lock_("RasterQueryQueue.pending_raster_queries_lock_") {}
 
 RasterQueryQueue::~RasterQueryQueue() = default;
 

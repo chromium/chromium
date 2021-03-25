@@ -33,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/process/process.h"
+#include "base/record_replay.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
@@ -4676,6 +4677,7 @@ void RenderFrameImpl::DidObserveLazyLoadBehavior(
 
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
+  recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext Start");
   if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||
        enable_mojo_js_bindings_) &&
       IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
@@ -4684,8 +4686,12 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
     blink::WebContextFeatures::EnableMojoJS(context, true);
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
+    recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext #1");
     observer.DidCreateScriptContext(context, world_id);
+  }
+
+  recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext Done");
 }
 
 void RenderFrameImpl::WillReleaseScriptContext(v8::Local<v8::Context> context,
