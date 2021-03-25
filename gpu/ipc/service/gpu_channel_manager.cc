@@ -655,52 +655,22 @@ void GpuChannelManager::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-      "TotalDuration");
-
-  if (program_cache_) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "ProgramCacheHandleMemoryPressureDuration");
+  if (program_cache_)
     program_cache_->HandleMemoryPressure(memory_pressure_level);
-  }
 
   // These caches require a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-          "DiscardableManagerHandleMemoryPressureDuration");
       discardable_manager_.HandleMemoryPressure(memory_pressure_level);
-    }
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-          "PasshtroughDiscardableManagerHandleMemoryPressureDuration");
       passthrough_discardable_manager_.HandleMemoryPressure(
           memory_pressure_level);
-    }
-
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "SharedContextStatePurgeMemoryDuration");
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
-  if (gr_shader_cache_) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "GrShaderCachePurgeMemoryDuration");
+
+  if (gr_shader_cache_)
     gr_shader_cache_->PurgeMemory(memory_pressure_level);
-  }
 #if defined(OS_WIN)
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "TrimD3DResourcesDuration");
-    TrimD3DResources();
-  }
+  TrimD3DResources();
 #endif
 }
 

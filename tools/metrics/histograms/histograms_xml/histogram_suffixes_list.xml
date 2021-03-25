@@ -7188,6 +7188,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="GpuChannelManagerPressureHandlerDurationDetails"
     separator=".">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
   <suffix name="DiscardableManagerHandleMemoryPressureDuration"
       label="The time taken by the call to
              |ServiceDiscardableManager::HandleMemoryPressure|."/>

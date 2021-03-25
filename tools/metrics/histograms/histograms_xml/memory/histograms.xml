@@ -766,6 +766,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="Memory.Experimental.GpuChannelManagerPressureHandlerDuration"
     units="ms" expires_after="2021-08-22">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="GpuChannelManagerPressureHandlerDetails" -->
 
   <owner>sebmarchand@chromium.org</owner>
