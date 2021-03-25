@@ -76,6 +76,10 @@ bool NGLayoutInputNode::IsSliderThumb() const {
   return IsBlock() && blink::IsSliderThumb(GetDOMNode());
 }
 
+bool NGLayoutInputNode::IsSVGText() const {
+  return box_ && box_->IsNGSVGText();
+}
+
 bool NGLayoutInputNode::IsEmptyTableSection() const {
   return box_->IsTableSection() && To<LayoutNGTableSection>(box_)->IsEmpty();
 }

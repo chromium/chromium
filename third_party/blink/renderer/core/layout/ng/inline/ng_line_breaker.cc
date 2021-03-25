@@ -410,6 +410,9 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.IsEmpty());
 
+  if (node_.IsSVGText())
+    line_info->MutableResults()->ReserveCapacity(text_content_.length());
+
   if (item_index_) {
     // We're past the first line
     previous_line_had_forced_break_ = is_after_forced_break_;
@@ -686,8 +689,11 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   if (UNLIKELY(HasHyphen()))
     position_ -= RemoveHyphen(line_info->MutableResults());
 
-  NGInlineItemResult* item_result = AddItem(item, line_info);
-  item_result->should_create_line_box = true;
+  NGInlineItemResult* item_result = nullptr;
+  if (!node_.IsSVGText()) {
+    item_result = AddItem(item, line_info);
+    item_result->should_create_line_box = true;
+  }
   // Try to commit |pending_end_overhang_| of a prior NGInlineItemResult.
   // |pending_end_overhang_| doesn't work well with bidi reordering. It's
   // difficult to compute overhang after bidi reordering because it affect
@@ -765,6 +771,11 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     return;
   }
 
+  if (node_.IsSVGText()) {
+    SplitTextByGlyphs(item, line_info);
+    return;
+  }
+
   // Add until the end of the item if !auto_wrap. In most cases, it's the whole
   // item.
   DCHECK_EQ(item_result->EndOffset(), item.EndOffset());
@@ -787,6 +798,39 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   DCHECK(!item_result->can_break_after);
   trailing_whitespace_ = WhitespaceState::kUnknown;
   position_ += item_result->inline_size;
+  MoveToNextOf(item);
+}
+
+// In SVG <text>, we produce NGInlineItemResult split by glyphs for simplicity.
+// Split in PrepareLayout() or after producing NGFragmentItem would need
+// additional memory overhead. So we split in NGLineBreaker while it converts
+// NGInlineItems to NGInlineItemResults.
+//
+// TODO(crbug.com/1179585): Ideally we should split the text by segments
+// partitioned by x/y/dx/dy/rotate attributes.
+void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
+                                      NGLineInfo* line_info) {
+  DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
+  DCHECK(node_.IsSVGText());
+  DCHECK_EQ(offset_, item.StartOffset());
+
+  const ShapeResult& shape = *item.TextShapeResult();
+  shape.EnsurePositionData();
+  do {
+    unsigned glyph_end = (offset_ + 1 == shape.EndIndex())
+                             ? shape.EndIndex()
+                             : shape.CachedNextSafeToBreakOffset(offset_ + 1);
+    NGInlineItemResult* result = AddItem(item, glyph_end, line_info);
+    result->should_create_line_box = true;
+    auto shape_result_view =
+        ShapeResultView::Create(&shape, offset_, glyph_end);
+    result->inline_size =
+        shape_result_view->SnappedWidth().ClampNegativeToZero();
+    result->shape_result = std::move(shape_result_view);
+    offset_ = glyph_end;
+    position_ += result->inline_size;
+  } while (offset_ < shape.EndIndex());
+  trailing_whitespace_ = WhitespaceState::kUnknown;
   MoveToNextOf(item);
 }
 
@@ -2314,7 +2358,8 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   }
   current_style_ = &style;
 
-  auto_wrap_ = style.AutoWrap();
+  //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
+  auto_wrap_ = !node_.IsSVGText() && style.AutoWrap();
 
   if (auto_wrap_) {
     LineBreakType line_break_type;

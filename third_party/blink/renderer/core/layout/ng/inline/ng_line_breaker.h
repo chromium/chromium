@@ -123,6 +123,9 @@ class CORE_EXPORT NGLineBreaker {
   };
 
   void HandleText(const NGInlineItem& item, const ShapeResult&, NGLineInfo*);
+  // Split |item| by glyphs, and add them to |line_info|.
+  // This is for SVG <text>.
+  void SplitTextByGlyphs(const NGInlineItem& item, NGLineInfo* line_info);
   enum BreakResult { kSuccess, kOverflow };
   BreakResult BreakText(NGInlineItemResult*,
                         const NGInlineItem&,
