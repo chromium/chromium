@@ -279,7 +279,7 @@ class ContentSubresourceFilterThrottleManagerTest
     CreateAgentForHost(new_host);
   }
 
-  void FrameDeleted(content::RenderFrameHost* host) override {
+  void RenderFrameDeleted(content::RenderFrameHost* host) override {
     agent_map_.erase(host);
   }
 
