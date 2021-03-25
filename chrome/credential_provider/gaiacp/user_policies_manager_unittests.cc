@@ -330,17 +330,17 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Bool(),
                        ::testing::Values(L"", L"valid-dm-token")));
 
-// Test to verify automatic enabling of cloud policies when DM token is present.
+// Test to verify cloud policies can be disabled from registry.
 // Parameters:
 // string : Value of DM Token on the device.
 // int : 0 - Cloud policies disabled through registry.
 //       1 - Cloud policies enabled through registry.
 //       2 - Cloud policies registry flag not set.
-class GcpUserPoliciesEnableOnDmTokenTest
+class GcpUserPoliciesDisableFromRegistryTest
     : public GcpUserPoliciesBaseTest,
       public ::testing::WithParamInterface<std::tuple<const char*, int>> {};
 
-TEST_P(GcpUserPoliciesEnableOnDmTokenTest, EnableIfFound) {
+TEST_P(GcpUserPoliciesDisableFromRegistryTest, DisableIfSet) {
   std::string dm_token(std::get<0>(GetParam()));
   int reg_enable_cloud_policies = std::get<1>(GetParam());
 
@@ -356,10 +356,9 @@ TEST_P(GcpUserPoliciesEnableOnDmTokenTest, EnableIfFound) {
   // UserDeviceManager in each test.
   FakeUserPoliciesManager fake_user_policies_manager;
 
-  // Feature is enabled if it's explicitly enabled or if the flag is not set and
-  // a valid DM token exists.
-  if (reg_enable_cloud_policies == 1 ||
-      (reg_enable_cloud_policies == 2 && !dm_token.empty())) {
+  // Feature is enabled if it's explicitly enabled or if the flag is not set
+  // whether a valid DM token exists or not.
+  if (reg_enable_cloud_policies == 1 || reg_enable_cloud_policies == 2) {
     ASSERT_TRUE(UserPoliciesManager::Get()->CloudPoliciesEnabled());
   } else {
     ASSERT_FALSE(UserPoliciesManager::Get()->CloudPoliciesEnabled());
@@ -367,7 +366,7 @@ TEST_P(GcpUserPoliciesEnableOnDmTokenTest, EnableIfFound) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         GcpUserPoliciesEnableOnDmTokenTest,
+                         GcpUserPoliciesDisableFromRegistryTest,
                          ::testing::Combine(::testing::Values("", "dm-token"),
                                             ::testing::Values(0, 1, 2)));
 

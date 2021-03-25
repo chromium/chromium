@@ -1020,6 +1020,7 @@ TEST_F(GcpGaiaCredentialBaseTest, DenySigninBlockedDuringSignin) {
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmAllowConsumerAccounts, 1));
   GoogleMdmEnrolledStatusForTesting force_success(true);
   GoogleUploadDeviceDetailsNeededForTesting upload_device_details_needed(false);
+  FakeUserPoliciesManager fake_user_policies_manager;
 
   // Create a fake user that has the same gaia id as the test gaia id.
   CComBSTR first_sid;
@@ -1029,6 +1030,11 @@ TEST_F(GcpGaiaCredentialBaseTest, DenySigninBlockedDuringSignin) {
                       base::UTF8ToUTF16(kDefaultGaiaId), base::string16(),
                       &first_sid));
   ASSERT_EQ(2ul, fake_os_user_manager()->GetUserCount());
+
+  UserPolicies user_policies;
+  fake_user_policies_manager.SetUserPolicies((BSTR)first_sid, user_policies);
+  fake_user_policies_manager.SetUserPolicyStaleOrMissing((BSTR)first_sid,
+                                                         false);
 
   std::vector<base::string16> reauth_sids;
   reauth_sids.push_back((BSTR)first_sid);
@@ -1104,6 +1110,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmSupportsMultiUser, 1));
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmAllowConsumerAccounts, 1));
   GoogleUploadDeviceDetailsNeededForTesting upload_device_details_needed(false);
+  FakeUserPoliciesManager fake_user_policies_manager;
 
   // Create a fake user that has the same gaia id as the test gaia id.
   CComBSTR first_sid;
@@ -1131,6 +1138,12 @@ TEST_F(GcpGaiaCredentialBaseTest,
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(
                       base::UTF8ToUTF16(std::string(kKeyValidityPeriodInDays)),
                       validity_period_in_days_dword));
+
+  UserPolicies user_policies;
+  user_policies.validity_period_days = validity_period_in_days_dword;
+  fake_user_policies_manager.SetUserPolicies((BSTR)first_sid, user_policies);
+  fake_user_policies_manager.SetUserPolicyStaleOrMissing((BSTR)first_sid,
+                                                         false);
 
   GoogleMdmEnrolledStatusForTesting force_success(true);
   fake_internet_checker()->SetHasInternetConnection(

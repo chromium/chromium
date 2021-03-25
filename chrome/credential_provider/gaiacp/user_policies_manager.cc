@@ -164,10 +164,8 @@ extension::TaskCreator UserPoliciesManager::GetFetchPoliciesTaskCreator() {
 }
 
 UserPoliciesManager::UserPoliciesManager() : fetch_status_(S_OK) {
-  std::string dm_token;
-  bool has_dm_token = SUCCEEDED(GetDmToken(&dm_token)) && !dm_token.empty();
-  g_cloud_policies_enabled = GetGlobalFlagOrDefault(kCloudPoliciesEnabledRegKey,
-                                                    has_dm_token ? 1 : 0) == 1;
+  g_cloud_policies_enabled =
+      GetGlobalFlagOrDefault(kCloudPoliciesEnabledRegKey, 1) == 1;
 }
 
 UserPoliciesManager::~UserPoliciesManager() = default;

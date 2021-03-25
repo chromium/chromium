@@ -29,7 +29,39 @@ namespace credential_provider {
 
 namespace testing {
 
-class GcpCredentialProviderTest : public GlsRunnerTestBase {};
+class GcpCredentialProviderTest : public GlsRunnerTestBase {
+ protected:
+  void CreateDefaultCloudPoliciesForUser(const std::wstring& sid);
+  void SetCloudPoliciesForUser(const std::wstring& sid,
+                               const UserPolicies policies);
+
+ private:
+  std::unique_ptr<FakeUserPoliciesManager> fake_user_policies_manager_;
+  std::unique_ptr<FakeTokenGenerator> fake_token_generator_;
+};
+
+void GcpCredentialProviderTest::CreateDefaultCloudPoliciesForUser(
+    const std::wstring& sid) {
+  UserPolicies policies;
+  SetCloudPoliciesForUser(sid, policies);
+}
+
+void GcpCredentialProviderTest::SetCloudPoliciesForUser(
+    const std::wstring& sid,
+    const UserPolicies policies) {
+  if (!fake_user_policies_manager_)
+    fake_user_policies_manager_.reset(new FakeUserPoliciesManager());
+  if (!fake_token_generator_)
+    fake_token_generator_.reset(new FakeTokenGenerator());
+
+  // Ensure user has policies and valid GCPW token.
+  fake_user_policies_manager_->SetUserPolicies(sid, policies);
+  fake_user_policies_manager_->SetUserPolicyStaleOrMissing(sid, false);
+
+  std::string dm_token = "test-gcpw-dm-token";
+  fake_token_generator_->SetTokensForTesting({dm_token});
+  EXPECT_EQ(S_OK, GenerateGCPWDmToken(sid));
+}
 
 TEST_F(GcpCredentialProviderTest, Basic) {
   Microsoft::WRL::ComPtr<IGaiaCredentialProvider> provider;
@@ -290,6 +322,8 @@ TEST_F(GcpCredentialProviderTest, AddPersonAfterUserRemove) {
                       kDummyUsername, kDummyPassword, L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &sid));
 
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
+
   {
     Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
     Microsoft::WRL::ComPtr<ICredentialProvider> provider;
@@ -380,12 +414,14 @@ TEST_P(GcpCredentialProviderSetSerializationTest, CheckAutoLogon) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       first_username, L"password", L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &first_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)first_sid);
 
   CComBSTR second_sid;
   constexpr wchar_t second_username[] = L"username2";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       second_username, L"password", L"Full Name", L"Comment",
                       L"gaia-id2", L"foo2@gmail.com", &second_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)second_sid);
 
   // Build a dummy authentication buffer that can be passed to SetSerialization.
   CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION cpcs;
@@ -504,12 +540,16 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
 
   ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid),
                                   base::UTF8ToUTF16(kKeyLastTokenValid), L"0"));
+
+  UserPolicies policies;
   if (is_offline_validity_expired) {
     // Setting validity period to zero enforces gcpw login irrespective of
     // whether internet is available or not.
-    ASSERT_EQ(S_OK, SetGlobalFlagForTesting(
-                        base::UTF8ToUTF16(kKeyValidityPeriodInDays), 0));
+    policies.validity_period_days = 0;
   }
+
+  // Ensure user has policies and valid GCPW token.
+  SetCloudPoliciesForUser((BSTR)sid, policies);
 
   if (!has_token_handle)
     ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kUserTokenHandle, L""));
@@ -621,6 +661,7 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
                                                     true, &sid, &error));
   }
 
+  UserPolicies policies;
   if (has_user_id) {
     base::string16 test_user_id(L"12345");
     ASSERT_EQ(S_OK, SetUserProperty(OLE2CW(sid), kUserId, test_user_id));
@@ -633,13 +674,15 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
     if (is_offline_validity_expired) {
       // Setting validity period to zero enforces gcpw login irrespective of
       // whether internet is available or not.
-      ASSERT_EQ(S_OK, SetGlobalFlagForTesting(
-                          base::UTF8ToUTF16(kKeyValidityPeriodInDays), 0));
+      policies.validity_period_days = 0;
     }
 
     ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
                                     is_upload_device_details_failed ? 0 : 1));
   }
+
+  // Ensure user has policies and valid GCPW token.
+  SetCloudPoliciesForUser((BSTR)sid, policies);
 
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
@@ -722,12 +765,14 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       first_username, L"password", L"full name", L"comment",
                       L"gaia-id", L"foo@gmail.com", &first_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)first_sid);
 
   CComBSTR second_sid;
   constexpr wchar_t second_username[] = L"username2";
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       second_username, L"password", L"Full Name", L"Comment",
                       L"gaia-id2", L"foo2@gmail.com", &second_sid));
+  CreateDefaultCloudPoliciesForUser((BSTR)second_sid);
 
   // Set the user locking the system.
   SetSidLockingWorkstation(second_user_locking_system ? OLE2CW(second_sid)
