@@ -541,6 +541,16 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
     case GL_DEPTH32F_STENCIL8:
     case GL_STENCIL_INDEX8:
       break;
+    case GL_R16_EXT:
+    case GL_RG16_EXT:
+    case GL_RGBA16_EXT:
+      if (!ExtensionEnabled(kEXTTextureNorm16Name)) {
+        SynthesizeGLError(GL_INVALID_ENUM, "getInternalformatParameter",
+                          "invalid internalformat when EXT_texture_norm16 "
+                          "is not enabled");
+        return ScriptValue::CreateNull(script_state->GetIsolate());
+      }
+      break;
     case GL_R16F:
     case GL_RG16F:
     case GL_RGBA16F:
