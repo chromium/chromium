@@ -253,6 +253,8 @@ class NetworkHandler : public DevToolsDomainHandler,
   static Maybe<protocol::Network::ClientSecurityState>
   MaybeBuildClientSecurityState(
       const network::mojom::ClientSecurityStatePtr& state);
+  static std::unique_ptr<protocol::Network::CorsErrorStatus>
+  BuildCorsErrorStatus(const network::CorsErrorStatus& status);
 
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,

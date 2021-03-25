@@ -555,6 +555,12 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
                           has_cors_been_affected_by_isolated_world_origin_);
   }
 
+  if (devtools_observer_ && status.cors_error_status) {
+    devtools_observer_->OnCorsError(request_.devtools_request_id,
+                                    request_.request_initiator, request_.url,
+                                    *status.cors_error_status);
+  }
+
   forwarding_client_->OnComplete(status);
   std::move(delete_callback_).Run(this);
   // |this| is deleted here.

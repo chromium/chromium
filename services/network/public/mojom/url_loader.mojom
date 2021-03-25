@@ -30,9 +30,6 @@ import "url/mojom/url.mojom";
 [Native]
 struct URLRequestRedirectInfo;
 
-[Native]
-struct CorsErrorStatus;
-
 // URLLoader is an interface for performing a single request to a URL.
 //
 // Destroying a URLLoader will cancel the associated request.

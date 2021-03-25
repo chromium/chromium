@@ -100,3 +100,6 @@ enum CorsError {
   // See: https://wicg.github.io/cors-rfc1918.
   kInsecurePrivateNetwork,
 };
+
+[Native]
+struct CorsErrorStatus;

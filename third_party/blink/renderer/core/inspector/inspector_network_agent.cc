@@ -502,7 +502,7 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
 }
 
 std::unique_ptr<protocol::Network::CorsErrorStatus> BuildCorsErrorStatus(
-    network::CorsErrorStatus status) {
+    const network::CorsErrorStatus& status) {
   return protocol::Network::CorsErrorStatus::create()
       .setCorsError(BuildCorsError(status.cors_error))
       .setFailedParameter(String::FromUTF8(status.failed_parameter))

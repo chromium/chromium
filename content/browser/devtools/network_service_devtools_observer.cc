@@ -176,6 +176,42 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(
                    protocol::Network::ResourceTypeEnum::Preflight, status);
 }
 
+void NetworkServiceDevToolsObserver::OnCorsError(
+    const base::Optional<std::string>& devtools_request_id,
+    const base::Optional<::url::Origin>& initiator_origin,
+    const GURL& url,
+    const network::CorsErrorStatus& cors_error_status) {
+  if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)
+    return;
+  auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!ftn)
+    return;
+  std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
+      protocol::Audits::AffectedRequest::Create()
+          .SetRequestId(devtools_request_id ? *devtools_request_id : "")
+          .SetUrl(url.spec())
+          .Build();
+  auto cors_issue_details =
+      protocol::Audits::CorsIssueDetails::Create()
+          .SetIsWarning(false)
+          .SetRequest(std::move(affected_request))
+          .SetCorsErrorStatus(
+              protocol::NetworkHandler::BuildCorsErrorStatus(cors_error_status))
+          .Build();
+  if (initiator_origin) {
+    cors_issue_details->SetInitiatorOrigin(initiator_origin->GetURL().spec());
+  }
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetCorsIssueDetails(std::move(cors_issue_details))
+                     .Build();
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::CorsIssue)
+                   .SetDetails(std::move(details))
+                   .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(
+      ftn->current_frame_host(), issue.get());
+}
+
 void NetworkServiceDevToolsObserver::Clone(
     mojo::PendingReceiver<network::mojom::DevToolsObserver> observer) {
   mojo::MakeSelfOwnedReceiver(

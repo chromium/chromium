@@ -535,6 +535,16 @@ interface DevToolsObserver {
     string devtool_request_id,
     TrustTokenOperationResult result);
 
+  // Called to send information about a CORS problem. This callback is intended
+  // to share sensitive information with DevTools, and is handled in the browser
+  // process. Called even when |devtool_request_id| is not available to the
+  // URLLoader to ensure CORS issues are recorded even if DevTools is closed.
+  OnCorsError(
+    string? devtool_request_id,
+    url.mojom.Origin? initiator_origin,
+    url.mojom.Url url,
+    CorsErrorStatus status);
+
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
   // observer).

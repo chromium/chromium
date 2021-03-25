@@ -67,6 +67,10 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
   void OnCorsPreflightRequestCompleted(
       const base::UnguessableToken& devtools_request_id,
       const network::URLLoaderCompletionStatus& status) override;
+  void OnCorsError(const base::Optional<std::string>& devtool_request_id,
+                   const base::Optional<::url::Origin>& initiator_origin,
+                   const GURL& url,
+                   const network::CorsErrorStatus& status) override;
   void Clone(mojo::PendingReceiver<network::mojom::DevToolsObserver> listener)
       override;
 

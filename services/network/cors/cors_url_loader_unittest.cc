@@ -39,9 +39,11 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/url_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -202,6 +204,12 @@ class CorsURLLoaderTest : public testing::Test {
     request.method = net::HttpRequestHeaders::kGetMethod;
     request.url = url;
     request.request_initiator = url::Origin::Create(origin);
+    if (devtools_observer_for_next_request_) {
+      request.trusted_params = ResourceRequest::TrustedParams();
+      request.trusted_params->devtools_observer =
+          devtools_observer_for_next_request_->Bind();
+      devtools_observer_for_next_request_ = nullptr;
+    }
     CreateLoaderAndStart(request);
   }
 
@@ -397,6 +405,10 @@ class CorsURLLoaderTest : public testing::Test {
 
   NetworkContext* network_context() { return network_context_.get(); }
 
+  void set_devtools_observer_for_next_request(MockDevToolsObserver* observer) {
+    devtools_observer_for_next_request_ = observer;
+  }
+
  private:
   // Test environment.
   base::test::TaskEnvironment task_environment_;
@@ -413,6 +425,7 @@ class CorsURLLoaderTest : public testing::Test {
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<mojo::Receiver<mojom::URLLoaderFactory>>
       test_url_loader_factory_receiver_;
+  MockDevToolsObserver* devtools_observer_for_next_request_ = nullptr;
 
   // Holds URLLoader that CreateLoaderAndStart() creates.
   mojo::Remote<mojom::URLLoader> url_loader_;
@@ -2553,6 +2566,36 @@ TEST_F(CorsURLLoaderTest, TAOCheckPassRedirect2) {
   RunUntilComplete();
 
   EXPECT_TRUE(client().response_head()->timing_allow_passed);
+}
+
+TEST_F(CorsURLLoaderTest, DevToolsObserverOnCorsErrorCallback) {
+  const GURL origin("https://example.com");
+  const url::Origin initiator_origin = url::Origin::Create(origin);
+  ResetFactory(initiator_origin, kRendererProcessId, true /* is_trusted */,
+               true /* ignore_isolated_world_origin */,
+               false /* skip_cors_enabled_scheme_check */);
+  const GURL url("http://other.example.com/foo.png");
+  MockDevToolsObserver devtools_observer;
+  set_devtools_observer_for_next_request(&devtools_observer);
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kSameOrigin);
+
+  RunUntilComplete();
+
+  // This call never hits the network URLLoader (i.e. the TestURLLoaderFactory)
+  // because it is fails right away.
+  EXPECT_FALSE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+  ASSERT_TRUE(client().completion_status().cors_error_status);
+  EXPECT_EQ(mojom::CorsError::kDisallowedByMode,
+            client().completion_status().cors_error_status->cors_error);
+  devtools_observer.WaitUntilCorsError();
+  EXPECT_TRUE(devtools_observer.cors_error_params());
+  const auto& params = *devtools_observer.cors_error_params();
+  EXPECT_EQ(mojom::CorsError::kDisallowedByMode, params.status.cors_error);
+  EXPECT_EQ(initiator_origin, params.initiator_origin);
+  EXPECT_EQ(url, params.url);
 }
 
 }  // namespace

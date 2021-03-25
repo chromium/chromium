@@ -2078,14 +2078,6 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
       return protocol::Network::CorsErrorEnum::InsecurePrivateNetwork;
   }
 }
-
-std::unique_ptr<protocol::Network::CorsErrorStatus> BuildCorsErrorStatus(
-    network::CorsErrorStatus status) {
-  return protocol::Network::CorsErrorStatus::Create()
-      .SetCorsError(BuildCorsError(status.cors_error))
-      .SetFailedParameter(status.failed_parameter)
-      .Build();
-}
 }  // namespace
 
 void NetworkHandler::ResponseReceived(
@@ -2916,6 +2908,14 @@ NetworkHandler::MaybeBuildClientSecurityState(
           state->private_network_request_policy))
       .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
       .SetInitiatorIsSecureContext(state->is_web_secure_context)
+      .Build();
+}
+
+std::unique_ptr<protocol::Network::CorsErrorStatus>
+NetworkHandler::BuildCorsErrorStatus(const network::CorsErrorStatus& status) {
+  return protocol::Network::CorsErrorStatus::Create()
+      .SetCorsError(BuildCorsError(status.cors_error))
+      .SetFailedParameter(status.failed_parameter)
       .Build();
 }
 

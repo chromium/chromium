@@ -318,6 +318,10 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     if (wait_for_completed_)
       std::move(wait_for_completed_).Run();
   }
+  void OnCorsError(const base::Optional<std::string>& devtool_request_id,
+                   const base::Optional<::url::Origin>& initiator_origin,
+                   const GURL& url,
+                   const network::CorsErrorStatus& status) override {}
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
     receivers_.Add(this, std::move(observer));
   }

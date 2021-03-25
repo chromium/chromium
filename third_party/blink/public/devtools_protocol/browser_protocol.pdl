@@ -711,6 +711,7 @@ experimental domain Audits
       Network.CorsErrorStatus corsErrorStatus
       boolean isWarning
       AffectedRequest request
+      optional string initiatorOrigin
       optional Network.IPAddressSpace resourceIPAddressSpace
       optional Network.ClientSecurityState clientSecurityState
 
