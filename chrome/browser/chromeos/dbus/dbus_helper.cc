@@ -21,6 +21,7 @@
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
@@ -41,6 +42,11 @@
 #include "chromeos/dbus/typecd/typecd_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/dbus/userdataauth/arc_quota_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
@@ -78,6 +84,7 @@ void InitializeDBus() {
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
   InitializeDBusClient<ArcCameraClient>(bus);
+  InitializeDBusClient<ArcQuotaClient>(bus);
   InitializeDBusClient<ArcSensorServiceClient>(bus);
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<AuthPolicyClient>(bus);
@@ -86,10 +93,13 @@ void InitializeDBus() {
   InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<CrosHealthdClient>(bus);
   InitializeDBusClient<CryptohomeClient>(bus);
+  InitializeDBusClient<CryptohomeMiscClient>(bus);
+  InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<DlpClient>(bus);
   hermes_clients::Initialize(bus);
+  InitializeDBusClient<InstallAttributesClient>(bus);
   InitializeDBusClient<IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
   InitializeDBusClient<MachineLearningClient>(bus);
@@ -103,6 +113,7 @@ void InitializeDBus() {
   InitializeDBusClient<TpmManagerClient>(bus);
   InitializeDBusClient<TypecdClient>(bus);
   InitializeDBusClient<U2FClient>(bus);
+  InitializeDBusClient<UserDataAuthClient>(bus);
   InitializeDBusClient<UpstartClient>(bus);
 
   // Initialize the device settings service so that we'll take actions per
@@ -136,6 +147,7 @@ void ShutdownDBus() {
 
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   UpstartClient::Shutdown();
+  UserDataAuthClient::Shutdown();
   U2FClient::Shutdown();
   TypecdClient::Shutdown();
   TpmManagerClient::Shutdown();
@@ -149,10 +161,13 @@ void ShutdownDBus() {
   MachineLearningClient::Shutdown();
   KerberosClient::Shutdown();
   IpPeripheralServiceClient::Shutdown();
+  InstallAttributesClient::Shutdown();
   hermes_clients::Shutdown();
   DlcserviceClient::Shutdown();
   DlpClient::Shutdown();
   CupsProxyClient::Shutdown();
+  CryptohomePkcs11Client::Shutdown();
+  CryptohomeMiscClient::Shutdown();
   CryptohomeClient::Shutdown();
   CrosHealthdClient::Shutdown();
   CrasAudioClient::Shutdown();
@@ -160,6 +175,7 @@ void ShutdownDBus() {
   BiodClient::Shutdown();
   AuthPolicyClient::Shutdown();
   AttestationClient::Shutdown();
+  ArcQuotaClient::Shutdown();
   ArcCameraClient::Shutdown();
 
   DBusThreadManager::Shutdown();
