@@ -19,12 +19,14 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
+import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -32,8 +34,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * LongScreenshotsMediator is responsible for retrieving the long screenshot Bitmaps via
  * {@link LongScreenshotsEntryManager} and displaying them in the area selection dialog.
  */
-public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListener {
+public class LongScreenshotsMediator
+        implements LongScreenshotsEntry.EntryListener, EditorScreenshotSource {
     private Dialog mDialog;
+    private boolean mDone;
+    private Runnable mDoneCallback;
     private PropertyModel mModel;
     private View mDialogView;
     private final Activity mActivity;
@@ -50,7 +55,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mAnimationsComplete = 0;
     }
 
-    public void displayInitialScreenshot() {
+    private void displayInitialScreenshot() {
         LongScreenshotsEntry entry = mEntryManager.generateInitialEntry();
         entry.setListener(new LongScreenshotsEntry.EntryListener() {
             @Override
@@ -92,6 +97,11 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     public void areaSelectionDone(View view) {
         // TODO(1163193): Delete all bitmaps.
         mDialog.cancel();
+        mDone = true;
+        if (mDoneCallback != null) {
+            mDoneCallback.run();
+        }
+        mDoneCallback = null;
     }
 
     public void areaSelectionClose(View view) {
@@ -228,5 +238,23 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     @VisibleForTesting
     public Dialog getDialog() {
         return mDialog;
+    }
+
+    // EditorScreenshotSource implementation.
+    @Override
+    public void capture(@Nullable Runnable callback) {
+        mDoneCallback = callback;
+        displayInitialScreenshot();
+    }
+
+    @Override
+    public boolean isReady() {
+        return mDone;
+    }
+
+    @Override
+    public Bitmap getScreenshot() {
+        // TODO(skare): Populate with actual selected region.
+        return mInitialBitmap;
     }
 }

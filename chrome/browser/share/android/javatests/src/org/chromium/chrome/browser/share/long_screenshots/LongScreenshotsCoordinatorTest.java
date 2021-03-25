@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -85,6 +86,6 @@ public class LongScreenshotsCoordinatorTest {
     @Test
     public void testCaptureScreenshotInitialEntrySuccess() {
         mCoordinator.captureScreenshot();
-        verify(mMediator, times(1)).displayInitialScreenshot();
+        verify(mMediator, times(1)).capture(Mockito.isA(Runnable.class));
     }
 }

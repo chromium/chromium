@@ -98,7 +98,7 @@ public class ScreenshotCoordinator {
      * to install the DFM a set amount of times per session. If MAX_INSTALL_ATTEMPTS is reached,
      * directly opens the screenshot sharesheet instead.
      */
-    private void handleScreenshot() {
+    protected void handleScreenshot() {
         if (mImageEditorModuleProvider != null) {
             if (mImageEditorModuleProvider.isModuleInstalled()) {
                 launchEditor();

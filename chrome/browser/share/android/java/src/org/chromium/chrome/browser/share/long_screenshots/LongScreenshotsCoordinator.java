@@ -81,6 +81,13 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         if (mMediator == null) {
             mMediator = new LongScreenshotsMediator(mActivity, mEntryManager);
         }
-        mMediator.displayInitialScreenshot();
+        mMediator.capture(() -> {
+            mScreenshot = mMediator.getScreenshot();
+            if (mScreenshot == null) {
+                // TODO(crbug/1024586): Show error message
+            } else {
+                super.handleScreenshot();
+            }
+        });
     }
 }
