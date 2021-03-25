@@ -81,8 +81,16 @@ class ItemSuggestCache {
       &kExperiment, "server_url",
       "https://appsitemsuggest-pa.googleapis.com/v1/items"};
 
+  // Specifies the ItemSuggest backend that should be used to serve our
+  // requests.
+  static constexpr base::FeatureParam<std::string> kModelName{
+      &kExperiment, "model_name", "quick_access"};
+
   static constexpr base::FeatureParam<int> kMinMinutesBetweenUpdates{
       &kExperiment, "min_minutes_between_updates", 15};
+
+  // Returns the body for the itemsuggest request. Affected by |kExperiment|.
+  std::string GetRequestBody();
 
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);

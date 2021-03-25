@@ -64,16 +64,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // The scope required for an access token in order to query ItemSuggest.
 constexpr char kDriveScope[] = "https://www.googleapis.com/auth/drive.readonly";
 
-constexpr char kRequestBody[] = R"({
-      'client_info': {
-        'platform_type': 'CHROME_OS',
-        'scenario_type': 'CHROME_OS_ZSS_FILES',
-        'request_type': 'BACKGROUND_REQUEST'
-      },
-      'max_suggestions': 10,
-      'type_detail_fields': 'drive_item.title,justification.display_text'
-    })";
-
 bool IsDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
@@ -186,6 +176,7 @@ const base::Feature ItemSuggestCache::kExperiment{
     "LauncherItemSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
 constexpr base::FeatureParam<bool> ItemSuggestCache::kEnabled;
 constexpr base::FeatureParam<std::string> ItemSuggestCache::kServerUrl;
+constexpr base::FeatureParam<std::string> ItemSuggestCache::kModelName;
 constexpr base::FeatureParam<int> ItemSuggestCache::kMinMinutesBetweenUpdates;
 
 ItemSuggestCache::Result::Result(const std::string& id,
@@ -223,6 +214,29 @@ base::Optional<ItemSuggestCache::Results> ItemSuggestCache::GetResults() {
   // Return a copy because a pointer to |results_| will become invalid whenever
   // the cache is updated.
   return results_;
+}
+
+std::string ItemSuggestCache::GetRequestBody() {
+  // We request that ItemSuggest serve our request via particular model by
+  // specifying the model name in client_tags. This is a non-standard part of
+  // the API, implemented so we can experiment with model backends. The valid
+  // values for the tag are DCHECKed below.
+  static constexpr char kRequestBody[] = R"({
+        'client_info': {
+          'platform_type': 'CHROME_OS',
+          'scenario_type': 'CHROME_OS_ZSS_FILES',
+          'request_type': 'BACKGROUND_REQUEST',
+          'client_tags': {
+            'name': '$1'
+          }
+        },
+        'max_suggestions': 10,
+        'type_detail_fields': 'drive_item.title,justification.display_text'
+      })";
+
+  const std::string& model = kModelName.Get();
+  DCHECK(model == "quick_access" || model == "future_access");
+  return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
 }
 
 void ItemSuggestCache::UpdateCache() {
@@ -283,7 +297,7 @@ void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
   // Make a new request.
   url_loader_ = MakeRequestLoader(token_info.token);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
-  url_loader_->AttachStringForUpload(kRequestBody, "application/json");
+  url_loader_->AttachStringForUpload(GetRequestBody(), "application/json");
 
   // Perform the request.
   url_loader_->DownloadToString(
