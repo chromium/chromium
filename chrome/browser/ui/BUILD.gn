@@ -3149,8 +3149,6 @@ static_library("ui") {
       "cocoa/renderer_context_menu/render_view_context_menu_mac.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h",
       "cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.mm",
-      "cocoa/rosetta_required_infobar_delegate.h",
-      "cocoa/rosetta_required_infobar_delegate.mm",
       "cocoa/scoped_menu_bar_lock.h",
       "cocoa/scoped_menu_bar_lock.mm",
       "cocoa/screentime/fake_webpage_controller.h",
@@ -3228,7 +3226,6 @@ static_library("ui") {
       "//extensions/components/native_app_window",
       "//third_party/google_toolbox_for_mac",
       "//third_party/mozilla",
-      "//third_party/widevine/cdm:buildflags",
       "//ui/accelerated_widget_mac:accelerated_widget_mac",
     ]
     include_dirs = [ "$target_gen_dir" ]

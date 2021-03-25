@@ -39533,7 +39533,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="24" label="AUTO_SIGNIN_FIRST_RUN_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="25" label="GENERATED_PASSWORD_SAVED_INFOBAR_DELEGATE_ANDROID"/>
   <int value="26" label="SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE"/>
-  <int value="27" label="PEPPER_BROKER_INFOBAR_DELEGATE"/>
+  <int value="27" label="PEPPER_BROKER_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="28" label="PERMISSION_UPDATE_INFOBAR_DELEGATE_ANDROID"/>
   <int value="29"
       label="DURABLE_STORAGE_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
@@ -39613,8 +39613,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC (Obsolete)"/>
   <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
-  <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
-  <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE"/>
+  <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE (Obsolete)"/>
+  <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="105" label="AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE"/>
   <int value="106" label="AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS"/>
 </enum>

@@ -61,8 +61,6 @@ namespace component_updater {
 
 namespace {
 
-static bool g_was_widevine_cdm_component_rejected_due_to_no_rosetta;
-
 // CRX hash. The extension id is: oimompecagnajdejgnnjijobebaeigek.
 const uint8_t kWidevineSha2Hash[] = {
     0xe8, 0xce, 0xcf, 0x42, 0x06, 0xd0, 0x93, 0x49, 0x6d, 0xd9, 0x89,
@@ -261,10 +259,8 @@ bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
                         base::MachOArchitectures::kARM64)) ==
       base::MachOArchitectures::kX86_64;
   if (launch_x86_64 && !base::mac::IsRosettaInstalled()) {
-    g_was_widevine_cdm_component_rejected_due_to_no_rosetta = true;
     return false;
   }
-  g_was_widevine_cdm_component_rejected_due_to_no_rosetta = false;
 #endif  // OS_MAC && ARCH_CPU_ARM64
 
   content::CdmCapability capability;
@@ -383,10 +379,6 @@ void RegisterWidevineCdmComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<WidevineCdmComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
-}
-
-bool WasWidevineCdmComponentRejectedDueToNoRosetta() {
-  return g_was_widevine_cdm_component_rejected_due_to_no_rosetta;
 }
 
 }  // namespace component_updater
