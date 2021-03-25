@@ -83,6 +83,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
   const char kAppDisplayName[] = "name";
   const char kAppDisplayVersion[] = "version";
   const char kAppPublisher[] = "publisher";
+  const char kAppType[] = "app_type";
 
   const wchar_t kApp1[] = L"app1";
   const wchar_t kAppDisplayName1[] = L"appName1";
@@ -209,6 +210,8 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
                                    base::WideToUTF8(kAppDisplayVersion1));
       request_dict_1->SetStringKey(kAppPublisher,
                                    base::WideToUTF8(kAppPublisher1));
+      // WIN_32
+      request_dict_1->SetIntKey(kAppType, 1);
       app_info_value_list.Append(
           base::Value::FromUniquePtrValue(std::move(request_dict_1)));
 
@@ -218,6 +221,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
                                    base::WideToUTF8(kAppDisplayName2));
       request_dict_2->SetStringKey(kAppDisplayVersion,
                                    base::WideToUTF8(kAppDisplayVersion2));
+      request_dict_2->SetIntKey(kAppType, 1);
       app_info_value_list.Append(
           base::Value::FromUniquePtrValue(std::move(request_dict_2)));
     }
