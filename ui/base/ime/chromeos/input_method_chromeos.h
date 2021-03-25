@@ -167,10 +167,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   gfx::Range previous_selection_range_;
 
   // Indicates if there is an ongoing composition text.
-  bool composing_text_;
+  bool composing_text_ = false;
 
   // Indicates if the composition text is changed or deleted.
-  bool composition_changed_;
+  bool composition_changed_ = false;
 
   // Indicates whether there is a pending SetCompositionRange operation.
   base::Optional<PendingSetCompositionRange> pending_composition_range_;
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
 
   // Indicates whether currently is handling a physical key event.
   // This is used in CommitText/UpdateCompositionText/etc.
-  bool handling_key_event_;
+  bool handling_key_event_ = false;
 
   // Used for making callbacks.
   base::WeakPtrFactory<InputMethodChromeOS> weak_ptr_factory_{this};

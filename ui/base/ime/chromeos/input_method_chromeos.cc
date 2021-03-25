@@ -39,10 +39,7 @@ ui::IMEEngineHandlerInterface* GetEngine() {
 // InputMethodChromeOS implementation -----------------------------------------
 InputMethodChromeOS::InputMethodChromeOS(
     internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate),
-      composing_text_(false),
-      composition_changed_(false),
-      handling_key_event_(false) {
+    : InputMethodBase(delegate) {
   ResetContext();
 }
 
@@ -566,8 +563,7 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessUnfilteredKeyPressEvent(
   // If a key event was not filtered by |context_| and |character_composer_|,
   // then it means the key event didn't generate any result text. So we need
   // to send corresponding character to the focused text input client.
-  uint16_t ch = event->GetCharacter();
-  if (ch)
+  if (event->GetCharacter())
     client->InsertChar(*event);
   return details;
 }
@@ -788,13 +784,13 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   if (!character_composer_.FilterKeyPress(event))
     return false;
 
-  // CharacterComposer consumed the key event.  Update the composition text.
+  // CharacterComposer consumed the key event. Update the composition text.
   CompositionText preedit;
   preedit.text = character_composer_.preedit_string();
   UpdateCompositionText(preedit, preedit.text.size(), !preedit.text.empty());
-  std::u16string commit_text = character_composer_.composed_character();
+  const std::u16string& commit_text = character_composer_.composed_character();
   if (!commit_text.empty()) {
-    CommitText(std::move(commit_text),
+    CommitText(commit_text,
                TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
   return true;
