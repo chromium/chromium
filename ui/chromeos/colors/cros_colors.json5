@@ -107,7 +107,10 @@
 
     separator_color: "rgba($black_rgb, 0.12)",
 
-    link_color: "$google_blue_700",
+    link_color: {
+      light: "$google_blue_700",
+      dark: "$google_blue_300",
+    },
 
     /* button-primary */
     button_background_color_primary: "$icon_color_prominent",
