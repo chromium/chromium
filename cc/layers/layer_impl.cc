@@ -661,6 +661,8 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   state->SetInteger("effect_tree_index", effect_tree_index());
   state->SetInteger("scroll_tree_index", scroll_tree_index());
 
+  state->SetInteger("sorting_context_id", GetSortingContextId());
+
   state->SetInteger("draws_content", DrawsContent());
   state->SetInteger("gpu_memory_usage",
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));

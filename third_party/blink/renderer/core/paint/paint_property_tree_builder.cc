@@ -730,6 +730,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         state.sticky_constraint = std::move(constraint);
       }
 
+      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
       OnUpdate(properties_->UpdateStickyTranslation(*context_.current.transform,
                                                     std::move(state)));
     } else {
@@ -853,6 +854,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       TransformPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_animation_on_compositor =
           object_.StyleRef().IsRunningTransformAnimationOnCompositor();
+      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
+      // (The comment above already says so!)
       auto effective_change_type = properties_->UpdateTransform(
           *context_.current.transform, std::move(state), animation_state);
       if (effective_change_type ==
@@ -1915,6 +1918,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       SetTransformNodeStateFromAffineTransform(state, content_to_parent_space);
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
+      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
       OnUpdate(properties_->UpdateReplacedContentTransform(
           *context_.current.transform, std::move(state)));
     } else {

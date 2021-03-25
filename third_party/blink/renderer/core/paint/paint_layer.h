@@ -782,7 +782,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     const PaintLayer* clip_path_ancestor = nullptr;
     const PaintLayer* mask_ancestor = nullptr;
 
-    // The fist ancestor which can scroll. This is a subset of the
+    // The first ancestor which can scroll. This is a subset of the
     // ancestorOverflowLayer chain where the scrolling layer is visible and
     // has a larger scroll content than its bounds.
     const PaintLayer* ancestor_scrolling_layer = nullptr;

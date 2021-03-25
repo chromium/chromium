@@ -135,6 +135,15 @@ CompositingLayerAssigner::ComputeCompositedLayerUpdate(PaintLayer* layer) {
   return update;
 }
 
+static unsigned GetRenderingContextId(const PaintLayer* layer) {
+  const auto& fragment = layer->GetLayoutObject().PrimaryStitchingFragment();
+  DCHECK(fragment.HasLocalBorderBoxProperties());
+  return fragment.LocalBorderBoxProperties()
+      .Transform()
+      .Unalias()
+      .RenderingContextId();
+}
+
 SquashingDisallowedReasons
 CompositingLayerAssigner::GetReasonsPreventingSquashing(
     const PaintLayer* layer,
@@ -192,6 +201,13 @@ CompositingLayerAssigner::GetReasonsPreventingSquashing(
 
   if (layer->TransformAncestor() != squashing_layer.TransformAncestor())
     return SquashingDisallowedReason::kTransformAncestorMismatch;
+
+  // A PaintLayer can generate multiple compositor layers that have
+  // *different* sorting contexts (because they point to different
+  // TransformTree nodes).  We are only checking one here, which will not be
+  // accurate in all cases.
+  if (GetRenderingContextId(layer) != GetRenderingContextId(&squashing_layer))
+    return SquashingDisallowedReason::kPreserve3DSortingContextMismatch;
 
   if (layer->HasFilterInducingProperty() ||
       layer->FilterAncestor() != squashing_layer.FilterAncestor())

@@ -18,6 +18,7 @@ using SquashingDisallowedReasons = unsigned;
   V(ClippingContainerMismatch)                  \
   V(OpacityAncestorMismatch)                    \
   V(TransformAncestorMismatch)                  \
+  V(Preserve3DSortingContextMismatch)           \
   V(FilterMismatch)                             \
   V(WouldBreakPaintOrder)                       \
   V(SquashingVideoIsDisallowed)                 \
