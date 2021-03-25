@@ -28,7 +28,8 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kSubresourceRedirect,
         {{"enable_login_robots_based_compression", "true"},
-         {"enable_public_image_hints_based_compression", "false"}}}},
+         {"enable_public_image_hints_based_compression", "false"},
+         {"enable_login_robots_for_low_memory", "true"}}}},
       {});
 
   for (auto* origin :
@@ -46,7 +47,8 @@ TEST(SubresourceRedirectUtilTest, GetRobotsServerURL_ModifiedLitePagesOrigin) {
       {{blink::features::kSubresourceRedirect,
         {{"enable_login_robots_based_compression", "true"},
          {"enable_public_image_hints_based_compression", "false"},
-         {"lite_page_robots_origin", "https://modified.litepages.com/"}}}},
+         {"lite_page_robots_origin", "https://modified.litepages.com/"},
+         {"enable_login_robots_for_low_memory", "true"}}}},
       {});
 
   for (auto* origin :
