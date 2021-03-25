@@ -209,12 +209,11 @@ executable("app_list_demo") {
   ]
 }
 
-test("app_list_unittests") {
-  use_xvfb = use_xvfb_in_this_config
+source_set("unit_tests") {
+  testonly = true
 
   sources = [
     "folder_image_unittest.cc",
-    "test/run_all_unittests.cc",
     "views/app_list_main_view_unittest.cc",
     "views/app_list_menu_model_adapter_unittest.cc",
     "views/app_list_view_unittest.cc",
@@ -260,5 +259,19 @@ test("app_list_unittests") {
   data_deps = [
     "//third_party/mesa_headers",
     "//ui/resources:ui_test_pak_data",
+  ]
+}
+
+# TODO(https://crbug.com/942564): Remove this binary from the bots and then
+# delete it.
+test("app_list_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [ "test/run_all_unittests.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
 }

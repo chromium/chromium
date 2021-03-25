@@ -16,6 +16,7 @@
 #include "ash/app_list/test/app_list_test_model.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -63,8 +64,8 @@ class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
 
 class FolderHeaderViewTest : public views::ViewsTestBase {
  public:
-  FolderHeaderViewTest() {}
-  ~FolderHeaderViewTest() override {}
+  FolderHeaderViewTest() = default;
+  ~FolderHeaderViewTest() override = default;
 
   // testing::Test overrides:
   void SetUp() override {
@@ -118,6 +119,7 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
     folder_header_view_->SetPreviousFolderNameForTest(previous_name);
   }
 
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   std::unique_ptr<AppListTestModel> model_;
   FolderHeaderView* folder_header_view_ = nullptr;  // owned by |widget_|.
   std::unique_ptr<TestFolderHeaderViewDelegate> delegate_;

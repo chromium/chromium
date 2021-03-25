@@ -18,6 +18,7 @@
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +69,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   }
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   SearchResultPageView* view_ = nullptr;  // Owned by views hierarchy.
   SearchResultTileItemListView* tile_list_view_ =

@@ -2442,6 +2442,7 @@ test("ash_unittests") {
     ":test_support",
     "//ash/app_list",
     "//ash/app_list:test_support",
+    "//ash/app_list:unit_tests",
     "//ash/app_menu",
     "//ash/assistant/model",
     "//ash/assistant/ui",

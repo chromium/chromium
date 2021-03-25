@@ -15,6 +15,7 @@
 #include "ash/app_list/test/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -133,6 +134,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> view_;
   views::Widget* widget_;

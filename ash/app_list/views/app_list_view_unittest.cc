@@ -44,6 +44,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -389,6 +390,8 @@ class AppListViewTest : public views::ViewsTestBase,
 
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
 
   AppListView* view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
@@ -809,6 +812,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* view_ = nullptr;  // Owned by native widget.
   SearchResultContainerView* suggestions_container_ =
       nullptr;                                    // Owned by view hierarchy.

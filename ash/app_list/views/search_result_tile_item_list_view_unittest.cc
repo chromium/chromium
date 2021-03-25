@@ -14,6 +14,7 @@
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -194,6 +195,7 @@ class SearchResultTileItemListViewTest
   size_t GetResultCount() const { return view_->num_results(); }
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   test::AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultTileItemListView> view_;
   views::Widget* widget_;

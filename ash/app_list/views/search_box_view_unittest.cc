@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
@@ -181,6 +182,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
 
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   views::Widget* widget_;
   AppListView* app_list_view_ = nullptr;

@@ -36,6 +36,7 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -512,6 +513,7 @@ class AppsGridViewTest : public views::ViewsTestBase,
     apps_grid_view_->MoveItemInModel(item_view, target);
   }
 
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;    // Owned by native widget.
   AppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
   ContentsView* contents_view_ = nullptr;   // Owned by |app_list_view_|.

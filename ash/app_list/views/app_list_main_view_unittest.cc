@@ -16,6 +16,7 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/test/apps_grid_view_test_api.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
@@ -211,6 +212,7 @@ class AppListMainViewTest : public views::ViewsTestBase {
   }
 
  protected:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
 };
