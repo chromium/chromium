@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"

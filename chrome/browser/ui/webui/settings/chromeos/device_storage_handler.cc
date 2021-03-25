@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"

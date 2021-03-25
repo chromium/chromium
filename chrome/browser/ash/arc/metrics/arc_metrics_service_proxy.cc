@@ -6,8 +6,8 @@
 
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"

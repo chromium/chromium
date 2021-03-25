@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_ARC_WEB_CONTENTS_DATA_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_ARC_WEB_CONTENTS_DATA_H_
+#ifndef CHROME_BROWSER_ASH_ARC_ARC_WEB_CONTENTS_DATA_H_
+#define CHROME_BROWSER_ASH_ARC_ARC_WEB_CONTENTS_DATA_H_
 
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -30,4 +30,4 @@ class ArcWebContentsData
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_ARC_WEB_CONTENTS_DATA_H_
+#endif  // CHROME_BROWSER_ASH_ARC_ARC_WEB_CONTENTS_DATA_H_

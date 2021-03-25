@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 
 #include "chrome/browser/ash/login/chrome_restart_request.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/enterprise/arc_force_installed_apps_tracker.h"
 #include "chrome/browser/ash/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
 
 namespace arc {
 namespace data_snapshotd {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/arc_demo_mode_delegate_impl.h"
+#include "chrome/browser/ash/arc/arc_demo_mode_delegate_impl.h"
 
 #include <memory>
 

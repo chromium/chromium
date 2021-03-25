@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"

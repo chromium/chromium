@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/arc/arc_ui_availability_reporter.h"
+#include "chrome/browser/ash/arc/arc_ui_availability_reporter.h"
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 

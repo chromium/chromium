@@ -9,9 +9,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/arc/arc_optin_uma.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/net/system_network_context_manager.h"

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 
+#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"

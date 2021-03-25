@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 
 #include "base/containers/contains.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"

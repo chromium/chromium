@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 
-#include "chrome/browser/chromeos/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

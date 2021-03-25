@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_
-#define CHROME_BROWSER_CHROMEOS_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_
+#ifndef CHROME_BROWSER_ASH_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_
+#define CHROME_BROWSER_ASH_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_
 
 class Profile;
 
@@ -16,4 +16,4 @@ void ShowArcMigrationGuideNotification(Profile* profile);
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_
+#endif  // CHROME_BROWSER_ASH_ARC_ARC_MIGRATION_GUIDE_NOTIFICATION_H_

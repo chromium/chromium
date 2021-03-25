@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler_factory.h"
 
 #include "ash/public/cpp/ash_features.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"

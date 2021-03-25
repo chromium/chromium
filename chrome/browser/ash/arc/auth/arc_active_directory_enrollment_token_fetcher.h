@@ -11,8 +11,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_fetcher_base.h"
-#include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 

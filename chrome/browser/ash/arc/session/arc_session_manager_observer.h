@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_SESSION_MANAGER_OBSERVER_H_
 
-#include "chrome/browser/chromeos/arc/arc_support_host.h"
+#include "chrome/browser/ash/arc/arc_support_host.h"
 
 namespace arc {
 
