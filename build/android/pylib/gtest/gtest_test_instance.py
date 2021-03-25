@@ -175,10 +175,15 @@ def ParseGTestOutput(output, symbolizer, device_abi):
 
   def handle_possibly_unknown_test():
     if test_name is not None:
-      results.append(base_test_result.BaseTestResult(
-          TestNameWithoutDisabledPrefix(test_name),
-          fallback_result_type or base_test_result.ResultType.UNKNOWN,
-          duration, log=symbolize_stack_and_merge_with_log()))
+      results.append(
+          base_test_result.BaseTestResult(
+              TestNameWithoutDisabledPrefix(test_name),
+              # If we get here, that means we started a test, but it did not
+              # produce a definitive test status output, so assume it crashed.
+              # crbug/1191716
+              fallback_result_type or base_test_result.ResultType.CRASH,
+              duration,
+              log=symbolize_stack_and_merge_with_log()))
 
   for l in output:
     matcher = _RE_TEST_STATUS.match(l)

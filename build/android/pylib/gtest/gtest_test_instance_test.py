@@ -156,7 +156,7 @@ class GtestTestInstanceTests(unittest.TestCase):
     self.assertEquals(1, len(actual))
     self.assertEquals('FooTest.Bar', actual[0].GetName())
     self.assertEquals(0, actual[0].GetDuration())
-    self.assertEquals(base_test_result.ResultType.UNKNOWN, actual[0].GetType())
+    self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
 
   def testParseGTestOutput_nonterminalUnknown(self):
     raw_output = [
@@ -169,7 +169,7 @@ class GtestTestInstanceTests(unittest.TestCase):
 
     self.assertEquals('FooTest.Bar', actual[0].GetName())
     self.assertEquals(0, actual[0].GetDuration())
-    self.assertEquals(base_test_result.ResultType.UNKNOWN, actual[0].GetType())
+    self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
 
     self.assertEquals('FooTest.Baz', actual[1].GetName())
     self.assertEquals(1, actual[1].GetDuration())
