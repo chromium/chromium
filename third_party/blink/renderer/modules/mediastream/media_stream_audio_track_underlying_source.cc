@@ -41,7 +41,6 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
 }
 
 void MediaStreamAudioTrackUnderlyingSource::Trace(Visitor* visitor) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visitor->Trace(track_);
   AudioFrameQueueUnderlyingSource::Trace(visitor);
 }
