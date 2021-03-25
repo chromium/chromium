@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
@@ -525,6 +526,9 @@
 - (void)sharePage {
   ActivityParams* params = [[ActivityParams alloc]
       initWithScenario:ActivityScenario::TabShareButton];
+
+  // Exit fullscreen if needed to make sure that share button is visible.
+  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController

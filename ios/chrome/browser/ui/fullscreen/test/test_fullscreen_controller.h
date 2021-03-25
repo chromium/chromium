@@ -53,6 +53,10 @@ class TestFullscreenController : public FullscreenController {
   // Calls FullscreenWillAnimate() on observers.
   void OnFullscreenWillAnimate(FullscreenAnimator* animator);
 
+  // Returns the UserDataKey, used to set the FullscreenController for a
+  // browser.
+  static const void* UserDataKeyForTesting();
+
  private:
   // The model.
   FullscreenModel* model_ = nullptr;

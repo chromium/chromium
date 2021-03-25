@@ -92,6 +92,11 @@ class FullscreenController : public base::SupportsUserData::Data {
   // Force horizontal content resize, when content isn't tracking resize by
   // itself.
   virtual void ResizeHorizontalViewport() = 0;
+
+ protected:
+  // Returns the key used to store the UserData. Protected so it can be used in
+  // tests.
+  static const void* UserDataKey();
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_CONTROLLER_H_

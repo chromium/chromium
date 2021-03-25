@@ -19,21 +19,14 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Key used to associate the stored FullscreenControllerImpl.
-const char kFullscreenControllerUserDataKey[] = "fullscreen_controller";
-
-}  // namespace
-
 // static
 FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
-  FullscreenControllerImpl* fullscreen_controller =
-      static_cast<FullscreenControllerImpl*>(
-          browser->GetUserData(kFullscreenControllerUserDataKey));
+  FullscreenController* fullscreen_controller =
+      static_cast<FullscreenController*>(
+          browser->GetUserData(FullscreenController::UserDataKey()));
   if (!fullscreen_controller) {
     fullscreen_controller = new FullscreenControllerImpl(browser);
-    browser->SetUserData(kFullscreenControllerUserDataKey,
+    browser->SetUserData(FullscreenController::UserDataKey(),
                          base::WrapUnique(fullscreen_controller));
   }
   return fullscreen_controller;
