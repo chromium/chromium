@@ -101,8 +101,6 @@ class ReadLaterButton : public views::LabelButton,
 
   Browser* const browser_;
 
-  views::View* side_panel_webview_ = nullptr;
-
   views::DotIndicator* dot_indicator_ = nullptr;
 
   ReadingListModel* reading_list_model_ = nullptr;
@@ -112,8 +110,6 @@ class ReadLaterButton : public views::LabelButton,
   std::unique_ptr<WebUIBubbleManagerT<ReadLaterUI>> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;
-
-  std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

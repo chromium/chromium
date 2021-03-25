@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -70,6 +71,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -271,12 +273,22 @@ void ToolbarView::Init() {
         std::make_unique<ToolbarAccountIconContainerView>(browser_);
   }
 
+  std::unique_ptr<ReadLaterToolbarButton> read_later_button;
+  if (browser_view_->side_panel() &&
+      base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    read_later_button = std::make_unique<ReadLaterToolbarButton>(browser_);
+  }
+
   // Always add children in order from left to right, for accessibility.
   back_ = AddChildView(std::move(back));
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
   home_ = AddChildView(std::move(home));
   location_bar_ = AddChildView(std::move(location_bar));
+
+  if (read_later_button)
+    read_later_button_ = AddChildView(std::move(read_later_button));
+
   if (browser_actions)
     browser_actions_ = AddChildView(std::move(browser_actions));
 

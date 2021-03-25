@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -94,32 +93,6 @@ constexpr base::TimeDelta kHighlightHideDuration =
 constexpr base::TimeDelta kHighlightDuration =
     base::TimeDelta::FromMilliseconds(2250);
 
-class ReadLaterSidePanelWebView : public views::WebView,
-                                  public BubbleContentsWrapper::Host {
- public:
-  ReadLaterSidePanelWebView(Profile* profile, base::RepeatingClosure close_cb)
-      : close_cb_(std::move(close_cb)),
-        contents_wrapper_(std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
-            GURL(chrome::kChromeUIReadLaterURL),
-            profile,
-            IDS_READ_LATER_TITLE,
-            /*enable_extension_apis=*/true,
-            /*webui_resizes_host=*/false)) {
-    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-    contents_wrapper_->ReloadWebContents();
-    SetWebContents(contents_wrapper_->web_contents());
-  }
-
-  // BubbleContentsWrapper::Host:
-  void ShowUI() override {}
-  void CloseUI() override { close_cb_.Run(); }
-
- private:
-  base::RepeatingClosure close_cb_;
-  std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
-  base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
-};
-
 }  // namespace
 
 ReadLaterButton::ReadLaterButton(Browser* browser)
@@ -139,6 +112,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
       })),
       highlight_color_animation_(
           std::make_unique<HighlightColorAnimation>(this)) {
+  DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)->side_panel());
   dot_indicator_ = views::DotIndicator::Install(image());
 
   reading_list_model_ =
@@ -159,13 +133,6 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-
-  if (BrowserView::GetBrowserViewForBrowser(browser_)->side_panel()) {
-    contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
-        GURL(chrome::kChromeUIReadLaterURL), browser_->profile(),
-        IDS_READ_LATER_TITLE, true);
-    contents_wrapper_->ReloadWebContents();
-  }
 }
 
 ReadLaterButton::~ReadLaterButton() = default;
@@ -257,47 +224,27 @@ void ReadLaterButton::ReadingListDidAddEntry(const ReadingListModel* model,
 }
 
 void ReadLaterButton::ButtonPressed() {
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_);
   highlight_color_animation_->Hide();
 
-  if (browser_view->side_panel()) {
-    if (!side_panel_webview_) {
-      auto webview = std::make_unique<ReadLaterSidePanelWebView>(
-          browser_->profile(),
-          base::BindRepeating(&ReadLaterButton::ButtonPressed,
-                              base::Unretained(this)));
-      side_panel_webview_ =
-          browser_view->side_panel()->AddChildView(std::move(webview));
-      SetHighlighted(true);
-    } else {
-      browser_view->side_panel()->RemoveChildViewT(side_panel_webview_);
-      side_panel_webview_ = nullptr;
-      // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
-      // SetHighlighted(false) here.
-      SetHighlighted(false);
-    }
+  if (webui_bubble_manager_->GetBubbleWidget()) {
+    webui_bubble_manager_->CloseBubble();
   } else {
-    if (webui_bubble_manager_->GetBubbleWidget()) {
-      webui_bubble_manager_->CloseBubble();
-    } else {
-      base::RecordAction(
-          base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
-      feature_engagement::Tracker* tracker =
-          feature_engagement::TrackerFactory::GetForBrowserContext(
-              browser_->profile());
-      tracker->NotifyEvent(feature_engagement::events::kReadingListMenuOpened);
-      RecordBookmarkBarState(browser_);
-      webui_bubble_manager_->ShowBubble();
-      reading_list_model_->MarkAllSeen();
-      dot_indicator_->Hide();
-      // There should only ever be a single bubble widget active for the
-      // ReadLaterButton.
-      DCHECK(!bubble_widget_observation_.IsObserving());
-      bubble_widget_observation_.Observe(
-          webui_bubble_manager_->GetBubbleWidget());
-      widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
-    }
+    base::RecordAction(
+        base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser_->profile());
+    tracker->NotifyEvent(feature_engagement::events::kReadingListMenuOpened);
+    RecordBookmarkBarState(browser_);
+    webui_bubble_manager_->ShowBubble();
+    reading_list_model_->MarkAllSeen();
+    dot_indicator_->Hide();
+    // There should only ever be a single bubble widget active for the
+    // ReadLaterButton.
+    DCHECK(!bubble_widget_observation_.IsObserving());
+    bubble_widget_observation_.Observe(
+        webui_bubble_manager_->GetBubbleWidget());
+    widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
   }
 }
 

@@ -1444,7 +1444,8 @@ void BookmarkBarView::Init() {
   // We'll re-enable when the model is loaded.
   other_bookmarks_button_->SetEnabled(false);
 
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
+      !browser_view_->side_panel()) {
     read_later_separator_view_ =
         AddChildView(std::make_unique<ButtonSeparatorView>());
     read_later_button_ =
