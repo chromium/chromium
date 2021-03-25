@@ -178,10 +178,6 @@
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 #endif
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-#include "media/mojo/mojom/cdm_infobar_service.mojom.h"
-#endif
-
 namespace content {
 namespace internal {
 
@@ -936,11 +932,6 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&ClipboardHostImpl::Create));
   map->Add<blink::mojom::RawClipboardHost>(
       base::BindRepeating(&RawClipboardHostImpl::Create));
-
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-  map->Add<media::mojom::CdmInfobarService>(base::BindRepeating(
-      &EmptyBinderForFrame<media::mojom::CdmInfobarService>));
-#endif
 
   GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
                                                                          map);
