@@ -20,6 +20,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -77,6 +78,29 @@ ArcProvisionNotificationService::~ArcProvisionNotificationService() {
   ArcSessionManager::Get()->RemoveObserver(this);
 }
 
+void ArcProvisionNotificationService::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::ACTIVE ||
+      !show_on_session_starts_) {
+    return;
+  }
+  show_on_session_starts_ = false;
+  session_observation_.Reset();
+  ShowNotification();
+}
+
+void ArcProvisionNotificationService::MaybeShowNotification() {
+  // Do not show notification before session starts.
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
+    show_on_session_starts_ = true;
+    if (!session_observation_.IsObserving())
+      session_observation_.Observe(session_manager::SessionManager::Get());
+    return;
+  }
+  ShowNotification();
+}
+
 void ArcProvisionNotificationService::ShowNotification() {
   Profile* profile = Profile::FromBrowserContext(context_);
   message_center::NotifierId notifier_id(
@@ -102,10 +126,15 @@ void ArcProvisionNotificationService::ShowNotification() {
 }
 
 void ArcProvisionNotificationService::HideNotification() {
-  NotificationDisplayService::GetForProfile(
-      Profile::FromBrowserContext(context_))
-      ->Close(NotificationHandler::Type::TRANSIENT,
-              kManagedProvisionNotificationId);
+  if (show_on_session_starts_) {
+    show_on_session_starts_ = false;
+    session_observation_.Reset();
+  } else {
+    NotificationDisplayService::GetForProfile(
+        Profile::FromBrowserContext(context_))
+        ->Close(NotificationHandler::Type::TRANSIENT,
+                kManagedProvisionNotificationId);
+  }
 }
 
 void ArcProvisionNotificationService::OnArcPlayStoreEnabledChanged(
@@ -120,7 +149,7 @@ void ArcProvisionNotificationService::OnArcStarted() {
   // ARC is going to start.
   if (profiles::IsPublicSession() &&
       !chromeos::DemoSession::IsDeviceInDemoMode()) {
-    ShowNotification();
+    MaybeShowNotification();
   }
 }
 
@@ -130,7 +159,7 @@ void ArcProvisionNotificationService::OnArcOptInManagementCheckStarted() {
   // managed prefs), or ensure that no notification is shown otherwise.
   Profile* profile = Profile::FromBrowserContext(context_);
   if (ShouldStartArcSilentlyForManagedProfile(profile)) {
-    ShowNotification();
+    MaybeShowNotification();
   } else {
     HideNotification();
   }

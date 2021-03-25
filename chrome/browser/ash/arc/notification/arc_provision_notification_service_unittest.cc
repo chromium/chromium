@@ -26,6 +26,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -44,6 +45,10 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
             std::make_unique<chromeos::FakeChromeUserManager>()) {}
 
   void SetUp() override {
+    SetUpInternal(/*should_create_session_manager=*/true);
+  }
+
+  void SetUpInternal(bool should_create_session_manager) {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
@@ -55,6 +60,9 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
+
+    if (should_create_session_manager)
+      session_manager_ = std::make_unique<session_manager::SessionManager>();
 
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();
@@ -81,6 +89,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
+    session_manager_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -92,6 +101,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
  private:
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -116,8 +126,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
   arc_session_manager_->SetProfile(profile());
   arc_session_manager_->Initialize();
 
-  // Trigger opt-in flow. The notification gets shown.
+  // Trigger opt-in flow. The notification gets shown when session starts.
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
@@ -156,8 +172,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
   arc_session_manager_->Initialize();
 
   // Enable ARC. The opt-in flow doesn't take place, and no notification is
-  // shown.
+  // shown when session starts.
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -185,8 +207,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
   arc_session_manager_->SetProfile(profile());
   arc_session_manager_->Initialize();
 
-  // Trigger opt-in flow. The notification gets shown.
+  // Trigger opt-in flow. The notification gets shown when session starts.
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
@@ -220,8 +248,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
   arc_session_manager_->SetProfile(profile());
   arc_session_manager_->Initialize();
 
-  // Trigger opt-in flow. The notification gets shown.
+  // Trigger opt-in flow. The notification gets shown when session starts.
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
@@ -251,8 +285,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
   arc_session_manager_->SetProfile(profile());
   arc_session_manager_->Initialize();
 
-  // Trigger opt-in flow. The notification is not shown.
+  // Trigger opt-in flow. The notification is not shown when session starts.
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
   arc_session_manager_->RequestEnable();
+  EXPECT_FALSE(
+      display_service_->GetNotification(kArcManagedProvisionNotificationId));
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
@@ -280,7 +320,10 @@ class ArcProvisionNotificationServiceOobeTest
  protected:
   ArcProvisionNotificationServiceOobeTest() = default;
   void SetUp() override {
-    ArcProvisionNotificationServiceTest::SetUp();
+    // SessionManager is created in FakeLoginDisplayHost. We should not create
+    // another one here.
+    ArcProvisionNotificationServiceTest::SetUpInternal(
+        /*should_create_session_manager=*/false);
 
     GetFakeUserManager()->set_current_user_new(true);
     CreateLoginDisplayHost();
