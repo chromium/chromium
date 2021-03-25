@@ -19,7 +19,7 @@ class IMEObserver;
 class NetworkObserver;
 class ScreenCaptureObserver;
 class ScreenShareObserver;
-class SystemTrayObserver;
+class SystemTrayFocusObserver;
 class VirtualKeyboardObserver;
 
 namespace mojom {
@@ -59,10 +59,9 @@ class ASH_EXPORT SystemTrayNotifier {
   void NotifyScreenShareStop();
 
   // System tray focus.
-  void AddSystemTrayObserver(SystemTrayObserver* observer);
-  void RemoveSystemTrayObserver(SystemTrayObserver* observer);
+  void AddSystemTrayFocusObserver(SystemTrayFocusObserver* observer);
+  void RemoveSystemTrayFocusObserver(SystemTrayFocusObserver* observer);
   void NotifyFocusOut(bool reverse);
-  void NotifySystemTrayBubbleShown();
 
   // Virtual keyboard.
   void AddVirtualKeyboardObserver(VirtualKeyboardObserver* observer);
@@ -75,7 +74,8 @@ class ASH_EXPORT SystemTrayNotifier {
   base::ObserverList<ScreenCaptureObserver>::Unchecked
       screen_capture_observers_;
   base::ObserverList<ScreenShareObserver>::Unchecked screen_share_observers_;
-  base::ObserverList<SystemTrayObserver>::Unchecked system_tray_observers_;
+  base::ObserverList<SystemTrayFocusObserver>::Unchecked
+      system_tray_focus_observers_;
   base::ObserverList<VirtualKeyboardObserver>::Unchecked
       virtual_keyboard_observers_;
 

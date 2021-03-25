@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_SYSTEM_TRAY_OBSERVER_H_
-#define ASH_PUBLIC_CPP_SYSTEM_TRAY_OBSERVER_H_
+#ifndef ASH_PUBLIC_CPP_SYSTEM_TRAY_FOCUS_OBSERVER_H_
+#define ASH_PUBLIC_CPP_SYSTEM_TRAY_FOCUS_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
@@ -11,18 +11,15 @@
 namespace ash {
 
 // A class that observes system tray related focus events.
-class ASH_PUBLIC_EXPORT SystemTrayObserver {
+class ASH_PUBLIC_EXPORT SystemTrayFocusObserver {
  public:
   // Called when focus is about to leave system tray.
   virtual void OnFocusLeavingSystemTray(bool reverse) = 0;
 
-  // Called when the UnifiedSystemTrayBubble is shown.
-  virtual void OnSystemTrayBubbleShown() {}
-
  protected:
-  virtual ~SystemTrayObserver() = default;
+  virtual ~SystemTrayFocusObserver() = default;
 };
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_SYSTEM_TRAY_OBSERVER_H_
+#endif  // ASH_PUBLIC_CPP_SYSTEM_TRAY_FOCUS_OBSERVER_H_

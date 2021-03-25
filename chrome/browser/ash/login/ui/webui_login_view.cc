@@ -123,7 +123,7 @@ WebUILoginView::WebUILoginView(const WebViewSettings& settings,
   }
 
   if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayObserver(this);
+    LoginScreenClient::Get()->AddSystemTrayFocusObserver(this);
     observing_system_tray_focus_ = true;
   }
 }
@@ -134,7 +134,7 @@ WebUILoginView::~WebUILoginView() {
 
   // TODO(crbug.com/1188526) - Improve the observation of the system tray
   if (observing_system_tray_focus_ && LoginScreenClient::HasInstance())
-    LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
+    LoginScreenClient::Get()->RemoveSystemTrayFocusObserver(this);
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
 
   // Clear any delegates we have set on the WebView.
@@ -322,7 +322,7 @@ void WebUILoginView::Observe(int type,
       // deleted on shutdown. It should unregister itself before the deletion
       // happens.
       if (observing_system_tray_focus_) {
-        LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
+        LoginScreenClient::Get()->RemoveSystemTrayFocusObserver(this);
         observing_system_tray_focus_ = false;
       }
       break;
@@ -421,16 +421,9 @@ void WebUILoginView::OnFocusLeavingSystemTray(bool reverse) {
   AboutToRequestFocusFromTabTraversal(reverse);
 }
 
-void WebUILoginView::OnSystemTrayBubbleShown() {
-  if (!GetOobeUI())
-    return;
-
-  GetOobeUI()->OnSystemTrayBubbleShown();
-}
-
 void WebUILoginView::OnLoginPromptVisible() {
   if (!observing_system_tray_focus_ && LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayObserver(this);
+    LoginScreenClient::Get()->AddSystemTrayFocusObserver(this);
     observing_system_tray_focus_ = true;
   }
   // If we're hidden than will generate this signal once we're shown.

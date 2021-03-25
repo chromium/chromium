@@ -334,10 +334,6 @@ void WelcomeScreenHandler::GiveChromeVoxHint() {
   CallJS("login.WelcomeScreen.maybeGiveChromeVoxHint");
 }
 
-void WelcomeScreenHandler::CancelChromeVoxHintIdleDetection() {
-  screen_->CancelChromeVoxHintIdleDetection();
-}
-
 void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
   base::UmaHistogramBoolean("OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess",
                             true);
@@ -371,7 +367,7 @@ void WelcomeScreenHandler::UpdateA11yState() {
   a11y_info.SetBoolean("virtualKeyboardEnabled",
                        AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
   if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
-    CancelChromeVoxHintIdleDetection();
+    screen_->CancelChromeVoxHintIdleDetection();
   CallJS("login.WelcomeScreen.refreshA11yInfo", a11y_info);
 }
 
