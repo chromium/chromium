@@ -445,6 +445,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void Delete() override;
   void SelectAll() override;
   void CollapseSelection() override;
+  void ScrollToTopOfDocument() override;
+  void ScrollToBottomOfDocument() override;
   void Replace(const std::u16string& word) override;
   void ReplaceMisspelling(const std::u16string& word) override;
   void NotifyContextMenuClosed(const GURL& link_followed) override;

@@ -4394,6 +4394,14 @@ void WebContentsImpl::CollapseSelection() {
   input_handler->CollapseSelection();
 }
 
+void WebContentsImpl::ScrollToTopOfDocument() {
+  ExecuteEditCommand("ScrollToBeginningOfDocument", base::nullopt);
+}
+
+void WebContentsImpl::ScrollToBottomOfDocument() {
+  ExecuteEditCommand("ScrollToEndOfDocument", base::nullopt);
+}
+
 void WebContentsImpl::Replace(const std::u16string& word) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Replace");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
