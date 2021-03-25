@@ -467,6 +467,7 @@ class CommerceHintCacaoTest : public CommerceHintAgentTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    CommerceHintAgentTest::SetUpCommandLine(command_line);
     // This bloom filter rejects "walmart.com" as a shopping site.
     command_line->AppendSwitchASCII("optimization_guide_hints_override",
                                     "Eg8IDxILCBsQJxoFiUzKeE4=");
