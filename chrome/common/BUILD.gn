@@ -160,6 +160,7 @@ static_library("common") {
     "//base:base_static",
     "//base:i18n",
     "//base/util/values:values_util",
+    "//build:branding_buildflags",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app/theme:theme_resources",
@@ -239,7 +240,6 @@ static_library("common") {
   ]
 
   deps = [
-    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/crash/core/app",
     "//components/google/core/common",
@@ -532,12 +532,12 @@ static_library("non_code_constants") {
     ":buildflags",
     ":version_header",
     "//base",
-    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//ppapi/buildflags",
   ]
 
   public_deps = [
+    "//build:branding_buildflags",
     "//printing/buildflags",
     "//ui/base:buildflags",
   ]

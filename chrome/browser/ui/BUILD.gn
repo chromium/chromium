@@ -1631,7 +1631,10 @@ static_library("ui") {
       "//ui/base/dragdrop/mojom",
       "//ui/events",
     ]
-    public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
+    public_deps += [
+      "//build:branding_buildflags",
+      "//ui/base/dragdrop/mojom:mojom_headers",
+    ]
 
     allow_circular_includes_from += [ "//chrome/browser/media/router" ]
 
@@ -3322,6 +3325,7 @@ static_library("ui") {
       "webui/version/version_util_win.h",
     ]
     public_deps += [
+      "//build:branding_buildflags",
       "//ui/views",
       "//ui/views/controls/webview",
     ]

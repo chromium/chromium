@@ -23,6 +23,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
@@ -178,7 +179,7 @@ void BrowserSwitcherServiceWin::LoadRulesFromPrefs() {
 base::FilePath BrowserSwitcherServiceWin::GetCacheDir() {
   if (!cache_dir_for_testing_.empty())
     return cache_dir_for_testing_;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, &path))
     return path;

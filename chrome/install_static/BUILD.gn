@@ -21,13 +21,15 @@ if (is_win) {
   static_library("install_static_util") {
     deps = [
       ":buildflags",
-      "//build:branding_buildflags",
       "//components/nacl/common:buildflags",
       "//components/version_info:channel",
       "//components/version_info:generate_version_info",
     ]
 
-    public_deps = [ "//chrome/chrome_elf:nt_registry" ]
+    public_deps = [
+      "//build:branding_buildflags",
+      "//chrome/chrome_elf:nt_registry",
+    ]
 
     sources = [
       "../app/chrome_dll_resource.h",

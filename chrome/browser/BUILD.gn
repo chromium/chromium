@@ -4844,6 +4844,7 @@ static_library("browser") {
       "win/util_win_service.h",
     ]
     public_deps += [
+      "//build:branding_buildflags",
       "//chrome/services/util_win/public/mojom",
       "//ui/views",
       "//ui/views/controls/webview",

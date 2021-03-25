@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_inspector.h"
 #include "chrome/browser/win/conflicts/third_party_metrics_recorder.h"
@@ -25,7 +26,7 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class ModuleLoadAttemptLogListener;
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -34,7 +35,7 @@ class ThirdPartyConflictsManager;
 namespace base {
 struct OnTaskRunnerDeleter;
 }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // A class that keeps track of all modules loaded across Chrome processes.
 //
@@ -75,8 +76,8 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   static void SetInstance(std::unique_ptr<ModuleDatabase> module_database);
 
   // Initializes the ModuleLoadAttemptLogListener instance. This function is a
-  // noop on non-GOOGLE_CHROME_BUILD configurations because it is used only for
-  // third-party software blocking, which is only enabled in Google Chrome
+  // noop on non-GOOGLE_CHROME_BRANDING configurations because it is used only
+  // for third-party software blocking, which is only enabled in Google Chrome
   // builds.
   void StartDrainingModuleLoadAttemptsLog();
 
@@ -145,7 +146,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // ModuleDatabase becomes idle ASAP.
   void IncreaseInspectionPriority();
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns false if third-party modules blocking is disabled via
@@ -222,7 +223,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // OnNewModuleFound().
   void NotifyLoadedModules(ModuleDatabaseObserver* observer);
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Called by DisableThirdPartyBlocking() to disable the analysis of loaded
   // modules.
   // Note: This is distinct from OnThirdPartyBlockingPolicyDisabled() because
@@ -255,7 +256,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // Indicates if all input method editors have been enumerated.
   bool ime_enumerated_;
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<ModuleLoadAttemptLogListener>
       module_load_attempt_log_listener_;
 
@@ -270,7 +271,7 @@ class ModuleDatabase : public ModuleDatabaseEventSource {
   // Holds observers.
   base::ObserverList<ModuleDatabaseObserver>::Unchecked observer_list_;
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<ThirdPartyConflictsManager> third_party_conflicts_manager_;
 #endif
 
