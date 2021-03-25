@@ -74,6 +74,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& bcc,
              const std::string& subject,
              const std::string& body) override;
+  void DocumentLoadComplete() override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   SkColor GetBackgroundColor() override;
@@ -158,15 +159,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Consumes a token for saving the document.
   void ConsumeSaveToken(const std::string& token);
 
-  // Sends the attachments data.
-  void SendAttachments();
-
-  // Sends the bookmarks data.
-  void SendBookmarks();
-
-  // Send document metadata data.
-  void SendMetadata();
-
   // Sends the loading progress, where `percentage` represents the progress, or
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
@@ -214,9 +206,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sets the text input type for this plugin based on `in_focus`.
   virtual void SetFormFieldInFocus(bool in_focus) = 0;
 
-  // Starts loading accessibility information.
-  void LoadAccessibility();
-
   // Sets the accessibility information about the PDF document in the renderer.
   virtual void SetAccessibilityDocInfo(
       const AccessibilityDocInfo& doc_info) = 0;
@@ -260,9 +249,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Performs tasks necessary when the document is loaded in print preview mode.
   virtual void OnPrintPreviewLoaded() = 0;
-
-  // Records metrics about the document metadata.
-  void RecordDocumentMetrics();
 
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
@@ -341,8 +327,23 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Callback to clear deferred invalidates after painting finishes.
   void ClearDeferredInvalidates(int32_t /*unused_but_required*/);
 
+  // Sends the attachments data.
+  void SendAttachments();
+
+  // Sends the bookmarks data.
+  void SendBookmarks();
+
+  // Send document metadata data.
+  void SendMetadata();
+
   // Sends the thumbnail image data.
   void SendThumbnail(base::Value reply, Thumbnail thumbnail);
+
+  // Starts loading accessibility information.
+  void LoadAccessibility();
+
+  // Records metrics about the document metadata.
+  void RecordDocumentMetrics();
 
   // Adds a sample to an enumerated histogram and filter out print preview
   // usage.

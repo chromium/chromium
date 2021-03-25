@@ -276,10 +276,6 @@ PdfViewWebPlugin::SearchString(const char16_t* string,
   return {};
 }
 
-void PdfViewWebPlugin::DocumentLoadComplete() {
-  NOTIMPLEMENTED();
-}
-
 void PdfViewWebPlugin::DocumentLoadFailed() {
   NOTIMPLEMENTED();
 }

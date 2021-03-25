@@ -1033,43 +1033,6 @@ OutOfProcessInstance::SearchString(const char16_t* string,
   return results;
 }
 
-void OutOfProcessInstance::DocumentLoadComplete() {
-  // Clear focus state for OSK.
-  FormTextFieldFocusChange(false);
-
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
-  set_document_load_state(DocumentLoadState::kComplete);
-  UserMetricsRecordAction("PDF.LoadSuccess");
-  RecordDocumentMetrics();
-
-  if (IsPrintPreview())
-    OnPrintPreviewLoaded();
-
-  SendAttachments();
-  SendBookmarks();
-  SendMetadata();
-  SendLoadingProgress(/*percentage=*/100);
-
-  if (accessibility_state() == AccessibilityState::kPending)
-    LoadAccessibility();
-
-  if (!full_frame())
-    return;
-
-  DidStopLoading();
-
-  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
-    content_restrictions |= kContentRestrictionCopy;
-
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
-      !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
-    content_restrictions |= kContentRestrictionPrint;
-  }
-
-  SetContentRestrictions(content_restrictions);
-}
-
 void OutOfProcessInstance::RotateClockwise() {
   engine()->RotateClockwise();
 }

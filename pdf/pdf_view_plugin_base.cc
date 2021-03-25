@@ -34,6 +34,7 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/content_restriction.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
 #include "pdf/paint_ready_rect.h"
@@ -243,6 +244,44 @@ void PdfViewPluginBase::Email(const std::string& to,
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::DocumentLoadComplete() {
+  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state_);
+  document_load_state_ = DocumentLoadState::kComplete;
+
+  UserMetricsRecordAction("PDF.LoadSuccess");
+  RecordDocumentMetrics();
+
+  // Clear the focus state for on-screen keyboards.
+  FormTextFieldFocusChange(false);
+
+  if (IsPrintPreview())
+    OnPrintPreviewLoaded();
+
+  SendAttachments();
+  SendBookmarks();
+  SendMetadata();
+  SendLoadingProgress(/*percentage=*/100);
+
+  if (accessibility_state_ == AccessibilityState::kPending)
+    LoadAccessibility();
+
+  if (!full_frame_)
+    return;
+
+  DidStopLoading();
+
+  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
+  if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
+    content_restrictions |= kContentRestrictionCopy;
+
+  if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
+      !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
+    content_restrictions |= kContentRestrictionPrint;
+  }
+
+  SetContentRestrictions(content_restrictions);
+}
+
 void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
                                              uint32_t doc_size) {
   double progress = 0.0;
@@ -370,97 +409,6 @@ void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "consumeSaveToken");
   message.SetStringKey("token", token);
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::SendAttachments() {
-  const std::vector<DocumentAttachmentInfo>& attachment_infos =
-      engine()->GetDocumentAttachmentInfoList();
-  if (attachment_infos.empty())
-    return;
-
-  base::Value attachments(base::Value::Type::LIST);
-  for (const DocumentAttachmentInfo& attachment_info : attachment_infos) {
-    // Send `size` as -1 to indicate that the attachment is too large to be
-    // downloaded.
-    const int size = attachment_info.size_bytes <= kMaximumSavedFileSize
-                         ? static_cast<int>(attachment_info.size_bytes)
-                         : -1;
-
-    base::Value attachment(base::Value::Type::DICTIONARY);
-    attachment.SetStringKey("name", attachment_info.name);
-    attachment.SetIntKey("size", size);
-    attachment.SetBoolKey("readable", attachment_info.is_readable);
-    attachments.Append(std::move(attachment));
-  }
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "attachments");
-  message.SetKey("attachmentsData", std::move(attachments));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::SendBookmarks() {
-  base::Value bookmarks = engine()->GetBookmarks();
-  if (bookmarks.GetList().empty())
-    return;
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "bookmarks");
-  message.SetKey("bookmarksData", std::move(bookmarks));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::SendMetadata() {
-  base::Value metadata(base::Value::Type::DICTIONARY);
-  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
-
-  const std::string version = FormatPdfVersion(document_metadata.version);
-  if (!version.empty())
-    metadata.SetStringKey("version", version);
-
-  metadata.SetStringKey("fileSize",
-                        ui::FormatBytes(document_metadata.size_bytes));
-
-  metadata.SetBoolKey("linearized", document_metadata.linearized);
-
-  if (!document_metadata.title.empty())
-    metadata.SetStringKey("title", document_metadata.title);
-
-  if (!document_metadata.author.empty())
-    metadata.SetStringKey("author", document_metadata.author);
-
-  if (!document_metadata.subject.empty())
-    metadata.SetStringKey("subject", document_metadata.subject);
-
-  if (!document_metadata.keywords.empty())
-    metadata.SetStringKey("keywords", document_metadata.keywords);
-
-  if (!document_metadata.creator.empty())
-    metadata.SetStringKey("creator", document_metadata.creator);
-
-  if (!document_metadata.producer.empty())
-    metadata.SetStringKey("producer", document_metadata.producer);
-
-  if (!document_metadata.creation_date.is_null()) {
-    metadata.SetStringKey("creationDate", base::TimeFormatShortDateAndTime(
-                                              document_metadata.creation_date));
-  }
-
-  if (!document_metadata.mod_date.is_null()) {
-    metadata.SetStringKey("modDate", base::TimeFormatShortDateAndTime(
-                                         document_metadata.mod_date));
-  }
-
-  metadata.SetStringKey("pageSize",
-                        FormatPageSize(engine()->GetUniformPageSizePoints()));
-
-  metadata.SetBoolKey("canSerializeDocument",
-                      IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
-
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetStringKey("type", "metadata");
-  message.SetKey("metadataData", std::move(metadata));
   SendMessage(std::move(message));
 }
 
@@ -671,36 +619,6 @@ int PdfViewPluginBase::GetDocumentPixelHeight() const {
       std::ceil(document_size_.height() * zoom() * device_scale()));
 }
 
-void PdfViewPluginBase::LoadAccessibility() {
-  accessibility_state_ = AccessibilityState::kLoaded;
-  AccessibilityDocInfo doc_info;
-  doc_info.page_count = engine_->GetNumberOfPages();
-  doc_info.text_accessible =
-      engine_->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE);
-  doc_info.text_copyable = engine_->HasPermission(PDFEngine::PERMISSION_COPY);
-
-  // A new document layout will trigger the creation of a new accessibility
-  // tree, so |next_accessibility_page_index_| should be reset to ignore
-  // outdated asynchronous calls of PrepareAndSetAccessibilityPageInfo().
-  next_accessibility_page_index_ = 0;
-  SetAccessibilityDocInfo(doc_info);
-
-  // If the document contents isn't accessible, don't send anything more.
-  if (!(engine_->HasPermission(PDFEngine::PERMISSION_COPY) ||
-        engine_->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE))) {
-    return;
-  }
-
-  PrepareAndSetAccessibilityViewportInfo();
-
-  // Schedule loading the first page.
-  ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
-      base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
-                     GetWeakPtr()),
-      0);
-}
-
 void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
   // Outdated calls are ignored.
   if (page_index != next_accessibility_page_index_)
@@ -742,40 +660,6 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
                         &viewport_info.selection_end_char_index);
 
   SetAccessibilityViewportInfo(viewport_info);
-}
-
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfHasAttachment {
-  kNo = 0,
-  kYes = 1,
-  kMaxValue = kYes,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfIsTagged {
-  kNo = 0,
-  kYes = 1,
-  kMaxValue = kYes,
-};
-
-}  // namespace
-
-void PdfViewPluginBase::RecordDocumentMetrics() {
-  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
-  HistogramEnumeration("PDF.Version", document_metadata.version);
-  HistogramCustomCounts("PDF.PageCount", document_metadata.page_count, 1,
-                        1000000, 50);
-  HistogramEnumeration("PDF.HasAttachment", document_metadata.has_attachments
-                                                ? PdfHasAttachment::kYes
-                                                : PdfHasAttachment::kNo);
-  HistogramEnumeration("PDF.IsTagged", document_metadata.tagged
-                                           ? PdfIsTagged::kYes
-                                           : PdfIsTagged::kNo);
-  HistogramEnumeration("PDF.FormType", document_metadata.form_type);
 }
 
 void PdfViewPluginBase::SetZoom(double scale) {
@@ -1098,6 +982,97 @@ void PdfViewPluginBase::ClearDeferredInvalidates(
   deferred_invalidates_.clear();
 }
 
+void PdfViewPluginBase::SendAttachments() {
+  const std::vector<DocumentAttachmentInfo>& attachment_infos =
+      engine()->GetDocumentAttachmentInfoList();
+  if (attachment_infos.empty())
+    return;
+
+  base::Value attachments(base::Value::Type::LIST);
+  for (const DocumentAttachmentInfo& attachment_info : attachment_infos) {
+    // Send `size` as -1 to indicate that the attachment is too large to be
+    // downloaded.
+    const int size = attachment_info.size_bytes <= kMaximumSavedFileSize
+                         ? static_cast<int>(attachment_info.size_bytes)
+                         : -1;
+
+    base::Value attachment(base::Value::Type::DICTIONARY);
+    attachment.SetStringKey("name", attachment_info.name);
+    attachment.SetIntKey("size", size);
+    attachment.SetBoolKey("readable", attachment_info.is_readable);
+    attachments.Append(std::move(attachment));
+  }
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "attachments");
+  message.SetKey("attachmentsData", std::move(attachments));
+  SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::SendBookmarks() {
+  base::Value bookmarks = engine()->GetBookmarks();
+  if (bookmarks.GetList().empty())
+    return;
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "bookmarks");
+  message.SetKey("bookmarksData", std::move(bookmarks));
+  SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::SendMetadata() {
+  base::Value metadata(base::Value::Type::DICTIONARY);
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+
+  const std::string version = FormatPdfVersion(document_metadata.version);
+  if (!version.empty())
+    metadata.SetStringKey("version", version);
+
+  metadata.SetStringKey("fileSize",
+                        ui::FormatBytes(document_metadata.size_bytes));
+
+  metadata.SetBoolKey("linearized", document_metadata.linearized);
+
+  if (!document_metadata.title.empty())
+    metadata.SetStringKey("title", document_metadata.title);
+
+  if (!document_metadata.author.empty())
+    metadata.SetStringKey("author", document_metadata.author);
+
+  if (!document_metadata.subject.empty())
+    metadata.SetStringKey("subject", document_metadata.subject);
+
+  if (!document_metadata.keywords.empty())
+    metadata.SetStringKey("keywords", document_metadata.keywords);
+
+  if (!document_metadata.creator.empty())
+    metadata.SetStringKey("creator", document_metadata.creator);
+
+  if (!document_metadata.producer.empty())
+    metadata.SetStringKey("producer", document_metadata.producer);
+
+  if (!document_metadata.creation_date.is_null()) {
+    metadata.SetStringKey("creationDate", base::TimeFormatShortDateAndTime(
+                                              document_metadata.creation_date));
+  }
+
+  if (!document_metadata.mod_date.is_null()) {
+    metadata.SetStringKey("modDate", base::TimeFormatShortDateAndTime(
+                                         document_metadata.mod_date));
+  }
+
+  metadata.SetStringKey("pageSize",
+                        FormatPageSize(engine()->GetUniformPageSizePoints()));
+
+  metadata.SetBoolKey("canSerializeDocument",
+                      IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "metadata");
+  message.SetKey("metadataData", std::move(metadata));
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
   const SkBitmap& bitmap = thumbnail.bitmap();
   base::Value image_data(base::make_span(
@@ -1109,6 +1084,70 @@ void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
   reply.SetIntKey("width", bitmap.width());
   reply.SetIntKey("height", bitmap.height());
   SendMessage(std::move(reply));
+}
+
+void PdfViewPluginBase::LoadAccessibility() {
+  accessibility_state_ = AccessibilityState::kLoaded;
+  AccessibilityDocInfo doc_info;
+  doc_info.page_count = engine_->GetNumberOfPages();
+  doc_info.text_accessible =
+      engine_->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE);
+  doc_info.text_copyable = engine_->HasPermission(PDFEngine::PERMISSION_COPY);
+
+  // A new document layout will trigger the creation of a new accessibility
+  // tree, so `next_accessibility_page_index_` should be reset to ignore
+  // outdated asynchronous calls of PrepareAndSetAccessibilityPageInfo().
+  next_accessibility_page_index_ = 0;
+  SetAccessibilityDocInfo(doc_info);
+
+  // If the document contents isn't accessible, don't send anything more.
+  if (!(engine_->HasPermission(PDFEngine::PERMISSION_COPY) ||
+        engine_->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE))) {
+    return;
+  }
+
+  PrepareAndSetAccessibilityViewportInfo();
+
+  // Schedule loading the first page.
+  ScheduleTaskOnMainThread(
+      kAccessibilityPageDelay,
+      base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
+                     GetWeakPtr()),
+      0);
+}
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfHasAttachment {
+  kNo = 0,
+  kYes = 1,
+  kMaxValue = kYes,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PdfIsTagged {
+  kNo = 0,
+  kYes = 1,
+  kMaxValue = kYes,
+};
+
+}  // namespace
+
+void PdfViewPluginBase::RecordDocumentMetrics() {
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+  HistogramEnumeration("PDF.Version", document_metadata.version);
+  HistogramCustomCounts("PDF.PageCount", document_metadata.page_count, 1,
+                        1000000, 50);
+  HistogramEnumeration("PDF.HasAttachment", document_metadata.has_attachments
+                                                ? PdfHasAttachment::kYes
+                                                : PdfHasAttachment::kNo);
+  HistogramEnumeration("PDF.IsTagged", document_metadata.tagged
+                                           ? PdfIsTagged::kYes
+                                           : PdfIsTagged::kNo);
+  HistogramEnumeration("PDF.FormType", document_metadata.form_type);
 }
 
 template <typename T>
