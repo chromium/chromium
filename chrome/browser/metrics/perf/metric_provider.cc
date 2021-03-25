@@ -7,8 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -161,8 +159,8 @@ void MetricProvider::OnSessionRestoreDone(int num_tabs_restored) {
 void MetricProvider::OnProfileDone(
     base::WeakPtr<MetricProvider> provider,
     std::unique_ptr<SampledProfile> sampled_profile) {
-  base::PostTask(FROM_HERE, base::TaskTraits(content::BrowserThread::UI),
-                 base::BindOnce(&MetricProvider::AddProfileToCache, provider,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&MetricProvider::AddProfileToCache, provider,
                                 std::move(sampled_profile)));
 }
 

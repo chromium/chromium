@@ -26,7 +26,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -899,8 +898,8 @@ class NotificationPlatformBridgeLinuxImpl
       const base::Optional<bool>& by_user,
       const base::Optional<std::u16string>& reply) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    base::PostTask(
-        location, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        location,
         base::BindOnce(ForwardNotificationOperationOnUiThread, operation,
                        data->notification_type, data->origin_url,
                        data->notification_id, action_index, by_user, reply,

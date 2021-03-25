@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -112,8 +111,8 @@ inline void MaybeReply(const base::Location& location,
                        base::OnceCallback<void(Args...)> reply,
                        Args... args) {
   if (reply) {
-    base::PostTask(location, {BrowserThread::UI},
-                   base::BindOnce(std::move(reply), args...));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        location, base::BindOnce(std::move(reply), args...));
   }
 }
 

@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_service_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,8 +40,8 @@ void RunFront(content::AppCacheQuotaClient::RequestQueue* queue) {
 void RunDeleteOnIO(const base::Location& from_here,
                    net::CompletionRepeatingCallback callback,
                    int result) {
-  base::PostTask(from_here, {BrowserThread::IO},
-                 base::BindOnce(std::move(callback), result));
+  GetIOThreadTaskRunner({})->PostTask(
+      from_here, base::BindOnce(std::move(callback), result));
 }
 }  // namespace
 
