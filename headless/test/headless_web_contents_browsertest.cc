@@ -260,16 +260,19 @@ class HeadlessWebContentsScreenshotWindowPositionTest
   }
 };
 
-HEADLESS_ASYNC_DEVTOOLED_TEST_P(
-    HeadlessWebContentsScreenshotWindowPositionTest);
-
-// Instantiate test case for both software and gpu compositing modes.
 #if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
+DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_P(
+    HeadlessWebContentsScreenshotWindowPositionTest);
+#else
+HEADLESS_ASYNC_DEVTOOLED_TEST_P(
+    HeadlessWebContentsScreenshotWindowPositionTest);
+#endif
+
+// Instantiate test case for both software and gpu compositing modes.
 INSTANTIATE_TEST_SUITE_P(HeadlessWebContentsScreenshotWindowPositionTests,
                          HeadlessWebContentsScreenshotWindowPositionTest,
                          ::testing::Bool());
-#endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
 class HeadlessWebContentsPDFTest : public HeadlessAsyncDevTooledBrowserTest {
