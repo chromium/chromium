@@ -1972,15 +1972,6 @@ bool ResourceFetcher::StartLoad(
 
   ResourceLoader* loader = nullptr;
 
-  if (archive_ && resource->Url().ProtocolIsInHTTPFamily()) {
-    // MHTML documents should not trigger HTTP requests.
-    //
-    // TODO(lukasza): https://crbug.com/1151438: Remove the ad-hoc DwoC below,
-    // once the bug is fixed and verified.
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
-  }
-
   {
     // Forbids JavaScript/revalidation until start()
     // to prevent unintended state transitions.
