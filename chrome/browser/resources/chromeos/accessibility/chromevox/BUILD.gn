@@ -482,6 +482,7 @@ js_library("chromevox_library") {
     "$externs_path/login_state.js",
     "$externs_path/metrics_private.js",
     "$externs_path/settings_private.js",
+    "$externs_path/tts.js",
     "$externs_path/virtual_keyboard_private.js",
   ]
 }

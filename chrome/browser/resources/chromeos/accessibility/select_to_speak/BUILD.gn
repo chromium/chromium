@@ -165,10 +165,10 @@ js_library("select_to_speak") {
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
     "$externs_path/clipboard.js",
     "$externs_path/command_line_private.js",
     "$externs_path/pending.js",
+    "$externs_path/tts.js",
   ]
 }
 
@@ -177,8 +177,8 @@ js_library("select_to_speak_options") {
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
     "$externs_path/metrics_private.js",
+    "$externs_path/tts.js",
   ]
 }
 
@@ -212,7 +212,6 @@ js_library("paragraph_utils") {
   externs_list = [
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
-    "$externs_path/chrome_extensions.js",
   ]
 }
 
@@ -226,7 +225,10 @@ js_library("prefs_manager") {
 
 js_library("metrics_utils") {
   deps = [ ":prefs_manager" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
+  externs_list = [
+    "$externs_path/metrics_private.js",
+    "$externs_path/tts.js",
+  ]
 }
 
 js_library("select_to_speak_constants") {

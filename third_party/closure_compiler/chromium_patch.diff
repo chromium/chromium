@@ -55,7 +55,7 @@ index 54cf6b1a2bcc..0619bdce01a4 100644
   * Returns an object representing current load times. Note that the properties
   * on the object do not change and the function must be called again to get
 diff --git b/third_party/closure_compiler/externs/chrome_extensions.js a/third_party/closure_compiler/externs/chrome_extensions.js
-index 276232d3f990..808f11f84084 100644
+index 41b2f5b485c7..7110aaf8f223 100644
 --- b/third_party/closure_compiler/externs/chrome_extensions.js
 +++ a/third_party/closure_compiler/externs/chrome_extensions.js
 @@ -233,72 +233,6 @@ if (Math.random() < 1) {  // always true but the compiler doesn't know that
@@ -181,7 +181,159 @@ index 276232d3f990..808f11f84084 100644
  
  
  /** @type {string} */
-@@ -8528,642 +8505,6 @@ chrome.fileSystem.requestFileSystem = function(options, callback) {};
+@@ -4380,151 +4357,6 @@ chrome.idle.getAutoLockDelay = function(callback) {};
+ chrome.idle.onStateChanged;
+ 
+ 
+-/**
+- * Chrome Text-to-Speech API.
+- * @const
+- * @see https://developer.chrome.com/extensions/tts.html
+- */
+-chrome.tts = {};
+-
+-
+-
+-/**
+- * An event from the TTS engine to communicate the status of an utterance.
+- * @constructor
+- */
+-function TtsEvent() {}
+-
+-
+-/** @type {string} */
+-TtsEvent.prototype.type;
+-
+-
+-/** @type {number} */
+-TtsEvent.prototype.charIndex;
+-
+-
+-/** @type {string} */
+-TtsEvent.prototype.errorMessage;
+-
+-
+-/**
+- * The speech options for the TTS engine.
+- * @record
+- * @see https://developer.chrome.com/apps/tts#type-TtsOptions
+- */
+-function TtsOptions() {}
+-
+-/** @type {boolean|undefined} */
+-TtsOptions.prototype.enqueue;
+-
+-/** @type {string|undefined} */
+-TtsOptions.prototype.voiceName;
+-
+-/** @type {string|undefined} */
+-TtsOptions.prototype.extensionId;
+-
+-/** @type {string|undefined} */
+-TtsOptions.prototype.lang;
+-
+-/** @type {number|undefined} */
+-TtsOptions.prototype.rate;
+-
+-/** @type {number|undefined} */
+-TtsOptions.prototype.pitch;
+-
+-/** @type {number|undefined} */
+-TtsOptions.prototype.volume;
+-
+-/** @type {!Array<string>|undefined} */
+-TtsOptions.prototype.requiredEventTypes;
+-
+-/** @type {!Array<string>|undefined} */
+-TtsOptions.prototype.desiredEventTypes;
+-
+-/** @type {!function(!TtsEvent)|undefined} */
+-TtsOptions.prototype.onEvent;
+-
+-
+-/**
+- * A description of a voice available for speech synthesis.
+- * @constructor
+- */
+-function TtsVoice() {}
+-
+-
+-/** @type {string} */
+-TtsVoice.prototype.voiceName;
+-
+-
+-/** @type {string} */
+-TtsVoice.prototype.lang;
+-
+-
+-/** @type {string} */
+-TtsVoice.prototype.gender;
+-
+-
+-/** @type {string} */
+-TtsVoice.prototype.extensionId;
+-
+-
+-/** @type {Array<string>} */
+-TtsVoice.prototype.eventTypes;
+-
+-
+-/**
+- * Gets an array of all available voices.
+- * @param {function(Array<TtsVoice>)=} opt_callback An optional callback
+- *     function.
+- * @return {undefined}
+- */
+-chrome.tts.getVoices = function(opt_callback) {};
+-
+-
+-/**
+- * Checks if the engine is currently speaking.
+- * @param {function(boolean)=} opt_callback The callback function.
+- * @return {undefined}
+- */
+-chrome.tts.isSpeaking = function(opt_callback) {};
+-
+-
+-/**
+- * Speaks text using a text-to-speech engine.
+- * @param {string} utterance The text to speak, either plain text or a complete,
+- *     well-formed SSML document. Speech engines that do not support SSML will
+- *     strip away the tags and speak the text. The maximum length of the text is
+- *     32,768 characters.
+- * @param {TtsOptions=} options The speech options.
+- * @param {function()=} callback Called right away, before speech finishes.
+- * @return {undefined}
+- */
+-chrome.tts.speak = function(utterance, options, callback) {};
+-
+-
+-/**
+- * Stops any current speech.
+- * @return {undefined}
+- */
+-chrome.tts.stop = function() {};
+-
+-
+-/**
+- * @const
+- * @see https://developer.chrome.com/extensions/ttsEngine.html
+- */
+-chrome.ttsEngine = {};
+-
+-
+-/** @type {!ChromeEvent} */
+-chrome.ttsEngine.onSpeak;
+-
+-
+-/** @type {!ChromeEvent} */
+-chrome.ttsEngine.onStop;
+-
+-
+ /**
+  * @const
+  * @see https://developer.chrome.com/extensions/contentSettings.html
+@@ -8474,642 +8306,6 @@ chrome.fileSystem.requestFileSystem = function(options, callback) {};
  chrome.fileSystem.getVolumeList = function(callback) {};
  
  

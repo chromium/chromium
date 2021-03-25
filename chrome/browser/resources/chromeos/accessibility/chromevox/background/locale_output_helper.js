@@ -31,7 +31,7 @@ LocaleOutputHelper = class {
      * @private {number}
      */
     LocaleOutputHelper.PROBABILITY_THRESHOLD_ = 0.9;
-    /** @private {!Array<!TtsVoice>} */
+    /** @private {!Array<!chrome.tts.TtsVoice>} */
     this.availableVoices_ = [];
     const setAvailableVoices = () => {
       chrome.tts.getVoices((voices) => {

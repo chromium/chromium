@@ -1095,7 +1095,7 @@ export class SelectToSpeak {
     if (!nodeGroup) {
       return;
     }
-    const options = {};
+    const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     // Copy options so we can add lang below
     Object.assign(options, this.prefsManager_.speechOptions());
     if (this.enableLanguageDetectionIntegration_ &&
@@ -1297,21 +1297,25 @@ export class SelectToSpeak {
   /**
    * Uses the 'word' speech event to determine which node is currently beings
    * spoken, and prepares for highlight if enabled.
-   * @param {!TtsEvent} event The event to use for updates.
+   * @param {!chrome.tts.TtsEvent} event The event to use for updates.
    * @param {ParagraphUtils.NodeGroup} nodeGroup The node group for this
    *     utterance.
    * @private
    */
   onTtsWordEvent_(event, nodeGroup) {
+    if (event.charIndex === undefined) {
+      return;
+    }
     // Not all speech engines include length in the ttsEvent object. .
     const hasLength = event.length !== undefined && event.length >= 0;
+    const length = event.length || 0;
     // Only update the |this.currentCharIndex_| if event has a higher charIndex.
     // TTS sometimes will report an incorrect number at the end of an utterance.
     this.currentCharIndex_ = Math.max(event.charIndex, this.currentCharIndex_);
     console.debug(nodeGroup.text + ' (index ' + event.charIndex + ')');
     let debug = '-'.repeat(event.charIndex);
     if (hasLength) {
-      debug += '^'.repeat(event.length);
+      debug += '^'.repeat(length);
     } else {
       debug += '^';
     }
@@ -1333,8 +1337,7 @@ export class SelectToSpeak {
       if (hasLength) {
         this.currentNodeWord_ = {
           'start': event.charIndex - this.currentNodeGroupItem_.startChar,
-          'end': event.charIndex + event.length -
-              this.currentNodeGroupItem_.startChar
+          'end': event.charIndex + length - this.currentNodeGroupItem_.startChar
         };
         this.updateUi_();
       } else {

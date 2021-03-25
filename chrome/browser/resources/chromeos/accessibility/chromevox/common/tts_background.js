@@ -419,7 +419,7 @@ TtsBackground = class extends ChromeTtsBase {
       this.onTtsEvent_(event, utteranceId);
     }, this);
 
-    const validatedProperties = {};
+    const validatedProperties = /** @type {!chrome.tts.TtsOptions} */ ({});
     for (let i = 0; i < TtsBackground.ALLOWED_PROPERTIES_.length; i++) {
       const p = TtsBackground.ALLOWED_PROPERTIES_[i];
       if (utterance.properties[p]) {
