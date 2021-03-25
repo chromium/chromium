@@ -222,11 +222,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   const std::vector<sync_pb::SyncEntity> entities_before =
       fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 

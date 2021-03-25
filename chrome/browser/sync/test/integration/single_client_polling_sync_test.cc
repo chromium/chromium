@@ -129,11 +129,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        ShouldPollWhenIntervalExpiredAcrossRestarts) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
   syncer::SyncTransportDataPrefs remote_prefs(GetProfile(0)->GetPrefs());

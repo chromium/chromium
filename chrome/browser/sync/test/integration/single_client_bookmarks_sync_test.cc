@@ -1013,11 +1013,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
 
   // After restart, the last sync cycle snapshot should be empty.
@@ -1404,11 +1399,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_FALSE(node->is_favicon_loading());
   ASSERT_FALSE(node->is_favicon_loaded());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->StartSyncService());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
@@ -1438,11 +1428,6 @@ IN_PROC_BROWSER_TEST_F(
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
 
   // Make sure the favicon gets loaded.
@@ -1528,11 +1513,6 @@ IN_PROC_BROWSER_TEST_F(
                    .bookmark()
                    .has_full_title());
   ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
   ASSERT_TRUE(
       BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
@@ -1580,11 +1560,6 @@ IN_PROC_BROWSER_TEST_F(
                    .has_full_title());
 
   ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
-  // to get a non-empty refresh token on startup.
-  GetClient(0)->SignInPrimaryAccount();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
   ASSERT_TRUE(
       BookmarkFaviconLoadedChecker(kSingleProfileIndex, GURL(kBookmarkPageUrl))
