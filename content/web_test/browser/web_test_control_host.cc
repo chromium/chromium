@@ -36,6 +36,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -1167,6 +1169,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     return;
 
   const bool main_window =
+      FrameTreeNode::From(frame)->frame_tree()->type() ==
+          FrameTree::Type::kPrimary &&
       WebContents::FromRenderFrameHost(frame) == main_window_->web_contents();
 
   RenderProcessHost* process_host = frame->GetProcess();
