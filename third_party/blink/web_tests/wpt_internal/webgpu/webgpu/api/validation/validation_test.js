@@ -4,7 +4,11 @@
 import { kMaxQueryCount } from '../../capability_info.js';
 import { GPUTest } from '../../gpu_test.js';
 
-export const kEncoderTypes = ['non-pass', 'compute pass', 'render pass', 'render bundle'];
+export const kRenderEncodeTypes = ['render pass', 'render bundle'];
+
+export const kProgrammableEncoderTypes = ['compute pass', ...kRenderEncodeTypes];
+
+export const kEncoderTypes = ['non-pass', ...kProgrammableEncoderTypes];
 
 export class ValidationTest extends GPUTest {
   createTextureWithState(state, descriptor) {
@@ -188,7 +192,7 @@ export class ValidationTest extends GPUTest {
 
   createNoOpRenderPipeline() {
     return this.device.createRenderPipeline({
-      vertexStage: {
+      vertex: {
         module: this.device.createShaderModule({
           code: '[[stage(vertex)]] fn main() -> void {}',
         }),
@@ -196,16 +200,16 @@ export class ValidationTest extends GPUTest {
         entryPoint: 'main',
       },
 
-      fragmentStage: {
+      fragment: {
         module: this.device.createShaderModule({
           code: '[[stage(fragment)]] fn main() -> void {}',
         }),
 
         entryPoint: 'main',
+        targets: [{ format: 'rgba8unorm' }],
       },
 
-      primitiveTopology: 'triangle-list',
-      colorStates: [{ format: 'rgba8unorm' }],
+      primitive: { topology: 'triangle-list' },
     });
   }
 

@@ -307,11 +307,11 @@ g.test('vertexAccess')
     }
 
     // Vertex buffer descriptors
-    const vertexBuffers = [];
+    const buffers = [];
     {
       let currAttribute = 0;
       for (let i = 0; i < bufferContents.length; i++) {
-        vertexBuffers.push({
+        buffers.push({
           arrayStride: attributesPerBuffer * typeInfo.size,
           stepMode: i === 0 ? 'instance' : 'vertex',
           attributes: Array(attributesPerBuffer)
@@ -332,7 +332,7 @@ g.test('vertexAccess')
     }
 
     const pipeline = t.device.createRenderPipeline({
-      vertexStage: {
+      vertex: {
         module: t.device.createShaderModule({
           code: `
             [[builtin(position)]] var<out> Position : vec4<f32>;
@@ -366,9 +366,10 @@ g.test('vertexAccess')
         }),
 
         entryPoint: 'main',
+        buffers,
       },
 
-      fragmentStage: {
+      fragment: {
         module: t.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor : vec4<f32>;
@@ -378,13 +379,10 @@ g.test('vertexAccess')
         }),
 
         entryPoint: 'main',
+        targets: [{ format: 'rgba8unorm' }],
       },
 
-      primitiveTopology: 'point-list',
-      colorStates: [{ format: 'rgba8unorm' }],
-      vertexState: {
-        vertexBuffers,
-      },
+      primitive: { topology: 'point-list' },
     });
 
     // Pipeline setup, texture setup

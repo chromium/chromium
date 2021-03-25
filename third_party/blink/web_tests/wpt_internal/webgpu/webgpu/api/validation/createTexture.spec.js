@@ -267,6 +267,72 @@ g.test('sampleCount,valid_sampleCount_with_other_parameter_varies')
     }, !success);
   });
 
+g.test('texture_size,default_value_and_smallest_size,uncompressed_format')
+  .desc(
+    `Test default values for height and depthOrArrayLayers for every dimension type and every uncompressed format.
+	  It also tests smallest size (lower bound) for every dimension type and every uncompressed format, while other texture_size tests are testing the upper bound.`
+  )
+  .cases(poptions('dimension', [undefined, ...kTextureDimensions]))
+  .subcases(() =>
+    params()
+      .combine(poptions('format', kUncompressedTextureFormats))
+      .combine(poptions('size', [[1], [1, 1], [1, 1, 1]]))
+  )
+  .fn(async t => {
+    const { dimension, format, size } = t.params;
+
+    await t.selectDeviceOrSkipTestCase(kAllTextureFormatInfo[format].extension);
+
+    const descriptor = {
+      size,
+      dimension,
+      format,
+      usage: GPUTextureUsage.SAMPLED,
+    };
+
+    t.device.createTexture(descriptor);
+  });
+
+g.test('texture_size,default_value_and_smallest_size,compressed_format')
+  .desc(
+    `Test default values for height and depthOrArrayLayers for every dimension type and every compressed format.
+	  It also tests smallest size (lower bound) for every dimension type and every compressed format, while other texture_size tests are testing the upper bound.`
+  )
+  .cases(poptions('dimension', [undefined, ...kTextureDimensions]))
+  .subcases(() =>
+    params()
+      .combine(poptions('format', kCompressedTextureFormats))
+      .expand(p => {
+        const { blockWidth, blockHeight } = kAllTextureFormatInfo[p.format];
+        return [
+          { size: [1], _success: false },
+          { size: [blockWidth], _success: false },
+          { size: [1, 1], _success: false },
+          { size: [blockWidth, blockHeight], _success: true },
+          { size: [1, 1, 1], _success: false },
+          { size: [blockWidth, blockHeight, 1], _success: true },
+        ];
+      })
+  )
+  .fn(async t => {
+    const { dimension, format, size, _success } = t.params;
+
+    const info = kCompressedTextureFormatInfo[format];
+
+    await t.selectDeviceOrSkipTestCase(info.extension);
+
+    const descriptor = {
+      size,
+      dimension,
+      format,
+      usage: GPUTextureUsage.SAMPLED,
+    };
+
+    t.expectValidationError(() => {
+      t.device.createTexture(descriptor);
+    }, !_success);
+  });
+
 g.test('texture_size,1d_texture')
   .desc(`Test texture size requirement for 1D texture`)
   .subcases(() =>

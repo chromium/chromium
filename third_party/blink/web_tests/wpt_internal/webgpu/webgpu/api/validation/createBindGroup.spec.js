@@ -317,3 +317,53 @@ TODO(#234): disallow zero-sized bindings`
       });
     }
   });
+
+g.test('minBindingSize')
+  .desc('Tests that minBindingSize is correctly enforced.')
+  .subcases(() =>
+    params()
+      .combine(poptions('minBindingSize', [undefined, 4, 256]))
+      .expand(({ minBindingSize }) =>
+        poptions(
+          'size',
+          minBindingSize !== undefined
+            ? [minBindingSize - 1, minBindingSize, minBindingSize + 1]
+            : [4, 256]
+        )
+      )
+  )
+  .fn(t => {
+    const { size, minBindingSize } = t.params;
+
+    const bindGroupLayout = t.device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: {
+            type: 'storage',
+            minBindingSize,
+          },
+        },
+      ],
+    });
+
+    const storageBuffer = t.device.createBuffer({
+      size,
+      usage: GPUBufferUsage.STORAGE,
+    });
+
+    t.expectValidationError(() => {
+      t.device.createBindGroup({
+        layout: bindGroupLayout,
+        entries: [
+          {
+            binding: 0,
+            resource: {
+              buffer: storageBuffer,
+            },
+          },
+        ],
+      });
+    }, minBindingSize !== undefined && size < minBindingSize);
+  });

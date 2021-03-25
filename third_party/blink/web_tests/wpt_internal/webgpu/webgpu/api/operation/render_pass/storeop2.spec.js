@@ -24,7 +24,7 @@ g.test('storeOp_controls_whether_1x1_drawn_quad_is_stored')
 
     // create render pipeline
     const renderPipeline = t.device.createRenderPipeline({
-      vertexStage: {
+      vertex: {
         module: t.device.createShaderModule({
           code: `
             [[builtin(position)]] var<out> Position : vec4<f32>;
@@ -44,7 +44,7 @@ g.test('storeOp_controls_whether_1x1_drawn_quad_is_stored')
         entryPoint: 'main',
       },
 
-      fragmentStage: {
+      fragment: {
         module: t.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor : vec4<f32>;
@@ -56,10 +56,10 @@ g.test('storeOp_controls_whether_1x1_drawn_quad_is_stored')
         }),
 
         entryPoint: 'main',
+        targets: [{ format: 'r8unorm' }],
       },
 
-      primitiveTopology: 'triangle-list',
-      colorStates: [{ format: 'r8unorm' }],
+      primitive: { topology: 'triangle-list' },
     });
 
     // encode pass and submit

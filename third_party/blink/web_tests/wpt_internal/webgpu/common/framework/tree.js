@@ -1,7 +1,6 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/
-import { compareQueries, Ordering } from './query/compare.js';
+ **/ import { compareQueries, Ordering } from './query/compare.js';
 import {
   TestQueryMultiCase,
   TestQuerySingleCase,
@@ -11,7 +10,7 @@ import {
 import { kBigSeparator, kWildcard, kPathSeparator, kParamSeparator } from './query/separators.js';
 import { stringifySingleParam } from './query/stringify_params.js';
 
-import { assert } from './util/util.js';
+import { assert, StacklessError } from './util/util.js';
 
 // `loadTreeForQuery()` loads a TestTree for a given queryToLoad.
 // The resulting tree is a linked-list all the way from `suite:*` to queryToLoad,
@@ -42,8 +41,8 @@ export class TestTree {
     this.root = root;
   }
 
-  iterateCollapsedQueries() {
-    return TestTree.iterateSubtreeCollapsedQueries(this.root);
+  iterateCollapsedQueries(includeEmptySubtrees) {
+    return TestTree.iterateSubtreeCollapsedQueries(this.root, includeEmptySubtrees);
   }
 
   iterateLeaves() {
@@ -67,14 +66,14 @@ export class TestTree {
     return TestTree.subtreeToString('(root)', this.root, '');
   }
 
-  static *iterateSubtreeCollapsedQueries(subtree) {
+  static *iterateSubtreeCollapsedQueries(subtree, includeEmptySubtrees) {
     for (const [, child] of subtree.children) {
       if ('children' in child) {
         // Is a subtree
-        if (!child.collapsible) {
-          yield* TestTree.iterateSubtreeCollapsedQueries(child);
-        } else if (child.children.size) {
-          // Don't yield empty subtrees (e.g. files with no tests)
+        if (child.children.size > 0 && !child.collapsible) {
+          yield* TestTree.iterateSubtreeCollapsedQueries(child, includeEmptySubtrees);
+        } else if (child.children.size > 0 || includeEmptySubtrees) {
+          // Don't yield empty subtrees (e.g. files with no tests) unless includeEmptySubtrees
           yield child.query;
         }
       } else {
@@ -157,6 +156,9 @@ export async function loadTreeForQuery(loader, queryToLoad, subqueriesToExpand) 
       // Entry is a README that is an ancestor or descendant of the query.
       // (It's included for display in the standalone runner.)
 
+      // Mark any applicable subqueriesToExpand as seen.
+      isCollapsible(new TestQueryMultiFile(suite, entry.file));
+
       // readmeSubtree is suite:a,b,*
       // (This is always going to dedup with a file path, if there are any test spec files under
       // the directory that has the README).
@@ -213,12 +215,13 @@ export async function loadTreeForQuery(loader, queryToLoad, subqueriesToExpand) 
   }
 
   for (const [i, sq] of subqueriesToExpandEntries) {
-    const seen = seenSubqueriesToExpand[i];
-    assert(
-      seen,
-      `subqueriesToExpand entry did not match anything (can happen if the subquery was larger \
-than one file, or due to overlap with another subquery): ${sq.toString()}`
-    );
+    const subquerySeen = seenSubqueriesToExpand[i];
+    if (!subquerySeen) {
+      throw new StacklessError(
+        `subqueriesToExpand entry did not match anything \
+(could be wrong, or could be redundant with a previous subquery):\n  ${sq.toString()}`
+      );
+    }
   }
   assert(foundCase, 'Query does not match any cases');
 
@@ -364,7 +367,7 @@ function insertLeaf(parent, query, t) {
   const leaf = {
     readableRelativeName: readableNameForCase(query),
     query,
-    run: rec => t.run(rec),
+    run: (rec, expectations) => t.run(rec, query, expectations || []),
   };
 
   assert(!parent.children.has(key));

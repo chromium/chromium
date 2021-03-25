@@ -3,14 +3,20 @@
  **/ export const description = `
 copyImageBitmapToTexture from ImageBitmaps created from various sources.
 
-TODO: additional sources
+TODO: Test ImageBitmap generated from all possible ImageBitmapSource, relevant ImageBitmapOptions
+    (https://html.spec.whatwg.org/multipage/imagebitmap-and-animations.html#images-2)
+    and various source filetypes and metadata (weird dimensions, EXIF orientations, video rotations
+    and visible/crop rectangles, etc. (In theory these things are handled inside createImageBitmap,
+    but in theory could affect the internal representation of the ImageBitmap.)
+
+TODO: Test zero-sized copies from all sources (just make sure params cover it) (e.g. 0x0, 0x4, 4x0).
 `;
-import { poptions, params } from '../../common/framework/params_builder.js';
-import { makeTestGroup } from '../../common/framework/test_group.js';
-import { unreachable } from '../../common/framework/util/util.js';
-import { kUncompressedTextureFormatInfo } from '../capability_info.js';
-import { GPUTest } from '../gpu_test.js';
-import { kTexelRepresentationInfo } from '../util/texture/texel_data.js';
+import { poptions, params } from '../../../common/framework/params_builder.js';
+import { makeTestGroup } from '../../../common/framework/test_group.js';
+import { unreachable } from '../../../common/framework/util/util.js';
+import { kUncompressedTextureFormatInfo } from '../../capability_info.js';
+import { GPUTest } from '../../gpu_test.js';
+import { kTexelRepresentationInfo } from '../../util/texture/texel_data.js';
 
 function calculateRowPitch(width, bytesPerPixel) {
   const bytesPerRow = width * bytesPerPixel;

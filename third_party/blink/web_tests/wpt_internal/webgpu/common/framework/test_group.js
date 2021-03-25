@@ -1,11 +1,13 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { SkipTestCase } from './fixture.js';
+ **/ import { SkipTestCase, UnexpectedPassError } from './fixture.js';
 import { extractPublicParams, mergeParams } from './params_utils.js';
+import { compareQueries, Ordering } from './query/compare.js';
+import { TestQuerySingleCase } from './query/query.js';
 import { kPathSeparator } from './query/separators.js';
 import { stringifyPublicParams, stringifyPublicParamsUniquely } from './query/stringify_params.js';
 import { validQueryPart } from './query/validQueryPart.js';
-import { assert } from './util/util.js';
+import { assert, unreachable } from './util/util.js';
 
 export function makeTestGroup(fixture) {
   return new TestGroup(fixture);
@@ -156,23 +158,29 @@ class TestBuilder {
         params,
         this.subcaseParams,
         this.fixture,
-        this.testFn
+        this.testFn,
+        this.testCreationStack
       );
     }
   }
 }
 
 class RunCaseSpecific {
-  constructor(testPath, params, subParamGen, fixture, fn) {
+  constructor(testPath, params, subParamGen, fixture, fn, testCreationStack) {
     this.id = { test: testPath, params: extractPublicParams(params) };
     this.params = params;
     this.subParamGen = subParamGen;
     this.fixture = fixture;
     this.fn = fn;
+    this.testCreationStack = testCreationStack;
   }
 
-  async runTest(rec, params, throwSkip) {
+  async runTest(rec, params, throwSkip, expectedStatus) {
     try {
+      rec.beginSubCase();
+      if (expectedStatus === 'skip') {
+        throw new SkipTestCase('Skipped by expectations');
+      }
       const inst = new this.fixture(rec, params);
 
       try {
@@ -192,10 +200,43 @@ class RunCaseSpecific {
         throw ex;
       }
       rec.threw(ex);
+    } finally {
+      try {
+        rec.endSubCase(expectedStatus);
+      } catch (ex) {
+        assert(ex instanceof UnexpectedPassError);
+        ex.message = `Testcase passed unexpectedly.`;
+        ex.stack = this.testCreationStack.stack;
+        rec.warn(ex);
+      }
     }
   }
 
-  async run(rec) {
+  async run(rec, selfQuery, expectations) {
+    const getExpectedStatus = selfQueryWithSubParams => {
+      let didSeeFail = false;
+      for (const exp of expectations) {
+        const ordering = compareQueries(exp.query, selfQueryWithSubParams);
+        if (ordering === Ordering.Unordered || ordering === Ordering.StrictSubset) {
+          continue;
+        }
+
+        switch (exp.expectation) {
+          // Skip takes precendence. If there is any expectation indicating a skip,
+          // signal it immediately.
+          case 'skip':
+            return 'skip';
+          case 'fail':
+            // Otherwise, indicate that we might expect a failure.
+            didSeeFail = true;
+            break;
+          default:
+            unreachable();
+        }
+      }
+      return didSeeFail ? 'fail' : 'pass';
+    };
+
     rec.start();
     if (this.subParamGen) {
       let totalCount = 0;
@@ -203,7 +244,15 @@ class RunCaseSpecific {
       for (const subParams of this.subParamGen(this.params)) {
         rec.info(new Error('subcase: ' + stringifyPublicParams(subParams)));
         try {
-          await this.runTest(rec, mergeParams(this.params, subParams), true);
+          const params = mergeParams(this.params, subParams);
+          const subcaseQuery = new TestQuerySingleCase(
+            selfQuery.suite,
+            selfQuery.filePathParts,
+            selfQuery.testPathParts,
+            params
+          );
+
+          await this.runTest(rec, params, true, getExpectedStatus(subcaseQuery));
         } catch (ex) {
           if (ex instanceof SkipTestCase) {
             // Convert SkipTestCase to info messages
@@ -221,7 +270,7 @@ class RunCaseSpecific {
         rec.skipped(new SkipTestCase('all subcases were skipped'));
       }
     } else {
-      await this.runTest(rec, this.params, false);
+      await this.runTest(rec, this.params, false, getExpectedStatus(selfQuery));
     }
     rec.finish();
   }

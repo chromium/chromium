@@ -1,6 +1,8 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ export const description = '';
+ **/ export const description = `
+Tests for capability checking for features enabling optional query types.
+`;
 import { params, pbool, poptions } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
 import { ValidationTest } from '../../validation_test.js';
@@ -14,6 +16,10 @@ Tests that creating query set shouldn't be valid without the required feature en
 - createQuerySet
   - type {occlusion, pipeline-statistics, timestamp}
   - x= {pipeline statistics, timestamp} query {enable, disable}
+
+TODO: This test should expect *synchronous* exceptions, not validation errors, per
+<https://github.com/gpuweb/gpuweb/blob/main/design/ErrorConventions.md>.
+As of this writing, the spec needs to be fixed as well.
   `
   )
   .params(

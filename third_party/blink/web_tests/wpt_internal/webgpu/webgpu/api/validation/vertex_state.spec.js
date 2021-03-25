@@ -55,14 +55,15 @@ function addTestAttributes(
 }
 
 class F extends ValidationTest {
-  getDescriptor(vertexState, vertexShaderCode) {
+  getDescriptor(buffers, vertexShaderCode) {
     const descriptor = {
-      vertexStage: {
+      vertex: {
         module: this.device.createShaderModule({ code: vertexShaderCode }),
         entryPoint: 'main',
+        buffers,
       },
 
-      fragmentStage: {
+      fragment: {
         module: this.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor : vec4<f32>;
@@ -73,17 +74,16 @@ class F extends ValidationTest {
         }),
 
         entryPoint: 'main',
+        targets: [{ format: 'rgba8unorm' }],
       },
 
-      primitiveTopology: 'triangle-list',
-      colorStates: [{ format: 'rgba8unorm' }],
-      vertexState,
+      primitive: { topology: 'triangle-list' },
     };
 
     return descriptor;
   }
 
-  testVertexState(success, vertexState, vertexShader = VERTEX_SHADER_CODE_WITH_NO_INPUT) {
+  testVertexState(success, buffers, vertexShader = VERTEX_SHADER_CODE_WITH_NO_INPUT) {
     const vsModule = this.device.createShaderModule({ code: vertexShader });
     const fsModule = this.device.createShaderModule({
       code: `
@@ -95,19 +95,19 @@ class F extends ValidationTest {
 
     this.expectValidationError(() => {
       this.device.createRenderPipeline({
-        vertexState,
-        vertexStage: {
+        vertex: {
           module: vsModule,
           entryPoint: 'main',
+          buffers,
         },
 
-        fragmentStage: {
+        fragment: {
           module: fsModule,
           entryPoint: 'main',
+          targets: [{ format: 'rgba8unorm' }],
         },
 
-        primitiveTopology: 'triangle-list',
-        colorStates: [{ format: 'rgba8unorm' }],
+        primitive: { topology: 'triangle-list' },
       });
     }, !success);
   }
@@ -164,7 +164,7 @@ g.test('max_vertex_buffer_limit')
     }
 
     const success = count <= kMaxVertexBuffers;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('max_vertex_attribute_limit')
@@ -201,7 +201,7 @@ g.test('max_vertex_attribute_limit')
     }
 
     const success = attribCount <= kMaxVertexAttributes;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('max_vertex_buffer_array_stride_limit')
@@ -231,7 +231,7 @@ g.test('max_vertex_buffer_array_stride_limit')
     vertexBuffers[vertexBufferIndex] = { arrayStride, attributes: [] };
 
     const success = arrayStride <= kMaxVertexBufferArrayStride;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('vertex_buffer_array_stride_limit_alignment')
@@ -262,7 +262,7 @@ g.test('vertex_buffer_array_stride_limit_alignment')
     vertexBuffers[vertexBufferIndex] = { arrayStride, attributes: [] };
 
     const success = arrayStride % 4 === 0;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('vertex_attribute_shaderLocation_limit')
@@ -301,7 +301,7 @@ g.test('vertex_attribute_shaderLocation_limit')
     vertexBuffers[vertexBufferIndex] = { arrayStride: 256, attributes };
 
     const success = testShaderLocation < kMaxVertexAttributes;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('vertex_attribute_shaderLocation_unique')
@@ -366,7 +366,7 @@ g.test('vertex_attribute_shaderLocation_unique')
     // Note that an empty vertex shader will be used so errors only happens because of the conflict
     // in the vertex state.
     const success = shaderLocationA !== shaderLocationB;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('vertex_shader_input_location_limit')
@@ -403,7 +403,7 @@ g.test('vertex_shader_input_location_limit')
     ];
 
     const success = testLocation < kMaxVertexAttributes;
-    t.testVertexState(success, { vertexBuffers }, shader);
+    t.testVertexState(success, vertexBuffers, shader);
   });
 
 g.test('vertex_shader_input_location_in_vertex_state')
@@ -445,7 +445,7 @@ g.test('vertex_shader_input_location_in_vertex_state')
       extraAttributeSkippedLocations: [testShaderLocation],
     });
 
-    t.testVertexState(false, { vertexBuffers }, shader);
+    t.testVertexState(false, vertexBuffers, shader);
 
     // Add an attribute for the test location and try again.
     addTestAttributes(attributes, {
@@ -453,7 +453,7 @@ g.test('vertex_shader_input_location_in_vertex_state')
       testAttributeAtStart,
     });
 
-    t.testVertexState(true, { vertexBuffers }, shader);
+    t.testVertexState(true, vertexBuffers, shader);
   });
 
 g.test('vertex_shader_type_matches_attribute_format')
@@ -496,14 +496,12 @@ g.test('vertex_shader_type_matches_attribute_format')
     const success = requiredBaseType === shaderBaseType;
     t.testVertexState(
       success,
-      {
-        vertexBuffers: [
-          {
-            arrayStride: 0,
-            attributes: [{ offset: 0, shaderLocation: 0, format }],
-          },
-        ],
-      },
+      [
+        {
+          arrayStride: 0,
+          attributes: [{ offset: 0, shaderLocation: 0, format }],
+        },
+      ],
 
       shader
     );
@@ -567,7 +565,7 @@ g.test('vertex_attribute_offset_alignment')
     vertexBuffers[vertexBufferIndex] = { arrayStride, attributes };
 
     const success = offset % kVertexFormatInfo[format].bytesPerComponent === 0;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('vertex_attribute_contained_in_stride')
@@ -639,7 +637,7 @@ g.test('vertex_attribute_contained_in_stride')
     const limit = arrayStride === 0 ? kMaxVertexBufferArrayStride : arrayStride;
 
     const success = offset + formatSize <= limit;
-    t.testVertexState(success, { vertexBuffers });
+    t.testVertexState(success, vertexBuffers);
   });
 
 g.test('many_attributes_overlapping')
@@ -652,7 +650,5 @@ g.test('many_attributes_overlapping')
       attributes.push({ format: formats[i % 3], offset: i * 4, shaderLocation: i });
     }
 
-    t.testVertexState(true, {
-      vertexBuffers: [{ arrayStride: 0, attributes }],
-    });
+    t.testVertexState(true, [{ arrayStride: 0, attributes }]);
   });

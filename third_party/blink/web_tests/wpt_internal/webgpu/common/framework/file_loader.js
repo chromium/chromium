@@ -3,6 +3,7 @@
  **/ import { parseQuery } from './query/parseQuery.js';
 
 import { loadTreeForQuery } from './tree.js';
+import { assert } from './util/util.js';
 
 // A listing file, e.g. either of:
 // - `src/webgpu/listing.ts` (which is dynamically computed, has a Promise<TestSuiteListing>)
@@ -18,7 +19,11 @@ export class TestFileLoader {
     return loadTreeForQuery(
       this,
       query,
-      subqueriesToExpand.map(q => parseQuery(q))
+      subqueriesToExpand.map(s => {
+        const q = parseQuery(s);
+        assert(q.level >= 2, () => `subqueriesToExpand entries should not be multi-file:\n  ${q}`);
+        return q;
+      })
     );
   }
 

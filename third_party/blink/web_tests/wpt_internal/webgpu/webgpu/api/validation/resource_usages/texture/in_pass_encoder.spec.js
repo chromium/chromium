@@ -951,7 +951,7 @@ g.test('unused_bindings_in_pipeline')
           },
         })
       : t.device.createRenderPipeline({
-          vertexStage: {
+          vertex: {
             module: t.device.createShaderModule({
               code: wgslVertex,
             }),
@@ -959,16 +959,16 @@ g.test('unused_bindings_in_pipeline')
             entryPoint: 'main',
           },
 
-          fragmentStage: {
+          fragment: {
             module: t.device.createShaderModule({
               code: wgslFragment,
             }),
 
             entryPoint: 'main',
+            targets: [{ format: 'rgba8unorm' }],
           },
 
-          primitiveTopology: 'triangle-list',
-          colorStates: [{ format: 'rgba8unorm' }],
+          primitive: { topology: 'triangle-list' },
         });
 
     const encoder = t.device.createCommandEncoder();

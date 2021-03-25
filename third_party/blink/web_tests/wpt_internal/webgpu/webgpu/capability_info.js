@@ -377,6 +377,9 @@ export const kVertexFormats = keysOf(kVertexFormatInfo);
 
 // Bindings
 
+// Dynamic buffer offsets require offset to be divisible by 256
+export const kMinDynamicBufferOffsetAlignment = 256;
+
 export const kMaxBindingsPerBindGroup = 16;
 
 export const kPerStageBindingLimits = {

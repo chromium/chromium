@@ -5,8 +5,7 @@ copyTextureToBuffer and copyBufferToTexture validation tests not covered by
 the general image_copy tests, or by destroyed,*.
 
 TODO:
-Add tests to cover the validation rule that source.offset is a multiple of the texel block size of
-destination.texture.[[format]].
+- Move all the tests here to image_copy/ and test writeTexture() with depth/stencil formats.
 `;
 import { poptions, params } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
@@ -29,7 +28,7 @@ class ImageCopyTest extends ValidationTest {
     }, !isSuccess);
   }
 
-  testCopyTexturetoBuffer(source, destination, copySize, isSuccess) {
+  testCopyTextureToBuffer(source, destination, copySize, isSuccess) {
     const encoder = this.device.createCommandEncoder();
     encoder.copyTextureToBuffer(source, destination, copySize);
     this.expectValidationError(() => {
@@ -51,6 +50,7 @@ g.test('depth_stencil_format,copy_usage_and_aspect')
   .subcases(() => params().combine(poptions('aspect', ['all', 'depth-only', 'stencil-only'])))
   .fn(async t => {
     const { format, aspect } = t.params;
+    await t.selectDeviceForTextureFormatOrSkipTestCase(format);
 
     const textureSize = { width: 1, height: 1, depthOrArrayLayers: 1 };
     const texture = t.device.createTexture({
@@ -71,7 +71,7 @@ g.test('depth_stencil_format,copy_usage_and_aspect')
 
     {
       const success = depthStencilBufferTextureCopySupported('CopyT2B', format, aspect);
-      t.testCopyTexturetoBuffer({ texture, aspect }, { buffer }, textureSize, success);
+      t.testCopyTextureToBuffer({ texture, aspect }, { buffer }, textureSize, success);
     }
   });
 
@@ -93,9 +93,9 @@ g.test('depth_stencil_format,copy_buffer_size')
       .combine(poptions('format', kDepthStencilFormats))
       .combine(poptions('aspect', ['depth-only', 'stencil-only']))
       .combine(poptions('copyType', ['CopyB2T', 'CopyT2B']))
-      .filter(param => {
-        return depthStencilBufferTextureCopySupported(param.copyType, param.format, param.aspect);
-      })
+      .filter(param =>
+        depthStencilBufferTextureCopySupported(param.copyType, param.format, param.aspect)
+      )
   )
   .subcases(() =>
     params().combine(
@@ -108,6 +108,7 @@ g.test('depth_stencil_format,copy_buffer_size')
   )
   .fn(async t => {
     const { format, aspect, copyType, copySize } = t.params;
+    await t.selectDeviceForTextureFormatOrSkipTestCase(format);
 
     const texture = t.device.createTexture({
       size: copySize,
@@ -151,18 +152,82 @@ g.test('depth_stencil_format,copy_buffer_size')
       );
     } else {
       assert(copyType === 'CopyT2B');
-      t.testCopyTexturetoBuffer(
+      t.testCopyTextureToBuffer(
         { texture, aspect },
         { buffer: bigEnoughBuffer, bytesPerRow, rowsPerImage },
         copySize,
         true
       );
 
-      t.testCopyTexturetoBuffer(
+      t.testCopyTextureToBuffer(
         { texture, aspect },
         { buffer: smallerBuffer, bytesPerRow, rowsPerImage },
         copySize,
         false
+      );
+    }
+  });
+
+g.test('depth_stencil_format,copy_buffer_offset')
+  .desc(
+    `
+    Validate for every depth stencil formats the buffer offset must be a multiple of 4 in
+    copyBufferToTexture() and copyTextureToBuffer().
+    `
+  )
+  .cases(
+    params()
+      .combine(poptions('format', kDepthStencilFormats))
+      .combine(poptions('aspect', ['depth-only', 'stencil-only']))
+      .combine(poptions('copyType', ['CopyB2T', 'CopyT2B']))
+      .filter(param =>
+        depthStencilBufferTextureCopySupported(param.copyType, param.format, param.aspect)
+      )
+  )
+  .subcases(() => poptions('offset', [1, 2, 4, 6, 8]))
+  .fn(async t => {
+    const { format, aspect, copyType, offset } = t.params;
+    await t.selectDeviceForTextureFormatOrSkipTestCase(format);
+
+    const textureSize = { width: 4, height: 4, depthOrArrayLayers: 1 };
+
+    const texture = t.device.createTexture({
+      size: textureSize,
+      format,
+      usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST,
+    });
+
+    const texelAspectSize = depthStencilFormatAspectSize(format, aspect);
+    assert(texelAspectSize > 0);
+
+    const bytesPerRow = align(texelAspectSize * textureSize.width, kBytesPerRowAlignment);
+    const rowsPerImage = textureSize.height;
+    const minimumBufferSize =
+      bytesPerRow * (rowsPerImage * textureSize.depthOrArrayLayers - 1) +
+      align(texelAspectSize * textureSize.width, kBufferCopyAlignment);
+    assert(minimumBufferSize > kBufferCopyAlignment);
+
+    const buffer = t.device.createBuffer({
+      size: align(minimumBufferSize + offset, kBufferCopyAlignment),
+      usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST,
+    });
+
+    const isSuccess = offset % 4 === 0;
+
+    if (copyType === 'CopyB2T') {
+      t.testCopyBufferToTexture(
+        { buffer, offset, bytesPerRow, rowsPerImage },
+        { texture, aspect },
+        textureSize,
+        isSuccess
+      );
+    } else {
+      assert(copyType === 'CopyT2B');
+      t.testCopyTextureToBuffer(
+        { texture, aspect },
+        { buffer, offset, bytesPerRow, rowsPerImage },
+        textureSize,
+        isSuccess
       );
     }
   });

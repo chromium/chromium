@@ -28,6 +28,36 @@ class F extends ValidationTest {
 
 export const g = makeTestGroup(F);
 
+g.test('occlusion_query,query_type')
+  .desc(
+    `
+Tests that set occlusion query set with all types in render pass descriptor:
+- type {occlusion (control case), pipeline statistics, timestamp}
+- {undefined} for occlusion query set in render pass descriptor
+  `
+  )
+  .subcases(() => poptions('type', ['undefined'].concat(kQueryTypes)))
+  .unimplemented();
+
+g.test('occlusion_query,invalid_query_set')
+  .desc(
+    `
+Tests that begin occlusion query with a invalid query set that failed during creation.
+  `
+  )
+  .subcases(() => poptions('querySetState', ['valid', 'invalid']))
+  .unimplemented();
+
+g.test('occlusion_query,query_index')
+  .desc(
+    `
+Tests that begin occlusion query with query index:
+- queryIndex {in, out of} range for GPUQuerySet
+  `
+  )
+  .subcases(() => poptions('queryIndex', [0, 2]))
+  .unimplemented();
+
 g.test('writeTimestamp,query_type_and_index')
   .desc(
     `
@@ -60,10 +90,10 @@ Tests that write timestamp to all types of query set on all possible encoders:
     }, type !== 'timestamp' || queryIndex >= count);
   });
 
-g.test('writeTimestamp,invalid_queryset')
+g.test('writeTimestamp,invalid_query_set')
   .desc(
     `
-Tests that write timestamp to a invalid queryset that failed during creation:
+Tests that write timestamp to a invalid query set that failed during creation:
 - x= {non-pass, compute, render} enconder
   `
   )

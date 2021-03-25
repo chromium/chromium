@@ -1,6 +1,8 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
+Note: render pass 'occlusionQuerySet' validation is tested in queries/general.spec.ts
+
 TODO: check for duplication (render_pass/, etc.), plan, and implement.
 Note possibly a lot of this should be operation tests instead.
 Notes:

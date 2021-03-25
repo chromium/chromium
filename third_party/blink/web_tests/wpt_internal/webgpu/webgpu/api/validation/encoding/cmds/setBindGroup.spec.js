@@ -6,116 +6,149 @@ setBindGroup validation tests.
 TODO: merge these notes and implement.
 > (Note: If there are errors with using certain binding types in certain passes, test those in the file for that pass type, not here.)
 >
-> All x= {compute pass, render pass, render bundle}
->
-> - setBindGroup
->     - x= {compute pass, render pass}
->     - index {0, max, max+1}
->     - GPUBindGroup object {valid, invalid, valid but refers to destroyed {buffer, texture}}
->     - bind group {with, without} dynamic offsets with {too few, too many} dynamicOffsets entries
->         - x= {sequence, Uint32Array} overload
->     - iff minBufferBindingSize is specified, buffer size is correctly validated against it (make sure static offset + dynamic offset are both accounted for)
 > - state tracking (probably separate file)
 >     - x= {compute pass, render pass}
 >     - {null, compatible, incompatible} current pipeline (should have no effect without draw/dispatch)
 >     - setBindGroup in different orders (e.g. 0,1,2 vs 2,0,1)
 `;
-import { poptions, params } from '../../../../../common/framework/params_builder.js';
+import { poptions, params, pbool } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
-import { ValidationTest } from '../../validation_test.js';
+import { range, unreachable } from '../../../../../common/framework/util/util.js';
+import { kMinDynamicBufferOffsetAlignment } from '../../../../capability_info.js';
+import { kProgrammableEncoderTypes, ValidationTest } from '../../validation_test.js';
 
 class F extends ValidationTest {
-  makeAttachmentTexture() {
-    return this.device.createTexture({
-      format: 'rgba8unorm',
-      size: { width: 16, height: 16, depthOrArrayLayers: 1 },
-      usage: GPUTextureUsage.RENDER_ATTACHMENT,
-    });
+  encoderTypeToStageFlag(encoderType) {
+    switch (encoderType) {
+      case 'compute pass':
+        return GPUShaderStage.COMPUTE;
+      case 'render pass':
+      case 'render bundle':
+        return GPUShaderStage.FRAGMENT;
+      default:
+        unreachable('Unknown encoder type');
+    }
   }
 
-  testComputePass(bindGroup, dynamicOffsets) {
-    const encoder = this.device.createCommandEncoder();
-    const computePass = encoder.beginComputePass();
-    computePass.setBindGroup(0, bindGroup, dynamicOffsets);
-    computePass.endPass();
-    encoder.finish();
+  createBindingResourceWithState(resourceType, state) {
+    switch (resourceType) {
+      case 'texture': {
+        const texture = this.createTextureWithState('valid');
+        const view = texture.createView();
+        if (state === 'destroyed') {
+          texture.destroy();
+        }
+        return view;
+      }
+      case 'buffer':
+        return {
+          buffer: this.createBufferWithState(state, {
+            size: 4,
+            usage: GPUBufferUsage.STORAGE,
+          }),
+        };
+
+      default:
+        unreachable('unknown resource type');
+    }
   }
 
-  testRenderPass(bindGroup, dynamicOffsets) {
-    const encoder = this.device.createCommandEncoder();
-    const renderPass = encoder.beginRenderPass({
-      colorAttachments: [
-        {
-          attachment: this.makeAttachmentTexture().createView(),
-          loadValue: { r: 1.0, g: 0.0, b: 0.0, a: 1.0 },
-        },
-      ],
+  createBindGroup(state, resourceType, encoderType, indices) {
+    if (state === 'invalid') {
+      this.device.pushErrorScope('validation');
+      indices = new Array(indices.length + 1).fill(0);
+    }
+
+    const layout = this.device.createBindGroupLayout({
+      entries: indices.map(binding => ({
+        binding,
+        visibility: this.encoderTypeToStageFlag(encoderType),
+        ...(resourceType === 'buffer' ? { buffer: { type: 'storage' } } : { texture: {} }),
+      })),
     });
 
-    renderPass.setBindGroup(0, bindGroup, dynamicOffsets);
-    renderPass.endPass();
-    encoder.finish();
-  }
-
-  testRenderBundle(bindGroup, dynamicOffsets) {
-    const encoder = this.device.createRenderBundleEncoder({
-      colorFormats: ['rgba8unorm'],
+    const bindGroup = this.device.createBindGroup({
+      layout,
+      entries: indices.map(binding => ({
+        binding,
+        resource: this.createBindingResourceWithState(
+          resourceType,
+          state === 'destroyed' ? state : 'valid'
+        ),
+      })),
     });
 
-    encoder.setBindGroup(0, bindGroup, dynamicOffsets);
-    encoder.finish();
+    if (state === 'invalid') {
+      this.device.popErrorScope();
+    }
+    return bindGroup;
   }
 }
 
 export const g = makeTestGroup(F);
 
-g.test('dynamic_offsets_passed_but_not_expected,compute_pass')
-  .params(poptions('type', ['compute', 'renderpass', 'renderbundle']))
+g.test('state_and_binding_index')
+  .desc('Tests that setBindGroup correctly handles {valid, invalid} bindGroups.')
+  .cases(
+    params()
+      .combine(poptions('encoderType', kProgrammableEncoderTypes))
+      .combine(poptions('state', ['valid', 'invalid', 'destroyed']))
+      .combine(poptions('resourceType', ['buffer', 'texture']))
+  )
   .fn(async t => {
-    const bindGroupLayout = t.device.createBindGroupLayout({ entries: [] });
-    const bindGroup = t.device.createBindGroup({ layout: bindGroupLayout, entries: [] });
+    const { encoderType, state, resourceType } = t.params;
+    const { maxBindGroups } = t.device.adapter.limits || { maxBindGroups: 4 };
 
-    const { type } = t.params;
+    async function runTest(index) {
+      const { encoder, finish } = t.createEncoder(encoderType);
+      encoder.setBindGroup(index, t.createBindGroup(state, resourceType, encoderType, [index]));
+
+      const shouldError = index >= maxBindGroups;
+
+      if (!shouldError && state === 'destroyed') {
+        t.device.pushErrorScope('validation');
+        const commandBuffer = finish();
+        const error = await t.device.popErrorScope();
+        t.expect(error === null, `finish() should not fail, but failed with ${error}`);
+        t.expectValidationError(() => {
+          t.queue.submit([commandBuffer]);
+        });
+      } else {
+        t.expectValidationError(() => {
+          t.debug('here');
+          finish();
+        }, shouldError || state !== 'valid');
+      }
+    }
+
+    // TODO: move to subcases() once we can query the device limits
+    for (const index of [1, maxBindGroups - 1, maxBindGroups]) {
+      t.debug(`test bind group index ${index}`);
+      await runTest(index);
+    }
+  });
+
+g.test('dynamic_offsets_passed_but_not_expected')
+  .desc('Tests that setBindGroup correctly errors on unexpected dynamicOffsets.')
+  .cases(poptions('encoderType', kProgrammableEncoderTypes))
+  .fn(async t => {
+    const { encoderType } = t.params;
+    const bindGroup = t.createBindGroup('valid', 'buffer', encoderType, []);
     const dynamicOffsets = [0];
 
+    const { encoder, finish } = t.createEncoder(encoderType);
+    encoder.setBindGroup(0, bindGroup, dynamicOffsets);
+
     t.expectValidationError(() => {
-      if (type === 'compute') {
-        const encoder = t.device.createCommandEncoder();
-        const computePass = encoder.beginComputePass();
-        computePass.setBindGroup(0, bindGroup, dynamicOffsets);
-        computePass.endPass();
-        encoder.finish();
-      } else if (type === 'renderpass') {
-        const encoder = t.device.createCommandEncoder();
-        const renderPass = encoder.beginRenderPass({
-          colorAttachments: [
-            {
-              attachment: t.makeAttachmentTexture().createView(),
-              loadValue: { r: 1.0, g: 0.0, b: 0.0, a: 1.0 },
-            },
-          ],
-        });
-
-        renderPass.setBindGroup(0, bindGroup, dynamicOffsets);
-        renderPass.endPass();
-        encoder.finish();
-      } else if (type === 'renderbundle') {
-        const encoder = t.device.createRenderBundleEncoder({
-          colorFormats: ['rgba8unorm'],
-        });
-
-        encoder.setBindGroup(0, bindGroup, dynamicOffsets);
-        encoder.finish();
-      } else {
-        t.fail();
-      }
+      finish();
     });
   });
 
 g.test('dynamic_offsets_match_expectations_in_pass_encoder')
-  .params(
+  .desc('Tests that given dynamicOffsets match the specified bindGroup.')
+  .cases(
     params()
-      .combine(poptions('type', ['compute', 'renderpass', 'renderbundle']))
+      .combine(poptions('encoderType', kProgrammableEncoderTypes))
       .combine([
         { dynamicOffsets: [256, 0], _success: true }, // Dynamic offsets aligned
         { dynamicOffsets: [1, 2], _success: false }, // Dynamic offsets not aligned
@@ -135,37 +168,40 @@ g.test('dynamic_offsets_match_expectations_in_pass_encoder')
         { dynamicOffsets: [0, 1024], _success: false },
         { dynamicOffsets: [0, 0xffffffff], _success: false },
       ])
+      .combine(pbool('useU32array'))
   )
   .fn(async t => {
-    // Dynamic buffer offsets require offset to be divisible by 256
-    const MIN_DYNAMIC_BUFFER_OFFSET_ALIGNMENT = 256;
-    const BINDING_SIZE = 9;
+    const kBindingSize = 9;
 
     const bindGroupLayout = t.device.createBindGroupLayout({
       entries: [
         {
           binding: 0,
           visibility: GPUShaderStage.COMPUTE | GPUShaderStage.FRAGMENT,
-          type: 'uniform-buffer',
-          hasDynamicOffset: true,
+          buffer: {
+            type: 'uniform',
+            hasDynamicOffset: true,
+          },
         },
 
         {
           binding: 1,
           visibility: GPUShaderStage.COMPUTE | GPUShaderStage.FRAGMENT,
-          type: 'storage-buffer',
-          hasDynamicOffset: true,
+          buffer: {
+            type: 'storage',
+            hasDynamicOffset: true,
+          },
         },
       ],
     });
 
     const uniformBuffer = t.device.createBuffer({
-      size: 2 * MIN_DYNAMIC_BUFFER_OFFSET_ALIGNMENT + 8,
+      size: 2 * kMinDynamicBufferOffsetAlignment + 8,
       usage: GPUBufferUsage.UNIFORM,
     });
 
     const storageBuffer = t.device.createBuffer({
-      size: 2 * MIN_DYNAMIC_BUFFER_OFFSET_ALIGNMENT + 8,
+      size: 2 * kMinDynamicBufferOffsetAlignment + 8,
       usage: GPUBufferUsage.STORAGE,
     });
 
@@ -176,7 +212,7 @@ g.test('dynamic_offsets_match_expectations_in_pass_encoder')
           binding: 0,
           resource: {
             buffer: uniformBuffer,
-            size: BINDING_SIZE,
+            size: kBindingSize,
           },
         },
 
@@ -184,26 +220,106 @@ g.test('dynamic_offsets_match_expectations_in_pass_encoder')
           binding: 1,
           resource: {
             buffer: storageBuffer,
-            size: BINDING_SIZE,
+            size: kBindingSize,
           },
         },
       ],
     });
 
-    const { type, dynamicOffsets, _success } = t.params;
+    const { encoderType, dynamicOffsets, useU32array, _success } = t.params;
+
+    const { encoder, finish } = t.createEncoder(encoderType);
+    if (useU32array) {
+      encoder.setBindGroup(0, bindGroup, new Uint32Array(dynamicOffsets), 0, dynamicOffsets.length);
+    } else {
+      encoder.setBindGroup(0, bindGroup, dynamicOffsets);
+    }
 
     t.expectValidationError(() => {
-      if (type === 'compute') {
-        t.testComputePass(bindGroup, dynamicOffsets);
-      } else if (type === 'renderpass') {
-        t.testRenderPass(bindGroup, dynamicOffsets);
-      } else if (type === 'renderbundle') {
-        t.testRenderBundle(bindGroup, dynamicOffsets);
-      } else {
-        t.fail();
-      }
-      t.testComputePass(bindGroup, dynamicOffsets);
+      finish();
     }, !_success);
   });
 
-// TODO: test error bind group
+g.test('u32array_start_and_length')
+  .desc('Tests that dynamicOffsetsData(Start|Length) apply to the given Uint32Array.')
+  .subcases(() => [
+    // dynamicOffsetsDataLength > offsets.length
+    {
+      offsets: [0],
+      dynamicOffsetsDataStart: 0,
+      dynamicOffsetsDataLength: 2,
+      _success: false,
+    },
+
+    // dynamicOffsetsDataStart + dynamicOffsetsDataLength > offsets.length
+    {
+      offsets: [0],
+      dynamicOffsetsDataStart: 1,
+      dynamicOffsetsDataLength: 1,
+      _success: false,
+    },
+
+    {
+      offsets: [0, 0],
+      dynamicOffsetsDataStart: 1,
+      dynamicOffsetsDataLength: 1,
+      _success: true,
+    },
+
+    {
+      offsets: [0, 0, 0],
+      dynamicOffsetsDataStart: 1,
+      dynamicOffsetsDataLength: 1,
+      _success: true,
+    },
+
+    {
+      offsets: [0, 0],
+      dynamicOffsetsDataStart: 0,
+      dynamicOffsetsDataLength: 2,
+      _success: true,
+    },
+  ])
+  .fn(t => {
+    const { offsets, dynamicOffsetsDataStart, dynamicOffsetsDataLength, _success } = t.params;
+    const kBindingSize = 8;
+
+    const bindGroupLayout = t.device.createBindGroupLayout({
+      entries: range(dynamicOffsetsDataLength, i => ({
+        binding: i,
+        visibility: GPUShaderStage.FRAGMENT,
+        buffer: {
+          type: 'storage',
+          hasDynamicOffset: true,
+        },
+      })),
+    });
+
+    const bindGroup = t.device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: range(dynamicOffsetsDataLength, i => ({
+        binding: i,
+        resource: {
+          buffer: t.createBufferWithState('valid', {
+            size: kBindingSize,
+            usage: GPUBufferUsage.STORAGE,
+          }),
+
+          size: kBindingSize,
+        },
+      })),
+    });
+
+    const { encoder, finish } = t.createEncoder('render pass');
+    encoder.setBindGroup(
+      0,
+      bindGroup,
+      new Uint32Array(offsets),
+      dynamicOffsetsDataStart,
+      dynamicOffsetsDataLength
+    );
+
+    t.expectValidationError(() => {
+      finish();
+    }, !_success);
+  });

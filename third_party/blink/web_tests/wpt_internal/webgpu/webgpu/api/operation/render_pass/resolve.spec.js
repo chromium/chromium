@@ -39,9 +39,9 @@ g.test('render_pass_resolve')
       .combine(poptions('resolveTargetBaseArrayLayer', [0, 1]))
   )
   .fn(t => {
-    const colorStateDescriptors = [];
+    const targets = [];
     for (let i = 0; i < t.params.numColorAttachments; i++) {
-      colorStateDescriptors.push({ format: kFormat });
+      targets.push({ format: kFormat });
     }
 
     // These shaders will draw a white triangle into a texture. After draw, the top left
@@ -50,7 +50,7 @@ g.test('render_pass_resolve')
     // well as a line between the portions that contain the midpoint color due to the multisample
     // resolve.
     const pipeline = t.device.createRenderPipeline({
-      vertexStage: {
+      vertex: {
         module: t.device.createShaderModule({
           code: `
             [[builtin(position)]] var<out> Position : vec4<f32>;
@@ -69,7 +69,7 @@ g.test('render_pass_resolve')
         entryPoint: 'main',
       },
 
-      fragmentStage: {
+      fragment: {
         module: t.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor0 : vec4<f32>;
@@ -87,11 +87,11 @@ g.test('render_pass_resolve')
         }),
 
         entryPoint: 'main',
+        targets,
       },
 
-      primitiveTopology: 'triangle-list',
-      colorStates: colorStateDescriptors,
-      sampleCount: 4,
+      primitive: { topology: 'triangle-list' },
+      multisample: { count: 4 },
     });
 
     const resolveTargets = [];

@@ -1,7 +1,11 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { assert } from '../util/util.js';
+ **/ import { optionEnabled } from '../../runtime/helper/options.js';
+import { assert, unreachable } from '../util/util.js';
+
+import { compareQueries, Ordering } from './compare.js';
 import { encodeURIComponentSelectively } from './encode_selectively.js';
+import { parseQuery } from './parseQuery.js';
 import { kBigSeparator, kPathSeparator, kWildcard } from './separators.js';
 import { stringifyPublicParams } from './stringify_params.js';
 
@@ -10,8 +14,6 @@ import { stringifyPublicParams } from './stringify_params.js';
  *
  * TestQuery types are immutable.
  */
-
-// SingleCase
 
 /**
  * A multi-file test query, like `s:*` or `s:a,b,*`.
@@ -121,4 +123,78 @@ export class TestQuerySingleCase extends TestQueryMultiCase {
       stringifyPublicParams(this.params),
     ];
   }
+}
+
+/**
+ * Parse raw expectations input into TestQueryWithExpectation[], filtering so that only
+ * expectations that are relevant for the provided query and wptURL.
+ *
+ * `rawExpectations` should be @type {{ query: string, expectation: Expectation }[]}
+ *
+ * The `rawExpectations` are parsed and validated that they are in the correct format.
+ * If `wptURL` is passed, the query string should be of the full path format such
+ * as `path/to/cts.html?worker=0&q=suite:test_path:test_name:foo=1;bar=2;*`.
+ * If `wptURL` is `undefined`, the query string should be only the query
+ * `suite:test_path:test_name:foo=1;bar=2;*`.
+ */
+export function parseExpectationsForTestQuery(
+  rawExpectations,
+
+  query,
+  wptURL
+) {
+  if (!Array.isArray(rawExpectations)) {
+    unreachable('Expectations should be an array');
+  }
+  const expectations = [];
+  for (const entry of rawExpectations) {
+    assert(typeof entry === 'object');
+    const rawExpectation = entry;
+    assert(rawExpectation.query !== undefined, 'Expectation missing query string');
+    assert(rawExpectation.expectation !== undefined, 'Expectation missing expectation string');
+
+    let expectationQuery;
+    if (wptURL !== undefined) {
+      const expectationURL = new URL(`${wptURL.origin}/${entry.query}`);
+      if (expectationURL.pathname !== wptURL.pathname) {
+        continue;
+      }
+      assert(
+        expectationURL.pathname === wptURL.pathname,
+        `Invalid expectation path ${expectationURL.pathname}
+Expectation should be of the form path/to/cts.html?worker=0&q=suite:test_path:test_name:foo=1;bar=2;...
+        `
+      );
+
+      const params = expectationURL.searchParams;
+      if (optionEnabled('worker', params) !== optionEnabled('worker', wptURL.searchParams)) {
+        continue;
+      }
+
+      const qs = params.getAll('q');
+      assert(qs.length === 1, 'currently, there must be exactly one ?q= in the expectation string');
+      expectationQuery = parseQuery(qs[0]);
+    } else {
+      expectationQuery = parseQuery(entry.query);
+    }
+
+    if (compareQueries(query, expectationQuery) === Ordering.Unordered) {
+      continue;
+    }
+
+    switch (entry.expectation) {
+      case 'pass':
+      case 'skip':
+      case 'fail':
+        break;
+      default:
+        unreachable(`Invalid expectation ${entry.expectation}`);
+    }
+
+    expectations.push({
+      query: expectationQuery,
+      expectation: entry.expectation,
+    });
+  }
+  return expectations;
 }

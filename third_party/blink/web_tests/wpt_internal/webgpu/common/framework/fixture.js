@@ -3,6 +3,7 @@
  **/ import { assert } from './util/util.js';
 
 export class SkipTestCase extends Error {}
+export class UnexpectedPassError extends Error {}
 
 // A Fixture is a class used to instantiate each test case at run time.
 // A new instance of the Fixture is created for every single test case
