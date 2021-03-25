@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that XHRs with the same url as a main resource have correct category.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 

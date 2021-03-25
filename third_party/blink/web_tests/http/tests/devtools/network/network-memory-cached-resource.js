@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that memory-cached resources are correctly reported.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise(`resources/memory-cached-resource.html`);
 

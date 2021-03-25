@@ -10,7 +10,7 @@
       'https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor';
   const innerUrl = 'https://127.0.0.1:8443/loading/sxg/resources/inner-url.html';
 
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.NetworkAgent.setCacheDisabled(false);
 

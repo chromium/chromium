@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests cookie pane rendering in Network panel\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function run() {

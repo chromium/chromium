@@ -5,7 +5,7 @@
 (async function() {
   // TestRunner.startDumpingProtocolMessages();
   TestRunner.addResult(`Tests content is available for a cross-process iframe.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   NetworkTestRunner.recordNetwork();
   await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/resources/cross-origin-iframe.html');

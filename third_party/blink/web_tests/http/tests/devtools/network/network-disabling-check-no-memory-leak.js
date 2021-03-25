@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that after disabling network domain, content saved on backend is removed. https://bugs.webkit.org/show_bug.cgi?id=67995`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

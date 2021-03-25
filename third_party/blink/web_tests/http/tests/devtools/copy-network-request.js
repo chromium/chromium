@@ -5,7 +5,7 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests curl command generation\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   var logView = UI.panels.network._networkLogView;

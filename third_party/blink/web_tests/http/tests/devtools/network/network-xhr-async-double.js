@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests responses in network tab for two XHRs sent without any delay between them. Bug 91630\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 

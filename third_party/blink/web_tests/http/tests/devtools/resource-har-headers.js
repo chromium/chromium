@@ -6,7 +6,7 @@
   'use strict';
   TestRunner.addResult(`Tests the nondeterministic bits of HAR conversion via the magic of hard-coded values.\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
 
   function visibleNewlines(s) {
     return s.replace(/\r/, '\\r').replace(/\n/, '\\n');

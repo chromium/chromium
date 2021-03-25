@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that page navigation initiated by JS is correctly reported.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/initiator.html');
   TestRunner.runWhenPageLoads(step1);

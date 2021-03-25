@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test timeline aggregated details.\n`);
   await TestRunner.loadModule('performance_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '6.23';

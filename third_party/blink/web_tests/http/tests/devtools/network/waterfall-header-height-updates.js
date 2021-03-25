@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests to ensure network waterfall column updates header height when headers are not visible.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await NetworkTestRunner.clearNetworkCache();
 

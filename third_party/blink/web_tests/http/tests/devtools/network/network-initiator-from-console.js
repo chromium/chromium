@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that there is no javascript error when console evaluation causes resource loading.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   TestRunner.reloadPage(step1);

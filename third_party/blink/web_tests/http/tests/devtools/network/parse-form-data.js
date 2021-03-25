@@ -55,7 +55,7 @@
   ];
 
   TestRunner.addResult('Tests that form submissions appear and are parsed in the network panel');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await runFormTest(formValues);

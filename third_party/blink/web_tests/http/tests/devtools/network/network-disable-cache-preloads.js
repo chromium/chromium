@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests disabling cache from inspector and seeing that preloads are not evicted from memory cache.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 

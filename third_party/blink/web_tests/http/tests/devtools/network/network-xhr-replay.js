@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XHR replaying. Bug 95187\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function lastRequest() {

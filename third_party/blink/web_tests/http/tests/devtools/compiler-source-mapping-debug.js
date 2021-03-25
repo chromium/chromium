@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests installing compiler source map in scripts panel.\n`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.addScriptTag('resources/compiled-2.js');

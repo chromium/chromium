@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that time calculator is updated for both visible and hidden requests.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   var target = UI.panels.network._networkLogView;

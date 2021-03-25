@@ -5,7 +5,7 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests content is available for failed image request.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`

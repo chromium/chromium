@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests that hyperlink auditing (ping) requests appear in network panel')
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.loadHTML(`<a id="pingLink" href="#" ping="ping.js">ping</a>`);
   await TestRunner.evaluateInPagePromise(`

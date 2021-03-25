@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests XSL stylsheet content. http://crbug.com/603806\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   NetworkTestRunner.recordNetwork();
   await TestRunner.evaluateInPageAsync(`

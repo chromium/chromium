@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests to make sure film strip and overview pane show if the other does not exist. http://crbug.com/723659\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();
