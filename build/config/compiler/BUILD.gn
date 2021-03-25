@@ -736,6 +736,11 @@ config("compiler") {
     cflags += [ "-fcomplete-member-pointers" ]
   }
 
+  # TODO(crbug/1185183): Remove after next clang roll
+  if (is_clang && !is_nacl && is_linux && is_msan) {
+    cflags += [ "-flegacy-pass-manager" ]
+  }
+
   # Pass the same C/C++ flags to the objective C/C++ compiler.
   cflags_objc += cflags_c
   cflags_objcc += cflags_cc
