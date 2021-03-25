@@ -54,6 +54,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/common/content_switches.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
@@ -101,6 +102,9 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDefaultApps);
+    // switches::kTestType is needed before SystemWebAppManager construction
+    // to skip adding the default SWAs.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 
     profile_ = std::make_unique<TestingProfile>();
 
@@ -111,8 +115,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extension_service_->Init();
 
-    ConfigureWebAppProvider();
-    web_app::TestWebAppProvider::Get(profile())->Start();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     crostini_helper_ = std::make_unique<CrostiniTestHelper>(profile());
     crostini_helper_->ReInitializeAppServiceIntegration();
@@ -226,15 +229,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   }
 
  private:
-  void ConfigureWebAppProvider() {
-    auto system_web_app_manager =
-        std::make_unique<web_app::TestSystemWebAppManager>(profile());
-
-    auto* provider = web_app::TestWebAppProvider::Get(profile());
-    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-    provider->SetRunSubsystemStartupTasks(true);
-  }
-
   base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_helper_;
@@ -710,8 +704,8 @@ TEST_F(ShelfContextMenuTest, WebApp) {
   constexpr char kWebAppName[] = "WebApp1";
 
   app_service_test().FlushMojoCalls();
-  const web_app::AppId app_id =
-      web_app::InstallDummyWebApp(profile(), kWebAppName, GURL(kWebAppUrl));
+  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      profile(), kWebAppName, GURL(kWebAppUrl));
 
   controller()->PinAppWithID(app_id);
   const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));

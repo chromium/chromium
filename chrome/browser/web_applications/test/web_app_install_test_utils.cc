@@ -13,11 +13,24 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
+namespace test {
+
+void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
+  TestWebAppProvider* provider = TestWebAppProvider::Get(profile);
+  DCHECK(provider);
+  provider->SetRunSubsystemStartupTasks(true);
+  provider->Start();
+  // Await registry ready.
+  base::RunLoop run_loop;
+  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
@@ -54,4 +67,5 @@ AppId InstallDummyWebApp(Profile* profile,
   return app_id;
 }
 
+}  // namespace test
 }  // namespace web_app

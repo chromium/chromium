@@ -40,6 +40,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,8 +92,8 @@ class AppServiceWrapperTest : public ::testing::Test {
   AppServiceWrapperTest& operator=(const AppServiceWrapperTest&) = delete;
   ~AppServiceWrapperTest() override = default;
 
-  ArcAppTest& arc_test() { return arc_test_; }
-  AppServiceWrapper& tested_wrapper() { return tested_wrapper_; }
+  Profile* profile() { return profile_.get(); }
+  AppServiceWrapper& tested_wrapper() { return *tested_wrapper_; }
   MockListener& test_listener() { return test_listener_; }
 
   // testing::Test:
@@ -101,22 +102,28 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDefaultApps);
+    // switches::kTestType is needed before SystemWebAppManager construction
+    // to skip adding the default SWAs.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
+
+    profile_ = std::make_unique<TestingProfile>();
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_)));
+            extensions::ExtensionSystem::Get(profile())));
     extension_service_ = extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extension_service_->Init();
 
-    ConfigureWebAppProvider();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    app_service_test_.SetUp(&profile_);
-    arc_test_.SetUp(&profile_);
+    app_service_test_.SetUp(profile());
+    arc_test_.SetUp(profile());
     app_service_test_.FlushMojoCalls();
     task_environment_.RunUntilIdle();
 
-    tested_wrapper_.AddObserver(&test_listener_);
+    tested_wrapper_ = std::make_unique<AppServiceWrapper>(profile());
+    tested_wrapper_->AddObserver(&test_listener_);
 
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = CreateExtension(
@@ -126,7 +133,7 @@ class AppServiceWrapperTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    tested_wrapper_.RemoveObserver(&test_listener_);
+    tested_wrapper_->RemoveObserver(&test_listener_);
     arc_test_.TearDown();
 
     testing::Test::TearDown();
@@ -158,8 +165,8 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       DCHECK(url.has_value());
-      const web_app::AppId installed_app_id =
-          web_app::InstallDummyWebApp(&profile_, app_name, GURL(url.value()));
+      const web_app::AppId installed_app_id = web_app::test::InstallDummyWebApp(
+          profile(), app_name, GURL(url.value()));
       EXPECT_EQ(installed_app_id, app_id.app_id());
       task_environment_.RunUntilIdle();
       return;
@@ -184,7 +191,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       base::RunLoop run_loop;
-      WebAppProviderBase::GetProviderBase(&profile_)
+      WebAppProviderBase::GetProviderBase(profile())
           ->install_finalizer()
           .UninstallExternalWebApp(
               app_id.app_id(), web_app::ExternalInstallSource::kExternalDefault,
@@ -220,7 +227,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
-      WebAppProviderBase::GetProviderBase(&profile_)
+      WebAppProviderBase::GetProviderBase(profile())
           ->registry_controller()
           .SetAppIsDisabled(app_id.app_id(), disabled);
       task_environment_.RunUntilIdle();
@@ -242,26 +249,16 @@ class AppServiceWrapperTest : public ::testing::Test {
   }
 
  private:
-  void ConfigureWebAppProvider() {
-    auto system_web_app_manager =
-        std::make_unique<web_app::TestSystemWebAppManager>(&profile_);
-
-    auto* provider = web_app::TestWebAppProvider::Get(&profile_);
-    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-    provider->SetRunSubsystemStartupTasks(true);
-    provider->Start();
-  }
-
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
 
   extensions::ExtensionService* extension_service_ = nullptr;
 
-  AppServiceWrapper tested_wrapper_{&profile_};
+  std::unique_ptr<AppServiceWrapper> tested_wrapper_;
   MockListener test_listener_;
 };
 

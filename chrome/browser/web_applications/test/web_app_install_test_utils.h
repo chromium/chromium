@@ -13,11 +13,19 @@ class GURL;
 class Profile;
 
 namespace web_app {
+namespace test {
+
+// Start the WebAppProvider and subsystems, and wait for startup to complete.
+// Note: if auto-installed system web apps are not wanted, ensure that
+// |switches::kTestType| is set before the profile is created. If default web
+// apps are not wanted, ensure that |switches::kDisableDefaultApps| is set.
+void AwaitStartWebAppProviderAndSubsystems(Profile* profile);
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& app_url);
 
+}  // namespace test
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_INSTALL_TEST_UTILS_H_
