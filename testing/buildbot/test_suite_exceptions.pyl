@@ -642,7 +642,7 @@
       },
       'linux-chromeos-lts': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter;../../testing/buildbot/filters/chromeos.lts.browser_tests.filter',
         ],
       },
       'linux-chromeos-rel': {
