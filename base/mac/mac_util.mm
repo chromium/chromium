@@ -10,6 +10,8 @@
 #include <errno.h>
 #include <stddef.h>
 #include <string.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>
 #include <sys/utsname.h>
 #include <sys/xattr.h>
 
@@ -18,7 +20,6 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
-#include "base/mac/rosetta.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_nsobject.h"
@@ -404,6 +405,21 @@ int MacOSVersion() {
 }
 
 }  // namespace internal
+
+namespace {
+
+#if defined(ARCH_CPU_X86_64)
+// https://developer.apple.com/documentation/apple_silicon/about_the_rosetta_translation_environment#3616845
+bool ProcessIsTranslated() {
+  int ret = 0;
+  size_t size = sizeof(ret);
+  if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1)
+    return false;
+  return ret;
+}
+#endif  // ARCH_CPU_X86_64
+
+}  // namespace
 
 CPUType GetCPUType() {
 #if defined(ARCH_CPU_ARM64)

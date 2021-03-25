@@ -1170,8 +1170,6 @@ component("base") {
       "mac/objc_release_properties.mm",
       "mac/os_crash_dumps.cc",
       "mac/os_crash_dumps.h",
-      "mac/rosetta.h",
-      "mac/rosetta.mm",
       "mac/scoped_aedesc.h",
       "mac/scoped_authorizationref.h",
       "mac/scoped_authorizationref.mm",
