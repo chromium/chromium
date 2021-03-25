@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -14,6 +13,7 @@
 #include "chromecast/browser/webview/webview_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -92,8 +92,8 @@ class WebviewTest : public content::BrowserTestBase {
   // asynchronously.
   void SubmitWebviewRequest(WebviewController* controller,
                             const webview::WebviewRequest& request) {
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(&WebviewController::ProcessRequest,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&WebviewController::ProcessRequest,
                                   base::Unretained(controller), request));
   }
 
@@ -101,8 +101,8 @@ class WebviewTest : public content::BrowserTestBase {
   void SubmitNavigation(content::WebContents* web_contents,
                         const std::string& path) {
     GURL url = embedded_test_server()->GetURL("foo.com", path);
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(
             [](content::WebContents* web_contents, const GURL& url) {
               ignore_result(content::NavigateToURL(web_contents, url));

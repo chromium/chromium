@@ -12,7 +12,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -201,7 +200,7 @@ TEST(BrowserTaskEnvironmentTest, NotInitializedUIThread) {
       { GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
   EXPECT_DEATH_IF_SUPPORTED(
-      { base::PostTask(FROM_HERE, {BrowserThread::UI}, base::DoNothing()); },
+      { GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
 }
 
@@ -216,7 +215,7 @@ TEST(BrowserTaskEnvironmentTest, NotInitializedIOThread) {
       { GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
   EXPECT_DEATH_IF_SUPPORTED(
-      { base::PostTask(FROM_HERE, {BrowserThread::IO}, base::DoNothing()); },
+      { GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing()); },
       kDeathMatcher);
 }
 

@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -94,12 +93,12 @@ struct FetchResult {
 
 void RunWithDelay(base::OnceClosure closure, base::TimeDelta delay) {
   base::RunLoop run_loop;
-  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                        base::BindLambdaForTesting([&]() {
-                          std::move(closure).Run();
-                          run_loop.Quit();
-                        }),
-                        delay);
+  GetUIThreadTaskRunner({})->PostDelayedTask(FROM_HERE,
+                                             base::BindLambdaForTesting([&]() {
+                                               std::move(closure).Run();
+                                               run_loop.Quit();
+                                             }),
+                                             delay);
   run_loop.Run();
 }
 

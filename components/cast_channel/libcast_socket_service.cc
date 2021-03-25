@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_transport.h"
@@ -164,7 +163,7 @@ class CastSocketWrapper final : public CastSocket {
 LibcastSocketService::LibcastSocketService()
     : openscreen_task_runner_(
           // NOTE: Network service must be accessed on UI thread.
-          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})),
+          content::GetUIThreadTaskRunner({})),
       socket_factory_(this, &openscreen_task_runner_),
       tls_factory_(openscreen::TlsConnectionFactory::CreateFactory(
           &socket_factory_,

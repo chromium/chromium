@@ -19,7 +19,6 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -279,8 +278,7 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       base::BindRepeating(&shell::CastSessionIdMap::GetSessionId),
-      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
-      GetMediaTaskRunner(),
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
       ServiceConnector::MakeRemote(kBrowserProcessClientId),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #elif defined(OS_ANDROID)
@@ -304,8 +302,7 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       base::BindRepeating(&shell::CastSessionIdMap::GetSessionId),
-      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
-      GetMediaTaskRunner(),
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
       ServiceConnector::MakeRemote(kBrowserProcessClientId),
       BUILDFLAG(ENABLE_CAST_AUDIO_MANAGER_MIXER));
 #endif
@@ -635,8 +632,8 @@ base::OnceClosure CastContentBrowserClient::SelectClientCertificate(
   std::string session_id =
       CastNavigationUIData::GetSessionIdForWebContents(web_contents);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &CastContentBrowserClient::SelectClientCertificateOnIOThread,
           base::Unretained(this), requesting_url, session_id,

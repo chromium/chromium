@@ -76,8 +76,8 @@ void MediaDevicesDispatcherHost::Create(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
                      [](int render_process_id, int render_frame_id) {
                        RenderFrameHost* render_frame_host =
                            RenderFrameHost::FromID(render_process_id,

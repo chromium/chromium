@@ -9,7 +9,6 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -64,8 +63,8 @@ void ReportQueueManualTestContext::OnStart() {
   }
 
   // The DMToken must be retrieved on the UI thread.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&ReportQueueManualTestContext::GetDmToken,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ReportQueueManualTestContext::GetDmToken,
                                 base::Unretained(this)));
 }
 

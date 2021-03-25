@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/task/post_task.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/accessibility/proto/gallium_server_accessibility.grpc.pb.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -114,8 +113,8 @@ bool FlutterAccessibilityHelperBridge::OnAccessibilityEventRequest(
       std::make_unique<::gallium::castos::OnAccessibilityEventRequest>(
           *event_data);
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&FlutterAccessibilityHelperBridge::
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&FlutterAccessibilityHelperBridge::
                                     OnAccessibilityEventRequestInternal,
                                 base::Unretained(this), std::move(event)));
   return true;

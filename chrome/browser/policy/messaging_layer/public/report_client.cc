@@ -15,7 +15,6 @@
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
@@ -200,8 +199,8 @@ ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
 
 void ReportingClient::ClientInitializingContext::OnStart() {
   // CloudPolicyClient requires posting to the main UI thread.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](GetCloudPolicyClientCallback get_client_cb,
              base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>

@@ -7,7 +7,6 @@
 #include <atomic>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -55,8 +54,8 @@ CreateReportQueueConfigGetter(Profile* profile) {
             },
             profile, std::move(complete_cb));
 
-        base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                       std::move(task));
+        content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                     std::move(task));
       },
       profile);
 }

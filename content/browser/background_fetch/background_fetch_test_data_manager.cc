@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -101,8 +101,8 @@ void BackgroundFetchTestDataManager::InitializeOnCoreThread() {
   mojo::PendingRemote<storage::mojom::BlobStorageContext> remote;
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&ChromeBlobStorageContext::BindMojoContext,
                      blob_storage_context_,
                      remote.InitWithNewPipeAndPassReceiver()),

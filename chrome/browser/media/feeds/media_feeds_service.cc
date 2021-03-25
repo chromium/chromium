@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -181,8 +180,8 @@ MediaFeedsService::MediaFeedsService(Profile* profile)
   }
 
   // Wrapping in PostTask is needed to avoid a crash in the tests.
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(&MediaFeedsService::RecordFeedWatchtimes,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&MediaFeedsService::RecordFeedWatchtimes,
                                 weak_factory_.GetWeakPtr()));
 }
 

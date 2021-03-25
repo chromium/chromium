@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -250,8 +250,8 @@ class OutputStreamWriteOperation
                    base::OnceCallback<void()> on_complete) {
     stream_ = ComPtr<IOutputStream>(stream);
     on_complete_ = std::move(on_complete);
-    if (!base::PostTask(
-            FROM_HERE, {content::BrowserThread::IO},
+    if (!content::GetIOThreadTaskRunner({})->PostTask(
+            FROM_HERE,
             base::BindOnce(&OutputStreamWriteOperation::WriteStreamOnIOThread,
                            weak_factory_.GetWeakPtr())))
       Complete();

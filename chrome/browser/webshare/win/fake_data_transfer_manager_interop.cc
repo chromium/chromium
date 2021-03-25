@@ -6,9 +6,9 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/webshare/win/fake_data_transfer_manager.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webshare {
@@ -65,8 +65,8 @@ IFACEMETHODIMP FakeDataTransferManagerInterop::ShowShareUIForWindow(
       std::move(it->second->GetDataRequestedInvoker()).Run();
       return E_FAIL;
     case ShowShareUIForWindowBehavior::ScheduleEvent:
-      EXPECT_TRUE(base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                                 it->second->GetDataRequestedInvoker()));
+      EXPECT_TRUE(content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, it->second->GetDataRequestedInvoker()));
       return S_OK;
     case ShowShareUIForWindowBehavior::SucceedWithoutAction:
       return S_OK;

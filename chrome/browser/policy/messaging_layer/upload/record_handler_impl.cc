@@ -15,7 +15,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/values.h"
@@ -186,8 +185,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 
   base::Value request = std::move(request_result.value());
 
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           [](policy::CloudPolicyClient* client, base::Value request,
              base::OnceCallback<void(base::Optional<base::Value>)>
