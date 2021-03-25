@@ -405,6 +405,17 @@ class OAuth2Test : public OobeBaseTest {
 
   void WaitForMergeSessionCompletion(
       OAuth2LoginManager::SessionRestoreState final_state) {
+    // Wait for all pending tasks to be completed before waiting for
+    // MergeSession. `SESSION_RESTORE_DONE` does not always mean valid token
+    // because the merge session operation could be skipped when the first
+    // account in Gaia cookies matches the primary account in TokenService.
+    // In this case the token could still be invalid. Wait for Access Token
+    // fetch requests to complete to make sure that after the test calls
+    // `WaitForMergeSessionCompletion` it can safely check token status. This
+    // race condition should be fixed after migration of OAuth2LoginManager to
+    // observe AccountReconcilor (https://crbug.com/1051956).
+    base::RunLoop().RunUntilIdle();
+
     // Wait for the session merge to finish.
     std::set<OAuth2LoginManager::SessionRestoreState> states;
     states.insert(OAuth2LoginManager::SESSION_RESTORE_DONE);
