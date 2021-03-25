@@ -69,13 +69,15 @@ TEST(SmsRemoteFetcherTest, DisabledByDefault) {
 }
 
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
+  // This needs to be done before any tasks running on other threads check if a
+  // feature is enabled.
   base::test::ScopedFeatureList flags;
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
+
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   content::WebContents::CreateParams create_params(&profile, nullptr);
   auto web_contents = content::WebContents::Create(create_params);
-
-  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
@@ -99,13 +101,15 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
 }
 
 TEST(SmsRemoteFetcherTest, OneDevice) {
+  // This needs to be done before any tasks running on other threads check if a
+  // feature is enabled.
   base::test::ScopedFeatureList flags;
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
+
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   content::WebContents::CreateParams create_params(&profile, nullptr);
   auto web_contents = content::WebContents::Create(create_params);
-
-  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
@@ -144,13 +148,15 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 }
 
 TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
+  // This needs to be done before any tasks running on other threads check if a
+  // feature is enabled.
   base::test::ScopedFeatureList flags;
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
+
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   content::WebContents::CreateParams create_params(&profile, nullptr);
   auto web_contents = content::WebContents::Create(create_params);
-
-  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
@@ -186,13 +192,15 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 }
 
 TEST(SmsRemoteFetcherTest, RequestCancelled) {
+  // This needs to be done before any tasks running on other threads check if a
+  // feature is enabled.
   base::test::ScopedFeatureList flags;
+  flags.InitAndEnableFeature(kWebOTPCrossDevice);
+
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   content::WebContents::CreateParams create_params(&profile, nullptr);
   auto web_contents = content::WebContents::Create(create_params);
-
-  flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
   MockSharingService* service = CreateSharingService(&profile);
 
