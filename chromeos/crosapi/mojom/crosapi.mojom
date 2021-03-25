@@ -280,7 +280,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 13
+// Next version: 14
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -359,6 +359,11 @@ struct BrowserInitParams {
   // System idle info to initialize SystemIdleCache.
   [MinVersion=12]
   IdleInfo? idle_info@12;
+
+  // Launches an incognito window.
+  // Added in M91.
+  [MinVersion=13]
+  bool is_incognito@13;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

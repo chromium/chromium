@@ -94,6 +94,10 @@
 #include "chrome/browser/ui/profile_picker.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS) && defined(USE_X11)
 #include "ui/events/devices/x11/touch_factory_x11.h"  // nogncheck
 #endif
@@ -548,9 +552,15 @@ bool StartupBrowserCreator::LaunchBrowser(
   if (IncognitoModePrefs::ShouldLaunchIncognito(command_line,
                                                 profile->GetPrefs())) {
     profile = profile->GetPrimaryOTRProfile();
-  } else if (command_line.HasSwitch(switches::kIncognito)) {
-    LOG(WARNING) << "Incognito mode disabled by policy, launching a normal "
-                 << "browser session.";
+  } else {
+    bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    expect_incognito |=
+        chromeos::LacrosChromeServiceImpl::Get()->init_params()->is_incognito;
+#endif
+    LOG_IF(WARNING, expect_incognito)
+        << "Incognito mode disabled by policy, launching a normal "
+        << "browser session.";
   }
 
   if (profiles::IsGuestModeRequested(command_line,
