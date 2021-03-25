@@ -648,7 +648,8 @@ the same type of data, with some minor variations. You can declare the metadata
 for these concisely using patterned histograms. For example:
 
 ```xml
-<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}" ...>
+<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}" 
+    units="multiplier" expires_after="M95">
   <owner>individual@chromium.org</owner>
   <owner>team@chromium.org</owner>
   <summary>
@@ -672,7 +673,8 @@ for these concisely using patterned histograms. For example:
 This example defines metadata for 12 (= 3 x 4) concrete histograms, such as
 
 ```xml
-<histogram name="Pokemon.Charizard.EfficacyAgainstWater" ...>
+<histogram name="Pokemon.Charizard.EfficacyAgainstWater"
+    units="multiplier" expires_after="M95">
   <owner>individual@chromium.org</owner>
   <owner>team@chromium.org</owner>
   <summary>
