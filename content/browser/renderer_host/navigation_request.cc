@@ -4007,8 +4007,13 @@ void NavigationRequest::CommitPageActivation() {
   // Move the BackForwardCacheImpl::Entry into RenderFrameHostManager, in
   // preparation for committing. This entry may be either restored from the
   // backforward cache or a prerender activation.
-  frame_tree_node_->render_manager()->RestoreFromBackForwardCache(
-      std::move(activated_entry));
+  if (IsServedFromBackForwardCache()) {
+    frame_tree_node_->render_manager()->RestoreFromBackForwardCache(
+        std::move(activated_entry));
+  } else {
+    frame_tree_node_->render_manager()->ActivatePrerender(
+        std::move(activated_entry));
+  }
 
   // Commit the restored BackForwardCache Entry. This includes committing the
   // RenderFrameHost and restoring extra state, such as proxies, etc.

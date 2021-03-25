@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1845,6 +1846,60 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheTest,
       base::HistogramBase::Sample(BackForwardCacheMetrics::NotRestoredReason::
                                       kBackForwardCacheDisabledForPrerender),
       1);
+}
+
+class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
+ public:
+  PrerenderWithProactiveBrowsingInstanceSwap() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kProactivelySwapBrowsingInstance,
+                               {{"level", "SameSite"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderWithProactiveBrowsingInstanceSwap,
+                         testing::Values(kWebContents, kMPArch),
+                         ToString);
+
+// Make sure that we can deal with the speculative RFH that is created during
+// the activation navigation.
+// TODO(https://crbug.com/1190197): We should try to avoid creating the
+// speculative RFH (redirects allowing). Once that is done we should either
+// change this test (if redirects allowed) or remove it completely.
+IN_PROC_BROWSER_TEST_P(PrerenderWithProactiveBrowsingInstanceSwap,
+                       LinkRelPrerender) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A prerender host for the URL should be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  // Activate the prerendered page.
+  // The test passes if we don't crash while cleaning up speculative render
+  // frame host.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+
+  // The prerender host should be consumed.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
 }  // namespace

@@ -696,6 +696,22 @@ bool RenderFrameHostManager::DeleteFromPendingList(
   return true;
 }
 
+// Prerender navigations match a prerender after calling
+// GetFrameHostForNavigation, which means we might create a speculative RFH and
+// then try to replace it with the prerendered RFH during activation. We can not
+// just reset this RFH in RestoreFromBackForwardCache as the RFH would be in an
+// invalid state for destruction. We need to properly clean up first. Hence this
+// method.
+// TODO(https://crbug.com/1190197): We should refactor prerender matching flow
+// to ensure that we do not create speculative RFHs for prerender activation.
+void RenderFrameHostManager::ActivatePrerender(
+    std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
+  DCHECK(blink::features::IsPrerenderMPArchEnabled());
+  if (speculative_render_frame_host_)
+    DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
+  RestoreFromBackForwardCache(std::move(entry));
+}
+
 void RenderFrameHostManager::RestoreFromBackForwardCache(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation",
@@ -712,6 +728,11 @@ void RenderFrameHostManager::RestoreFromBackForwardCache(
   // and it would be clearer if we could not reuse speculative_render_frame_host
   // in the long run. For now, and to avoid complex edge cases, we simply reuse
   // it to preserve the understood logic in CommitPending.
+
+  // There should be no speculative RFH at this point. With BackForwardCache, it
+  // should have never been created, and with prerender activation, it should
+  // have been cleared out earlier.
+  DCHECK(!speculative_render_frame_host_);
   speculative_render_frame_host_ = std::move(entry->render_frame_host);
   bfcache_entry_to_restore_ = std::move(entry);
 }
