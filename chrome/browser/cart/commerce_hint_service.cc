@@ -50,7 +50,8 @@ class CommerceHintObserverImpl
   ~CommerceHintObserverImpl() override = default;
 
   void OnAddToCart(const base::Optional<GURL>& cart_url) override {
-    DVLOG(1) << "Received OnAddToCart in the browser process";
+    DVLOG(1) << "Received OnAddToCart in the browser process on "
+             << binding_url_;
     if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
     service_->OnAddToCart(binding_url_, cart_url);
