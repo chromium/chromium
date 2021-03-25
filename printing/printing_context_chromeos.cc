@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -30,7 +29,6 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
-#include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 

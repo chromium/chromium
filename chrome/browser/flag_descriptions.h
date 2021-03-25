@@ -2324,9 +2324,6 @@ extern const char kDoubleTapToZoomInTabletModeDescription[];
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 
-extern const char kEnableAdvancedPpdAttributesName[];
-extern const char kEnableAdvancedPpdAttributesDescription[];
-
 extern const char kEnableAppDataSearchName[];
 extern const char kEnableAppDataSearchDescription[];
 
