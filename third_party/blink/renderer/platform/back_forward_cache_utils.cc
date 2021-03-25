@@ -27,6 +27,14 @@ bool IsInflightNetworkRequestBackForwardCacheSupportEnabled() {
          base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable);
 }
 
+bool IsFreezeWhileKeepActiveBackForwardCacheSupportEnabled() {
+  // Similar to in IsInflightNetworkRequestBackForwardCacheSupportEnabled(), the
+  // call to RuntimeEnabledFeatures::BackForwardCacheEnabled() must be done
+  // first.
+  return RuntimeEnabledFeatures::BackForwardCacheEnabled() &&
+         base::FeatureList::IsEnabled(features::kFreezeWhileKeepActive);
+}
+
 int GetLoadingTasksUnfreezableParamAsInt(const std::string& param_name,
                                          int default_value) {
   if (!IsInflightNetworkRequestBackForwardCacheSupportEnabled())

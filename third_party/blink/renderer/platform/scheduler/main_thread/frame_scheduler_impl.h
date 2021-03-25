@@ -360,6 +360,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   base::sequence_manager::TaskQueue::QueuePriority
       default_loading_task_priority_ =
           base::sequence_manager::TaskQueue::QueuePriority::kNormalPriority;
+  // Whether we should freeze task queues or not when KeepActive is true.
+  TraceableState<bool, TracingCategoryName::kInfo>
+      is_freeze_while_keep_active_enabled_;
 
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().

@@ -34,6 +34,7 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -43,6 +44,7 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_context.h"
@@ -3269,5 +3271,251 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerCrossOriginIsolatedBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+// Tests with BackForwardCache and KeepActiveFreezing enabled.
+class ServiceWorkerBackForwardCacheBrowserTest
+    : public ServiceWorkerBrowserTest {
+ protected:
+  ServiceWorkerBackForwardCacheBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{{features::kBackForwardCache,
+           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+            {"enable_same_site", "true"},
+            {"process_binding_strength", "NORMAL"}}},
+          {blink::features::kFreezeWhileKeepActive, {}}}
+
+        },
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return web_contents()->GetFrameTree()->root()->current_frame_host();
+  }
+
+  const std::string kTryToTriggerEvictionScript = R"(
+    window.addEventListener('freeze', () => {
+      setTimeout(() => {
+        console.log('script that might cause eviction');
+      }, 0);
+    })
+  )";
+
+  const std::string kPostMessageScript = R"(
+    new Promise((resolve, reject) => {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        resolve(event.data);
+      });
+      navigator.serviceWorker.controller.postMessage(
+        "postMessage from the page");
+    });
+  )";
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a service worker that shares a renderer process with a
+// back-forward cached page and an active page still runs normally.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
+                       ShareProcessWithBackForwardCachedPageAndLivePage) {
+  StartServerAndNavigateToSetup();
+
+  GURL url_1(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  GURL url_2(embedded_test_server()->GetURL("/service_worker/empty.html"));
+  GURL service_worker_url(
+      embedded_test_server()->GetURL("/service_worker/hello.js"));
+
+  // 1) Navigate to |url_1|, and register a service worker for it.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  RenderFrameHostImpl* rfh_1 = current_frame_host();
+
+  {
+    WorkerRunningStatusObserver observer(public_context());
+    // Register service worker in the current page. This will run a new service
+    // worker.
+    EXPECT_EQ("DONE", EvalJs(rfh_1, "register('hello.js');"));
+    observer.WaitUntilRunning();
+  }
+
+  {
+    // Assert that there's only 1 service worker running.
+    const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+        public_context()->GetRunningServiceWorkerInfos();
+    ASSERT_EQ(1u, infos.size());
+
+    // The service worker shares the process with the page that requested it.
+    const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+    EXPECT_EQ(service_worker_url, running_info.script_url);
+    EXPECT_EQ(rfh_1->GetProcess()->GetID(), running_info.render_process_id);
+  }
+
+  // Reload the page so that it would use the service worker.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  rfh_1 = current_frame_host();
+
+  // Fetch something from the service worker.
+  EXPECT_EQ(
+      "hello from the service worker\n",
+      EvalJs(rfh_1, "fetch('./hello_sw').then(response => response.text())"));
+
+  // Send message to the service worker, and expect a reply.
+  EXPECT_EQ("postMessage from the service worker",
+            EvalJs(rfh_1, kPostMessageScript));
+
+  // When the page is about to be frozen before getting into the back-forward
+  // cache, set a timeout that will run script and cause the page to be evicted
+  // from the back-forward cache if the task queues are not properly frozen.
+  EXPECT_TRUE(ExecJs(rfh_1, kTryToTriggerEvictionScript));
+
+  // 2) Navigate to |url_2|, which is in-scope of the service worker.
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  RenderFrameHostImpl* rfh_2 = current_frame_host();
+
+  // |rfh_1| and |rfh_2| uses the same renderer process.
+  EXPECT_EQ(rfh_1->GetProcess(), rfh_2->GetProcess());
+
+  {
+    // Assert that there's still only 1 service worker running.
+    const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+        public_context()->GetRunningServiceWorkerInfos();
+    ASSERT_EQ(1u, infos.size());
+
+    // The service worker also shares the same process as |rfh_2|.
+    const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+    EXPECT_EQ(service_worker_url, running_info.script_url);
+    EXPECT_EQ(rfh_2->GetProcess()->GetID(), running_info.render_process_id);
+  }
+
+  // Fetch something from the service worker.
+  EXPECT_EQ(
+      "hello from the service worker\n",
+      EvalJs(rfh_2, "fetch('./hello_sw').then(response => response.text())"));
+
+  // Send message to the service worker, and expect a reply.
+  EXPECT_EQ("postMessage from the service worker",
+            EvalJs(rfh_2, kPostMessageScript));
+
+  // This test passes if the service worker still runs and responds correctly,
+  // and |rfh_1| stays in the back-forward cache, and we're able to restore it
+  // from the back-forward cache when we go back.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_1, current_frame_host());
+}
+
+// Tests that a service worker that shares a renderer process with a
+// back-forward cached page and no active pages still runs normally.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBackForwardCacheBrowserTest,
+                       ShareProcessWithBackForwardCachedPageOnly) {
+  StartServerAndNavigateToSetup();
+
+  GURL url_1(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  GURL url_2(embedded_test_server()->GetURL("/service_worker/empty.html"));
+  GURL webui_url(std::string(kChromeUIScheme) + "://" +
+                 std::string(kChromeUIGpuHost));
+  GURL service_worker_url(
+      embedded_test_server()->GetURL("/service_worker/hello.js"));
+
+  // 1) Navigate to |url_1|, and register a service worker for it.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  RenderFrameHostImpl* rfh_1 = current_frame_host();
+
+  {
+    WorkerRunningStatusObserver observer(public_context());
+    // Register service worker in the current page. This will run a new service
+    // worker.
+    EXPECT_EQ("DONE", EvalJs(rfh_1, "register('hello.js');"));
+    observer.WaitUntilRunning();
+  }
+
+  {
+    // Assert that there's only 1 service worker running.
+    const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+        public_context()->GetRunningServiceWorkerInfos();
+    ASSERT_EQ(1u, infos.size());
+
+    // The service worker shares the process with the page that requested it.
+    const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+    EXPECT_EQ(service_worker_url, running_info.script_url);
+    EXPECT_EQ(rfh_1->GetProcess()->GetID(), running_info.render_process_id);
+  }
+
+  // Reload the page so that it would use the service worker.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  rfh_1 = current_frame_host();
+
+  // Fetch something from the service worker.
+  EXPECT_EQ(
+      "hello from the service worker\n",
+      EvalJs(rfh_1, "fetch('./hello_sw').then(response => response.text())"));
+
+  // Send message to the service worker, and expect a reply.
+  EXPECT_EQ("postMessage from the service worker",
+            EvalJs(rfh_1, kPostMessageScript));
+
+  // When the page is about to be frozen before getting into the back-forward
+  // cache, set a timeout that will run script and cause the page to be evicted
+  // from the back-forward cache if the task queues are not properly frozen.
+  EXPECT_TRUE(ExecJs(rfh_1, kTryToTriggerEvictionScript));
+
+  // 2) Navigate to a WebUI page that will use a different process than |rfh_1|.
+  EXPECT_TRUE(NavigateToURL(shell(), webui_url));
+  // The previous page will get into the back-forward cache. At this point, the
+  // service worker does not share a process with any active pages.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  EXPECT_NE(rfh_1->GetProcess(), current_frame_host()->GetProcess());
+
+  // 3) Open a new tab and navigate it to |url_2|, which is in-scope of the
+  // service worker.
+  Shell* new_shell = Shell::CreateNewWindow(
+      web_contents()->GetController().GetBrowserContext(), GURL::EmptyGURL(),
+      nullptr, gfx::Size());
+  EXPECT_TRUE(NavigateToURL(new_shell, url_2));
+  RenderFrameHostImpl* rfh_2 = static_cast<RenderFrameHostImpl*>(
+      new_shell->web_contents()->GetMainFrame());
+
+  // |rfh_1| and |rfh_2| are in different renderer processes because they are
+  // in different tabs.
+  EXPECT_NE(rfh_1->GetProcess(), rfh_2->GetProcess());
+
+  {
+    // Assert that there's only 1 service worker running.
+    const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
+        public_context()->GetRunningServiceWorkerInfos();
+    ASSERT_EQ(1u, infos.size());
+
+    // The service worker is in a different process than |rfh_2| (it's still
+    // in |rfh_1|'s process).
+    const ServiceWorkerRunningInfo& running_info = infos.begin()->second;
+    EXPECT_EQ(service_worker_url, running_info.script_url);
+    EXPECT_NE(rfh_2->GetProcess()->GetID(), running_info.render_process_id);
+    EXPECT_EQ(rfh_1->GetProcess()->GetID(), running_info.render_process_id);
+  }
+
+  // Fetch something from the service worker.
+  EXPECT_EQ(
+      "hello from the service worker\n",
+      EvalJs(rfh_2, "fetch('./hello_sw').then(response => response.text())"));
+
+  // Send message to the service worker, and expect a reply.
+  EXPECT_EQ("postMessage from the service worker",
+            EvalJs(rfh_2, kPostMessageScript));
+
+  // This test passes if the service worker still runs and responds correctly,
+  // and |rfh_1| stays in the back-forward cache, and we're able to restore it
+  // from the back-forward cache when we go back.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_1, current_frame_host());
+}
 
 }  // namespace content

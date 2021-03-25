@@ -330,6 +330,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcLibvpxEncodeNV12;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLoadingTasksUnfreezable;
 
+BLINK_COMMON_EXPORT extern const base::Feature kFreezeWhileKeepActive;
+
 BLINK_COMMON_EXPORT extern const base::Feature kTargetBlankImpliesNoOpener;
 
 BLINK_COMMON_EXPORT extern const base::Feature
