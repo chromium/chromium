@@ -68,7 +68,10 @@ void FakeInstallAttributesClient::InstallAttributesFinalize(
 void FakeInstallAttributesClient::InstallAttributesGetStatus(
     const ::user_data_auth::InstallAttributesGetStatusRequest& request,
     InstallAttributesGetStatusCallback callback) {
-  NOTIMPLEMENTED();
+  base::Optional<::user_data_auth::InstallAttributesGetStatusReply> reply =
+      BlockingInstallAttributesGetStatus(request);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 void FakeInstallAttributesClient::RemoveFirmwareManagementParameters(
     const ::user_data_auth::RemoveFirmwareManagementParametersRequest& request,
