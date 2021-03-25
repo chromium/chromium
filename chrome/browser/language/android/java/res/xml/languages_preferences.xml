@@ -6,7 +6,7 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <org.chromium.chrome.browser.language.settings.LanguageListPreference
+    <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
         android:key="preferred_languages"
         android:layout="@layout/languages_preference"
         android:widgetLayout="@layout/accept_languages_list" />

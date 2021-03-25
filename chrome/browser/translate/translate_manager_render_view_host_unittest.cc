@@ -1282,12 +1282,10 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
   PrefService* prefs = profile->GetPrefs();
   PrefChangeRegistrar registrar;
   registrar.Init(prefs);
-  registrar.Add(translate::TranslatePrefs::kPrefAlwaysTranslateLists,
-                pref_callback_);
+  registrar.Add(prefs::kPrefAlwaysTranslateList, pref_callback_);
   std::unique_ptr<translate::TranslatePrefs> translate_prefs(
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
-  SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefAlwaysTranslateLists);
+  SetPrefObserverExpectation(prefs::kPrefAlwaysTranslateList);
   translate_prefs->AddLanguagePairToAlwaysTranslateList("fr", "en");
 
   // Load a page in French.
@@ -1324,8 +1322,7 @@ TEST_F(TranslateManagerRenderViewHostTest, AlwaysTranslateLanguagePref) {
 
   // Now revert the always translate pref and make sure we go back to expected
   // behavior, which is show a "before translate" infobar.
-  SetPrefObserverExpectation(
-      translate::TranslatePrefs::kPrefAlwaysTranslateLists);
+  SetPrefObserverExpectation(prefs::kPrefAlwaysTranslateList);
   translate_prefs->RemoveLanguagePairFromAlwaysTranslateList("fr", "en");
   SimulateNavigation(GURL("http://www.google.fr"), "fr", true);
   EXPECT_FALSE(GetTranslateMessage(&source_lang, &target_lang));

@@ -33,7 +33,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 /**
  * A preference that displays the current accept language list.
  */
-public class LanguageListPreference extends Preference {
+public class ContentLanguagesPreference extends Preference {
     private static class LanguageListAdapter
             extends LanguageListBaseAdapter implements LanguagesManager.AcceptLanguageObserver {
         private final Context mContext;
@@ -138,7 +138,7 @@ public class LanguageListPreference extends Preference {
     private LanguageListAdapter mAdapter;
     private AddLanguageFragment.Launcher mLauncher;
 
-    public LanguageListPreference(Context context, AttributeSet attrs) {
+    public ContentLanguagesPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAdapter = new LanguageListAdapter(context);
     }

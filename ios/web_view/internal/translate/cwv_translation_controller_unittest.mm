@@ -107,7 +107,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefNeverPromptSitesWithTime);
     pref_service_.registry()->RegisterDictionaryPref(
-        translate::TranslatePrefs::kPrefAlwaysTranslateLists);
+        prefs::kPrefAlwaysTranslateList);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateDeniedCount);
     pref_service_.registry()->RegisterDictionaryPref(

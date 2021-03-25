@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -22,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.browser.language.R;
-import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -32,16 +32,35 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
+import java.util.Collection;
+
 /**
- * Fragment that lists the languages that are always translated. Languages can be removed via the
- * overflow menu and added with the `Add Language` button.
+ * Base Fragment for an editable list of LanguageItems. Languages can be removed via the overflow
+ * menu and added with the `Add Language` button. Subclasses will override makeFragmentListDelegate
+ * to populate the LanguageItem list and provide callbacks for adding and removing items.
  */
-public class AlwaysTranslateLanguagesFragment extends Fragment implements FragmentSettingsLauncher {
-    // Request code for returning from Select Language
+public abstract class LanguageItemListFragment
+        extends Fragment implements FragmentSettingsLauncher {
+    // Request code for returning from Select Language Fragment
     private static final int REQUEST_CODE_SELECT_LANGUAGE = 1;
 
-    private class AlwaysTranslateLanguageListAdapter extends LanguageListBaseAdapter {
-        AlwaysTranslateLanguageListAdapter(Context context) {
+    /**
+     * Interface for helper functions to populate the LanguageItem list and used by
+     * {@link LanguageItemListPreference} to make a summary and launch the correct Fragment.
+     */
+    public interface ListDelegate {
+        /**
+         * Return LanguageItems to show in LanguageItemListFragment.
+         */
+        Collection<LanguageItem> getLanguageItems();
+        /**
+         * Return class name to launch this LanguageItemListFragment from an Intent.
+         */
+        String getFragmentClassName();
+    }
+
+    private class ListAdapter extends LanguageListBaseAdapter {
+        ListAdapter(Context context) {
             super(context);
         }
 
@@ -58,8 +77,7 @@ public class AlwaysTranslateLanguagesFragment extends Fragment implements Fragme
             ListMenu.Delegate delegate = (model) -> {
                 int textId = model.get(ListMenuItemProperties.TITLE_ID);
                 if (textId == R.string.remove) {
-                    TranslateBridge.setLanguageAlwaysTranslateState(
-                            currentLanguageItem.getCode(), false);
+                    onLanguageRemoved(currentLanguageItem.getCode());
                     onDataUpdated();
                 }
             };
@@ -69,17 +87,19 @@ public class AlwaysTranslateLanguagesFragment extends Fragment implements Fragme
         }
 
         public void onDataUpdated() {
-            setDisplayedLanguages(LanguagesManager.getInstance().getAlwaysTranslateLanguageItems());
+            setDisplayedLanguages(mListDelegate.getLanguageItems());
         }
     }
 
     private SettingsLauncher mSettingsLauncher;
-    private AlwaysTranslateLanguageListAdapter mAdapter;
+    private ListAdapter mAdapter;
+    private ListDelegate mListDelegate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().setTitle(R.string.languages_settings_automatic_title);
+        mListDelegate = makeFragmentListDelegate();
+        getActivity().setTitle(getLanguageListTitle(getContext()));
     }
 
     @Override
@@ -96,13 +116,13 @@ public class AlwaysTranslateLanguagesFragment extends Fragment implements Fragme
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        mAdapter = new AlwaysTranslateLanguageListAdapter(activity);
+        mAdapter = new ListAdapter(activity);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.onDataUpdated();
-        inflatedView.findViewById(R.id.scroll_view)
-                .getViewTreeObserver()
-                .addOnScrollChangedListener(SettingsUtils.getShowShadowOnScrollListener(
-                        mRecyclerView, inflatedView.findViewById(R.id.shadow)));
+        ScrollView scrollView = inflatedView.findViewById(R.id.scroll_view);
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(
+                SettingsUtils.getShowShadowOnScrollListener(
+                        scrollView, inflatedView.findViewById(R.id.shadow)));
 
         TextView addLanguageButton = (TextView) inflatedView.findViewById(R.id.add_language);
         addLanguageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -126,7 +146,7 @@ public class AlwaysTranslateLanguagesFragment extends Fragment implements Fragme
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
             String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
-            TranslateBridge.setLanguageAlwaysTranslateState(code, true);
+            onLanguageAdded(code);
             mAdapter.onDataUpdated();
         }
     }
@@ -135,4 +155,24 @@ public class AlwaysTranslateLanguagesFragment extends Fragment implements Fragme
     public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
         mSettingsLauncher = settingsLauncher;
     }
+
+    /**
+     * Return the ListDelegate that will be used to populate the LangaugeItemList for a subclass.
+     */
+    protected abstract LanguageItemListFragment.ListDelegate makeFragmentListDelegate();
+
+    /**
+     * Return title for LanguageItemListFragment.
+     */
+    protected abstract String getLanguageListTitle(Context context);
+
+    /**
+     * Callback for when a language is added to the LanguageItemList.
+     */
+    protected abstract void onLanguageAdded(String code);
+
+    /**
+     * Callback for when a language is removed to the LanguageItemList.
+     */
+    protected abstract void onLanguageRemoved(String code);
 }

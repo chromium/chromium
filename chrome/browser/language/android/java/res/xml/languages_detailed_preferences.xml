@@ -22,7 +22,7 @@
       android:order="2"
       app:allowDividerAbove="true">
 
-      <org.chromium.chrome.browser.language.settings.LanguageListPreference
+      <org.chromium.chrome.browser.language.settings.ContentLanguagesPreference
           android:key="content_languages_preference"
           android:layout="@layout/languages_preference"
           android:widgetLayout="@layout/accept_languages_list" />
@@ -56,10 +56,9 @@
                 app:allowDividerAbove="false"
                 app:allowDividerBelow="false" />
 
-            <org.chromium.components.browser_ui.settings.ChromeBasePreference
+            <org.chromium.chrome.browser.language.settings.LanguageItemListPreference
               android:key="translate_settings_always_languages"
               android:title="@string/languages_settings_automatic"
-              android:fragment="org.chromium.chrome.browser.language.settings.AlwaysTranslateLanguagesFragment"
               app:allowDividerAbove="false"
               app:allowDividerBelow="false" />
 

@@ -245,7 +245,7 @@ void TranslateInternalsHandler::SendPrefsToJs() {
       translate::TranslatePrefs::kPrefTranslateRecentTarget,
       translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated,
       translate::TranslatePrefs::kPrefNeverPromptSitesWithTime,
-      translate::TranslatePrefs::kPrefAlwaysTranslateLists,
+      prefs::kPrefAlwaysTranslateList,
       translate::TranslatePrefs::kPrefTranslateDeniedCount,
       translate::TranslatePrefs::kPrefTranslateIgnoredCount,
       translate::TranslatePrefs::kPrefTranslateAcceptedCount,

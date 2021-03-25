@@ -87,7 +87,6 @@ const char TranslatePrefs::kPrefNeverPromptSitesDeprecated[] =
     "translate_site_blacklist";
 const char TranslatePrefs::kPrefNeverPromptSitesWithTime[] =
     "translate_site_blacklist_with_time";
-const char TranslatePrefs::kPrefAlwaysTranslateLists[] = "translate_whitelists";
 const char TranslatePrefs::kPrefTranslateDeniedCount[] =
     "translate_denied_count_for_language";
 const char TranslatePrefs::kPrefTranslateIgnoredCount[] =
@@ -559,7 +558,7 @@ bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
     base::StringPiece original_language,
     base::StringPiece target_language) {
   const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kPrefAlwaysTranslateLists);
+      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
   if (dict) {
     const std::string* auto_target_lang =
         dict->FindStringKey(original_language);
@@ -572,7 +571,7 @@ bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
 void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
     base::StringPiece original_language,
     base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
+  DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
     NOTREACHED() << "Always translate pref is unregistered";
@@ -584,7 +583,7 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
 void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
     base::StringPiece original_language,
     base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, kPrefAlwaysTranslateLists);
+  DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
   base::DictionaryValue* dict = update.Get();
   if (!dict) {
     NOTREACHED() << "Always translate pref is unregistered";
@@ -607,7 +606,7 @@ void TranslatePrefs::SetLanguageAlwaysTranslateState(
 
 std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
   const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kPrefAlwaysTranslateLists);
+      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
   if (!dict) {
     NOTREACHED() << "Always translate pref is unregistered";
   }
@@ -635,11 +634,11 @@ void TranslatePrefs::ClearNeverPromptSiteList() {
 }
 
 bool TranslatePrefs::HasLanguagePairsToAlwaysTranslate() const {
-  return !IsDictionaryEmpty(kPrefAlwaysTranslateLists);
+  return !IsDictionaryEmpty(prefs::kPrefAlwaysTranslateList);
 }
 
 void TranslatePrefs::ClearAlwaysTranslateLanguagePairs() {
-  prefs_->ClearPref(kPrefAlwaysTranslateLists);
+  prefs_->ClearPref(prefs::kPrefAlwaysTranslateList);
 }
 
 int TranslatePrefs::GetTranslationDeniedCount(
@@ -843,7 +842,7 @@ bool TranslatePrefs::CanTranslateLanguage(
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece original_language,
                                          std::string* target_language) {
   const base::DictionaryValue* dict =
-      prefs_->GetDictionary(kPrefAlwaysTranslateLists);
+      prefs_->GetDictionary(prefs::kPrefAlwaysTranslateList);
   if (dict && dict->GetString(original_language, target_language)) {
     DCHECK(!target_language->empty());
     return !target_language->empty();
@@ -889,7 +888,7 @@ void TranslatePrefs::RegisterProfilePrefs(
       kPrefNeverPromptSitesWithTime,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
-      kPrefAlwaysTranslateLists,
+      prefs::kPrefAlwaysTranslateList,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       kPrefTranslateDeniedCount,

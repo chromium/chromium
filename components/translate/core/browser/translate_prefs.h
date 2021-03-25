@@ -131,7 +131,6 @@ class TranslatePrefs {
   // 3 milestones (M74).
   static const char kPrefNeverPromptSitesDeprecated[];
   static const char kPrefNeverPromptSitesWithTime[];
-  static const char kPrefAlwaysTranslateLists[];
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];
