@@ -52,8 +52,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName,
-            @Nullable String originalDeeplink) {
+            @Nullable String callerEmail, @Nullable String originalDeeplink) {
         OnboardingCoordinatorFactory onboardingCoordinatorFactory =
                 new OnboardingCoordinatorFactory(
                         context, bottomSheetController, browserControls, compositorViewHolder);
@@ -101,7 +100,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                                     parameters.put(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT, "true");
                                     AutofillAssistantClient.fromWebContents(webContents)
                                             .start(initialUrl, parameters, experimentIds,
-                                                    callerAccount, userName, isChromeCustomTab,
+                                                    callerEmail, isChromeCustomTab,
                                                     triggerScriptBridge.getOnboardingCoordinator());
                                 }
                             }
@@ -112,7 +111,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
 
         // Regular flow for starting without dedicated trigger script.
         startAutofillAssistantRegular(onboardingCoordinatorFactory, webContents, isChromeCustomTab,
-                initialUrl, parameters, experimentIds, callerAccount, userName);
+                initialUrl, parameters, experimentIds, callerEmail);
     }
 
     /** Whether {@code parameters} indicate that a trigger script should be started. */
@@ -127,14 +126,13 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     private void startAutofillAssistantRegular(
             OnboardingCoordinatorFactory onboardingCoordinatorFactory,
             @NonNull WebContents webContents, boolean isChromeCustomTab, @NonNull String initialUrl,
-            Map<String, String> parameters, String experimentIds, @Nullable String callerAccount,
-            @Nullable String userName) {
+            Map<String, String> parameters, String experimentIds, @Nullable String callerEmail) {
         String intent = parameters.get(BaseOnboardingCoordinator.INTENT_IDENTFIER);
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN, intent);
             AutofillAssistantClient.fromWebContents(webContents)
-                    .start(initialUrl, parameters, experimentIds, callerAccount, userName,
-                            isChromeCustomTab, /* onboardingCoordinator= */ null);
+                    .start(initialUrl, parameters, experimentIds, callerEmail, isChromeCustomTab,
+                            /* onboardingCoordinator= */ null);
             return;
         }
 
@@ -169,8 +167,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 return;
             }
             AutofillAssistantClient.fromWebContents(webContents)
-                    .start(initialUrl, parameters, experimentIds, callerAccount, userName,
-                            isChromeCustomTab, onboardingCoordinator);
+                    .start(initialUrl, parameters, experimentIds, callerEmail, isChromeCustomTab,
+                            onboardingCoordinator);
         }, webContents, initialUrl);
     }
 

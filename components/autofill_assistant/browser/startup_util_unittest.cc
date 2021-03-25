@@ -76,12 +76,10 @@ const std::map<std::string, std::string> kBase64TriggerScript = {
     {"TRIGGER_SCRIPTS_BASE64", "abc"}};
 
 const TriggerContext::Options kDefaultCCTOptions = {
-    std::string(), /* is_cct = */ true, false,        false,
-    std::string(), std::string(),       std::string()};
+    std::string(), /* is_cct = */ true, false, false, std::string()};
 
 const TriggerContext::Options kDefaultNonCCTOptions = {
-    std::string(), /* is_cct = */ false, false,        false,
-    std::string(), std::string(),        std::string()};
+    std::string(), /* is_cct = */ false, false, false, std::string()};
 
 // The set of feature combinations to test.
 const TestFeatureConfig kTestFeatureConfigs[] = {

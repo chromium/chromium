@@ -65,9 +65,8 @@ const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
 // Note: this parameter is automatically removed from |ToProto|.
 const char kEnabledParameterName[] = "ENABLED";
 
-// Special parameter specified by some callers. Note: this parameter is
-// automatically removed from |ToProto|.
-const char kCallerAccountParameterName[] = "CALLER_ACCOUNT";
+// The parameter key for the user's email, as indicated by the caller.
+const char kCallerEmailParameterName[] = "USER_EMAIL";
 
 // The original deeplink as indicated by the caller. Use this parameter instead
 // of the initial URL when available to avoid issues where the initial URL
@@ -147,8 +146,7 @@ ScriptParameters::ToProto(bool only_trigger_script_allowlisted) const {
 
   // TODO(arbesser): Send properly typed parameters to backend.
   for (const auto& parameter : parameters_) {
-    if ((parameter.first == kCallerAccountParameterName) ||
-        (parameter.first == kEnabledParameterName)) {
+    if (parameter.first == kEnabledParameterName) {
       continue;
     }
     auto* out_param = out.Add();
@@ -205,6 +203,10 @@ base::Optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
 
 base::Optional<std::string> ScriptParameters::GetIntent() const {
   return GetParameter(kIntent);
+}
+
+base::Optional<std::string> ScriptParameters::GetCallerEmail() const {
+  return GetParameter(kCallerEmailParameterName);
 }
 
 base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {

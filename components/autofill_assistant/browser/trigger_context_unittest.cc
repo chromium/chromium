@@ -33,9 +33,7 @@ TEST(TriggerContextTest, Create) {
       /* is_cct = */ true,
       /* onboarding_shown = */ true,
       /* is_direct_action = */ true,
-      /* caller_account_hash = */ "hash",
-      /* initial_url = */ "https://www.example.com",
-      /* username = */ "fake_username"};
+      /* initial_url = */ "https://www.example.com"};
   EXPECT_THAT(context.GetScriptParameters().ToProto(),
               UnorderedElementsAreArray(std::map<std::string, std::string>(
                   {{"key_a", "value_a"}, {"key_b", "value_b"}})));
@@ -43,9 +41,7 @@ TEST(TriggerContextTest, Create) {
   EXPECT_TRUE(context.GetCCT());
   EXPECT_TRUE(context.GetOnboardingShown());
   EXPECT_TRUE(context.GetDirectAction());
-  EXPECT_EQ(context.GetCallerAccountHash(), "hash");
   EXPECT_EQ(context.GetInitialUrl(), "https://www.example.com");
-  EXPECT_EQ(context.GetUsername(), "fake_username");
 
   context.SetOnboardingShown(false);
   EXPECT_FALSE(context.GetOnboardingShown());
@@ -59,7 +55,6 @@ TEST(TriggerContextTest, MergeEmpty) {
   EXPECT_FALSE(merged.GetCCT());
   EXPECT_FALSE(merged.GetOnboardingShown());
   EXPECT_FALSE(merged.GetDirectAction());
-  EXPECT_TRUE(merged.GetCallerAccountHash().empty());
 }
 
 TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
@@ -78,7 +73,6 @@ TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
   EXPECT_FALSE(merged.GetCCT());
   EXPECT_FALSE(merged.GetOnboardingShown());
   EXPECT_FALSE(merged.GetDirectAction());
-  EXPECT_TRUE(merged.GetCallerAccountHash().empty());
 }
 
 TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
@@ -95,9 +89,7 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
       /* is_cct = */ true,
       /* onboarding_shown = */ true,
       /* is_direct_action = */ true,
-      /* caller_account_hash = */ "hash",
-      /* initial_url = */ "https://www.example.com",
-      /* username = */ "fake_username"};
+      /* initial_url = */ "https://www.example.com"};
 
   // Adding empty to make sure empty contexts are properly skipped.
   TriggerContext empty;
@@ -109,9 +101,7 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
   EXPECT_TRUE(merged.GetCCT());
   EXPECT_TRUE(merged.GetOnboardingShown());
   EXPECT_TRUE(merged.GetDirectAction());
-  EXPECT_EQ(merged.GetCallerAccountHash(), "hash");
   EXPECT_EQ(merged.GetInitialUrl(), "https://www.example.com");
-  EXPECT_EQ(merged.GetUsername(), "fake_username");
 }
 
 TEST(TriggerContextTest, HasExperimentId) {

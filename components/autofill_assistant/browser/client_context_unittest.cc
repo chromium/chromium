@@ -95,14 +95,14 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
       .WillOnce(Return(std::pair<int, int>(1080, 1920)));
   EXPECT_CALL(mock_client_, GetScreenOrientation())
       .WillOnce(Return(ClientContextProto::LANDSCAPE));
-  client_context.Update({/* params = */ {},
-                         /* exp = */ "1,2,3",
-                         /* is_cct = */ true,
-                         /* onboarding_shown = */ true,
-                         /* is_direct_action = */ true,
-                         /* caller_account_hash = */ "account_hash",
-                         /* initial_url = */ "https://www.example.com",
-                         /* username = */ "fake_username"});
+  client_context.Update(
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "example@chromium.org"}}),
+       /* exp = */ "1,2,3",
+       /* is_cct = */ true,
+       /* onboarding_shown = */ true,
+       /* is_direct_action = */ true,
+       /* initial_url = */ "https://www.example.com"});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -133,14 +133,12 @@ TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
   EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
 
-  client_context.Update({/* params = */ {},
+  client_context.Update({std::make_unique<ScriptParameters>(),
                          /* exp = */ "1,2,3",
                          /* is_cct = */ true,
                          /* onboarding_shown = */ true,
                          /* is_direct_action = */ true,
-                         /* caller_account_hash = */ "account_hash",
-                         /* initial_url = */ "https://www.example.com",
-                         /* username = */ "fake_username"});
+                         /* initial_url = */ "https://www.example.com"});
 
   actual_client_context = client_context.AsProto();
   EXPECT_FALSE(actual_client_context.has_window_size());
@@ -154,29 +152,25 @@ TEST_F(ClientContextTest, AccountMatching) {
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::UNKNOWN));
 
-  // Should match john.doe@chromium.org.
   client_context.Update(
-      {/* params = */ {},
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "john.doe@chromium.org"}}),
        /* exp = */ std::string(),
        /* is_cct = */ false,
        /* onboarding_shown = */ false,
        /* is_direct_action = */ false,
-       /* caller_account_hash = */
-       "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3",
-       /* initial_url = */ "https://www.example.com",
-       /* username = */ "fake_username"});
+       /* initial_url = */ "https://www.example.com"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
-  client_context.Update({/* params = */ {},
-                         /* exp = */ std::string(),
-                         /* is_cct = */ false,
-                         /* onboarding_shown = */ false,
-                         /* is_direct_action = */ false,
-                         /* caller_account_hash = */
-                         "different",
-                         /* initial_url = */ "https://www.example.com",
-                         /* username = */ "fake_username"});
+  client_context.Update(
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "lisa.doe@chromium.org"}}),
+       /* exp = */ std::string(),
+       /* is_cct = */ false,
+       /* onboarding_shown = */ false,
+       /* is_direct_action = */ false,
+       /* initial_url = */ "https://www.example.com"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

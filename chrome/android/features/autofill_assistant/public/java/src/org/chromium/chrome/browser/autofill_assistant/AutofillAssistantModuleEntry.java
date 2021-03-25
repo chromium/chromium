@@ -40,8 +40,7 @@ public interface AutofillAssistantModuleEntry {
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName,
-            @Nullable String originalDeeplink);
+            @Nullable String callerEmail, @Nullable String originalDeeplink);
     /**
      * Returns a {@link AutofillAssistantActionHandler} instance tied to the activity owning the
      * given bottom sheet, and scrim view.

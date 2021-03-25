@@ -86,6 +86,7 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
 TEST(ScriptParametersTest, SpecialScriptParameters) {
   ScriptParameters parameters = {
       {{"ENABLED", "true"},
+       {"USER_EMAIL", "example@chromium.org"},
        {"ORIGINAL_DEEPLINK", "https://www.example.com"},
        {"TRIGGER_SCRIPT_EXPERIMENT", "true"},
        {"START_IMMEDIATELY", "false"},
@@ -105,6 +106,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"DETAILS_TOTAL_PRICE", "12"}}};
 
   EXPECT_THAT(parameters.GetEnabled(), Eq(true));
+  EXPECT_THAT(parameters.GetCallerEmail(), Eq("example@chromium.org"));
   EXPECT_THAT(parameters.GetOriginalDeeplink(), Eq("https://www.example.com"));
   EXPECT_THAT(parameters.GetTriggerScriptExperiment(), Eq(true));
   EXPECT_THAT(parameters.GetStartImmediately(), Eq(false));
@@ -169,10 +171,8 @@ TEST(ScriptParametersTest, ScriptParameterMatch) {
   EXPECT_FALSE(parameters.Matches(must_match_empty));
 }
 
-TEST(ScriptParametersTest, ToProtoRemovesEnabledAndCallerAccount) {
-  ScriptParameters parameters = {{{"key_a", "value_a"},
-                                  {"ENABLED", "true"},
-                                  {"CALLER_ACCOUNT", "caller"}}};
+TEST(ScriptParametersTest, ToProtoRemovesEnabled) {
+  ScriptParameters parameters = {{{"key_a", "value_a"}, {"ENABLED", "true"}}};
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
               UnorderedElementsAreArray(

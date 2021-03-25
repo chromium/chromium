@@ -496,17 +496,13 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     jboolean is_cct,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaRef<jstring>& jcaller_account_hash,
-    const base::android::JavaRef<jstring>& jinitial_url,
-    const base::android::JavaRef<jstring>& jusername) {
+    const base::android::JavaRef<jstring>& jinitial_url) {
   return std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
           CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
       SafeConvertJavaStringToNative(env, jexperiment_ids), is_cct,
       onboarding_shown, is_direct_action,
-      SafeConvertJavaStringToNative(env, jcaller_account_hash),
-      SafeConvertJavaStringToNative(env, jinitial_url),
-      SafeConvertJavaStringToNative(env, jusername));
+      SafeConvertJavaStringToNative(env, jinitial_url));
 }
 
 }  // namespace ui_controller_android_utils

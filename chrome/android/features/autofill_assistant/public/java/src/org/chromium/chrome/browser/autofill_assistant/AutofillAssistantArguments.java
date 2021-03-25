@@ -99,9 +99,6 @@ public class AutofillAssistantArguments {
      */
     public static final String PARAMETER_START_IMMEDIATELY = "START_IMMEDIATELY";
 
-    /** Special parameter for the calling account. */
-    private static final String PARAMETER_CALLER_ACCOUNT = "CALLER_ACCOUNT";
-
     /** Special parameter for user email. */
     private static final String PARAMETER_USER_EMAIL = "USER_EMAIL";
 
@@ -206,9 +203,6 @@ public class AutofillAssistantArguments {
         Map<String, String> map = new HashMap<>();
 
         for (String key : mAutofillAssistantParameters.keySet()) {
-            if (PARAMETER_ENABLED.equals(key) || PARAMETER_CALLER_ACCOUNT.equals(key)) {
-                continue;
-            }
             map.put(key, decode(mAutofillAssistantParameters.get(key).toString()));
         }
 
@@ -241,32 +235,12 @@ public class AutofillAssistantArguments {
     }
 
     /**
-     * Finds the caller account from the CALLER_ACCOUNT entry.
-     * @return caller account or null.
+     * Returns the user's email as indicated by the caller, if specified.
+     * @return caller's email or null.
      */
     @Nullable
-    public String getCallerAccount() {
-        return getStringParameter(PARAMETER_CALLER_ACCOUNT);
-    }
-
-    /**
-     * Finds the user email from the USER_EMAIL entry or from the ACCOUNT_NAME extra.
-     * @return user email or null.
-     */
-    @Nullable
-    public String getUserName() {
-        String fromParameter = getStringParameter(PARAMETER_USER_EMAIL);
-        if (!TextUtils.isEmpty(fromParameter)) {
-            return fromParameter;
-        }
-
-        for (String extra : mIntentExtras.keySet()) {
-            if (extra.endsWith("ACCOUNT_NAME")) {
-                return mIntentExtras.get(extra).toString();
-            }
-        }
-
-        return null;
+    public String getCallerEmail() {
+        return getStringParameter(PARAMETER_USER_EMAIL);
     }
 
     public String getInitialUrl() {

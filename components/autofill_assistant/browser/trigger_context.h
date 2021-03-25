@@ -25,18 +25,14 @@ class TriggerContext {
             bool is_cct,
             bool onboarding_shown,
             bool is_direct_action,
-            const std::string& caller_account_hash,
-            const std::string& initial_url,
-            const std::string& username);
+            const std::string& initial_url);
     Options();
     ~Options();
     std::string experiment_ids;
     bool is_cct = false;
     bool onboarding_shown = false;
     bool is_direct_action = false;
-    std::string caller_account_hash;
     std::string initial_url;
-    std::string username;
   };
 
   // Creates an empty trigger context.
@@ -57,9 +53,7 @@ class TriggerContext {
                  bool is_cct,
                  bool onboarding_shown,
                  bool is_direct_action,
-                 const std::string& caller_account_hash,
-                 const std::string& initial_url,
-                 const std::string& username);
+                 const std::string& initial_url);
 
   // Creates a trigger context that contains the merged contents of all input
   // instances at the time of calling (does not reference |contexts| after
@@ -98,11 +92,6 @@ class TriggerContext {
   // Returns true if the current action was triggered by a direct action.
   virtual bool GetDirectAction() const;
 
-  virtual std::string GetCallerAccountHash() const;
-
-  // Returns the username, as specified by the caller. May be empty.
-  virtual std::string GetUsername() const;
-
  private:
   std::unique_ptr<ScriptParameters> script_parameters_;
 
@@ -114,13 +103,8 @@ class TriggerContext {
   bool onboarding_shown_ = false;
   bool direct_action_ = false;
 
-  std::string caller_account_hash_;
-
   // The initial url at the time of triggering.
   std::string initial_url_;
-
-  // The username, as specified by the caller.
-  std::string username_;
 };
 
 }  // namespace autofill_assistant

@@ -106,7 +106,6 @@ bool ClientAndroid::Start(JNIEnv* env,
                           const JavaParamRef<jobject>& jcaller,
                           const JavaParamRef<jstring>& jinitial_url,
                           const JavaParamRef<jstring>& jexperiment_ids,
-                          const JavaParamRef<jstring>& jcaller_account,
                           const JavaParamRef<jobjectArray>& jparameter_names,
                           const JavaParamRef<jobjectArray>& jparameter_values,
                           jboolean jis_cct,
@@ -132,8 +131,7 @@ bool ClientAndroid::Start(JNIEnv* env,
   GURL initial_url(base::android::ConvertJavaStringToUTF8(env, jinitial_url));
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, jexperiment_ids, jparameter_names, jparameter_values, jis_cct,
-      jonboarding_shown, /* is_direct_action = */ false, jcaller_account,
-      jinitial_url, /* jusername = */ nullptr);
+      jonboarding_shown, /* is_direct_action = */ false, jinitial_url);
 
   intent_ = trigger_context->GetScriptParameters().GetIntent().value_or(
       kIntentNotSet);
@@ -172,9 +170,7 @@ void ClientAndroid::StartTriggerScript(
       ui_controller_android_utils::CreateTriggerContext(
           env, jexperiment_ids, jparameter_names, jparameter_values,
           /* is_cct = */ false, /* onboarding_shown = */ false,
-          /* is_direct_action = */ false,
-          /* caller_account_hash = */ nullptr, jinitial_url,
-          /* jusername = */ nullptr),
+          /* is_direct_action = */ false, jinitial_url),
       jservice_request_sender);
 }
 
@@ -244,9 +240,7 @@ void ClientAndroid::FetchWebsiteActions(
           env, jexperiment_ids, jparameter_names, jparameter_values,
           /* is_cct = */ false, /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
-          /* caller_account_hash = */ nullptr,
-          /* jinitial_url = */ nullptr,
-          /* jusername = */ nullptr),
+          /* jinitial_url = */ nullptr),
       base::BindOnce(&ClientAndroid::OnFetchWebsiteActions,
                      weak_ptr_factory_.GetWeakPtr(), scoped_jcallback));
 }
@@ -365,9 +359,7 @@ bool ClientAndroid::PerformDirectAction(
       env, jexperiment_ids, jparameter_names, jparameter_values,
       /* is_cct = */ false, /* onboarding_shown = */ false,
       /* is_direct_action = */ true,
-      /* caller_account_hash = */ nullptr,
-      /* jinitial_url = */ nullptr,
-      /* jusername = */ nullptr);
+      /* jinitial_url = */ nullptr);
 
   // Cancel through the UI if it is up. This allows the user to undo. This is
   // always available, even if no action was found and action_index == -1.

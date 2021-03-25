@@ -6,7 +6,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "components/version_info/version_info.h"
-#include "crypto/sha2.h"
 
 namespace autofill_assistant {
 
@@ -52,14 +51,11 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   }
 
   // TODO(b/156882027): Add an integration test for accounts handling.
-  std::string chrome_account_sha_bin =
-      crypto::SHA256HashString(chrome_signed_in_email_address);
-  std::string client_account_hash = base::ToLowerASCII(base::HexEncode(
-      chrome_account_sha_bin.data(), chrome_account_sha_bin.size()));
-  if (trigger_context.GetCallerAccountHash().empty()) {
+  auto caller_email = trigger_context.GetScriptParameters().GetCallerEmail();
+  if (!caller_email.has_value()) {
     proto_.set_accounts_matching_status(ClientContextProto::UNKNOWN);
   } else {
-    if (trigger_context.GetCallerAccountHash() == client_account_hash) {
+    if (chrome_signed_in_email_address == caller_email) {
       proto_.set_accounts_matching_status(
           ClientContextProto::ACCOUNTS_MATCHING);
     } else {

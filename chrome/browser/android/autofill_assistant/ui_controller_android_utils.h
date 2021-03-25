@@ -116,9 +116,7 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
     jboolean is_cct,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaRef<jstring>& jcaller_account_hash,
-    const base::android::JavaRef<jstring>& jinitial_url,
-    const base::android::JavaRef<jstring>& jusername);
+    const base::android::JavaRef<jstring>& jinitial_url);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

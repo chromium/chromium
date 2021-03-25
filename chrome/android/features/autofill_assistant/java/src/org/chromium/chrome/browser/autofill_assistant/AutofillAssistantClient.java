@@ -104,8 +104,7 @@ public class AutofillAssistantClient {
      * is the URL included into the intent
      * @param parameters Autofill Assistant parameters to set during the whole flow
      * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param callerAccount the account calling the flow
-     * @param userName the user name associated with this flow
+     * @param callerEmail the email of the caller, if specified.
      * @param isChromeCustomTab whether this was started from a {@link CustomTabActivity} or a
      *         normal Chrome tab.
      * @param onboardingCoordinator if non-null, reuse existing UI elements, usually created to show
@@ -116,15 +115,14 @@ public class AutofillAssistantClient {
      * still fail after this method returns true; the failure will be displayed on the UI.
      */
     boolean start(String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName, boolean isChromeCustomTab,
+            @Nullable String callerEmail, boolean isChromeCustomTab,
             @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         checkNativeClientIsAliveOrThrow();
-        chooseAccountAsyncIfNecessary(userName);
+        chooseAccountAsyncIfNecessary(callerEmail);
         return AutofillAssistantClientJni.get().start(mNativeClientAndroid, this, initialUrl,
-                experimentIds, callerAccount,
-                parameters.keySet().toArray(new String[parameters.size()]),
+                experimentIds, parameters.keySet().toArray(new String[parameters.size()]),
                 parameters.values().toArray(new String[parameters.size()]), isChromeCustomTab,
                 onboardingCoordinator,
                 /* onboardingShown= */
@@ -406,8 +404,8 @@ public class AutofillAssistantClient {
         AutofillAssistantClient fromWebContents(WebContents webContents);
         void onOnboardingUiChange(WebContents webContents, boolean shown);
         boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
-                String experimentIds, String callerAccount, String[] parameterNames,
-                String[] parameterValues, boolean isChromeCustomTab,
+                String experimentIds, String[] parameterNames, String[] parameterValues,
+                boolean isChromeCustomTab,
                 @Nullable BaseOnboardingCoordinator onboardingCoordinator, boolean onboardingShown,
                 long nativeService);
         void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,

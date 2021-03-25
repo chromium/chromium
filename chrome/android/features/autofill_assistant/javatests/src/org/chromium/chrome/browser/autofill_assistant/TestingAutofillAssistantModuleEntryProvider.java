@@ -74,8 +74,7 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 ApplicationViewportInsetSupplier bottomInsetProvider,
                 ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
                 @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-                @Nullable String callerAccount, @Nullable String userName,
-                @Nullable String originalDeeplink) {}
+                @Nullable String callerEmail, @Nullable String originalDeeplink) {}
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
