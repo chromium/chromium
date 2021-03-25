@@ -34,7 +34,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Creates Storage instance, and returns it with the completion callback.
   static void Create(
       const StorageOptions& options,
-      UploaderInterface::StartCb start_upload_cb,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
@@ -86,7 +86,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
           scoped_refptr<EncryptionModuleInterface> encryption_module,
-          UploaderInterface::StartCb start_upload_cb);
+          UploaderInterface::AsyncStartUploaderCb async_start_upload_cb);
 
   // Initializes the object by adding all queues for all priorities.
   // Must be called once and only once after construction.
@@ -112,7 +112,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_;
 
   // Upload provider callback.
-  const UploaderInterface::StartCb start_upload_cb_;
+  const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 };
 
 }  // namespace reporting

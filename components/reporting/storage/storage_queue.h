@@ -40,17 +40,17 @@ namespace reporting {
 class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
  public:
   // Callback type for UploadInterface provider for this queue.
-  using StartUploadCb =
-      base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>()>;
+  using AsyncStartUploaderCb = base::RepeatingCallback<void(
+      UploaderInterface::UploaderInterfaceResultCb)>;
 
   // Creates StorageQueue instance with the specified options, and returns it
-  // with the |completion_cb| callback. |start_upload_cb| is a factory callback
-  // that instantiates UploaderInterface every time the queue starts uploading
-  // records - periodically or immediately after Write (and in the near future -
-  // upon explicit Flush request).
+  // with the |completion_cb| callback. |async_start_upload_cb| is a factory
+  // callback that instantiates UploaderInterface every time the queue starts
+  // uploading records - periodically or immediately after Write (and in the
+  // near future - upon explicit Flush request).
   static void Create(
       const QueueOptions& options,
-      StartUploadCb start_upload_cb,
+      AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
@@ -80,22 +80,23 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // on upload_period of the queue, and can also be called explicitly - for
   // a queue with an infinite or very large upload period. Multiple |Flush|
   // calls can safely run in parallel.
-  // Starts by calling |start_upload_cb_| that instantiates |UploaderInterface
-  // uploader|. Then repeatedly reads EncryptedRecord(s) one by one from the
-  // StorageQueue starting from |first_sequencing_id_|, handing each one over to
-  // |uploader|->ProcessRecord (keeping ownership of the buffer) and resuming
-  // after result callback returns 'true'. Only files that have been closed are
-  // included in reading; |Upload| makes sure to close the last writeable file
-  // and create a new one before starting to send records to the |uploader|.
-  // If some records are not available or corrupt, |uploader|->ProcessGap is
-  // called. If the monotonic order of sequencing is broken, INTERNAL error
-  // Status is reported. |Upload| can be stopped after any record by returning
-  // 'false' to |processed_cb| callback - in that case |Upload| will behave as
-  // if the end of data has been reached. While one or more |Upload|s are
-  // active, files can be added to the StorageQueue but cannot be deleted. If
-  // processing of the record takes significant time, |uploader| implementation
-  // should be offset to another thread to avoid locking StorageQueue.
-  // Helper methods: SwitchLastFileIfNotEmpty, CollectFilesForUpload.
+  // Starts by calling |async_start_upload_cb_| that instantiates
+  // |UploaderInterface uploader|. Then repeatedly reads EncryptedRecord(s) one
+  // by one from the StorageQueue starting from |first_sequencing_id_|, handing
+  // each one over to |uploader|->ProcessRecord (keeping ownership of the
+  // buffer) and resuming after result callback returns 'true'. Only files that
+  // have been closed are included in reading; |Upload| makes sure to close the
+  // last writeable file and create a new one before starting to send records to
+  // the |uploader|. If some records are not available or corrupt,
+  // |uploader|->ProcessGap is called. If the monotonic order of sequencing is
+  // broken, INTERNAL error Status is reported. |Upload| can be stopped after
+  // any record by returning 'false' to |processed_cb| callback - in that case
+  // |Upload| will behave as if the end of data has been reached. While one or
+  // more |Upload|s are active, files can be added to the StorageQueue but
+  // cannot be deleted. If processing of the record takes significant time,
+  // |uploader| implementation should be offset to another thread to avoid
+  // locking StorageQueue. Helper methods: SwitchLastFileIfNotEmpty,
+  // CollectFilesForUpload.
   void Flush();
 
   // Test only: makes specified records fail on reading.
@@ -187,7 +188,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Private constructor, to be called by Create factory method only.
   StorageQueue(const QueueOptions& options,
-               StartUploadCb start_upload_cb,
+               AsyncStartUploaderCb async_start_upload_cb,
                scoped_refptr<EncryptionModuleInterface> encryption_module);
 
   // Initializes the object by enumerating files in the assigned directory
@@ -329,7 +330,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   base::RepeatingTimer upload_timer_;
 
   // Upload provider callback.
-  const StartUploadCb start_upload_cb_;
+  const AsyncStartUploaderCb async_start_upload_cb_;
 
   // Encryption module.
   scoped_refptr<EncryptionModuleInterface> encryption_module_;

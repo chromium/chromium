@@ -283,7 +283,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         storage_queue_create_event;
     StorageQueue::Create(
         options,
-        base::BindRepeating(&StorageQueueTest::BuildMockUploader,
+        base::BindRepeating(&StorageQueueTest::AsyncStartMockUploader,
                             base::Unretained(this)),
         test_encryption_module_, storage_queue_create_event.cb());
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
@@ -317,11 +317,12 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
-  StatusOr<std::unique_ptr<UploaderInterface>> BuildMockUploader() {
+  void AsyncStartMockUploader(
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
     auto uploader =
         std::make_unique<MockUploadClient>(&last_record_digest_map_);
     set_mock_uploader_expectations_.Call(uploader.get());
-    return uploader;
+    std::move(start_uploader_cb).Run(std::move(uploader));
   }
 
   Status WriteString(base::StringPiece data) {
@@ -630,7 +631,7 @@ TEST_P(StorageQueueTest, ValidateVariousRecordSizes) {
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
-      .WillOnce(Invoke([&data](MockUploadClient* mock_upload_client) {
+      .WillOnce(Invoke([data](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp client_setup(mock_upload_client);
         for (size_t i = 0; i < data.size(); ++i) {
           client_setup.Required(i, data[i]);
@@ -885,23 +886,21 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
             .Required(0, kData[0])
             .Possible(1, kData[1])
             .Possible(2, kData[2]);
-      }));
-  WriteStringOrDie(kData[0]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Possible(2, kData[2]);
-      }));
-  WriteStringOrDie(kData[1]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2]);
       }));
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
   WriteStringOrDie(kData[2]);
 }
 
@@ -918,51 +917,37 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
             .Possible(0, kData[0])
             .Possible(1, kData[1])
             .Possible(2, kData[2]);
-      }));
-  WriteStringOrDie(kData[0]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Possible(0, kData[0])
             .Possible(1, kData[1])
             .Possible(2, kData[2]);
-      }));
-  WriteStringOrDie(kData[1]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Possible(0, kData[0])
             .Possible(1, kData[1])
             .Required(2, kData[2]);  // Not confirmed - hence |Required|
-      }));
-  WriteStringOrDie(kData[2]);
-
-  // Confirm #1, removing data #0 and #1
-  ConfirmOrDie(/*sequencing_id=*/1);
-
-  // Add more data and verify that #2 and new data are returned.
-  // Upload is initiated asynchronously, so it may happen after the next
-  // record is also written. Because of that we set expectations for the
-  // data after the current one as |Possible|.
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
+      // After adding more data verify that #2 and new data are returned.
+      // Upload is initiated asynchronously, so it may happen after the next
+      // record is also written. Because of that we set expectations for the
+      // data after the current one as |Possible|.
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Possible(4, kMoreData[1])
             .Possible(5, kMoreData[2]);
-      }));
-  WriteStringOrDie(kMoreData[0]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Required(2, kData[2])
             .Required(3, kMoreData[0])
             .Required(4, kMoreData[1])
             .Possible(5, kMoreData[2]);
-      }));
-  WriteStringOrDie(kMoreData[1]);
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .Required(2, kData[2])
@@ -970,6 +955,17 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
             .Required(4, kMoreData[1])
             .Required(5, kMoreData[2]);
       }));
+
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Confirm #1, removing data #0 and #1
+  ConfirmOrDie(/*sequencing_id=*/1);
+
+  // Add more data to verify that #2 and new data are returned.
+  WriteStringOrDie(kMoreData[0]);
+  WriteStringOrDie(kMoreData[1]);
   WriteStringOrDie(kMoreData[2]);
 }
 
@@ -989,10 +985,6 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
 TEST_P(StorageQueueTest, ForceConfirm) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
 
-  WriteStringOrDie(kData[0]);
-  WriteStringOrDie(kData[1]);
-  WriteStringOrDie(kData[2]);
-
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -1000,24 +992,11 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             .Required(0, kData[0])
             .Required(1, kData[1])
             .Required(2, kData[2]);
-      }));
-  // Forward time to trigger upload
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
-  // Confirm #1 and forward time again, possibly removing records #0 and #1
-  ConfirmOrDie(/*sequencing_id=*/1);
-  // Set uploader expectations.
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client).Required(2, kData[2]);
-      }));
-  // Forward time to trigger upload
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
-  // Now force confirm the very beginning and forward time again.
-  ConfirmOrDie(/*sequencing_id=*/base::nullopt, /*force=*/true);
-  // Set uploader expectations: #0 and #1 could be returned as Gaps
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
+      // #0 and #1 could be returned as Gaps
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .RequiredSeqId(0)
@@ -1030,14 +1009,8 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             .PossibleGap(0, 2)
             .Possible(1, kData[1])
             .Required(2, kData[2]);
-      }));
-  // Forward time to trigger upload
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
-  // Force confirm #0 and forward time again.
-  ConfirmOrDie(/*sequencing_id=*/0, /*force=*/true);
-  // Set uploader expectations: #0 and #1 could be returned as Gaps
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      }))
+      // #0 and #1 could be returned as Gaps
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
         MockUploadClient::SetUp(mock_upload_client)
             .RequiredSeqId(1)
@@ -1048,6 +1021,28 @@ TEST_P(StorageQueueTest, ForceConfirm) {
             .Possible(1, kData[1])
             .Required(2, kData[2]);
       }));
+
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #1 and forward time again, possibly removing records #0 and #1
+  ConfirmOrDie(/*sequencing_id=*/1);
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Now force confirm the very beginning and forward time again.
+  ConfirmOrDie(/*sequencing_id=*/base::nullopt, /*force=*/true);
+
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Force confirm #0 and forward time again.
+  ConfirmOrDie(/*sequencing_id=*/0, /*force=*/true);
+
   // Forward time to trigger upload
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }

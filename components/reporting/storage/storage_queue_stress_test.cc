@@ -154,7 +154,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
         storage_queue_create_event;
     StorageQueue::Create(
         options,
-        base::BindRepeating(&StorageQueueStressTest::BuildTestUploader,
+        base::BindRepeating(&StorageQueueStressTest::AsyncStartTestUploader,
                             base::Unretained(this)),
         test_encryption_module_, storage_queue_create_event.cb());
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
@@ -184,8 +184,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
-  StatusOr<std::unique_ptr<UploaderInterface>> BuildTestUploader() {
-    return std::make_unique<TestUploadClient>(&last_record_digest_map_);
+  void AsyncStartTestUploader(
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
+    std::move(start_uploader_cb)
+        .Run(std::make_unique<TestUploadClient>(&last_record_digest_map_));
   }
 
   void WriteStringAsync(base::StringPiece data,

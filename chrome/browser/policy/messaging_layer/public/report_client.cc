@@ -174,14 +174,14 @@ ReportingClient::InstantiateInitializingContext(
     scoped_refptr<InitializationStateTracker> init_state_tracker) {
   return new ClientInitializingContext(
       std::move(build_cloud_policy_client_cb_),
-      base::BindRepeating(&ReportingClient::BuildUploader),
+      base::BindRepeating(&ReportingClient::AsyncStartUploader),
       std::move(update_config_cb), std::move(init_complete_cb), this,
       init_state_tracker);
 }
 
 ReportingClient::ClientInitializingContext::ClientInitializingContext(
     GetCloudPolicyClientCallback get_client_cb,
-    UploaderInterface::StartCb start_upload_cb,
+    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     ReportingClient* client,
@@ -191,7 +191,7 @@ ReportingClient::ClientInitializingContext::ClientInitializingContext(
                                                std::move(init_complete_cb),
                                                std::move(init_state_tracker)),
       get_client_cb_(std::move(get_client_cb)),
-      start_upload_cb_(std::move(start_upload_cb)),
+      async_start_upload_cb_(std::move(async_start_upload_cb)),
       client_(client) {}
 
 ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
@@ -242,7 +242,7 @@ void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
           .set_directory(reporting_path)
           .set_signature_verification_public_key(
               SignatureVerifier::VerificationKey()),
-      std::move(start_upload_cb_), EncryptionModule::Create(),
+      std::move(async_start_upload_cb_), EncryptionModule::Create(),
       base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
                      base::Unretained(this)));
 }
@@ -315,15 +315,17 @@ StatusOr<std::unique_ptr<ReportQueue>> ReportingClient::CreateNewQueue(
 }
 
 // static
-StatusOr<std::unique_ptr<UploaderInterface>> ReportingClient::BuildUploader(
+void ReportingClient::AsyncStartUploader(
     Priority priority,
-    bool need_encryption_key) {
+    bool need_encryption_key,
+    UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
   ReportingClient* const instance =
       static_cast<ReportingClient*>(GetInstance());
   DCHECK(instance->upload_client_);
-  return Uploader::Create(base::BindOnce(
+  auto uploader = Uploader::Create(base::BindOnce(
       &UploadClient::EnqueueUpload,
       base::Unretained(instance->upload_client_.get()), need_encryption_key));
+  std::move(start_uploader_cb).Run(std::move(uploader));
 }
 
 ReportingClient::TestEnvironment::TestEnvironment(

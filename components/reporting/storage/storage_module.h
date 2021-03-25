@@ -27,7 +27,7 @@ class StorageModule : public StorageModuleInterface {
   // Factory method creates |StorageModule| object.
   static void Create(
       const StorageOptions& options,
-      UploaderInterface::StartCb start_upload_cb,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
           callback);

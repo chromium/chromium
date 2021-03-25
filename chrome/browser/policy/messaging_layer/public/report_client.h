@@ -39,7 +39,7 @@ class ReportingClient : public ReportQueueProvider {
    public:
     ClientInitializingContext(
         GetCloudPolicyClientCallback get_client_cb,
-        UploaderInterface::StartCb start_upload_cb,
+        UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
         UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
         ReportingClient* client,
@@ -73,7 +73,7 @@ class ReportingClient : public ReportQueueProvider {
         StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
 
     GetCloudPolicyClientCallback get_client_cb_;
-    UploaderInterface::StartCb start_upload_cb_;
+    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
     policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
     std::unique_ptr<UploadClient> upload_client_;
@@ -125,10 +125,11 @@ class ReportingClient : public ReportQueueProvider {
   void OnInitState(bool reporting_client_configured);
   void OnInitializationComplete(Status init_status);
 
-  // TODO(chromium:1078512) Priority is unused, remove it.
-  static StatusOr<std::unique_ptr<UploaderInterface>> BuildUploader(
+  // TODO(b/183666933) Priority is used only for testing, remove it if possible.
+  static void AsyncStartUploader(
       Priority priority,
-      bool need_encryption_key);
+      bool need_encryption_key,
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
   GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
 

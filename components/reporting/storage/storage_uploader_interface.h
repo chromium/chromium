@@ -24,13 +24,24 @@ namespace reporting {
 // automatically discards after |Completed| returns.
 class UploaderInterface {
  public:
-  // Callback type for UploadInterface provider for specified priority.
-  // |priority| identifies which queue is going to upload the data.
-  // Set |need_encryption_key| if key is needed (initially or periodically).
-  using StartCb =
-      base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
-          Priority priority,
-          bool need_encryption_key)>;
+  // using AsyncStartUploaderCb =
+  //     base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
+  //         Priority priority,
+  //         bool need_encryption_key)>;
+  // Asynchronous callback that instantiates uploader.
+  // To start upload, call |AsyncStartUploaderCb| on a thread pool. Once
+  // uploader is instantiated, |AsyncStartUploaderCb| calls its parameter
+  // passing uploader instance (or error Status). Set |need_encryption_key| if
+  // key is needed (initially or periodically).
+  using UploaderInterfaceResultCb =
+      base::OnceCallback<void(StatusOr<std::unique_ptr<UploaderInterface>>)>;
+  // Callback type for asynchronous UploadInterface provider. |priority|
+  // identifies which queue is going to upload the data.
+  // TODO(b/183666933): |priority| is only used by tests, remove it if possible.
+  using AsyncStartUploaderCb =
+      base::RepeatingCallback<void(Priority priority,
+                                   bool need_encryption_key,
+                                   UploaderInterfaceResultCb)>;
 
   UploaderInterface(const UploaderInterface& other) = delete;
   const UploaderInterface& operator=(const UploaderInterface& other) = delete;

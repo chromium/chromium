@@ -57,7 +57,7 @@ void StorageModule::UpdateEncryptionKey(
 // static
 void StorageModule::Create(
     const StorageOptions& options,
-    UploaderInterface::StartCb start_upload_cb,
+    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
     scoped_refptr<EncryptionModuleInterface> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         callback) {
@@ -65,7 +65,7 @@ void StorageModule::Create(
       // Cannot base::MakeRefCounted, since constructor is protected.
       base::WrapRefCounted(new StorageModule());
   Storage::Create(
-      options, start_upload_cb, encryption_module,
+      options, async_start_upload_cb, encryption_module,
       base::BindOnce(
           [](scoped_refptr<StorageModule> instance,
              base::OnceCallback<void(
