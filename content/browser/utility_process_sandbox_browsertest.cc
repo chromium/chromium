@@ -170,4 +170,9 @@ INSTANTIATE_TEST_SUITE_P(
       return name;
     });
 
+// In some configurations (e.g. Linux ASAN) GetSandboxTypesToTest() returns an
+// empty list. Suppress runtime warnings about unparameterized tests. See
+// https://crbug.com/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(UtilityProcessSandboxBrowserTest);
+
 }  // namespace content
