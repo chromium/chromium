@@ -162,7 +162,8 @@ body.tab-navigation .circle input:focus::after {
   visibility: visible;
 }
 
-body.taking.video .left-stripe {
+body.taking.video .left-stripe:not(#options-group),
+body.taking.video #options-group :not(#open-ptz-panel) {
   opacity: 0;
   transition: visibility 0ms 225ms, opacity 225ms var(--standard-easing);
   visibility: hidden;
@@ -644,9 +645,11 @@ body.should-handle-intent-result #gallery-enter {
   --switch-device-gap: 32px;
   bottom: calc(var(--bottom-line) + (var(--big-icon) / 2) + var(--switch-device-gap) - var(--option-item-vpadding));
   flex-direction: column-reverse;
+  transition: bottom var(--fast1-duration);
 }
 
-body:not(.multi-camera) #options-group {
+body:not(.multi-camera) #options-group,
+body.taking.video #options-group {
   bottom: calc(var(--bottom-line) - var(--option-item-vpadding) - (var(--small-icon) / 2));
 }
 
@@ -1280,6 +1283,11 @@ html[dir=rtl] #banner-close {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
   left: 68px;
   position: absolute;
+}
+
+body.taking.video #panel-container {
+  bottom: 24px;
+  transition: bottom var(--fast1-duration);
 }
 
 #panel-container button {
