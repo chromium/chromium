@@ -980,6 +980,43 @@ public class TabGridDialogTest {
         verifyShowingDialog(cta, 2, null);
     }
 
+    @Test
+    @MediumTest
+    public void testCreateTabInDialog() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Open dialog from tab switcher and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+
+        // Create a tab by tapping "+" on the dialog.
+        onView(allOf(withId(R.id.toolbar_right_button),
+                       isDescendantOfA(withId(R.id.dialog_container_view))))
+                .perform(click());
+        waitForDialogHidingAnimation(cta);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        openDialogFromTabSwitcherAndVerify(cta, 3, null);
+
+        // Enter first tab page.
+        clickFirstTabInDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        // Open dialog from tab strip and verify dialog is showing correct content.
+        openDialogFromStripAndVerify(cta, 3, null);
+
+        // Create a tab by tapping "+" on the dialog.
+        onView(allOf(withId(R.id.toolbar_right_button),
+                       isDescendantOfA(withId(R.id.dialog_container_view))))
+                .perform(click());
+        waitForDialogHidingAnimation(cta);
+        openDialogFromStripAndVerify(cta, 4, null);
+    }
+
     private void openDialogFromTabSwitcherAndVerify(
             ChromeTabbedActivity cta, int tabCount, String customizedTitle) {
         clickFirstCardFromTabSwitcher(cta);
