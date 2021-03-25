@@ -47,10 +47,12 @@ class SharedImageRepresentationGLTexturePassthroughD3D
 #if BUILDFLAG(USE_DAWN)
 class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
  public:
-  SharedImageRepresentationDawnD3D(SharedImageManager* manager,
-                                   SharedImageBacking* backing,
-                                   MemoryTypeTracker* tracker,
-                                   WGPUDevice device);
+  SharedImageRepresentationDawnD3D(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      WGPUDevice device,
+      dawn_native::d3d12::ExternalImageDXGI* external_image);
 
   ~SharedImageRepresentationDawnD3D() override;
 
@@ -60,6 +62,7 @@ class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
  private:
   WGPUDevice device_;
   WGPUTexture texture_ = nullptr;
+  dawn_native::d3d12::ExternalImageDXGI* external_image_ = nullptr;
 
   // TODO(cwallez@chromium.org): Load procs only once when the factory is
   // created and pass a pointer to them around?

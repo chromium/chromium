@@ -18,7 +18,14 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_image_d3d.h"
+
+// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
+// ui/gl/buildflags.h
+#if BUILDFLAG(USE_DAWN)
+#include <dawn_native/D3D12Backend.h>
+#endif  // BUILDFLAG(USE_DAWN)
 
 namespace gfx {
 class Size;
@@ -93,6 +100,8 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
+  uint32_t GetAllowedDawnUsages() const;
+
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
   scoped_refptr<gles2::TexturePassthrough> texture_;
   scoped_refptr<gl::GLImage> image_;
@@ -114,6 +123,12 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex_;
   uint64_t keyed_mutex_acquire_key_ = 0;
   bool keyed_mutex_acquired_ = false;
+
+  // If external_image_ exists, it means Dawn produced the D3D12 side of the
+  // D3D11 texture created by ID3D12Device::OpenSharedHandle.
+#if BUILDFLAG(USE_DAWN)
+  std::unique_ptr<dawn_native::d3d12::ExternalImageDXGI> external_image_;
+#endif  // BUILDFLAG(USE_DAWN)
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingD3D);
 };
