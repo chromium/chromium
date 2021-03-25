@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -132,6 +133,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncCellular-APN-Authentication", IDS_ONC_CELLULAR_APN_AUTHENTICATION},
       {"OncCellular-APN-Password", IDS_ONC_CELLULAR_APN_PASSWORD},
       {"OncCellular-APN-Username", IDS_ONC_CELLULAR_APN_USERNAME},
+      {"OncCellular-APN-Attach", IDS_ONC_CELLULAR_APN_ATTACH},
       {"OncCellular-ActivationState", IDS_ONC_CELLULAR_ACTIVATION_STATE},
       {"OncCellular-ActivationState_Activated",
        IDS_ONC_CELLULAR_ACTIVATION_STATE_ACTIVATED},
@@ -353,6 +355,10 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"remove", IDS_REMOVE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean(
+      "useAttachApn",
+      base::FeatureList::IsEnabled(chromeos::features::kCellularUseAttachApn));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -378,7 +384,7 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
-      base::FeatureList::IsEnabled(features::kHiddenNetworkWarning));
+      base::FeatureList::IsEnabled(::features::kHiddenNetworkWarning));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.

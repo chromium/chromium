@@ -174,6 +174,7 @@ ONC_EXPORT extern const char kPassword[];
 ONC_EXPORT extern const char kAuthentication[];
 ONC_EXPORT extern const char kLocalizedName[];
 ONC_EXPORT extern const char kLanguage[];
+ONC_EXPORT extern const char kAttach[];
 }  // namespace cellular_apn
 
 namespace cellular_found_network {

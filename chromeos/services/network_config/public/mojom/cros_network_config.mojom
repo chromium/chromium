@@ -303,6 +303,9 @@ struct ApnProperties {
   string? name;
   string? password;
   string? username;
+  // The attach property uses a string? instead of an enum to allow for possible
+  // free-form entry in the future.
+  string? attach;
 };
 
 struct CellularProviderProperties {
@@ -390,6 +393,9 @@ struct ManagedApnProperties {
   ManagedString? name;
   ManagedString? password;
   ManagedString? username;
+  // The attach property uses a string? instead of an enum to allow for possible
+  // free-form entry in the future.
+  ManagedString? attach;
 };
 
 struct ManagedApnList {

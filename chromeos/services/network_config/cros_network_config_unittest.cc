@@ -57,16 +57,19 @@ const char kCellularTestApn1[] = "TEST.APN1";
 const char kCellularTestApnName1[] = "Test Apn 1";
 const char kCellularTestApnUsername1[] = "Test User";
 const char kCellularTestApnPassword1[] = "Test Pass";
+const char kCellularTestApnAttach1[] = "";
 
 const char kCellularTestApn2[] = "TEST.APN2";
 const char kCellularTestApnName2[] = "Test Apn 2";
 const char kCellularTestApnUsername2[] = "Test User";
 const char kCellularTestApnPassword2[] = "Test Pass";
+const char kCellularTestApnAttach2[] = "";
 
 const char kCellularTestApn3[] = "TEST.APN3";
 const char kCellularTestApnName3[] = "Test Apn 3";
 const char kCellularTestApnUsername3[] = "Test User";
 const char kCellularTestApnPassword3[] = "Test Pass";
+const char kCellularTestApnAttach3[] = "attach";
 
 }  // namespace
 
@@ -268,6 +271,7 @@ class CrosNetworkConfigTest : public testing::Test {
                             kCellularTestApnUsername2);
     apn_entry2.SetStringKey(shill::kApnPasswordProperty,
                             kCellularTestApnPassword2);
+    apn_entry2.SetStringKey(shill::kApnAttachProperty, kCellularTestApnAttach2);
     apn_list.Append(std::move(apn_entry2));
 
     helper().device_test()->SetDeviceProperty(
@@ -1119,6 +1123,7 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   new_apn->name = kCellularTestApnName1;
   new_apn->username = kCellularTestApnUsername1;
   new_apn->password = kCellularTestApnPassword1;
+  new_apn->attach = kCellularTestApnAttach1;
   cellular_config->apn = std::move(new_apn);
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
@@ -1135,6 +1140,7 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   new_apn->name = kCellularTestApnName3;
   new_apn->username = kCellularTestApnUsername3;
   new_apn->password = kCellularTestApnPassword3;
+  new_apn->attach = kCellularTestApnAttach3;
   cellular_config->apn = std::move(new_apn);
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
@@ -1156,6 +1162,43 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   ASSERT_EQ(kCellularTestApn3, properties->type_properties->get_cellular()
                                    ->custom_apn_list->front()
                                    ->access_point_name);
+  ASSERT_EQ(kCellularTestApnName3, properties->type_properties->get_cellular()
+                                       ->custom_apn_list->front()
+                                       ->name);
+  ASSERT_EQ(kCellularTestApnUsername3,
+            properties->type_properties->get_cellular()
+                ->custom_apn_list->front()
+                ->username);
+  ASSERT_EQ(kCellularTestApnPassword3,
+            properties->type_properties->get_cellular()
+                ->custom_apn_list->front()
+                ->password);
+  ASSERT_EQ(kCellularTestApnAttach3, properties->type_properties->get_cellular()
+                                         ->custom_apn_list->front()
+                                         ->attach);
+}
+
+TEST_F(CrosNetworkConfigTest, UnrecognizedAttachApnValue) {
+  SetupAPNList();
+  const char kUnrecognizedTestApnAttachStr[] = "unrecognized attach value";
+  const char* kGUID = "cellular_guid";
+
+  // Verify that custom APN list is updated properly.
+  auto config = mojom::ConfigProperties::New();
+  auto cellular_config = mojom::CellularConfigProperties::New();
+  auto new_apn = mojom::ApnProperties::New();
+
+  new_apn->attach = kUnrecognizedTestApnAttachStr;
+  cellular_config->apn = std::move(new_apn);
+  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
+      std::move(cellular_config));
+  SetProperties(kGUID, std::move(config));
+
+  // Unrecognized values are still saved without incident.
+  ASSERT_EQ(kUnrecognizedTestApnAttachStr, GetManagedProperties(kGUID)
+                                               ->type_properties->get_cellular()
+                                               ->custom_apn_list->front()
+                                               ->attach);
 }
 
 TEST_F(CrosNetworkConfigTest, ConfigureNetwork) {

@@ -266,6 +266,7 @@ const OncFieldSignature cellular_apn_fields[] = {
     {::onc::cellular_apn::kAuthentication, &kStringSignature},
     {::onc::cellular_apn::kLocalizedName, &kStringSignature},
     {::onc::cellular_apn::kLanguage, &kStringSignature},
+    {::onc::cellular_apn::kAttach, &kStringSignature},
     {NULL}};
 
 const OncFieldSignature cellular_found_network_fields[] = {

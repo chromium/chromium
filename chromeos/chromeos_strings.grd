@@ -1044,6 +1044,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_CELLULAR_APN_PASSWORD" desc="ONC Property label for APN-Password">
         Password
       </message>
+      <message name="IDS_ONC_CELLULAR_APN_ATTACH" desc="ONC Property label for APN-Attach APN that is required by some cellular network providers in order to connect">
+        Attach APN
+      </message>
       <message name="IDS_ONC_CELLULAR_SERVING_OPERATOR_NAME" desc="ONC Property label for Cellular.ServingOperator.Name">
         Operator
       </message>

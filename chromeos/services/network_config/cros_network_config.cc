@@ -965,6 +965,7 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value* dict) {
   apn->name = GetString(dict, ::onc::cellular_apn::kName);
   apn->password = GetString(dict, ::onc::cellular_apn::kPassword);
   apn->username = GetString(dict, ::onc::cellular_apn::kUsername);
+  apn->attach = GetString(dict, ::onc::cellular_apn::kAttach);
   return apn;
 }
 
@@ -989,6 +990,7 @@ mojom::ManagedApnPropertiesPtr GetManagedApnProperties(const base::Value* dict,
   apn->name = GetManagedString(apn_dict, ::onc::cellular_apn::kName);
   apn->password = GetManagedString(apn_dict, ::onc::cellular_apn::kPassword);
   apn->username = GetManagedString(apn_dict, ::onc::cellular_apn::kUsername);
+  apn->attach = GetManagedString(apn_dict, ::onc::cellular_apn::kAttach);
   return apn;
 }
 
@@ -1652,6 +1654,7 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
       SetString(::onc::cellular_apn::kName, apn.name, &apn_dict);
       SetString(::onc::cellular_apn::kPassword, apn.password, &apn_dict);
       SetString(::onc::cellular_apn::kUsername, apn.username, &apn_dict);
+      SetString(::onc::cellular_apn::kAttach, apn.attach, &apn_dict);
       type_dict.SetKey(::onc::cellular::kAPN, std::move(apn_dict));
     }
   } else if (properties->type_config->is_ethernet()) {
@@ -2544,6 +2547,8 @@ void CrosNetworkConfig::UpdateCustomAPNList(
             cellular_config.apn->localized_name, &custom_apn);
   SetString(::onc::cellular_apn::kLanguage, cellular_config.apn->language,
             &custom_apn);
+  SetString(::onc::cellular_apn::kAttach, cellular_config.apn->attach,
+            &custom_apn);
 
   // The UI currently only supports setting a single custom apn.
   base::Value custom_apn_list(base::Value::Type::LIST);
@@ -2580,6 +2585,7 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomAPNList(
     mojo_apn->localized_name =
         GetString(&apn, ::onc::cellular_apn::kLocalizedName);
     mojo_apn->language = GetString(&apn, ::onc::cellular_apn::kLanguage);
+    mojo_apn->attach = GetString(&apn, ::onc::cellular_apn::kAttach);
     mojo_custom_apns.push_back(std::move(mojo_apn));
   }
   return mojo_custom_apns;

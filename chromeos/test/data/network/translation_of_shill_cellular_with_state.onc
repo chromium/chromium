@@ -43,9 +43,10 @@
       }, {
         "AccessPointName": "test-apn3",
         "Password": "test-password3",
-        "Username": "test-username3"
+        "Username": "test-username3",
+        "Attach": "attach"
       }
-    ],	
+    ],
     "SIMLockStatus": {
       "LockType": "sim-pin",
       "LockEnabled": true

@@ -163,6 +163,7 @@ const FieldTranslationEntry cellular_apn_fields[] = {
     {::onc::cellular_apn::kAuthentication, shill::kApnAuthenticationProperty},
     {::onc::cellular_apn::kLocalizedName, shill::kApnLocalizedNameProperty},
     {::onc::cellular_apn::kLanguage, shill::kApnLanguageProperty},
+    {::onc::cellular_apn::kAttach, shill::kApnAttachProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_found_network_fields[] = {

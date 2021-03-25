@@ -1243,6 +1243,12 @@
   }
 }
 
+/**
+ * The value of ApnProperties.attach must be equivalent to this value
+ * in order for an Attach APN to occur.
+ */
+OncMojo.USE_ATTACH_APN_NAME = "attach";
+
 /** @typedef {chromeos.networkConfig.mojom.DeviceStateProperties} */
 OncMojo.DeviceStateProperties;
 
