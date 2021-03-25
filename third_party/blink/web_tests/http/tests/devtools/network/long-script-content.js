@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests long script content is correctly shown in source panel after page reload.\n`);
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('network');

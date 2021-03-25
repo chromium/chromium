@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests pause functionality in detached frame.`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(
       `<iframe id="child" src="resources/child.html"></iframe>`);

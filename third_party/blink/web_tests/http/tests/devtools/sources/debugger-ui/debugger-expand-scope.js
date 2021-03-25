@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that sections representing scopes of the current call frame are expandable and contain correct data.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <input type="button" onclick="testFunction()" value="Test">

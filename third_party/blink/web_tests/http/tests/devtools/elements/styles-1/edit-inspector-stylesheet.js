@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that adding a new rule creates inspector stylesheet resource and allows its live editing.\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>

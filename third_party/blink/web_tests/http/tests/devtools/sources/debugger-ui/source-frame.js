@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that it's possible to set breakpoint in source frame, and that source frame displays breakpoints and console errors.\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadLegacyModule('source_frame');

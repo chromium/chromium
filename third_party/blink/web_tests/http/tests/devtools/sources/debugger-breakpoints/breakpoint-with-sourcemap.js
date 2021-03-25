@@ -4,7 +4,7 @@
 
 (async function test() {
   TestRunner.addResult('Checks breakpoint in file with sourcemap');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verifies Bindings.cssWorkspaceBinding.propertyUILocation functionality\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/property-ui-location.html');

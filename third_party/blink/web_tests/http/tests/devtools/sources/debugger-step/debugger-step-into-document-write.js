@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger StepInto will step into inlined scripts created by document.write().\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-step-into-document-write.html')

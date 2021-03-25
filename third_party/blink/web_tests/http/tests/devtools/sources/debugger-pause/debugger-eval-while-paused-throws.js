@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that evaluation in console that throws works fine when script is paused.\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalObj = {

@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadTestModule('extensions_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadLegacyModule('components');
 
   TestRunner.clickOnURL = async function() {

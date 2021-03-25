@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that debugger will skip breakpoint hit when script execution is already paused. See bug\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

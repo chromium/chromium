@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests framework black-boxing on DOM, XHR and Event breakpoints.\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="rootElement"></div>

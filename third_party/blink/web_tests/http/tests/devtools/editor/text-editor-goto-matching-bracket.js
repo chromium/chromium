@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies editor's "Goto Matching Bracket" behavior, which is triggered via Ctrl-M shortcut.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <pre id="codeSnippet">function MyClass(a, b)

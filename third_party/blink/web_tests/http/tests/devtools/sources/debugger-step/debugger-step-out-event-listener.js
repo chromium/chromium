@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that stepping out of an event listener will lead to a pause in the next event listener.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="myDiv"></div>

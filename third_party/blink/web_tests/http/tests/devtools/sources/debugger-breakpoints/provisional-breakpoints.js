@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests provisional breakpoints on navigation.');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigate(TestRunner.url('resources/a.html'));

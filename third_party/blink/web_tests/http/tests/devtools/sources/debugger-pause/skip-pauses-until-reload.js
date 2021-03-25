@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that 'skip all pauses' mode blocks breakpoint and gets cancelled right at page reload.`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
 

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and StyleSheetMapping.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function addStyleSheet()
       {

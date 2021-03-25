@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test editor cursorPositionToCoordinates and coordinatesToCursorPosition API\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var text = ['function foo(a, b) {', '    var f = /*.[a]/.test(a);', '    return f;'];

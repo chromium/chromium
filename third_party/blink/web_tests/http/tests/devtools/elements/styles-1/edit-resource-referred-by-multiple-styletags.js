@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that editing sourcecode which is referred by multiple stylesheets (via sourceURL comment) updates all stylesheets.\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`

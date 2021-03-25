@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that object's __proto__ property is present in object properties section when script is paused on a breakpoint.Bug 41214\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function C()

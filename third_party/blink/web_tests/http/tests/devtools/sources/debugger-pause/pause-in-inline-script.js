@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that main resource script text is correct when paused in inline script on reload.`);
 
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();

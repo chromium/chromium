@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies applied indentation whenever you hit enter in "{|}" or type in "}" while inside opened block.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <pre id="codeSnippet">{} {}

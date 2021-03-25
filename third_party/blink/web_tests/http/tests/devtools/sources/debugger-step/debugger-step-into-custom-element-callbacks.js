@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that stepping into custom element methods will lead to a pause in the callbacks.\n`);
 
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.evaluateInPagePromise(`

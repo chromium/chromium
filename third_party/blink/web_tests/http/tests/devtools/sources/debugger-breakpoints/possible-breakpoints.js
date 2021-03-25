@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Checks that BreakpointManager.possibleBreakpoints returns correct locations\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPageAnonymously(`
       function foo() {
