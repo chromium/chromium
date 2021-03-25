@@ -143,4 +143,12 @@
         android:layout_height="0px"
         android:layout_gravity="bottom" />
 
+    <FrameLayout
+        android:id="@+id/survey_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:visibility="gone"
+        android:clipChildren="false"/>
+
 </merge>
