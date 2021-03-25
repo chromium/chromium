@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,11 +40,6 @@
 namespace {
 
 typedef content::NavigationThrottle::ThrottleCheckResult ThrottleCheckResult;
-
-const base::FeatureParam<base::TimeDelta> kManifestFetchDelay{
-    &lookalikes::features::kLookalikeDigitalAssetLinks,
-    lookalikes::features::kLookalikeDigitalAssetLinksTimeoutParameter,
-    base::TimeDelta::FromSeconds(5)};
 
 // Returns true if |current_url| is at the end of the redirect chain
 // stored in |stored_redirect_chain|.
@@ -220,7 +214,8 @@ LookalikeUrlNavigationThrottle::CheckManifestsAndMaybeShowInterstitial(
   // TODO(crbug.com/1175385): Consider moving this to LookalikeURLService.
   digital_asset_link_validator_ =
       std::make_unique<DigitalAssetLinkCrossValidator>(
-          profile_, lookalike_origin, target_origin, kManifestFetchDelay.Get(),
+          profile_, lookalike_origin, target_origin,
+          LookalikeUrlService::kManifestFetchDelay.Get(),
           LookalikeUrlService::Get(profile_)->clock(), std::move(callback));
   digital_asset_link_validator_->Start();
   return NavigationThrottle::DEFER;

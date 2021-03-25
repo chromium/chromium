@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -52,6 +53,8 @@ class LookalikeUrlService : public KeyedService {
 
   void SetClockForTesting(base::Clock* clock);
   base::Clock* clock() const { return clock_; }
+
+  static const base::FeatureParam<base::TimeDelta> kManifestFetchDelay;
 
  private:
   void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);

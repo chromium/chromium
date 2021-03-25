@@ -844,6 +844,7 @@ PageInfoUI::CreateSafetyTipSecurityDescription(
       // not visible to the user, so don't affect Page Info.
       break;
 
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       break;

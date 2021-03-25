@@ -133,7 +133,10 @@ enum class SafetyTipStatus {
   // The current page had a lookalike URL, but a Safety Tip was not shown since
   // it had been previously ignored by the user.
   kLookalikeIgnored = 6,
-  kMaxValue = kLookalikeIgnored,
+  // Safety tip UI was ignored because of the lookalike's digital asset link
+  // manifest matched the target's.
+  kDigitalAssetLinkMatch = 7,
+  kMaxValue = kDigitalAssetLinkMatch,
 };
 
 // Information about the last safety tip shown in the UI. This is used in page

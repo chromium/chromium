@@ -43,6 +43,7 @@ int GetSafetyTipBannerId(security_state::SafetyTipStatus safety_tip_status,
                      : IDR_SAFETY_TIP_ILLUSTRATION_LIGHT;
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kBadKeyword:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:

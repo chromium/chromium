@@ -172,6 +172,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
       NOTREACHED();
       return nullptr;
 
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       return nullptr;

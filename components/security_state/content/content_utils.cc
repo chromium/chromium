@@ -317,6 +317,7 @@ void ExplainSafetyTipSecurity(
       NOTREACHED();
       return;
 
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       return;

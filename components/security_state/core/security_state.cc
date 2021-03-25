@@ -54,6 +54,8 @@ std::string GetHistogramSuffixForSafetyTipStatus(
       return "SafetyTip_BadReputationIgnored";
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return "SafetyTip_LookalikeIgnored";
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
+      return "SafetyTip_DigitalAssetLinkMatch";
     case security_state::SafetyTipStatus::kBadKeyword:
       return "SafetyTip_BadKeyword";
   }
@@ -79,6 +81,7 @@ bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
     case security_state::SafetyTipStatus::kBadKeyword:
       // TODO(crbug/1012982): Decide whether to degrade the indicator once the
       // UI lands.
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kUnknown:
     case security_state::SafetyTipStatus::kNone:
       return false;
