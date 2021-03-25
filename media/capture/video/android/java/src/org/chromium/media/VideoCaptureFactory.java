@@ -54,17 +54,17 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static boolean isLegacyOrDeprecatedDevice(int index) {
-        return VideoCaptureCamera2.isLegacyDevice(index);
+    static boolean isLegacyOrDeprecatedDevice(int id) {
+        return VideoCaptureCamera2.isLegacyDevice(id);
     }
 
     // Factory methods.
     @CalledByNative
-    static VideoCapture createVideoCapture(int index, long nativeVideoCaptureDeviceAndroid) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return new VideoCaptureCamera(index, nativeVideoCaptureDeviceAndroid);
+    static VideoCapture createVideoCapture(int id, long nativeVideoCaptureDeviceAndroid) {
+        if (isLegacyOrDeprecatedDevice(id)) {
+            return new VideoCaptureCamera(id, nativeVideoCaptureDeviceAndroid);
         }
-        return new VideoCaptureCamera2(index, nativeVideoCaptureDeviceAndroid);
+        return new VideoCaptureCamera2(id, nativeVideoCaptureDeviceAndroid);
     }
 
     @CalledByNative
