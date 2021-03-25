@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that SecurityStateComparator correctly compares the severity of security states.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   var ordering = [

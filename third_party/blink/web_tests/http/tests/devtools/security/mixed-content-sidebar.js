@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the sidebar uses the correct styling for mixed content subresources.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   const pageVisibleSecurityState = new Security.PageVisibleSecurityState(

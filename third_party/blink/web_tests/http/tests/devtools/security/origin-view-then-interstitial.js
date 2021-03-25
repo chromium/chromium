@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the panel transitions to the overview view when navigating to an interstitial. Regression test for https://crbug.com/638601\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   var request1 = new SDK.NetworkRequest(0, 'http://foo.test/', 'http://foo.test', 0, 0, null);

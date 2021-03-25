@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests JS ignore list for timeline\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '6.23';

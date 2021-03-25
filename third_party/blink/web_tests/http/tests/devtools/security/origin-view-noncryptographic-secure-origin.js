@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the panel shows the correct text for non-cryptographic secure origins\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   var request1 = new SDK.NetworkRequest(0, 'chrome-test://test', 'chrome-test://test', 0, 0, null);

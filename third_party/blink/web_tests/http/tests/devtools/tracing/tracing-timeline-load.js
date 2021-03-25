@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests tracing based Timeline save/load functionality.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   TestRunner.TestTimelineLoaderClient = function() {

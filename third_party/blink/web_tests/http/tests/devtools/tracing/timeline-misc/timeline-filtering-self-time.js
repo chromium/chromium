@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test filtering in Bottom-Up Timeline Tree View panel.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';

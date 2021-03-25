@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that origin group names in the Security panel are distinct.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   var originGroupNameSize = Object.keys(Security.SecurityPanelSidebarTree.OriginGroup).length;

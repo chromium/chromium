@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that info explanations are placed after regular explanations.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   const pageVisibleSecurityState = new Security.PageVisibleSecurityState(

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test timeline page metrics.`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   function processTraceEvents(title, traceEvents) {

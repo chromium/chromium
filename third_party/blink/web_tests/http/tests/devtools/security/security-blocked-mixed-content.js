@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests active mixed content blocking in the security panel.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   TestRunner.mainTarget.model(Security.SecurityModel)

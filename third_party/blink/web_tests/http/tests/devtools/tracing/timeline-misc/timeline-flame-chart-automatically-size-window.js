@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests the TimelineFlameChart automatically sized window.\n`);
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var timeline = UI.panels.timeline;

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the active and passive mixed content explanations prompt the user to refresh when there are no recorded requests, and link to the network panel when there are recorded requests.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   TestRunner.addResult('\nBefore Refresh --------------');
