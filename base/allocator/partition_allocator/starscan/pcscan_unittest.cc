@@ -21,6 +21,9 @@ class PCScanTest : public testing::Test {
  public:
   PCScanTest() {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
+    // Previous test runs within the same process decommit GigaCage, therefore
+    // we need to make sure that the card table is recommitted for each run.
+    PCScan::Instance().ReinitForTesting();
     allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,

@@ -152,6 +152,9 @@ class BASE_EXPORT PCScan final {
   // Finish scan as scanner thread.
   void FinishScanForTesting();
 
+  // Reinitialize internal structures (e.g. card table).
+  void ReinitForTesting();
+
   // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
   static PCScan instance_ PA_CONSTINIT;
 
