@@ -29,7 +29,10 @@ namespace {
 const char kPDFPath[] = "/testpage.pdf";
 
 // Path wich leads to a PNG file.
-const char KPNGPath[] = "/chromium_logo.png";
+const char kPNGPath[] = "/chromium_logo.png";
+
+// Path wich leads to a MOV file.
+const char kMOVPath[] = "/video_sample.mov";
 
 // Matcher for the Cancel button.
 id<GREYMatcher> ShareMenuDismissButton() {
@@ -116,7 +119,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   }
 
   // Open the activity menu.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(KPNGPath)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
@@ -141,6 +144,44 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that open in button do not appears when opening a MOV file.
+- (void)testOpenInMOV {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kMOVPath)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that open in button appears when opening a PNG and when shutting down
+// the test server, the appropriate error message is displayed.
+- (void)testOpenInOfflineServer {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      assertWithMatcher:grey_notNil()];
+
+  // Shutdown the test server.
+  GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),
+                 @"Server did not shutdown.");
+
+  // Open the activity menu.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      performAction:grey_tap()];
+
+  // Wait for the dialog containing the error to appear.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(
+                                     grey_text(l10n_util::GetNSStringWithFixup(
+                                         IDS_IOS_OPEN_IN_FILE_DOWNLOAD_FAILED)),
+                                     grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, condition),
+             @"Waiting for the error dialog to appear");
 }
 
 @end
