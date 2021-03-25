@@ -44,7 +44,6 @@ group("closure_compile") {
     "file_manager/foreground/js:closure_compile",
     "file_manager/foreground/js/metadata:closure_compile",
     "file_manager/foreground/js/ui:closure_compile",
-    "file_manager/test:closure_compile",
     "gallery/js:closure_compile",
     "gallery/js/image_editor:closure_compile",
     "image_loader:closure_compile",

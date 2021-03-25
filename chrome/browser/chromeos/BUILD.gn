@@ -3498,7 +3498,6 @@ static_library("test_support") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/file_manager/file_manager/test:create_test_main",
     "//url",
   ]
 }

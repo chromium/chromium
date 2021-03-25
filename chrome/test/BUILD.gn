@@ -2687,7 +2687,6 @@ if (!is_android) {
         "../browser/chromeos/file_manager/file_manager_jstest.cc",
         "../browser/chromeos/file_manager/file_manager_jstest_base.cc",
         "../browser/chromeos/file_manager/file_manager_jstest_base.h",
-        "../browser/chromeos/file_manager/file_manager_uitest.cc",
         "../browser/chromeos/file_manager/file_tasks_browsertest.cc",
         "../browser/chromeos/file_manager/gallery_browsertest.cc",
         "../browser/chromeos/file_manager/gallery_jstest.cc",
