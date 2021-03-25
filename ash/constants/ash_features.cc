@@ -488,11 +488,6 @@ const base::Feature kMediaAppAnnotation{"MediaAppAnnotation",
 const base::Feature kMediaAppDisplayExif{"MediaAppDisplayExif",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether known extensions for RAW image formats are handled by the ChromeOS
-// Media App.
-const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Whether Pdf files loading ink is enabled in the ChromeOS media app.
 const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
