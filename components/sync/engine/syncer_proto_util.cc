@@ -374,14 +374,6 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
   UMA_HISTOGRAM_MEDIUM_TIMES("Sync.PostedClientToServerMessageLatency",
                              base::Time::Now() - start_time);
 
-  if (response->error_code() != sync_pb::SyncEnums::SUCCESS) {
-    // TODO(crbug.com/1004302): Stop recording once
-    // Sync.PostedClientToServerMessageError2 (recorded below) has reached
-    // Stable. The reason is so the two can be compared for the same population.
-    base::UmaHistogramSparse("Sync.PostedClientToServerMessageError",
-                             response->error_code());
-  }
-
   // The error can be specified in 2 different fields, so consider both of them.
   sync_pb::SyncEnums::ErrorType error_type =
       response->has_error() ? response->error().error_type()

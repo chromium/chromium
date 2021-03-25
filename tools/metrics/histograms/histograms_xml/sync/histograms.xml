@@ -878,11 +878,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessageError" enum="SyncErrorType"
-    expires_after="2021-08-08">
-<!-- TODO(crbug.com/1004302): Deprecate once
-Sync.PostedClientToServerMessageError2 has reached Stable (so the two histograms
-can be compared for the same population). -->
-
+    expires_after="2021-03-23">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
