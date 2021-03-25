@@ -102,13 +102,13 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // closed.  If this returns true, the dialog is closed, otherwise the
   // dialog remains open. Default implementation returns true.
   virtual bool OnDialogCloseRequested();
-  // Use `OnDialogCloseRequested()` instead. This one is called too late in the
-  // closing process, so returning false here will leave you a half-broken
-  // dialog. Currently, `AddSupervisionDialog` relies on this to record
-  // histogram correctly.
-  //
-  // TODO(crbug.com/1110759): remove this function.
-  virtual bool DeprecatedOnDialogCloseRequested();
+
+  // Called when the dialog's window is certainly about to close, but teardown
+  // has not started yet. This differs from OnDialogCloseRequested in that
+  // OnDialogCloseRequested is part of the process of deciding whether to close
+  // a window, while OnDialogWillClose is called as soon as it is known for
+  // certain that the window is about to be closed.
+  virtual void OnDialogWillClose() {}
 
   // A callback to notify the delegate that the dialog is about to close due to
   // the user pressing the ESC key.

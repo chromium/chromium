@@ -126,11 +126,10 @@ bool AddSupervisionDialog::OnDialogCloseRequested() {
   return !showing_confirm_dialog;
 }
 
-bool AddSupervisionDialog::DeprecatedOnDialogCloseRequested() {
+void AddSupervisionDialog::OnDialogWillClose() {
   // Record UMA metric that user has closed the Add Supervision dialog.
   AddSupervisionMetricsRecorder::GetInstance()->RecordAddSupervisionEnrollment(
       AddSupervisionMetricsRecorder::EnrollmentState::kClosed);
-  return true;
 }
 
 bool AddSupervisionDialog::ShouldCloseDialogOnEscape() const {

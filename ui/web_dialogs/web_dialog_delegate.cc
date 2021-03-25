@@ -28,10 +28,6 @@ bool WebDialogDelegate::OnDialogCloseRequested() {
   return true;
 }
 
-bool WebDialogDelegate::DeprecatedOnDialogCloseRequested() {
-  return true;
-}
-
 bool WebDialogDelegate::ShouldCenterDialogTitleText() const {
   return false;
 }

@@ -99,7 +99,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   views::CloseRequestResult OnWindowCloseRequested() override;
 
   // WidgetDelegate:
-  bool OnCloseRequested(Widget::ClosedReason close_reason) override;
   bool CanMaximize() const override;
   std::u16string GetWindowTitle() const override;
   std::u16string GetAccessibleWindowTitle() const override;
@@ -179,6 +178,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   // Accessor used by metadata only.
   ObservableWebView* GetWebView() const { return web_view_; }
+
+  void NotifyDialogWillClose();
 
   // This view is a delegate to the HTML content since it needs to get notified
   // about when the dialog is closing. For all other actions (besides dialog

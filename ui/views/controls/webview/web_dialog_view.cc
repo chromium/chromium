@@ -96,6 +96,8 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   if (delegate_) {
     for (const auto& accelerator : delegate_->GetAccelerators())
       AddAccelerator(accelerator);
+    RegisterWindowWillCloseCallback(base::BindOnce(
+        &WebDialogView::NotifyDialogWillClose, base::Unretained(this)));
   }
 }
 
@@ -178,10 +180,6 @@ views::CloseRequestResult WebDialogView::OnWindowCloseRequested() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, views::WidgetDelegate implementation:
-
-bool WebDialogView::OnCloseRequested(Widget::ClosedReason close_reason) {
-  return !delegate_ || delegate_->DeprecatedOnDialogCloseRequested();
-}
 
 bool WebDialogView::CanMaximize() const {
   if (delegate_)
@@ -475,6 +473,11 @@ void WebDialogView::InitDialog() {
 
   if (!disable_url_load_for_test_)
     web_view_->LoadInitialURL(GetDialogContentURL());
+}
+
+void WebDialogView::NotifyDialogWillClose() {
+  if (delegate_)
+    delegate_->OnDialogWillClose();
 }
 
 BEGIN_METADATA(WebDialogView, ClientView)
