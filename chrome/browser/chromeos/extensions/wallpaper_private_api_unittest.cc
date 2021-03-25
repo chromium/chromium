@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
@@ -37,7 +37,7 @@ class WallpaperPrivateApiUnittest : public testing::Test {
   ~WallpaperPrivateApiUnittest() override = default;
 
   void SetUp() override {
-    // Required for WallpaperControllerClient.
+    // Required for WallpaperControllerClientImpl.
     chromeos::SystemSaltGetter::Initialize();
   }
 
@@ -70,7 +70,7 @@ TEST_F(WallpaperPrivateApiUnittest, ResetWallpaper) {
 
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   TestWallpaperController test_controller;
-  WallpaperControllerClient client;
+  WallpaperControllerClientImpl client;
   client.InitForTesting(&test_controller);
   fake_user_manager()->AddUser(AccountId::FromUserEmail(kTestAccount));
 

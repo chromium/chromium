@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
 #include <utility>
 
@@ -41,7 +41,7 @@ namespace {
 // Known user keys.
 const char kWallpaperFilesId[] = "wallpaper-files-id";
 
-WallpaperControllerClient* g_wallpaper_controller_client_instance = nullptr;
+WallpaperControllerClientImpl* g_wallpaper_controller_client_instance = nullptr;
 
 bool IsKnownUser(const AccountId& account_id) {
   return user_manager::UserManager::Get()->IsKnownUser(account_id);
@@ -118,44 +118,44 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 
 }  // namespace
 
-WallpaperControllerClient::WallpaperControllerClient() {
+WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
   local_state_ = g_browser_process->local_state();
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kAccountsPrefShowUserNamesOnSignIn,
           base::BindRepeating(
-              &WallpaperControllerClient::ShowWallpaperOnLoginScreen,
+              &WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen,
               weak_factory_.GetWeakPtr()));
 
   DCHECK(!g_wallpaper_controller_client_instance);
   g_wallpaper_controller_client_instance = this;
 }
 
-WallpaperControllerClient::~WallpaperControllerClient() {
+WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
   wallpaper_controller_->SetClient(nullptr);
   weak_factory_.InvalidateWeakPtrs();
   DCHECK_EQ(this, g_wallpaper_controller_client_instance);
   g_wallpaper_controller_client_instance = nullptr;
 }
 
-void WallpaperControllerClient::Init() {
+void WallpaperControllerClientImpl::Init() {
   pref_registrar_.Init(local_state_);
   pref_registrar_.Add(
       prefs::kDeviceWallpaperImageFilePath,
       base::BindRepeating(
-          &WallpaperControllerClient::DeviceWallpaperImageFilePathChanged,
+          &WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged,
           weak_factory_.GetWeakPtr()));
   wallpaper_controller_ = ash::WallpaperController::Get();
   InitController();
 }
 
-void WallpaperControllerClient::InitForTesting(
+void WallpaperControllerClientImpl::InitForTesting(
     ash::WallpaperController* controller) {
   wallpaper_controller_ = controller;
   InitController();
 }
 
-void WallpaperControllerClient::SetInitialWallpaper() {
+void WallpaperControllerClientImpl::SetInitialWallpaper() {
   // Apply device customization.
   namespace customization_util = chromeos::customization_wallpaper_util;
   if (customization_util::ShouldUseCustomizedDefaultWallpaper()) {
@@ -200,11 +200,11 @@ void WallpaperControllerClient::SetInitialWallpaper() {
 }
 
 // static
-WallpaperControllerClient* WallpaperControllerClient::Get() {
+WallpaperControllerClientImpl* WallpaperControllerClientImpl::Get() {
   return g_wallpaper_controller_client_instance;
 }
 
-std::string WallpaperControllerClient::GetFilesId(
+std::string WallpaperControllerClientImpl::GetFilesId(
     const AccountId& account_id) const {
   DCHECK(CanGetFilesId());
   std::string stored_value;
@@ -220,7 +220,7 @@ std::string WallpaperControllerClient::GetFilesId(
   return wallpaper_files_id;
 }
 
-void WallpaperControllerClient::SetCustomWallpaper(
+void WallpaperControllerClientImpl::SetCustomWallpaper(
     const AccountId& account_id,
     const std::string& wallpaper_files_id,
     const std::string& file_name,
@@ -233,7 +233,7 @@ void WallpaperControllerClient::SetCustomWallpaper(
       account_id, wallpaper_files_id, file_name, layout, image, preview_mode);
 }
 
-void WallpaperControllerClient::SetOnlineWallpaperIfExists(
+void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
     const AccountId& account_id,
     const std::string& url,
     ash::WallpaperLayout layout,
@@ -245,7 +245,7 @@ void WallpaperControllerClient::SetOnlineWallpaperIfExists(
       account_id, url, layout, preview_mode, std::move(callback));
 }
 
-void WallpaperControllerClient::SetOnlineWallpaperFromData(
+void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
     const AccountId& account_id,
     const std::string& image_data,
     const std::string& url,
@@ -258,8 +258,9 @@ void WallpaperControllerClient::SetOnlineWallpaperFromData(
       account_id, image_data, url, layout, preview_mode, std::move(callback));
 }
 
-void WallpaperControllerClient::SetDefaultWallpaper(const AccountId& account_id,
-                                                    bool show_wallpaper) {
+void WallpaperControllerClientImpl::SetDefaultWallpaper(
+    const AccountId& account_id,
+    bool show_wallpaper) {
   if (!IsKnownUser(account_id))
     return;
 
@@ -269,7 +270,7 @@ void WallpaperControllerClient::SetDefaultWallpaper(const AccountId& account_id,
         << "Cannot get wallpaper files id in SetDefaultWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::BindOnce(&WallpaperControllerClient::SetDefaultWallpaper,
+        base::BindOnce(&WallpaperControllerClientImpl::SetDefaultWallpaper,
                        weak_factory_.GetWeakPtr(), account_id, show_wallpaper));
     return;
   }
@@ -278,14 +279,14 @@ void WallpaperControllerClient::SetDefaultWallpaper(const AccountId& account_id,
                                              show_wallpaper);
 }
 
-void WallpaperControllerClient::SetCustomizedDefaultWallpaperPaths(
+void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {
   wallpaper_controller_->SetCustomizedDefaultWallpaperPaths(
       customized_default_small_path, customized_default_large_path);
 }
 
-void WallpaperControllerClient::SetPolicyWallpaper(
+void WallpaperControllerClientImpl::SetPolicyWallpaper(
     const AccountId& account_id,
     std::unique_ptr<std::string> data) {
   if (!data || !IsKnownUser(account_id))
@@ -295,7 +296,7 @@ void WallpaperControllerClient::SetPolicyWallpaper(
   // https://crbug.com/615239.
   if (!CanGetFilesId()) {
     AddCanGetFilesIdCallback(base::BindOnce(
-        &WallpaperControllerClient::SetPolicyWallpaper,
+        &WallpaperControllerClientImpl::SetPolicyWallpaper,
         weak_factory_.GetWeakPtr(), account_id, std::move(data)));
     return;
   }
@@ -304,7 +305,7 @@ void WallpaperControllerClient::SetPolicyWallpaper(
                                             *data);
 }
 
-bool WallpaperControllerClient::SetThirdPartyWallpaper(
+bool WallpaperControllerClientImpl::SetThirdPartyWallpaper(
     const AccountId& account_id,
     const std::string& wallpaper_files_id,
     const std::string& file_name,
@@ -315,40 +316,41 @@ bool WallpaperControllerClient::SetThirdPartyWallpaper(
              account_id, wallpaper_files_id, file_name, layout, image);
 }
 
-void WallpaperControllerClient::ConfirmPreviewWallpaper() {
+void WallpaperControllerClientImpl::ConfirmPreviewWallpaper() {
   wallpaper_controller_->ConfirmPreviewWallpaper();
 }
 
-void WallpaperControllerClient::CancelPreviewWallpaper() {
+void WallpaperControllerClientImpl::CancelPreviewWallpaper() {
   wallpaper_controller_->CancelPreviewWallpaper();
 }
 
-void WallpaperControllerClient::UpdateCustomWallpaperLayout(
+void WallpaperControllerClientImpl::UpdateCustomWallpaperLayout(
     const AccountId& account_id,
     ash::WallpaperLayout layout) {
   if (IsKnownUser(account_id))
     wallpaper_controller_->UpdateCustomWallpaperLayout(account_id, layout);
 }
 
-void WallpaperControllerClient::ShowUserWallpaper(const AccountId& account_id) {
+void WallpaperControllerClientImpl::ShowUserWallpaper(
+    const AccountId& account_id) {
   if (IsKnownUser(account_id))
     wallpaper_controller_->ShowUserWallpaper(account_id);
 }
 
-void WallpaperControllerClient::ShowSigninWallpaper() {
+void WallpaperControllerClientImpl::ShowSigninWallpaper() {
   wallpaper_controller_->ShowSigninWallpaper();
 }
 
-void WallpaperControllerClient::ShowAlwaysOnTopWallpaper(
+void WallpaperControllerClientImpl::ShowAlwaysOnTopWallpaper(
     const base::FilePath& image_path) {
   wallpaper_controller_->ShowAlwaysOnTopWallpaper(image_path);
 }
 
-void WallpaperControllerClient::RemoveAlwaysOnTopWallpaper() {
+void WallpaperControllerClientImpl::RemoveAlwaysOnTopWallpaper() {
   wallpaper_controller_->RemoveAlwaysOnTopWallpaper();
 }
 
-void WallpaperControllerClient::RemoveUserWallpaper(
+void WallpaperControllerClientImpl::RemoveUserWallpaper(
     const AccountId& account_id) {
   if (!IsKnownUser(account_id))
     return;
@@ -359,7 +361,7 @@ void WallpaperControllerClient::RemoveUserWallpaper(
         << "Cannot get wallpaper files id in RemoveUserWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::BindOnce(&WallpaperControllerClient::RemoveUserWallpaper,
+        base::BindOnce(&WallpaperControllerClientImpl::RemoveUserWallpaper,
                        weak_factory_.GetWeakPtr(), account_id));
     return;
   }
@@ -368,7 +370,7 @@ void WallpaperControllerClient::RemoveUserWallpaper(
                                              GetFilesId(account_id));
 }
 
-void WallpaperControllerClient::RemovePolicyWallpaper(
+void WallpaperControllerClientImpl::RemovePolicyWallpaper(
     const AccountId& account_id) {
   if (!IsKnownUser(account_id))
     return;
@@ -379,7 +381,7 @@ void WallpaperControllerClient::RemovePolicyWallpaper(
         << "Cannot get wallpaper files id in RemovePolicyWallpaper. This "
            "should never happen under normal circumstances.";
     AddCanGetFilesIdCallback(
-        base::BindOnce(&WallpaperControllerClient::RemovePolicyWallpaper,
+        base::BindOnce(&WallpaperControllerClientImpl::RemovePolicyWallpaper,
                        weak_factory_.GetWeakPtr(), account_id));
     return;
   }
@@ -388,70 +390,71 @@ void WallpaperControllerClient::RemovePolicyWallpaper(
                                                GetFilesId(account_id));
 }
 
-void WallpaperControllerClient::GetOfflineWallpaperList(
+void WallpaperControllerClientImpl::GetOfflineWallpaperList(
     ash::WallpaperController::GetOfflineWallpaperListCallback callback) {
   wallpaper_controller_->GetOfflineWallpaperList(std::move(callback));
 }
 
-void WallpaperControllerClient::SetAnimationDuration(
+void WallpaperControllerClientImpl::SetAnimationDuration(
     const base::TimeDelta& animation_duration) {
   wallpaper_controller_->SetAnimationDuration(animation_duration);
 }
 
-void WallpaperControllerClient::OpenWallpaperPickerIfAllowed() {
+void WallpaperControllerClientImpl::OpenWallpaperPickerIfAllowed() {
   wallpaper_controller_->OpenWallpaperPickerIfAllowed();
 }
 
-void WallpaperControllerClient::MinimizeInactiveWindows(
+void WallpaperControllerClientImpl::MinimizeInactiveWindows(
     const std::string& user_id_hash) {
   wallpaper_controller_->MinimizeInactiveWindows(user_id_hash);
 }
 
-void WallpaperControllerClient::RestoreMinimizedWindows(
+void WallpaperControllerClientImpl::RestoreMinimizedWindows(
     const std::string& user_id_hash) {
   wallpaper_controller_->RestoreMinimizedWindows(user_id_hash);
 }
 
-void WallpaperControllerClient::AddObserver(
+void WallpaperControllerClientImpl::AddObserver(
     ash::WallpaperControllerObserver* observer) {
   wallpaper_controller_->AddObserver(observer);
 }
 
-void WallpaperControllerClient::RemoveObserver(
+void WallpaperControllerClientImpl::RemoveObserver(
     ash::WallpaperControllerObserver* observer) {
   wallpaper_controller_->RemoveObserver(observer);
 }
 
-gfx::ImageSkia WallpaperControllerClient::GetWallpaperImage() {
+gfx::ImageSkia WallpaperControllerClientImpl::GetWallpaperImage() {
   return wallpaper_controller_->GetWallpaperImage();
 }
 
-const std::vector<SkColor>& WallpaperControllerClient::GetWallpaperColors() {
+const std::vector<SkColor>&
+WallpaperControllerClientImpl::GetWallpaperColors() {
   return wallpaper_controller_->GetWallpaperColors();
 }
 
-bool WallpaperControllerClient::IsWallpaperBlurred() {
+bool WallpaperControllerClientImpl::IsWallpaperBlurred() {
   return wallpaper_controller_->IsWallpaperBlurredForLockState();
 }
 
-bool WallpaperControllerClient::IsActiveUserWallpaperControlledByPolicy() {
+bool WallpaperControllerClientImpl::IsActiveUserWallpaperControlledByPolicy() {
   return wallpaper_controller_->IsActiveUserWallpaperControlledByPolicy();
 }
 
-ash::WallpaperInfo WallpaperControllerClient::GetActiveUserWallpaperInfo() {
+ash::WallpaperInfo WallpaperControllerClientImpl::GetActiveUserWallpaperInfo() {
   return wallpaper_controller_->GetActiveUserWallpaperInfo();
 }
 
-bool WallpaperControllerClient::ShouldShowWallpaperSetting() {
+bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
 }
 
-void WallpaperControllerClient::DeviceWallpaperImageFilePathChanged() {
+void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
   wallpaper_controller_->SetDevicePolicyWallpaperPath(
       GetDeviceWallpaperImageFilePath());
 }
 
-void WallpaperControllerClient::InitController() {
+void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetClient(this);
 
   base::FilePath user_data;
@@ -466,7 +469,7 @@ void WallpaperControllerClient::InitController() {
                               device_policy_wallpaper);
 }
 
-void WallpaperControllerClient::ShowWallpaperOnLoginScreen() {
+void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
   if (user_manager::UserManager::Get()->IsUserLoggedIn())
     return;
 
@@ -487,7 +490,7 @@ void WallpaperControllerClient::ShowWallpaperOnLoginScreen() {
   ShowUserWallpaper(account_id);
 }
 
-void WallpaperControllerClient::OpenWallpaperPicker() {
+void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
   apps::AppServiceProxy* proxy =
@@ -505,7 +508,7 @@ void WallpaperControllerClient::OpenWallpaperPicker() {
       apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
-void WallpaperControllerClient::MaybeClosePreviewWallpaper() {
+void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
 
@@ -520,14 +523,15 @@ void WallpaperControllerClient::MaybeClosePreviewWallpaper() {
                                          std::move(event));
 }
 
-bool WallpaperControllerClient::ShouldShowUserNamesOnLogin() const {
+bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
   ash::CrosSettings::Get()->GetBoolean(
       chromeos::kAccountsPrefShowUserNamesOnSignIn, &show_user_names);
   return show_user_names;
 }
 
-base::FilePath WallpaperControllerClient::GetDeviceWallpaperImageFilePath() {
+base::FilePath
+WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
   return base::FilePath(
       local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
 }

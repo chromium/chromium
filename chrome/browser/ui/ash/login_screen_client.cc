@@ -24,7 +24,7 @@
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -262,7 +262,7 @@ void LoginScreenClient::OnLoginScreenShown() {
 }
 
 void LoginScreenClient::LoadWallpaper(const AccountId& account_id) {
-  WallpaperControllerClient::Get()->ShowUserWallpaper(account_id);
+  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
 void LoginScreenClient::SignOutUser() {

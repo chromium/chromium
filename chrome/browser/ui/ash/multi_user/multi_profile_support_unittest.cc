@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -282,7 +282,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
   user_manager::ScopedUserManager user_manager_enabler_;
 
-  std::unique_ptr<::WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 
   TestWallpaperController test_wallpaper_controller_;
 
@@ -319,7 +319,7 @@ void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
   ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
       ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
   wallpaper_controller_client_ =
-      std::make_unique<::WallpaperControllerClient>();
+      std::make_unique<WallpaperControllerClientImpl>();
   wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 }
 

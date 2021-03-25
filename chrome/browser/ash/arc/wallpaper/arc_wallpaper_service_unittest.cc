@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -83,7 +83,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
     // Wallpaper
     wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClient>();
+        std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // Arc services
@@ -115,7 +115,7 @@ class ArcWallpaperServiceTest : public testing::Test {
  protected:
   arc::ArcWallpaperService* service_ = nullptr;
   std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_ = nullptr;
-  std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
  private:

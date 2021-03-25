@@ -38,7 +38,7 @@
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"
@@ -558,7 +558,7 @@ void DemoSession::ShowSplashScreen() {
     image_path =
         demo_resources_->path().Append(kSplashScreensPath).Append("en-US.jpg");
   }
-  WallpaperControllerClient::Get()->ShowAlwaysOnTopWallpaper(image_path);
+  WallpaperControllerClientImpl::Get()->ShowAlwaysOnTopWallpaper(image_path);
   remove_splash_screen_fallback_timer_->Start(
       FROM_HERE, kRemoveSplashScreenTimeout,
       base::BindOnce(&DemoSession::RemoveSplashScreen,
@@ -568,7 +568,7 @@ void DemoSession::ShowSplashScreen() {
 void DemoSession::RemoveSplashScreen() {
   if (splash_screen_removed_)
     return;
-  WallpaperControllerClient::Get()->RemoveAlwaysOnTopWallpaper();
+  WallpaperControllerClientImpl::Get()->RemoveAlwaysOnTopWallpaper();
   remove_splash_screen_fallback_timer_.reset();
   app_window_registry_observer_.RemoveAll();
   splash_screen_removed_ = true;

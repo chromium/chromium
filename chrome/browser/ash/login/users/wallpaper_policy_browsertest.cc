@@ -36,7 +36,7 @@
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -190,7 +190,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    WallpaperControllerClient::Get()->AddObserver(this);
+    WallpaperControllerClientImpl::Get()->AddObserver(this);
 
     // Set up policy signing.
     user_policy_builders_[0] =
@@ -200,14 +200,14 @@ class WallpaperPolicyTest : public LoginManagerTest,
   }
 
   void TearDownOnMainThread() override {
-    WallpaperControllerClient::Get()->RemoveObserver(this);
+    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
     LoginManagerTest::TearDownOnMainThread();
   }
 
   // Obtain wallpaper image and return its average ARGB color.
   SkColor GetAverageWallpaperColor() {
     average_color_.reset();
-    auto image = WallpaperControllerClient::Get()->GetWallpaperImage();
+    auto image = WallpaperControllerClientImpl::Get()->GetWallpaperImage();
     const gfx::ImageSkiaRep& representation = image.GetRepresentation(1.0f);
     if (representation.is_null()) {
       ADD_FAILURE() << "No image representation.";

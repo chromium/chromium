@@ -51,7 +51,7 @@
 #include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chromeos/network/network_connect.h"
@@ -167,12 +167,13 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   in_session_auth_dialog_client_ =
       std::make_unique<InSessionAuthDialogClient>();
 
-  // NOTE: The WallpaperControllerClient must be initialized before the
+  // NOTE: The WallpaperControllerClientImpl must be initialized before the
   // session controller, because the session controller triggers the loading
   // of users, which itself calls a code path which eventually reaches the
-  // WallpaperControllerClient singleton instance via
+  // WallpaperControllerClientImpl singleton instance via
   // chromeos::ChromeUserManagerImpl.
-  wallpaper_controller_client_ = std::make_unique<WallpaperControllerClient>();
+  wallpaper_controller_client_ =
+      std::make_unique<WallpaperControllerClientImpl>();
   wallpaper_controller_client_->Init();
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();

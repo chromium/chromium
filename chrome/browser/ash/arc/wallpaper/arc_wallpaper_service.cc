@@ -14,7 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -150,14 +150,15 @@ void ArcWallpaperService::SetDefaultWallpaper() {
   decode_request_.reset();
   const user_manager::User* const primary_user =
       UserManager::Get()->GetPrimaryUser();
-  WallpaperControllerClient::Get()->SetDefaultWallpaper(
+  WallpaperControllerClientImpl::Get()->SetDefaultWallpaper(
       primary_user->GetAccountId(),
       primary_user->is_active() /*show_wallpaper=*/);
 }
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  gfx::ImageSkia image = WallpaperControllerClient::Get()->GetWallpaperImage();
+  gfx::ImageSkia image =
+      WallpaperControllerClientImpl::Get()->GetWallpaperImage();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&EncodeImagePng, image), std::move(callback));
@@ -168,11 +169,12 @@ void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
   const AccountId account_id =
       UserManager::Get()->GetPrimaryUser()->GetAccountId();
   const std::string wallpaper_files_id =
-      WallpaperControllerClient::Get()->GetFilesId(account_id);
+      WallpaperControllerClientImpl::Get()->GetFilesId(account_id);
 
-  const bool result = WallpaperControllerClient::Get()->SetThirdPartyWallpaper(
-      account_id, wallpaper_files_id, kAndroidWallpaperFilename,
-      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image);
+  const bool result =
+      WallpaperControllerClientImpl::Get()->SetThirdPartyWallpaper(
+          account_id, wallpaper_files_id, kAndroidWallpaperFilename,
+          ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image);
 
   // Notify the Android side whether the request is going through or not.
   if (result)

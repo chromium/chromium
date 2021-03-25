@@ -81,7 +81,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1284,9 +1284,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
     // Initialize the rest.
     ChromeLauncherControllerTest::SetUp();
 
-    // Initialize WallpaperControllerClient.
+    // Initialize WallpaperControllerClientImpl.
     wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClient>();
+        std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // Ensure there are multiple profiles. User 0 is created during setup.
@@ -1387,7 +1387,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 
   TestWallpaperController test_wallpaper_controller_;
 

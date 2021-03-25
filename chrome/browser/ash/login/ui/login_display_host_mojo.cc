@@ -33,7 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -465,7 +465,7 @@ void LoginDisplayHostMojo::HandleHardlockPod(const AccountId& account_id) {
 
 void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
-  WallpaperControllerClient::Get()->ShowUserWallpaper(account_id);
+  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
   if (focused_pod_account_id_ != account_id)
     MaybeUpdateOfflineLoginLinkVisibility(account_id);
   focused_pod_account_id_ = account_id;

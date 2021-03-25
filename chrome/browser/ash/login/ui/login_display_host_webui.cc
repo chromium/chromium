@@ -65,7 +65,7 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
@@ -268,7 +268,7 @@ void ShowLoginWizardFinish(
   // display host to be created.
   DCHECK(session_manager::SessionManager::Get());
   DCHECK(chromeos::LoginDisplayHost::default_host());
-  WallpaperControllerClient::Get()->SetInitialWallpaper();
+  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   // TODO(crbug.com/1105387): Part of initial screen logic.
   MaybeShowDeviceDisabledScreen();
 }

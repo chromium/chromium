@@ -55,7 +55,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
@@ -549,7 +549,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     local_state_ = std::make_unique<ScopedTestingLocalState>(
         TestingBrowserProcess::GetGlobal());
     wallpaper_controller_client_ =
-        std::make_unique<WallpaperControllerClient>();
+        std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
     g_browser_process->local_state()->SetString(
         "PublicAccountPendingDataRemoval", user_email);
@@ -577,7 +577,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
 
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   TestWallpaperController test_wallpaper_controller_;
-  std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   GURL google_;
 };
 

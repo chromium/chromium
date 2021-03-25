@@ -22,7 +22,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/user_manager/user.h"
@@ -155,7 +155,7 @@ ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   const user_manager::User* user = GetUserFromBrowserContext(browser_context());
   account_id_ = user->GetAccountId();
   wallpaper_files_id_ =
-      WallpaperControllerClient::Get()->GetFilesId(account_id_);
+      WallpaperControllerClientImpl::Get()->GetFilesId(account_id_);
 
   if (params_->details.data) {
     StartDecode(*params_->details.data);
@@ -185,7 +185,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
 
   const std::string file_name =
       base::FilePath(params_->details.filename).BaseName().value();
-  WallpaperControllerClient::Get()->SetCustomWallpaper(
+  WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
       account_id_, wallpaper_files_id_, file_name, layout, image,
       /*preview_mode=*/false);
   unsafe_wallpaper_decoder_ = nullptr;

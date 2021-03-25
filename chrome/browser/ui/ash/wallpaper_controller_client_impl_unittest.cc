@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -13,27 +13,27 @@
 
 namespace {
 
-class WallpaperControllerClientTest : public testing::Test {
+class WallpaperControllerClientImplTest : public testing::Test {
  public:
-  WallpaperControllerClientTest()
+  WallpaperControllerClientImplTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
-  ~WallpaperControllerClientTest() override = default;
+  ~WallpaperControllerClientImplTest() override = default;
 
  private:
   ScopedTestingLocalState local_state_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::test::TaskEnvironment task_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientTest);
+  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientImplTest);
 };
 
-TEST_F(WallpaperControllerClientTest, Construction) {
+TEST_F(WallpaperControllerClientImplTest, Construction) {
   TestWallpaperController controller;
-  WallpaperControllerClient client;
+  WallpaperControllerClientImpl client;
   client.InitForTesting(&controller);
 
   // Singleton was initialized.
-  EXPECT_EQ(&client, WallpaperControllerClient::Get());
+  EXPECT_EQ(&client, WallpaperControllerClientImpl::Get());
 
   // Object was set as client.
   EXPECT_TRUE(controller.was_client_set());

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_IMPL_H_
 
 #include <memory>
 
@@ -17,10 +17,10 @@
 class AccountId;
 
 // Handles chrome-side wallpaper control alongside the ash-side controller.
-class WallpaperControllerClient : public ash::WallpaperControllerClient {
+class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
  public:
-  WallpaperControllerClient();
-  virtual ~WallpaperControllerClient();
+  WallpaperControllerClientImpl();
+  virtual ~WallpaperControllerClientImpl();
 
   // Initializes and connects to ash.
   void Init();
@@ -32,7 +32,7 @@ class WallpaperControllerClient : public ash::WallpaperControllerClient {
   // been initialized.
   void SetInitialWallpaper();
 
-  static WallpaperControllerClient* Get();
+  static WallpaperControllerClientImpl* Get();
 
   // Returns files identifier for the |account_id|.
   std::string GetFilesId(const AccountId& account_id) const;
@@ -126,9 +126,9 @@ class WallpaperControllerClient : public ash::WallpaperControllerClient {
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
-  base::WeakPtrFactory<WallpaperControllerClient> weak_factory_{this};
+  base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClient);
+  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientImpl);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_WALLPAPER_CONTROLLER_CLIENT_IMPL_H_

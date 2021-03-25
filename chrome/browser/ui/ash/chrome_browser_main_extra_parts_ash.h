@@ -41,7 +41,7 @@ class SessionControllerClientImpl;
 class SystemTrayClient;
 class TabletModePageBehavior;
 class VpnListForwarder;
-class WallpaperControllerClient;
+class WallpaperControllerClientImpl;
 class MediaNotificationProviderImpl;
 class ProjectorClientImpl;
 
@@ -94,7 +94,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<SystemTrayClient> system_tray_client_;
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
   std::unique_ptr<VpnListForwarder> vpn_list_forwarder_;
-  std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   std::unique_ptr<ProjectorClientImpl> projector_client_;
   // TODO(stevenjb): Move NetworkPortalNotificationController to c/b/ui/ash and
   // elim chromeos:: namespace. https://crbug.com/798569.

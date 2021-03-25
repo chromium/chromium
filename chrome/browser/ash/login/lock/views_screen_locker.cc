@@ -32,7 +32,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -150,7 +150,7 @@ void ViewsScreenLocker::HandleHardlockPod(const AccountId& account_id) {
 void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
 
-  WallpaperControllerClient::Get()->ShowUserWallpaper(account_id);
+  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
 void ViewsScreenLocker::HandleOnNoPodFocused() {
