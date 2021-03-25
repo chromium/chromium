@@ -74,6 +74,11 @@
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #endif
@@ -153,6 +158,12 @@ class ProfileManagerTest : public testing::Test {
   ~ProfileManagerTest() override = default;
 
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
+    lacros_chrome_service_impl_ =
+        std::make_unique<chromeos::LacrosChromeServiceImpl>(nullptr);
+#endif
+
     // Create a new temporary directory, and store the path
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
@@ -260,6 +271,11 @@ class ProfileManagerTest : public testing::Test {
       session_type_;
   std::unique_ptr<WallpaperControllerClient> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::LacrosChromeServiceImpl>
+      lacros_chrome_service_impl_;
 #endif
 };
 

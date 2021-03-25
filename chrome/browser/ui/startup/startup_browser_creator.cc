@@ -647,8 +647,14 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   // However, new profiles can be created from a browser process that has this
   // switch so do not set the session pref to SessionStartupPref::LAST for
   // those as there is nothing to restore.
-  if ((command_line.HasSwitch(switches::kRestoreLastSession) || did_restart) &&
-      !profile->IsNewProfile()) {
+  bool restore_last_session =
+      command_line.HasSwitch(switches::kRestoreLastSession);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  restore_last_session |= chromeos::LacrosChromeServiceImpl::Get()
+                              ->init_params()
+                              ->restore_last_session;
+#endif
+  if ((restore_last_session || did_restart) && !profile->IsNewProfile()) {
     pref.type = SessionStartupPref::LAST;
   }
 

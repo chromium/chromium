@@ -280,7 +280,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 14
+// Next version: 15
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -364,6 +364,11 @@ struct BrowserInitParams {
   // Added in M91.
   [MinVersion=13]
   bool is_incognito@13;
+
+  // Restores tabs from the last session.
+  // Added in M91.
+  [MinVersion=14]
+  bool restore_last_session@14;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

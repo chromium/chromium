@@ -33,6 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "chromeos/ui/base/tablet_state.h"
 #endif
 
@@ -212,6 +213,10 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   // We need to create a MessageLoop, otherwise a bunch of things fails.
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
