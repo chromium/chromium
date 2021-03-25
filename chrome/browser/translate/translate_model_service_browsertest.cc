@@ -83,7 +83,8 @@ class TranslateModelServiceWithoutOptimizationGuideBrowserTest
  public:
   TranslateModelServiceWithoutOptimizationGuideBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled}, {});
+        {translate::kTFLiteLanguageDetectionEnabled},
+        {optimization_guide::features::kOptimizationHints});
   }
 
   ~TranslateModelServiceWithoutOptimizationGuideBrowserTest() override =
