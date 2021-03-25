@@ -421,7 +421,7 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   ALWAYS_INLINE size_t AdjustSize0IfNeeded(size_t size) const {
-#if BUILDFLAG(USE_BACKUP_REF_PTR) && !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     // The minimum slot size is base::kAlignment. If |requested_size| is 0 and
     // there are extra before the allocation (which must be at least
     // kAlignment), then these extras will fill the slot, leading to returning a
@@ -446,8 +446,7 @@ struct BASE_EXPORT PartitionRoot {
       return 1;
 #else
     PA_DCHECK(!extras_offset || (extras_size - extras_offset));
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
-        // !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     return size;
   }
 
@@ -803,7 +802,12 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
 
   // memset() can be really expensive.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  memset(slot_start, kFreedByte, slot_span->GetUtilizedSlotSize());
+  memset(slot_start, kFreedByte,
+         slot_span->GetUtilizedSlotSize()
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+             - sizeof(internal::PartitionRefCount)
+#endif
+  );
 #endif
 
   if (root->is_thread_safe) {
@@ -1002,13 +1006,23 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
   // memset() can be really expensive.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  memset(slot_start, kFreedByte, utilized_slot_size);
+  memset(slot_start, kFreedByte,
+         utilized_slot_size
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+             - sizeof(internal::PartitionRefCount)
+#endif
+  );
 #elif ZERO_RANDOMLY_ON_FREE
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
       !slot_span->bucket->is_direct_mapped()) {
-    internal::SecureMemset(slot_start, 0, utilized_slot_size);
+    internal::SecureMemset(slot_start, 0,
+                           utilized_slot_size
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+                               - sizeof(internal::PartitionRefCount)
+#endif
+    );
   }
 #endif
 
@@ -1366,13 +1380,17 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //  <------------------(e)------------------------>
   //  <------------------(f)------------------------>
   //
-  // If the slot size is small, [refcnt] is stored at the end of the slot.
-  // If the slot size is large (i.e. single slot span case), [refcnt] is stored
-  // in SubsequentMetadata (after raw size). However, the space for refcnt is
-  // still reserved after use data (or after the trailing cookie, if present),
-  // even though redundant. This important to put the extras right after user
-  // data so that we can keep the system pages at the end of the slot empty and
-  // thus decommittable.
+  // If the slot start address is not SystemPageSize() aligned (this also means,
+  // the slot size is small), [refcnt] of this slot is stored at the end of
+  // the previous slot. So this makes us to obtain refcount address with slot
+  // start address minus sizeof(refcount).
+  // If the slot start address is SystemPageSize() aligned (regarding single
+  // slot span, the slot start address is always SystemPage size-aligned),
+  // [refcnt] is stored in refcount bitmap placed after SuperPage metadata.
+  // However, the space for refcnt is still reserved at the end of slot, even
+  // though redundant. Because, regarding not single slot span, it is a little
+  // difficult to change usable_size if refcnt serves the slot in the next
+  // system page.
   // TODO(tasak): we don't need to add/subtract sizeof(refcnt) to requested size
   // in single slot span case.
 

@@ -134,6 +134,16 @@ MaxSystemPagesPerSlotSpan() {
 //
 // QuarantineBitmaps are inserted for partitions that may have PCScan enabled.
 //
+// If refcount_at_end_allocation is enabled, RefcountBitmap(4KiB) is inserted
+// after the Metadata page for BackupRefPtr. The guard pages after the bitmap
+// will be 4KiB.
+//
+//...
+//     | Metadata page (4 KiB) |
+//     | RefcountBitmap (4 KiB)|
+//     | Guard pages (4 KiB)   |
+//...
+//
 // Each slot span is a contiguous range of one or more `PartitionPage`s. Note
 // that slot spans of different sizes may co-exist with one super page. Even
 // slot spans of the same size may support different slot sizes. However, all

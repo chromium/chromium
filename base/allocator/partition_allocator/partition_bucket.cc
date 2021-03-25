@@ -346,7 +346,14 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // Keep the first partition page in the super page inaccessible to serve as a
   // guard page, except an "island" in the middle where we put page metadata and
   // also a tiny amount of extent metadata.
-  RecommitSystemPages(super_page + SystemPageSize(), SystemPageSize(),
+  RecommitSystemPages(super_page + SystemPageSize(),
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+                      // Allocate 2 SystemPages, one for SuperPage metadata and
+                      // the other for RefCount bitmap.
+                      SystemPageSize() * 2,
+#else
+                      SystemPageSize(),
+#endif
                       PageReadWrite, PageUpdatePermissions);
 
   // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it

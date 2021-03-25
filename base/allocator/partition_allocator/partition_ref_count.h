@@ -158,7 +158,39 @@ static constexpr size_t kInSlotRefCountBufferSize = sizeof(PartitionRefCount);
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 constexpr size_t kPartitionPastAllocationAdjustment = 0;
 
-BASE_EXPORT PartitionRefCount* PartitionRefCountPointer(void* slot_start);
+constexpr size_t kPartitionRefCountIndexMultiplier =
+    SystemPageSize() /
+    (sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()));
+
+static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
+                   kPartitionRefCountIndexMultiplier <=
+               SystemPageSize()),
+              "PartitionRefCount Bitmap size must be smaller than or equal to "
+              "<= SystemPageSize().");
+
+ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
+  DCheckGetSlotOffsetIsZero(slot_start);
+  uintptr_t slot_start_as_uintptr = reinterpret_cast<uintptr_t>(slot_start);
+  if (LIKELY(slot_start_as_uintptr & SystemPageOffsetMask())) {
+    uintptr_t refcount_ptr_as_uintptr =
+        slot_start_as_uintptr - sizeof(PartitionRefCount);
+    PA_DCHECK(refcount_ptr_as_uintptr % alignof(PartitionRefCount) == 0);
+    return reinterpret_cast<PartitionRefCount*>(refcount_ptr_as_uintptr);
+  } else {
+    PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
+        (slot_start_as_uintptr & kSuperPageBaseMask) + SystemPageSize() * 2);
+    size_t index = ((slot_start_as_uintptr & kSuperPageOffsetMask)
+#if !defined(OS_APPLE)
+                    >> SystemPageShift()
+#else
+                    / SystemPageSize()
+#endif
+                        ) *
+                   kPartitionRefCountIndexMultiplier;
+    PA_DCHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
+    return bitmap_base + index;
+  }
+}
 
 #else  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
 
