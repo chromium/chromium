@@ -136,6 +136,11 @@ base::FilePath PlatformCrashpadInitialization(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Empty means stable.
     const bool allow_empty_channel = true;
+    if (channel == "extended") {
+      // Extended stable reports as stable (empty string) with an extra bool.
+      channel.clear();
+      annotations["extended_stable_channel"] = "true";
+    }
 #else
     const bool allow_empty_channel = false;
 #endif

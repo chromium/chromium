@@ -65,7 +65,16 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
           channel = [channel substringFromIndex:[@"arm64-" length]];
         else if ([channel hasPrefix:@"universal-"])
           channel = [channel substringFromIndex:[@"universal-" length]];
-        process_annotations["channel"] = base::SysNSStringToUTF8(channel);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        if ([channel isEqual:@"extended"]) {
+          // Extended stable reports as stable with an extra bool.
+          channel = @"";
+          process_annotations["extended_stable_channel"] = "true";
+        }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        if (allow_empty_channel || [channel length]) {
+          process_annotations["channel"] = base::SysNSStringToUTF8(channel);
+        }
       }
 
       NSString* version =

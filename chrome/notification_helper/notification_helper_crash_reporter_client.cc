@@ -77,7 +77,8 @@ void NotificationHelperCrashReporterClient::GetProductNameAndVersion(
     *special_build = std::wstring();
   }
 
-  *channel_name = install_static::GetChromeChannelName();
+  *channel_name =
+      install_static::GetChromeChannelName(/*with_extended_stable=*/true);
 }
 
 bool NotificationHelperCrashReporterClient::ShouldShowRestartDialog(

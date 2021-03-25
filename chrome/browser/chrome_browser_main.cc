@@ -944,7 +944,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
   // Set the product channel for crash reports.
   if (!crash_reporter::IsCrashpadEnabled()) {
-    breakpad::SetChannelCrashKey(chrome::GetChannelName());
+    breakpad::SetChannelCrashKey(
+        chrome::GetChannelName(chrome::WithExtendedStable(true)));
   }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 
