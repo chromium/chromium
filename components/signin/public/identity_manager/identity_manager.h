@@ -27,6 +27,8 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -683,6 +685,11 @@ class IdentityManager : public KeyedService,
 #if defined(OS_ANDROID)
   // Java-side IdentityManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_identity_manager_;
+
+  // CoreAccountId and the corresponding fetch start time, this is only
+  // used to record account information fetch duration.
+  base::flat_map<CoreAccountId, base::TimeTicks>
+      account_info_fetch_start_times_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
