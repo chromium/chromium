@@ -332,6 +332,19 @@ void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void BrowserManager::SetState(State state) {
+  if (state_ == state)
+    return;
+  state_ = state;
+
+  for (auto& observer : observers_) {
+    if (state == State::TERMINATING) {
+      observer.OnMojoDisconnected();
+    }
+    observer.OnStateChanged();
+  }
+}
+
 BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
     mojo::RemoteSetElementId mojo_id,
     mojom::BrowserService* service,
@@ -353,7 +366,7 @@ void BrowserManager::Start() {
   // Ensure we're not trying to open a window before the shelf is initialized.
   DCHECK(ChromeLauncherController::instance());
 
-  state_ = State::CREATING_LOG_FILE;
+  SetState(State::CREATING_LOG_FILE);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateLogFile),
@@ -504,10 +517,10 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   lacros_process_ = base::LaunchProcess(command_line, options);
   if (!lacros_process_.IsValid()) {
     LOG(ERROR) << "Failed to launch lacros-chrome";
-    state_ = State::STOPPED;
+    SetState(State::STOPPED);
     return;
   }
-  state_ = State::STARTING;
+  SetState(State::STARTING);
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
   legacy_channel.RemoteProcessLaunchAttempted();
   channel.RemoteProcessLaunchAttempted();
@@ -524,7 +537,7 @@ void BrowserManager::OnBrowserServiceConnected(
   }
 
   DCHECK_EQ(state_, State::STARTING);
-  state_ = State::RUNNING;
+  SetState(State::RUNNING);
 
   DCHECK(!browser_service_.has_value());
   browser_service_ =
@@ -551,7 +564,6 @@ void BrowserManager::OnMojoDisconnected() {
   DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
   LOG(WARNING)
       << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
-  state_ = State::TERMINATING;
 
   browser_service_.reset();
   crosapi_id_.reset();
@@ -562,13 +574,13 @@ void BrowserManager::OnMojoDisconnected() {
       base::BindOnce(&BrowserManager::OnLacrosChromeTerminated,
                      weak_factory_.GetWeakPtr()));
 
-  NotifyMojoDisconnected();
+  SetState(State::TERMINATING);
 }
 
 void BrowserManager::OnLacrosChromeTerminated() {
   DCHECK_EQ(state_, State::TERMINATING);
   LOG(WARNING) << "Lacros-chrome is terminated";
-  state_ = State::STOPPED;
+  SetState(State::STOPPED);
   // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
   SetLaunchOnLoginPref(false);
@@ -598,11 +610,11 @@ void BrowserManager::OnSessionStateChanged() {
 
   // Must be checked after user session start because it depends on user type.
   if (browser_util::IsLacrosEnabled()) {
-    state_ = State::LOADING;
+    SetState(State::LOADING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
                                          weak_factory_.GetWeakPtr()));
   } else {
-    state_ = State::UNAVAILABLE;
+    SetState(State::UNAVAILABLE);
     browser_loader_->Unload();
   }
 }
@@ -611,7 +623,7 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
   DCHECK_EQ(state_, State::LOADING);
 
   lacros_path_ = path;
-  state_ = path.empty() ? State::UNAVAILABLE : State::STOPPED;
+  SetState(path.empty() ? State::UNAVAILABLE : State::STOPPED);
   if (load_complete_callback_) {
     const bool success = !path.empty();
     std::move(load_complete_callback_).Run(success);
@@ -620,11 +632,6 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
   if (state_ == State::STOPPED && GetLaunchOnLoginPref()) {
     Start();
   }
-}
-
-void BrowserManager::NotifyMojoDisconnected() {
-  for (auto& observer : observers_)
-    observer.OnMojoDisconnected();
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {

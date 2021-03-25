@@ -143,6 +143,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -817,6 +818,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   browser_manager_ = std::make_unique<crosapi::BrowserManager>(
       g_browser_process->platform_part()->cros_component_manager());
 
+  browser_manager_->AddObserver(SessionControllerClientImpl::Get());
+
   if (immediate_login) {
     const std::string cryptohome_id =
         parsed_command_line().GetSwitchValueASCII(switches::kLoginUser);
@@ -1140,6 +1143,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
 
+  browser_manager_->RemoveObserver(SessionControllerClientImpl::Get());
   browser_manager_.reset();
   crosapi_manager_.reset();
 

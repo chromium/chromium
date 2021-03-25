@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager_observer.h"
 #include "chrome/browser/chromeos/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -43,7 +44,8 @@ class SessionControllerClientImpl
       public session_manager::SessionManagerObserver,
       public SupervisedUserServiceObserver,
       public content::NotificationObserver,
-      public policy::off_hours::DeviceOffHoursController::Observer {
+      public policy::off_hours::DeviceOffHoursController::Observer,
+      public crosapi::BrowserManagerObserver {
  public:
   SessionControllerClientImpl();
   ~SessionControllerClientImpl() override;
@@ -149,6 +151,9 @@ class SessionControllerClientImpl
   // or if "OffHours" mode will be ended earlier than "SessionLengthLimit"
   // policy.
   void SendSessionLengthLimit();
+
+  // crosapi::BrowserManagerObserver:
+  void OnStateChanged() override;
 
   // SessionController instance in ash.
   ash::SessionController* session_controller_ = nullptr;
