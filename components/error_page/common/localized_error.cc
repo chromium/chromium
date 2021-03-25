@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/error_page/common/alt_game_images.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/net_error_info.h"
@@ -909,7 +910,41 @@ LocalizedError::PageState LocalizedError::GetPageState(
     const std::string& locale,
     bool is_blocked_by_extension) {
   LocalizedError::PageState result;
-  result.is_offline_error = IsOfflineError(error_domain, error_code);
+  if (IsOfflineError(error_domain, error_code)) {
+    result.is_offline_error = true;
+
+    // These strings are to be read by a screen reader during the dino game.
+    result.strings.SetString(
+        "dinoGameA11yAriaLabel",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_ARIA_LABEL));
+    result.strings.SetString(
+        "dinoGameA11yGameOver",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_OVER));
+    result.strings.SetString(
+        "dinoGameA11yHighScore",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_HIGH_SCORE));
+    result.strings.SetString(
+        "dinoGameA11yJump", l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_JUMP));
+    result.strings.SetString(
+        "dinoGameA11yStartGame",
+        l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_START));
+
+    if (EnableAltGameMode()) {
+      result.strings.SetBoolean("enableAltGameMode", true);
+      // We don't know yet which scale the page will use, so both 1x and 2x
+      // should be loaded.
+      result.strings.SetString("altGameCommonImage1x",
+                               GetAltGameImage(/*image_id=*/0, /*scale=*/1));
+      result.strings.SetString("altGameCommonImage2x",
+                               GetAltGameImage(/*image_id=*/0, /*scale=*/2));
+      int choice = ChooseAltGame();
+      result.strings.SetString("altGameType", base::NumberToString(choice));
+      result.strings.SetString("altGameSpecificImage1x",
+                               GetAltGameImage(choice, 1));
+      result.strings.SetString("altGameSpecificImage2x",
+                               GetAltGameImage(choice, 2));
+    }
+  }
 
   webui::SetLoadTimeDataDefaults(locale, &result.strings);
 

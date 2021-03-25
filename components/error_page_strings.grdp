@@ -373,11 +373,28 @@
     <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Mobile: Instructions on how to start playing the offline game. 'dino' is an acceptable English nickname that refers to 'dinosaur'">
       Tap the dino to play
     </message>
+    <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL" desc="Message to be spoken by a screen reader to give the user instructions for playing the net error dino game. Tapping the screen activates the game and causes the dinosaur to jump. Mobile platforms only.">
+      Dino game, tap to jump and play
+    </message>
   </if>
   <if expr="not is_android and not is_ios">
     <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Instructions on how to start playing the offline game.">
       Press space to play
     </message>
+    <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL" desc="Message to be spoken by a screen reader to give the user instructions for playing the net error dino game. Pressing space activates the game and causes the dinosaur to jump. Desktop platforms only.">
+      Dino game, press space to jump and play
+    </message>
   </if>
-
+  <message name="IDS_ERRORPAGE_DINO_GAME_START" desc="Message to be spoken by a screen reader to notify the user that the dino game has started and the dinosaur is running.">
+    Game started.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_GAME_OVER" desc="Message to be spoken by a screen reader to notify the user that the dino game has ended and tell the user the score.">
+    Game over, your score is <ph name="SCORE">$1<ex>100</ex></ph>.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_HIGH_SCORE" desc="Message to be spoken by a screen reader to tell the user the highest recorded dino game score.">
+    Your highest score is <ph name="SCORE">$1<ex>100</ex></ph>.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_JUMP" desc="Message to be spoken by a screen reader while the dino game is running to tell the user to jump because an obstacle is near.">
+    Jump!
+  </message>
 </grit-part>

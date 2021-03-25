@@ -8,6 +8,7 @@ js_type_check("closure_compile") {
   deps = [
     ":neterror",
     ":offline",
+    ":offline-sprite-definitions",
     "//components/security_interstitials/core/common/resources:interstitial_mobile_nav",
     "//ui/webui/resources/js:load_time_data",
   ]
@@ -24,6 +25,9 @@ js_library("neterror") {
 }
 
 js_library("offline") {
+}
+
+js_library("offline-sprite-definitions") {
 }
 
 if (is_ios) {

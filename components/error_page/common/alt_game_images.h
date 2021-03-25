@@ -20,6 +20,9 @@ bool EnableAltGameMode();
 // Returns a data URL corresponding to the image ID and scale.
 std::string GetAltGameImage(int image_id, int scale);
 
+// Returns an image ID.
+int ChooseAltGame();
+
 }  // namespace error_page
 
 #endif  // COMPONENTS_ERROR_PAGE_COMMON_ALT_GAME_IMAGES_H_
