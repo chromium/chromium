@@ -71,6 +71,15 @@ class ChooserContextBase : public KeyedService {
   // by default but could be set by the user or group policy.
   bool CanRequestObjectPermission(const url::Origin& origin);
 
+  // Returns the object corresponding to |key| that |origin| has been granted
+  // permission to access. This method should only be called if
+  // |GetKeyForObject()| is overridden to return sensible keys.
+  //
+  // This method may be extended by a subclass to return
+  // objects not stored in |host_content_settings_map_|.
+  virtual std::unique_ptr<Object> GetGrantedObject(const url::Origin& origin,
+                                                   const base::StringPiece key);
+
   // Returns the list of objects that |origin| has been granted permission to
   // access. This method may be extended by a subclass to return objects not
   // stored in |host_content_settings_map_|.
@@ -86,6 +95,9 @@ class ChooserContextBase : public KeyedService {
 
   // Grants |origin| access to |object| by writing it into
   // |host_content_settings_map_|.
+  // TODO(https://crbug.com/1189682): Combine GrantObjectPermission and
+  // UpdateObjectPermission methods into key-based GrantOrUpdateObjectPermission
+  // once backend is updated to make key-based methods more efficient.
   void GrantObjectPermission(const url::Origin& origin, base::Value object);
 
   // Updates |old_object| with |new_object| for |origin|, and writes the value
@@ -99,8 +111,35 @@ class ChooserContextBase : public KeyedService {
   // This method may be extended by a subclass to revoke permission to access
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
+  // TODO(https://crbug.com/1189682): Remove this method once backend is updated
+  // to make key-based methods more efficient.
   virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::Value& object);
+
+  // Revokes |origin|'s permission to access the object corresponding to |key|.
+  // This method should only be called if |GetKeyForObject()| is overridden to
+  // return sensible keys.
+  //
+  // This method may be extended by a subclass to revoke permission to access
+  // objects returned by GetGrantedObjects but not stored in
+  // |host_content_settings_map_|.
+  virtual void RevokeObjectPermission(const url::Origin& origin,
+                                      const base::StringPiece key);
+
+  // Returns whether |origin| has granted objects.
+  //
+  // This method may be extended by a subclass to include permission to access
+  // objects returned by GetGrantedObjects but not stored in
+  // |host_content_settings_map_|.
+  virtual bool HasGrantedObjects(const url::Origin& origin);
+
+  // Returns a string which is used to uniquely identify this object. If this
+  // method is extended by a subclass to return unique keys, the new key-based
+  // techniques will be used. Otherwise, class methods will fall back to the
+  // legacy behavior of matching via an object.
+  // TODO(https://crbug.com/1189682): This should be made fully virtual once
+  // backend is updated to make key-based methods more efficient.
+  virtual std::string GetKeyForObject(const base::Value& object);
 
   // Validates the structure of an object read from
   // |host_content_settings_map_|.

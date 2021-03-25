@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -60,6 +61,29 @@ bool ChooserContextBase::CanRequestObjectPermission(const url::Origin& origin) {
   DCHECK(content_setting == CONTENT_SETTING_ASK ||
          content_setting == CONTENT_SETTING_BLOCK);
   return content_setting == CONTENT_SETTING_ASK;
+}
+
+std::unique_ptr<ChooserContextBase::Object>
+ChooserContextBase::GetGrantedObject(const url::Origin& origin,
+                                     const base::StringPiece key) {
+  if (!CanRequestObjectPermission(origin))
+    return nullptr;
+
+  content_settings::SettingInfo info;
+  base::Value setting = GetWebsiteSetting(origin, &info);
+
+  base::Value* objects = setting.FindListKey(kObjectListKey);
+  if (!objects)
+    return nullptr;
+
+  for (auto& object : objects->GetList()) {
+    if (IsValidObject(object) && GetKeyForObject(object) == key) {
+      return std::make_unique<Object>(
+          origin, std::move(object), info.source,
+          host_content_settings_map_->IsOffTheRecord());
+    }
+  }
+  return nullptr;
 }
 
 std::vector<std::unique_ptr<ChooserContextBase::Object>>
@@ -137,8 +161,25 @@ void ChooserContextBase::GrantObjectPermission(const url::Origin& origin,
         setting.SetKey(kObjectListKey, base::Value(base::Value::Type::LIST));
   }
 
-  if (!base::Contains(objects->GetList(), object))
-    objects->Append(std::move(object));
+  const std::string key = GetKeyForObject(object);
+
+  if (key.empty()) {
+    // Use the legacy behavior.
+    if (!base::Contains(objects->GetList(), object))
+      objects->Append(std::move(object));
+  } else {
+    base::Value::ListView object_list = objects->GetList();
+    auto it = base::ranges::find_if(object_list, [this, &key](auto& obj) {
+      return IsValidObject(obj) && GetKeyForObject(obj) == key;
+    });
+    if (it != object_list.end()) {
+      // Update object permission.
+      *it = std::move(object);
+    } else {
+      // Grant object permission.
+      objects->Append(std::move(object));
+    }
+  }
 
   SetWebsiteSetting(origin, std::move(setting));
   NotifyPermissionChanged();
@@ -178,6 +219,35 @@ void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
 
   SetWebsiteSetting(origin, std::move(setting));
   NotifyPermissionRevoked(origin);
+}
+
+void ChooserContextBase::RevokeObjectPermission(const url::Origin& origin,
+                                                const base::StringPiece key) {
+  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
+  base::Value* objects = setting.FindListKey(kObjectListKey);
+  if (!objects)
+    return;
+
+  base::Value::ListView object_list = objects->GetList();
+  auto it = base::ranges::find_if(object_list, [this, &key](auto& object) {
+    return IsValidObject(object) && GetKeyForObject(object) == key;
+  });
+  if (it != object_list.end())
+    objects->EraseListIter(it);
+
+  SetWebsiteSetting(origin, std::move(setting));
+  NotifyPermissionRevoked(origin);
+}
+
+bool ChooserContextBase::HasGrantedObjects(const url::Origin& origin) {
+  base::Value setting = GetWebsiteSetting(origin, /*info=*/nullptr);
+  base::Value* objects = setting.FindListKey(kObjectListKey);
+
+  return objects && !objects->GetList().empty();
+}
+
+std::string ChooserContextBase::GetKeyForObject(const base::Value& object) {
+  return std::string();
 }
 
 bool ChooserContextBase::IsOffTheRecord() {
