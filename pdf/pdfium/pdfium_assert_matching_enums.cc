@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/content_restriction.h"
 #include "pdf/document_metadata.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "ppapi/c/pp_input_event.h"
@@ -394,3 +395,14 @@ STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kClosestToEdge,
                    PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE);
 STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityScrollAlignment::kMaxValue,
                    PP_PDF_ACCESSIBILITYSCROLLALIGNMENT_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::kContentRestrictionCopy,
+                   PP_CONTENT_RESTRICTION_COPY);
+STATIC_ASSERT_ENUM(chrome_pdf::kContentRestrictionCut,
+                   PP_CONTENT_RESTRICTION_CUT);
+STATIC_ASSERT_ENUM(chrome_pdf::kContentRestrictionPaste,
+                   PP_CONTENT_RESTRICTION_PASTE);
+STATIC_ASSERT_ENUM(chrome_pdf::kContentRestrictionPrint,
+                   PP_CONTENT_RESTRICTION_PRINT);
+STATIC_ASSERT_ENUM(chrome_pdf::kContentRestrictionSave,
+                   PP_CONTENT_RESTRICTION_SAVE);

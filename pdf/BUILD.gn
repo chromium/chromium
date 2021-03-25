@@ -80,6 +80,7 @@ if (enable_pdf) {
       "accessibility.cc",
       "accessibility.h",
       "chunk_stream.h",
+      "content_restriction.h",
       "document_attachment_info.cc",
       "document_attachment_info.h",
       "document_layout.cc",

@@ -29,6 +29,7 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/content_restriction.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -1007,8 +1008,7 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
     // Disable save and print until the document is fully loaded, since they
     // would generate an incomplete document.  Need to do this each time we
     // call DidStartLoading since that resets the content restrictions.
-    pp::PDF::SetContentRestriction(
-        this, PP_CONTENT_RESTRICTION_SAVE | PP_CONTENT_RESTRICTION_PRINT);
+    SetContentRestrictions(kContentRestrictionSave | kContentRestrictionPrint);
   }
 
   return CreateUrlLoaderInternal();
@@ -1074,17 +1074,16 @@ void OutOfProcessInstance::DocumentLoadComplete() {
     did_call_start_loading_ = false;
   }
 
-  int content_restrictions =
-      PP_CONTENT_RESTRICTION_CUT | PP_CONTENT_RESTRICTION_PASTE;
+  int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
   if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
-    content_restrictions |= PP_CONTENT_RESTRICTION_COPY;
+    content_restrictions |= kContentRestrictionCopy;
 
   if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
       !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
-    content_restrictions |= PP_CONTENT_RESTRICTION_PRINT;
+    content_restrictions |= kContentRestrictionPrint;
   }
 
-  pp::PDF::SetContentRestriction(this, content_restrictions);
+  SetContentRestrictions(content_restrictions);
 }
 
 void OutOfProcessInstance::RotateClockwise() {
@@ -1459,6 +1458,10 @@ void OutOfProcessInstance::LoadNextPreviewPage() {
   if (print_preview_loaded_page_count_ == print_preview_page_count_) {
     SendPrintPreviewLoadedNotification();
   }
+}
+
+void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
+  pp::PDF::SetContentRestriction(this, content_restrictions);
 }
 
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {

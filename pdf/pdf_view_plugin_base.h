@@ -247,6 +247,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return size > 0 && size <= kMaximumSavedFileSize;
   }
 
+  // Disables browser commands because of restrictions on how the data is to be
+  // used (i.e. can't copy/print). `content_restrictions` should have its bits
+  // set by `chrome_pdf::ContentRestriction` enum values.
+  virtual void SetContentRestrictions(int content_restrictions) = 0;
+
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 

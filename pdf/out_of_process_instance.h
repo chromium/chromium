@@ -156,6 +156,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
+  void SetContentRestrictions(int content_restrictions) override;
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:

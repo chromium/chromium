@@ -442,6 +442,10 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
   NOTIMPLEMENTED();
 }
 
+void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
+  NOTIMPLEMENTED();
+}
+
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
 }
