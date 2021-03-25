@@ -106,10 +106,10 @@ void SetActiveProfilePath(const base::FilePath& profile_path);
 COMPONENT_EXPORT(FULL_RESTORE)
 bool HasWindowInfo(int32_t restore_window_id);
 
-// Modifies |out_params| based on the window info associated with
-// |restore_window_id|.
+// Modifies `out_params` based on the window info associated with
+// `restore_window_id`. Returns true if `out_params` was modified.
 COMPONENT_EXPORT(FULL_RESTORE)
-void ModifyWidgetParams(int32_t restore_window_id,
+bool ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
 // Invoked when the task is created for an ARC app.

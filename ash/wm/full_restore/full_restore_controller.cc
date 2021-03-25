@@ -46,12 +46,11 @@ constexpr ShellWindowId kAppParentContainers[5] = {
 };
 
 // The types of apps currently supported by full restore.
-// TODO(crbug.com/1164472): Add ARC apps when they are supported.
 // TODO(crbug.com/1164472): Checking app type is temporary solution until we
 // can get windows which are allowed to full restore from the
 // FullRestoreService.
-constexpr AppType kSupportedAppTypes[2] = {AppType::BROWSER,
-                                           AppType::CHROME_APP};
+constexpr AppType kSupportedAppTypes[3] = {
+    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
 
 // Returns the sibling of `window` that `window` should be stacked below based
 // on restored activation indices. Returns nullptr if `window` does not need

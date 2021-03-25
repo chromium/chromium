@@ -80,13 +80,13 @@ bool HasWindowInfo(int32_t restore_window_id) {
       restore_window_id);
 }
 
-void ModifyWidgetParams(int32_t restore_window_id,
+bool ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params) {
   if (!ash::features::IsFullRestoreEnabled())
-    return;
+    return false;
 
-  FullRestoreReadHandler::GetInstance()->ModifyWidgetParams(restore_window_id,
-                                                            out_params);
+  return FullRestoreReadHandler::GetInstance()->ModifyWidgetParams(
+      restore_window_id, out_params);
 }
 
 void OnTaskCreated(const std::string& app_id,

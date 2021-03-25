@@ -253,6 +253,12 @@ class AppLaunchHandlerBrowserTest : public extensions::PlatformAppBrowserTest {
             std::vector<base::FilePath>{}, nullptr));
   }
 
+  std::unique_ptr<::full_restore::WindowInfo> GetWindowInfo(
+      int32_t restore_window_id) {
+    return ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+        restore_window_id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -592,9 +598,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
 
   // Close the window.
   CloseAppWindow(app_window);
-  ASSERT_FALSE(
-      ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
-          restore_window_id));
+  ASSERT_FALSE(GetWindowInfo(restore_window_id));
 
   // Remove the added desks.
   while (true) {
@@ -802,12 +806,6 @@ class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
     } else {
       EXPECT_EQ(init_count, initialized_windows[window]);
     }
-  }
-
-  std::unique_ptr<::full_restore::WindowInfo> GetWindowInfo(
-      int32_t restore_window_id) {
-    return ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
-        restore_window_id);
   }
 
   ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
