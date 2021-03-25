@@ -500,8 +500,7 @@ public final class AwBrowserProcess {
         EmbeddedComponentLoader loader =
                 new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
         final Intent intent = new Intent();
-        intent.setClassName(
-                ContextUtils.getApplicationContext(), ServiceNames.COMPONENTS_PROVIDER_SERVICE);
+        intent.setClassName(getWebViewPackageName(), ServiceNames.COMPONENTS_PROVIDER_SERVICE);
         loader.connect(intent);
     }
 
