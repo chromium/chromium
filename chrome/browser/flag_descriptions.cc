@@ -78,6 +78,11 @@ const char kCOLRV1FontsName[] = "COLR v1 Fonts";
 const char kCOLRV1FontsDescription[] =
     "Display COLR v1 color gradient vector fonts.";
 
+extern const char kCSSContainerQueriesName[] = "Enable CSS Container Queries";
+extern const char kCSSContainerQueriesDescription[] =
+    "Enables support for @container, inline-size and block-size values for the "
+    "contain property, and the LayoutNG Grid implementation.";
+
 const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
 const char kConditionalTabStripAndroidDescription[] =
     "Allows users to access conditional tab strip.";

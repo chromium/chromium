@@ -44619,6 +44619,7 @@ from previous Chrome versions.
   <int value="-1308102778" label="IPH_DesktopSnoozeFeature:disabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
+  <int value="-1304401930" label="CSSContainerQueries:enabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>
   <int value="-1301804101"
@@ -47853,6 +47854,7 @@ from previous Chrome versions.
       label="AutofillAlwaysReturnCloudTokenizedCard:enabled"/>
   <int value="1634897915" label="password-import-export:enabled"/>
   <int value="1634980726" label="VrShellExperimentalRendering:disabled"/>
+  <int value="1635695770" label="CSSContainerQueries:disabled"/>
   <int value="1635986352" label="ContextMenuSearchWithGoogleLens:enabled"/>
   <int value="1636721063"
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>

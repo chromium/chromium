@@ -83,6 +83,9 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kCOLRV1FontsName[];
 extern const char kCOLRV1FontsDescription[];
 
+extern const char kCSSContainerQueriesName[];
+extern const char kCSSContainerQueriesDescription[];
+
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 

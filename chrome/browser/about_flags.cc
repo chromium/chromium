@@ -2735,6 +2735,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"colr-v1-fonts", flag_descriptions::kCOLRV1FontsName,
      flag_descriptions::kCOLRV1FontsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCOLRV1Fonts)},
+    {"enable-container-queries", flag_descriptions::kCSSContainerQueriesName,
+     flag_descriptions::kCSSContainerQueriesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCSSContainerQueries)},
 #if defined(OS_ANDROID)
     {"contextual-search-debug", flag_descriptions::kContextualSearchDebugName,
      flag_descriptions::kContextualSearchDebugDescription, kOsAndroid,

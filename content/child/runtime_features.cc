@@ -353,6 +353,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"BlockCredentialedSubresources",
            features::kBlockCredentialedSubresources},
           {"COLRV1Fonts", blink::features::kCOLRV1Fonts},
+          {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"CompositeAfterPaint", blink::features::kCompositeAfterPaint},
           {"ComputePressure", blink::features::kComputePressure},
           {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
