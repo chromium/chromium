@@ -16,6 +16,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/values.h"
 #include "content/browser/histogram_synchronizer.h"
+#include "content/browser/histograms_monitor.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -30,6 +31,14 @@ namespace {
 
 const char kHistogramsUIJs[] = "histograms_internals.js";
 const char kHistogramsUIRequestHistograms[] = "requestHistograms";
+const char kHistogramsUIStartMonitoring[] = "startMonitoring";
+const char kHistogramsUIFetchDiff[] = "fetchDiff";
+
+// Stores the information received from Javascript side.
+struct JsParams {
+  std::string callback_id;
+  std::string query;
+};
 
 WebUIDataSource* CreateHistogramsHTMLSource() {
   WebUIDataSource* source = WebUIDataSource::Create(kChromeUIHistogramHost);
@@ -52,7 +61,13 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
 
  private:
   void HandleRequestHistograms(const base::ListValue* args);
+  void HandleStartMoninoring(const base::ListValue* args);
+  void HandleFetchDiff(const base::ListValue* args);
 
+  // Calls AllowJavascript() and unpacks the passed params.
+  JsParams AllowJavascriptAndUnpackParams(const base::ListValue& args);
+
+  HistogramsMonitor histogram_monitor_;
   DISALLOW_COPY_AND_ASSIGN(HistogramsMessageHandler);
 };
 
@@ -60,27 +75,45 @@ HistogramsMessageHandler::HistogramsMessageHandler() {}
 
 HistogramsMessageHandler::~HistogramsMessageHandler() {}
 
+JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
+    const base::ListValue& args) {
+  AllowJavascript();
+  JsParams params;
+  args.GetString(0, &params.callback_id);
+  args.GetString(1, &params.query);
+  return params;
+}
+
 void HistogramsMessageHandler::HandleRequestHistograms(
     const base::ListValue* args) {
   base::StatisticsRecorder::ImportProvidedHistograms();
   HistogramSynchronizer::FetchHistograms();
-
-  AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
-  std::string query;
-  args->GetString(1, &query);
-
+  JsParams params = AllowJavascriptAndUnpackParams(*args);
   base::ListValue histograms_list;
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
-           base::StatisticsRecorder::GetHistograms(), query))) {
+           base::StatisticsRecorder::GetHistograms(), params.query))) {
     base::DictionaryValue histogram_dict = histogram->ToGraphDict();
     if (!histogram_dict.empty())
       histograms_list.Append(std::move(histogram_dict));
   }
 
-  ResolveJavascriptCallback(base::Value(callback_id),
+  ResolveJavascriptCallback(base::Value(params.callback_id),
+                            std::move(histograms_list));
+}
+
+void HistogramsMessageHandler::HandleStartMoninoring(
+    const base::ListValue* args) {
+  JsParams params = AllowJavascriptAndUnpackParams(*args);
+  histogram_monitor_.StartMonitoring(params.query);
+  ResolveJavascriptCallback(base::Value(params.callback_id),
+                            base::Value("Success"));
+}
+
+void HistogramsMessageHandler::HandleFetchDiff(const base::ListValue* args) {
+  JsParams params = AllowJavascriptAndUnpackParams(*args);
+  base::ListValue histograms_list = histogram_monitor_.GetDiff();
+  ResolveJavascriptCallback(base::Value(params.callback_id),
                             std::move(histograms_list));
 }
 
@@ -92,6 +125,16 @@ void HistogramsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kHistogramsUIRequestHistograms,
       base::BindRepeating(&HistogramsMessageHandler::HandleRequestHistograms,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      kHistogramsUIStartMonitoring,
+      base::BindRepeating(&HistogramsMessageHandler::HandleStartMoninoring,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      kHistogramsUIFetchDiff,
+      base::BindRepeating(&HistogramsMessageHandler::HandleFetchDiff,
                           base::Unretained(this)));
 }
 

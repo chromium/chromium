@@ -1875,6 +1875,7 @@ test("content_unittests") {
     "../browser/gpu/gpu_data_manager_testing_entry_enums_autogen.h",
     "../browser/gpu/gpu_data_manager_testing_exceptions_autogen.h",
     "../browser/handwriting/handwriting_recognition_service_impl_unittest.cc",
+    "../browser/histograms_monitor_unittest.cc",
     "../browser/idle/idle_manager_unittest.cc",
     "../browser/indexed_db/fake_indexed_db_metadata_coding.cc",
     "../browser/indexed_db/fake_indexed_db_metadata_coding.h",

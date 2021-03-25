@@ -9,9 +9,17 @@
   <title>Histograms</title>
 </head>
 <h1>Histograms</h1>
-<p>Stats accumulated from browser startup to previous page load; reload to get stats as of this page load.
-</p>
-<button id="refresh">Refresh</button>
+<div id="accumulating_section">
+  <button id="enable_monitoring">Switch to Monitoring Mode</button>
+  <p>Stats accumulated from browser startup to previous page load;
+    reload to get stats as of this page load.</p>
+  <button id="refresh">Refresh</button>
+</div>
+<div id="monitoring_section" style="display: none">
+  <button id="disable_monitoring">Switch to Histogram Mode</button>
+  <p>The page will show the difference in histogram data since you switched to
+    Monitoring mode. The page will automatically refresh every 1 second.</p>
+</div>
 <div id="histograms"></div>
 <template id="histogram-template"><pre><h4></h4><p></p></pre><br><hr><br></template>
 </html>

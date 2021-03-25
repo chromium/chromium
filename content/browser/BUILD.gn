@@ -916,6 +916,8 @@ source_set("browser") {
     "histogram_synchronizer.h",
     "histograms_internals_ui.cc",
     "histograms_internals_ui.h",
+    "histograms_monitor.cc",
+    "histograms_monitor.h",
     "idle/idle_manager_impl.cc",
     "idle/idle_manager_impl.h",
     "idle/idle_monitor.cc",

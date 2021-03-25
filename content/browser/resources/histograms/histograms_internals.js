@@ -5,15 +5,70 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+// Timer for automatic update in monitoring mode.
+let fetchDiffScheduler = null;
+
 /**
  * Initiates the request for histograms.
  */
 function requestHistograms() {
-  let query = '';
+  sendWithPromise('requestHistograms', getQuery()).then(addHistograms);
+}
+
+/**
+ * Starts monitoring histograms.
+ * This will get a histogram snapshot as the base to be diffed against.
+ */
+function startMonitoring() {
+  sendWithPromise('startMonitoring', getQuery()).then(fetchDiff);
+}
+
+/**
+ * Schedules the fetching of histogram diff (after 1000ms) and rendering it.
+ * This will also recursively call the next fetchDiff() to periodically updtate
+ * the page.
+ */
+function fetchDiff() {
+  fetchDiffScheduler = setTimeout(function() {
+    sendWithPromise('fetchDiff', getQuery())
+        .then(addHistograms)
+        .then(fetchDiff);
+  }, 1000);
+}
+
+/**
+ * Gets the query string from the URL.
+ * For example, if the URL is chrome://histograms/abc, then query is "abc".
+ */
+function getQuery() {
   if (document.location.pathname) {
-    query = document.location.pathname.substring(1);
+    return document.location.pathname.substring(1);
   }
-  sendWithPromise('requestHistograms', query).then(addHistograms);
+  return '';
+}
+
+/**
+ * Callback function when users switch to Monitoring mode.
+ */
+function enableMonitoring() {
+  $('accumulating_section').style.display = 'none';
+  $('monitoring_section').style.display = 'block';
+  $('histograms').innerHTML = trustedTypes.emptyHTML;
+  startMonitoring();
+}
+
+/**
+ * Callback function when users switch away from Monitoring mode.
+ */
+function disableMonitoring() {
+  if (fetchDiffScheduler) {
+    clearTimeout(fetchDiffScheduler);
+    fetchDiffScheduler = null;
+  }
+  $('accumulating_section').style.display = 'block';
+  $('monitoring_section').style.display = 'none';
+  $('histograms').innerHTML = trustedTypes.emptyHTML;
+  requestHistograms();
 }
 
 /**
@@ -40,6 +95,7 @@ function addHistograms(histograms) {
  */
 document.addEventListener('DOMContentLoaded', function() {
   $('refresh').onclick = requestHistograms;
-
+  $('enable_monitoring').onclick = enableMonitoring;
+  $('disable_monitoring').onclick = disableMonitoring;
   requestHistograms();
 });
