@@ -108,7 +108,7 @@ class CORE_EXPORT NGGridBlockTrackCollection
   void SetSpecifiedTracks(const NGGridTrackList* explicit_tracks,
                           const NGGridTrackList* implicit_tracks,
                           wtf_size_t start_offset,
-                          wtf_size_t auto_repeat_count);
+                          wtf_size_t auto_repetitions);
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |track_number|, and a range will end at |track_number| + |span_length|
   void EnsureTrackCoverage(wtf_size_t track_number, wtf_size_t span_length);
@@ -141,7 +141,7 @@ class CORE_EXPORT NGGridBlockTrackCollection
 
   bool track_indices_need_sort_ = false;
   GridTrackSizingDirection direction_;
-  wtf_size_t auto_repeat_count_ = 0;
+  wtf_size_t auto_repetitions_ = 0;
 
   // Stores the specified and implicit tracks specified by SetSpecifiedTracks.
   const NGGridTrackList* explicit_tracks_;
@@ -192,7 +192,7 @@ class CORE_EXPORT NGGridBlockTrackCollection
 // dimension, tracks within a set are "commutative" and can be sized evenly.
 class CORE_EXPORT NGGridSet {
  public:
-  NGGridSet(wtf_size_t track_count, bool is_collapsed);
+  explicit NGGridSet(wtf_size_t track_count);
   // |is_content_box_size_indefinite| is used to normalize percentage track
   // sizing functions; from https://drafts.csswg.org/css-grid-2/#track-sizes:
   //   "If the size of the grid container depends on the size of its tracks,
@@ -339,6 +339,9 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
       wtf_size_t range_index,
       TrackSpanProperties::PropertyId property_id) const;
 
+  wtf_size_t NonCollapsedTrackCount() const {
+    return non_collapsed_track_count_;
+  }
   GridTrackSizingDirection Direction() const { return direction_; }
   bool IsForColumns() const { return direction_ == kForColumns; }
   const Vector<Range>& Ranges() const { return ranges_; }
@@ -356,6 +359,7 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
       const NGGridTrackList& specified_track_list,
       bool is_content_box_size_indefinite);
 
+  wtf_size_t non_collapsed_track_count_;
   GridTrackSizingDirection direction_;
 
   Vector<Range> ranges_;

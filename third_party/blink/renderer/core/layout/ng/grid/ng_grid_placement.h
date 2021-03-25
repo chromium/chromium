@@ -36,6 +36,8 @@ class CORE_EXPORT NGGridPlacement {
       wtf_size_t* start_line,
       wtf_size_t* end_line) const;
 
+  wtf_size_t AutoRepeatTrackCount(
+      GridTrackSizingDirection track_direction) const;
   wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const;
   wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const;
 
@@ -79,8 +81,6 @@ class CORE_EXPORT NGGridPlacement {
                        wtf_size_t minor_end,
                        const GridItems& grid_items) const;
 
-  wtf_size_t AutoRepeatTrackCount(
-      GridTrackSizingDirection track_direction) const;
   bool HasSparsePacking() const;
 
   // Used to resolve positions using |GridPositionsResolver|.

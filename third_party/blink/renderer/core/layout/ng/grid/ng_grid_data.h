@@ -21,8 +21,8 @@ namespace blink {
 struct NGGridData {
   wtf_size_t row_start;
   wtf_size_t column_start;
-  wtf_size_t row_auto_repeat_count;
-  wtf_size_t column_auto_repeat_count;
+  wtf_size_t row_auto_repeat_track_count;
+  wtf_size_t column_auto_repeat_track_count;
   struct SetData {
     SetData(LayoutUnit offset, wtf_size_t track_count)
         : offset(offset), track_count(track_count) {}
@@ -35,13 +35,18 @@ struct NGGridData {
     RangeData(wtf_size_t track_count,
               wtf_size_t starting_set_index,
               wtf_size_t set_count)
-        : track_count(track_count),
-          starting_set_index(starting_set_index),
+        : starting_set_index(starting_set_index),
+          track_count(track_count),
           set_count(set_count) {}
-    wtf_size_t track_count;
+
+    // We don't store the |kIsCollapsed| flag from track collections here, but
+    // collapsed ranges can be identified by their set count being zero.
+    bool IsCollapsed() const { return !set_count; }
+
     // This is derived from other data in layout_ng_grid, can be removed if not
     // useful for out of flow elements.
     wtf_size_t starting_set_index;
+    wtf_size_t track_count;
     wtf_size_t set_count;
   };
   struct TrackCollectionGeometry {

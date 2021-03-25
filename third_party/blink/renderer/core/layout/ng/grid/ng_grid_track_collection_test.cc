@@ -443,8 +443,7 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_COLLAPSED_RANGE(9u, 3u, range_iterator);
   set_iterator =
       IteratorForRange(algorithm_collection, range_iterator.RangeIndex());
-  EXPECT_SET(GridTrackSize(Length::Fixed(0)), 3u, set_iterator);
-  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  EXPECT_TRUE(set_iterator.IsAtEnd());
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(12u, 4u, range_iterator);
@@ -459,8 +458,7 @@ TEST_F(NGGridTrackCollectionTest,
   EXPECT_COLLAPSED_RANGE(16u, 1u, range_iterator);
   set_iterator =
       IteratorForRange(algorithm_collection, range_iterator.RangeIndex());
-  EXPECT_SET(GridTrackSize(Length::Fixed(0)), 1u, set_iterator);
-  EXPECT_FALSE(set_iterator.MoveToNextSet());
+  EXPECT_TRUE(set_iterator.IsAtEnd());
   EXPECT_TRUE(range_iterator.MoveToNextRange());
 
   EXPECT_RANGE(17u, 2u, range_iterator);

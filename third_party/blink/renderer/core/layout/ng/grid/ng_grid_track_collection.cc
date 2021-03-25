@@ -158,23 +158,23 @@ void NGGridBlockTrackCollection::SetSpecifiedTracks(
     const NGGridTrackList* explicit_tracks,
     const NGGridTrackList* implicit_tracks,
     wtf_size_t start_offset,
-    wtf_size_t auto_repeat_count) {
+    wtf_size_t auto_repetitions) {
   DCHECK_NE(nullptr, explicit_tracks);
   DCHECK_NE(nullptr, implicit_tracks);
   // The implicit track list should have only one repeater, if any.
   DCHECK_LE(implicit_tracks->RepeaterCount(), 1u);
-  DCHECK_NE(kInvalidRangeIndex, auto_repeat_count);
+  DCHECK_NE(kInvalidRangeIndex, auto_repetitions);
 
   explicit_tracks_ = explicit_tracks;
   implicit_tracks_ = implicit_tracks;
-  auto_repeat_count_ = auto_repeat_count;
+  auto_repetitions_ = auto_repetitions;
 
   const wtf_size_t repeater_count = explicit_tracks_->RepeaterCount();
   wtf_size_t current_repeater_start_line = start_offset;
 
   for (wtf_size_t i = 0; i < repeater_count; ++i) {
     wtf_size_t repeater_track_count =
-        explicit_tracks_->RepeatCount(i, auto_repeat_count_) *
+        explicit_tracks_->RepeatCount(i, auto_repetitions_) *
         explicit_tracks_->RepeatSize(i);
     DCHECK_NE(repeater_track_count, 0u);
 
@@ -271,7 +271,7 @@ void NGGridBlockTrackCollection::FinalizeRanges(wtf_size_t start_offset) {
       next_explicit_repeater_start +=
           explicit_tracks_->RepeatSize(current_explicit_repeater_index) *
           explicit_tracks_->RepeatCount(current_explicit_repeater_index,
-                                        auto_repeat_count_);
+                                        auto_repetitions_);
     }
 
     // Determine track number and count of the range.
@@ -424,18 +424,12 @@ wtf_size_t NGGridBlockTrackCollection::RangeCount() const {
   return ranges_.size();
 }
 
-NGGridSet::NGGridSet(wtf_size_t track_count, bool is_collapsed)
+NGGridSet::NGGridSet(wtf_size_t track_count)
     : track_count_(track_count),
       track_size_(Length::Auto(), Length::Auto()),
       growth_limit_(kIndefiniteSize),
       fit_content_limit_(kIndefiniteSize),
-      is_infinitely_growable_(false) {
-  if (is_collapsed) {
-    // From https://drafts.csswg.org/css-grid-2/#collapsed-track: "A collapsed
-    // track is treated as having a fixed track sizing function of '0px'".
-    track_size_ = GridTrackSize(Length::Fixed(), Length::Fixed());
-  }
-}
+      is_infinitely_growable_(false) {}
 
 NGGridSet::NGGridSet(wtf_size_t track_count,
                      const GridTrackSize& track_size,
@@ -540,7 +534,8 @@ bool NGGridLayoutAlgorithmTrackCollection::Range::IsCollapsed() const {
 NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     const NGGridBlockTrackCollection& block_track_collection,
     bool is_content_box_size_indefinite)
-    : direction_(block_track_collection.Direction()) {
+    : non_collapsed_track_count_(0),
+      direction_(block_track_collection.Direction()) {
   for (auto range_iterator = block_track_collection.RangeIterator();
        !range_iterator.IsAtEnd(); range_iterator.MoveToNextRange()) {
     const NGGridBlockTrackCollection::Range& block_track_range =
@@ -559,19 +554,21 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     bool is_content_box_size_indefinite) {
   Range new_range(block_track_range, /* starting_set_index */ sets_.size());
 
-  if (block_track_range.IsCollapsed() ||
-      block_track_range.repeater_index == kInvalidRangeIndex) {
-#if DCHECK_IS_ON()
-    // If there are no specified repeaters for this range, it must be implicit.
-    if (block_track_range.repeater_index == kInvalidRangeIndex)
-      DCHECK(block_track_range.IsImplicit());
-#endif
+  if (block_track_range.repeater_index == kInvalidRangeIndex) {
+    // The only case where a range doesn't have a repeater index is when the
+    // range is in the implicit grid and there are no auto track definitions;
+    // fill the entire range with a single set of 'auto' tracks.
+    DCHECK(block_track_range.IsImplicit());
 
-    // Append a single element for the entire range's set.
+    non_collapsed_track_count_ += new_range.track_count;
     new_range.set_count = 1;
-    sets_.emplace_back(block_track_range.track_count,
-                       block_track_range.IsCollapsed());
+    sets_.emplace_back(new_range.track_count);
+  } else if (block_track_range.IsCollapsed()) {
+    // Append a range that contains the collapsed tracks, but do not append new
+    // sets so that its tracks do not participate in the track sizing algorithm.
+    new_range.set_count = 0;
   } else {
+    non_collapsed_track_count_ += new_range.track_count;
     wtf_size_t current_repeater_size =
         specified_track_list.RepeatSize(block_track_range.repeater_index);
     DCHECK_LT(block_track_range.repeater_offset, current_repeater_size);
@@ -580,7 +577,7 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     // definitions from |NGGridBlockTrackCollection| range's repeater clamped by
     // the range's total track count if it's less than the repeater's size.
     new_range.set_count =
-        std::min(current_repeater_size, block_track_range.track_count);
+        std::min(current_repeater_size, new_range.track_count);
     DCHECK_GT(new_range.set_count, 0u);
 
     // The following two variables help compute how many tracks a set element

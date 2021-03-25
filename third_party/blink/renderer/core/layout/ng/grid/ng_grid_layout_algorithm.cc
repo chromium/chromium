@@ -206,9 +206,10 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   auto grid_data = std::make_unique<NGGridData>();
   grid_data->row_start = grid_placement.StartOffset(kForRows);
   grid_data->column_start = grid_placement.StartOffset(kForColumns);
-  grid_data->row_auto_repeat_count = grid_placement.AutoRepetitions(kForRows);
-  grid_data->column_auto_repeat_count =
-      grid_placement.AutoRepetitions(kForColumns);
+  grid_data->row_auto_repeat_track_count =
+      grid_placement.AutoRepeatTrackCount(kForRows);
+  grid_data->column_auto_repeat_track_count =
+      grid_placement.AutoRepeatTrackCount(kForColumns);
   grid_data->row_geometry =
       ConvertSetGeometry(grid_geometry.row_geometry, row_track_collection);
   grid_data->column_geometry = ConvertSetGeometry(grid_geometry.column_geometry,
@@ -2192,8 +2193,10 @@ void NGGridLayoutAlgorithm::StretchAutoTracks(
   for (auto set_iterator = track_collection->GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
     auto& set = set_iterator.CurrentSet();
-    if (set.TrackSize().HasAutoMaxTrackBreadth())
+    if (set.TrackSize().HasAutoMaxTrackBreadth() &&
+        !set.TrackSize().IsFitContent()) {
       sets_to_grow.push_back(&set);
+    }
   }
 
   if (sets_to_grow.IsEmpty())
@@ -2421,7 +2424,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
   switch (content_alignment.Distribution()) {
     case ContentDistributionType::kSpaceBetween: {
       // Default behavior for 'space-between' is to start align content.
-      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (track_count < 2 || free_space < LayoutUnit())
         return geometry;
@@ -2431,7 +2434,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
     }
     case ContentDistributionType::kSpaceAround: {
       // Default behaviour for 'space-around' is to center content.
-      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (track_count < 1 || free_space < LayoutUnit()) {
         geometry.start_offset += free_space / 2;
@@ -2445,7 +2448,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
     }
     case ContentDistributionType::kSpaceEvenly: {
       // Default behaviour for 'space-evenly' is to center content.
-      const wtf_size_t track_count = track_collection.EndLineOfImplicitGrid();
+      const wtf_size_t track_count = track_collection.NonCollapsedTrackCount();
       const LayoutUnit free_space = FreeSpace();
       if (free_space < LayoutUnit()) {
         geometry.start_offset += free_space / 2;
@@ -2860,67 +2863,81 @@ void NGGridLayoutAlgorithm::ComputeOffsetAndSize(
     LayoutUnit block_size,
     LayoutUnit* start_offset,
     LayoutUnit* size) const {
+  const auto& borders = container_builder_.Borders();
   wtf_size_t start_index, end_index;
-  LayoutUnit border;
-  // The default padding box value of the |size| will only be used in out of
-  // flow items in which both the start line and end line are defined as 'auto'.
+  LayoutUnit end_offset;
+
+  // The default padding box value for |size| will only be used for out of flow
+  // items in which both the start line and end line are defined as 'auto'.
   if (track_direction == kForColumns) {
     start_index = item.column_set_indices->begin;
     end_index = item.column_set_indices->end;
-    border = container_builder_.Borders().inline_start;
-    *size =
-        border_box_size_.inline_size - container_builder_.Borders().InlineSum();
+
+    *start_offset = borders.inline_start;
+    end_offset = border_box_size_.inline_size - borders.inline_end;
   } else {
     start_index = item.row_set_indices->begin;
     end_index = item.row_set_indices->end;
-    border = container_builder_.Borders().block_start;
-    *size = border_box_size_.block_size == kIndefiniteSize
-                ? block_size
-                : border_box_size_.block_size;
-    *size -= container_builder_.Borders().BlockSum();
+
+    *start_offset = borders.block_start;
+    end_offset = ((border_box_size_.block_size == kIndefiniteSize)
+                      ? block_size
+                      : border_box_size_.block_size) -
+                 borders.block_end;
   }
-  *start_offset = border;
-  LayoutUnit end_offset = border;
-  // If the start line is defined, the size is calculated by subtracting the
-  // offset at start index. Additionally, the start border is removed from the
-  // cumulated offset because it was already accounted for in the previous value
-  // of the size.
-  if (start_index != kNotFound) {
+
+  // If the start line is defined, the size will be calculated by subtracting
+  // the offset at |start_index|; otherwise, use the computed border start.
+  if (start_index != kNotFound)
     *start_offset = set_geometry.sets[start_index].offset;
-    *size -= (*start_offset - end_offset);
-  }
+
   // If the end line is defined, the offset (which can be the offset at the
   // start index or the start border) and the added grid gap after the spanned
   // tracks are subtracted from the offset at the end index.
   if (end_index != kNotFound) {
-    // If we are measuring a grid-item we might not yet have determined the
-    // final (used) sizes for all of out sets. |last_indefinite_index| is used
-    // to track what sets have indefinite/definite sizes.
-    //
-    // |last_indefinite_index| is the last set seen which was indefinite. If
-    // our |start_index| is greater than this, all the sets between this and
-    // our |end_index| are definite.
-    const wtf_size_t last_indefinite_index =
-        set_geometry.sets[end_index].last_indefinite_index;
-    end_offset = set_geometry.sets[end_index].offset;
-    if (last_indefinite_index == kNotFound ||
-        start_index > last_indefinite_index) {
-      *size = end_offset - *start_offset - set_geometry.gutter_size;
+    if (end_index == start_index) {
+      // This item spans only collapsed tracks, return a size of zero.
+      *size = LayoutUnit();
     } else {
-      *size = kIndefiniteSize;
+      // If we are measuring a grid item we might not yet have determined the
+      // final used sizes for all sets; |last_indefinite_index| is the last set
+      // which has an indefinite used size, if |start_index| is greater, then
+      // all the sets between it and |end_index| are definite.
+      const wtf_size_t last_indefinite_index =
+          set_geometry.sets[end_index].last_indefinite_index;
+      if (last_indefinite_index == kNotFound ||
+          start_index > last_indefinite_index) {
+        // Don't subtract the gutter size from the offset before the first set.
+        *size = set_geometry.sets[end_index].offset - *start_offset -
+                (end_index ? set_geometry.gutter_size : LayoutUnit());
+      } else {
+        *size = kIndefiniteSize;
+      }
     }
+  } else {
+    // The end index can only be |kNotFound| for out of flow items and, by the
+    // time we call this method, we should not have indefinite track sizes.
+    DCHECK_EQ(set_geometry.sets.back().last_indefinite_index, kNotFound);
+
+    // |start_offset| can be greater than |end_offset| if the track sizes from
+    // the grid overflow the container's respective size.
+    *size = (end_offset - *start_offset).ClampNegativeToZero();
   }
 
 #if DCHECK_IS_ON()
   if (start_index != kNotFound && end_index != kNotFound) {
     DCHECK_LT(start_index, end_index);
     DCHECK_LT(end_index, set_geometry.sets.size());
-    DCHECK(*size >= 0 || *size == kIndefiniteSize);
   } else {
     // Only out of flow items can have an undefined ('auto') value for the start
     // and/or end |set_indices|.
     DCHECK_EQ(item.item_type, ItemType::kOutOfFlow);
+    if (start_index != kNotFound)
+      DCHECK_LT(start_index, set_geometry.sets.size());
+    if (end_index != kNotFound)
+      DCHECK_LT(end_index, set_geometry.sets.size());
   }
+  DCHECK(*size >= 0 || *size == kIndefiniteSize);
 #endif
 }
 

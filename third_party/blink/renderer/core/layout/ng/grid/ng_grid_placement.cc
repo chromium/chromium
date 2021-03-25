@@ -303,6 +303,12 @@ bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
   return false;
 }
 
+wtf_size_t NGGridPlacement::AutoRepeatTrackCount(
+    GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns) ? column_auto_repeat_track_count_
+                                          : row_auto_repeat_track_count_;
+}
+
 wtf_size_t NGGridPlacement::AutoRepetitions(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? column_auto_repetitions_
@@ -313,12 +319,6 @@ wtf_size_t NGGridPlacement::StartOffset(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? column_start_offset_
                                           : row_start_offset_;
-}
-
-wtf_size_t NGGridPlacement::AutoRepeatTrackCount(
-    GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? column_auto_repeat_track_count_
-                                          : row_auto_repeat_track_count_;
 }
 
 bool NGGridPlacement::HasSparsePacking() const {

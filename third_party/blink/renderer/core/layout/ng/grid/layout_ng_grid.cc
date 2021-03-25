@@ -40,12 +40,8 @@ size_t LayoutNGGrid::ExplicitGridEndForDirection(
   const auto* grid_data = GetGridData();
   if (!grid_data)
     return 0;
-
-  const size_t explicit_grid_start = ExplicitGridStartForDirection(direction);
-  const auto& geometry = (direction == kForRows) ? grid_data->row_geometry
-                                                 : grid_data->column_geometry;
-
-  return explicit_grid_start + geometry.total_track_count;
+  return (direction == kForRows) ? grid_data->row_geometry.total_track_count
+                                 : grid_data->column_geometry.total_track_count;
 }
 
 size_t LayoutNGGrid::AutoRepeatCountForDirection(
@@ -54,8 +50,8 @@ size_t LayoutNGGrid::AutoRepeatCountForDirection(
   const auto* grid_data = GetGridData();
   if (!grid_data)
     return 0;
-  return (direction == kForRows) ? grid_data->row_auto_repeat_count
-                                 : grid_data->column_auto_repeat_count;
+  return (direction == kForRows) ? grid_data->row_auto_repeat_track_count
+                                 : grid_data->column_auto_repeat_track_count;
 }
 
 LayoutUnit LayoutNGGrid::GridGap(GridTrackSizingDirection direction) const {
@@ -80,30 +76,30 @@ LayoutUnit LayoutNGGrid::GridItemOffset(
 Vector<LayoutUnit> LayoutNGGrid::TrackSizesForComputedStyle(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
-  Vector<LayoutUnit> tracks;
+  Vector<LayoutUnit> track_sizes;
   const auto* grid_data = GetGridData();
   if (!grid_data)
-    return tracks;
+    return track_sizes;
+
   const auto& geometry = (direction == kForRows) ? grid_data->row_geometry
                                                  : grid_data->column_geometry;
-
-  const LayoutUnit gutter_size = geometry.gutter_size;
-  tracks.ReserveInitialCapacity(
+  track_sizes.ReserveInitialCapacity(
       std::min<wtf_size_t>(geometry.total_track_count, kGridMaxTracks));
+
   for (const auto& range : geometry.ranges) {
-    Vector<LayoutUnit> track_sizes =
-        ComputeTrackSizesInRange(direction, range, gutter_size);
-    for (wtf_size_t track_in_range = 0; track_in_range < range.track_count;
-         ++track_in_range) {
-      tracks.emplace_back(track_sizes[track_in_range % range.set_count]);
-      // Respect track count limit.
-      if (tracks.size() > kGridMaxTracks)
-        return tracks;
+    Vector<LayoutUnit> track_sizes_in_range =
+        ComputeTrackSizesInRange(range, direction);
+    for (wtf_size_t i = 0; i < range.track_count; ++i) {
+      track_sizes.emplace_back(
+          track_sizes_in_range[i % track_sizes_in_range.size()]);
+
+      // Respect total track count limit.
+      DCHECK(track_sizes.size() <= kGridMaxTracks);
+      if (track_sizes.size() == kGridMaxTracks)
+        return track_sizes;
     }
   }
-  // TODO(janewman): Handle collapsed tracks when we have auto repetitions.
-
-  return tracks;
+  return track_sizes;
 }
 
 Vector<LayoutUnit> LayoutNGGrid::RowPositions() const {
@@ -123,22 +119,38 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
   if (!grid_data)
     return expanded_positions;
 
-  const NGGridData::TrackCollectionGeometry& geometry =
-      (direction == kForRows) ? grid_data->row_geometry
-                              : grid_data->column_geometry;
-
-  const Vector<LayoutUnit> track_sizes = TrackSizesForComputedStyle(direction);
-  const LayoutUnit gutter = geometry.gutter_size;
-  expanded_positions.ReserveInitialCapacity(track_sizes.size() + 1);
+  const auto& geometry = (direction == kForRows) ? grid_data->row_geometry
+                                                 : grid_data->column_geometry;
   LayoutUnit current_offset = geometry.sets[0].offset;
+
+  expanded_positions.ReserveInitialCapacity(
+      std::min<wtf_size_t>(geometry.total_track_count + 1, kGridMaxTracks));
   expanded_positions.emplace_back(current_offset);
-  for (LayoutUnit track_size : track_sizes) {
-    current_offset += track_size;
-    // Don't add gap to the last offset.
-    if (expanded_positions.size() < track_sizes.size())
-      current_offset += gutter;
-    expanded_positions.emplace_back(current_offset);
-  }
+
+  bool is_last_range_collapsed = true;
+  auto BuildExpandedPositions = [&]() {
+    for (const auto& range : geometry.ranges) {
+      is_last_range_collapsed = range.IsCollapsed();
+      Vector<LayoutUnit> track_sizes_in_range =
+          ComputeTrackSizesInRange(range, direction);
+
+      for (wtf_size_t i = 0; i < range.track_count; ++i) {
+        current_offset +=
+            track_sizes_in_range[i % track_sizes_in_range.size()] +
+            (range.IsCollapsed() ? LayoutUnit() : geometry.gutter_size);
+        expanded_positions.emplace_back(current_offset);
+
+        // Respect total track count limit.
+        DCHECK(expanded_positions.size() <= kGridMaxTracks);
+        if (expanded_positions.size() == kGridMaxTracks)
+          return;
+      }
+    }
+  };
+
+  BuildExpandedPositions();
+  if (!is_last_range_collapsed)
+    expanded_positions.back() -= geometry.gutter_size;
   return expanded_positions;
 }
 
@@ -150,36 +162,40 @@ const NGGridData* LayoutNGGrid::GetGridData() const {
 // See comment above |NGGridData| for explanation on why we can't just divide
 // the set sizes by their track count.
 Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizesInRange(
-    GridTrackSizingDirection direction,
-    const NGGridData::RangeData range,
-    LayoutUnit gutter_size) const {
+    const NGGridData::RangeData& range,
+    GridTrackSizingDirection direction) const {
   Vector<LayoutUnit> track_sizes;
   const auto* grid_data = GetGridData();
   if (!grid_data)
     return track_sizes;
 
-  const NGGridData::TrackCollectionGeometry& geometry =
-      (direction == kForRows) ? grid_data->row_geometry
-                              : grid_data->column_geometry;
+  if (range.IsCollapsed())
+    return {LayoutUnit()};
+
+  const auto& geometry = (direction == kForRows) ? grid_data->row_geometry
+                                                 : grid_data->column_geometry;
+  track_sizes.ReserveInitialCapacity(range.set_count);
+
   const wtf_size_t ending_set_index =
       range.starting_set_index + range.set_count;
-  track_sizes.ReserveInitialCapacity(range.set_count);
   for (wtf_size_t set_index = range.starting_set_index;
        set_index < ending_set_index; ++set_index) {
     // Set information is stored as offsets. To determine the size of a single
-    // track in a givent set, first determine the total size the set takes up by
+    // track in a given set, first determine the total size the set takes up by
     // finding the difference between the offsets.
-    const wtf_size_t set_track_count = geometry.sets[set_index + 1].track_count;
     LayoutUnit set_size =
         (geometry.sets[set_index + 1].offset - geometry.sets[set_index].offset);
-    DCHECK_GE(set_track_count, 0u);
+
+    const wtf_size_t set_track_count = geometry.sets[set_index + 1].track_count;
+    DCHECK_GT(set_track_count, 0u);
+
     // Once we have determined the size of the set, we can find the size of a
     // given track by dividing the |set_size| by the |set_track_count|.
     // In some situations, this will leave a remainder, but rather than try to
     // distribute the space unequally between tracks, discard it to prefer equal
     // length tracks.
-    LayoutUnit track_size = (set_size / set_track_count) - gutter_size;
-    track_sizes.emplace_back(track_size);
+    track_sizes.emplace_back((set_size / set_track_count) -
+                             geometry.gutter_size);
   }
   return track_sizes;
 }
