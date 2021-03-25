@@ -162,7 +162,6 @@ if (is_android) {
       ":display_java",
       ":media_java_resources",
       "//base:base_java",
-      "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

@@ -36,7 +36,6 @@ generate_jni("screen_capture_jni_headers") {
 android_library("screen_capture_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [ "java/src/org/chromium/media/ScreenCapture.java" ]

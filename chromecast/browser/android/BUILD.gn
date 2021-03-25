@@ -172,7 +172,6 @@ android_library("cast_shell_java") {
     ":reactive_android_java",
     ":resume_intents_java",
     "//base:base_java",
-    "//base:jni_java",
     "//chromecast/base:base_java",
     "//chromecast/media/cma/backend/android:audio_track_java",
     "//components/crash/android:java",

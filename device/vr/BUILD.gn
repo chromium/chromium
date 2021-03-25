@@ -324,7 +324,6 @@ if (enable_gvr_services) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//third_party/gvr-android-sdk:gvr_common_java",
       "//ui/android:ui_java",
     ]

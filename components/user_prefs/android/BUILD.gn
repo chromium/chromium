@@ -12,7 +12,6 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/user_prefs/UserPrefs.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:browser_context_java",
     "//components/prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

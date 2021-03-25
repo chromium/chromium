@@ -26,7 +26,6 @@ android_library("java") {
   deps = [
     "third_party/float_property:java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",

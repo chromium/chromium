@@ -7037,7 +7037,6 @@ if (is_android) {
     testonly = true
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/test/android:chrome_java_test_support",

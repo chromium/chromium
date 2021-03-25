@@ -110,7 +110,6 @@ android_library("service_java") {
   deps = [
     ":feature_list_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -125,10 +124,7 @@ android_library("feature_list_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources =
       [ "java/src/org/chromium/components/payments/PaymentFeatureList.java" ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
 }
 
 android_library("full_java") {
@@ -172,7 +168,6 @@ android_library("full_java") {
     ":minimal_java",
     ":service_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/autofill/android:autofill_java",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
@@ -215,7 +210,6 @@ android_library("minimal_java") {
   deps = [
     ":service_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/autofill/android:payments_autofill_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -313,7 +307,6 @@ java_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",

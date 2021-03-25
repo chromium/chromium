@@ -231,10 +231,7 @@ if (is_android) {
 
   android_library("java") {
     sources = java_sources_needing_jni
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-    ]
+    deps = [ "//base:base_java" ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

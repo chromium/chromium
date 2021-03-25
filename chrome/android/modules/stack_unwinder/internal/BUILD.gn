@@ -10,7 +10,6 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/android/modules/stack_unwinder/public:java",
   ]
 }

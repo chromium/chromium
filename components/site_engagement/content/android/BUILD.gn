@@ -8,7 +8,6 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/site_engagement/SiteEngagementService.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:browser_context_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

@@ -8,7 +8,6 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/android/modules/cablev2_authenticator/public:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

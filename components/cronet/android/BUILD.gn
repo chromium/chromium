@@ -951,7 +951,7 @@ if (!is_component_build) {
     ":cronet_test_apk_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
+
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",

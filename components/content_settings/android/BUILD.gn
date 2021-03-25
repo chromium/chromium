@@ -16,7 +16,6 @@ android_library("java") {
   deps = [
     ":content_settings_enums_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:browser_context_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

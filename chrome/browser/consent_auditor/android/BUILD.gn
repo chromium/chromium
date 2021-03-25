@@ -12,7 +12,6 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/consent_auditor/ConsentAuditorBridge.java" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/profiles/android:java",
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

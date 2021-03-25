@@ -199,7 +199,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test/embedded_test_server:aw_net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android/provider:java",
     "//components/autofill/android/provider/test_support:component_autofill_provider_java_test_support",
@@ -439,7 +438,6 @@ android_library("webview_instrumentation_test_utils_java") {
   deps = [
     "//android_webview:common_variations_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/component_updater/android:embedded_component_loader_java",
     "//components/variations/android:variations_java",
     "//third_party/junit",

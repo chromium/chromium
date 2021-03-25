@@ -36,7 +36,6 @@ android_library("internal_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/thin_webview:java",
     "//content/public/android:content_java",

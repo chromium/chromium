@@ -4234,10 +4234,7 @@ if (is_android) {
         [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-    ]
+    deps = [ "//base:base_java" ]
   }
 
   generate_build_config_srcjar("base_build_config_gen") {

@@ -376,7 +376,6 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
-      "//base:jni_java",
       "//components/browser_ui/widget/android:java",
       "//components/embedder_support/android:util_java",
       "//components/query_tiles:query_tile_java",

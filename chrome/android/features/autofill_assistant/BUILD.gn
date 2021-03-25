@@ -35,7 +35,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/browser_controls/android:java",
@@ -263,7 +262,6 @@ android_library("autofill_assistant_java_test_support") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/autofill_assistant/browser:proto_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -439,7 +437,7 @@ java_strings_grd("java_strings_grd") {
                 [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
 }
 
-if (!incremental_install){
+if (!incremental_install) {
   zip("password_change_tests_runner") {
     testonly = true
     inputs = [

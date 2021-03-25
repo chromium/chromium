@@ -60,7 +60,6 @@ android_library("system_impl_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//mojo/public/java:system_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

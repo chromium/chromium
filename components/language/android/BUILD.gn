@@ -30,9 +30,6 @@ android_library("language_bridge_java") {
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
   ]
 
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

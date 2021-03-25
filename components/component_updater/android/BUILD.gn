@@ -13,7 +13,6 @@ android_library("background_task_update_scheduler_java") {
   deps = [
     ":background_task_update_scheduler_jni_headers",
     "//base:base_java",
-    "//base:jni_java",
     "//components/background_task_scheduler:background_task_scheduler_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
@@ -57,7 +56,6 @@ android_library("embedded_component_loader_java") {
     ":component_provider_service_aidl_java",
     ":embedded_component_loader_jni_headers",
     "//base:base_java",
-    "//base:jni_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

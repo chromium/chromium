@@ -11,7 +11,6 @@ generate_jni("jni_headers") {
 android_library("gcm_driver_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

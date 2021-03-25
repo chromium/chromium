@@ -26,7 +26,6 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:browser_context_java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",

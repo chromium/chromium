@@ -22,7 +22,6 @@ java_cpp_enum("java_enums_srcjar") {
 android_library("java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -60,10 +59,7 @@ generate_jni("java_handler_jni_headers") {
 }
 
 android_library("handler_java") {
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = _java_handler_jni_sources
 }

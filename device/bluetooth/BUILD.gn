@@ -547,7 +547,6 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//components/location/android:location_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

@@ -59,7 +59,6 @@ android_library("java") {
     ":critical_persisted_tab_data_proto_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/endpoint_fetcher:java",
