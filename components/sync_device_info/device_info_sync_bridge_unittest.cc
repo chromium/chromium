@@ -368,7 +368,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
              SharingSenderIdP256dhForSuffix(kLocalSuffix),
              SharingSenderIdAuthSecretForSuffix(kLocalSuffix)},
             sharing_enabled_features),
-        last_fcm_registration_token, last_interested_data_types);
+        /*paask_info=*/base::nullopt, last_fcm_registration_token,
+        last_interested_data_types);
   }
 
   void Clear() override { local_device_info_.reset(); }

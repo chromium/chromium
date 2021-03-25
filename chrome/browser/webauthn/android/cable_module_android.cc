@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/webauthn/android/cable_module_android.h"
+
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
@@ -63,6 +65,12 @@ void RegisterForCloudMessages() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   GetRegistration();
+}
+
+base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+GetSyncDataIfRegistered() {
+  // Not yet implemented.
+  return base::nullopt;
 }
 
 }  // namespace authenticator

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_H_
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -63,6 +64,31 @@ class DeviceInfo {
     bool operator==(const SharingInfo& other) const;
   };
 
+  struct PhoneAsASecurityKeyInfo {
+    PhoneAsASecurityKeyInfo();
+    PhoneAsASecurityKeyInfo(const PhoneAsASecurityKeyInfo& other);
+    PhoneAsASecurityKeyInfo(PhoneAsASecurityKeyInfo&& other);
+    PhoneAsASecurityKeyInfo& operator=(const PhoneAsASecurityKeyInfo& other);
+    ~PhoneAsASecurityKeyInfo();
+
+    bool operator==(const PhoneAsASecurityKeyInfo& other) const;
+
+    // The domain of the tunnel service. See
+    // |device::cablev2::tunnelserver::DecodeDomain| to decode this value.
+    uint16_t tunnel_server_domain;
+    // contact_id is an opaque value that is sent to the tunnel service in order
+    // to identify the caBLEv2 authenticator.
+    std::vector<uint8_t> contact_id;
+    // secret is the shared secret that authenticates the desktop to the
+    // authenticator.
+    std::array<uint8_t, 32> secret;
+    // id identifies the secret so that the phone knows which secret to use
+    // for a given connection.
+    uint32_t id;
+    // peer_public_key_x962 is the authenticator's public key.
+    std::array<uint8_t, 65> peer_public_key_x962;
+  };
+
   DeviceInfo(const std::string& guid,
              const std::string& client_name,
              const std::string& chrome_version,
@@ -75,6 +101,7 @@ class DeviceInfo {
              base::TimeDelta pulse_interval,
              bool send_tab_to_self_receiving_enabled,
              const base::Optional<SharingInfo>& sharing_info,
+             const base::Optional<PhoneAsASecurityKeyInfo>& paask_info,
              const std::string& fcm_registration_token,
              const ModelTypeSet& interested_data_types);
   ~DeviceInfo();
@@ -126,6 +153,8 @@ class DeviceInfo {
   // Returns Sharing related info of the device.
   const base::Optional<SharingInfo>& sharing_info() const;
 
+  const base::Optional<PhoneAsASecurityKeyInfo>& paask_info() const;
+
   // Returns the FCM registration token for sync invalidations.
   const std::string& fcm_registration_token() const;
 
@@ -150,6 +179,8 @@ class DeviceInfo {
   void set_send_tab_to_self_receiving_enabled(bool new_value);
 
   void set_sharing_info(const base::Optional<SharingInfo>& sharing_info);
+
+  void set_paask_info(PhoneAsASecurityKeyInfo&& paask_info);
 
   void set_client_name(const std::string& client_name);
 
@@ -191,6 +222,8 @@ class DeviceInfo {
   bool send_tab_to_self_receiving_enabled_;
 
   base::Optional<SharingInfo> sharing_info_;
+
+  base::Optional<PhoneAsASecurityKeyInfo> paask_info_;
 
   // An FCM registration token obtained by sync invalidations service.
   std::string fcm_registration_token_;

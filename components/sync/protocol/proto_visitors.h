@@ -387,6 +387,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(feature_fields);
   VISIT(sharing_fields);
   VISIT(invalidation_fields);
+  VISIT(paask_fields);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
@@ -401,6 +402,15 @@ VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {
   VISIT(sender_id_fcm_token_v2);
   VISIT_BYTES(sender_id_p256dh_v2);
   VISIT_BYTES(sender_id_auth_secret_v2);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PhoneAsASecurityKeySpecificFields& proto) {
+  VISIT(tunnel_server_domain);
+  VISIT_BYTES(contact_id);
+  VISIT(id);
+  VISIT_BYTES(peer_public_key_x962);
+  // |secret| is deliberately omitted to avoid including sensitive information
+  // in debugging output, which might be included in bug reports etc.
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DictionarySpecifics& proto) {

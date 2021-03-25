@@ -57,6 +57,12 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
     local_device_info_->set_interested_data_types(*interested_data_types);
   }
 
+  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+      sync_client_->GetPhoneAsASecurityKeyInfo();
+  if (paask_info) {
+    local_device_info_->set_paask_info(std::move(*paask_info));
+  }
+
   return local_device_info_.get();
 }
 
@@ -83,11 +89,13 @@ void LocalDeviceInfoProviderImpl::Initialize(
   // become ready by then.
   std::string last_fcm_registration_token;
   ModelTypeSet last_interested_data_types;
+  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
   if (device_info_restored_from_store) {
     last_fcm_registration_token =
         device_info_restored_from_store->fcm_registration_token();
     last_interested_data_types =
         device_info_restored_from_store->interested_data_types();
+    paask_info = device_info_restored_from_store->paask_info();
   }
 
   // The local device doesn't have a last updated timestamps. It will be set in
@@ -99,8 +107,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
-      sync_client_->GetLocalSharingInfo(), last_fcm_registration_token,
-      last_interested_data_types);
+      sync_client_->GetLocalSharingInfo(), paask_info,
+      last_fcm_registration_token, last_interested_data_types);
 
   // Notify observers.
   closure_list_.Notify();

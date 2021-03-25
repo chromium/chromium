@@ -32,6 +32,10 @@
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/webauthn/android/cable_module_android.h"
+#endif
+
 namespace {
 
 class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
@@ -95,6 +99,15 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     // unknown (base::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
     return syncer::ModelTypeSet();
+  }
+
+  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  GetPhoneAsASecurityKeyInfo() const override {
+#if defined(OS_ANDROID)
+    return webauthn::authenticator::GetSyncDataIfRegistered();
+#else
+    return base::nullopt;
+#endif
   }
 
  private:

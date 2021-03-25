@@ -60,7 +60,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client_;
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
-  SyncInvalidationsService* sync_invalidations_service_;
+  SyncInvalidationsService* const sync_invalidations_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceImpl);
 };

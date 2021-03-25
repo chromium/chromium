@@ -73,6 +73,11 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return syncer::ModelTypeSet();
   }
 
+  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  GetPhoneAsASecurityKeyInfo() const override {
+    return base::nullopt;
+  }
+
  private:
   PrefService* const prefs_;
   syncer::SyncInvalidationsService* const sync_invalidations_service_;
