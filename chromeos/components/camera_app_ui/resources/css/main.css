@@ -76,6 +76,10 @@ input[type=checkbox] {
   -webkit-appearance: none;
 }
 
+[tabindex] {
+  user-select: none;
+}
+
 body.tab-navigation button:focus::after,
 body.tab-navigation input:focus::after {
   border: 2px solid var(--focus-color);
@@ -966,11 +970,6 @@ body:not(.show-metadata) #expert-controls>.metadata-row,
 body:not(.video) #expert-controls>.video-option-row,
 body:not(.custom-video-parameters) #expert-controls>.video-option-row {
   display: none;
-}
-
-#video-profile,
-#video-level {
-  pointer-events: auto;
 }
 
 #preview-grid-horizontal {

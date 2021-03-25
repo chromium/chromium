@@ -67,14 +67,6 @@ export function getShortcutIdentifier(event) {
 }
 
 /**
- * Makes the element unfocusable by mouse.
- * @param {!HTMLElement} element Element to be unfocusable.
- */
-export function makeUnfocusableByMouse(element) {
-  element.addEventListener('mousedown', (event) => event.preventDefault());
-}
-
-/**
  * Opens help.
  */
 export function openHelp() {

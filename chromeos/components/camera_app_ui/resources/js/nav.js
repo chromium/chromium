@@ -35,8 +35,6 @@ let topmostIndex = -1;
 export function setup(views) {
   allViews = views;
   // Manage all tabindex usages in for navigation.
-  dom.getAll('[tabindex]', HTMLElement)
-      .forEach((element) => util.makeUnfocusableByMouse(element));
   document.body.addEventListener('keydown', (event) => {
     const e = assertInstanceof(event, KeyboardEvent);
     if (e.key === 'Tab') {
