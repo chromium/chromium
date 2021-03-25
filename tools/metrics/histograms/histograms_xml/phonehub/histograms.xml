@@ -133,6 +133,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="PhoneHub.NotificationAccessSetup.SuccessfulSetupDuration"
+    units="ms" expires_after="M98">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the time it takes for the user to successfully go through the
+    Chromebook UI that guides them through granting Phone Hub notifications
+    access on their phone. Emitted once at the end of a successful setup flow.
+    The user should only need to go through the flow once successfully for each
+    phone they pair to.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.NotificationAccessSetup.{AllStatusesOrLastStatus}"
+    enum="PhoneHubNotificationAccessSetupStatus" expires_after="M98">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records {AllStatusesOrLastStatus} the Chromebook UI that guides them through
+    granting Phone Hub notifications access on their phone. Emitted each time
+    the user goes through the notification access setup flow. The user should
+    only need to go through the flow once successfully for each phone they pair
+    to.
+  </summary>
+  <token key="AllStatusesOrLastStatus">
+    <variant name="AllStatuses" summary="each step the user sees in"/>
+    <variant name="LastStatus"
+        summary="the last state the user experiences in"/>
+  </token>
+</histogram>
+
 <histogram name="PhoneHub.NotificationCount" units="notifications"
     expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>

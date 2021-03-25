@@ -61050,6 +61050,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="Show notification access setup response"/>
 </enum>
 
+<enum name="PhoneHubNotificationAccessSetupStatus">
+  <int value="1" label="Connecting to phone"/>
+  <int value="2" label="Timed out connecting to phone"/>
+  <int value="3" label="Disconnected from phone before setup complete"/>
+  <int value="4" label="Sent message to phone; awaiting response"/>
+  <int value="5" label="Completed successfully"/>
+  <int value="6" label="Phone is prohibited from granting access"/>
+</enum>
+
 <enum name="PhoneHubNotificationInteraction">
   <int value="0" label="User sent an inline reply from notification"/>
   <int value="1" label="User dismissed notification"/>
