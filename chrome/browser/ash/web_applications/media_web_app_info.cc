@@ -39,6 +39,20 @@ constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
     {"video/ogg", ".ogv,.ogx,.ogm"},
     {"video/webm", ".webm"},
     {"video/mpeg", ".3gp,.avi,.m4v,.mkv,.mov,.mp4,.mpeg,.mpeg4,.mpg,.mpg4"},
+
+    // More image formats. These are needed because MIME types are not always
+    // available, even for known extensions. E.g. filesystem providers may
+    // override Chrome's builtin mapping with an empty string. All supported
+    // image/* `k{Primary,Secondary}Mappings` in net/base/mime_util.cc should be
+    // listed here to ensure consistency with the image/* handler.
+    {"image/bmp", ".bmp"},
+    {"image/gif", ".gif"},
+    {"image/vnd.microsoft.icon", ".ico"},
+    {"image/jpeg", ".jpeg,.jpg,.jpe,.jfif,.jif,.jfi,.pjpeg,.pjp"},
+    {"image/png", ".png"},
+    {"image/webp", ".webp"},
+    {"image/svg+xml", ".svg,.svgz"},
+    {"image/avif", ".avif"},
 };
 
 using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
