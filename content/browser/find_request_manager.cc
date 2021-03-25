@@ -185,6 +185,8 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
       return;
 
     manager_->RemoveFrame(rfh);
+    // Make sure RenderFrameDeleted will be called to clean up
+    DCHECK(rfh->IsRenderFrameCreated());
     manager_->AddFrame(rfh, true /* force */);
   }
 
@@ -198,10 +200,6 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
     // must not interact with them anymore.
     if (old_host)
       RemoveFrameRecursively(static_cast<RenderFrameHostImpl*>(old_host));
-  }
-
-  void FrameDeleted(RenderFrameHost* rfh) override {
-    manager_->RemoveFrame(rfh);
   }
 
  private:
