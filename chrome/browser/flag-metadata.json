@@ -1216,6 +1216,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-accessibility-live-caption-soda",
+    "owners": [ "abigailbklein@google.com", "evliu@google.com", "robsc@chromium.org", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-accessibility-object-model",
     "owners": [ "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 79

@@ -5073,6 +5073,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccessibilityLiveCaptionName,
      flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
+    {"enable-accessibility-live-caption-soda",
+     flag_descriptions::kEnableAccessibilityLiveCaptionSodaName,
+     flag_descriptions::kEnableAccessibilityLiveCaptionSodaDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(media::kUseSodaForLiveCaption)},
 #endif  // !defined(OS_ANDROID)
 
     {"enable-accessibility-object-model",

@@ -1965,6 +1965,9 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
+extern const char kEnableAccessibilityLiveCaptionSodaName[];
+extern const char kEnableAccessibilityLiveCaptionSodaDescription[];
+
 extern const char kCastMediaRouteProviderName[];
 extern const char kCastMediaRouteProviderDescription[];
 

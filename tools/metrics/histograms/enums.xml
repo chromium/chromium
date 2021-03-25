@@ -46645,6 +46645,7 @@ from previous Chrome versions.
   <int value="584661108"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:disabled"/>
   <int value="586021329" label="VibrateRequiresUserGesture:enabled"/>
+  <int value="587020527" label="UseSodaForLiveCaption:enabled"/>
   <int value="588333474" label="OfflineIndicator:disabled"/>
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
@@ -46790,6 +46791,7 @@ from previous Chrome versions.
   <int value="701795774" label="WebAppEnableUrlHandlers:enabled"/>
   <int value="702060507" label="SafetyCheckWeakPasswords:disabled"/>
   <int value="703469777" label="AndroidNightModeTabReparenting:enabled"/>
+  <int value="703621694" label="UseSodaForLiveCaption:disabled"/>
   <int value="705407202" label="AutofillSaveCardImprovedUserConsent:disabled"/>
   <int value="705411729" label="AccessiblePDFForm:disabled"/>
   <int value="705712478" label="EnablePalmOnToolTypePalm:disabled"/>
