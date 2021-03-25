@@ -1447,7 +1447,8 @@ public class InstantStartTest {
 
     private void waitForTabModel() {
         CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized,
+                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private static List<Tile> createFakeSiteSuggestionTiles() {
