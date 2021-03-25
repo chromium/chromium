@@ -12,6 +12,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -53,17 +56,23 @@ class FileSystemDownloadControllerTest : public testing::Test {
       : test_item_(FILE_PATH_LITERAL(
             "file_system_download_controller_test.txt.crdownload")),
         controller_(&test_item_),
+        profile_manager_(TestingBrowserProcess::GetGlobal()),
         url_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
+    EXPECT_TRUE(profile_manager_.SetUp());
+    PrefService* prefs =
+        profile_manager_.CreateTestingProfile("test-user")->GetPrefs();
     controller_.Init(
         base::BindRepeating(&FileSystemDownloadControllerTest::AuthenRetry,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&FileSystemDownloadControllerTest::DownloadComplete,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr()),
+        prefs);
   }
 
   void SetUp() override {
+    testing::Test::SetUp();
     if (test_item_.GetTemporaryFilePath().empty() ||
         !base::WriteFile(test_item_.GetTemporaryFilePath(),
                          "FileSystemDownloadControllerTest")) {
@@ -91,16 +100,17 @@ class FileSystemDownloadControllerTest : public testing::Test {
 
  protected:
   DownloadItemForTest test_item_;
-
   FileSystemDownloadController controller_;
 
   int authentication_retry_{0};
   bool download_callback_called_{false};
   bool upload_success_{false};
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  // Decoder and TestingProfileManager can only be declared after
+  // TaskEnvironment.
   data_decoder::test::InProcessDataDecoder decoder_;
-  // Decoder can only be declared after TaskEnvironment.
+  TestingProfileManager profile_manager_;
 
   base::OnceClosure quit_closure_;
 

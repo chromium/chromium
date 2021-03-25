@@ -42,6 +42,10 @@ const char kOnBulkDataEntryScopePref[] =
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
+// Template to store the Box folder_id for caching purposes
+constexpr char kFileSystemUploadFolderIdPref[] =
+    "enterprise_connectors.file_system.box.folder_id";
+
 namespace {
 
 void RegisterFileSystemPrefs(PrefRegistrySimple* registry) {

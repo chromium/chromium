@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 
 namespace enterprise_connectors {
@@ -29,7 +30,8 @@ class FileSystemDownloadController {
   // current_api_call_ to be the first step of the whole API call workflow. Must
   // be called before calling TryTask() for the first time.
   void Init(base::RepeatingCallback<void(void)> authen_retry_callback,
-            base::OnceCallback<void(bool)> download_callback);
+            base::OnceCallback<void(bool)> download_callback,
+            PrefService* prefs);
 
   // Kick off the workflow from the step stored in current_api_call_. Will
   // re-attempt the last step from where it left off if it called callback with
@@ -74,6 +76,7 @@ class FileSystemDownloadController {
   const base::FilePath local_file_path_;
   const base::FilePath target_file_name_;
   const size_t file_size_;
+  PrefService* prefs_;
 
   base::WeakPtrFactory<FileSystemDownloadController> weak_factory_{this};
 };

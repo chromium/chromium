@@ -21,6 +21,7 @@ constexpr char kAccessTokenPrefPathTemplate[] =
       "enterprise_connectors.file_system.%s.access_token";
 constexpr char kRefreshTokenPrefPathTemplate[] =
       "enterprise_connectors.file_system.%s.refresh_token";
+constexpr char kBoxProviderName[] = "box";
 
 // Traffic annotation strings must be fully defined at compile time.  They
 // can't be dynamically built at runtime based on the |service_provider|.
@@ -28,7 +29,7 @@ constexpr char kRefreshTokenPrefPathTemplate[] =
 // appropriate annotation for each.
 net::NetworkTrafficAnnotationTag GetAnnotation(
     const std::string& service_provider) {
-  if (service_provider == "box") {
+  if (service_provider == kBoxProviderName) {
     return net::DefineNetworkTrafficAnnotation("box_access_token_fetcher",
                                                R"(
         semantics {
@@ -125,8 +126,11 @@ void RegisterFileSystemPrefsForServiceProvider(
       base::StringPrintf(kRefreshTokenPrefPathTemplate,
                          service_provider.c_str()),
       std::string());
-
-  // TODO(1157641) store folder_id in profile pref to handle indexing latency.
+  // Currently need this caching only for Box, depending on what other 3P APIs
+  // look like we may want to do this more generally.
+  if (service_provider == kBoxProviderName) {
+    registry->RegisterStringPref(kFileSystemUploadFolderIdPref, std::string());
+  }
 }
 
 bool SetFileSystemToken(PrefService* prefs,

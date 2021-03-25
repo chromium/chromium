@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/file_system/download_controller.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 
 #include "base/files/file_util.h"
+#include "components/prefs/pref_service.h"
 #include "net/http/http_status_code.h"
 
 namespace enterprise_connectors {
-
 FileSystemDownloadController::FileSystemDownloadController(
     download::DownloadItem* download_item)
     : local_file_path_(download_item->GetFullPath()),
@@ -20,9 +21,18 @@ FileSystemDownloadController::~FileSystemDownloadController() = default;
 
 void FileSystemDownloadController::Init(
     base::RepeatingCallback<void(void)> authentication_retry_callback,
-    base::OnceCallback<void(bool)> download_callback) {
+    base::OnceCallback<void(bool)> download_callback,
+    PrefService* prefs) {
   authentication_retry_callback_ = authentication_retry_callback;
   download_callback_ = std::move(download_callback);
+  DCHECK(prefs);
+  prefs_ = prefs;
+  folder_id_ = prefs_->GetString(kFileSystemUploadFolderIdPref);
+  if (!folder_id_.empty()) {
+    // TODO(1190396): Add preflight checks here.
+    current_api_call_ = CreateUploadApiCall();
+    return;
+  }
   current_api_call_ =
       std::make_unique<BoxFindUpstreamFolderApiCallFlow>(base::BindOnce(
           &FileSystemDownloadController::OnFindUpstreamFolderResponse,
@@ -98,6 +108,7 @@ void FileSystemDownloadController::OnFindUpstreamFolderResponse(
             weak_factory_.GetWeakPtr()));
   } else {
     folder_id_ = folder_id;
+    prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
     // Advance to start an upload session.
     current_api_call_ = CreateUploadApiCall();
   }
@@ -118,7 +129,7 @@ void FileSystemDownloadController::OnCreateUpstreamFolderResponse(
 
   CHECK_EQ(folder_id.empty(), false);
   folder_id_ = folder_id;
-
+  prefs_->SetString(kFileSystemUploadFolderIdPref, folder_id);
   // Advance to start an upload session.
   current_api_call_ = CreateUploadApiCall();
   TryCurrentApiCall();

@@ -107,7 +107,8 @@ void FileSystemRenameHandler::Start(Callback callback) {
       base::BindRepeating(&FileSystemRenameHandler::OnApiAuthenticationError,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&FileSystemRenameHandler::NotifyResultToDownloadThread,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      GetPrefs());
   StartInternal();
 }
 
