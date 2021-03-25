@@ -442,7 +442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
-    expires_after="2021-05-05">
+    expires_after="2022-05-05">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -453,7 +453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="Event">
     <variant name="CleanShutdown" summary="a clean shutdown"/>
     <variant name="Crash"
-        summary="a crash. This metric is a superset of these 3 methrics:
+        summary="a crash. This metric is a superset of these 3 metrics:
                  Stability.iOS.TabCountBeforeFreeze,
                  Stability.iOS.TabCountBeforeSignalCrash,
                  Stability.iOS.TabCountBeforeUTE"/>
