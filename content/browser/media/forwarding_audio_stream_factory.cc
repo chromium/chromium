@@ -269,7 +269,7 @@ bool ForwardingAudioStreamFactory::IsMuted() const {
   return is_muted_;
 }
 
-void ForwardingAudioStreamFactory::FrameDeleted(
+void ForwardingAudioStreamFactory::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(render_frame_host);

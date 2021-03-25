@@ -199,7 +199,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
   // WebContentsObserver implementation. We observe these events so that we can
   // clean up streams belonging to a frame when that frame is destroyed.
-  void FrameDeleted(RenderFrameHost* render_frame_host) final;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) final;
 
   Core* core() { return core_.get(); }
 

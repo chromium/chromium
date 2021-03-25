@@ -528,7 +528,7 @@ TEST_F(ForwardingAudioStreamFactoryTest, DestroyFrame_DestroysRelatedStreams) {
     testing::Mock::VerifyAndClear(&*other_rfh_output_broker);
   }
 
-  factory.FrameDeleted(other_rfh());
+  factory.RenderFrameDeleted(other_rfh());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(other_rfh_input_broker)
       << "Input broker should be destructed when owning frame is destructed.";
