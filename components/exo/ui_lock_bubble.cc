@@ -27,7 +27,7 @@ namespace exo {
 UILockBubbleView::~UILockBubbleView() = default;
 
 UILockBubbleView::UILockBubbleView(views::View* anchor_view)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_CENTER) {
+    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::FLOAT) {
   set_margins(views::LayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
   SetCanActivate(false);
@@ -36,25 +36,25 @@ UILockBubbleView::UILockBubbleView(views::View* anchor_view)
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  views::Label* textLabel = AddChildView(
+  views::Label* text_label = AddChildView(
       std::make_unique<views::Label>(std::u16string(l10n_util::GetStringUTF16(
           IDS_EXO_UI_LOCK_NOTIFICATION_BUBBLE_MESSAGE))));
-  textLabel->SetEnabledColor(SK_ColorWHITE);
-  textLabel->SetBackgroundColor(SK_ColorBLACK);
-  textLabel->SetAutoColorReadabilityEnabled(true);
-  textLabel->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  text_label->SetEnabledColor(SK_ColorWHITE);
+  text_label->SetBackgroundColor(SK_ColorBLACK);
+  text_label->SetAutoColorReadabilityEnabled(true);
+  text_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 }
 
 // TODO(crbug.com/1178861): Refactor this functionality to be provided by Ash
 // directly
-views::Widget* UILockBubbleView::DisplayBubble(views::View* bubbleAnchor) {
-  views::Widget* bubbleViewWidget =
+views::Widget* UILockBubbleView::DisplayBubble(views::View* bubble_anchor) {
+  views::Widget* bubble_view_widget =
       views::BubbleDialogDelegateView::CreateBubble(
-          new UILockBubbleView(bubbleAnchor));
-  bubbleViewWidget->SetOpacity(0.5);
-  bubbleViewWidget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-  bubbleViewWidget->Show();
-  return bubbleViewWidget;
+          new UILockBubbleView(bubble_anchor));
+  bubble_view_widget->SetOpacity(0.5);
+  bubble_view_widget->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);
+  bubble_view_widget->Show();
+  return bubble_view_widget;
 }
 
 BEGIN_METADATA(UILockBubbleView, views::BubbleDialogDelegateView)

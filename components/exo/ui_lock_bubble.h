@@ -14,6 +14,8 @@ namespace exo {
 
 // This view displays a Bubble within the always on top container instructing a
 // user on how to exit non-immersive fullscreen or 'gaming mode'.
+// TODO(b/161952658): Use  ShellSurfaceBase::AddOverlay() rather than
+// BubbleDialogDelegateView.
 class UILockBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(UILockBubbleView);
