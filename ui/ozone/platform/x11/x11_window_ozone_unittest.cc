@@ -258,7 +258,7 @@ TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
   constexpr gfx::Rect bounds(30, 80, 800, 600);
   auto window = CreatePlatformWindow(&delegate, bounds, &widget);
 
-  EXPECT_CALL(delegate, OnBoundsChanged(screen_bounds_in_px));
+  EXPECT_CALL(delegate, OnBoundsChanged(testing::Eq(screen_bounds_in_px)));
   window->ToggleFullscreen();
 }
 

@@ -76,11 +76,11 @@ void VulkanDemo::Run() {
   run_loop_ = nullptr;
 }
 
-void VulkanDemo::OnBoundsChanged(const gfx::Rect& new_bounds) {
-  if (vulkan_surface_->image_size() == new_bounds.size())
+void VulkanDemo::OnBoundsChanged(const BoundsChange& change) {
+  if (vulkan_surface_->image_size() == change.bounds.size())
     return;
   auto generation = vulkan_surface_->swap_chain_generation();
-  vulkan_surface_->Reshape(new_bounds.size(), gfx::OVERLAY_TRANSFORM_NONE);
+  vulkan_surface_->Reshape(change.bounds.size(), gfx::OVERLAY_TRANSFORM_NONE);
   if (vulkan_surface_->swap_chain_generation() != generation) {
     // Size has been changed, we need to clear all surfaces which will be
     // recreated later.

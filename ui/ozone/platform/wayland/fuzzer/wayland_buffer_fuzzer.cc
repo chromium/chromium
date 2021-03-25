@@ -48,7 +48,7 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   MockPlatformWindowDelegate() = default;
   ~MockPlatformWindowDelegate() = default;
 
-  MOCK_METHOD1(OnBoundsChanged, void(const gfx::Rect& new_bounds));
+  MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));
   MOCK_METHOD1(DispatchEvent, void(ui::Event* event));
   MOCK_METHOD0(OnCloseRequest, void());

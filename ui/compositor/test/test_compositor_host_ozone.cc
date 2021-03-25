@@ -36,7 +36,7 @@ class TestCompositorHostOzone::StubPlatformWindowDelegate
   gfx::AcceleratedWidget widget() const { return widget_; }
 
   // PlatformWindowDelegate:
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {}
+  void OnBoundsChanged(const BoundsChange& change) override {}
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
   void DispatchEvent(Event* event) override {}
   void OnCloseRequest() override {}

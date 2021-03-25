@@ -286,7 +286,7 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
   // Configure event makes Wayland update bounds, but does not change toplevel
   // input region, opaque region or window geometry immediately. Such actions
   // are postponed to UpdateVisualSize();
-  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds.width(),
                                                kNormalBounds.height()))
       .Times(0);
@@ -421,7 +421,7 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   uint32_t serial = 0;
 
   // Make sure the window has normal state initially.
-  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
   window_->SetBounds(kNormalBounds);
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
@@ -438,7 +438,7 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kMaximizedBounds.width(),
                                                kMaximizedBounds.height()));
   EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
-  EXPECT_CALL(delegate_, OnBoundsChanged(kMaximizedBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMaximizedBounds)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
   window_->Maximize();
   SendConfigureEvent(xdg_surface_, kMaximizedBounds.width(),
@@ -472,7 +472,7 @@ TEST_P(WaylandWindowTest, MaximizeAndRestore) {
                                                kNormalBounds.height()));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
   EXPECT_CALL(delegate_, OnActivationChanged(_)).Times(0);
-  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
   EXPECT_CALL(*GetXdgToplevel(), UnsetMaximized());
   window_->Restore();
   // Reinitialize wl_array, which removes previous old states.
@@ -732,7 +732,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   uint32_t serial = 0;
 
   // Make sure the window has normal state initially.
-  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
   window_->SetBounds(kNormalBounds);
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
@@ -748,7 +748,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kMaximizedBounds.width(),
                                                kMaximizedBounds.height()));
   EXPECT_CALL(delegate_, OnActivationChanged(Eq(true)));
-  EXPECT_CALL(delegate_, OnBoundsChanged(kMaximizedBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kMaximizedBounds)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
   window_->Maximize();
   // State changes are synchronous.
@@ -783,7 +783,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds.width(),
                                                kNormalBounds.height()));
   EXPECT_CALL(*GetXdgToplevel(), UnsetFullscreen());
-  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kNormalBounds)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_)).Times(1);
   window_->Restore();
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
@@ -1976,9 +1976,9 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
   // bounds from relative to parent to be relative to screen. The Wayland
   // compositor does not reposition the menu, because it fits the screen, but
   // the nested menu window is repositioned to the left.
-  EXPECT_CALL(
-      nested_menu_window_delegate,
-      OnBoundsChanged(gfx::Rect({139, 156}, nested_menu_window_bounds.size())));
+  EXPECT_CALL(nested_menu_window_delegate,
+              OnBoundsChanged(
+                  Eq(gfx::Rect({139, 156}, nested_menu_window_bounds.size()))));
   calculated_nested_bounds.set_origin({-301, 80});
   SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
 
@@ -1991,10 +1991,12 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
   // menu window along y-axis and fixes bounds of a top level window so that it
   // is located (from the Chromium point of view) below origin of the menu
   // window.
-  EXPECT_CALL(delegate_, OnBoundsChanged(
-                             gfx::Rect({0, 363}, window_->GetBounds().size())));
-  EXPECT_CALL(menu_window_delegate,
-              OnBoundsChanged(gfx::Rect({440, 0}, menu_window_bounds.size())));
+  EXPECT_CALL(
+      delegate_,
+      OnBoundsChanged(Eq(gfx::Rect({0, 363}, window_->GetBounds().size()))));
+  EXPECT_CALL(
+      menu_window_delegate,
+      OnBoundsChanged(Eq(gfx::Rect({440, 0}, menu_window_bounds.size()))));
   SendConfigureEventPopup(menu_window.get(),
                           gfx::Rect({440, -363}, menu_window_bounds.size()));
 
@@ -2032,9 +2034,9 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
   // bounds back to be relative to display correctly. If the window is near to
   // the left edge of a display, nothing is going to change, and the origin will
   // be the same as in the previous case.
-  EXPECT_CALL(
-      nested_menu_window_delegate,
-      OnBoundsChanged(gfx::Rect({149, 258}, nested_menu_window_bounds.size())));
+  EXPECT_CALL(nested_menu_window_delegate,
+              OnBoundsChanged(
+                  Eq(gfx::Rect({149, 258}, nested_menu_window_bounds.size()))));
   calculated_nested_bounds.set_origin({-291, 258});
   SendConfigureEventPopup(nested_menu_window.get(), calculated_nested_bounds);
 
@@ -2045,10 +2047,12 @@ TEST_P(WaylandWindowTest, AdjustPopupBounds) {
   // the WaylandWindow repositions the top level window back to 0,0 (which had
   // an offset to compensate the position of the menu window fliped along
   // y-axis. It just has had negative y value, which is wrong for Chromium.
-  EXPECT_CALL(delegate_,
-              OnBoundsChanged(gfx::Rect({0, 0}, window_->GetBounds().size())));
-  EXPECT_CALL(menu_window_delegate,
-              OnBoundsChanged(gfx::Rect({440, 76}, menu_window_bounds.size())));
+  EXPECT_CALL(
+      delegate_,
+      OnBoundsChanged(Eq(gfx::Rect({0, 0}, window_->GetBounds().size()))));
+  EXPECT_CALL(
+      menu_window_delegate,
+      OnBoundsChanged(Eq(gfx::Rect({440, 76}, menu_window_bounds.size()))));
   SendConfigureEventPopup(menu_window.get(),
                           gfx::Rect({440, 76}, menu_window_bounds.size()));
 

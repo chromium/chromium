@@ -35,7 +35,7 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   void OnCursorVisibilityChangedNative(bool show) override;
 
   // ui::PlatformWindow:
-  void OnBoundsChanged(const gfx::Rect& bounds) override;
+  void OnBoundsChanged(const BoundsChange& bounds) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

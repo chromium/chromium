@@ -9,6 +9,13 @@
 
 namespace ui {
 
+PlatformWindowDelegate::BoundsChange::BoundsChange() = default;
+
+PlatformWindowDelegate::BoundsChange::BoundsChange(const gfx::Rect& bounds)
+    : bounds(bounds) {}
+
+PlatformWindowDelegate::BoundsChange::~BoundsChange() = default;
+
 PlatformWindowDelegate::PlatformWindowDelegate() = default;
 
 PlatformWindowDelegate::~PlatformWindowDelegate() = default;

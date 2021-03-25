@@ -51,8 +51,9 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   }
 
   // PlatformWindowDelegate:
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {
-    changed_bounds_ = new_bounds;
+  void OnBoundsChanged(
+      const PlatformWindowDelegate::BoundsChange& change) override {
+    changed_bounds_ = change.bounds;
     if (!quit_closure_.is_null() && changed_bounds_ == expected_bounds_)
       std::move(quit_closure_).Run();
   }
