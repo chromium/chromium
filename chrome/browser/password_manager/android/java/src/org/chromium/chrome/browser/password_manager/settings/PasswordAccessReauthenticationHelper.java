@@ -11,7 +11,9 @@ import androidx.annotation.IntDef;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.password_manager.R;
+import org.chromium.chrome.browser.password_manager.ReauthResult;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 import org.chromium.ui.widget.Toast;
 
@@ -23,6 +25,9 @@ import java.lang.annotation.RetentionPolicy;
  * reauthentication can happen at a given time.
  */
 public class PasswordAccessReauthenticationHelper {
+    public static final String SETTINGS_REAUTHENTICATION_HISTOGRAM =
+            "PasswordManager.ReauthToAccessPasswordInSettings";
+
     /**
      * The reason for the reauthentication.
      *
@@ -73,6 +78,9 @@ public class PasswordAccessReauthenticationHelper {
 
         // Invoke the handler immediately if an authentication is still valid.
         if (ReauthenticationManager.authenticationStillValid(ReauthScope.ONE_AT_A_TIME)) {
+            RecordHistogram.recordEnumeratedHistogram(SETTINGS_REAUTHENTICATION_HISTOGRAM,
+                    ReauthResult.SKIPPED, ReauthResult.MAX_VALUE + 1);
+
             callback.onResult(true);
             return;
         }

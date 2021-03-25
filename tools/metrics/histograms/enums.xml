@@ -14903,6 +14903,22 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="9" label="Error: Allocator has become corrupted."/>
 </enum>
 
+<enum name="CredentialEditError">
+  <int value="0" label="Empty password"/>
+  <int value="1" label="Duplicate username"/>
+</enum>
+
+<enum name="CredentialEntryAction">
+  <int value="0" label="Deleted"/>
+  <int value="1" label="Copied username"/>
+  <int value="2" label="Unmasked password"/>
+  <int value="3" label="Masked password"/>
+  <int value="4" label="Copied password"/>
+  <int value="5" label="Edit username and save"/>
+  <int value="6" label="Edit password and save"/>
+  <int value="7" label="Edit username and password and save"/>
+</enum>
+
 <enum name="CredentialFilteredType">
   <int value="0" label="No sync credentials present"/>
   <int value="1" label="Sync credentials were removed"/>

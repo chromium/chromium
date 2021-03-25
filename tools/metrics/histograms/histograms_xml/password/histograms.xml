@@ -959,6 +959,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.CredentialEditError"
+    enum="CredentialEditError" expires_after="M97">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records the errors displayed by the saved credential entry editor, when the
+    user encounters them. Android-only for now.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.CredentialEntryViewActions.{CredentialEntryType}"
+    enum="CredentialEntryAction" expires_after="M97">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Records actions performed by the users in the {CredentialEntryType} view.
+    Android-only for now.
+  </summary>
+  <token key="CredentialEntryType">
+    <variant name="BlockedCredential"/>
+    <variant name="FederatedCredential"/>
+    <variant name="SavedPassword"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.CredentialsCountFromAccountStoreAfterUnlock"
     units="credentials" expires_after="M95">
   <owner>fhorschig@chromium.org</owner>

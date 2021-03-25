@@ -436,6 +436,7 @@ if (is_android) {
     sources = [
       "biometric_authenticator.h",
       "manage_passwords_referrer.h",
+      "password_manager_metrics_util.h",
     ]
   }
 }
