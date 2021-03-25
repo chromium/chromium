@@ -4459,6 +4459,7 @@ test("unit_tests") {
       "//components/messages/android:test_support",
       "//components/module_installer/android:module_installer_java",
       "//components/permissions/android:test_support",
+      "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_java",
     ]
     if (use_v8_context_snapshot) {

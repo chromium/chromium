@@ -164,9 +164,9 @@ void UpdatePersistentErrorOfRefreshTokenForAccount(
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 
 #if defined(OS_ANDROID)
-// Disables interaction with system accounts, which requires special
-// initialization of the java subsystems (AccountManagerFacade).
-void DisableInteractionWithSystemAccounts();
+// Stubs AccountManagerFacade, which requires special initialization of the java
+// subsystems.
+void SetUpMockAccountManagerFacade();
 #endif
 
 // Cancels all ongoing operations related to the accounts in the Gaia cookie.

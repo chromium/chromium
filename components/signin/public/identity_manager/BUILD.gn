@@ -170,4 +170,8 @@ source_set("test_support") {
   if (is_chromeos_lacros) {
     deps += [ "//components/account_manager_core" ]
   }
+
+  if (is_android) {
+    deps += [ "//components/signin/public/android:test_support_jni_headers" ]
+  }
 }

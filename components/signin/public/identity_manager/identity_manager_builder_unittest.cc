@@ -79,7 +79,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   base::FilePath dest_path = temp_dir.GetPath();
 
 #if defined(OS_ANDROID)
-  DisableInteractionWithSystemAccounts();
+  SetUpMockAccountManagerFacade();
 #endif
 
   IdentityManagerBuildParams params;

@@ -30,6 +30,7 @@
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
+#include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
 #endif
 
 namespace signin {
@@ -433,9 +434,9 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {
 }
 
 #if defined(OS_ANDROID)
-void DisableInteractionWithSystemAccounts() {
-  ProfileOAuth2TokenServiceDelegateAndroid::
-      set_disable_interaction_with_system_accounts();
+void SetUpMockAccountManagerFacade() {
+  Java_AccountManagerFacadeUtil_setUpMockFacade(
+      base::android::AttachCurrentThread());
 }
 #endif
 

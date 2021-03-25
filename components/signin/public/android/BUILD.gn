@@ -68,16 +68,25 @@ generate_jni("jni_headers") {
   ]
 }
 
+generate_jni("test_support_jni_headers") {
+  namespace = "signin"
+  sources = [ "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java" ]
+}
+
 android_library("signin_java_test_support") {
   testonly = true
   deps = [
     ":java",
     ":signin_test_resources",
+    ":test_support_jni_headers",
     "//base:base_java",
+    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/mockito:mockito_java",
   ]
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
+    "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
     "java/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",

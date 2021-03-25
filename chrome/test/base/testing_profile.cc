@@ -324,7 +324,7 @@ void TestingProfile::Init() {
   }
 
 #if defined(OS_ANDROID)
-  signin::DisableInteractionWithSystemAccounts();
+  signin::SetUpMockAccountManagerFacade();
 #endif
 
   // Normally this would happen during browser startup, but for tests
