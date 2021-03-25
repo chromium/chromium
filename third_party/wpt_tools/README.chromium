@@ -12,3 +12,5 @@ Description: This includes code for the manifest tool, lint tool, and wptserve.
     for more details on maintenance.
 Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
+- Local patch to work-around error where maybe_parse_tombstone is missing
+  a parameter.

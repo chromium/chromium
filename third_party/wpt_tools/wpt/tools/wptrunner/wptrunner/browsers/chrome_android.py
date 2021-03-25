@@ -189,7 +189,7 @@ class ChromeAndroidBrowserBase(Browser):
         cmd.extend(['logcat', '*:D'])
         return cmd
 
-    def maybe_parse_tombstone(self, logger):
+    def maybe_parse_tombstone(self):
         if self.stackparser_script:
             cmd = [self.stackparser_script, "-a", "-w"]
             if self.device_serial:
@@ -197,7 +197,7 @@ class ChromeAndroidBrowserBase(Browser):
             cmd.extend(["--output-directory", self.output_directory])
             raw_output = subprocess.check_output(cmd)
             for line in raw_output.splitlines():
-                logger.process_output("TRACE", line, "logcat")
+                self.logger.process_output("TRACE", line, "logcat")
 
     def setup_adb_reverse(self):
         self._adb_run(['wait-for-device'])
