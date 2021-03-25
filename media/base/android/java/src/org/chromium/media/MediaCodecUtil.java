@@ -125,14 +125,18 @@ class MediaCodecUtil {
     }
 
     /**
-     * Return true if and only if name is a software codec.
-     * @param name The codec name, e.g. from MediaCodecInfo.getName().
+     * Return true if and only if info is a software codec.
      */
-    public static boolean isSoftwareCodec(String name) {
+    private static boolean isSoftwareCodec(MediaCodecInfo info) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return !info.isHardwareAccelerated();
+
+        String name = info.getName().toLowerCase(Locale.ROOT);
         // This is taken from libstagefright/OMXCodec.cpp for pre codec2.
-        if (name.startsWith("OMX.google.")) return true;
-        // Codec2 names sw decoders this way. See hardware/google/av/codec2/vndk/C2Store.cpp .
-        if (name.startsWith("c2.google.")) return true;
+        if (name.startsWith("omx.google.")) return true;
+
+        // Codec2 names sw decoders this way.
+        // See hardware/google/av/codec2/vndk/C2Store.cpp.
+        if (name.startsWith("c2.google.") || name.startsWith("c2.android.")) return true;
 
         return false;
     }
@@ -153,7 +157,7 @@ class MediaCodecUtil {
                     info.isEncoder() ? MediaCodecDirection.ENCODER : MediaCodecDirection.DECODER;
             if (codecDirection != direction) continue;
 
-            if (requireSoftwareCodec && !isSoftwareCodec(info.getName())) continue;
+            if (requireSoftwareCodec && !isSoftwareCodec(info)) continue;
 
             for (String supportedType : info.getSupportedTypes()) {
                 if (supportedType.equalsIgnoreCase(mime)) return info.getName();
@@ -626,7 +630,7 @@ class MediaCodecUtil {
     private static @Nullable @HWEncoder Integer findHWEncoder(String mime) {
         MediaCodecListHelper codecListHelper = new MediaCodecListHelper();
         for (MediaCodecInfo info : codecListHelper) {
-            if (!info.isEncoder() || isSoftwareCodec(info.getName())) continue;
+            if (!info.isEncoder() || isSoftwareCodec(info)) continue;
 
             String encoderName = null;
             for (String mimeType : info.getSupportedTypes()) {
