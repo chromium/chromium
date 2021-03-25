@@ -33,6 +33,7 @@ class Vector2d;
 }  // namespace gfx
 
 namespace base {
+class TickClock;
 class TimeTicks;
 }
 
@@ -161,6 +162,12 @@ EVENTS_EXPORT display::Display::TouchSupport GetInternalDisplayTouchSupport();
 EVENTS_EXPORT void ComputeEventLatencyOS(const PlatformEvent& native_event);
 
 #if defined(OS_WIN)
+// Makes ComputeEventLatencyOS call the given |clock| to find the current time
+// ticks to compare to an MSG timestamp. If |clock| is nullptr, it will call
+// ::GetTickCount, which is the default.
+EVENTS_EXPORT void SetEventLatencyTickClockForTesting(
+    const base::TickClock* clock);
+
 EVENTS_EXPORT int GetModifiersFromKeyState();
 
 // Returns true if |message| identifies a mouse event that was generated as the

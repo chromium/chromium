@@ -4,20 +4,158 @@
 
 #include "ui/events/event_utils.h"
 
+#include <limits>
 #include <map>
 #include <vector>
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/tick_clock.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/base_event_utils.h"
 
 namespace ui {
 
 namespace {
+
 int g_custom_event_types = ET_LAST;
+
+#if defined(OS_WIN)
+
+#define UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES(name, sample)        \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                         \
+                             base::TimeDelta::FromMilliseconds(1), \
+                             base::TimeDelta::FromMilliseconds(100000), 100)
+
+class GetTickCountClock : public base::TickClock {
+ public:
+  GetTickCountClock() = default;
+  ~GetTickCountClock() override = default;
+
+  base::TimeTicks NowTicks() const override {
+    return base::TimeTicks() +
+           base::TimeDelta::FromMilliseconds(::GetTickCount());
+  }
+};
+
+const base::TickClock* g_tick_count_clock = nullptr;
+
+// Logs experimental Event.Latency.OS_WIN.* metrics to parallel
+// Event.Latency.OS.*.
+// TODO(crbug.com/1189656): Check that these are accurate enough to replace
+// Event.Latency.OS.*.
+void ComputeEventLatencyOSWin(const PlatformEvent& native_event,
+                              base::TimeTicks current_time) {
+  static const base::NoDestructor<GetTickCountClock> default_tick_count_clock;
+  if (!g_tick_count_clock)
+    g_tick_count_clock = default_tick_count_clock.get();
+
+  // Only log this metric for events that indicate strong user intent (eg.
+  // clicks and keypresses), not every move event. This will detect jank that
+  // causes the most user pain.
+  //
+  // TODO(crbug.com/1189656): TOUCH_* is never logged because touch events are
+  // created directly in HWNDMessageHandler without going through a path that
+  // calls ComputeEventLatencyOS.
+  const EventType event_type = EventTypeFromNative(native_event);
+  switch (event_type) {
+    case ET_KEY_PRESSED:
+    case ET_MOUSE_PRESSED:
+      // Continue to log this event.
+      break;
+    default:
+      // Ignore this event.
+      return;
+  }
+
+  // On Windows EventTimeFromNativeEvent returns the current time instead of
+  // the timestamp from |native_event|, which makes it useless for latency
+  // metrics, so retrieve the time stamp directly.
+  base::TimeTicks current_tick_count = g_tick_count_clock->NowTicks();
+  base::TimeTicks time_stamp =
+      base::TimeTicks() + base::TimeDelta::FromMilliseconds(native_event.time);
+  // Check if the 32-bit tick count wrapped around after the event.
+  if (current_tick_count < time_stamp) {
+    // ::GetTickCount returns an unsigned 32-bit value, which will fit into the
+    // signed 64-bit base::TimeTicks.
+    current_tick_count +=
+        base::TimeDelta::FromMilliseconds(std::numeric_limits<DWORD>::max());
+  }
+
+  // The timestamp from |native_event| is from the GetTickCount clock, which
+  // has a different 0-point from |current_time| (which uses either the
+  // high-resolution timer or timeGetTime). Adjust it to be compatible.
+  //
+  // This offset will vary by up to ~16 msec because it depends on when exactly
+  // we sample the high-resolution clock. It would be more consistent to
+  // calculate one offset at the start of the program and apply it every time,
+  // but that consistency isn't needed for jank investigations and then we
+  // would have to adjust for clock drift.
+  const base::TimeDelta time_source_offset = current_time - current_tick_count;
+  time_stamp += time_source_offset;
+
+  // Check that the event doesn't come from a device giving bogus timestamps.
+  // On most platforms this is done inside EventTimeFromNativeEvent.
+  const bool is_valid = IsValidTimebase(current_time, time_stamp);
+  UMA_HISTOGRAM_BOOLEAN("Event.Latency.OS_WIN_IS_VALID", is_valid);
+  switch (event_type) {
+    case ET_KEY_PRESSED:
+      UMA_HISTOGRAM_BOOLEAN("Event.Latency.OS_WIN_IS_VALID.KEY_PRESSED",
+                            is_valid);
+      break;
+    case ET_MOUSE_PRESSED:
+      UMA_HISTOGRAM_BOOLEAN("Event.Latency.OS_WIN_IS_VALID.MOUSE_PRESSED",
+                            is_valid);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  if (!is_valid)
+    return;
+
+  const base::TimeDelta delta = current_time - time_stamp;
+
+  if (base::TimeTicks::IsHighResolution()) {
+    UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES("Event.Latency.OS_WIN.HIGH_RES",
+                                          delta);
+    switch (event_type) {
+      case ET_KEY_PRESSED:
+        UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES(
+            "Event.Latency.OS_WIN.HIGH_RES.KEY_PRESSED", delta);
+        break;
+      case ET_MOUSE_PRESSED:
+        UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES(
+            "Event.Latency.OS_WIN.HIGH_RES.MOUSE_PRESSED", delta);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  } else {
+    UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES("Event.Latency.OS_WIN.LOW_RES",
+                                          delta);
+    switch (event_type) {
+      case ET_KEY_PRESSED:
+        UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES(
+            "Event.Latency.OS_WIN.LOW_RES.KEY_PRESSED", delta);
+        break;
+      case ET_MOUSE_PRESSED:
+        UMA_HISTOGRAM_WIN_EVENT_LATENCY_TIMES(
+            "Event.Latency.OS_WIN.LOW_RES.MOUSE_PRESSED", delta);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 std::unique_ptr<Event> EventFromNative(const PlatformEvent& native_event) {
@@ -83,8 +221,18 @@ display::Display::TouchSupport GetInternalDisplayTouchSupport() {
   return display::Display::TouchSupport::UNAVAILABLE;
 }
 
+#if defined(OS_WIN)
+void SetEventLatencyTickClockForTesting(const base::TickClock* clock) {
+  g_tick_count_clock = clock;
+}
+#endif
+
 void ComputeEventLatencyOS(const PlatformEvent& native_event) {
   base::TimeTicks current_time = EventTimeForNow();
+#if defined(OS_WIN)
+  // Also record windows-only metrics.
+  ComputeEventLatencyOSWin(native_event, current_time);
+#endif
   base::TimeTicks time_stamp = EventTimeFromNative(native_event);
   base::TimeDelta delta = current_time - time_stamp;
 

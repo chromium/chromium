@@ -27,11 +27,6 @@ const int kSystemKeyModifierMask = EF_COMMAND_DOWN;
 const int kSystemKeyModifierMask = EF_ALT_DOWN;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_APPLE)
 
-bool IsValidTimebase(base::TimeTicks now, base::TimeTicks timestamp) {
-  int64_t delta = (now - timestamp).InMilliseconds();
-  return delta >= 0 && delta <= 60 * 1000;
-}
-
 }  // namespace
 
 base::AtomicSequenceNumber g_next_event_id;
@@ -71,6 +66,11 @@ double EventTimeStampToSeconds(base::TimeTicks time_stamp) {
 
 base::TimeTicks EventTimeStampFromSeconds(double time_stamp_seconds) {
   return base::TimeTicks() + base::TimeDelta::FromSecondsD(time_stamp_seconds);
+}
+
+bool IsValidTimebase(base::TimeTicks now, base::TimeTicks timestamp) {
+  int64_t delta = (now - timestamp).InMilliseconds();
+  return delta >= 0 && delta <= 60 * 1000;
 }
 
 void ValidateEventTimeClock(base::TimeTicks* timestamp) {

@@ -43,6 +43,13 @@ EVENTS_BASE_EXPORT double EventTimeStampToSeconds(base::TimeTicks time_stamp);
 EVENTS_BASE_EXPORT base::TimeTicks EventTimeStampFromSeconds(
     double time_stamp_seconds);
 
+// Returns false if an event timestamp is clearly bogus given that the event
+// was generated a short time before |now|. Some fraction of devices, across
+// all platforms provide bogus event timestamps. See
+// https://crbug.com/650338#c1.
+EVENTS_BASE_EXPORT bool IsValidTimebase(base::TimeTicks now,
+                                        base::TimeTicks timestamp);
+
 // Ensures that the event timestamp values are coming from the same underlying
 // monotonic clock as base::TimeTicks::Now() and if it is not then falls
 // back to using the current ticks for event timestamp.

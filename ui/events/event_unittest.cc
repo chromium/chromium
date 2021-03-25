@@ -7,10 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
+#include <string>
 
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -654,6 +658,12 @@ TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
   MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN.HIGH_RES.MOUSE_WHEEL",
+                                    0);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN.LOW_RES.MOUSE_WHEEL",
+                                    0);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN_IS_VALID.MOUSE_WHEEL",
+                                    0);
 #endif
 }
 
@@ -829,6 +839,120 @@ INSTANTIATE_TEST_SUITE_P(
     AltGraphEventTest,
     ::testing::Combine(::testing::Values(WM_CHAR),
                        ::testing::ValuesIn(kAltGraphEventTestCases)));
+
+constexpr struct EventLatencyOSWinTestCase {
+  EventType event_type;
+  UINT win_event;
+  const char* histogram_suffix;
+} kEventLatencyOSWinTestCases[] = {
+    {
+        ET_KEY_PRESSED,
+        WM_KEYDOWN,
+        "KEY_PRESSED",
+    },
+    {
+        ET_MOUSE_PRESSED,
+        WM_LBUTTONDOWN,
+        "MOUSE_PRESSED",
+    },
+};
+
+class EventLatencyOSWinTest
+    : public ::testing::TestWithParam<EventLatencyOSWinTestCase> {
+ public:
+  EventLatencyOSWinTest() { SetEventLatencyTickClockForTesting(&tick_clock_); }
+
+  ~EventLatencyOSWinTest() { SetEventLatencyTickClockForTesting(nullptr); }
+
+ protected:
+  static constexpr char kHighResHistogram[] = "Event.Latency.OS_WIN.HIGH_RES";
+  static constexpr char kLowResHistogram[] = "Event.Latency.OS_WIN.LOW_RES";
+  static constexpr char kIsValidHistogram[] = "Event.Latency.OS_WIN_IS_VALID";
+
+  void UpdateTickClock(DWORD timestamp) {
+    tick_clock_.SetNowTicks(base::TimeTicks() +
+                            base::TimeDelta::FromMilliseconds(timestamp));
+  }
+
+  std::string HighResEventHistogram() const {
+    return base::StrCat({kHighResHistogram, ".", GetParam().histogram_suffix});
+  }
+
+  std::string LowResEventHistogram() const {
+    return base::StrCat({kLowResHistogram, ".", GetParam().histogram_suffix});
+  }
+
+  std::string IsValidEventHistogram() const {
+    return base::StrCat({kIsValidHistogram, ".", GetParam().histogram_suffix});
+  }
+
+  void ExpectValidHistograms(const base::HistogramTester& histogram_tester,
+                             base::TimeDelta delta) {
+    // Expect both general and per-event histograms to be set.
+    histogram_tester.ExpectUniqueSample(kIsValidHistogram, true, 1);
+    histogram_tester.ExpectUniqueSample(IsValidEventHistogram(), true, 1);
+    if (base::TimeTicks::IsHighResolution()) {
+      histogram_tester.ExpectUniqueTimeSample(kHighResHistogram, delta, 1);
+      histogram_tester.ExpectUniqueTimeSample(HighResEventHistogram(), delta,
+                                              1);
+      histogram_tester.ExpectTotalCount(kLowResHistogram, 0);
+      histogram_tester.ExpectTotalCount(LowResEventHistogram(), 0);
+    } else {
+      histogram_tester.ExpectUniqueTimeSample(kLowResHistogram, delta, 1);
+      histogram_tester.ExpectUniqueTimeSample(LowResEventHistogram(), delta, 1);
+      histogram_tester.ExpectTotalCount(kHighResHistogram, 0);
+      histogram_tester.ExpectTotalCount(HighResEventHistogram(), 0);
+    }
+  }
+
+  base::SimpleTestTickClock tick_clock_;
+};
+
+TEST_P(EventLatencyOSWinTest, ComputeEventLatencyOS) {
+  // Create an event whose timestamp is very close to the max range of
+  // ::GetTickCount.
+  constexpr DWORD timestamp_msec = std::numeric_limits<DWORD>::max() - 10;
+  const MSG event = {nullptr, GetParam().win_event, 0, 0, timestamp_msec};
+
+  // Measure the latency of an event that's processed not long after the OS
+  // timestamp.
+  UpdateTickClock(timestamp_msec + 5);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOS(event);
+    ExpectValidHistograms(histogram_tester,
+                          base::TimeDelta::FromMilliseconds(5));
+  }
+
+  // Simulate ::GetTickCount advancing 15 msec, which wraps around past 0.
+  constexpr DWORD wrapped_timestamp_msec = timestamp_msec + 15;
+  static_assert(wrapped_timestamp_msec == 4,
+                "timestamp should have wrapped around");
+  UpdateTickClock(wrapped_timestamp_msec);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOS(event);
+    ExpectValidHistograms(histogram_tester,
+                          base::TimeDelta::FromMilliseconds(15));
+  }
+
+  // Simulate an event with a bogus timestamp.
+  UpdateTickClock(timestamp_msec - 1000);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOS(event);
+    histogram_tester.ExpectUniqueSample(kIsValidHistogram, false, 1);
+    histogram_tester.ExpectUniqueSample(IsValidEventHistogram(), false, 1);
+    histogram_tester.ExpectTotalCount(kHighResHistogram, 0);
+    histogram_tester.ExpectTotalCount(HighResEventHistogram(), 0);
+    histogram_tester.ExpectTotalCount(kLowResHistogram, 0);
+    histogram_tester.ExpectTotalCount(LowResEventHistogram(), 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EventLatencyOSWinTest,
+                         ::testing::ValuesIn(kEventLatencyOSWinTestCases));
 
 #endif  // defined(OS_WIN)
 
