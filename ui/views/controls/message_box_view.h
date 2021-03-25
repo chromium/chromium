@@ -71,9 +71,6 @@ class VIEWS_EXPORT MessageBoxView : public View {
   // Sets the text and the callback of the link. |text| must be non-empty.
   void SetLink(const base::string16& text, Link::ClickedCallback callback);
 
-  // View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void SetInterRowVerticalSpacing(int spacing);
   void SetMessageWidth(int width);
 

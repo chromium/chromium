@@ -183,10 +183,6 @@ void MessageBoxView::SetLink(const base::string16& text,
   ResetLayoutManager();
 }
 
-void MessageBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlertDialog;
-}
-
 void MessageBoxView::SetInterRowVerticalSpacing(int spacing) {
   if (inter_row_vertical_spacing_ == spacing)
     return;
@@ -220,8 +216,6 @@ void MessageBoxView::ViewHierarchyChanged(
   if (details.child == this && details.is_add) {
     if (prompt_field_ && prompt_field_->GetVisible())
       prompt_field_->SelectAll(true);
-
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
   }
 }
 
