@@ -99,6 +99,10 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mContainerMediator.removeHeightObserver(observer);
     }
 
+    public void updateTabObscured(boolean isObscured) {
+        mContainerMediator.updateTabObscured(isObscured);
+    }
+
     private void registerResource() {
         if (mResourceRegistered) return;
 

@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewWrapper;
@@ -107,6 +108,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ActivityTabTabObserver mTabObserver;
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
     private Callback<Integer> mContinuousSearchObserver;
+    private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
 
     private int mStatusIndicatorHeight;
     private int mContinuousSearchHeight;
@@ -202,10 +204,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mContinuousSearchContainerCoordinator != null) {
+            getTabObscuringHandler().removeObserver(mContinuousSearchTabObscuringHandlerObserver);
             mContinuousSearchContainerCoordinator.removeHeightObserver(mContinuousSearchObserver);
             mContinuousSearchContainerCoordinator.destroy();
             mContinuousSearchContainerCoordinator = null;
             mContinuousSearchObserver = null;
+            mContinuousSearchTabObscuringHandlerObserver = null;
         }
         super.destroy();
     }
@@ -507,6 +511,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             updateTopControlsHeight();
         };
         mContinuousSearchContainerCoordinator.addHeightObserver(mContinuousSearchObserver);
+        mContinuousSearchTabObscuringHandlerObserver =
+                isObscured -> mContinuousSearchContainerCoordinator.updateTabObscured(isObscured);
+        getTabObscuringHandler().addObserver(mContinuousSearchTabObscuringHandlerObserver);
     }
 
     @Override

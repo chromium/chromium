@@ -30,6 +30,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
     private boolean mInitialized;
     private boolean mIsVisible;
+    private boolean mIsTabObscured;
     private int mJavaLayoutHeight;
 
     ContinuousSearchContainerMediator(BrowserControlsStateProvider browserControlsStateProvider,
@@ -44,6 +45,16 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     void onLayoutInitialized(PropertyModel model, Runnable requestLayout) {
         mModel = model;
         mRequestLayout = requestLayout;
+    }
+
+    /**
+     * Called when the obscurity state of the current Tab changes.
+     * @param isObscured Whether the tab is obscured.
+     */
+    void updateTabObscured(boolean isObscured) {
+        mIsTabObscured = isObscured;
+        mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
+                !mIsTabObscured && mIsVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     /**
@@ -118,18 +129,22 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
         // Only show the composited view when the UI is partly visible (mid transition) and native
         // can run animations.
         mModel.set(ContinuousSearchContainerProperties.COMPOSITED_VIEW_VISIBLE,
-                !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get());
+                !mIsTabObscured
+                        && (!uiFullyVisible && isUiVisible
+                                && mCanAnimateNativeBrowserControls.get()));
 
         // If we're running the animations in native, the Android view should only be visible when
         // the container is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries.
         mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
-                !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
-                        ? View.GONE
-                        : ((isUiVisible && !mCanAnimateNativeBrowserControls.get())
-                                                || uiFullyVisible
-                                        ? View.VISIBLE
-                                        : View.GONE));
+                mIsTabObscured
+                        ? View.INVISIBLE
+                        : !uiFullyVisible && isUiVisible && mCanAnimateNativeBrowserControls.get()
+                                ? View.GONE
+                                : ((isUiVisible && !mCanAnimateNativeBrowserControls.get())
+                                                        || uiFullyVisible
+                                                ? View.VISIBLE
+                                                : View.GONE));
 
         final boolean doneHiding = !isUiVisible && !mIsVisible;
         if (doneHiding) {
