@@ -8983,8 +8983,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
     auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
     frame.metadata.transition_directives.emplace_back(
         1, CompositorFrameTransitionDirective::Type::kSave,
-        CompositorFrameTransitionDirective::Effect::kCoverLeft,
-        base::TimeDelta::FromMilliseconds(500));
+        CompositorFrameTransitionDirective::Effect::kCoverLeft);
 
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     auto* surface = support->GetLastCreatedSurfaceForTesting();

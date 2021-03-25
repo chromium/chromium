@@ -135,19 +135,14 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
 
   viz::CompositorFrameTransitionDirective::Type type;
   viz::CompositorFrameTransitionDirective::Effect effect;
-  base::TimeDelta duration;
   std::vector<viz::CompositorRenderPassId> shared_render_pass_ids;
   if (!data.ReadType(&type) || !data.ReadEffect(&effect) ||
-      !data.ReadDuration(&duration) ||
       !data.ReadSharedRenderPassIds(&shared_render_pass_ids)) {
     return false;
   }
 
-  if (duration > viz::CompositorFrameTransitionDirective::kMaxDuration)
-    return false;
-
   *out = viz::CompositorFrameTransitionDirective(
-      sequence_id, type, effect, duration, std::move(shared_render_pass_ids));
+      sequence_id, type, effect, std::move(shared_render_pass_ids));
   return true;
 }
 

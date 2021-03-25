@@ -38,11 +38,6 @@ struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
 template <>
 struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
                     viz::CompositorFrameTransitionDirective> {
-  static base::TimeDelta duration(
-      const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.duration();
-  }
-
   static uint32_t sequence_id(
       const viz::CompositorFrameTransitionDirective& directive) {
     return directive.sequence_id();

@@ -19,9 +19,6 @@
 namespace blink {
 namespace {
 
-constexpr base::TimeDelta kDefaultDuration =
-    base::TimeDelta::FromMilliseconds(300);
-
 DocumentTransition::Request::Effect ParseEffect(const String& input) {
   using MapType = HashMap<String, DocumentTransition::Request::Effect>;
   DEFINE_STATIC_LOCAL(
@@ -42,12 +39,6 @@ DocumentTransition::Request::Effect ParseEffect(const String& input) {
   auto it = lookup_map->find(input);
   return it != lookup_map->end() ? it->value
                                  : DocumentTransition::Request::Effect::kNone;
-}
-
-base::TimeDelta ParseDuration(const DocumentTransitionPrepareOptions* options) {
-  return options->hasDuration()
-             ? base::TimeDelta::FromMilliseconds(options->duration())
-             : kDefaultDuration;
 }
 
 DocumentTransition::Request::Effect ParseRootTransition(
@@ -133,7 +124,6 @@ ScriptPromise DocumentTransition::prepare(
   }
 
   // We're going to be creating a new transition, parse the options.
-  auto duration = ParseDuration(options);
   auto effect = ParseRootTransition(options);
   if (options->hasSharedElements())
     SetActiveSharedElements(options->sharedElements());
@@ -144,7 +134,7 @@ ScriptPromise DocumentTransition::prepare(
 
   state_ = State::kPreparing;
   pending_request_ = Request::CreatePrepare(
-      effect, duration, document_tag_, prepare_shared_element_count_,
+      effect, document_tag_, prepare_shared_element_count_,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));

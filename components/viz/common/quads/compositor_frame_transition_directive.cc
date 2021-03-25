@@ -10,8 +10,6 @@
 
 namespace viz {
 
-constexpr base::TimeDelta CompositorFrameTransitionDirective::kMaxDuration;
-
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
     default;
 
@@ -19,15 +17,11 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
     Effect effect,
-    base::TimeDelta duration,
     std::vector<CompositorRenderPassId> shared_render_pass_ids)
     : sequence_id_(sequence_id),
       type_(type),
       effect_(effect),
-      duration_(duration),
-      shared_render_pass_ids_(std::move(shared_render_pass_ids)) {
-  DCHECK_LE(duration_, kMaxDuration);
-}
+      shared_render_pass_ids_(std::move(shared_render_pass_ids)) {}
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     const CompositorFrameTransitionDirective&) = default;

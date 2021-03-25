@@ -208,35 +208,6 @@ TEST_P(DocumentTransitionTest, EffectParsing) {
   EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kExplode);
 }
 
-TEST_P(DocumentTransitionTest, DurationParsing) {
-  // Test default init.
-  auto* transition =
-      DocumentTransitionSupplement::documentTransition(GetDocument());
-
-  V8TestingScope v8_scope;
-  ScriptState* script_state = v8_scope.GetScriptState();
-  ExceptionState& exception_state = v8_scope.GetExceptionState();
-  DocumentTransitionPrepareOptions default_options;
-  transition->prepare(script_state, &default_options, exception_state);
-
-  auto request = transition->TakePendingRequest();
-  ASSERT_TRUE(request);
-
-  auto directive = request->ConstructDirective({});
-  EXPECT_EQ(directive.duration(), base::TimeDelta::FromMilliseconds(300));
-
-  // Test set duration parsing.
-  DocumentTransitionPrepareOptions explode_options;
-  explode_options.setDuration(123);
-  transition->prepare(script_state, &explode_options, exception_state);
-
-  request = transition->TakePendingRequest();
-  ASSERT_TRUE(request);
-
-  directive = request->ConstructDirective({});
-  EXPECT_EQ(directive.duration(), base::TimeDelta::FromMilliseconds(123));
-}
-
 TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <style>

@@ -19,6 +19,5 @@ enum RootTransitionType {
 
 dictionary DocumentTransitionPrepareOptions {
   RootTransitionType rootTransition;
-  DOMTimeStamp duration;
   sequence<Element?> sharedElements;
 };

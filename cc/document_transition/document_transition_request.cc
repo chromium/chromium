@@ -67,13 +67,11 @@ uint32_t DocumentTransitionRequest::s_next_sequence_id_ = 1;
 // static
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreatePrepare(Effect effect,
-                                         base::TimeDelta duration,
                                          uint32_t document_tag,
                                          uint32_t shared_element_count,
                                          base::OnceClosure commit_callback) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      effect, duration, document_tag, shared_element_count,
-      std::move(commit_callback)));
+      effect, document_tag, shared_element_count, std::move(commit_callback)));
 }
 
 // static
@@ -87,13 +85,11 @@ DocumentTransitionRequest::CreateStart(uint32_t document_tag,
 
 DocumentTransitionRequest::DocumentTransitionRequest(
     Effect effect,
-    base::TimeDelta duration,
     uint32_t document_tag,
     uint32_t shared_element_count,
     base::OnceClosure commit_callback)
     : type_(Type::kSave),
       effect_(effect),
-      duration_(duration),
       document_tag_(document_tag),
       shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
@@ -116,13 +112,6 @@ DocumentTransitionRequest::ConstructDirective(
     const std::map<DocumentTransitionSharedElementId,
                    viz::CompositorRenderPassId>&
         shared_element_render_pass_id_map) const {
-  // Note that the clamped_duration is also verified at
-  // CompositorFrameTransitionDirective deserialization time.
-  auto clamped_duration =
-      duration_ < viz::CompositorFrameTransitionDirective::kMaxDuration
-          ? duration_
-          : viz::CompositorFrameTransitionDirective::kMaxDuration;
-
   std::vector<viz::CompositorRenderPassId> shared_passes(shared_element_count_);
   for (uint32_t i = 0; i < shared_passes.size(); ++i) {
     auto it = shared_element_render_pass_id_map.find(
@@ -131,15 +120,14 @@ DocumentTransitionRequest::ConstructDirective(
       continue;
     shared_passes[i] = it->second;
   }
-  return viz::CompositorFrameTransitionDirective(
-      sequence_id_, type_, effect_, clamped_duration, std::move(shared_passes));
+  return viz::CompositorFrameTransitionDirective(sequence_id_, type_, effect_,
+                                                 std::move(shared_passes));
 }
 
 std::string DocumentTransitionRequest::ToString() const {
   std::ostringstream str;
   str << "[type: " << TypeToString(type_)
       << " effect: " << EffectToString(effect_)
-      << " duration: " << duration_.InMillisecondsF() << "ms"
       << " sequence_id: " << sequence_id_ << "]";
   return str.str();
 }

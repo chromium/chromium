@@ -26,20 +26,16 @@ CompositorRenderPassId NextRenderPassId(const CompositorRenderPassId& id) {
   return CompositorRenderPassId(id.GetUnsafeValue() + 1);
 }
 
-constexpr base::TimeDelta kMinimumAnimationDuration =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kDefaultAnimationDuration =
+    base::TimeDelta::FromMilliseconds(300);
 
-// TODO(vmpstr): if we decide upon hard-coded animation durations per
-// (https://github.com/vmpstr/shared-element-transitions/issues/9), 500ms for
-// transform transitions and 400ms for opacity transitions (staggered) produces
-// appealing results. For the time being, we will scale the overall duration to
-// produce the opacity duration. Opacity transitions which reveal an element
-// (i.e., transition opacity from 0 -> 1) should finish ahead of a translation.
-// This way, you'll see the next page fade into view and settle
-// while fully opaque. Similarly, transitions which hide an element (i.e.,
-// transition opacity from 1 -> 0) should, for a brief period, animate with
-// full opacity so the user can get a sense of the
-// motion before the element disappears.
+// Scale the overall duration to produce the opacity duration. Opacity
+// transitions which reveal an element (i.e., transition opacity from 0 -> 1)
+// should finish ahead of a translation. This way, you'll see the next page fade
+// into view and settle while fully opaque. Similarly, transitions which hide an
+// element (i.e., transition opacity from 1 -> 0) should, for a brief period,
+// animate with full opacity so the user can get a sense of the motion before
+// the element disappears.
 constexpr float kOpacityTransitionDurationScaleFactor = 0.8f;
 
 // When performing slides, the amount moved is proportional to the minimum
@@ -472,8 +468,7 @@ void SurfaceAnimationManager::UpdateAnimationCurves(
               : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
   // Create the transform curve.
-  base::TimeDelta transform_duration =
-      std::max(save_directive_->duration(), kMinimumAnimationDuration);
+  base::TimeDelta transform_duration = kDefaultAnimationDuration;
 
   std::unique_ptr<gfx::KeyframedTransformAnimationCurve> transform_curve(
       gfx::KeyframedTransformAnimationCurve::Create());

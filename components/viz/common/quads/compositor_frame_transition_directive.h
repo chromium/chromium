@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -44,20 +43,15 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     kRevealUp
   };
 
-  // This is the maximum allowable transition duration.
-  static constexpr base::TimeDelta kMaxDuration =
-      base::TimeDelta::FromMilliseconds(500);
-
   CompositorFrameTransitionDirective();
 
-  // Constructs a new directive. Note that if type is `kSave`, the effect and
-  // duration should be specified for a desired effect. These are ignored for
-  // the `kAnimate` type.
+  // Constructs a new directive. Note that if type is `kSave`, the effect should
+  // be specified for a desired effect. These are ignored for the `kAnimate`
+  // type.
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
       Effect effect = Effect::kNone,
-      base::TimeDelta duration = {},
       std::vector<CompositorRenderPassId> shared_render_pass_ids = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
@@ -74,9 +68,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The type of this directive.
   Type type() const { return type_; }
 
-  // The duration of the animation. Note that this is at most kMaxDuration.
-  base::TimeDelta duration() const { return duration_; }
-
   // The effect for the transition.
   Effect effect() const { return effect_; }
 
@@ -91,8 +82,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   Type type_ = Type::kSave;
 
   Effect effect_ = Effect::kNone;
-
-  base::TimeDelta duration_;
 
   std::vector<CompositorRenderPassId> shared_render_pass_ids_;
 };

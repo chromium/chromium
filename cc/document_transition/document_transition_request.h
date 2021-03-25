@@ -28,7 +28,6 @@ class CC_EXPORT DocumentTransitionRequest {
   // Creates a Type::kPrepare type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreatePrepare(
       Effect effect,
-      base::TimeDelta duration,
       uint32_t document_tag,
       uint32_t shared_element_count,
       base::OnceClosure commit_callback);
@@ -70,7 +69,6 @@ class CC_EXPORT DocumentTransitionRequest {
   using Type = viz::CompositorFrameTransitionDirective::Type;
 
   DocumentTransitionRequest(Effect effect,
-                            base::TimeDelta duration,
                             uint32_t document_tag,
                             uint32_t shared_element_count,
                             base::OnceClosure commit_callback);
@@ -80,7 +78,6 @@ class CC_EXPORT DocumentTransitionRequest {
 
   const Type type_;
   const Effect effect_ = Effect::kNone;
-  const base::TimeDelta duration_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
   base::OnceClosure commit_callback_;

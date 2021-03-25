@@ -9464,7 +9464,6 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
     layer_tree_host()->AddDocumentTransitionRequest(
         DocumentTransitionRequest::CreatePrepare(
             DocumentTransitionRequest::Effect::kExplode,
-            base::TimeDelta::FromMilliseconds(123),
             /*document_tag=*/0, /*shared_element_count=*/0,
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
     layer_tree_host()->AddDocumentTransitionRequest(
@@ -9485,7 +9484,6 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
               viz::CompositorFrameTransitionDirective::Type::kSave);
     EXPECT_EQ(save.effect(),
               viz::CompositorFrameTransitionDirective::Effect::kExplode);
-    EXPECT_EQ(save.duration(), base::TimeDelta::FromMilliseconds(123));
 
     const auto& animate = frame.metadata.transition_directives[1];
     EXPECT_GT(animate.sequence_id(), save.sequence_id());

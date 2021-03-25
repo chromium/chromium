@@ -51,7 +51,7 @@ bool AreDelegatedInkMetadataEqual(const gfx::DelegatedInkMetadata& a,
 bool AreTransitionDirectivesEqual(const CompositorFrameTransitionDirective& a,
                                   const CompositorFrameTransitionDirective& b) {
   return a.sequence_id() == b.sequence_id() && a.type() == b.type() &&
-         a.effect() == b.effect() && a.duration() == b.duration();
+         a.effect() == b.effect();
 }
 
 TEST(CompositorFrameMetadata, Clone) {
@@ -90,8 +90,7 @@ TEST(CompositorFrameMetadata, Clone) {
       gfx::RectF(1, 2, 3, 4), true);
   metadata.transition_directives.emplace_back(
       4u, CompositorFrameTransitionDirective::Type::kSave,
-      CompositorFrameTransitionDirective::Effect::kCoverUp,
-      base::TimeDelta::FromMilliseconds(321));
+      CompositorFrameTransitionDirective::Effect::kCoverUp);
 
   CompositorFrameMetadata clone = metadata.Clone();
   EXPECT_FLOAT_EQ(clone.device_scale_factor, metadata.device_scale_factor);

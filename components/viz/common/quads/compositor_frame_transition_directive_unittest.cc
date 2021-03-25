@@ -13,14 +13,12 @@ using Effect = CompositorFrameTransitionDirective::Effect;
 using Type = CompositorFrameTransitionDirective::Type;
 
 TEST(CompositorFrameTransitionDirective, GettersReflectParameters) {
-  CompositorFrameTransitionDirective save_directive(
-      1u, Type::kSave, Effect::kCoverLeft,
-      base::TimeDelta::FromMilliseconds(100));
+  CompositorFrameTransitionDirective save_directive(1u, Type::kSave,
+                                                    Effect::kCoverLeft);
 
   EXPECT_EQ(1u, save_directive.sequence_id());
   EXPECT_EQ(Type::kSave, save_directive.type());
   EXPECT_EQ(Effect::kCoverLeft, save_directive.effect());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100), save_directive.duration());
 
   CompositorFrameTransitionDirective animate_directive(2, Type::kAnimate);
 
