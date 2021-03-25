@@ -44,6 +44,11 @@ class FakeSecurityDomainsServer {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& http_request);
 
+  // Rotates trusted vault key by adding new shared key for all members. Returns
+  // new trusted vault key.
+  std::vector<uint8_t> RotateTrustedVaultKey(
+      const std::vector<uint8_t>& last_trusted_vault_key);
+
   int GetMemberCount() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
 
@@ -56,12 +61,21 @@ class FakeSecurityDomainsServer {
   HandleJoinSecurityDomainsRequest(
       const net::test_server::HttpRequest& http_request);
 
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleGetSecurityDomainMemberRequest(
+      const net::test_server::HttpRequest& http_request);
+
   bool received_invalid_request_ = false;
   const GURL server_url_;
 
   // Maps members public key to shared keys that belong to this member.
   std::map<std::string, std::vector<sync_pb::SharedMemberKey>>
       public_key_to_shared_keys_;
+
+  // Maps members public key to rotation proofs of members shared keys.
+  std::map<std::string, std::vector<sync_pb::RotationProof>>
+      public_key_to_rotation_proofs_;
+
   // Zero epoch is used when there are no members in the security domain, once
   // first member is joined it is initialized to non-zero value. Members still
   // can join with constant key without populating epoch while

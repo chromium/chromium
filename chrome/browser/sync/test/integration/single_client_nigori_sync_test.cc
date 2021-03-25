@@ -1139,4 +1139,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
   EXPECT_FALSE(GetSecurityDomainsServer()->received_invalid_request());
 }
 
+// If device was successfully registered with constant key, it should silently
+// follow key rotation and transit to trusted vault passphrase without going
+// through key retrieval flow.
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
+                       ShouldFollowInitialKeyRotation) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  // Rotate trusted vault key and mimic transition to trusted vault passphrase
+  // type.
+  std::vector<uint8_t> new_trusted_vault_key =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{new_trusted_vault_key}),
+                        GetFakeServer());
+
+  // Inject password encrypted with trusted vault key and verify client is able
+  // to decrypt it.
+  const KeyParamsForTesting trusted_vault_key_params =
+      Pbkdf2KeyParamsForTesting(new_trusted_vault_key);
+  const password_manager::PasswordForm password_form =
+      passwords_helper::CreateTestPasswordForm(0);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form, trusted_vault_key_params.password,
+      trusted_vault_key_params.derivation_params, GetFakeServer());
+  EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
+}
+
 }  // namespace
