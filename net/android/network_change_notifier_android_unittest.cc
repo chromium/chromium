@@ -188,17 +188,21 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
               connection_type_getter.Run());
   }
 
-  void SetOnline() {
+  void SetOnline(bool drain_run_loop = true) {
     delegate_.SetOnline();
-    // Note that this is needed because base::ObserverListThreadSafe uses
-    // PostTask().
-    base::RunLoop().RunUntilIdle();
+    if (drain_run_loop) {
+      // Note that this is needed because base::ObserverListThreadSafe uses
+      // PostTask().
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
-  void SetOffline() {
+  void SetOffline(bool drain_run_loop = true) {
     delegate_.SetOffline();
-    // See comment above.
-    base::RunLoop().RunUntilIdle();
+    if (drain_run_loop) {
+      // See comment above.
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void FakeConnectionSubtypeChange(ConnectionSubtype subtype) {
@@ -489,6 +493,17 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
             NetworkChangeNotifier::GetDefaultNetwork());
 
   NetworkChangeNotifier::RemoveNetworkObserver(&network_observer);
+}
+
+// Tests that network type changes happen synchronously. Otherwise the type
+// "change" at browser startup leaves tasks on the queue that will later
+// invalidate any network requests that have been started.
+TEST_F(NetworkChangeNotifierDelegateAndroidTest, TypeChangeIsSynchronous) {
+  const int initial_value = delegate_observer_.type_notifications_count();
+  SetOffline(/*drain_run_loop=*/false);
+  // Note that there's no call to |base::RunLoop::RunUntilIdle| here. The
+  // update must happen synchronously.
+  EXPECT_EQ(initial_value + 1, delegate_observer_.type_notifications_count());
 }
 
 }  // namespace net
