@@ -572,9 +572,12 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
   // holds all the text.
   // TODO(nektar): This is fragile! Replace with code that flattens tree.
   if (IsPlainTextField() && InternalChildCount() == 1) {
-    return GetTextContainerForPlainTextField(*this)
-        ->GetRootFrameHypertextRangeBoundsRect(start, len, clipping_behavior,
-                                               offscreen_result);
+    const BrowserAccessibility* text_field_inner_container =
+        GetTextContainerForPlainTextField(*this);
+    if (text_field_inner_container && text_field_inner_container != this) {
+      return text_field_inner_container->GetRootFrameHypertextRangeBoundsRect(
+          start, len, clipping_behavior, offscreen_result);
+    }
   }
 
   if (GetRole() != ax::mojom::Role::kStaticText) {
