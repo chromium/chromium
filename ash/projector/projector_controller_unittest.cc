@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/projector/test/mock_projector_metadata_controller.h"
 #include "ash/projector/test/mock_projector_ui_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -16,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/services/machine_learning/public/mojom/soda.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,9 +58,7 @@ void NotifyControllerForPartialSpeechResult(
 
 class ProjectorControllerTest : public AshTestBase {
  public:
-  ProjectorControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kProjector);
-  }
+  ProjectorControllerTest() = default;
 
   ProjectorControllerTest(const ProjectorControllerTest&) = delete;
   ProjectorControllerTest& operator=(const ProjectorControllerTest&) = delete;
@@ -71,11 +67,10 @@ class ProjectorControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ =
-        static_cast<ProjectorControllerImpl*>(ProjectorController::Get());
+    controller_ = std::make_unique<ProjectorControllerImpl>();
 
     auto mock_ui_controller =
-        std::make_unique<MockProjectorUiController>(controller_);
+        std::make_unique<MockProjectorUiController>(controller_.get());
     mock_ui_controller_ = mock_ui_controller.get();
     controller_->SetProjectorUiControllerForTest(std::move(mock_ui_controller));
 
@@ -89,10 +84,7 @@ class ProjectorControllerTest : public AshTestBase {
  protected:
   MockProjectorUiController* mock_ui_controller_ = nullptr;
   MockProjectorMetadataController* mock_metadata_controller_ = nullptr;
-  ProjectorControllerImpl* controller_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ProjectorControllerImpl> controller_;
 };
 
 TEST_F(ProjectorControllerTest, ShowToolbar) {
@@ -123,7 +115,7 @@ TEST_F(ProjectorControllerTest, OnTranscription) {
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since capton is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
-  NotifyControllerForFinalSpeechResult(controller_);
+  NotifyControllerForFinalSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
@@ -134,7 +126,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
   // Verify that |OnTranscription| in |ProjectorUiController| is not called
   // since caption is off.
   EXPECT_CALL(*mock_ui_controller_, OnTranscription(_, _)).Times(0);
-  NotifyControllerForPartialSpeechResult(controller_);
+  NotifyControllerForPartialSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
@@ -154,7 +146,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOn) {
   EXPECT_CALL(*mock_ui_controller_, OnTranscription("transcript text 1", true))
       .Times(1);
   controller_->SetCaptionState(true);
-  NotifyControllerForFinalSpeechResult(controller_);
+  NotifyControllerForFinalSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
@@ -168,7 +160,7 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
               OnTranscription("transcript partial text 1", false))
       .Times(1);
   controller_->SetCaptionState(true);
-  NotifyControllerForPartialSpeechResult(controller_);
+  NotifyControllerForPartialSpeechResult(controller_.get());
 }
 
 TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailable) {
