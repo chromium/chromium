@@ -284,7 +284,13 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // like regular filters do, so they can still be composited.
           break;
         case CSSPropertyID::kBackgroundColor:
-          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
+          // The table rows and table cols are painted into table cells, which
+          // means their background is never painted using
+          // BackgroundColorPaintWorklet, as a result, we should not composite
+          // the background color animation on the table rows or cols.
+          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
+              layout_object->IsLayoutTableCol() ||
+              layout_object->IsTableRow()) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }
