@@ -219,6 +219,9 @@ extern const char kCheckOfflineCapabilityDescription[];
 extern const char kChromeLabsName[];
 extern const char kChromeLabsDescription[];
 
+extern const char kCompositeAfterPaintName[];
+extern const char kCompositeAfterPaintDescription[];
+
 extern const char kComputePressureAPIName[];
 extern const char kComputePressureAPIDescription[];
 

@@ -624,6 +624,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "composite-after-paint",
+    "owners": [ "pdr", "wangxianzhu" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "composited-layer-borders",
     "owners": [ "ccameron" ],
     "expiry_milestone": 76

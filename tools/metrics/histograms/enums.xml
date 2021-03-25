@@ -43805,6 +43805,7 @@ from previous Chrome versions.
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
   <int value="-1996087238" label="kAutofillEnableOffersInDownstream:enabled"/>
   <int value="-1993730028" label="CrostiniPortForwarding:enabled"/>
+  <int value="-1992999120" label="composite-after-paint"/>
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989134646" label="PhoneHubUseBle:disabled"/>
@@ -45365,6 +45366,7 @@ from previous Chrome versions.
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641820371" label="EnableCustomMacPaperSizes:enabled"/>
   <int value="-641719457" label="disable-compositor-touch-hit-testing"/>
+  <int value="-641423897" label="CompositeAfterPaint:disabled"/>
   <int value="-640191786" label="DesktopPWAsWithoutExtensions:enabled"/>
   <int value="-639070391" label="FreezeUserAgent:disabled"/>
   <int value="-639026783" label="disable-gpu-appcontainer"/>
@@ -46285,6 +46287,7 @@ from previous Chrome versions.
       label="AutofillEnforceMinRequiredFieldsForHeuristics:disabled"/>
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
   <int value="223662457" label="BackgroundLoadingForDownloads:enabled"/>
+  <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>

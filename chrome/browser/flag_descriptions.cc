@@ -359,6 +359,11 @@ const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "
     "experimental features.";
 
+const char kCompositeAfterPaintName[] = "Composite after paint";
+const char kCompositeAfterPaintDescription[] =
+    "A new algorithm to create compositing layers. "
+    "See http://bit.ly/composite-after-paint.";
+
 const char kComputePressureAPIName[] = "Compute Pressure API";
 const char kComputePressureAPIDescription[] =
     "Enables the experimental Compute Pressure API, giving websites access "
