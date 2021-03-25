@@ -3604,7 +3604,7 @@ source_set("unit_tests") {
     "../ash/attestation/tpm_challenge_key_subtle_unittest.cc",
     "../ash/attestation/tpm_challenge_key_unittest.cc",
     "../ash/authpolicy/authpolicy_credentials_manager_unittest.cc",
-    "../ash/authpolicy/authpolicy_helper.unittest.cc",
+    "../ash/authpolicy/authpolicy_helper_unittest.cc",
     "../ash/borealis/borealis_app_launcher_unittest.cc",
     "../ash/borealis/borealis_context_manager_unittest.cc",
     "../ash/borealis/borealis_context_unittest.cc",

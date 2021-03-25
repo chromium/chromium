@@ -10,12 +10,12 @@
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kDMToken[] = "dm_token";
 
-class MockAuthPolicyClient : public FakeAuthPolicyClient {
+class MockAuthPolicyClient : public chromeos::FakeAuthPolicyClient {
  public:
   MockAuthPolicyClient() { SetStarted(true); }
   ~MockAuthPolicyClient() override = default;
@@ -56,10 +56,10 @@ class MockAuthPolicyClient : public FakeAuthPolicyClient {
 
 // Check that helper calls RefreshDevicePolicy after JoinAdDomain.
 TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
-  ScopedStubInstallAttributes scoped_stub_install_attributes;
+  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes;
 
   auto* mock_client = new MockAuthPolicyClient;
-  CryptohomeClient::InitializeFake();
+  chromeos::CryptohomeClient::InitializeFake();
 
   AuthPolicyHelper helper;
   helper.set_dm_token(kDMToken);
@@ -73,8 +73,8 @@ TEST(AuthPolicyHelper, JoinFollowedByRefreshDevicePolicy) {
                       }));
   mock_client->CheckExpectations();
 
-  CryptohomeClient::Shutdown();
-  AuthPolicyClient::Shutdown();
+  chromeos::CryptohomeClient::Shutdown();
+  chromeos::AuthPolicyClient::Shutdown();
 }
 
-}  // namespace chromeos
+}  // namespace ash
