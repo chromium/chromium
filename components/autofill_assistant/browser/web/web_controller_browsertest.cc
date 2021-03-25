@@ -2169,6 +2169,26 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInputWithDelay) {
   GetFieldsValue({selector}, {"abc"});
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, BackspaceKeyEvent) {
+  std::vector<Selector> selectors;
+  Selector a_selector({"#input4"});
+  selectors.emplace_back(a_selector);
+  // The initial value of #input4 is "helloworld4", sending a backspace should
+  // remove the last character.
+  EXPECT_EQ(ACTION_APPLIED,
+            SendKeyboardInput(a_selector, UTF8ToUnicode("\b")).proto_status());
+  Selector b_selector({"#input5"});
+  selectors.emplace_back(b_selector);
+  // The initial value of #input5 is "helloworld5", selecting the value and
+  // sending a backspace should remove the entire text.
+  EXPECT_EQ(ACTION_APPLIED,
+            SetFieldValue(
+                b_selector, "\b",
+                KeyboardValueFillStrategy::SIMULATE_KEY_PRESSES_SELECT_VALUE)
+                .proto_status());
+  GetFieldsValue(selectors, {"helloworld", std::string()});
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        SendKeyboardInputDevtoolsFailure) {
   // This makes devtools action fail and is used as a way of testing that the

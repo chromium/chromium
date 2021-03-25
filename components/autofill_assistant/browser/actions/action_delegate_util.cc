@@ -385,10 +385,6 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
             key_press_delay_in_millisecond));
         break;
       case SIMULATE_KEY_PRESSES_SELECT_VALUE:
-        // TODO(b/149004036): In case of empty, send a backspace (i.e. code 8),
-        // instead of falling back to SetValueAttribute(""). This currently
-        // fails in WebControllerBrowserTest.GetAndSetFieldValue. Fixing this
-        // might fix b/148001624 as well.
         actions->emplace_back(
             base::BindOnce(&WebController::SelectFieldValue,
                            delegate->GetWebController()->GetWeakPtr()));

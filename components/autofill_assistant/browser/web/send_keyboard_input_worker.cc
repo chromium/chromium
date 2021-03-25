@@ -13,8 +13,16 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace autofill_assistant {
-
 namespace {
+
+base::Optional<std::vector<std::string>> GetCommandForDomKey(
+    ui::DomKey dom_key) {
+  if (dom_key == ui::DomKey::BACKSPACE) {
+    return std::vector<std::string>({"DeleteBackward"});
+  }
+  return base::nullopt;
+}
+
 std::unique_ptr<input::DispatchKeyEventParams> CreateKeyEventParamsForCharacter(
     input::DispatchKeyEventType type,
     base::Optional<base::Time> timestamp,
@@ -39,6 +47,11 @@ std::unique_ptr<input::DispatchKeyEventParams> CreateKeyEventParamsForCharacter(
   auto dom_key = ui::DomKey::FromCharacter(codepoint);
   if (dom_key.IsValid()) {
     params->SetKey(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
+    auto commands = GetCommandForDomKey(dom_key);
+    if (commands.has_value()) {
+      params->SetCommands(*commands);
+    }
+
   } else {
 #ifdef NDEBUG
     VLOG(1) << __func__ << ": Failed to set DomKey for codepoint";
