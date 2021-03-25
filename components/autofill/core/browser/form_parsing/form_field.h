@@ -64,6 +64,7 @@ class FormField {
   static const float kBaseCreditCardParserScore;
   static const float kBasePriceParserScore;
   static const float kBaseNameParserScore;
+  static const float kBaseMerchantPromoCodeParserScore;
   static const float kBaseSearchParserScore;
 
   // Only derived classes may instantiate.

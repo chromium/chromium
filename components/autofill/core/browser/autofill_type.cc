@@ -103,6 +103,11 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
 
+    case MERCHANT_PROMO_CODE:
+      // TODO(crbug/1190334): Create new field type group kMerchantPromoCode.
+      //                      (This involves updating many switch statements.)
+      return FieldTypeGroup::kNoGroup;
+
     case PASSWORD:
     case ACCOUNT_CREATION_PASSWORD:
     case NOT_ACCOUNT_CREATION_PASSWORD:
@@ -125,7 +130,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PHONE_FAX_WHOLE_NUMBER:
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
-    case MERCHANT_PROMO_CODE:
     case UPI_VPA:
       return FieldTypeGroup::kNoGroup;
 

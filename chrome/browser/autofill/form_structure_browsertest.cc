@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -185,7 +186,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1150895) Remove once launched.
        features::kAutofillParsingPatternsLanguageDetection,
        // TODO(crbug/1165780): Remove once shared labels are launched.
-       features::kAutofillEnableSupportForParsingWithSharedLabels},
+       features::kAutofillEnableSupportForParsingWithSharedLabels,
+       // TODO(crbug/1190334): Remove once launched.
+       features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
       {});
 }

@@ -596,4 +596,10 @@ const char kUrlSearchActionRe[] = "/search(/|((\\w*\\.\\w+)?$))";
 const char kSocialSecurityRe[] = "ssn|social.?security.?(num(ber)?|#)*";
 const char kOneTimePwdRe[] = "one.?time|sms.?(code|token|password|pwd|pass)";
 
+/////////////////////////////////////////////////////////////////////////////
+// merchant_promo_code_field.cc
+/////////////////////////////////////////////////////////////////////////////
+const char kMerchantPromoCodeRe[] =
+    "\\bpromo code\\b|\\bcoupon code\\b|\\bgift code\\b";
+
 }  // namespace autofill

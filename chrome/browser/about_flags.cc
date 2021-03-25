@@ -7189,6 +7189,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"composite-after-paint", flag_descriptions::kCompositeAfterPaintName,
      flag_descriptions::kCompositeAfterPaintDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCompositeAfterPaint)},
+    {"autofill-parse-merchant-promo-code-fields",
+     flag_descriptions::kAutofillParseMerchantPromoCodeFieldsName,
+     flag_descriptions::kAutofillParseMerchantPromoCodeFieldsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillParseMerchantPromoCodeFields)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

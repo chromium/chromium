@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/form_parsing/email_field.h"
+#include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
@@ -40,7 +41,7 @@ namespace autofill {
 
 // There's an implicit precedence determined by the values assigned here. Email
 // is currently the most important followed by Phone, Travel, Address,
-// Credit Card, Name, and Search.
+// Credit Card, Price, Name, Merchant promo code, and Search.
 const float FormField::kBaseEmailParserScore = 1.4f;
 const float FormField::kBasePhoneParserScore = 1.3f;
 const float FormField::kBaseTravelParserScore = 1.2f;
@@ -48,6 +49,7 @@ const float FormField::kBaseAddressParserScore = 1.1f;
 const float FormField::kBaseCreditCardParserScore = 1.0f;
 const float FormField::kBasePriceParserScore = 0.95f;
 const float FormField::kBaseNameParserScore = 0.9f;
+const float FormField::kBaseMerchantPromoCodeParserScore = 0.85f;
 const float FormField::kBaseSearchParserScore = 0.8f;
 
 // static
@@ -102,6 +104,10 @@ FieldCandidatesMap FormField::ParseFormFields(
   // Name pass.
   ParseFormFieldsPass(NameField::Parse, processed_fields, &field_candidates,
                       page_language, log_manager);
+
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
+                      &field_candidates, page_language, log_manager);
 
   // Search pass.
   ParseFormFieldsPass(SearchField::Parse, processed_fields, &field_candidates,
