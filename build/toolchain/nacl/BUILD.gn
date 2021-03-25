@@ -66,6 +66,12 @@ template("pnacl_toolchain") {
         rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/pnacl-",
                     root_build_dir)
 
+    if (host_os == "win") {
+      # Flip the slashes so that copy/paste of the commands works.
+      # This is also done throughout build\toolchain\win\BUILD.gn
+      toolprefix = string_replace(toolprefix, "/", "\\")
+    }
+
     cc = compiler_scriptprefix + toolprefix + "clang" + scriptsuffix
     cxx = compiler_scriptprefix + toolprefix + "clang++" + scriptsuffix
     ar = toolprefix + "ar" + scriptsuffix
@@ -130,6 +136,12 @@ template("nacl_glibc_toolchain") {
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
 
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
+
   nacl_toolchain("glibc_" + toolchain_cpu) {
     cc = toolprefix + "gcc" + toolsuffix
     cxx = toolprefix + "g++" + toolsuffix
@@ -185,6 +197,12 @@ template("nacl_clang_toolchain") {
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
 
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
+
   nacl_toolchain("clang_newlib_" + toolchain_cpu) {
     cc = toolprefix + "clang" + toolsuffix
     cxx = toolprefix + "clang++" + toolsuffix
@@ -211,6 +229,12 @@ template("nacl_irt_toolchain") {
   toolprefix = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/" +
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
+
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
 
   link_irt = rebase_path("//native_client/build/link_irt.py", root_build_dir)
 
