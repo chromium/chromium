@@ -763,8 +763,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     static method isTypeSupported
 [Worker]     attribute @@toStringTag
 [Worker]     getter complete
-[Worker]     getter frameCount
-[Worker]     getter repetitionCount
 [Worker]     getter tracks
 [Worker]     getter type
 [Worker]     method close
@@ -772,7 +770,21 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method decode
 [Worker]     method decodeMetadata
 [Worker]     method reset
-[Worker]     method selectTrack
+[Worker] interface ImageTrack
+[Worker]     attribute @@toStringTag
+[Worker]     getter animated
+[Worker]     getter frameCount
+[Worker]     getter repetitionCount
+[Worker]     getter selected
+[Worker]     method constructor
+[Worker]     setter selected
+[Worker] interface ImageTrackList
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     getter selectedIndex
+[Worker]     getter selectedTrack
+[Worker]     method @@iterator
+[Worker]     method constructor
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode

@@ -7220,8 +7220,6 @@ interface ImageDecoder
     static method isTypeSupported
     attribute @@toStringTag
     getter complete
-    getter frameCount
-    getter repetitionCount
     getter tracks
     getter type
     method close
@@ -7229,7 +7227,21 @@ interface ImageDecoder
     method decode
     method decodeMetadata
     method reset
-    method selectTrack
+interface ImageTrack
+    attribute @@toStringTag
+    getter animated
+    getter frameCount
+    getter repetitionCount
+    getter selected
+    method constructor
+    setter selected
+interface ImageTrackList
+    attribute @@toStringTag
+    getter length
+    getter selectedIndex
+    getter selectedTrack
+    method @@iterator
+    method constructor
 interface Ink
     attribute @@toStringTag
     method constructor

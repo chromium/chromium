@@ -12,15 +12,14 @@
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
-#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -37,6 +36,34 @@ namespace {
 bool IsTypeSupportedInternal(String type) {
   return type.ContainsOnlyASCIIOrEmpty() &&
          IsSupportedImageMimeType(type.Ascii());
+}
+
+ImageDecoder::AnimationOption AnimationOptionFromIsAnimated(bool is_animated) {
+  return is_animated ? ImageDecoder::AnimationOption::kPreferAnimation
+                     : ImageDecoder::AnimationOption::kPreferStillImage;
+}
+
+DOMException* CreateUnsupportedImageTypeException(String type) {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError,
+      String::Format("The provided image type (%s) is not supported",
+                     type.Ascii().c_str()));
+}
+
+DOMException* CreateClosedException() {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kInvalidStateError, "The decoder has been closed.");
+}
+
+DOMException* CreateNoSelectedTracksException() {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kInvalidStateError, "No selected track.");
+}
+
+DOMException* CreateDecodeFailure(uint32_t index) {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kEncodingError,
+      String::Format("Failed to decode frame at index %d", index));
 }
 
 }  // namespace
@@ -78,7 +105,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            const ImageDecoderInit* init,
                                            ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      script_state_(script_state) {
+      script_state_(script_state),
+      tracks_(MakeGarbageCollected<ImageTrackList>(this)) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
@@ -98,8 +126,10 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (!IsTypeSupportedInternal(mime_type_))
     return;
 
-  if (init->hasPreferAnimation())
+  if (init->hasPreferAnimation()) {
     prefer_animation_ = init->preferAnimation();
+    animation_option_ = AnimationOptionFromIsAnimated(*prefer_animation_);
+  }
 
   if (init->data().IsReadableStream()) {
     if (init->data().GetAsReadableStream()->IsLocked() ||
@@ -177,7 +207,9 @@ ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   }
 
   if (!decoder_) {
-    resolver->Reject(CreateUnsupportedImageTypeException());
+    resolver->Reject(IsTypeSupportedInternal(mime_type_)
+                         ? CreateNoSelectedTracksException()
+                         : CreateUnsupportedImageTypeException(mime_type_));
     return promise;
   }
 
@@ -200,7 +232,14 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
   }
 
   if (!decoder_) {
-    resolver->Reject(CreateUnsupportedImageTypeException());
+    // We may have no selected tracks at this point.
+    if (IsTypeSupportedInternal(mime_type_)) {
+      DCHECK(pending_metadata_decodes_.IsEmpty());
+      resolver->Resolve();
+      return promise;
+    }
+
+    resolver->Reject(CreateUnsupportedImageTypeException(mime_type_));
     return promise;
   }
 
@@ -209,64 +248,37 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
   return promise;
 }
 
-void ImageDecoderExternal::selectTrack(uint32_t track_id,
-                                       ExceptionState& exception_state) {
-  if (closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The decoder has been closed.");
-    return;
-  }
+void ImageDecoderExternal::UpdateSelectedTrack() {
+  DCHECK(!closed_);
 
-  if (track_id >= tracks_.size()) {
-    exception_state.ThrowRangeError(
-        ExceptionMessages::IndexOutsideRange<uint32_t>(
-            "track index", track_id, 0, ExceptionMessages::kInclusiveBound,
-            tracks_.size(), ExceptionMessages::kExclusiveBound));
-    return;
-  }
-
-  // Returning early allows us to avoid churn from unnecessarily destructing the
-  // underlying ImageDecoder interface.
-  if (tracks_.size() == 1 || selected_track_id_ == track_id)
-    return;
-
-  // Promise resolution may be reentrant, so continuously abort promises.
-  while (!pending_decodes_.IsEmpty()) {
-    AbortPendingDecodes(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Aborted by track change"));
-  }
+  reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Aborted by track change"));
 
   // TODO(crbug.com/1073995): We eventually need a formal track selection
   // mechanism. For now we can only select between the still and animated images
   // and must destruct the decoder for changes.
   decoder_.reset();
-  selected_track_id_ = track_id;
-  prefer_animation_ = tracks_[track_id]->animated();
+  if (!tracks_->selectedTrack())
+    return;
+
+  animation_option_ = AnimationOptionFromIsAnimated(
+      tracks_->selectedTrack().value()->animated());
 
   CreateImageDecoder();
   MaybeUpdateMetadata();
   MaybeSatisfyPendingDecodes();
 }
 
-uint32_t ImageDecoderExternal::frameCount() const {
-  return frame_count_;
-}
-
 String ImageDecoderExternal::type() const {
   return mime_type_;
-}
-
-uint32_t ImageDecoderExternal::repetitionCount() const {
-  return repetition_count_;
 }
 
 bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
-const ImageDecoderExternal::ImageTrackList ImageDecoderExternal::tracks()
-    const {
-  return tracks_;
+ImageTrackList& ImageDecoderExternal::tracks() const {
+  return *tracks_;
 }
 
 void ImageDecoderExternal::reset(DOMException* exception) {
@@ -291,8 +303,7 @@ void ImageDecoderExternal::close() {
     consumer_->Cancel();
   consumer_ = nullptr;
   decoder_.reset();
-  tracks_.clear();
-  frame_count_ = repetition_count_ = 0;
+  tracks_->Disconnect();
   mime_type_ = "";
   stream_buffer_ = nullptr;
   segment_reader_ = nullptr;
@@ -363,7 +374,8 @@ void ImageDecoderExternal::CreateImageDecoder() {
   DCHECK(IsTypeSupportedInternal(mime_type_));
   decoder_ = ImageDecoder::CreateByMimeType(
       mime_type_, segment_reader_, data_complete_, alpha_option_,
-      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior_, desired_size_);
+      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior_, desired_size_,
+      animation_option_);
 
   // CreateByImageType() can't fail if we use a supported image type. Which we
   // DCHECK above via isTypeSupported().
@@ -373,17 +385,27 @@ void ImageDecoderExternal::CreateImageDecoder() {
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
   DCHECK(!closed_);
   DCHECK(decoder_);
+
   for (auto& request : pending_decodes_) {
+    if (decoder_->Failed()) {
+      request->exception = CreateDecodeFailure(request->frame_index);
+      continue;
+    }
     if (!data_complete_) {
       // We can't fulfill this promise at this time.
-      if (request->frame_index >= frame_count_)
+      if (tracks_->IsEmpty() ||
+          request->frame_index >=
+              tracks_->selectedTrack().value()->frameCount()) {
         continue;
-    } else if (request->frame_index >= frame_count_) {
+      }
+    } else if (request->frame_index >=
+               tracks_->selectedTrack().value()->frameCount()) {
       request->exception = MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kIndexSizeError,
           ExceptionMessages::IndexOutsideRange<uint32_t>(
               "frame index", request->frame_index, 0,
-              ExceptionMessages::kInclusiveBound, frame_count_,
+              ExceptionMessages::kInclusiveBound,
+              tracks_->selectedTrack().value()->frameCount(),
               ExceptionMessages::kExclusiveBound));
       continue;
     }
@@ -397,10 +419,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 
     auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
     if (decoder_->Failed() || !image) {
-      request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kEncodingError,
-          String::Format("Failed to decode frame at index %d",
-                         request->frame_index));
+      request->exception = CreateDecodeFailure(request->frame_index);
       continue;
     }
 
@@ -497,8 +516,12 @@ void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
     return;
 
   DCHECK(decoder_->Failed() || decoder_->IsDecodedSizeAvailable());
-  for (auto& resolver : pending_metadata_decodes_)
-    resolver->Resolve();
+  for (auto& resolver : pending_metadata_decodes_) {
+    if (decoder_->Failed())
+      resolver->Reject();
+    else
+      resolver->Resolve();
+  }
   pending_metadata_decodes_.clear();
 }
 
@@ -517,45 +540,47 @@ void ImageDecoderExternal::MaybeUpdateMetadata() {
     return;
   }
 
-  const size_t decoded_frame_count = decoder_->FrameCount();
+  uint32_t frame_count = static_cast<uint32_t>(decoder_->FrameCount());
   if (decoder_->Failed()) {
     MaybeSatisfyPendingMetadataDecodes();
     return;
   }
 
-  frame_count_ = static_cast<uint32_t>(decoded_frame_count);
+  int repetition_count = decoder_->RepetitionCount();
+  if (decoder_->Failed()) {
+    MaybeSatisfyPendingMetadataDecodes();
+    return;
+  }
 
-  // The internal value has some magic negative numbers; for external purposes
-  // we want to only surface positive repetition counts. The rest is up to the
-  // client.
-  const int decoded_repetition_count = decoder_->RepetitionCount();
-  if (decoded_repetition_count > 0)
-    repetition_count_ = decoded_repetition_count;
-
-  // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
-  // expose tracks yet. So for now just assume a still and animated track for
-  // images which declare to be multi-image and have animations.
-  if (tracks_.IsEmpty()) {
-    auto* track = ImageTrackExternal::Create();
-    track->setId(0);
-    tracks_.push_back(track);
+  if (tracks_->IsEmpty()) {
+    // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
+    // expose tracks yet. So for now just assume a still and animated track for
+    // images which declare to be multi-image and have animations.
 
     if (decoder_->ImageHasBothStillAndAnimatedSubImages()) {
-      track->setAnimated(false);
+      int selected_track_id = 1;  // Currently animation is always default.
+      if (prefer_animation_.has_value()) {
+        selected_track_id = prefer_animation_.value() ? 1 : 0;
+
+        // Sadly there's currently no way to get the frame count information for
+        // unselected tracks, so for now just leave frame count as unknown but
+        // force repetition count to be animated.
+        if (!prefer_animation_.value()) {
+          frame_count = 0;
+          repetition_count = kAnimationLoopOnce;
+        }
+      }
 
       // All multi-track images have a still image track. Even if it's just the
       // first frame of the animation.
-      track = ImageTrackExternal::Create();
-      track->setId(1);
-      track->setAnimated(true);
-      tracks_.push_back(track);
-
-      if (prefer_animation_.has_value())
-        selected_track_id_ = prefer_animation_.value() ? 1 : 0;
+      tracks_->AddTrack(1, kAnimationNone, selected_track_id == 0);
+      tracks_->AddTrack(frame_count, repetition_count, selected_track_id == 1);
     } else {
-      track->setAnimated(frame_count_ > 1);
-      selected_track_id_ = 0;
+      tracks_->AddTrack(frame_count, repetition_count, true);
     }
+  } else {
+    tracks_->selectedTrack().value()->UpdateTrack(frame_count,
+                                                  repetition_count);
   }
 
   MaybeSatisfyPendingMetadataDecodes();
@@ -577,20 +602,6 @@ bool ImageDecoderExternal::HasValidEncodedData() const {
   }
 
   return true;
-}
-
-DOMException* ImageDecoderExternal::CreateUnsupportedImageTypeException()
-    const {
-  DCHECK(!decoder_);
-  return MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError,
-      String::Format("The provided image type (%s) is not supported",
-                     mime_type_.Ascii().c_str()));
-}
-
-DOMException* ImageDecoderExternal::CreateClosedException() const {
-  return MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kInvalidStateError, "The decoder has been closed.");
 }
 
 void ImageDecoderExternal::AbortPendingDecodes(DOMException* exception) {

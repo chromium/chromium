@@ -24,7 +24,7 @@ class ScriptState;
 class ImageDecodeOptions;
 class ImageDecoderInit;
 class ImageDecodeResult;
-class ImageTrackExternal;
+class ImageTrackList;
 class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
 class SegmentReader;
@@ -46,19 +46,14 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   static ScriptPromise isTypeSupported(ScriptState*, String type);
 
-  using ImageTrackList = HeapVector<Member<ImageTrackExternal>>;
-
   // image_decoder.idl implementation.
   ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
   ScriptPromise decodeMetadata();
-  void selectTrack(uint32_t track_id, ExceptionState&);
-  uint32_t frameCount() const;
-  String type() const;
-  uint32_t repetitionCount() const;
-  bool complete() const;
-  const ImageTrackList tracks() const;
   void reset(DOMException* exception = nullptr);
   void close();
+  String type() const;
+  bool complete() const;
+  ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
@@ -73,6 +68,9 @@ class MODULES_EXPORT ImageDecoderExternal final
   // ScriptWrappable override.
   bool HasPendingActivity() const override;
 
+  // Called by ImageTrack to change the current track.
+  void UpdateSelectedTrack();
+
  private:
   void CreateImageDecoder();
 
@@ -83,10 +81,6 @@ class MODULES_EXPORT ImageDecoderExternal final
   // Returns false if the decoder was constructed with an ArrayBuffer or
   // ArrayBufferView that has since been neutered.
   bool HasValidEncodedData() const;
-
-  // Helpers for creating common exceptions for rejecting promises.
-  DOMException* CreateUnsupportedImageTypeException() const;
-  DOMException* CreateClosedException() const;
 
   void AbortPendingDecodes(DOMException* exception);
 
@@ -105,9 +99,12 @@ class MODULES_EXPORT ImageDecoderExternal final
   ColorBehavior color_behavior_ = ColorBehavior::Tag();
   SkISize desired_size_;
 
-  // Copy of |preferAnimation| from |init_data_|. Will be modified based on
-  // calls to selectTrack().
+  // Copy of |preferAnimation| from |init_data_|.
   base::Optional<bool> prefer_animation_;
+
+  // Currently configured AnimationOption for |decoder_|.
+  ImageDecoder::AnimationOption animation_option_ =
+      ImageDecoder::AnimationOption::kUnspecified;
 
   bool data_complete_ = false;
 
@@ -115,10 +112,7 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   std::unique_ptr<ImageDecoder> decoder_;
   String mime_type_;
-  uint32_t frame_count_ = 0u;
-  uint32_t repetition_count_ = 0u;
-  base::Optional<uint32_t> selected_track_id_;
-  ImageTrackList tracks_;
+  Member<ImageTrackList> tracks_;
 
   // Pending decode() requests.
   struct DecodeRequest : public GarbageCollected<DecodeRequest> {

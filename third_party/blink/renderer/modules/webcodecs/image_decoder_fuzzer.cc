@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_external.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -115,10 +117,13 @@ DEFINE_BINARY_PROTO_FUZZER(
           case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
             image_decoder->decodeMetadata();
             break;
-          case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack:
-            image_decoder->selectTrack(invocation.select_track().track_id(),
-                                       IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack: {
+            auto* track = image_decoder->tracks().AnonymousIndexedGetter(
+                invocation.select_track().track_id());
+            if (track)
+              track->setSelected(true);
             break;
+          }
           case wc_fuzzer::ImageDecoderApiInvocation::API_NOT_SET:
             break;
         }

@@ -218,15 +218,15 @@ TEST_F(ImageDecoderTest, DecodeGif) {
     ASSERT_TRUE(tester.IsFulfilled());
   }
 
-  EXPECT_EQ(decoder->type(), kImageType);
-  EXPECT_EQ(decoder->frameCount(), 2u);
-  EXPECT_EQ(decoder->repetitionCount(), 0u);
-  EXPECT_EQ(decoder->complete(), true);
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), true);
+  EXPECT_EQ(tracks.selectedTrack().value()->animated(), true);
 
-  auto tracks = decoder->tracks();
-  EXPECT_EQ(tracks.size(), 1u);
-  EXPECT_EQ(tracks[0]->id(), 0u);
-  EXPECT_EQ(tracks[0]->animated(), true);
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack().value()->frameCount(), 2u);
+  EXPECT_EQ(tracks.selectedTrack().value()->repetitionCount(), INFINITY);
+  EXPECT_EQ(decoder->complete(), true);
 
   {
     auto promise = decoder->decode(MakeOptions(0, true));
@@ -282,15 +282,15 @@ TEST_F(ImageDecoderTest, DecoderReset) {
     ASSERT_TRUE(tester.IsFulfilled());
   }
 
-  EXPECT_EQ(decoder->type(), kImageType);
-  EXPECT_EQ(decoder->frameCount(), 2u);
-  EXPECT_EQ(decoder->repetitionCount(), 0u);
-  EXPECT_EQ(decoder->complete(), true);
+  const auto& tracks = decoder->tracks();
+  ASSERT_EQ(tracks.length(), 1u);
+  EXPECT_EQ(tracks.AnonymousIndexedGetter(0)->animated(), true);
+  EXPECT_EQ(tracks.selectedTrack().value()->animated(), true);
 
-  auto tracks = decoder->tracks();
-  EXPECT_EQ(tracks.size(), 1u);
-  EXPECT_EQ(tracks[0]->id(), 0u);
-  EXPECT_EQ(tracks[0]->animated(), true);
+  EXPECT_EQ(decoder->type(), kImageType);
+  EXPECT_EQ(tracks.selectedTrack().value()->frameCount(), 2u);
+  EXPECT_EQ(tracks.selectedTrack().value()->repetitionCount(), INFINITY);
+  EXPECT_EQ(decoder->complete(), true);
 
   {
     auto promise = decoder->decode(MakeOptions(0, true));
