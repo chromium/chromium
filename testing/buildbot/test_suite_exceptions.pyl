@@ -1066,6 +1066,11 @@
           'shards': 2,
         },
       },
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
+        ],
+      },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
           'shards': 2,
