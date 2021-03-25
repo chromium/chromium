@@ -29,9 +29,9 @@
         android:adjustViewBounds="false"
         android:scaleType="centerInside"
         android:elevation="6dp"
+        android:contentDescription="@string/photo_picker_accessibility_zoom_in"
         app:srcCompat="@drawable/zoom_in"
-        android:visibility="gone"
-        tools:ignore="ContentDescription"/>
+        android:visibility="gone"/>
 
     <org.chromium.components.browser_ui.photo_picker.PickerVideoPlayer
         android:layout_width="match_parent"

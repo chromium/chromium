@@ -738,6 +738,12 @@
       <message name="IDS_PHOTO_PICKER_VIDEO_DURATION" desc="The label showing the duration time and current position of the video, as in: 0:01 / 0:10.">
         <ph name="POSITION">%1$s<ex>0:01</ex></ph> / <ph name="DURATION">%2$s<ex>0:10</ex></ph>
       </message>
+      <message name="IDS_PHOTO_PICKER_ACCESSIBILITY_ZOOM_IN" desc="The accessibility string for the Zoom (in) button in the photo grid.">
+        Zoom in
+      </message>
+      <message name="IDS_PHOTO_PICKER_ACCESSIBILITY_ZOOM_OUT" desc="The accessibility string for the Zoom (out) button in the photo grid.">
+        Zoom out
+      </message>
       <message name="IDS_DECODER_DESCRIPTION" desc="The title for the image decoder utility service.">
         Image decoder
       </message>

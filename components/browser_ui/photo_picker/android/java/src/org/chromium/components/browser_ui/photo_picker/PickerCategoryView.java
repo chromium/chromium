@@ -411,10 +411,15 @@ public class PickerCategoryView extends RelativeLayout
 
         mMagnifyingMode = !mMagnifyingMode;
 
+        Context context = mWindowAndroid.getContext().get();
         if (mMagnifyingMode) {
             mZoom.setImageResource(R.drawable.zoom_out);
+            mZoom.setContentDescription(
+                    context.getString(R.string.photo_picker_accessibility_zoom_out));
         } else {
             mZoom.setImageResource(R.drawable.zoom_in);
+            mZoom.setContentDescription(
+                    context.getString(R.string.photo_picker_accessibility_zoom_in));
         }
 
         calculateGridMetrics();
