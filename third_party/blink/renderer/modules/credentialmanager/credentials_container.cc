@@ -937,7 +937,7 @@ ScriptPromise CredentialsContainer::get(
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
-  if ((options->hasPublicKey() || options->hasConditionalPublicKey()) &&
+  if (options->hasPublicKey() &&
       RuntimeEnabledFeatures::
           WebAuthenticationGetAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
@@ -951,17 +951,7 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
-  if (options->hasPublicKey() || options->hasConditionalPublicKey()) {
-    const PublicKeyCredentialRequestOptions* public_key_options;
-    bool is_conditional_ui_request;
-    if (options->hasPublicKey()) {
-      public_key_options = options->publicKey();
-      is_conditional_ui_request = false;
-    } else {
-      public_key_options = options->conditionalPublicKey();
-      is_conditional_ui_request = true;
-    }
-
+  if (options->hasPublicKey()) {
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
     if (!cryptotoken_origin->IsSameOriginWith(
             resolver->GetExecutionContext()->GetSecurityOrigin())) {
@@ -972,21 +962,21 @@ ScriptPromise CredentialsContainer::get(
     }
 
 #if defined(OS_ANDROID)
-    if (public_key_options->hasExtensions() &&
-        public_key_options->extensions()->hasUvm()) {
+    if (options->publicKey()->hasExtensions() &&
+        options->publicKey()->extensions()->hasUvm()) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kCredentialManagerGetWithUVM);
     }
 #endif
-    if (!IsArrayBufferOrViewBelowSizeLimit(public_key_options->challenge())) {
+    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
       resolver->Reject(DOMException::Create(
           "The `challenge` attribute exceeds the maximum allowed size.",
           "RangeError"));
       return promise;
     }
-    if (public_key_options->hasExtensions()) {
-      if (public_key_options->extensions()->hasAppid()) {
-        const auto& appid = public_key_options->extensions()->appid();
+    if (options->publicKey()->hasExtensions()) {
+      if (options->publicKey()->extensions()->hasAppid()) {
+        const auto& appid = options->publicKey()->extensions()->appid();
         if (!appid.IsEmpty()) {
           KURL appid_url(appid);
           if (!appid_url.IsValid()) {
@@ -998,24 +988,24 @@ ScriptPromise CredentialsContainer::get(
           }
         }
       }
-      if (public_key_options->extensions()->hasCableRegistration()) {
+      if (options->publicKey()->extensions()->hasCableRegistration()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'cableRegistration' extension is only valid when creating "
             "a credential"));
         return promise;
       }
-      if (public_key_options->extensions()->credProps()) {
+      if (options->publicKey()->extensions()->credProps()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'credProps' extension is only valid when creating "
             "a credential"));
         return promise;
       }
-      if (public_key_options->extensions()->hasLargeBlob()) {
+      if (options->publicKey()->extensions()->hasLargeBlob()) {
         DCHECK(RuntimeEnabledFeatures::
                    WebAuthenticationLargeBlobExtensionEnabled());
-        if (public_key_options->extensions()->largeBlob()->hasSupport()) {
+        if (options->publicKey()->extensions()->largeBlob()->hasSupport()) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError,
               "The 'largeBlob' extension's 'support' parameter is only valid "
@@ -1025,7 +1015,7 @@ ScriptPromise CredentialsContainer::get(
       }
     }
 
-    if (!public_key_options->hasUserVerification()) {
+    if (!options->publicKey()->hasUserVerification()) {
       resolver->DomWindow()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -1050,9 +1040,11 @@ ScriptPromise CredentialsContainer::get(
           WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
     }
 
+    bool is_conditional_ui_request = conditionalMediationSupported() &&
+                                     options->mediation() == "conditional";
     if (is_conditional_ui_request &&
-        public_key_options->hasAllowCredentials() &&
-        !public_key_options->allowCredentials().IsEmpty()) {
+        options->publicKey()->hasAllowCredentials() &&
+        !options->publicKey()->allowCredentials().IsEmpty()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "allowCredentials is not supported for conditionalPublicKey"));
@@ -1060,7 +1052,7 @@ ScriptPromise CredentialsContainer::get(
     }
 
     auto mojo_options =
-        MojoPublicKeyCredentialRequestOptions::From(*public_key_options);
+        MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
     if (mojo_options) {
       mojo_options->is_conditional = is_conditional_ui_request;
       if (!mojo_options->relying_party_id) {
@@ -1117,6 +1109,12 @@ ScriptPromise CredentialsContainer::get(
   }
 
   CredentialMediationRequirement requirement;
+  if (options->mediation() == "conditional") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Conditional mediation is not supported for this credential type"));
+    return promise;
+  }
   if (options->mediation() == "silent") {
     UseCounter::Count(ExecutionContext::From(script_state),
                       WebFeature::kCredentialManagerGetMediationSilent);
@@ -1417,6 +1415,10 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
                 std::make_unique<ScopedPromiseResolver>(resolver)));
 
   return promise;
+}
+
+bool CredentialsContainer::conditionalMediationSupported() {
+  return RuntimeEnabledFeatures::WebAuthenticationConditionalUIEnabled();
 }
 
 void CredentialsContainer::Trace(Visitor* visitor) const {

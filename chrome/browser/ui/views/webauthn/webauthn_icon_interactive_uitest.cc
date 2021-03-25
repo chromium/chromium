@@ -108,10 +108,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthUITest, ConditionalUI) {
       });
 
   constexpr char kGetAssertion[] =
-      "navigator.credentials.get({conditionalPublicKey: {"
-      "  challenge: new Uint8Array([1,2,3,4]),"
-      "  timeout: 1000,"
-      "}}).then(c => window.domAutomationController.send(c ? 'OK' : 'c null'),"
+      "navigator.credentials.get({"
+      "  publicKey: {"
+      "    challenge: new Uint8Array([1,2,3,4]),"
+      "    timeout: 1000,"
+      "  },"
+      "  mediation: 'conditional'"
+      "}).then(c => window.domAutomationController.send(c ? 'OK' : 'c null'),"
       "         e => window.domAutomationController.send(e.toString()));";
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
