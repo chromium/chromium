@@ -34,6 +34,8 @@ source_set("internal") {
   visibility = [ ":*" ]
 
   sources = [
+    "abortable_task_list.cc",
+    "abortable_task_list.h",
     "assistant_manager_observer.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",

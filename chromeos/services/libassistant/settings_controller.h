@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/optional.h"
+
+#include "chromeos/services/libassistant/abortable_task_list.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,7 +54,6 @@ class SettingsController : public AssistantManagerObserver,
       override;
 
  private:
-  using UpdateSettingsCallback = base::OnceCallback<void(const std::string&)>;
   class DeviceSettingsUpdater;
 
   // The settings are being passed in to clearly document when Libassistant
@@ -69,6 +70,8 @@ class SettingsController : public AssistantManagerObserver,
   // is stopped.
   // Used to update the device settings.
   std::unique_ptr<DeviceSettingsUpdater> device_settings_updater_;
+  // Contains all pending callbacks for get/update setting requests.
+  AbortableTaskList pending_response_waiters_;
 
   // Set in |OnAssistantManagerCreated| and unset in
   // |OnDestroyingAssistantManager|.

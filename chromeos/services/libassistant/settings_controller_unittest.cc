@@ -4,6 +4,7 @@
 
 #include "chromeos/services/libassistant/settings_controller.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -336,6 +337,47 @@ TEST_F(AssistantSettingsControllerTest,
   EXPECT_CALL(assistant_manager_mock(), EnableListening(false));
 
   CreateLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       GetSettingsShouldCallCallbackEvenIfLibassistantIsNotStarted) {
+  base::MockCallback<SettingsController::GetSettingsCallback> callback;
+
+  EXPECT_CALL(callback, Run(std::string{}));
+
+  controller().GetSettings("selector", callback.Get());
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       GetSettingsShouldCallCallbackIfLibassistantIsStopped) {
+  CreateAndStartLibassistant();
+
+  base::MockCallback<SettingsController::GetSettingsCallback> callback;
+  controller().GetSettings("selector", callback.Get());
+
+  EXPECT_CALL(callback, Run(std::string{}));
+  DestroyLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       UpdateSettingsShouldCallCallbackEvenIfLibassistantIsNotStarted) {
+  base::MockCallback<SettingsController::UpdateSettingsCallback> callback;
+
+  EXPECT_CALL(callback, Run(std::string{}));
+
+  controller().UpdateSettings("selector", callback.Get());
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       UpdateSettingsShouldCallCallbackIfLibassistantIsStopped) {
+  IGNORE_CALLS(assistant_manager_internal_mock(), SendUpdateSettingsUiRequest);
+  CreateAndStartLibassistant();
+
+  base::MockCallback<SettingsController::UpdateSettingsCallback> callback;
+  controller().UpdateSettings("selector", callback.Get());
+
+  EXPECT_CALL(callback, Run(std::string{}));
+  DestroyLibassistant();
 }
 
 }  // namespace libassistant

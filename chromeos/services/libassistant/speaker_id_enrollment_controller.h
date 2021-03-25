@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 
 #include "chromeos/assistant/libassistant/src/third_party/chromium/base/memory/weak_ptr.h"
+#include "chromeos/services/libassistant/abortable_task_list.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
@@ -56,7 +57,8 @@ class SpeakerIdEnrollmentController
   mojom::AudioInputController* const audio_input_;
 
   std::unique_ptr<EnrollmentSession> active_enrollment_session_;
-  std::unique_ptr<GetStatusWaiter> get_status_waiter_;
+  // Contains all pending callbacks for GetSpeakerIdEnrollmentStatus requests.
+  AbortableTaskList pending_response_waiters_;
 
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;

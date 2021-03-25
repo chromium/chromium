@@ -4,6 +4,9 @@
 
 #include "chromeos/services/libassistant/settings_controller.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -107,6 +110,105 @@ class SettingsController::DeviceSettingsUpdater
   assistant_client::AssistantManager& assistant_manager_;
 };
 
+// Sends a 'get settings' requests to Libassistant,
+// waits for the response and forwards it to the callback.
+// Will ensure the callback is always called, even when Libassistant is not
+// running or stopped.
+class GetSettingsResponseWaiter : public AbortableTask {
+ public:
+  explicit GetSettingsResponseWaiter(
+      SettingsController::GetSettingsCallback callback)
+      : callback_(std::move(callback)) {}
+
+  GetSettingsResponseWaiter(const GetSettingsResponseWaiter&) = delete;
+  GetSettingsResponseWaiter& operator=(const GetSettingsResponseWaiter&) =
+      delete;
+  ~GetSettingsResponseWaiter() override { DCHECK(!callback_); }
+
+  void SendRequest(
+      assistant_client::AssistantManagerInternal* assistant_manager_internal,
+      const std::string& selector) {
+    if (!assistant_manager_internal) {
+      VLOG(1) << "Assistant: 'get settings' request while Libassistant is not "
+                 "running.";
+      Abort();
+      return;
+    }
+
+    std::string serialized_proto =
+        assistant::SerializeGetSettingsUiRequest(selector);
+    assistant_manager_internal->SendGetSettingsUiRequest(
+        serialized_proto, /*user_id=*/std::string(),
+        ToStdFunction(BindToCurrentSequence(
+            base::BindOnce(&GetSettingsResponseWaiter::OnResponse,
+                           weak_factory_.GetWeakPtr()))));
+  }
+
+  // AbortableTask implementation:
+  bool IsFinished() override { return callback_.is_null(); }
+  void Abort() override {
+    VLOG(1) << "Assistant: Aborting 'get settings' request";
+    std::move(callback_).Run(std::string());
+  }
+
+ private:
+  void OnResponse(const assistant_client::VoicelessResponse& response) {
+    std::string result = assistant::UnwrapGetSettingsUiResponse(response);
+    std::move(callback_).Run(result);
+  }
+
+  SettingsController::GetSettingsCallback callback_;
+  base::WeakPtrFactory<GetSettingsResponseWaiter> weak_factory_{this};
+};
+
+// Sends a 'update settings' requests to Libassistant,
+// waits for the response and forwards it to the callback.
+// Will ensure the callback is always called, even when Libassistant is not
+// running or stopped.
+class UpdateSettingsResponseWaiter : public AbortableTask {
+ public:
+  explicit UpdateSettingsResponseWaiter(
+      SettingsController::UpdateSettingsCallback callback)
+      : callback_(std::move(callback)) {}
+
+  UpdateSettingsResponseWaiter(const UpdateSettingsResponseWaiter&) = delete;
+  UpdateSettingsResponseWaiter& operator=(const UpdateSettingsResponseWaiter&) =
+      delete;
+  ~UpdateSettingsResponseWaiter() override = default;
+
+  void SendRequest(
+      assistant_client::AssistantManagerInternal* assistant_manager_internal,
+      const std::string& settings) {
+    if (!assistant_manager_internal) {
+      VLOG(1) << "Assistant: 'update settings' request while Libassistant is "
+                 "not running.";
+      Abort();
+      return;
+    }
+
+    std::string serialized_proto =
+        assistant::SerializeUpdateSettingsUiRequest(settings);
+    assistant_manager_internal->SendUpdateSettingsUiRequest(
+        serialized_proto, /*user_id=*/std::string(),
+        ToStdFunction(BindToCurrentSequence(
+            base::BindOnce(&UpdateSettingsResponseWaiter::OnResponse,
+                           weak_factory_.GetWeakPtr()))));
+  }
+
+  // AbortableTask implementation:
+  bool IsFinished() override { return callback_.is_null(); }
+  void Abort() override { std::move(callback_).Run(std::string()); }
+
+ private:
+  void OnResponse(const assistant_client::VoicelessResponse& response) {
+    std::string result = assistant::UnwrapUpdateSettingsUiResponse(response);
+    std::move(callback_).Run(result);
+  }
+
+  SettingsController::UpdateSettingsCallback callback_;
+  base::WeakPtrFactory<UpdateSettingsResponseWaiter> weak_factory_{this};
+};
+
 SettingsController::SettingsController() = default;
 SettingsController::~SettingsController() = default;
 
@@ -145,44 +247,16 @@ void SettingsController::SetHotwordEnabled(bool value) {
 
 void SettingsController::GetSettings(const std::string& selector,
                                      GetSettingsCallback callback) {
-  if (!assistant_manager_internal_) {
-    std::move(callback).Run(std::string());
-    return;
-  }
-
-  std::string serialized_proto =
-      assistant::SerializeGetSettingsUiRequest(selector);
-  assistant_manager_internal_->SendGetSettingsUiRequest(
-      serialized_proto, std::string(),
-      ToStdFunction(BindToCurrentSequence(
-          [](GetSettingsCallback callback,
-             const assistant_client::VoicelessResponse& response) {
-            std::string result =
-                assistant::UnwrapGetSettingsUiResponse(response);
-            std::move(callback).Run(result);
-          },
-          std::move(callback))));
+  auto* waiter = pending_response_waiters_.Add(
+      std::make_unique<GetSettingsResponseWaiter>(std::move(callback)));
+  waiter->SendRequest(assistant_manager_internal_, selector);
 }
 
 void SettingsController::UpdateSettings(const std::string& settings,
                                         UpdateSettingsCallback callback) {
-  if (!assistant_manager_internal_) {
-    std::move(callback).Run(std::string());
-    return;
-  }
-
-  std::string serialized_proto =
-      assistant::SerializeUpdateSettingsUiRequest(settings);
-  assistant_manager_internal_->SendUpdateSettingsUiRequest(
-      serialized_proto, /*user_id=*/std::string(),
-      ToStdFunction(BindToCurrentSequence(
-          [](UpdateSettingsCallback callback,
-             const assistant_client::VoicelessResponse& response) {
-            std::string result =
-                assistant::UnwrapUpdateSettingsUiResponse(response);
-            std::move(callback).Run(result);
-          },
-          std::move(callback))));
+  auto* waiter = pending_response_waiters_.Add(
+      std::make_unique<UpdateSettingsResponseWaiter>(std::move(callback)));
+  waiter->SendRequest(assistant_manager_internal_, settings);
 }
 
 void SettingsController::UpdateListeningEnabled(
@@ -263,6 +337,7 @@ void SettingsController::OnDestroyingAssistantManager(
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
   device_settings_updater_ = nullptr;
+  pending_response_waiters_.AbortAll();
 
   authentication_tokens_.reset();
   hotword_enabled_.reset();
