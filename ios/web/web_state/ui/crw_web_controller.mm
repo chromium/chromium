@@ -766,30 +766,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       updateWebViewContentViewForContainerWindow:_containerView.window];
 }
 
-- (void)didFinishGoToIndexSameDocumentNavigationWithType:
-            (web::NavigationInitiationType)type
-                                          hasUserGesture:(BOOL)hasUserGesture {
-  web::NavigationItem* item =
-      self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
-  GURL URL = item->GetVirtualURL();
-  std::unique_ptr<web::NavigationContextImpl> context =
-      web::NavigationContextImpl::CreateNavigationContext(
-          self.webStateImpl, URL, hasUserGesture,
-          static_cast<ui::PageTransition>(
-              item->GetTransitionType() |
-              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK),
-          type == web::NavigationInitiationType::RENDERER_INITIATED);
-  context->SetIsSameDocument(true);
-  self.webStateImpl->OnNavigationStarted(context.get());
-  [self setDocumentURL:URL context:context.get()];
-  context->SetHasCommitted(true);
-  self.webStateImpl->OnNavigationFinished(context.get());
-  self.navigationHandler.navigationState = web::WKNavigationState::FINISHED;
-  [_requestController didFinishWithURL:URL
-                           loadSuccess:YES
-                               context:context.get()];
-}
-
 - (void)goToBackForwardListItem:(WKBackForwardListItem*)wk_item
                  navigationItem:(web::NavigationItem*)item
        navigationInitiationType:(web::NavigationInitiationType)type
@@ -2004,12 +1980,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)webRequestControllerDidStartLoading:
     (CRWWebRequestController*)requestController {
   [self didStartLoading];
-}
-
-- (void)webRequestController:(CRWWebRequestController*)requestController
-    didCompleteLoadWithSuccess:(BOOL)loadSuccess
-                    forContext:(web::NavigationContextImpl*)context {
-  [self loadCompleteWithSuccess:loadSuccess forContext:context];
 }
 
 - (void)webRequestControllerDisableNavigationGesturesUntilFinishNavigation:

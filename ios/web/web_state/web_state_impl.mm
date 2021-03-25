@@ -903,14 +903,6 @@ void WebStateImpl::RecordPageStateInNavigationItem() {
   [web_controller_ recordStateInHistory];
 }
 
-void WebStateImpl::OnGoToIndexSameDocumentNavigation(
-    NavigationInitiationType type,
-    bool has_user_gesture) {
-  [web_controller_
-      didFinishGoToIndexSameDocumentNavigationWithType:type
-                                        hasUserGesture:has_user_gesture];
-}
-
 void WebStateImpl::LoadCurrentItem(NavigationInitiationType type) {
   [web_controller_ loadCurrentURLWithRendererInitiatedNavigation:
                        type == NavigationInitiationType::RENDERER_INITIATED];

@@ -161,13 +161,6 @@ class WebStateImpl;
 // Notifies the CRWWebController that it has been hidden.
 - (void)wasHidden;
 
-// Called when NavigationManager has completed go to index same-document
-// navigation. Updates HTML5 history state, current document URL and sends
-// approprivate navigation and loading WebStateObserver callbacks.
-- (void)didFinishGoToIndexSameDocumentNavigationWithType:
-            (web::NavigationInitiationType)type
-                                          hasUserGesture:(BOOL)hasUserGesture;
-
 // Instructs WKWebView to navigate to the given navigation item. |wk_item| and
 // |item| must point to the same navigation item. Calling this method may
 // result in an iframe navigation.

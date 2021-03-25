@@ -30,11 +30,6 @@ class NavigationContextImpl;
 - (void)webRequestControllerDidStartLoading:
     (CRWWebRequestController*)requestController;
 
-// The delegate is called when a page is loaded.
-- (void)webRequestController:(CRWWebRequestController*)requestController
-    didCompleteLoadWithSuccess:(BOOL)loadSuccess
-                    forContext:(web::NavigationContextImpl*)context;
-
 // Asks proxy to disable back forward navigation gestures until the current (in
 // this case restore) navigation is complete.  This is necessary as restore
 // can trigger a large number of navigations, and when back/forward is enabled
