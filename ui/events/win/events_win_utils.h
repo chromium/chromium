@@ -101,8 +101,6 @@ bool GetFlingData(const MSG& native_event,
 // scrolled.
 bool GetScrollOffsetsFromMSG(const MSG& native_event);
 
-void ComputeEventLatencyOSFromMSG(const MSG& native_event);
-
 }  // namespace ui
 
 #endif  // UI_EVENTS_WIN_EVENTS_WIN_UTILS_H_

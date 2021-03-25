@@ -162,11 +162,25 @@ EVENTS_EXPORT display::Display::TouchSupport GetInternalDisplayTouchSupport();
 EVENTS_EXPORT void ComputeEventLatencyOS(const PlatformEvent& native_event);
 
 #if defined(OS_WIN)
-// Makes ComputeEventLatencyOS call the given |clock| to find the current time
-// ticks to compare to an MSG timestamp. If |clock| is nullptr, it will call
-// ::GetTickCount, which is the default.
+// Makes ComputeEventLatencyOSWinFromTickCount call the given |clock| to find
+// the current time ticks to compare to an MSG timestamp. If |clock| is nullptr,
+// it will call ::GetTickCount, which is the default.
 EVENTS_EXPORT void SetEventLatencyTickClockForTesting(
     const base::TickClock* clock);
+
+// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
+// ::GetTickCount (such as an MSG).
+EVENTS_EXPORT void ComputeEventLatencyOSWinFromTickCount(
+    ui::EventType event_type,
+    DWORD event_time,
+    base::TimeTicks current_time);
+
+// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
+// a Performance Counter (such as POINTER_INFO).
+EVENTS_EXPORT void ComputeEventLatencyOSWinFromPerformanceCounter(
+    ui::EventType event_type,
+    UINT64 event_time,
+    base::TimeTicks current_time);
 
 EVENTS_EXPORT int GetModifiersFromKeyState();
 
