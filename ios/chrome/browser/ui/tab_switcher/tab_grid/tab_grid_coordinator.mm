@@ -173,24 +173,27 @@
   DCHECK(self.incognitoTabsMediator);
   self.incognitoTabsMediator.browser = incognitoBrowser;
   self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
-  if (incognitoBrowser) {
-    self.baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
-        incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
-  } else {
-    self.baseViewController.incognitoPopupMenuHandler = nil;
-  }
 
-  // If the thumb strip is enabled and the tab grid is currently on the
-  // incognito page, make sure to update the shown state as it would be visible
-  // onscreen at this point.
-  if ([self isThumbStripEnabled] &&
-      self.baseViewController.activePage == TabGridPageIncognitoTabs) {
+  if ([self isThumbStripEnabled]) {
+    // Update the incognito popup menu handler. This is only used in Thumb
+    // Strip mode.
     if (incognitoBrowser) {
-      [self showActiveTabInPage:TabGridPageIncognitoTabs
-                   focusOmnibox:NO
-                   closeTabGrid:NO];
+      self.baseViewController.incognitoPopupMenuHandler = HandlerForProtocol(
+          incognitoBrowser->GetCommandDispatcher(), PopupMenuCommands);
     } else {
-      [self showTabViewController:nil shouldCloseTabGrid:NO completion:nil];
+      self.baseViewController.incognitoPopupMenuHandler = nil;
+    }
+    // If the tab grid is currently on the
+    // incognito page, make sure to update the shown state as it would be
+    // visible onscreen at this point.
+    if (self.baseViewController.activePage == TabGridPageIncognitoTabs) {
+      if (incognitoBrowser) {
+        [self showActiveTabInPage:TabGridPageIncognitoTabs
+                     focusOmnibox:NO
+                     closeTabGrid:NO];
+      } else {
+        [self showTabViewController:nil shouldCloseTabGrid:NO completion:nil];
+      }
     }
   }
 }
