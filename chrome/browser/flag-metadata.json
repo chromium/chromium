@@ -2704,8 +2704,8 @@
   },
   {
     "name": "enterprise-realtime-extension-request",
-    "owners": ["zmin", "pastarmovj"],
-    "expiry_milestone": 94
+    "owners": ["zmin", "parastoog"],
+    "expiry_milestone": 98
   },
   {
     "name": "enterprise-reporting-api-keychain-recreation",

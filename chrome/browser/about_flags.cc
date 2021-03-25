@@ -1542,6 +1542,17 @@ const FeatureEntry::FeatureVariation kNtpRepeatableQueriesVariations[] = {
 };
 #endif  // !defined(OS_ANDROID)
 
+#if !defined(OS_ANDROID)
+const FeatureEntry::FeatureParam kEnterpriseRealtimeExtensionRequestParam[] = {
+    {"with_erp", "false"},
+    {"with_erp", "true"}};
+const FeatureEntry::FeatureVariation
+    kEnterpriseRealtimeExtensionRequestVariation[] = {
+        {"with encrypted reporting pipeline",
+         kEnterpriseRealtimeExtensionRequestParam,
+         base::size(kEnterpriseRealtimeExtensionRequestParam), nullptr}};
+#endif  // !defined(OS_ANDROID)
+
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kTranslateForceTriggerOnEnglishHeuristic[] = {
     {language::kOverrideModelKey, language::kOverrideModelHeuristicValue},
@@ -5715,7 +5726,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnterpriseRealtimeExtensionRequestName,
      flag_descriptions::kEnterpriseRealtimeExtensionRequestDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kEnterpriseRealtimeExtensionRequest)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kEnterpriseRealtimeExtensionRequest,
+         kEnterpriseRealtimeExtensionRequestVariation,
+         "EnterpriseRealtimeExtensionRequest")},
 #endif  // !defined(OS_ANDROID)
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
