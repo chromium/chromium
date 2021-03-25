@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -72,10 +73,13 @@ std::unique_ptr<WebpageController> TabHelper::MakeWebpageController() {
 }
 
 void TabHelper::OnBlockedChanged(bool blocked) {
-  // TODO: Pause/resume playing media, update occlusion state on the
-  // WebContents, and so on. Getting this behavior right will probably require
-  // some care.
-  NOTIMPLEMENTED();
+  // TODO: Update occlusion state on the WebContents, and so on.
+  // Getting this behavior right will probably require some care.
+  auto* media_session = content::MediaSession::Get(web_contents());
+  if (blocked)
+    media_session->Suspend(content::MediaSession::SuspendType::kSystem);
+  else
+    media_session->Resume(content::MediaSession::SuspendType::kSystem);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper)

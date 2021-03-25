@@ -8,6 +8,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 
+@class BlockedObserver;
 @class STWebpageController;
 
 namespace screentime {
@@ -26,6 +27,7 @@ class WebpageControllerImpl : public WebpageController {
 
  private:
   base::scoped_nsobject<STWebpageController> platform_controller_;
+  base::scoped_nsobject<BlockedObserver> blocked_observer_;
   BlockedChangedCallback blocked_changed_callback_;
 };
 

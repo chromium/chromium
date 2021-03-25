@@ -53,6 +53,9 @@ namespace screentime {
 WebpageControllerImpl::WebpageControllerImpl(
     const BlockedChangedCallback& blocked_changed_callback)
     : platform_controller_([[STWebpageController alloc] init]),
+      blocked_observer_([[BlockedObserver alloc]
+          initWithController:this
+            nativeController:platform_controller_.get()]),
       blocked_changed_callback_(blocked_changed_callback) {
   NSError* error = nil;
   NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
