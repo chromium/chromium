@@ -23,7 +23,6 @@
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/common/thumbnail_score.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/query_parser/query_parser.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -674,40 +673,6 @@ enum class UrlsModifiedReason {
   // Notification is the result of AndroidProviderBackend.
   kAndroidDb,
 };
-
-// Annotations -----------------------------------------------------------------
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-// A structure containing the annotations made to page content for a visit.
-struct VisitContentAnnotations {
-  struct Category {
-    Category();
-    Category(int id, int weight);
-    bool operator==(const Category& other) const;
-    bool operator!=(const Category& other) const;
-
-    int id = 0;
-    int weight = 0;
-  };
-
-  VisitContentAnnotations();
-  VisitContentAnnotations(float floc_protected_score,
-                          const std::vector<Category>& categories,
-                          int64_t page_topics_model_version);
-  VisitContentAnnotations(const VisitContentAnnotations& other);
-  ~VisitContentAnnotations();
-
-  // A value from 0 to 1 that represents whether the page content is
-  // FLoC-protected.
-  float floc_protected_score = -1.0;
-  // A vector that contains category IDs and their weights. It is guaranteed
-  // that there will not be duplicates in the category IDs contained in this
-  // field.
-  std::vector<Category> categories;
-  // The version of the page topics model that was used to annotate content.
-  int64_t page_topics_model_version = -1;
-};
-#endif
 
 }  // namespace history
 

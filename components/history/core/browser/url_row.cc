@@ -43,6 +43,39 @@ size_t URLRow::EstimateMemoryUsage() const {
          base::trace_event::EstimateMemoryUsage(title_);
 }
 
+// Annotations
+// ----------------------------------------------------------
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+VisitContentAnnotations::Category::Category(int id, int weight)
+    : id(id), weight(weight) {}
+VisitContentAnnotations::Category::Category() = default;
+
+bool VisitContentAnnotations::Category::operator==(
+    const VisitContentAnnotations::Category& other) const {
+  return id == other.id && weight == other.weight;
+}
+
+bool VisitContentAnnotations::Category::operator!=(
+    const VisitContentAnnotations::Category& other) const {
+  return !(*this == other);
+}
+
+VisitContentAnnotations::VisitContentAnnotations(
+    float floc_protected_score,
+    const std::vector<Category>& categories,
+    int64_t page_topics_model_version)
+    : floc_protected_score(floc_protected_score),
+      categories(categories),
+      page_topics_model_version(page_topics_model_version) {}
+VisitContentAnnotations::VisitContentAnnotations() = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations::~VisitContentAnnotations() = default;
+
+#endif
+
 URLResult::URLResult() {}
 
 URLResult::URLResult(const GURL& url, base::Time visit_time)
@@ -58,9 +91,13 @@ URLResult::URLResult(URLResult&& other) noexcept
     : URLRow(std::move(other)),
       visit_time_(other.visit_time_),
       floc_allowed_(other.floc_allowed_),
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      content_annotations_(other.content_annotations_),
+#endif
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
-      blocked_visit_(other.blocked_visit_) {}
+      blocked_visit_(other.blocked_visit_) {
+}
 
 URLResult::~URLResult() {
 }
@@ -71,6 +108,9 @@ void URLResult::SwapResult(URLResult* other) {
   URLRow::Swap(other);
   std::swap(visit_time_, other->visit_time_);
   std::swap(floc_allowed_, other->floc_allowed_);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::swap(content_annotations_, other->content_annotations_);
+#endif
   snippet_.Swap(&other->snippet_);
   title_match_positions_.swap(other->title_match_positions_);
   std::swap(blocked_visit_, other->blocked_visit_);

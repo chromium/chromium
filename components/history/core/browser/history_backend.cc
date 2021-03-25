@@ -1513,6 +1513,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     url_result.set_visit_time(visit.visit_time);
     url_result.set_floc_allowed(visit.floc_allowed);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    url_result.set_content_annotations(
+        db_->GetContentAnnotationsForVisit(visit.visit_id));
+#endif
+
     // Set whether the visit was blocked for a managed user by looking at the
     // transition type.
     url_result.set_blocked_visit(
@@ -1546,6 +1551,12 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       URLResult url_result(text_match);
       url_result.set_visit_time(visits[j].visit_time);
       url_result.set_floc_allowed(visits[j].floc_allowed);
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      url_result.set_content_annotations(
+          db_->GetContentAnnotationsForVisit(visits[j].visit_id));
+#endif
+
       matching_visits.push_back(url_result);
     }
   }

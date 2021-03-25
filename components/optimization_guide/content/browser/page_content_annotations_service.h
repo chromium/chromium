@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"

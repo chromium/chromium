@@ -1598,6 +1598,19 @@ TEST_F(HistoryBackendTest, AddContentAnnotations) {
                   VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
   EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
 
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_TRUE(results[0].content_annotations());
+  EXPECT_EQ(0.5f, results[0].content_annotations()->floc_protected_score);
+  EXPECT_THAT(
+      results[0].content_annotations()->categories,
+      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
+                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(123, results[0].content_annotations()->page_topics_model_version);
+
   // Now, delete the URL. Content Annotations should be deleted.
   backend_->DeleteURL(url);
   ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(visit_id));

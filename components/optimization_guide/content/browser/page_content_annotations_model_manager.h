@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
-#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/content/browser/bert_model_executor.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 
