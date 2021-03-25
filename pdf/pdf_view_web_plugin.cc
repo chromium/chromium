@@ -446,6 +446,14 @@ void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
   NOTIMPLEMENTED();
 }
 
+void PdfViewWebPlugin::DidStartLoading() {
+  NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::DidStopLoading() {
+  NOTIMPLEMENTED();
+}
+
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
 }

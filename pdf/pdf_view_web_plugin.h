@@ -130,6 +130,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetAccessibilityViewportInfo(
       const AccessibilityViewportInfo& viewport_info) override;
   void SetContentRestrictions(int content_restrictions) override;
+  void DidStartLoading() override;
+  void DidStopLoading() override;
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:

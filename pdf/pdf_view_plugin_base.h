@@ -252,6 +252,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // set by `chrome_pdf::ContentRestriction` enum values.
   virtual void SetContentRestrictions(int content_restrictions) = 0;
 
+  // Sends start/stop loading notifications to the plugin's render frame.
+  // TODO(crbug.com/702993): Evaluate whether these methods are needed when the
+  // plugin is moved into a renderer process.
+  virtual void DidStartLoading() = 0;
+  virtual void DidStopLoading() = 0;
+
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 

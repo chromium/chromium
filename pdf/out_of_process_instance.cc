@@ -1000,10 +1000,7 @@ void OutOfProcessInstance::FormDidOpen(int32_t result) {
 
 std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
   if (full_frame()) {
-    if (!did_call_start_loading_) {
-      did_call_start_loading_ = true;
-      pp::PDF::DidStartLoading(this);
-    }
+    DidStartLoading();
 
     // Disable save and print until the document is fully loaded, since they
     // would generate an incomplete document.  Need to do this each time we
@@ -1069,10 +1066,7 @@ void OutOfProcessInstance::DocumentLoadComplete() {
   if (!full_frame())
     return;
 
-  if (did_call_start_loading_) {
-    pp::PDF::DidStopLoading(this);
-    did_call_start_loading_ = false;
-  }
+  DidStopLoading();
 
   int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
   if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
@@ -1245,10 +1239,7 @@ void OutOfProcessInstance::DocumentLoadFailed() {
   DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
   UserMetricsRecordAction("PDF.LoadFailure");
 
-  if (did_call_start_loading_) {
-    pp::PDF::DidStopLoading(this);
-    did_call_start_loading_ = false;
-  }
+  DidStopLoading();
 
   set_document_load_state(DocumentLoadState::kFailed);
   paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
@@ -1458,6 +1449,22 @@ void OutOfProcessInstance::LoadNextPreviewPage() {
   if (print_preview_loaded_page_count_ == print_preview_page_count_) {
     SendPrintPreviewLoadedNotification();
   }
+}
+
+void OutOfProcessInstance::DidStartLoading() {
+  if (did_call_start_loading_)
+    return;
+
+  pp::PDF::DidStartLoading(this);
+  did_call_start_loading_ = true;
+}
+
+void OutOfProcessInstance::DidStopLoading() {
+  if (!did_call_start_loading_)
+    return;
+
+  pp::PDF::DidStopLoading(this);
+  did_call_start_loading_ = false;
 }
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {
