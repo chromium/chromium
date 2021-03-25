@@ -187,7 +187,7 @@ public class StartSurfaceConfiguration {
      * when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled.
      */
     public static boolean consumeFocusOnOmnibox(Tab tab, Layout layout) {
-        if (layout instanceof StaticLayout && tab != null
+        if (tab != null && tab.getUrl().isEmpty() && layout instanceof StaticLayout
                 && StartSurfaceUserData.getFocusOnOmnibox(tab)) {
             assert OMNIBOX_FOCUSED_ON_NEW_TAB.getValue();
             StartSurfaceUserData.setFocusOnOmnibox(tab, false);
