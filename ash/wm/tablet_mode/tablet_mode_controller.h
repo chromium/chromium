@@ -134,7 +134,7 @@ class ASH_EXPORT TabletModeController
   // about to be initialized. When it is about to be shutdown, we are considered
   // out of tablet mode.
   bool InTabletMode() const override;
-  void ForceUiTabletModeState(base::Optional<bool> enabled) override;
+  bool ForceUiTabletModeState(base::Optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;
 
   // ShellObserver:

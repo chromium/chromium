@@ -3118,8 +3118,15 @@ AutotestPrivateSetTabletModeEnabledFunction::Run() {
   std::unique_ptr<api::autotest_private::SetTabletModeEnabled::Params> params(
       api::autotest_private::SetTabletModeEnabled::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
+  auto* tablet_mode = ash::TabletMode::Get();
+  if (tablet_mode->InTabletMode() == params->enabled) {
+    return RespondNow(
+        OneArgument(base::Value(ash::TabletMode::Get()->InTabletMode())));
+  }
+
   ash::TabletMode::Waiter waiter(params->enabled);
-  ash::TabletMode::Get()->ForceUiTabletModeState(params->enabled);
+  if (!tablet_mode->ForceUiTabletModeState(params->enabled))
+    return RespondNow(Error("failed to switch the tablet mode state"));
   waiter.Wait();
   return RespondNow(
       OneArgument(base::Value(ash::TabletMode::Get()->InTabletMode())));

@@ -538,14 +538,14 @@ bool TabletModeController::InTabletMode() const {
   return tablet_state_.InTabletMode();
 }
 
-void TabletModeController::ForceUiTabletModeState(
+bool TabletModeController::ForceUiTabletModeState(
     base::Optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;
     AccelerometerReader::GetInstance()->SetEnabled(true);
     if (!SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState()))
-      UpdateUiTabletState();
-    return;
+      return UpdateUiTabletState();
+    return true;
   }
   if (*enabled) {
     tablet_mode_behavior_ = kOnForAutotest;
@@ -557,7 +557,7 @@ void TabletModeController::ForceUiTabletModeState(
   // this should not block ScreenOrientationController as the screen may want
   // to be rotated for other factors.
   AccelerometerReader::GetInstance()->SetEnabled(false);
-  SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+  return SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
 }
 
 void TabletModeController::SetEnabledForTest(bool enabled) {
@@ -1311,7 +1311,7 @@ bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {
     return true;
 
   UpdateInternalInputDevicesEventBlocker();
-  return true;
+  return false;
 }
 
 bool TabletModeController::UpdateUiTabletState() {
