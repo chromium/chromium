@@ -349,6 +349,23 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   }
 
   /**
+   * Gets the translate target language (in most cases, the display locale).
+   * @param {function(string):void} callback
+   */
+  getTranslateTargetLanguage(callback) {
+    callback('en');
+  }
+
+  /**
+   * Sets the translate target language.
+   * @param {string} languageCode
+   */
+  setTranslateTargetLanguage(languageCode) {
+    this.settingsPrefs_.push(
+        'prefs.translate_recent_target.value', languageCode);
+  }
+
+  /**
    * Gets the current status of the chosen spell check dictionaries.
    * @param {function(!Array<
    *     !chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>):void}
@@ -383,14 +400,6 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
   removeSpellcheckWord(word) {
     /** @type {FakeChromeEvent} */ (this.onCustomDictionaryChanged)
         .callListeners([], [word]);
-  }
-
-  /**
-   * Gets the translate target language (in most cases, the display locale).
-   * @param {function(string):void} callback
-   */
-  getTranslateTargetLanguage(callback) {
-    setTimeout(callback.bind(null, 'en'));
   }
 
   /**
@@ -515,6 +524,11 @@ export function getFakeLanguagePrefs() {
       key: 'translate_blocked_languages',
       type: chrome.settingsPrivate.PrefType.LIST,
       value: ['en-US'],
+    },
+    {
+      key: 'translate_recent_target',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'en-US',
     }
   ];
   if (isChromeOS) {

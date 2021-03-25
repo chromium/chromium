@@ -90,6 +90,12 @@ LanguageSettingsPrivate.prototype = {
   getTranslateTargetLanguage: function(callback) {},
 
   /**
+   * Sets the translate target language given a language code.
+   * @param {string} languageCode
+   */
+  setTranslateTargetLanguage: function(languageCode) {},
+
+  /**
    * Gets all supported input methods, including third-party IMEs. Chrome OS
    * only.
    * @param {function(!chrome.languageSettingsPrivate.InputMethodLists):void}

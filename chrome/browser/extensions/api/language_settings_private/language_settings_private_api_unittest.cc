@@ -238,6 +238,36 @@ TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
   }
 }
 
+TEST_F(LanguageSettingsPrivateApiTest, SetTranslateTargetLanguageTest) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
+      ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
+
+  std::vector<std::string> content_languages_before;
+  translate_prefs_->GetLanguageList(&content_languages_before);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(std::vector<std::string>({"en-US"}), content_languages_before);
+#else
+  ASSERT_EQ(std::vector<std::string>({"en-US", "en"}),
+            content_languages_before);
+#endif
+  translate_prefs_->SetRecentTargetLanguage("en");
+  ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "en");
+
+  auto function = base::MakeRefCounted<
+      LanguageSettingsPrivateSetTranslateTargetLanguageFunction>();
+
+  std::unique_ptr<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                       "[\"af\"]", profile());
+  ASSERT_EQ(translate_prefs_->GetRecentTargetLanguage(), "af");
+
+  std::vector<std::string> content_languages_after;
+  translate_prefs_->GetLanguageList(&content_languages_after);
+  ASSERT_EQ(std::vector<std::string>({"en-US", "en", "af"}),
+            content_languages_after);
+}
+
 TEST_F(LanguageSettingsPrivateApiTest, GetLanguageListTest) {
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   RunGetLanguageListTest();

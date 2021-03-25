@@ -26894,6 +26894,7 @@ Called by update_extension_histograms.py.-->
       label="LANGUAGESETTINGSPRIVATE_SETLANGUAGEALWAYSTRANSLATESTATE"/>
   <int value="1546" label="ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG"/>
   <int value="1547" label="AUTOTESTPRIVATE_INSTALLBOREALIS"/>
+  <int value="1548" label="LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE"/>
 </enum>
 
 <enum name="ExtensionIconState">

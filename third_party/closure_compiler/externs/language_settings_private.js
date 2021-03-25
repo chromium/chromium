@@ -147,6 +147,12 @@ chrome.languageSettingsPrivate.removeSpellcheckWord = function(word) {};
 chrome.languageSettingsPrivate.getTranslateTargetLanguage = function(callback) {};
 
 /**
+ * Sets the translate target language given a language code.
+ * @param {string} languageCode
+ */
+chrome.languageSettingsPrivate.setTranslateTargetLanguage = function(languageCode) {};
+
+/**
  * Gets all supported input methods, including third-party IMEs. Chrome OS only.
  * @param {function(!chrome.languageSettingsPrivate.InputMethodLists): void}
  *     callback

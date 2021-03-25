@@ -189,6 +189,8 @@ Polymer({
         'prefs.spellcheck.blocked_dictionaries.value.*, languages)',
     'translateLanguagesPrefChanged_(' +
         'prefs.translate_blocked_languages.value.*, languages)',
+    'translateTargetPrefChanged_(' +
+        'prefs.translate_recent_target.value, languages)',
     'updateRemovableLanguages_(' +
         'prefs.intl.app_locale.value, languages.enabled)',
     'updateRemovableLanguages_(' +
@@ -542,6 +544,16 @@ Polymer({
       this.set(
           'languages.enabled.' + i + '.translateEnabled', translateEnabled);
     }
+  },
+
+  /** @private */
+  translateTargetPrefChanged_() {
+    if (this.prefs === undefined || this.languages === undefined) {
+      return;
+    }
+    this.set(
+        'languages.translateTarget',
+        this.getPref('translate_recent_target').value);
   },
 
   /**
@@ -1008,6 +1020,15 @@ Polymer({
   disableTranslateLanguage(languageCode) {
     this.languageSettingsPrivate_.setEnableTranslationForLanguage(
         languageCode, false);
+  },
+
+  /**
+   * Sets the translate target language and adds it to the content languages if
+   * not already there.
+   * @param {string} languageCode
+   */
+  setTranslateTargetLanguage(languageCode) {
+    this.languageSettingsPrivate_.setTranslateTargetLanguage(languageCode);
   },
 
   /**

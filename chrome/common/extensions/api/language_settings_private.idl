@@ -133,6 +133,9 @@ namespace languageSettingsPrivate {
     static void getTranslateTargetLanguage(
         GetTranslateTargetLanguageCallback callback);
 
+    // Sets the translate target language given a language code.
+    static void setTranslateTargetLanguage(DOMString languageCode);
+
     // Gets all supported input methods, including third-party IMEs.
     // Chrome OS only.
     static void getInputMethodLists(GetInputMethodListsCallback callback);

@@ -669,6 +669,36 @@ LanguageSettingsPrivateGetTranslateTargetLanguageFunction::Run() {
       profile->GetPrefs(), language_model))));
 }
 
+LanguageSettingsPrivateSetTranslateTargetLanguageFunction::
+    LanguageSettingsPrivateSetTranslateTargetLanguageFunction()
+    : chrome_details_(this) {}
+
+LanguageSettingsPrivateSetTranslateTargetLanguageFunction::
+    ~LanguageSettingsPrivateSetTranslateTargetLanguageFunction() = default;
+
+ExtensionFunction::ResponseAction
+LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
+  const auto parameters =
+      language_settings_private::SetTranslateTargetLanguage::Params::Create(
+          *args_);
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  const std::string& language_code = parameters->language_code;
+
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(
+          chrome_details_.GetProfile()->GetPrefs());
+
+  std::string chrome_language = language_code;
+  translate_prefs->AddToLanguageList(language_code, false);
+
+  if (language_code == translate_prefs->GetRecentTargetLanguage()) {
+    return RespondNow(NoArguments());
+  }
+  translate_prefs->SetRecentTargetLanguage(language_code);
+
+  return RespondNow(NoArguments());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Populates the vector of input methods using information in the list of
 // descriptors. Used for languageSettingsPrivate.getInputMethodLists().

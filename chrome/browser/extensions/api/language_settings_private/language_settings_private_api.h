@@ -270,6 +270,28 @@ class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
       LanguageSettingsPrivateGetTranslateTargetLanguageFunction);
 };
 
+// Implements the languageSettingsPrivate.setTranslateTargetLanguage method.
+class LanguageSettingsPrivateSetTranslateTargetLanguageFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateSetTranslateTargetLanguageFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.setTranslateTargetLanguage",
+      LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE)
+
+ protected:
+  ~LanguageSettingsPrivateSetTranslateTargetLanguageFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateSetTranslateTargetLanguageFunction);
+};
+
 // Implements the languageSettingsPrivate.getInputMethodLists method.
 class LanguageSettingsPrivateGetInputMethodListsFunction
     : public ExtensionFunction {
