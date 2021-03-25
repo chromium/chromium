@@ -98,6 +98,7 @@ class PendingApprovals {
   std::unique_ptr<WebstoreInstaller::Approval> PopApproval(
       Profile* profile,
       const std::string& id);
+  void Clear();
 
  private:
   using ApprovalList =
@@ -128,6 +129,10 @@ std::unique_ptr<WebstoreInstaller::Approval> PendingApprovals::PopApproval(
     }
   }
   return std::unique_ptr<WebstoreInstaller::Approval>();
+}
+
+void PendingApprovals::Clear() {
+  approvals_.clear();
 }
 
 api::webstore_private::Result WebstoreInstallHelperResultToApiResult(
@@ -336,6 +341,10 @@ std::unique_ptr<WebstoreInstaller::Approval>
 WebstorePrivateApi::PopApprovalForTesting(Profile* profile,
                                           const std::string& extension_id) {
   return g_pending_approvals.Get().PopApproval(profile, extension_id);
+}
+
+void WebstorePrivateApi::ClearPendingApprovalsForTesting() {
+  g_pending_approvals.Get().Clear();
 }
 
 WebstorePrivateBeginInstallWithManifest3Function::
@@ -689,6 +698,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed() {
   approval->skip_post_install_ui = !!details().enable_launcher;
   approval->dummy_extension = dummy_extension_.get();
   approval->installing_icon = gfx::ImageSkia::CreateFrom1xBitmap(icon_);
+  approval->bypassed_safebrowsing_friction = friction_dialog_shown_;
   if (details().authuser)
     approval->authuser = *details().authuser;
   g_pending_approvals.Get().PushApproval(std::move(approval));

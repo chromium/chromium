@@ -235,6 +235,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
   void set_do_not_sync(bool val) {
     set_install_flag(kInstallFlagDoNotSync, val);
   }
+  void set_bypassed_safebrowsing_friction_for_testing(bool val) {
+    set_install_flag(kInstallFlagBypassedSafeBrowsingFriction, val);
+  }
 
   // Virtual for testing.
   virtual void set_installer_callback(InstallerResultCallback callback);

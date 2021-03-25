@@ -619,6 +619,15 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
         extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
   }
 
+  void SetUp() override {
+    WebstorePrivateBeginInstallWithManifest3Test::SetUp();
+
+    // Clear the pending approvals. Leftover approvals can stay pending when
+    // testing the `webstorePrivate.beginInstallWithManifest3` function
+    // without calling `webstorePrivate.completeInstall`.
+    WebstorePrivateApi::ClearPendingApprovalsForTesting();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -665,6 +674,16 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
 
   EXPECT_EQ(test_case.expected_friction_shown,
             function->GetFrictionDialogShownForTesting());
+
+  std::unique_ptr<WebstoreInstaller::Approval> approval =
+      WebstorePrivateApi::PopApprovalForTesting(profile(), kExtensionId);
+  if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
+    ASSERT_TRUE(approval);
+    EXPECT_EQ(test_case.expected_friction_shown,
+              approval->bypassed_safebrowsing_friction);
+  } else {
+    EXPECT_FALSE(approval);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

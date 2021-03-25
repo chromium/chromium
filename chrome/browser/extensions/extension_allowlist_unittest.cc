@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_allowlist.h"
 
+#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
@@ -20,6 +21,7 @@ namespace {
 constexpr char kExtensionId1[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 constexpr char kExtensionId2[] = "hpiknbiabeeppbpihjehijgoemciehgk";
 constexpr char kExtensionId3[] = "bjafgdebaacbbbecmhlhpofkepfkgcpa";
+constexpr char kInstalledCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 
 }  // namespace
 
@@ -585,6 +587,33 @@ TEST_F(ExtensionAllowlistUnitTest, TurnOffEnhancedProtection) {
   EXPECT_EQ(
       ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
       extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId3));
+}
+
+TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
+  CreateExtensionService(/*enhanced_protection_enabled=*/true);
+
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  installer->set_allow_silent_install(true);
+  installer->set_bypassed_safebrowsing_friction_for_testing(true);
+
+  base::RunLoop run_loop;
+  installer->set_installer_callback(base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         const base::Optional<CrxInstallError>& error) {
+        ASSERT_FALSE(error) << error->message();
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitWhenIdleClosure()));
+
+  installer->InstallCrx(data_dir().AppendASCII("good.crx"));
+  run_loop.Run();
+
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(kInstalledCrx));
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            extension_prefs()->GetExtensionAllowlistState(kInstalledCrx));
+  EXPECT_EQ(
+      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kInstalledCrx));
 }
 
 class ExtensionAllowlistWithFeatureDisabledUnitTest

@@ -48,6 +48,9 @@ class WebstorePrivateApi {
   static std::unique_ptr<WebstoreInstaller::Approval> PopApprovalForTesting(
       Profile* profile,
       const std::string& extension_id);
+
+  // Clear the pending approvals. This should be used for testing only.
+  static void ClearPendingApprovalsForTesting();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function

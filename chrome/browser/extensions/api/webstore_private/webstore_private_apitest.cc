@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -34,10 +36,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/extension_install_ui.h"
+#include "extensions/common/extension_features.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -70,6 +74,8 @@ namespace utils = extension_function_test_utils;
 namespace extensions {
 
 namespace {
+
+constexpr char kExtensionId[] = "enfkhcelefdadlmkffamgdlgplcionje";
 
 class WebstoreInstallListener : public WebstoreInstaller::Delegate {
  public:
@@ -326,7 +332,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IconUrl) {
 // Tests that the Approvals are properly created in beginInstall.
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   std::string appId = "iladmdjkfniedhfhcfoefgojhgaiaccc";
-  std::string extensionId = "enfkhcelefdadlmkffamgdlgplcionje";
   ASSERT_TRUE(RunInstallTest("begin_install.html", "extension.crx"));
 
   std::unique_ptr<WebstoreInstaller::Approval> approval =
@@ -337,9 +342,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
   EXPECT_EQ("2", approval->authuser);
   EXPECT_EQ(browser()->profile(), approval->profile);
 
-  approval = WebstorePrivateApi::PopApprovalForTesting(
-      browser()->profile(), extensionId);
-  EXPECT_EQ(extensionId, approval->extension_id);
+  approval = WebstorePrivateApi::PopApprovalForTesting(browser()->profile(),
+                                                       kExtensionId);
+  EXPECT_EQ(kExtensionId, approval->extension_id);
   EXPECT_FALSE(approval->use_app_installed_bubble);
   EXPECT_FALSE(approval->skip_post_install_ui);
   EXPECT_TRUE(approval->authuser.empty());
@@ -643,6 +648,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateGetReferrerChainApiTest,
 
   GURL page_url = GetTestServerURLWithReferrers("empty_referrer_chain.html");
   ASSERT_TRUE(RunExtensionTest({.page_url = page_url.spec().c_str()}));
+}
+
+class ExtensionWebstorePrivateApiAllowlistEnforcementTest
+    : public ExtensionWebstorePrivateApiTest {
+ public:
+  ExtensionWebstorePrivateApiAllowlistEnforcementTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       EnhancedSafeBrowsingNotAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::ENHANCED_PROTECTION);
+  ASSERT_TRUE(
+      RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+  EXPECT_EQ(
+      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+      extension_prefs->GetExtensionAllowlistAcknowledgeState(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       EnhancedSafeBrowsingAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::ENHANCED_PROTECTION);
+  ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_UNDEFINED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
+                       StandardSafeBrowsingNotAllowlisted) {
+  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                                      safe_browsing::STANDARD_PROTECTION);
+  ASSERT_TRUE(
+      RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
+  EXPECT_EQ(ALLOWLIST_UNDEFINED,
+            extension_prefs->GetExtensionAllowlistState(kExtensionId));
 }
 
 }  // namespace extensions

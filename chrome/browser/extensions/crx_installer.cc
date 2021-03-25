@@ -154,6 +154,9 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
   if (approval->minimum_version.get())
     minimum_version_ = base::Version(*approval->minimum_version);
 
+  if (approval->bypassed_safebrowsing_friction)
+    install_flags_ = kInstallFlagBypassedSafeBrowsingFriction;
+
   show_dialog_callback_ = approval->show_dialog_callback;
 }
 
