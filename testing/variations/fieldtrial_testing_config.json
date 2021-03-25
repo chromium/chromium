@@ -4694,6 +4694,29 @@
             ]
         }
     ],
+    "OptimizationHintsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210323",
+                    "enable_features": [
+                        "OptimizationHints"
+                    ],
+                    "disable_features": [
+                        "OptimizationGuideModelDownloading",
+                        "OptimizationHintsFetching"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizedRealtimeThreadingMac": [
         {
             "platforms": [
