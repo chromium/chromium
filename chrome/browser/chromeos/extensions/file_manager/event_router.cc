@@ -939,25 +939,17 @@ void EventRouter::OnUnshare(const std::string& vm_name,
 }
 
 void EventRouter::OnTabletModeStarted() {
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnTabletModeChanged::kEventName)) {
-    DispatchEventToExtension(
-        profile_, extension_id,
-        extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
-        file_manager_private::OnTabletModeChanged::kEventName,
-        file_manager_private::OnTabletModeChanged::Create(/*enabled=*/true));
-  }
+  BroadcastEvent(
+      profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
+      file_manager_private::OnTabletModeChanged::kEventName,
+      file_manager_private::OnTabletModeChanged::Create(/*enabled=*/true));
 }
 
 void EventRouter::OnTabletModeEnded() {
-  for (const auto& extension_id : GetEventListenerExtensionIds(
-           profile_, file_manager_private::OnTabletModeChanged::kEventName)) {
-    DispatchEventToExtension(
-        profile_, extension_id,
-        extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
-        file_manager_private::OnTabletModeChanged::kEventName,
-        file_manager_private::OnTabletModeChanged::Create(/*enabled=*/false));
-  }
+  BroadcastEvent(
+      profile_, extensions::events::FILE_MANAGER_PRIVATE_ON_TABLET_MODE_CHANGED,
+      file_manager_private::OnTabletModeChanged::kEventName,
+      file_manager_private::OnTabletModeChanged::Create(/*enabled=*/false));
 }
 
 void EventRouter::OnCrostiniChanged(
