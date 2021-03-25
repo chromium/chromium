@@ -225,6 +225,10 @@ mojo::internal::ContainerValidateParams::key_validate_params
 mojo::internal::ContainerValidateParams::element_validate_params
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
 
+# Populated manually - usually on-stack pointer, pointing back to the collection
+# being iterated, owned by object that iterates over it.
+base::internal::circular_deque_const_iterator::parent_deque_
+
 # Populated manually - using mmap, MapViewOfFile or base::AllocPages directly
 blink::GCInfoTable::table_
 cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
