@@ -15,6 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.services.ComponentsProviderPathUtil;
+import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.util.EmbeddedComponentLoaderFactory;
@@ -44,7 +46,6 @@ public class EmbeddedComponentLoaderTest {
     private static CallbackHelper sOnComponentLoadFailedHelper = new CallbackHelper();
     private static List<String> sNativeErrors;
 
-    private static final String TEST_DIRECTORY_NAME = "MockComponentsProviderService_Dir";
     private static final String TEST_COMPONENT_ID = "jebgalgnebhfojomionfpkfelancnnkf";
     private static final String MANIFEST_JSON_STRING = "{"
             + "\n\"manifest_version\": 2,"
@@ -83,7 +84,17 @@ public class EmbeddedComponentLoaderTest {
 
     @Test
     @MediumTest
+    public void testLoadComponentsFromMockComponentsProviderService() throws Exception {
+        loadComponents(MockComponentsProviderService.class);
+    }
+
+    @Test
+    @MediumTest
     public void testLoadComponents() throws Exception {
+        loadComponents(ComponentsProviderService.class);
+    }
+
+    private void loadComponents(Class serviceClass) throws Exception {
         int onComponentLoadedCallCount = sOnComponentLoadedHelper.getCallCount();
         int onComponentLoadFailedCallCount = sOnComponentLoadFailedHelper.getCallCount();
 
@@ -94,8 +105,7 @@ public class EmbeddedComponentLoaderTest {
         FileUtils.copyStreamToFile(
                 new ByteArrayInputStream(MANIFEST_JSON_STRING.getBytes()), manifestFile);
 
-        Intent intent = new Intent(
-                ContextUtils.getApplicationContext(), MockComponentsProviderService.class);
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), serviceClass);
         intent.putExtra(TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
@@ -131,6 +141,7 @@ public class EmbeddedComponentLoaderTest {
     }
 
     private static File getTestDirectory() {
-        return new File(ContextUtils.getApplicationContext().getFilesDir(), TEST_DIRECTORY_NAME);
+        return new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath(),
+                TEST_COMPONENT_ID + "/3_123.456.789");
     }
 }
