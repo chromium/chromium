@@ -80,7 +80,8 @@ void TileServiceImpl::PurgeDb() {
 void TileServiceImpl::SetServerUrl(const std::string& base_url) {
   if (base_url.empty())
     return;
-  tile_fetcher_->SetServerUrl(TileConfig::GetQueryTilesServerUrl(base_url));
+  tile_fetcher_->SetServerUrl(
+      TileConfig::GetQueryTilesServerUrl(base_url, true));
 }
 
 void TileServiceImpl::OnFetchFinished(

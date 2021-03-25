@@ -352,4 +352,8 @@ public abstract class AppHooks {
     public boolean canStartForegroundServiceWhileInvisible() {
         return true;
     }
+
+    public String getDefaultQueryTilesServerUrl() {
+        return "";
+    }
 }

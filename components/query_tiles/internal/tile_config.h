@@ -65,11 +65,14 @@ extern const char kTileShufflePositionKey[];
 
 class TileConfig {
  public:
-  // Gets the URL for the Query Tiles server.
-  static GURL GetQueryTilesServerUrl();
-
-  // Gets the URL for the Query Tiles server, given the server address.
-  static GURL GetQueryTilesServerUrl(const std::string& base_url);
+  // Gets the URL for the Query Tiles service. If
+  // |override_field_trial_param_value_if_empty| is false, server URL provided
+  // by field trial param is preferred over |base_url|. Otherwise, |base_url| is
+  // used. This method could return an empty URL if no valid URL is provided
+  // though |base_url| or field trial param.
+  static GURL GetQueryTilesServerUrl(
+      const std::string& base_url,
+      bool override_field_trial_param_value_if_empty);
 
   // Gets whether running the background task requires unmeter network
   // condition.

@@ -11,9 +11,6 @@
 
 namespace query_tiles {
 
-// Default base URL string for the Query Tiles server.
-constexpr char kDefaultBaseURL[] = "https://chromeupboarding-pa.googleapis.com";
-
 // Default URL string for GetQueryTiles RPC.
 constexpr char kDefaultGetQueryTilePath[] = "/v1/querytiles";
 
@@ -119,15 +116,21 @@ const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
 }  // namespace
 
 // static
-GURL TileConfig::GetQueryTilesServerUrl() {
-  return GetQueryTilesServerUrl(base::GetFieldTrialParamValueByFeature(
-      features::kQueryTiles, kBaseURLKey));
-}
+GURL TileConfig::GetQueryTilesServerUrl(
+    const std::string& base_url,
+    bool override_field_trial_param_value_if_empty) {
+  std::string url = base_url;
+  if (!override_field_trial_param_value_if_empty) {
+    std::string field_trial_server_url = base::GetFieldTrialParamValueByFeature(
+        features::kQueryTiles, kBaseURLKey);
+    if (!field_trial_server_url.empty())
+      url = field_trial_server_url;
+  }
 
-// static
-GURL TileConfig::GetQueryTilesServerUrl(const std::string& base_url) {
-  GURL server_url = base_url.empty() ? GURL(kDefaultBaseURL) : GURL(base_url);
-  return BuildGetQueryTileURL(server_url, kDefaultGetQueryTilePath);
+  if (url.empty())
+    return GURL();
+
+  return BuildGetQueryTileURL(GURL(url), kDefaultGetQueryTilePath);
 }
 
 // static
