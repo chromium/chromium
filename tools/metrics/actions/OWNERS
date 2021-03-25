@@ -1,8 +1,9 @@
-# Note: Please send CLs to chromium-metrics-reviews@google.com rather than to
-# specific individuals. These CLs will be automatically reassigned to a reviewer
-# within about 5 minutes. This approach helps our team to load-balance incoming
-# reviews. Googlers can read more about this at go/gwsq-gerrit.
+# When sending a CL with metrics for review, if a member of
+# METRIC_REVIEWER_OWNERS is a good choice of reviewer, please send the CL to
+# them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
+# can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
 per-file actions.xml=file://base/metrics/OWNERS
+per-file actions.xml=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
 
 # Metrics changes should always be reviewed by owners.
 per-file actions.xml=set noparent

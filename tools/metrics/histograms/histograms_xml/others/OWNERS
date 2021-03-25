@@ -1,9 +1,5 @@
-# Prefer chromium-metrics-reviews@google.com instead.
-# Use the following owners only if:
-#  - The reviewer is available for review.
-#  - You work in the same area as them.
-#  - They are already a good reviewer for the non-metrics part of the CL.
-# See tools/metrics/histograms/histograms_xml/OWNERS for details.
-csharrison@chromium.org
-tbansal@chromium.org
-tby@chromium.org
+# When sending a CL with metrics for review, if a member of
+# METRIC_REVIEWER_OWNERS is a good choice of reviewer, please send the CL to
+# them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
+# can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
+per-file histograms.xml=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
