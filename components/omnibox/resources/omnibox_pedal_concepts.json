@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-03-20T02:15:33.628Z",
+  "time_generated": "2021-03-24T01:34:39.962Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -56,7 +56,7 @@
       "id": 7,
       "name": "RUN_CHROME_SAFETY_CHECK",
       "enabled": true,
-      "url": "chrome://settings/safetyCheck",
+      "url": "chrome://settings/safetyCheck?activate",
       "description": "Run a Safety Check in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK",
       "tags": ""
     },
@@ -104,71 +104,71 @@
       "id": 13,
       "name": "CREATE_GOOGLE_DOC",
       "enabled": true,
-      "url": "https://doc.new",
-      "description": "Create a new Google Doc quickly\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC",
+      "url": "https://docs.google.com/document/u/0/create?usp=chrome_actions",
+      "description": "Create a new Google Doc quickly (like doc.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC",
       "tags": ""
     },
     {
       "id": 14,
       "name": "CREATE_GOOGLE_SHEET",
       "enabled": true,
-      "url": "https://sheet.new",
-      "description": "Create a new Google Sheet quickly\n",
+      "url": "https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions",
+      "description": "Create a new Google Sheet quickly (like sheet.new)\n",
       "tags": ""
     },
     {
       "id": 15,
       "name": "CREATE_GOOGLE_SLIDE",
       "enabled": true,
-      "url": "https://slide.new",
-      "description": "Create new Google Slides quickly",
+      "url": "https://docs.google.com/presentation/u/0/create?usp=chrome_actions",
+      "description": "Create new Google Slides quickly (like slide.new)",
       "tags": ""
     },
     {
       "id": 16,
       "name": "CREATE_GOOGLE_CALENDAR_EVENT",
       "enabled": true,
-      "url": "https://cal.new",
-      "description": "Create a new Google Calendar event quickly",
+      "url": "https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions",
+      "description": "Create a new Google Calendar event quickly (like cal.new)",
       "tags": ""
     },
     {
       "id": 17,
       "name": "CREATE_GOOGLE_SITE",
       "enabled": true,
-      "url": "https://site.new",
-      "description": "Create a new Google Site quickly",
+      "url": "https://sites.google.com/u/0/create?usp=chrome_actions",
+      "description": "Create a new Google Site quickly (like site.new)",
       "tags": ""
     },
     {
       "id": 18,
       "name": "CREATE_GOOGLE_KEEP_NOTE",
       "enabled": true,
-      "url": "https://keep.new",
-      "description": "Create a new Google Keep note quickly",
+      "url": "https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE",
+      "description": "Create a new Google Keep note quickly (like keep.new)",
       "tags": ""
     },
     {
       "id": 19,
       "name": "CREATE_GOOGLE_FORM",
       "enabled": true,
-      "url": "https://form.new",
-      "description": "Create a new Google Form quickly",
+      "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions",
+      "description": "Create a new Google Form quickly (like form.new)",
       "tags": ""
     },
     {
       "id": 20,
       "name": "COMPOSE_EMAIL_IN_GMAIL",
       "enabled": true,
-      "url": "https://mail.new",
-      "description": "Create an email in Gmail quickly",
+      "url": "https://mail.google.com/mail/u/0/?usp=dot_new#inbox?compose=new",
+      "description": "Create an email in Gmail quickly (like mail.new)",
       "tags": ""
     },
     {
       "id": 21,
       "name": "SEE_CHROME_TIPS",
       "enabled": true,
-      "url": "",
+      "url": "https://www.google.com/chrome/tips/",
       "description": "Learn about new Chrome features",
       "tags": ""
     },
@@ -176,7 +176,7 @@
       "id": 22,
       "name": "MANAGE_GOOGLE_ACCOUNT",
       "enabled": true,
-      "url": "",
+      "url": "https://myaccount.google.com/?utm_source=ga-chrome-actions&utm_medium=manageGA",
       "description": "Manage your Google Account",
       "tags": ""
     },
@@ -186,6 +186,14 @@
       "enabled": true,
       "url": "",
       "description": "Clear your YouTube history in My Activity",
+      "tags": ""
+    },
+    {
+      "id": 24,
+      "name": "CHANGE_GOOGLE_PASSWORD",
+      "enabled": true,
+      "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW",
+      "description": "Change the password for your Google Account",
       "tags": ""
     }
   ],
@@ -804,6 +812,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -1452,6 +1481,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -2272,6 +2322,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -2889,6 +2960,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -3605,6 +3697,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -4223,6 +4336,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -4883,6 +5017,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -5507,6 +5662,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -6151,6 +6327,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -6824,14 +7021,33 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google sheet"
+                "google workspace",
+                "google chrome",
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "spreadsheet",
+                "sheet",
+                "trix"
               ]
             }
           ],
@@ -6840,12 +7056,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create sheet",
+            "description_text": "Create a new Google Sheet quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Sheet quickly",
+            "spoken_button_focus_announcement": "Create sheet button, press Enter to create a new Google Sheet quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:40:51.586Z"
         },
         {
           "id": 15,
@@ -6854,30 +7070,46 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google slides",
-                "google slide"
+                "presentation",
+                "slide",
+                "preso",
+                "deck"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             }
           ],
           "cover_cases": [
-            "create google slide",
-            "create google slides"
+            "create google slide"
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create presentation",
+            "description_text": "Create a new Google presentation in Slides quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google presentation in Slides quickly",
+            "spoken_button_focus_announcement": "Create presentation button, press Enter to create a new Google presentation in Slides quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:41:59.892Z"
         },
         {
           "id": 16,
@@ -6886,21 +7118,34 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "schedule",
+                "create",
+                "start",
+                "open",
+                "make",
+                "new",
+                "add"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google calendar"
-              ]
-            },
-            {
-              "required": false,
-              "single": true,
-              "synonyms": [
-                "event"
+                "calendar",
+                "invite",
+                "event",
+                "cal"
               ]
             }
           ],
@@ -6909,12 +7154,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create event",
+            "description_text": "Create a new event in Google Calendar quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new event in Google Calendar quickly",
+            "spoken_button_focus_announcement": "Create event button, press Enter to create a new event in Google Calendar quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:42:57.996Z"
         },
         {
           "id": 17,
@@ -6923,14 +7168,30 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google site"
+                "website",
+                "site"
               ]
             }
           ],
@@ -6939,12 +7200,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create site",
+            "description_text": "Create a new site in Google Site quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
+            "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:43:41.967Z"
         },
         {
           "id": 18,
@@ -6953,14 +7214,29 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google keep note"
+                "note"
               ]
             }
           ],
@@ -6969,12 +7245,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create note",
+            "description_text": "Create a new note in Google Keep quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new note in Google Keep quickly",
+            "spoken_button_focus_announcement": "Create note button, press Enter to create a new note in Google Keep quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:44:32.522Z"
         },
         {
           "id": 19,
@@ -6983,14 +7259,30 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": false,
+              "synonyms": [
+                "workspace",
+                "browser",
+                "g suite",
+                "chrome",
+                "google"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google form"
+                "survey",
+                "form"
               ]
             }
           ],
@@ -6999,12 +7291,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create form",
+            "description_text": "Create a new form in Google Form quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
+            "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:45:11.949Z"
         },
         {
           "id": 20,
@@ -7013,21 +7305,34 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "compose"
+                "compose",
+                "create",
+                "write",
+                "start",
+                "send",
+                "make",
+                "open",
+                "new"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "gmail"
+                "message",
+                "gmail",
+                "email"
               ]
             },
             {
               "required": false,
-              "single": true,
+              "single": false,
               "synonyms": [
-                "email"
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome"
               ]
             }
           ],
@@ -7037,12 +7342,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Compose message",
+            "description_text": "Create an email in Gmail quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create an email in Gmail quickly",
+            "spoken_button_focus_announcement": "Compose message button, press Enter to create an email in Gmail quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:47:35.920Z"
         },
         {
           "id": 21,
@@ -7051,13 +7356,29 @@
               "required": true,
               "single": true,
               "synonyms": [
+                "make the most of",
+                "understand",
+                "explore",
+                "learn",
+                "visit",
                 "see"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "browser",
+                "google"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
+                "new chrome features",
+                "chrome tips center",
+                "chrome features",
                 "chrome tips"
               ]
             }
@@ -7067,12 +7388,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "See Chrome tips",
+            "description_text": "Learn about Chrome features",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to learn about Chrome features",
+            "spoken_button_focus_announcement": "See Chrome tips button, press Enter to learn about Chrome features"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:46:23.220Z"
         },
         {
           "id": 22,
@@ -7081,14 +7402,18 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "manage"
+                "control google account",
+                "manage google account",
+                "adjust google account",
+                "fix google account"
               ]
             },
             {
-              "required": true,
-              "single": true,
+              "required": false,
+              "single": false,
               "synonyms": [
-                "google account"
+                "browser",
+                "chrome"
               ]
             }
           ],
@@ -7097,12 +7422,12 @@
           ],
           "enabled": false,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage Google Account",
+            "description_text": "Manage your info, privacy, and security in your Google Account",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your info, privacy, and security in your Google Account",
+            "spoken_button_focus_announcement": "Manage Google Account, press Enter to manage your info, privacy, and security in your Google Account"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-24T00:48:39.653Z"
         },
         {
           "id": 23,
@@ -7111,14 +7436,18 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "clear"
+                "delete youtube history",
+                "clear youtube history",
+                "wipe youtube history"
               ]
             },
             {
-              "required": true,
-              "single": true,
+              "required": false,
+              "single": false,
               "synonyms": [
-                "youtube history"
+                "browser",
+                "google",
+                "chrome"
               ]
             }
           ],
@@ -7133,6 +7462,40 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "account password change",
+                "change google password",
+                "change gmail password",
+                "google reset password",
+                "gmail reset password"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "browser",
+                "chrome",
+                "google"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "Change Google password",
+            "description_text": "Change the password for your Google Account",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
+            "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
+          },
+          "date_modified_omnibox_ui_strings": "2021-03-24T01:29:35.525Z"
         }
       ],
       "tokenize_each_character": false
@@ -7759,6 +8122,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -8418,6 +8802,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -9057,6 +9462,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -9674,6 +10100,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -10328,6 +10775,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -10942,6 +11410,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -11584,6 +12073,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -12312,6 +12822,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -12929,6 +13460,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -13616,6 +14168,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -14257,6 +14830,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -14880,6 +15474,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -15543,6 +16158,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -16155,6 +16791,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -16811,6 +17468,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -17502,6 +18180,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": true
@@ -18122,6 +18821,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -18770,6 +19490,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -19383,6 +20124,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -20037,6 +20799,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -20654,6 +21437,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -21310,6 +22114,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -21921,6 +22746,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -22580,6 +23426,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -23294,6 +24161,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -23918,6 +24806,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -24574,6 +25483,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -25200,6 +26130,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -25868,6 +26819,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -26510,6 +27482,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -27126,6 +28119,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -27882,6 +28896,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -28525,6 +29560,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -29140,6 +30196,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -29804,6 +30881,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -30442,6 +31540,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -31059,6 +32178,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -31739,6 +32879,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -32371,6 +33532,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
@@ -33027,6 +34209,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": false
@@ -33665,6 +34868,27 @@
             "spoken_button_focus_announcement": ""
           },
           "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         }
       ],
       "tokenize_each_character": true
@@ -34279,6 +35503,27 @@
         },
         {
           "id": 23,
+          "groups": [
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "一時的踏板placeholder"
+              ]
+            }
+          ],
+          "cover_cases": [],
+          "enabled": false,
+          "omnibox_ui_strings": {
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
+          },
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+        },
+        {
+          "id": 24,
           "groups": [
             {
               "required": true,
