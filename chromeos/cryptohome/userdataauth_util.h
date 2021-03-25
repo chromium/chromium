@@ -28,6 +28,12 @@ COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const base::Optional<GetKeyDataReply>& reply);
 
+// Extracts the account's disk usage size from |reply|.
+// If |reply| is malformed, returns -1.
+COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
+int64_t AccountDiskUsageReplyToUsageSize(
+    const base::Optional<GetAccountDiskUsageReply>& reply);
+
 // Converts user_data_auth::CryptohomeErrorCode to cryptohome::MountError.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code);

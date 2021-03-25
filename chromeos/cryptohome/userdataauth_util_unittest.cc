@@ -114,4 +114,27 @@ TEST(UserDataAuthUtilTest, GetKeyDataReplyToKeyDefinitions_ChallengeResponse) {
   EXPECT_EQ(kKeyLabel, key_definition.label);
 }
 
+TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeNullOptional) {
+  const base::Optional<GetAccountDiskUsageReply> reply = base::nullopt;
+
+  ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
+}
+
+TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeErrorInReply) {
+  GetAccountDiskUsageReply result;
+  result.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_IMPLEMENTED);
+  const base::Optional<GetAccountDiskUsageReply> reply = std::move(result);
+
+  ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), -1);
+}
+
+TEST(UserDataAuthUtilTest, AccountDiskUsageReplyToUsageSizeValidity) {
+  constexpr int64_t kSize = 0x123456789ABCLL;
+  GetAccountDiskUsageReply result;
+  result.set_size(kSize);
+  const base::Optional<GetAccountDiskUsageReply> reply = std::move(result);
+
+  ASSERT_EQ(AccountDiskUsageReplyToUsageSize(reply), kSize);
+}
+
 }  // namespace user_data_auth

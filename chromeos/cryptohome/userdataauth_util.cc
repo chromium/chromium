@@ -56,6 +56,20 @@ std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
   return cryptohome::RepeatedKeyDataToKeyDefinitions(key_data);
 }
 
+int64_t AccountDiskUsageReplyToUsageSize(
+    const base::Optional<GetAccountDiskUsageReply>& reply) {
+  if (IsEmpty(reply))
+    return -1;
+
+  if (reply->error() != CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "GetAccountDiskUsage failed with error: "
+                     << reply->error();
+    return -1;
+  }
+
+  return reply->size();
+}
+
 // TODO(crbug.com/797848): Finish testing this method.
 cryptohome::MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
   switch (code) {
