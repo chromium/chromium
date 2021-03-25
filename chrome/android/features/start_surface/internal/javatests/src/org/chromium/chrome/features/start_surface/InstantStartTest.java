@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+import org.chromium.chrome.browser.suggestions.tile.TopSitesTileView;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -1108,6 +1109,10 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void renderSingleAsHomepage_Landscape() throws IOException {
         // clang-format on
+        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
+        mostVisitedSites.setTileSuggestions(createFakeSiteSuggestions());
+        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
+
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
@@ -1152,7 +1157,7 @@ public class InstantStartTest {
                 mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
 
         ViewUtils.onViewWaiting(
-                allOf(withId(R.id.tile_view_title), withText("0 TOP_SITES"), isDisplayed()));
+                allOf(withId(R.id.tile_view_title), withText("0 EXPLORE_SITES"), isDisplayed()));
         ChromeRenderTestRule.sanitize(surface);
         mRenderTestRule.render(surface, "singlePane_MV_withTopSitesView");
     }
@@ -1273,7 +1278,11 @@ public class InstantStartTest {
                     @Override
                     public void perform(UiController uiController, View view) {
                         ViewGroup mvTilesContainer = (ViewGroup) view;
-                        mvTilesContainer.getChildAt(1).performClick();
+                        // Click explore sites icon.
+                        TopSitesTileView topSitesTileView =
+                                (TopSitesTileView) mvTilesContainer.getChildAt(0);
+                        assertEquals(TileSource.EXPLORE, topSitesTileView.getData().source);
+                        topSitesTileView.performClick();
                     }
                 });
         hideWatcher.waitForBehavior();
@@ -1452,13 +1461,15 @@ public class InstantStartTest {
 
     private static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
-                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+        siteSuggestions.add(new SiteSuggestion("0 EXPLORE_SITES", new GURL("https://www.bar.com"),
+                "", TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
                 new Date()));
 
-        siteSuggestions.add(new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
-                TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
-                new Date()));
+        for (int i = 0; i < 7; i++) {
+            siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
+                    new GURL("https://www." + i + ".com"), "", TileTitleSource.TITLE_TAG,
+                    TileSource.TOP_SITES, TileSectionType.PERSONALIZED, new Date()));
+        }
 
         return siteSuggestions;
     }
