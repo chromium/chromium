@@ -28,7 +28,8 @@
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
-#include "components/feed/core/v2/web_feed_index.h"
+#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
+#include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/core/v2/wire_response_translator.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/task/task_queue.h"
@@ -46,6 +47,7 @@ class UnreadContentNotifier;
 }
 class FeedNetwork;
 class FeedStore;
+class WebFeedSubscriptionCoordinator;
 class ImageFetcher;
 class MetricsReporter;
 class OfflinePageSpy;
@@ -93,6 +95,7 @@ class FeedStream : public FeedApi,
 
   // FeedApi.
 
+  WebFeedSubscriptionCoordinator& subscriptions() override;
   bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
@@ -191,7 +194,7 @@ class FeedStream : public FeedApi,
   void SetMetadata(feedstore::Metadata metadata);
   bool SetMetadata(base::Optional<feedstore::Metadata> metadata);
 
-  MetricsReporter* GetMetricsReporter() const { return metrics_reporter_; }
+  MetricsReporter& GetMetricsReporter() const { return *metrics_reporter_; }
 
   void PrefetchImage(const GURL& url);
 
@@ -241,6 +244,10 @@ class FeedStream : public FeedApi,
 
   RequestMetadata GetRequestMetadata(const StreamType& stream_type,
                                      bool is_for_next_page) const;
+
+  bool IsOffline() const { return delegate_->IsOffline(); }
+
+  offline_pages::TaskQueue& GetTaskQueue() { return task_queue_; }
 
   const WireResponseTranslator* GetWireResponseTranslator() const {
     return wire_response_translator_;
@@ -358,6 +365,8 @@ class FeedStream : public FeedApi,
 
   std::unique_ptr<OfflineSuggestionsProvider> offline_suggestions_provider_;
   std::unique_ptr<OfflinePageSpy> offline_page_spy_;
+  std::unique_ptr<WebFeedSubscriptionCoordinator>
+      web_feed_subscription_coordinator_;
 
   // Mutable state.
   RequestThrottler request_throttler_;
@@ -365,7 +374,6 @@ class FeedStream : public FeedApi,
 
   // State loaded at startup:
   feedstore::Metadata metadata_;
-  WebFeedIndex web_feed_index_;
 
   base::ObserverList<UnreadContentObserver> unread_content_observers_;
 

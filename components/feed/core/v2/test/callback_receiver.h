@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 
@@ -50,7 +51,7 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
     CallbackReceiverBase::Done();
   }
   base::OnceCallback<void(T...)> Bind() {
-    return base::BindOnce(&CallbackReceiver::Done, base::Unretained(this));
+    return base::BindOnce(&CallbackReceiver::Done, GetWeakPtr());
   }
 
   void Clear() {
@@ -80,7 +81,12 @@ class CallbackReceiver : public internal::CallbackReceiverBase {
   }
 
  private:
+  base::WeakPtr<CallbackReceiver> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   std::tuple<base::Optional<T>...> results_;
+  base::WeakPtrFactory<CallbackReceiver> weak_ptr_factory_{this};
 };
 
 template <>

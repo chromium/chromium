@@ -256,6 +256,7 @@ ImageFetchId TestImageFetcher::Fetch(
 
 TestFeedNetwork::TestFeedNetwork() = default;
 TestFeedNetwork::~TestFeedNetwork() = default;
+
 void TestFeedNetwork::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
@@ -278,8 +279,7 @@ void TestFeedNetwork::SendQueryRequest(
   } else {
     result.response_body = std::make_unique<feedwire::Response>();
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+  Reply(base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void TestFeedNetwork::SendDiscoverApiRequest(
@@ -307,8 +307,7 @@ void TestFeedNetwork::SendDiscoverApiRequest(
   if (!injected_responses.empty()) {
     RawResponse response = injected_responses[0];
     injected_responses.erase(injected_responses.begin());
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+    Reply(base::BindOnce(std::move(callback), std::move(response)));
     return;
   }
   ASSERT_TRUE(false) << "No API response injected, and no default is available:"
@@ -351,6 +350,43 @@ void TestFeedNetwork::ClearTestData() {
   api_requests_sent_.clear();
   api_request_count_.clear();
   injected_response_.reset();
+}
+
+void TestFeedNetwork::SendResponse() {
+  ASSERT_TRUE(send_responses_on_command_)
+      << "For use only send_responses_on_command_";
+  if (reply_closures_.empty()) {
+    // No replies queued yet, wait for the next one.
+    base::RunLoop run_loop;
+    on_reply_added_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  ASSERT_FALSE(reply_closures_.empty()) << "No replies ready to send";
+  auto callback = std::move(reply_closures_[0]);
+  reply_closures_.erase(reply_closures_.begin());
+  std::move(callback).Run();
+}
+
+void TestFeedNetwork::SendResponsesOnCommand(bool on) {
+  if (send_responses_on_command_ == on)
+    return;
+  if (!on) {
+    while (!reply_closures_.empty()) {
+      SendResponse();
+    }
+  }
+  send_responses_on_command_ = on;
+}
+
+void TestFeedNetwork::Reply(base::OnceClosure reply_closure) {
+  if (send_responses_on_command_) {
+    reply_closures_.push_back(std::move(reply_closure));
+    if (on_reply_added_)
+      on_reply_added_.Run();
+  } else {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(reply_closure));
+  }
 }
 
 TestWireResponseTranslator::TestWireResponseTranslator() = default;
@@ -532,6 +568,8 @@ void FeedApiTest::SetUp() {
 }
 
 void FeedApiTest::TearDown() {
+  // Unblock network responses to allow clean teardown.
+  network_.SendResponsesOnCommand(false);
   // Ensure the task queue can return to idle. Failure to do so may be
   // due to a stuck task that never called |TaskComplete()|.
   WaitForIdleTaskQueue();

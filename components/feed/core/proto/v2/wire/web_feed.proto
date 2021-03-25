@@ -8,6 +8,7 @@ package feedwire.webfeed;
 
 import "components/feed/core/proto/v2/wire/color.proto";
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
+import "components/feed/core/proto/v2/store.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -18,11 +19,20 @@ option optimize_for = LITE_RUNTIME;
 message ListFollowedWebFeedRequest {}
 message ListFollowedWebFeedResponse {}
 
-message FollowUriRequest {}
+message FollowUriRequest {
+  string uri = 1;
+  string web_feed_id = 2;
+}
 message FollowUriResponse {
   ConsistencyToken consistency_token = 1;
+  // TODO(harringtond): This is a placeholder while the wire proto is being
+  // finalized. We will not use store protos in the wire proto.
+  feedstore.WebFeedInfo web_feed_info = 2;
 }
-message UnfollowUriRequest {}
+message UnfollowUriRequest {
+  string subscription_id = 1;
+  string web_feed_id = 2;
+}
 message UnfollowUriResponse {
   ConsistencyToken consistency_token = 1;
 }

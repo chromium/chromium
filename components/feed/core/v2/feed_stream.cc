@@ -44,7 +44,8 @@
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
-#include "components/feed/core/v2/web_feed_index.h"
+#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
+#include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/task/closure_task.h"
@@ -139,6 +140,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
+  web_feed_subscription_coordinator_ =
+      std::make_unique<WebFeedSubscriptionCoordinator>(this);
   Stream& stream = GetStream(kForYouStream);
   offline_page_spy_ = std::make_unique<OfflinePageSpy>(
       stream.surface_updater.get(), offline_page_model);
@@ -158,6 +161,10 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 }
 
 FeedStream::~FeedStream() = default;
+
+WebFeedSubscriptionCoordinator& FeedStream::subscriptions() {
+  return *web_feed_subscription_coordinator_;
+}
 
 FeedStream::Stream* FeedStream::FindStream(const StreamType& stream_type) {
   auto iter = streams_.find(stream_type);
@@ -211,7 +218,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   metadata_ = std::move(result.metadata);
   // TODO(crbug/1152592): Test that the index is populated once there's an API
   // to access the data.
-  web_feed_index_.Populate(result.web_feed_startup_data);
+  web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 }
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {

@@ -629,4 +629,18 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
   return web_feed_stats_;
 }
 
+void MetricsReporter::OnFollowAttempt(
+    const WebFeedSubscriptions::FollowWebFeedResult& result) {
+  DVLOG(1) << "OnFollowAttempt web_feed_id="
+           << result.web_feed_metadata.web_feed_id
+           << " status=" << result.request_status;
+  // TODO(crbug/1152592): Add UMA.
+}
+
+void MetricsReporter::OnUnfollowAttempt(
+    const WebFeedSubscriptions::UnfollowWebFeedResult& result) {
+  DVLOG(1) << "OnUnfollowAttempt status=" << result.request_status;
+  // TODO(crbug/1152592): Add UMA.
+}
+
 }  // namespace feed

@@ -136,6 +136,8 @@ class FeedApi {
     base::WeakPtrFactory<UnreadContentObserver> weak_ptr_factory_{this};
   };
 
+  virtual WebFeedSubscriptions& subscriptions() = 0;
+
   // Attach/detach a surface. Surfaces should be attached when content is
   // required for display, and detached when content is no longer shown.
   virtual void AttachSurface(FeedStreamSurface*) = 0;

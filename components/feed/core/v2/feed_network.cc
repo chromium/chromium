@@ -9,6 +9,7 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 
 namespace feed {
 
@@ -20,5 +21,13 @@ FeedNetwork::QueryRequestResult& FeedNetwork::QueryRequestResult::operator=(
     QueryRequestResult&&) = default;
 
 FeedNetwork::~FeedNetwork() = default;
+
+// static
+void FeedNetwork::ParseAndForwardApiResponseBegin(
+    NetworkRequestType request_type,
+    const RawResponse& raw_response) {
+  MetricsReporter::NetworkRequestComplete(
+      request_type, raw_response.response_info.status_code);
+}
 
 }  // namespace feed

@@ -17,12 +17,14 @@
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/image_fetcher.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/test/proto_printer.h"
@@ -176,6 +178,20 @@ class TestFeedNetwork : public FeedNetwork {
     InjectApiRawResponse<API>(std::move(response));
   }
 
+  void InjectFollowResponse(
+      const feedwire::webfeed::FollowUriResponse& response) {
+    InjectApiResponse<FollowWebFeedDiscoverApi>(response);
+  }
+  void InjectFollowResponse(const FeedNetwork::RawResponse& response) {
+    InjectApiRawResponse<FollowWebFeedDiscoverApi>(response);
+  }
+  void InjectUnfollowResponse(
+      const feedwire::webfeed::UnfollowUriResponse& response) {
+    InjectApiResponse<UnfollowWebFeedDiscoverApi>(response);
+  }
+  void InjectUnfollowResponse(const FeedNetwork::RawResponse& response) {
+    InjectApiRawResponse<UnfollowWebFeedDiscoverApi>(response);
+  }
   void InjectEmptyActionRequestResult();
 
   template <typename API>
@@ -203,7 +219,20 @@ class TestFeedNetwork : public FeedNetwork {
     return iter == api_request_count_.end() ? 0 : iter->second;
   }
   int GetActionRequestCount() const;
+  int GetFollowRequestCount() const {
+    return GetApiRequestCount<FollowWebFeedDiscoverApi>();
+  }
+  int GetUnfollowRequestCount() const {
+    return GetApiRequestCount<UnfollowWebFeedDiscoverApi>();
+  }
+
   void ClearTestData();
+
+  // Enable (or disable) manual triggering of sending responses. When enabled,
+  // injected responses are not sent upon request, but instead one at a time
+  // when `SendResponse()` is called.
+  void SendResponsesOnCommand(bool on);
+  void SendResponse();
 
   base::Optional<feedwire::Request> query_request_sent;
   int send_query_call_count = 0;
@@ -211,6 +240,11 @@ class TestFeedNetwork : public FeedNetwork {
   bool forced_signed_out_request = false;
 
  private:
+  void Reply(base::OnceClosure reply_closure);
+
+  bool send_responses_on_command_ = false;
+  std::vector<base::OnceClosure> reply_closures_;
+  base::RepeatingClosure on_reply_added_;
   std::map<std::string, std::vector<RawResponse>> injected_api_responses_;
   std::map<std::string, std::string> api_requests_sent_;
   std::map<std::string, int> api_request_count_;

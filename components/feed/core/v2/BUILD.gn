@@ -72,8 +72,16 @@ source_set("feed_core_v2") {
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",
     "tasks/wait_for_store_initialize_task.h",
-    "web_feed_index.cc",
-    "web_feed_index.h",
+    "web_feed_subscription_coordinator.cc",
+    "web_feed_subscription_coordinator.h",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.cc",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.h",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.cc",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.h",
+    "web_feed_subscriptions/web_feed_id.cc",
+    "web_feed_subscriptions/web_feed_id.h",
+    "web_feed_subscriptions/web_feed_index.cc",
+    "web_feed_subscriptions/web_feed_index.h",
     "wire_response_translator.cc",
     "wire_response_translator.h",
   ]
@@ -149,6 +157,7 @@ source_set("core_unit_tests") {
     "api_test/feed_api_notice_card_unittest.cc",
     "api_test/feed_api_offline_pages_unittest.cc",
     "api_test/feed_api_stream_unittest.cc",
+    "api_test/feed_api_subscriptions_unittest.cc",
     "api_test/feed_api_test.cc",
     "api_test/feed_api_test.h",
     "feed_network_impl_unittest.cc",
@@ -170,7 +179,8 @@ source_set("core_unit_tests") {
     "test/stream_builder.cc",
     "test/stream_builder.h",
     "test/test_util.h",
-    "web_feed_index_unittest.cc",
+    "web_feed_subscriptions/web_feed_id_unittest.cc",
+    "web_feed_subscriptions/web_feed_index_unittest.cc",
   ]
 
   deps = [

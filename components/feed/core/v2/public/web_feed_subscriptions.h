@@ -49,12 +49,12 @@ class WebFeedSubscriptions {
   // Look up web feed information for a web page.
   virtual void FindWebFeedInfoForPage(
       const WebFeedPageInformation& page_info,
-      base::OnceCallback<void(std::unique_ptr<WebFeedMetadata>)> callback) = 0;
+      base::OnceCallback<void(WebFeedMetadata)> callback) = 0;
 
   // Look up web feed information for a web page given the `web_feed_id`.
   virtual void FindWebFeedInfoForWebFeedId(
       const std::string& web_feed_id,
-      base::OnceCallback<void(std::unique_ptr<WebFeedMetadata>)> callback) = 0;
+      base::OnceCallback<void(WebFeedMetadata)> callback) = 0;
 
   // Returns all current subscriptions.
   virtual void GetAllSubscriptions(

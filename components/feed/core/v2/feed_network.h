@@ -14,7 +14,6 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feed.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feedwire {
@@ -44,6 +43,16 @@ struct ListFollowedWebFeedDiscoverApi {
   static base::StringPiece Method() { return "GET"; }
   // TODO(harringtond): Path TDB.
   static base::StringPiece RequestPath() { return "v1/follow:listFollowed"; }
+};
+
+struct FollowWebFeedDiscoverApi {
+  using Request = feedwire::webfeed::FollowUriRequest;
+  using Response = feedwire::webfeed::FollowUriResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kFollowWebFeed;
+  static base::StringPiece Method() { return "POST"; }
+  // TODO(harringtond): Path TDB.
+  static base::StringPiece RequestPath() { return "v1/follow:followWebFeed"; }
 };
 
 struct UnfollowWebFeedDiscoverApi {
@@ -118,6 +127,8 @@ class FeedNetwork {
   virtual void CancelRequests() = 0;
 
  protected:
+  static void ParseAndForwardApiResponseBegin(NetworkRequestType request_type,
+                                              const RawResponse& raw_response);
   virtual void SendDiscoverApiRequest(
       base::StringPiece api_path,
       base::StringPiece method,
@@ -129,8 +140,7 @@ class FeedNetwork {
       base::OnceCallback<void(FeedNetwork::ApiResult<typename API::Response>)>
           result_callback,
       RawResponse raw_response) {
-    MetricsReporter::NetworkRequestComplete(
-        API::kRequestType, raw_response.response_info.status_code);
+    ParseAndForwardApiResponseBegin(API::kRequestType, raw_response);
     FeedNetwork::ApiResult<typename API::Response> result;
     result.response_info = raw_response.response_info;
     if (result.response_info.status_code == 200) {

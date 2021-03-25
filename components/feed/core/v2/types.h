@@ -19,6 +19,8 @@ namespace feed {
 using ::feed::ChromeInfo;
 using ::feed::EphemeralChangeId;
 using ::feed::Experiments;
+using ::feed::WebFeedSubscriptionRequestStatus;
+using ::feed::WebFeedSubscriptionStatus;
 
 // Uniquely identifies a revision of a |feedstore::Content|. If Content changes,
 // it is assigned a new revision number.

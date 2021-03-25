@@ -14,6 +14,7 @@
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/types.h"
 
 class PrefService;
@@ -84,6 +85,11 @@ class MetricsReporter {
   static void ActivityLoggingEnabled(bool response_has_logging_enabled);
   static void NoticeCardFulfilled(bool response_has_notice_card);
   static void NoticeCardFulfilledObsolete(bool response_has_notice_card);
+
+  // Web Feed events.
+  void OnFollowAttempt(const WebFeedSubscriptions::FollowWebFeedResult& result);
+  void OnUnfollowAttempt(
+      const WebFeedSubscriptions::UnfollowWebFeedResult& status);
 
  private:
   // State replicated for reporting per-stream-type metrics.

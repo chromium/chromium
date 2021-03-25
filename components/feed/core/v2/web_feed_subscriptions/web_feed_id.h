@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_INDEX_H_
-#define COMPONENTS_FEED_CORE_V2_WEB_FEED_INDEX_H_
+#ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_ID_H_
+#define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_ID_H_
 
-#include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
-#include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/feed_store.h"
-#include "components/feed/core/v2/proto_util.h"
+#include <ostream>
+#include <string>
 
-class GURL;
 namespace feedstore {
-class UriMatcher;
+class WebFeedInfo;
 }
 namespace feed {
-
 // Identifies a recommended or followed web feed.
 class WebFeedId {
  public:
@@ -42,39 +37,24 @@ class WebFeedId {
   bool operator<(const WebFeedId& rhs) const;
   bool operator==(const WebFeedId& rhs) const;
 
-  // Returns a string for debug/test printing.
-  std::string DebugString() const;
+  bool is_web_feed_id() const { return valid() && has_web_feed_id_; }
+  bool is_subscription_id() const { return valid() && !has_web_feed_id_; }
+
+  std::string ToString() const;
+  static WebFeedId FromString(std::string id);
+
+  // Returns the `web_feed_id`, or `subscription_id`.
+  const std::string& GetValue() const { return id_; }
 
  private:
   bool has_web_feed_id_ = false;
   std::string id_;
 };
+
 inline ::std::ostream& operator<<(::std::ostream& os, const WebFeedId& id) {
-  return os << id.DebugString();
+  return os << id.ToString();
 }
-
-// Tracks followed web feeds, and recommended web feeds.
-class WebFeedIndex {
- public:
-  WebFeedIndex();
-  ~WebFeedIndex();
-  // Build the index, replacing any existing data.
-  void Populate(const FeedStore::WebFeedStartupData& data);
-  // Returns the `WebFeedId` for `url`. If more than one web feed matches, this
-  // returns only one. Subscribed feeds, and more specific URL matches are
-  // returned preferentially.
-  WebFeedId FindWebFeedForUrl(const GURL& url);
-
- private:
-  void AddMatcher(const std::string& web_feed_id,
-                  const feedstore::UriMatcher& matcher);
-  WebFeedId FindWebFeedForDomain(base::StringPiece domain);
-  WebFeedId FindRecommendedWebFeed(const GURL& url);
-
-  // Maps from domain -> WebFeedId.
-  base::flat_map<std::string, WebFeedId> domains_;
-};
 
 }  // namespace feed
 
-#endif  // COMPONENTS_FEED_CORE_V2_WEB_FEED_INDEX_H_
+#endif  // COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_ID_H_

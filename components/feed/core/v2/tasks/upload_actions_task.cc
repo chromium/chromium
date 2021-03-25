@@ -310,7 +310,7 @@ void UploadActionsTask::UpdateTokenAndFinish() {
 }
 
 void UploadActionsTask::Done(UploadActionsStatus status) {
-  stream_->GetMetricsReporter()->OnUploadActions(status);
+  stream_->GetMetricsReporter().OnUploadActions(status);
   Result result;
   result.status = status;
   result.upload_attempt_count = upload_attempt_count_;

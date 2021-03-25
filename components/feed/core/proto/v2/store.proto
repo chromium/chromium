@@ -236,4 +236,8 @@ message WebFeedInfo {
   string subscription_id = 7;
   // Is this web feed known to generate content.
   bool is_active = 8;
+  // For subscribed feeds, this is the URL the user originally requested
+  // subscription. Used as a fallback for re-subscription. This may be unset if
+  // web_feed_id is set.
+  string request_url = 9;
 }

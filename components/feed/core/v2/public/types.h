@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_
 
+#include <iosfwd>
 #include <map>
 #include <string>
 
@@ -106,9 +107,11 @@ enum class WebFeedSubscriptionStatus {
   kSubscribeInProgress = 3,
   kUnsubscribeInProgress = 4,
 };
+std::ostream& operator<<(std::ostream& out, WebFeedSubscriptionStatus value);
 
 // Information about a web feed.
 struct WebFeedMetadata {
+  WebFeedMetadata();
   WebFeedMetadata(const WebFeedMetadata&);
   WebFeedMetadata(WebFeedMetadata&&);
   WebFeedMetadata& operator=(const WebFeedMetadata&);
@@ -118,11 +121,14 @@ struct WebFeedMetadata {
   std::string web_feed_id;
   // Whether the subscribed Web Feed has content available for fetching.
   bool is_active = false;
+  // Whether the Web Feed is recommended by the web feeds service.
+  bool is_recommended = false;
   std::string title;
   GURL publisher_url;
   WebFeedSubscriptionStatus subscription_status =
       WebFeedSubscriptionStatus::kUnknown;
 };
+std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value);
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
 enum class WebFeedSubscriptionRequestStatus {
@@ -132,6 +138,8 @@ enum class WebFeedSubscriptionRequestStatus {
   kFailedTooManySubscriptions = 3,
   kFailedUnknownError = 4,
 };
+std::ostream& operator<<(std::ostream& out,
+                         WebFeedSubscriptionRequestStatus value);
 
 }  // namespace feed
 
