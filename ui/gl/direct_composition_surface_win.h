@@ -54,6 +54,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // --disable-direct-composition-video-overlays. This function is thread safe.
   static bool AreOverlaysSupported();
 
+  // Returns if the GPU supports hardware overlays. This function is thread
+  // safe.
+  static bool AreHardwareOverlaysSupported();
+
   // Returns true if zero copy decode swap chain is supported.
   static bool IsDecodeSwapChainSupported();
   static void DisableDecodeSwapChain();

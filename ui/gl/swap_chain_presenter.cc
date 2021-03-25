@@ -223,20 +223,18 @@ SwapChainPresenter::~SwapChainPresenter() {
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
     bool content_is_hdr) {
-  DXGI_FORMAT yuv_overlay_format =
-      DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR();
-  // TODO(crbug.com/850799): Assess power/perf impact when protected video
-  // swap chain is composited by DWM.
-
-  // Always prefer YUV swap chain for hardware protected video for now.
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
-    return yuv_overlay_format;
-
   // Prefer RGB10A2 swapchain when playing HDR content.
   if (content_is_hdr)
     return DXGI_FORMAT_R10G10B10A2_UNORM;
 
-  if (failed_to_create_yuv_swapchain_)
+  DXGI_FORMAT yuv_overlay_format =
+      DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR();
+  // Always prefer YUV swap chain for hardware protected video for now.
+  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
+    return yuv_overlay_format;
+
+  if (failed_to_create_yuv_swapchain_ ||
+      !DirectCompositionSurfaceWin::AreHardwareOverlaysSupported())
     return DXGI_FORMAT_B8G8R8A8_UNORM;
 
   // Start out as YUV.
