@@ -26,6 +26,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.page_info.PageInfoView;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -73,14 +74,9 @@ public class PageInfoControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeActivity activity = sActivityTestRule.getActivity();
             Tab tab = activity.getActivityTab();
-            PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
-                    PageInfoController.OpenedFromSource.MENU,
-                    new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
-                            activity::getModalDialogManager,
-                            /*offlinePageLoadUrlDelegate=*/
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate(),
-                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            new ChromePageInfo(
+                    activity.getModalDialogManagerSupplier(), null, OpenedFromSource.MENU)
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
     }
 

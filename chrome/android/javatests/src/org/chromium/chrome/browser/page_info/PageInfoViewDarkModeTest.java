@@ -25,14 +25,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -76,17 +77,12 @@ public class PageInfoViewDarkModeTest {
     }
 
     private void openPageInfo() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR,
-                    new ChromePageInfoControllerDelegate(mActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            mActivityTestRule.getActivity().getModalDialogManagerSupplier(),
-                            /*offlinePageLoadUrlDelegate=*/
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate(),
-                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            new ChromePageInfo(
+                    activity.getModalDialogManagerSupplier(), null, OpenedFromSource.TOOLBAR)
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
 
         if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {

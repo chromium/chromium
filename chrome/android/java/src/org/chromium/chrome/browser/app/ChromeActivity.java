@@ -131,8 +131,7 @@ import org.chromium.chrome.browser.omaha.UpdateInfoBarController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.notification.UpdateNotificationController;
 import org.chromium.chrome.browser.omaha.notification.UpdateNotificationControllerFactory;
-import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
-import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.TabPrinter;
@@ -192,6 +191,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.CombinedPolicyProvider.PolicyChangeListener;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -2291,15 +2291,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.info_menu_id) {
-            WebContents webContents = currentTab.getWebContents();
-            PageInfoController.show(this, webContents, null,
-                    PageInfoController.OpenedFromSource.MENU,
-                    new ChromePageInfoControllerDelegate(this, webContents,
-                            this::getModalDialogManager,
-                            /*offlinePageLoadUrlDelegate=*/
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(currentTab)),
-                    new ChromePermissionParamsListBuilderDelegate(),
-                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            ChromePageInfo pageInfo = new ChromePageInfo(
+                    getModalDialogManagerSupplier(), null, OpenedFromSource.MENU);
+            pageInfo.show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }
 

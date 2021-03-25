@@ -179,13 +179,12 @@ public class SearchActivity extends AsyncInitializationActivity
         };
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
                 mProfileSupplier, mSearchBoxDataProvider, null, new WindowDelegate(getWindow()),
-                getWindowAndroid(),
-                /*activityTabSupplier=*/() -> null, /*modalDialogManagerSupplier=*/
-                getModalDialogManagerSupplier(),
-                /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
-                getLifecycleDispatcher(), overrideUrlLoadingDelegate,
-                /*backKeyBehavior=*/this, SearchEngineLogoUtils.getInstance(),
-                /*launchAssistanceSettingsAction=*/() -> {});
+                getWindowAndroid(), /*activityTabSupplier=*/() -> null,
+                getModalDialogManagerSupplier(), /*shareDelegateSupplier=*/null,
+                /*incognitoStateProvider=*/null, getLifecycleDispatcher(),
+                overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
+                SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
+                /*pageInfoAction=*/(tab, permission) -> {});
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

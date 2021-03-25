@@ -140,16 +140,12 @@ public class PageInfoViewTest {
     }
 
     private void openPageInfo(@ContentSettingsType int highlightedPermission) {
-        Tab tab = sActivityTestRule.getActivity().getActivityTab();
+        ChromeActivity activity = sActivityTestRule.getActivity();
+        Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR,
-                    new ChromePageInfoControllerDelegate(sActivityTestRule.getActivity(),
-                            tab.getWebContents(),
-                            sActivityTestRule.getActivity().getModalDialogManagerSupplier(),
-                            /*offlinePageLoadUrlDelegate=*/
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate(), highlightedPermission);
+            new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
+                    PageInfoController.OpenedFromSource.TOOLBAR)
+                    .show(tab, highlightedPermission);
         });
 
         if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {

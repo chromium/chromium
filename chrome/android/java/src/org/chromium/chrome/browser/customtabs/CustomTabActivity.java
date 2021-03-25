@@ -42,11 +42,10 @@ import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
-import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
@@ -213,15 +212,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         } else if (id == R.id.info_menu_id) {
             Tab tab = getTabModelSelector().getCurrentTab();
             if (tab == null) return false;
-            WebContents webContents = tab.getWebContents();
-            PageInfoController.show(this, webContents, getToolbarManager().getContentPublisher(),
-                    PageInfoController.OpenedFromSource.MENU,
-                    new ChromePageInfoControllerDelegate(this, webContents,
-                            this::getModalDialogManager,
-                            /*offlinePageLoadUrlDelegate=*/
-                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                    new ChromePermissionParamsListBuilderDelegate(),
-                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            String publisher = getToolbarManager().getContentPublisher();
+            new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU)
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);
