@@ -5081,7 +5081,9 @@ TEST_F(DesksBentoTest, ClickTargetLocationOfDroppedDesk) {
   // Drop the desk and click on the mini view.
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+  DeskSwitchAnimationWaiter waiter;
   ClickOnView(mini_view, event_generator);
+  waiter.Wait();
 }
 
 // Tests that while reordering desks by drag & drop, when a desk is snapping
