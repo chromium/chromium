@@ -257,8 +257,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     as core type and core frequency. Currently only implemented on Android. For
     every second of CPU time consumed by a process on a specific CPU core type
     and at a specific frequency, a sample is recorded into the bucket for the
-    frequency range. The histogram thus shows the total sum of CPU time seconds
-    spent for a specific process and core type across all users.
+    frequency range. Samples are recorded periodically depending on the task
+    load of each process's main thread. The histogram thus shows the total sum
+    of CPU time seconds spent for a specific process and core type across all
+    users.
+
+    For a histogram of daily per-user values, select &quot;Per-Client
+    Aggregation Mode&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Power.CpuTimeSecondsPerPowerMode" enum="PowerMode"
+    expires_after="2021-12-31">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Total seconds of CPU time consumed by Chrome, split by process type and
+    power mode. Currently only implemented on Android. For every second of CPU
+    time consumed by a process of the chosen type, while a specific PowerMode
+    was active, a sample is recorded into the bucket for the PowerMode. Samples
+    are recorded periodically depending on the task load of each process's main
+    thread. The histogram thus shows the total sum of CPU time seconds spent per
+    PowerMode within all processes of the chosen type across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
@@ -273,8 +293,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Total seconds of CPU time consumed by Chrome, split by process type.
     Currently only implemented on Android. For every second of CPU time consumed
     by one process, a sample is recorded into the bucket for the process's type.
-    The histogram thus shows the total sum of CPU time seconds spent per process
-    type across all users.
+    Samples are recorded periodically depending on the task load of each
+    process's main thread. The histogram thus shows the total sum of CPU time
+    seconds spent per process type across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
@@ -289,8 +310,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Total seconds of CPU time consumed by Chrome/WebView in the {Visibility}
     state, split by process type. Currently only implemented on Android. For
     every second of CPU time consumed by one process, a sample is recorded into
-    the bucket for the process's type. The histogram thus shows the total sum of
-    CPU time seconds spent per process type across all users.
+    the bucket for the process's type. Samples are recorded periodically
+    depending on the task load of each process's main thread. The histogram thus
+    shows the total sum of CPU time seconds spent per process type across all
+    users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
@@ -312,8 +335,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     time consumed by one thread, a sample is recorded into the bucket for the
     thread's type. CPU time consumed by a process that cannot be attributed to a
     specific thread is recorded into the &quot;UnattributedThread&quot; bucket.
-    The histogram thus shows the total sum of CPU time seconds spent per thread
-    type (within processes of a specific type) across all users.
+    Samples are recorded periodically depending on the task load of each
+    process's main thread. The histogram thus shows the total sum of CPU time
+    seconds spent per thread type (within processes of a specific type) across
+    all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.

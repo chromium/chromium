@@ -14561,6 +14561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="GPU" label=""/>
   <suffix name="Other" label=""/>
   <suffix name="Renderer" label=""/>
+  <affected-histogram name="Power.CpuTimeSecondsPerPowerMode"/>
   <affected-histogram name="Power.CpuTimeSecondsPerThreadType"/>
 </histogram_suffixes>
 

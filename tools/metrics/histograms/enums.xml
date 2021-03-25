@@ -61938,6 +61938,17 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PowerMode">
+  <int value="0" label="kIdle"/>
+  <int value="1" label="kAudible"/>
+  <int value="2" label="kLoading"/>
+  <int value="3" label="kAnimation"/>
+  <int value="4" label="kResponse"/>
+  <int value="5" label="kOtherActivity"/>
+  <int value="6" label="kBackground"/>
+  <int value="7" label="kCharging"/>
+</enum>
+
 <enum name="PowerSupplyType">
   <summary>
     The type of power supply connected to a Chrome OS system, as reported by the

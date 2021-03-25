@@ -22,6 +22,8 @@ CONTENT_EXPORT void SetupCpuTimeMetrics();
 // current thread. Beware: Should only be used for testing.
 CONTENT_EXPORT void WaitForCpuTimeMetricsForTesting();
 
+CONTENT_EXPORT void SetIgnoreHistogramAllocatorForTesting(bool);
+
 }  // namespace content
 
 #endif  // CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_H_

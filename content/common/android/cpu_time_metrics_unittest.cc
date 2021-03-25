@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "components/power_scheduler/power_mode.h"
 #include "content/common/process_visibility_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,12 +26,9 @@ void WorkForOneCpuSec(base::WaitableEvent* event) {
   }
 }
 
-constexpr int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
-
 TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   base::test::TaskEnvironment task_environment;
-  base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0,
-                                                        "CpuTimeMetricsTest");
+
   base::HistogramTester histograms;
   base::Thread thread1("StackSamplingProfiler");
 
@@ -41,9 +39,11 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 
   // Create the ProcessCpuTimeTaskObserver instance and register it
   // as the process visibility observer.
+  SetIgnoreHistogramAllocatorForTesting(true);
   SetupCpuTimeMetrics();
 
   // Start out in the foreground and spend one CPU second there.
+  // This will also set the current power mode to 'idle'.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
 
   thread1.task_runner()->PostTask(
@@ -72,19 +72,24 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
       "Power.CpuTimeSecondsPerProcessType.Foreground", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_foreground, 1);
 
+  int browser_cpu_seconds_power_mode_idle =
+      histograms.GetBucketCount("Power.CpuTimeSecondsPerPowerMode.Browser",
+                                power_scheduler::PowerMode::kIdle);
+  EXPECT_GE(browser_cpu_seconds_power_mode_idle, 1);
+
   int thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
                                 kSamplingProfilerThreadBucket);
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
-  base::GlobalHistogramAllocator::ReleaseForTesting();
+
+  SetIgnoreHistogramAllocatorForTesting(false);
 }
 
 TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   base::test::TaskEnvironment task_environment;
-  base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0,
-                                                        "CpuTimeMetricsTest");
+
   base::HistogramTester histograms;
   base::Thread thread1("StackSamplingProfiler");
 
@@ -95,6 +100,7 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
 
   // Create the ProcessCpuTimeTaskObserver instance and register it
   // as the process visibility observer.
+  SetIgnoreHistogramAllocatorForTesting(true);
   SetupCpuTimeMetrics();
 
   // Start out in the background and spend one CPU second there.
@@ -132,7 +138,8 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
-  base::GlobalHistogramAllocator::ReleaseForTesting();
+
+  SetIgnoreHistogramAllocatorForTesting(false);
 }
 
 }  // namespace

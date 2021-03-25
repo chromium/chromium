@@ -2243,6 +2243,7 @@ test("content_unittests") {
     "//components/network_session_configurator/common",
     "//components/offline_pages/buildflags",
     "//components/payments/mojom",
+    "//components/power_scheduler",
     "//components/services/quarantine/public/mojom",
     "//components/services/storage",
     "//components/services/storage:test_support",
