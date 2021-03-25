@@ -19,8 +19,10 @@ namespace arc {
 
 namespace {
 
+// TODO(b/183573525): This timeout is chosen tentatively. We should adjust the
+// value after collecting the latency metrics.
 constexpr base::TimeDelta kKeyEventDoneCallbackTimeout =
-    base::TimeDelta::FromMilliseconds(100);
+    base::TimeDelta::FromMilliseconds(300);
 
 }  // namespace
 
