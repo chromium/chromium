@@ -295,4 +295,66 @@ TEST(TestMockTimeTaskRunnerTest, AdvanceMockTickClockDoesNotRunTasks) {
   EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
 }
 
+TEST(TestMockTimeTaskRunnerTest, ProcessNextNTasks) {
+  auto mock_time_task_runner = MakeRefCounted<TestMockTimeTaskRunner>(
+      TestMockTimeTaskRunner::Type::kStandalone);
+  int counter = 0;
+
+  mock_time_task_runner->PostTask(
+      FROM_HERE, base::BindOnce([](int* counter) { *counter += 1; },
+                                Unretained(&counter)));
+  mock_time_task_runner->PostTask(
+      FROM_HERE, base::BindOnce([](int* counter) { *counter += 32; },
+                                Unretained(&counter)));
+
+  CancelableOnceClosure task1(base::BindOnce(
+      [](int* counter) { *counter += 16; }, Unretained(&counter)));
+  mock_time_task_runner->PostTask(FROM_HERE, task1.callback());
+
+  mock_time_task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](int* counter) { *counter += 256; },
+                     Unretained(&counter)),
+      TimeDelta::FromSeconds(3));
+  mock_time_task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](int* counter) { *counter += 64; },
+                     Unretained(&counter)),
+      TimeDelta::FromSeconds(1));
+  mock_time_task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](int* counter) { *counter += 1024; },
+                     Unretained(&counter)),
+      TimeDelta::FromMinutes(20));
+  mock_time_task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](int* counter) { *counter += 4096; },
+                     Unretained(&counter)),
+      TimeDelta::FromDays(20));
+  task1.Cancel();
+
+  int expected_value = 0;
+  EXPECT_EQ(expected_value, counter);
+  mock_time_task_runner->ProcessNextNTasks(0);
+  EXPECT_EQ(expected_value, counter);
+
+  mock_time_task_runner->ProcessNextNTasks(2);
+  expected_value += 1;
+  expected_value += 32;
+  EXPECT_EQ(expected_value, counter);
+
+  // The next task was canceled, so |counter| shouldn't change.
+  mock_time_task_runner->ProcessNextNTasks(1);
+  EXPECT_EQ(expected_value, counter);
+
+  mock_time_task_runner->ProcessNextNTasks(1);
+  expected_value += 64;
+  EXPECT_EQ(expected_value, counter);
+
+  mock_time_task_runner->ProcessNextNTasks(-1);
+  expected_value += 256;
+  expected_value += 1024;
+  expected_value += 4096;
+  EXPECT_EQ(expected_value, counter);
+}
 }  // namespace base

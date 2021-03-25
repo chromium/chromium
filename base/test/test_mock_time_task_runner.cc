@@ -188,7 +188,7 @@ void TestMockTimeTaskRunner::FastForwardBy(TimeDelta delta) {
   DCHECK_GE(delta, TimeDelta());
 
   const TimeTicks original_now_ticks = NowTicks();
-  ProcessAllTasksNoLaterThan(delta);
+  ProcessTasksNoLaterThan(delta);
   ForwardClocksUntilTickTime(original_now_ticks + delta);
 }
 
@@ -203,12 +203,17 @@ void TestMockTimeTaskRunner::AdvanceWallClock(TimeDelta delta) {
 
 void TestMockTimeTaskRunner::RunUntilIdle() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  ProcessAllTasksNoLaterThan(TimeDelta());
+  ProcessTasksNoLaterThan(TimeDelta());
+}
+
+void TestMockTimeTaskRunner::ProcessNextNTasks(int n) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  ProcessTasksNoLaterThan(TimeDelta::Max(), n);
 }
 
 void TestMockTimeTaskRunner::FastForwardUntilNoTasksRemain() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  ProcessAllTasksNoLaterThan(TimeDelta::Max());
+  ProcessTasksNoLaterThan(TimeDelta::Max());
 }
 
 void TestMockTimeTaskRunner::ClearPendingTasks() {
@@ -338,7 +343,8 @@ void TestMockTimeTaskRunner::OnAfterTaskRun() {
   // Empty default implementation.
 }
 
-void TestMockTimeTaskRunner::ProcessAllTasksNoLaterThan(TimeDelta max_delta) {
+void TestMockTimeTaskRunner::ProcessTasksNoLaterThan(TimeDelta max_delta,
+                                                     int limit) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_GE(max_delta, TimeDelta());
 
@@ -351,7 +357,7 @@ void TestMockTimeTaskRunner::ProcessAllTasksNoLaterThan(TimeDelta max_delta) {
   }
 
   const TimeTicks original_now_ticks = NowTicks();
-  while (!quit_run_loop_) {
+  for (int i = 0; !quit_run_loop_ && (limit < 0 || i < limit); i++) {
     OnBeforeSelectingTask();
     TestPendingTask task_info;
     if (!DequeueNextTask(original_now_ticks, max_delta, &task_info))
