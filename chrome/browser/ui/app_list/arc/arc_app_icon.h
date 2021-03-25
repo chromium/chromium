@@ -74,11 +74,18 @@ class ArcAppIcon {
 
   // Whether every supported scale factor was successfully loaded. "Supported"
   // is in the same sense as ui::GetSupportedScaleFactors().
-  bool EverySupportedScaleFactorIsLoaded() const;
+  //
+  // For the adaptive icon, if there is a non-adaptive icon for some scale
+  // refactors, sets all scale factors as the non-adaptive icon, and copy
+  // the decode result from |foreground_image_skia_| to |image_skia_|.
+  bool EverySupportedScaleFactorIsLoaded();
 
   const std::string& app_id() const { return app_id_; }
 
-  bool is_adaptive_icon() const { return is_adaptive_icon_; }
+  bool is_adaptive_icon() const {
+    return is_adaptive_icons_.empty() ? true
+                                      : is_adaptive_icons_.begin()->second;
+  }
 
   // Returns |image_skia_| and valid if the |icon_type_| is
   // IconType::kUncompressed.
@@ -246,7 +253,9 @@ class ArcAppIcon {
   // only one counter is needed.
   int icon_loaded_count_ = 0;
 
-  bool is_adaptive_icon_ = false;
+  // For some apps, some scales have the adaptive icons, but some are not. So
+  // using a map to present which scale is the adaptive icon, which is not.
+  std::map<ui::ScaleFactor, bool> is_adaptive_icons_;
 
   gfx::ImageSkia image_skia_;
   std::map<ui::ScaleFactor, std::string> compressed_images_;
