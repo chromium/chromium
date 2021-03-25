@@ -24,13 +24,13 @@ public class ContentUtils {
      * for "Request desktop site". Set it for WebContents so that it is available
      * when a NavigationEntry requires the user agent to be overridden.
      */
-    public static void setUserAgentOverride(WebContents webContents) {
-        ContentUtilsJni.get().setUserAgentOverride(webContents);
+    public static void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs) {
+        ContentUtilsJni.get().setUserAgentOverride(webContents, overrideInNewTabs);
     }
 
     @NativeMethods
     interface Natives {
         String getBrowserUserAgent();
-        void setUserAgentOverride(WebContents webContents);
+        void setUserAgentOverride(WebContents webContents, boolean overrideInNewTabs);
     }
 }

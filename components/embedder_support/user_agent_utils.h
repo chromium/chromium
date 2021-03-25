@@ -36,8 +36,12 @@ blink::UserAgentBrandList GenerateBrandVersionList(
 
 #if defined(OS_ANDROID)
 // This sets a user agent string to simulate a desktop user agent on mobile.
+// If |override_in_new_tabs| is true, and the first navigation in the tab is
+// renderer initiated, then is-overriding-user-agent is set to true for the
+// NavigationEntry.
 void SetDesktopUserAgentOverride(content::WebContents* web_contents,
-                                 const blink::UserAgentMetadata& metadata);
+                                 const blink::UserAgentMetadata& metadata,
+                                 bool override_in_new_tabs);
 #endif
 
 }  // namespace embedder_support

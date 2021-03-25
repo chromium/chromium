@@ -16,9 +16,11 @@ JNI_ContentUtils_GetBrowserUserAgent(JNIEnv* env) {
 
 static void JNI_ContentUtils_SetUserAgentOverride(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    jboolean j_override_in_new_tabs) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   embedder_support::SetDesktopUserAgentOverride(
-      web_contents, embedder_support::GetUserAgentMetadata());
+      web_contents, embedder_support::GetUserAgentMetadata(),
+      j_override_in_new_tabs);
 }
