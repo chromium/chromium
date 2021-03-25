@@ -11,7 +11,6 @@
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
@@ -33,18 +32,15 @@ struct SystemAppBackgroundTaskInfo {
   // The amount of time between each opening of the background url.
   // The url is opened using the same WebContents, so if the
   // previous task is still running, it will be closed.
-  // If using open_immediately, this should be greater than 120 seconds,
-  // which how long the immediate background tasks will wait.
   base::TimeDelta period;
 
   // The url of the background page to open. This should do one specific thing.
   // (Probably opening a shared worker, waiting for a response, and closing)
   GURL url;
 
-  // A flag to indicate that the task should be opened soon upon user
+  // A flag to indicate that the task should be opened immediately upon user
   // login, after the SWAs are done installing as opposed to waiting for the
-  // first period to be reached. "Soon" means about 2 minutes, to give the
-  // login time processing a chance to settle down.
+  // first period to be reached.
   bool open_immediately;
 };
 
@@ -83,25 +79,15 @@ class SystemAppBackgroundTask {
     web_app_url_loader_.reset(loader.release());
   }
 
-  base::OneShotTimer* get_start_timer_for_testing() {
-    return start_immediately_timer_.get();
-  }
-
-  base::RepeatingTimer* get_repeating_timer_for_testing() {
-    return timer_.get();
-  }
-
  private:
   void NavigateTimerBackgroundPage();
   void OnLoaderReady(WebAppUrlLoader::Result);
   void OnPageReady(WebAppUrlLoader::Result);
 
-  Profile* profile_;
   SystemAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;
   std::unique_ptr<base::RepeatingTimer> timer_;
-  std::unique_ptr<base::OneShotTimer> start_immediately_timer_;
   GURL url_;
   base::TimeDelta period_;
   unsigned long opened_count_;

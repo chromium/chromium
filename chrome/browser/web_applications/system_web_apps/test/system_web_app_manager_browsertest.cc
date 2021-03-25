@@ -1424,25 +1424,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   // a hook in the background pages to detect the navigation as an event. That's
   // a little too much work for one test though, and since this is mostly tested
   // in unittests, this is probably enough.
+
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://test-system-app/page2.html"));
 
   WaitForSystemAppsSynchronized();
-  navigation_observer.StartWatchingNewWebContents();
+
+  navigation_observer.WatchExistingWebContents();
+  navigation_observer.Wait();
 
   auto& tasks = GetManager().GetBackgroundTasksForTesting();
-  auto* start_timer = tasks[0]->get_start_timer_for_testing();
-  EXPECT_EQ(base::TimeDelta::FromSeconds(120), start_timer->GetCurrentDelay());
-  EXPECT_EQ(base::TimeDelta::FromDays(1),
-            tasks[0]->get_repeating_timer_for_testing()->GetCurrentDelay());
-
-  // The "Immediate" timer waits for 2 minutes, and it's really hard to mock
-  // time properly in a browser test, so just fire the thing now. We're not
-  // testing that base::Timer works.
-  start_timer->FireNow();
-
-  navigation_observer.Wait();
-  EXPECT_FALSE(start_timer->IsRunning());
   EXPECT_EQ(1u, tasks.size());
   EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
   EXPECT_EQ(base::TimeDelta::FromDays(1), tasks[0]->period_for_testing());
