@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -85,6 +86,46 @@ void NavigationDownloadPolicy::RecordHistogram() const {
     }
   }
   DCHECK(first_type_seen);
+}
+
+void NavigationDownloadPolicy::ApplyDownloadFramePolicy(
+    bool is_opener_navigation,
+    bool has_gesture,
+    bool can_access_current_origin,
+    bool has_download_sandbox_flag,
+    bool is_blocking_downloads_in_sandbox_enabled,
+    bool from_ad) {
+  if (!has_gesture)
+    SetAllowed(NavigationDownloadType::kNoGesture);
+
+  // Disallow downloads on an opener if the requestor is cross origin.
+  // See crbug.com/632514.
+  if (is_opener_navigation && !can_access_current_origin) {
+    SetDisallowed(NavigationDownloadType::kOpenerCrossOrigin);
+  }
+
+  if (has_download_sandbox_flag) {
+    if (is_blocking_downloads_in_sandbox_enabled) {
+      SetDisallowed(NavigationDownloadType::kSandbox);
+    } else {
+      SetAllowed(NavigationDownloadType::kSandbox);
+    }
+  }
+
+  if (from_ad) {
+    SetAllowed(NavigationDownloadType::kAdFrame);
+    if (!has_gesture) {
+      if (base::FeatureList::IsEnabled(
+              features::kBlockingDownloadsInAdFrameWithoutUserActivation)) {
+        SetDisallowed(NavigationDownloadType::kAdFrameNoGesture);
+      } else {
+        SetAllowed(NavigationDownloadType::kAdFrameNoGesture);
+      }
+    }
+  }
+
+  blocking_downloads_in_sandbox_enabled =
+      is_blocking_downloads_in_sandbox_enabled;
 }
 
 }  // namespace blink

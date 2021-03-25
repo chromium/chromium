@@ -55,6 +55,8 @@ class FakeRemoteFrameHost : public mojom::blink::RemoteFrameHost {
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& properties) override;
 
+  void OpenURL(mojom::blink::OpenURLParamsPtr params) override;
+
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 

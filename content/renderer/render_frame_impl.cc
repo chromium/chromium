@@ -539,10 +539,11 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->initiator_origin_trial_features.end());
 
   blink::NavigationDownloadPolicy download_policy;
-  RenderFrameImpl::MaybeSetDownloadFramePolicy(
-      info->is_opener_navigation, info->url_request, current_origin,
+  download_policy.ApplyDownloadFramePolicy(
+      info->is_opener_navigation, info->url_request.HasUserGesture(),
+      info->url_request.RequestorOrigin().CanAccess(current_origin),
       has_download_sandbox_flag, info->blocking_downloads_in_sandbox_enabled,
-      from_ad, &download_policy);
+      from_ad);
 
   return mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
@@ -1920,55 +1921,6 @@ blink::WebFrame* RenderFrameImpl::ResolveWebFrame(int frame_routing_id) {
     return opener_frame->GetWebFrame();
 
   return nullptr;
-}
-
-// static
-void RenderFrameImpl::MaybeSetDownloadFramePolicy(
-    bool is_opener_navigation,
-    const blink::WebURLRequest& request,
-    const blink::WebSecurityOrigin& current_origin,
-    bool has_download_sandbox_flag,
-    bool blocking_downloads_in_sandbox_enabled,
-    bool from_ad,
-    blink::NavigationDownloadPolicy* download_policy) {
-  bool has_gesture = request.HasUserGesture();
-  if (!has_gesture) {
-    download_policy->SetAllowed(blink::NavigationDownloadType::kNoGesture);
-  }
-
-  // Disallow downloads on an opener if the requestor is cross origin.
-  // See crbug.com/632514.
-  if (is_opener_navigation &&
-      !request.RequestorOrigin().CanAccess(current_origin)) {
-    download_policy->SetDisallowed(
-        blink::NavigationDownloadType::kOpenerCrossOrigin);
-  }
-
-  if (has_download_sandbox_flag) {
-    if (blocking_downloads_in_sandbox_enabled) {
-      download_policy->SetDisallowed(blink::NavigationDownloadType::kSandbox);
-    } else {
-      download_policy->SetAllowed(blink::NavigationDownloadType::kSandbox);
-    }
-  }
-
-  if (from_ad) {
-    download_policy->SetAllowed(blink::NavigationDownloadType::kAdFrame);
-    if (!has_gesture) {
-      if (base::FeatureList::IsEnabled(
-              blink::features::
-                  kBlockingDownloadsInAdFrameWithoutUserActivation)) {
-        download_policy->SetDisallowed(
-            blink::NavigationDownloadType::kAdFrameNoGesture);
-      } else {
-        download_policy->SetAllowed(
-            blink::NavigationDownloadType::kAdFrameNoGesture);
-      }
-    }
-  }
-
-  download_policy->blocking_downloads_in_sandbox_enabled =
-      blocking_downloads_in_sandbox_enabled;
 }
 
 blink::WebURL RenderFrameImpl::OverrideFlashEmbedWithHTML(
@@ -5604,11 +5556,12 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       current_frame_has_download_sandbox_flag;
   bool from_ad = info->initiator_frame_is_ad || frame_->IsAdSubframe();
 
-  MaybeSetDownloadFramePolicy(info->is_opener_navigation, info->url_request,
-                              frame_->GetSecurityOrigin(),
-                              has_download_sandbox_flag,
-                              info->blocking_downloads_in_sandbox_enabled,
-                              from_ad, &params->download_policy);
+  params->download_policy.ApplyDownloadFramePolicy(
+      info->is_opener_navigation, info->url_request.HasUserGesture(),
+      info->url_request.RequestorOrigin().CanAccess(
+          frame_->GetSecurityOrigin()),
+      has_download_sandbox_flag, info->blocking_downloads_in_sandbox_enabled,
+      from_ad);
   GetFrameHost()->OpenURL(std::move(params));
 }
 

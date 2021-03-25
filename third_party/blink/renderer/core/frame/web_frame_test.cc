@@ -66,6 +66,7 @@
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
@@ -9697,37 +9698,71 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterExistingRemoteToLocalSwap) {
   Reset();
 }
 
-class RemoteNavigationClient
-    : public frame_test_helpers::TestWebRemoteFrameClient {
+class RemoteFrameHostInterceptor : public mojom::blink::RemoteFrameHost {
  public:
-  RemoteNavigationClient() = default;
-  ~RemoteNavigationClient() override = default;
+  explicit RemoteFrameHostInterceptor(
+      blink::AssociatedInterfaceProvider* provider) {
+    provider->OverrideBinderForTesting(
+        mojom::blink::RemoteFrameHost::Name_,
+        base::BindRepeating(
+            &RemoteFrameHostInterceptor::BindRemoteFrameHostReceiver,
+            base::Unretained(this)));
+  }
+  ~RemoteFrameHostInterceptor() override = default;
 
-  // frame_test_helpers::TestWebRemoteFrameClient:
-  void Navigate(
-      const WebURLRequest& request,
-      bool should_replace_current_entry,
-      bool is_opener_navigation,
-      bool initiator_frame_has_download_sandbox_flag,
-      bool blocking_downloads_in_sandbox_enabled,
-      bool initiator_frame_is_ad,
-      CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>,
-      const base::Optional<WebImpression>& impression,
-      const blink::LocalFrameToken* initiator_frame_token,
-      blink::CrossVariantMojoRemote<
-          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
-          initiator_policy_container_keep_alive_handle) override {
-    last_request_.CopyFrom(request);
+  void BindRemoteFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(
+            std::move(handle)));
   }
 
-  const WebURLRequest& LastRequest() const { return last_request_; }
+  void SetInheritedEffectiveTouchAction(cc::TouchAction touch_action) override {
+  }
+  void UpdateRenderThrottlingStatus(bool is_throttled,
+                                    bool subtree_throttled,
+                                    bool display_locked) override {}
+  void VisibilityChanged(mojom::blink::FrameVisibility visibility) override {}
+  void DidFocusFrame() override {}
+  void CheckCompleted() override {}
+  void CapturePaintPreviewOfCrossProcessSubframe(
+      const gfx::Rect& clip_rect,
+      const base::UnguessableToken& guid) override {}
+  void SetIsInert(bool inert) override {}
+  void DidChangeOpener(
+      const base::Optional<LocalFrameToken>& opener_frame) override {}
+  void AdvanceFocus(blink::mojom::FocusType focus_type,
+                    const LocalFrameToken& source_frame_token) override {}
+  void RouteMessageEvent(
+      const base::Optional<LocalFrameToken>& source_frame_token,
+      const String& source_origin,
+      const String& target_origin,
+      BlinkTransferableMessage message) override {}
+  void PrintCrossProcessSubframe(const gfx::Rect& rect,
+                                 int document_cookie) override {}
+  void Detach() override {}
+  void UpdateViewportIntersection(
+      blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
+      const base::Optional<FrameVisualProperties>& visual_properties) override {
+  }
+
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& properties) override {}
+
+  void OpenURL(mojom::blink::OpenURLParamsPtr params) override {
+    intercepted_params_ = std::move(params);
+  }
+
+  const mojom::blink::OpenURLParamsPtr& GetInterceptedParams() {
+    return intercepted_params_;
+  }
 
  private:
-  WebURLRequest last_request_;
+  mojo::AssociatedReceiver<mojom::blink::RemoteFrameHost> receiver_{this};
+  mojom::blink::OpenURLParamsPtr intercepted_params_;
 };
 
 TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
-  RemoteNavigationClient client;
+  frame_test_helpers::TestWebRemoteFrameClient client;
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote(&client);
   WebFrame* target_frame = MainFrame()->FirstChild();
   ASSERT_TRUE(target_frame);
@@ -9735,13 +9770,17 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
+  RemoteFrameHostInterceptor interceptor(
+      client.GetRemoteAssociatedInterfaces());
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin::CreateFromString("http://127.0.0.1"), false);
   MainFrame()->ExecuteScript(
       WebScriptSource("document.getElementsByTagName('iframe')[0]."
                       "contentWindow.location = 'data:text/html,hi'"));
-  ASSERT_FALSE(client.LastRequest().IsNull());
-  EXPECT_EQ(WebURL(ToKURL("data:text/html,hi")), client.LastRequest().Url());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(interceptor.GetInterceptedParams());
+  EXPECT_EQ(ToKURL("data:text/html,hi"),
+            KURL(interceptor.GetInterceptedParams()->url));
 
   // Manually reset to break WebViewHelper's dependency on the stack allocated
   // TestWebFrameClient.
@@ -9749,7 +9788,7 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
 }
 
 TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
-  RemoteNavigationClient remote_client;
+  frame_test_helpers::TestWebRemoteFrameClient remote_client;
   WebRemoteFrame* remote_frame =
       frame_test_helpers::CreateRemote(&remote_client);
   MainFrame()->FirstChild()->Swap(remote_frame);
@@ -9760,6 +9799,8 @@ TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
   LocalDOMWindow* main_window =
       To<WebLocalFrameImpl>(MainFrame())->GetFrame()->DomWindow();
 
+  RemoteFrameHostInterceptor interceptor(
+      remote_client.GetRemoteAssociatedInterfaces());
   String destination = "data:text/html:destination";
   NonThrowableExceptionState exception_state;
   ScriptState* script_state =
@@ -9769,14 +9810,17 @@ TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
       script_state->GetContext());
   main_window->open(script_state->GetIsolate(), destination, "frame1", "",
                     exception_state);
-  ASSERT_FALSE(remote_client.LastRequest().IsNull());
-  EXPECT_EQ(remote_client.LastRequest().Url(), WebURL(KURL(destination)));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(interceptor.GetInterceptedParams());
+  EXPECT_EQ(KURL(interceptor.GetInterceptedParams()->url), KURL(destination));
 
   // Pointing a named frame to an empty URL should just return a reference to
   // the frame's window without navigating it.
   DOMWindow* result = main_window->open(script_state->GetIsolate(), "",
                                         "frame1", "", exception_state);
-  EXPECT_EQ(remote_client.LastRequest().Url(), WebURL(KURL(destination)));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(interceptor.GetInterceptedParams());
+  EXPECT_EQ(KURL(interceptor.GetInterceptedParams()->url), KURL(destination));
   EXPECT_EQ(result, WebFrame::ToCoreFrame(*remote_frame)->DomWindow());
 
   Reset();

@@ -337,12 +337,7 @@ void RenderFrameProxyHost::OnAssociatedInterfaceRequest(
   // receivers by resetting them before binding.
   // TODO(dcheng): Maybe there should be an equivalent to RenderFrameHostImpl's
   // InvalidateMojoConnection()?
-  if (interface_name == mojom::RenderFrameProxyHost::Name_) {
-    frame_proxy_host_associated_receiver_.reset();
-    frame_proxy_host_associated_receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::RenderFrameProxyHost>(
-            std::move(handle)));
-  } else if (interface_name == blink::mojom::RemoteFrameHost::Name_) {
+  if (interface_name == blink::mojom::RemoteFrameHost::Name_) {
     remote_frame_host_receiver_.reset();
     remote_frame_host_receiver_.Bind(
         mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>(
@@ -378,11 +373,6 @@ RenderFrameProxyHost::GetRemoteAssociatedInterfaces() {
 }
 
 void RenderFrameProxyHost::SetRenderFrameProxyCreated(bool created) {
-  if (!created) {
-    // If the renderer process has gone away, created can be false. In that
-    // case, invalidate the mojo connection.
-    frame_proxy_host_associated_receiver_.reset();
-  }
   render_frame_proxy_created_ = created;
 }
 
@@ -398,13 +388,6 @@ RenderFrameProxyHost::GetAssociatedRemoteMainFrame() {
   if (!remote_main_frame_)
     GetRemoteAssociatedInterfaces()->GetInterface(&remote_main_frame_);
   return remote_main_frame_;
-}
-
-const mojo::AssociatedRemote<content::mojom::RenderFrameProxy>&
-RenderFrameProxyHost::GetAssociatedRenderFrameProxy() {
-  if (!render_frame_proxy_)
-    GetRemoteAssociatedInterfaces()->GetInterface(&render_frame_proxy_);
-  return render_frame_proxy_;
 }
 
 void RenderFrameProxyHost::SetInheritedEffectiveTouchAction(

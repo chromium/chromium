@@ -58,6 +58,8 @@ void FakeRemoteFrameHost::UpdateViewportIntersection(
 void FakeRemoteFrameHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& properties) {}
 
+void FakeRemoteFrameHost::OpenURL(mojom::blink::OpenURLParamsPtr params) {}
+
 void FakeRemoteFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(

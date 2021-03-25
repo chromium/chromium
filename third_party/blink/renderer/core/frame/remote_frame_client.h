@@ -19,23 +19,11 @@
 
 namespace blink {
 class AssociatedInterfaceProvider;
-class ResourceRequest;
 
 class RemoteFrameClient : public FrameClient {
  public:
   ~RemoteFrameClient() override = default;
 
-  virtual void Navigate(
-      const ResourceRequest&,
-      bool should_replace_current_entry,
-      bool is_opener_navigation,
-      bool initiator_frame_has_download_sandbox_flag,
-      bool initiator_frame_is_ad,
-      mojo::PendingRemote<mojom::blink::BlobURLToken>,
-      const base::Optional<WebImpression>& impression,
-      const LocalFrameToken* initiator_frame_token,
-      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_keep_alive_handle) = 0;
   unsigned BackForwardLength() override = 0;
 
   virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;

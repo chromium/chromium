@@ -38,6 +38,9 @@ specific_include_rules = {
   "remote_frame\.h": [
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
   ],
+  "remote_frame\.cc": [
+    "+ui/base/window_open_disposition.h",
+  ],
   "remote_frame_view\.cc": [
     "+cc/base/math_util.h",
     "+components/paint_preview/common/paint_preview_tracker.h",

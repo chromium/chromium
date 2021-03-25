@@ -126,7 +126,6 @@ class WebElement;
 class WebFrameRequestBlocker;
 class WebLocalFrame;
 class WebMediaStreamDeviceObserver;
-class WebSecurityOrigin;
 class WebString;
 class WebURL;
 struct FramePolicy;
@@ -259,17 +258,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Looks up and returns the WebFrame corresponding to a given frame routing
   // ID.
   static blink::WebFrame* ResolveWebFrame(int opener_frame_routing_id);
-
-  // Possibly set the kOpenerCrossOrigin and kSandboxNoGesture policy in
-  // |download_policy|.
-  static void MaybeSetDownloadFramePolicy(
-      bool is_opener_navigation,
-      const blink::WebURLRequest& request,
-      const blink::WebSecurityOrigin& current_origin,
-      bool has_download_sandbox_flag,
-      bool blocking_downloads_in_sandbox_enabled,
-      bool from_ad,
-      blink::NavigationDownloadPolicy* download_policy);
 
   // Overwrites the given URL to use an HTML5 embed if possible.
   blink::WebURL OverrideFlashEmbedWithHTML(const blink::WebURL& url) override;

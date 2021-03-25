@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/frame_proxy.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -69,7 +68,6 @@ class RenderWidgetHostView;
 class CONTENT_EXPORT RenderFrameProxyHost
     : public IPC::Listener,
       public IPC::Sender,
-      public mojom::RenderFrameProxyHost,
       public blink::mojom::RemoteFrameHost,
       public blink::mojom::RemoteMainFrameHost {
  public:
@@ -202,6 +200,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
       override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& frame_visual_properties) override;
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
@@ -212,13 +211,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
       override;
   void RouteCloseEvent() override;
 
-  // mojom::RenderFrameProxyHost:
-  void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
-
-  // Returns associated remote for the content::mojom::RenderFrameProxy Mojo
-  // interface.
-  const mojo::AssociatedRemote<mojom::RenderFrameProxy>&
-  GetAssociatedRenderFrameProxy();
   // Requests a viz::LocalSurfaceId to enable auto-resize mode from the parent
   // renderer.
   void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size);
@@ -235,8 +227,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
  private:
   // These interceptor need access to frame_host_receiver_for_testing().
-  friend class RouteMessageEventInterceptor;
-  friend class OpenURLInterceptor;
+  friend class RemoteFrameHostInterceptor;
   friend class UpdateViewportIntersectionMessageFilter;
   friend class SynchronizeVisualPropertiesInterceptor;
 
@@ -255,12 +246,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>&
   frame_host_receiver_for_testing() {
     return remote_frame_host_receiver_;
-  }
-
-  // Needed for tests to be able to swap the implementation and intercept calls.
-  mojo::AssociatedReceiver<mojom::RenderFrameProxyHost>&
-  frame_proxy_host_receiver_for_testing() {
-    return frame_proxy_host_associated_receiver_;
   }
 
   // This RenderFrameProxyHost's routing id.
@@ -299,19 +284,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;
 
-  // Mojo receiver to this RenderFrameProxyHost.
-  mojo::AssociatedReceiver<mojom::RenderFrameProxyHost>
-      frame_proxy_host_associated_receiver_{this};
-
   // Holder of Mojo connection with the Frame service in Blink.
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> remote_frame_;
 
   // Holder of Mojo connection with the RemoteMainFrame in Blink. This remote
   // will be valid when the frame is the active main frame.
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> remote_main_frame_;
-
-  // Holder of Mojo connection with the content::mojom::RenderFrameProxy.
-  mojo::AssociatedRemote<mojom::RenderFrameProxy> render_frame_proxy_;
 
   mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>
       remote_frame_host_receiver_{this};

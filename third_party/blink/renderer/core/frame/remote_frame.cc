@@ -8,11 +8,17 @@
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/platform/impression_conversions.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -46,6 +52,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -55,6 +62,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace blink {
 
@@ -254,15 +262,50 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   // TODO(https://crbug.com/1173409 and https://crbug.com/1059959): Check that
   // we always have valid |initiator_frame_token| and
   // |initiator_policy_container_keep_alive_handle|.
+  ResourceRequest& request = frame_request.GetResourceRequest();
+  DCHECK(request.RequestorOrigin().get());
 
-  Client()->Navigate(frame_request.GetResourceRequest(),
-                     frame_load_type == WebFrameLoadType::kReplaceCurrentItem,
-                     is_opener_navigation,
-                     initiator_frame_has_download_sandbox_flag,
-                     initiator_frame_is_ad, frame_request.GetBlobURLToken(),
-                     frame_request.Impression(),
-                     base::OptionalOrNullptr(initiator_frame_token),
-                     std::move(initiator_policy_container_keep_alive_handle));
+  auto params = mojom::blink::OpenURLParams::New();
+  params->url = url;
+  params->initiator_origin = request.RequestorOrigin();
+  params->post_body =
+      blink::GetRequestBodyForWebURLRequest(WrappedResourceRequest(request));
+  DCHECK_EQ(!!params->post_body, request.HttpMethod().Utf8() == "POST");
+  params->extra_headers =
+      blink::GetWebURLRequestHeadersAsString(WrappedResourceRequest(request));
+  params->referrer = mojom::blink::Referrer::New(
+      KURL(NullURL(), request.ReferrerString()), request.GetReferrerPolicy());
+  params->disposition = ui::mojom::blink::WindowOpenDisposition::CURRENT_TAB;
+  params->should_replace_current_entry =
+      frame_load_type == WebFrameLoadType::kReplaceCurrentItem;
+  params->user_gesture = request.HasUserGesture();
+  params->triggering_event_info = mojom::blink::TriggeringEventInfo::kUnknown;
+  params->blob_url_token = frame_request.GetBlobURLToken();
+  params->href_translate =
+      String(frame_request.HrefTranslate().Latin1().c_str());
+  params->initiator_policy_container_keep_alive_handle =
+      std::move(initiator_policy_container_keep_alive_handle);
+  params->initiator_frame_token =
+      base::OptionalFromPtr(base::OptionalOrNullptr(initiator_frame_token));
+
+  if (frame_request.Impression()) {
+    params->impression =
+        blink::ConvertWebImpressionToImpression(*frame_request.Impression());
+  }
+
+  // Note: For the AdFrame/Sandbox download policy here it only covers the case
+  // where the navigation initiator frame is ad. The download_policy may be
+  // further augmented in RenderFrameProxyHost::OnOpenURL if the navigating
+  // frame is ad or sandboxed.
+  params->download_policy.ApplyDownloadFramePolicy(
+      is_opener_navigation, request.HasUserGesture(),
+      request.RequestorOrigin()->CanAccess(
+          GetSecurityContext()->GetSecurityOrigin()),
+      initiator_frame_has_download_sandbox_flag,
+      RuntimeEnabledFeatures::BlockingDownloadsInSandboxEnabled(),
+      initiator_frame_is_ad);
+
+  GetRemoteFrameHostRemote().OpenURL(std::move(params));
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {

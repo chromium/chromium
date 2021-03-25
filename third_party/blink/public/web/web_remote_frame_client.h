@@ -23,8 +23,6 @@
 
 namespace blink {
 
-class WebURLRequest;
-
 class WebRemoteFrameClient {
  public:
   // Specifies the reason for the detachment.
@@ -33,21 +31,6 @@ class WebRemoteFrameClient {
   // Notify the embedder that it should remove this frame from the frame tree
   // and release any resources associated with it.
   virtual void FrameDetached(DetachType) {}
-
-  // A remote frame was asked to start a navigation.
-  virtual void Navigate(
-      const WebURLRequest& request,
-      bool should_replace_current_entry,
-      bool is_opener_navigation,
-      bool initiator_frame_has_download_sandbox_flag,
-      bool blocking_downloads_in_sandbox_enabled,
-      bool initiator_frame_is_ad,
-      CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase> blob_url_token,
-      const base::Optional<WebImpression>& impression,
-      const LocalFrameToken* initiator_frame_token,
-      CrossVariantMojoRemote<
-          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
-          initiator_policy_container_keep_alive_handle) {}
 
   // Returns an AssociatedInterfaceProvider the frame can use to request
   // associated interfaces from the browser.

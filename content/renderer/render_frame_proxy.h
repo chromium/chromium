@@ -10,7 +10,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "content/common/content_export.h"
 #include "content/common/frame_messages.h"
-#include "content/common/frame_proxy.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -60,8 +59,7 @@ class RenderViewImpl;
 // RenderFrame is created for it.
 class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
                                         public IPC::Sender,
-                                        public blink::WebRemoteFrameClient,
-                                        public mojom::RenderFrameProxy {
+                                        public blink::WebRemoteFrameClient {
  public:
   // This method should be used to create a RenderFrameProxy, which will replace
   // an existing RenderFrame during its cross-process navigation from the
@@ -139,21 +137,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   void FrameDetached(DetachType type) override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
 
-  void Navigate(
-      const blink::WebURLRequest& request,
-      bool should_replace_current_entry,
-      bool is_opener_navigation,
-      bool initiator_frame_has_download_sandbox_flag,
-      bool blocking_downloads_in_sandbox_enabled,
-      bool initiator_frame_is_ad,
-      blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
-          blob_url_token,
-      const base::Optional<blink::WebImpression>& impression,
-      const blink::LocalFrameToken* initiator_frame_token,
-      blink::CrossVariantMojoRemote<
-          blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
-          initiator_policy_container_keep_alive_handle) override;
-
   void DidStartLoading();
 
  private:
@@ -161,8 +144,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
                    int routing_id);
 
   void Init(blink::WebRemoteFrame* frame, RenderViewImpl* render_view);
-
-  mojom::RenderFrameProxyHost* GetFrameProxyHost();
 
   // The |AgentSchedulingGroup| this proxy is associated with. NOTE: This is
   // different than the |AgentSchedulingGroup| associated with the frame being
@@ -177,13 +158,8 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   // Provides the mojo interface to this RenderFrameProxy's
   // RenderFrameProxyHost.
-  mojo::AssociatedRemote<mojom::RenderFrameProxyHost> frame_proxy_host_remote_;
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;
-
-  // Mojo receiver to this content::mojom::RenderFrameProxy.
-  mojo::AssociatedReceiver<mojom::RenderFrameProxy>
-      render_frame_proxy_receiver_{this};
 
   RenderViewImpl* render_view_ = nullptr;
 

@@ -870,6 +870,9 @@ interface RemoteFrameHost {
   // Tells the browser that a child's visual properties have changed.
   SynchronizeVisualProperties(
     FrameVisualProperties properties);
+
+  // Requests that the given URL be opened in the specified manner.
+  OpenURL(blink.mojom.OpenURLParams params);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

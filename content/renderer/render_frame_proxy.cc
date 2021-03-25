@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -288,10 +289,6 @@ void RenderFrameProxy::OnAssociatedInterfaceRequest(
     associated_interfaces_.TryBindInterface(interface_name, &handle);
   } else if (interface_name == blink::mojom::RemoteMainFrame::Name_) {
     associated_interfaces_.TryBindInterface(interface_name, &handle);
-  } else if (interface_name == content::mojom::RenderFrameProxy::Name_) {
-    render_frame_proxy_receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::RenderFrameProxy>(
-            std::move(handle)));
   }
 }
 
@@ -316,64 +313,6 @@ void RenderFrameProxy::FrameDetached(DetachType type) {
   web_frame_ = nullptr;
 
   delete this;
-}
-
-void RenderFrameProxy::Navigate(
-    const blink::WebURLRequest& request,
-    bool should_replace_current_entry,
-    bool is_opener_navigation,
-    bool initiator_frame_has_download_sandbox_flag,
-    bool blocking_downloads_in_sandbox_enabled,
-    bool initiator_frame_is_ad,
-    blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
-        blob_url_token,
-    const base::Optional<blink::WebImpression>& impression,
-    const blink::LocalFrameToken* initiator_frame_token,
-    blink::CrossVariantMojoRemote<
-        blink::mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
-        initiator_policy_container_keep_alive_handle) {
-  // The request must always have a valid initiator origin.
-  DCHECK(!request.RequestorOrigin().IsNull());
-
-  auto params = blink::mojom::OpenURLParams::New();
-  params->url = request.Url();
-  params->initiator_origin = request.RequestorOrigin();
-  params->post_body = blink::GetRequestBodyForWebURLRequest(request);
-  DCHECK_EQ(!!params->post_body, request.HttpMethod().Utf8() == "POST");
-  params->extra_headers =
-      blink::GetWebURLRequestHeadersAsString(request).Latin1();
-  params->referrer = blink::mojom::Referrer::New(
-      blink::WebStringToGURL(request.ReferrerString()),
-      request.GetReferrerPolicy());
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
-  params->should_replace_current_entry = should_replace_current_entry;
-  params->user_gesture = request.HasUserGesture();
-  params->triggering_event_info = blink::mojom::TriggeringEventInfo::kUnknown;
-  params->blob_url_token = std::move(blob_url_token);
-  params->initiator_policy_container_keep_alive_handle =
-      std::move(initiator_policy_container_keep_alive_handle);
-  params->initiator_frame_token = base::OptionalFromPtr(initiator_frame_token);
-
-  if (impression)
-    params->impression = blink::ConvertWebImpressionToImpression(*impression);
-
-  // Note: For the AdFrame/Sandbox download policy here it only covers the case
-  // where the navigation initiator frame is ad. The download_policy may be
-  // further augmented in RenderFrameProxyHost::OnOpenURL if the navigating
-  // frame is ad or sandboxed.
-  RenderFrameImpl::MaybeSetDownloadFramePolicy(
-      is_opener_navigation, request, web_frame_->GetSecurityOrigin(),
-      initiator_frame_has_download_sandbox_flag,
-      blocking_downloads_in_sandbox_enabled, initiator_frame_is_ad,
-      &params->download_policy);
-
-  GetFrameProxyHost()->OpenURL(std::move(params));
-}
-
-mojom::RenderFrameProxyHost* RenderFrameProxy::GetFrameProxyHost() {
-  if (!frame_proxy_host_remote_.is_bound())
-    GetRemoteAssociatedInterfaces()->GetInterface(&frame_proxy_host_remote_);
-  return frame_proxy_host_remote_.get();
 }
 
 blink::AssociatedInterfaceProvider*
