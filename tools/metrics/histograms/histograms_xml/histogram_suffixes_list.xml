@@ -1025,13 +1025,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Replaced with CasualGame2 in 2020/09.
     </obsolete>
   </suffix>
+  <suffix name="CasualGame2" label="Casual game 2.">
+    <obsolete>
+      Replaced in M91 by GachaClub
+    </obsolete>
+  </suffix>
   <suffix name="GachaClub" label="Casual game 2: Gacha Club"/>
   <suffix name="GarenaFreeFire" label="Shooter game: Garena Free Fire"/>
+  <suffix name="HeavyGame" label="Heavy Game.">
+    <obsolete>
+      Replaced in M91 by PUBGMobile
+    </obsolete>
+  </suffix>
   <suffix name="MinecraftEducationEdition"
       label="Online game 2: Minecraft: Education Edition"/>
   <suffix name="Netflix" label="Video playback app: Netflix"/>
+  <suffix name="OnlineGame" label="Online game.">
+    <obsolete>
+      Replaced in M91 by Roblox
+    </obsolete>
+  </suffix>
   <suffix name="PUBGMobile" label="Heavy Game: PUBG Mobile"/>
   <suffix name="Roblox" label="Online game: Roblox"/>
+  <suffix name="ShooterGame" label="Shooter game.">
+    <obsolete>
+      Replaced in M91 by GarenaFreeFire
+    </obsolete>
+  </suffix>
+  <suffix name="Video" label="Video playback app.">
+    <obsolete>
+      Replaced in M91 by Netflix
+    </obsolete>
+  </suffix>
   <affected-histogram name="Arc.Runtime.Performance.CommitDeviation"/>
   <affected-histogram name="Arc.Runtime.Performance.CommitDeviation2"/>
   <affected-histogram name="Arc.Runtime.Performance.FPS"/>
