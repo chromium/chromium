@@ -318,7 +318,6 @@
   "enterprise.reportingPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms" : ["win", "mac", "linux"],
     "allowlist" : [
       "86D63D90308742AA65B8B29AE2D39FED2D6DC310",  // https://crbug.com/882461 SecureConnect
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
@@ -15,6 +16,8 @@
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
+
+#if !defined(OS_CHROMEOS)
 namespace enterprise_reporting {
 
 extern const char kDeviceIdNotFound[];
@@ -136,6 +139,8 @@ class EnterpriseReportingPrivateGetDeviceInfoFunction
   void OnDeviceInfoRetrieved(
       const ::enterprise_signals::DeviceInfo& device_info);
 };
+
+#endif  // !defined(OS_CHROMEOS)
 
 class EnterpriseReportingPrivateGetContextInfoFunction
     : public ExtensionFunction {

@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -31,6 +30,9 @@ namespace enterprise_reporting_private =
     ::extensions::api::enterprise_reporting_private;
 
 namespace extensions {
+
+#if !defined(OS_CHROMEOS)
+
 namespace {
 
 const char kFakeClientId[] = "fake-client-id";
@@ -312,6 +314,8 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   EXPECT_EQ("00:00:00:00:00:00", info.mac_addresses[0]);
 #endif
 }
+
+#endif  // !defined(OS_CHROMEOS)
 
 class EnterpriseReportingPrivateGetContextInfoTest
     : public ExtensionApiUnittest {

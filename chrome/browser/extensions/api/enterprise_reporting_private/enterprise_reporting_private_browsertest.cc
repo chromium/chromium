@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -17,6 +16,13 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#endif
 
 namespace enterprise_reporting_private =
     ::extensions::api::enterprise_reporting_private;
@@ -76,6 +82,10 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
 #endif
 
   void SetupDMToken() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+#else
     browser_dm_token_storage_ =
         std::make_unique<policy::FakeBrowserDMTokenStorage>();
     browser_dm_token_storage_->SetEnrollmentToken("enrollment_token");
@@ -83,6 +93,7 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
     browser_dm_token_storage_->SetDMToken("dm_token");
     policy::BrowserDMTokenStorage::SetForTesting(
         browser_dm_token_storage_.get());
+#endif
   }
 
  private:
@@ -112,9 +123,15 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
         SetUpOnMainThread();
 
     if (browser_managed()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      auto* browser_policy_manager = g_browser_process->platform_part()
+                                         ->browser_policy_connector_chromeos()
+                                         ->GetDeviceCloudPolicyManager();
+#else
       auto* browser_policy_manager =
           g_browser_process->browser_policy_connector()
               ->machine_level_user_cloud_policy_manager();
+#endif
       auto browser_policy_data =
           std::make_unique<enterprise_management::PolicyData>();
       browser_policy_data->add_device_affiliation_ids(kBrowserID1);
@@ -124,9 +141,16 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     }
 
     if (profile_managed()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      auto* profile_policy_manager =
+          browser()->profile()->GetUserCloudPolicyManagerChromeOS();
+      profile_policy_manager->core()->client()->SetupRegistration(
+          "dm_token", "client_id", {});
+#else
       safe_browsing::SetProfileDMToken(browser()->profile(), "dm_token");
       auto* profile_policy_manager =
           browser()->profile()->GetUserCloudPolicyManager();
+#endif
       auto profile_policy_data =
           std::make_unique<enterprise_management::PolicyData>();
       profile_policy_data->add_user_affiliation_ids(kProfileID1);

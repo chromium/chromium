@@ -15,12 +15,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
-#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 namespace extensions {
 
 namespace {
+#if !defined(OS_CHROMEOS)
 const char kEndpointVerificationRetrievalFailed[] =
     "Failed to retrieve the endpoint verification data.";
 const char kEndpointVerificationStoreFailed[] =
@@ -57,6 +57,7 @@ api::enterprise_reporting_private::DeviceInfo ToDeviceInfo(
 
   return device_info;
 }
+#endif  // !defined(OS_CHROMEOS)
 
 api::enterprise_reporting_private::ContextInfo ToContextInfo(
     const enterprise_signals::ContextInfo& signals) {
@@ -86,6 +87,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
 
 }  // namespace
 
+#if !defined(OS_CHROMEOS)
 namespace enterprise_reporting {
 const char kDeviceIdNotFound[] = "Failed to retrieve the device id.";
 }  // namespace enterprise_reporting
@@ -294,6 +296,8 @@ void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
   Respond(OneArgument(
       base::Value::FromUniquePtrValue(ToDeviceInfo(device_signals).ToValue())));
 }
+
+#endif  // !defined(OS_CHROMEOS)
 
 // getContextInfo
 

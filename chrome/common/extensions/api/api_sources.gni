@@ -32,6 +32,7 @@ schema_sources_ = [
   "downloads.idl",
   "downloads_internal.idl",
   "enterprise_hardware_platform.idl",
+  "enterprise_reporting_private.idl",
   "font_settings.json",
   "gcm.json",
   "history.json",
@@ -123,10 +124,6 @@ if (is_chromeos_ash) {
   }
 } else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]
-}
-
-if (!is_chromeos_ash) {
-  schema_sources_ += [ "enterprise_reporting_private.idl" ]
 }
 
 if (enable_service_discovery) {
