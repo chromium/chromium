@@ -58,16 +58,12 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformClipboard {
                                   const DataMap& data_map,
                                   OfferDataClosure callback) = 0;
 
-  // Reads data from host system clipboard given mime type. The data is
-  // stored in 'data_map'.
-  //
-  // RequestDataClosure is invoked to acknowledge that the requested clipboard
-  // data has been read and stored into 'data_map'.
-  using RequestDataClosure =
-      base::OnceCallback<void(const base::Optional<Data>&)>;
+  // Reads data from host system clipboard given mime type. The resulting data
+  // is returned asynchronously through |callback|, whereas nullptr is returned
+  // if the request fails for some reason (i.e: no data available, etc).
+  using RequestDataClosure = base::OnceCallback<void(const Data& result)>;
   virtual void RequestClipboardData(ClipboardBuffer buffer,
                                     const std::string& mime_type,
-                                    DataMap* data_map,
                                     RequestDataClosure callback) = 0;
 
   // Gets the mime types of the data available for clipboard operations

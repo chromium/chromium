@@ -47,7 +47,6 @@ class WaylandClipboard : public PlatformClipboard {
   void RequestClipboardData(
       ClipboardBuffer buffer,
       const std::string& mime_type,
-      PlatformClipboard::DataMap* data_map,
       PlatformClipboard::RequestDataClosure callback) override;
   void GetAvailableMimeTypes(
       ClipboardBuffer buffer,

@@ -43,7 +43,6 @@ class Clipboard {
   // Asynchronously reads clipboard content with |mime_type| format. The result
   // data is expected to arrive through OnSelectionDataReceived() callback.
   virtual bool Read(const std::string& mime_type,
-                    ui::PlatformClipboard::DataMap* data_map,
                     ui::PlatformClipboard::RequestDataClosure callback) = 0;
 
   // Synchronously stores and announces |data| as available from this clipboard.
@@ -80,12 +79,9 @@ class ClipboardImpl final : public Clipboard,
 
   // TODO(crbug.com/1165466): Support nested clipboard requests.
   bool Read(const std::string& mime_type,
-            ui::PlatformClipboard::DataMap* data_map,
             ui::PlatformClipboard::RequestDataClosure callback) final {
-    DCHECK(data_map);
+    requested_mime_type_ = mime_type;
     if (GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type))) {
-      requested_mime_type_ = mime_type;
-      received_data_ = data_map;
       read_clipboard_closure_ = std::move(callback);
       return true;
     }
@@ -152,17 +148,9 @@ class ClipboardImpl final : public Clipboard,
 
   void SetData(ui::PlatformClipboard::Data contents,
                const std::string& mime_type) {
-    if (!received_data_)
-      return;
-
-    CHECK(contents);
     CHECK_EQ(GetMimeTypeForRequest(requested_mime_type_), mime_type);
-
-    (*received_data_)[requested_mime_type_] = contents;
     if (!read_clipboard_closure_.is_null())
       std::move(read_clipboard_closure_).Run(contents);
-
-    received_data_ = nullptr;
     requested_mime_type_.clear();
   }
 
@@ -208,10 +196,6 @@ class ClipboardImpl final : public Clipboard,
   // The data currently stored in a given clipboard buffer.
   ui::PlatformClipboard::DataMap offered_data_;
 
-  // Holds a temporary instance of the client's clipboard content
-  // so that we can asynchronously write to it.
-  ui::PlatformClipboard::DataMap* received_data_ = nullptr;
-
   // Stores the callback to be invoked upon data reading from clipboard.
   ui::PlatformClipboard::RequestDataClosure read_clipboard_closure_;
 
@@ -252,12 +236,11 @@ void WaylandClipboard::OfferClipboardData(
 void WaylandClipboard::RequestClipboardData(
     ClipboardBuffer buffer,
     const std::string& mime_type,
-    PlatformClipboard::DataMap* data_map,
     PlatformClipboard::RequestDataClosure callback) {
   if (auto* clipboard = GetClipboard(buffer))
-    clipboard->Read(mime_type, data_map, std::move(callback));
+    clipboard->Read(mime_type, std::move(callback));
   else
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(nullptr);
 }
 
 bool WaylandClipboard::IsSelectionOwner(ClipboardBuffer buffer) {

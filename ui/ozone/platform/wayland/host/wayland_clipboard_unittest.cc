@@ -119,19 +119,16 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   // writes in some sample data, and we check it matches expectation.
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         const base::Optional<PlatformClipboard::Data>& data) {
-        auto& bytes = data->get()->data();
-        std::string string_data = std::string(bytes.begin(), bytes.end());
+      [](base::OnceClosure quit_closure, const PlatformClipboard::Data& data) {
+        ASSERT_TRUE(data.get());
+        std::string string_data(data->front_as<const char>(), data->size());
         EXPECT_EQ(kSampleClipboardText, string_data);
         std::move(quit_closure).Run();
       },
       run_loop.QuitClosure());
 
-  PlatformClipboard::DataMap read_data_;
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
-                                   kMimeTypeTextUtf8, &read_data_,
-                                   std::move(callback));
+                                   kMimeTypeTextUtf8, std::move(callback));
   Sync();
   run_loop.Run();
 }
@@ -149,19 +146,15 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
 
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         const base::Optional<PlatformClipboard::Data>& data) {
-        std::string str(data->get()->front_as<const char>(),
-                        data->get()->size());
+      [](base::OnceClosure quit_closure, const PlatformClipboard::Data& data) {
+        std::string str(data->front_as<const char>(), data->size());
         EXPECT_EQ("utf8_text", str);
         std::move(quit_closure).Run();
       },
       run_loop.QuitClosure());
 
-  PlatformClipboard::DataMap read_data_;
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
-                                   kMimeTypeTextUtf8, &read_data_,
-                                   std::move(callback));
+                                   kMimeTypeTextUtf8, std::move(callback));
   Sync();
   run_loop.Run();
 }
@@ -170,16 +163,13 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // When no data offer is advertised and client requests clipboard data
   // from the server, the response callback should be gracefully called with
   // an empty string.
-  auto callback =
-      base::BindOnce([](const base::Optional<PlatformClipboard::Data>& data) {
-        auto& bytes = data->get()->data();
-        std::string string_data = std::string(bytes.begin(), bytes.end());
-        EXPECT_EQ("", string_data);
-      });
-  PlatformClipboard::DataMap read_data_;
+  auto callback = base::BindOnce([](const PlatformClipboard::Data& data) {
+    ASSERT_TRUE(data.get());
+    std::string string_data(data->front_as<const char>(), data->size());
+    EXPECT_EQ("", string_data);
+  });
   clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
-                                   kMimeTypeTextUtf8, &read_data_,
-                                   std::move(callback));
+                                   kMimeTypeTextUtf8, std::move(callback));
 }
 
 TEST_P(WaylandClipboardTest, IsSelectionOwner) {
@@ -209,45 +199,34 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
 
   // Post a read request for kSelection buffer, which will start its execution
   // after kCopyPaste request (below) starts.
-  PlatformClipboard::DataMap selection_data_;
   base::MockCallback<PlatformClipboard::RequestDataClosure> selection_callback;
   EXPECT_CALL(selection_callback, Run(_)).Times(1);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&PlatformClipboard::RequestClipboardData,
                      base::Unretained(clipboard_), ClipboardBuffer::kSelection,
-                     kMimeTypeTextUtf8, base::Unretained(&selection_data_),
-                     selection_callback.Get()));
+                     kMimeTypeTextUtf8, selection_callback.Get()));
 
   // Instantly start a clipboard read request for kCopyPaste buffer (the actual
   // data transfer will take place asynchronously. See WaylandDataDevice impl)
-  // and ensure read callback is called and |copy_paste_data_| is filled as
-  // expected, regardless any other request that may arrive in the meantime.
-  PlatformClipboard::DataMap copy_paste_data_;
+  // and ensure read callback is called with the expected resulting data,
+  // regardless any other request that may arrive in the meantime.
   base::RunLoop run_loop;
   clipboard_->RequestClipboardData(
-      ClipboardBuffer::kCopyPaste, kMimeTypeTextUtf8, &copy_paste_data_,
+      ClipboardBuffer::kCopyPaste, kMimeTypeTextUtf8,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             const base::Optional<PlatformClipboard::Data>& data) {
-            ASSERT_TRUE(data.has_value());
+             const PlatformClipboard::Data& data) {
+            ASSERT_TRUE(data.get());
             EXPECT_EQ(kSampleClipboardText,
-                      std::string(data->get()->front_as<const char>(),
-                                  data->get()->size()));
+                      std::string(data->front_as<const char>(), data->size()));
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()));
 
   Sync();
   run_loop.Run();
-
-  EXPECT_TRUE(selection_data_.empty());
-
-  EXPECT_EQ(1u, copy_paste_data_.size());
-  EXPECT_TRUE(base::Contains(copy_paste_data_, kMimeTypeTextUtf8));
-  auto contents = copy_paste_data_[kMimeTypeTextUtf8];
-  EXPECT_EQ(kSampleClipboardText,
-            std::string(contents->front_as<const char>(), contents->size()));
+  Sync();
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

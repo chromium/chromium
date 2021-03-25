@@ -61,7 +61,6 @@ class StubPlatformClipboard : public PlatformClipboard {
   void RequestClipboardData(
       ClipboardBuffer buffer,
       const std::string& mime_type,
-      PlatformClipboard::DataMap* data_map,
       PlatformClipboard::RequestDataClosure callback) override {
     std::move(callback).Run({});
   }
@@ -210,10 +209,6 @@ class ClipboardOzone::AsyncClipboardOzone {
         std::move(quit_closure_).Run();
     }
 
-    void FinishWithOptional(const base::Optional<Result>& result) {
-      Finish(result.value_or(Result{}));
-    }
-
     base::WeakPtr<Request<Result>> GetWeakPtr() {
       return weak_factory_.GetWeakPtr();
     }
@@ -250,10 +245,9 @@ class ClipboardOzone::AsyncClipboardOzone {
                                const std::string& mime_type) {
     using ReadRequest = Request<PlatformClipboard::Data>;
     ReadRequest request;
-    PlatformClipboard::DataMap data_map;
     platform_clipboard_->RequestClipboardData(
-        buffer, mime_type, &data_map,
-        base::BindOnce(&ReadRequest::FinishWithOptional, request.GetWeakPtr()));
+        buffer, mime_type,
+        base::BindOnce(&ReadRequest::Finish, request.GetWeakPtr()));
     return request.TakeResultSync().release();
   }
 
