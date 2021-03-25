@@ -2360,9 +2360,6 @@ extern const char kEnableAssistantMediaSessionIntegrationDescription[];
 extern const char kEnableAssistantRoutinesName[];
 extern const char kEnableAssistantRoutinesDescription[];
 
-extern const char kEnableAssistantTimersV2Name[];
-extern const char kEnableAssistantTimersV2Description[];
-
 extern const char kEnableAutoSelectName[];
 extern const char kEnableAutoSelectDescription[];
 

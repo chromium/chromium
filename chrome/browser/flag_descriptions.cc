@@ -4086,10 +4086,6 @@ const char kEnableAssistantMediaSessionIntegrationDescription[] =
 const char kEnableAssistantRoutinesName[] = "Assistant Routines";
 const char kEnableAssistantRoutinesDescription[] = "Enable Assistant Routines.";
 
-const char kEnableAssistantTimersV2Name[] = "Enable Assistant Timers V2";
-const char kEnableAssistantTimersV2Description[] =
-    "Enables v2 of Assistant timers.";
-
 const char kEnableAutoSelectName[] = "Auto Select";
 const char kEnableAutoSelectDescription[] =
     "Automatically select the word under cursor on contextual menu click.";

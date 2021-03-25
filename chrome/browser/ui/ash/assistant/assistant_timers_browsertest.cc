@@ -48,9 +48,9 @@ constexpr int kVersion = 1;
 
 #define EXPECT_VISIBLE_NOTIFICATIONS_BY_PREFIXED_ID(prefix_)                  \
   {                                                                           \
-    if (!FindVisibleNotificationsByPrefixedId(prefix_).empty())               \
+    if (!FindVisibleNotificationsByPrefixedId(prefix_).empty()) {             \
       return;                                                                 \
-                                                                              \
+    }                                                                         \
     MockMessageCenterObserver mock;                                           \
     ScopedObserver<MessageCenter, MessageCenterObserver> observer_{&mock};    \
     observer_.Add(MessageCenter::Get());                                      \
@@ -188,9 +188,7 @@ class MockMessageCenterObserver
 
 class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  AssistantTimersBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAssistantTimersV2);
-  }
+  AssistantTimersBrowserTest() = default;
 
   AssistantTimersBrowserTest(const AssistantTimersBrowserTest&) = delete;
   AssistantTimersBrowserTest& operator=(const AssistantTimersBrowserTest&) =
@@ -206,7 +204,6 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
   AssistantTestMixin* tester() { return &tester_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
   AssistantTestMixin tester_{&mixin_host_, this, embedded_test_server(), kMode,
                              kVersion};

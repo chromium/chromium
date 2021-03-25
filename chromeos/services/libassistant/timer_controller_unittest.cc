@@ -118,41 +118,7 @@ class AssistantTimerControllerTest : public ::testing::Test {
   TimerController controller_;
 };
 
-TEST_F(AssistantTimerControllerTest,
-       ShouldNotifyDelegateOfOnlyRingingTimersInV1) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      assistant::features::kAssistantTimersV2);
-
-  StartLibassistant();
-
-  EXPECT_CALL(delegate(), OnTimerStateChanged)
-      .WillOnce(Invoke([](const auto& timers) {
-        ASSERT_EQ(1u, timers.size());
-        EXPECT_EQ(AssistantTimerState::kFired, timers[0].state);
-      }));
-
-  std::vector<assistant_client::AlarmTimerEvent> events;
-
-  // Ignore NONE, ALARMs, and SCHEDULED/PAUSED timers.
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::NONE);
-  AddAlarmTimerEvent(&events, assistant_client::AlarmTimerEvent::Type::ALARM);
-  AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);
-  AddTimerEvent(&events, assistant_client::Timer::State::PAUSED);
-
-  // Accept FIRED timers.
-  AddTimerEvent(&events, assistant_client::Timer::State::FIRED);
-
-  fake_alarm_timer_manager().SetAllEvents(std::move(events));
-  fake_alarm_timer_manager().NotifyRingingStateListeners();
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(AssistantTimerControllerTest, ShouldNotifyDelegateOfAnyTimersInV2) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      assistant::features::kAssistantTimersV2);
-
+TEST_F(AssistantTimerControllerTest, ShouldNotifyDelegateOfAnyTimers) {
   // We expect OnTimerStateChanged() to be invoked when starting LibAssistant.
   EXPECT_CALL(delegate(), OnTimerStateChanged).Times(1);
 
@@ -186,11 +152,7 @@ TEST_F(AssistantTimerControllerTest, ShouldNotifyDelegateOfAnyTimersInV2) {
 }
 
 TEST_F(AssistantTimerControllerTest,
-       ShouldNotifyDelegateOfTimersWhenStartingLibAssistantInV2) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      assistant::features::kAssistantTimersV2);
-
+       ShouldNotifyDelegateOfTimersWhenStartingLibAssistant) {
   // Pre-populate the AlarmTimerManager with a single scheduled timer.
   std::vector<assistant_client::AlarmTimerEvent> events;
   AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);

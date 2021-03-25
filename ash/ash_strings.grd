@@ -2980,9 +2980,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_TECHNICAL" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a technical query.">
         Take a screenshot
       </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_TITLE" desc="Title for Assistant timer notification.">
-        Time's up
-      </message>
       <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE" desc="Message for Assistant timer notification. Example: 10m timer.">
         <ph name="TOTAL_TIME">{0}<ex>10m</ex></ph> timer
       </message>

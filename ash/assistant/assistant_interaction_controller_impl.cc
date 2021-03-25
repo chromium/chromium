@@ -45,7 +45,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::features::IsTimersV2Enabled;
 using chromeos::assistant::features::IsWaitSchedulingEnabled;
 
 // Android.

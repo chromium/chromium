@@ -36,11 +36,6 @@ extern const base::Feature kAssistantLauncherChipIntegration;
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const base::Feature kAssistantRoutines;
 
-// When enabled, we support the second version of timers UX which includes new
-// UI treatments for timers in Assistant and System UI.
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
-extern const base::Feature kAssistantTimersV2;
-
 // Enables server-driven wait scheduling. This allows the server to inject
 // pauses into the interaction response to give the user time to digest one leg
 // of a routine before proceeding to the next, for example, or to provide
@@ -107,8 +102,6 @@ bool IsResponseProcessingV2Enabled();
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsRoutinesEnabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsStereoAudioInputEnabled();
-
-COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsTimersV2Enabled();
 
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) bool IsVoiceMatchDisabled();
 

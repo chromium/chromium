@@ -2470,7 +2470,6 @@ const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kAssistantBetterOnboardingInternalName[] =
     "enable-assistant-better-onboarding";
-constexpr char kAssistantTimersV2InternalName[] = "enable-assistant-timers-v2";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -5339,11 +5338,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAssistantBetterOnboardingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::assistant::features::kAssistantBetterOnboarding)},
-
-    {kAssistantTimersV2InternalName,
-     flag_descriptions::kEnableAssistantTimersV2Name,
-     flag_descriptions::kEnableAssistantTimersV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantTimersV2)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
@@ -7260,8 +7254,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // The following flags are only available to teamfooders.
-  if (!strcmp(kAssistantBetterOnboardingInternalName, entry.internal_name) ||
-      !strcmp(kAssistantTimersV2InternalName, entry.internal_name)) {
+  if (!strcmp(kAssistantBetterOnboardingInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 

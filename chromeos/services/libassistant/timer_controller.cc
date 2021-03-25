@@ -48,13 +48,6 @@ std::vector<AssistantTimer> GetTimers(
     if (event.type != assistant_client::AlarmTimerEvent::TIMER)
       continue;
 
-    // We always handle timers that have fired. Only for timers v2, however, do
-    // we handle scheduled/paused timers so we can represent those states in UI.
-    if (event.timer_data.state != assistant_client::Timer::State::FIRED &&
-        !assistant::features::IsTimersV2Enabled()) {
-      continue;
-    }
-
     AssistantTimer timer;
     timer.id = event.timer_data.timer_id;
     timer.label = event.timer_data.label;
@@ -113,7 +106,6 @@ class TimerController::TimerListener {
                              weak_ptr));
         });
 
-    if (assistant::features::IsTimersV2Enabled()) {
       // In timers v2, we also want to know when timers are scheduled,
       // updated, and/or removed so that we can represent those states
       // in UI.
@@ -129,7 +121,6 @@ class TimerController::TimerListener {
 
       // Force sync the initial timer state.
       OnAlarmTimerStateChanged();
-    }
   }
 
   void Stop() {
