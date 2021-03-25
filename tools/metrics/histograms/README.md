@@ -607,9 +607,10 @@ does, then the parent directory's component is used.
 
 ### Cleaning Up Histogram Entries
 
-Do not delete histograms from histograms.xml. Instead, mark unused histograms as
-obsolete and annotate them with the date or milestone in the `<obsolete>` tag
-entry.
+Do not delete histograms from histograms.xml files or move them to
+obsolete_histograms.xml. Instead, mark unused histograms as obsolete and
+annotate them with the date or milestone in the `<obsolete>` tag entry. They
+will later get moved to obsolete_histograms.xml via tooling.
 
 If deprecating only some variants of a
 [patterned histogram](#Patterned-Histograms), mark each deprecated `<variant>`
