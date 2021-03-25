@@ -287,4 +287,33 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
   EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
 }
 
+TEST_F(LayerCopyAnimatorTest, NoAnimationStopImmediately) {
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto* root_layer = root()->layer();
+  auto* anim_layer = anim_root()->layer();
+
+  auto* animator = new LayerCopyAnimator(anim_root());
+  EXPECT_FALSE(animator->animation_requested());
+  EXPECT_EQ(2u, anim_layer->children().size());
+  EXPECT_EQ(1u, root_layer->children().size());
+
+  GenerateOneFrame();
+  Advance(base::TimeDelta::FromMilliseconds(32));
+
+  auto* copied_layer = animator->copied_layer_for_test();
+  ASSERT_TRUE(copied_layer);
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR, copied_layer->type());
+  EXPECT_EQ(gfx::Size(100, 100), copied_layer->size());
+
+  ui::TestLayerAnimationObserver observer;
+
+  animator->MaybeStartAnimation(
+      &observer, base::BindOnce([](ui::Layer* layer,
+                                   ui::LayerAnimationObserver* observer) {}));
+  EXPECT_EQ(1u, root_layer->children().size());
+  EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
+  EXPECT_EQ(-1, observer.last_ended_sequence_epoch());
+}
+
 }  //  namespace ash

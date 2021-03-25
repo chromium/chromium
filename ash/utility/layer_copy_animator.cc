@@ -124,6 +124,12 @@ void LayerCopyAnimator::RunAnimation() {
 
   std::move(animation_callback_).Run(copied_layer_.get(), observer_);
 
+  // Callback may not run animations, in which case, just end immediately.
+  if (!copied_layer_->GetAnimator()->is_animating()) {
+    CancelAndDelete();
+    return;
+  }
+
   if (fake_sequence_) {
     DCHECK(observer_);
     observer_->OnLayerAnimationEnded(fake_sequence_.get());
