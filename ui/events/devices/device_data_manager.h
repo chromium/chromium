@@ -68,6 +68,11 @@ class EVENTS_DEVICES_EXPORT DeviceDataManager
   void AddObserver(InputDeviceEventObserver* observer);
   void RemoveObserver(InputDeviceEventObserver* observer);
 
+  // Resets all device lists and |device_lists_complete_|. This method exists
+  // because the DeviceDataManager instance is created early in test suite setup
+  // and is hard to replace for tests that require a fresh one.
+  void ResetDeviceListsForTest();
+
  protected:
   DeviceDataManager();
 

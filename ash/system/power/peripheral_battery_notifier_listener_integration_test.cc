@@ -167,7 +167,6 @@ class PeripheralBatteryNotifierListenerIncompleteDevicesTest
 };
 
 TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
-
   // Level 50 at time 100, no low-battery notification.
   ClockAdvance(base::TimeDelta::FromSeconds(100));
   SendBatteryUpdate(kTestBatteryPath, kTestDeviceName, 50);

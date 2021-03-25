@@ -56,7 +56,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -141,8 +141,7 @@ void AshTestBase::TearDown() {
   display::Display::SetInternalDisplayId(display::kInvalidDisplayId);
 
   // Tests can add devices, so reset the lists for future tests.
-  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({});
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+  ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
 }
 
 // static
