@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/system_web_app_background_task.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"

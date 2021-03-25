@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/connection_holder.h"

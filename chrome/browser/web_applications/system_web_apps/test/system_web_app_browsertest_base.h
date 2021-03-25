@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
 
 #include <memory>
 
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -146,4 +146,4 @@ std::string SystemWebAppManagerTestParamsToString(
   INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                           \
       SUITE, ::testing::Values(TestProfileType::kGuest))
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_TEST_SYSTEM_WEB_APP_BROWSERTEST_BASE_H_

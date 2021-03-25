@@ -6,7 +6,7 @@
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"

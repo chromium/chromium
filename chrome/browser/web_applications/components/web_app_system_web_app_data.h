@@ -7,7 +7,7 @@
 
 #include <iosfwd>
 #include "base/optional.h"
-#include "chrome/browser/web_applications/components/system_web_app_types.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 namespace web_app {
 

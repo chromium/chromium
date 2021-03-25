@@ -12,7 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/components/system_web_app_types.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 namespace web_app {
 

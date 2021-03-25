@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/system_web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

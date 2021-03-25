@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_system_web_app_web_ui_controller_factory.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 
 #include "base/memory/ref_counted_memory.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_url_data_source.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"

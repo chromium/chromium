@@ -13,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"

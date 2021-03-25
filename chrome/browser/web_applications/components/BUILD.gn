@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 source_set("components") {
   sources = [
+    "../system_web_apps/system_web_app_types.h",
     "app_icon_manager.cc",
     "app_icon_manager.h",
     "app_registrar.cc",
@@ -37,9 +38,6 @@ source_set("components") {
     "policy/web_app_policy_constants.h",
     "protocol_handler_manager.cc",
     "protocol_handler_manager.h",
-    "system_web_app_background_task.cc",
-    "system_web_app_background_task.h",
-    "system_web_app_types.h",
     "url_handler_manager.cc",
     "url_handler_manager.h",
     "web_app_audio_focus_id_map.cc",

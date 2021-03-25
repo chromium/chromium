@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/system_web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 
 #include <string>
 #include <tuple>
@@ -31,7 +31,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"

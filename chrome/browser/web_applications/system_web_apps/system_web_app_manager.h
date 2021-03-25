@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -16,10 +16,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
-#include "chrome/browser/web_applications/components/system_web_app_background_task.h"
-#include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
@@ -323,4 +323,4 @@ class SystemWebAppManager {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_

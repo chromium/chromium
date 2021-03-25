@@ -11,12 +11,12 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "chrome/browser/web_applications/components/system_web_app_types.h"
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 class Profile;
 struct WebApplicationInfo;

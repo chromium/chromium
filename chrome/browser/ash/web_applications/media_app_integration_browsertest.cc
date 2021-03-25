@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/media_app_ui/buildflags.h"
 #include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
