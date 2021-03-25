@@ -45,10 +45,13 @@
 namespace {
 
 bool IsLargeMemoryDevice() {
-  // Treat any device with 2GiB or more of physical memory as a "large memory
-  // device". We check for slightly less than 2GiB so that devices with a small
+  // Treat any device with 4GiB or more of physical memory as a "large memory
+  // device". We check for slightly less than GiB so that devices with a small
   // amount of memory not accessible to the OS still count as "large".
-  return base::SysInfo::AmountOfPhysicalMemory() >= 2040LL * 1024 * 1024;
+  //
+  // Set to 4GiB, since we have 2GiB Android devices where tests flakily fail
+  // (e.g. Nexus 5X, crbug.com/1191195).
+  return base::SysInfo::AmountOfPhysicalMemory() >= 4000LL * 1024 * 1024;
 }
 
 bool SetAddressSpaceLimit() {
@@ -875,13 +878,7 @@ TEST_F(PartitionAllocTest, AllocSizes) {
 }
 
 // Test that we can fetch the real allocated size after an allocation.
-#if defined(OS_ANDROID)
-#define MAYBE_AllocGetSizeAndOffsetAndStart \
-  DISABLED_AllocGetSizeAndOffsetAndStart
-#else
-#define MAYBE_AllocGetSizeAndOffsetAndStart AllocGetSizeAndOffsetAndStart
-#endif
-TEST_F(PartitionAllocTest, MAYBE_AllocGetSizeAndOffsetAndStart) {
+TEST_F(PartitionAllocTest, AllocGetSizeAndOffsetAndStart) {
   void* ptr;
   void* slot_start;
   size_t requested_size, actual_capacity, predicted_capacity;
