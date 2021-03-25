@@ -17,9 +17,8 @@
   <template>
     <style include="oobe-dialog-host">
       .gesture-animation-container {
-        height: min(400px, 100%);
         overflow: hidden;
-        width: min(400px, 100%);
+        width: min(480px, var(--oobe-adaptive-dialog-content-width));
       }
 
       .gesture-list-item {
@@ -37,6 +36,9 @@
 
       .gesture-list-item-text {
         flex: 1 1 auto;
+        font-family: var(--oobe-header-font-family);
+        font-size: 15px;
+        font-weight: var(--oobe-header-font-weight);
         margin: auto;
         padding-inline-start: 16px;
       }
