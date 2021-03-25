@@ -76,8 +76,9 @@ class MEDIA_EXPORT CdmContext {
   // CallbackRegistration object can be destructed on any thread.
   // - Thread Model: Can be called on any thread. The registered callback will
   // always be called on the thread where RegisterEventCB() is called.
-  // - TODO(xhwang): Not using base::CallbackList because it is not thread-
-  // safe. Consider refactoring base::CallbackList to avoid code duplication.
+  // - TODO(xhwang): Not using base::RepeatingCallbackList because it is not
+  // thread- safe. Consider refactoring base::RepeatingCallbackList to avoid
+  // code duplication.
   virtual std::unique_ptr<CallbackRegistration> RegisterEventCB(
       EventCB event_cb);
 
