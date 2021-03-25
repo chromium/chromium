@@ -168,6 +168,10 @@ declare_args() {
   # Bugs have been reported to the windbg/WPA teams and this workaround will be
   # removed when they are fixed.
   use_full_pdb_paths = false
+
+  # Enable -H, which prints the include tree during compilation.
+  # For use by tools/clang/scripts/analyze_includes.py
+  show_includes = false
 }
 
 declare_args() {
@@ -724,6 +728,11 @@ config("compiler") {
       # graph profile sorting for it, add an opt-out flag, and pass it here.
       ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
     }
+  }
+
+  if (is_clang && !is_nacl && show_includes) {
+    assert(!is_win, "show_includes is not supported on Windows")
+    cflags += [ "-H" ]
   }
 
   # This flag enforces that member pointer base types are complete. It helps

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chrome #include Analysis</title>
+    <script src="include-analysis.js"></script>
+    <style>
+    tr td { text-align: right; }
+    tr td:nth-child(1) { text-align: left; }
+    tr td:nth-child(2) { text-align: left; }
+    th a { text-decoration: none; }
+    tbody tr:hover { background-color: #dddddd; }
+    th { position: sticky; top: 0; background-color: #ffffff }
+    </style>
+  </head>
+  <body>
+
+<h1>Chrome #include Analysis</h1>
+
+<p>Build target: <span id="buildTarget">x</span>. Revision: <span id="buildRevision">x</span>. Analyzed on: <span id="analysisDate">x</span>.</p>
+
+<p>Number of translation units: <span id="numRoots">x</span>. Total translation unit size: <span id="totBuildSize">x</span> bytes.</p>
+
+<p>Number of files: <span id="numFiles">x</span>. Total file size: <span id="totFileSize">x</span> bytes.</p>
+
+<h3>Legend</h3>
+<dl>
+  <dt>Translation Unit</dt> <dd>The data processed during a compiler invocation.</dd>
+  <dt>Individual Size</dt> <dd>The size of the file, and as a percentage of the total file size.</dd>
+  <dt>Expanded Size</dt> <dd>The size of the file and all the files it includes, directly and indirectly. Also shown as percentage of the total translation unit size.</dd>
+  <dt>Added Size</dt> <dd>How much size is added by this file being part of the build. In other words, if this file were empty and had no includes, how much smaller would the build be. Also shown as percentage of the total translation unit size.</dd>
+  <dt>Occurrences</dt> <dd>How many translation units this file is part of. Also shown as a percentage of the total number of translation units.</dd>
+</dl>
+
+<p>File size does not correlate perfectly with compile time, but generally serve as a rough guide to what files are slow to compile.</p>
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Filename <a href="javascript:sortOnFilename()">&uarr;</a></th>
+      <th colspan="2">Individual Size (B) <a href="javascript:sortOnISize()">&darr;</a></th>
+      <th colspan="2">Expanded Size (B) <a href="javascript:sortOnTSize()">&darr;</a></th>
+      <th colspan="2">Added Size (B) <a href="javascript:sortOnASize()">&darr;</a></th>
+      <th colspan="2">Occurrences <a href="javascript:sortOnPrevalence()">&darr;</a></th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+"use strict";
+
+function sum(arr) {
+  return arr.reduce((a, b) => a + b, 0);
+}
+
+const numberFormat = new Intl.NumberFormat('en-US');
+function fmt(num) {
+  return numberFormat.format(num);
+}
+
+const totFileSize = sum(data.sizes);
+const totBuildSize = sum(data.roots.map(r => data.tsizes[r]));
+const numRoots = data.roots.length;
+
+document.getElementById('buildTarget').textContent = data.target;
+document.getElementById('buildRevision').innerHTML =
+    `<a href="https://crrev.com/${data.revision}">${data.revision}</a>`;
+document.getElementById('analysisDate').textContent = data.date;
+
+document.getElementById('numRoots').textContent = fmt(numRoots);
+document.getElementById('totBuildSize').textContent = fmt(totBuildSize);
+document.getElementById('numFiles').textContent = fmt(data.files.length);
+document.getElementById('totFileSize').textContent = fmt(totFileSize);
+
+
+function buildRow(i, rank) {
+  return `
+<tr>
+<td>${rank}</td>
+<td><a href="https://source.chromium.org/chromium/chromium/src/+/master:${data.files[i]}">${data.files[i]}</a></td>
+<td>${fmt(data.sizes[i])}</td> <td>${(100 * data.sizes[i] / totFileSize).toFixed(2)}&nbsp;%</td>
+<td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
+<td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
+<td>${fmt(data.prevalence[i])}</td> <td>${(100 * data.prevalence[i] / numRoots).toFixed(2)}&nbsp;%</td>
+</tr>
+  `;
+}
+
+function clearTable() {
+  const tbody = document.querySelector('tbody');
+  tbody.parentNode.removeChild(tbody);
+}
+
+function buildTable(sortFunc) {
+  clearTable();
+
+  let fileNums = [...Array(data.files.length).keys()];
+  fileNums.sort(sortFunc);
+  const limit = Math.min(1000, fileNums.length);
+
+  const tbody = document.createElement('tbody');
+  tbody.innerHTML = fileNums.slice(0, limit).map(buildRow).join('');
+  document.querySelector('table').appendChild(tbody);
+}
+
+function sortOnFilename() {
+  buildTable((i, j) => data.files[i].localeCompare(data.files[j]));
+}
+
+function sortOnISize() {
+  buildTable((i, j) => data.sizes[j] - data.sizes[i]);
+}
+
+function sortOnTSize() {
+  buildTable((i, j) => data.tsizes[j] - data.tsizes[i]);
+}
+
+function sortOnASize() {
+  buildTable((i, j) => data.asizes[j] - data.asizes[i]);
+}
+
+function sortOnPrevalence() {
+  buildTable((i, j) => data.prevalence[j] - data.prevalence[i]);
+}
+
+sortOnASize();
+</script>
+
+  </body>
+</html>
