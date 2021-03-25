@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/printing/history/print_job_database_impl.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_impl.h"
+#include "chrome/browser/chromeos/printing/history/print_job_reporting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -36,6 +37,7 @@ PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
           "PrintJobHistoryService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(chromeos::PrintJobReportingServiceFactory::GetInstance());
 }
 
 PrintJobHistoryServiceFactory::~PrintJobHistoryServiceFactory() {}
@@ -58,9 +60,16 @@ KeyedService* PrintJobHistoryServiceFactory::BuildServiceInstanceFor(
       database_provider, profile->GetPath());
   CupsPrintJobManager* print_job_manager =
       chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  chromeos::PrintJobReportingService* print_job_reporting_service =
+      chromeos::PrintJobReportingServiceFactory::GetForBrowserContext(profile);
 
-  return new PrintJobHistoryServiceImpl(std::move(print_job_database),
-                                        print_job_manager, profile->GetPrefs());
+  auto* history_service = new PrintJobHistoryServiceImpl(
+      std::move(print_job_database), print_job_manager, profile->GetPrefs());
+  // Service is null in tests.
+  if (print_job_reporting_service) {
+    history_service->AddObserver(print_job_reporting_service);
+  }
+  return history_service;
 }
 
 void PrintJobHistoryServiceFactory::RegisterProfilePrefs(

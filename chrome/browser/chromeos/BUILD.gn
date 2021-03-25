@@ -2832,6 +2832,8 @@ source_set("chromeos") {
     "printing/history/print_job_info_proto_conversions.cc",
     "printing/history/print_job_info_proto_conversions.h",
     "printing/history/print_job_reporting_service.h",
+    "printing/history/print_job_reporting_service_factory.cc",
+    "printing/history/print_job_reporting_service_factory.h",
     "printing/history/print_job_reporting_service_impl.cc",
     "printing/ppd_provider_factory.cc",
     "printing/ppd_provider_factory.h",
