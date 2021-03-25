@@ -9,9 +9,14 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -20,10 +25,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Unit tests for MessageQueueManager.
@@ -60,7 +68,19 @@ public class MessageQueueManagerTest {
         }
     }
 
-    private static final int SCOPE_TYPE = 0;
+    private static class MockWindowAndroidWebContents extends MockWebContents {
+        @Override
+        public WindowAndroid getTopLevelNativeWindow() {
+            // WindowAndroid includes some APIs not available on L. Do not mock this
+            // on Android L.
+            WindowAndroid windowAndroid = mock(WindowAndroid.class);
+            doNothing().when(windowAndroid).addActivityStateObserver(any());
+            doReturn(ActivityState.RESUMED).when(windowAndroid).getActivityState();
+            return windowAndroid;
+        }
+    }
+
+    private static final int SCOPE_TYPE = MessageScopeType.NAVIGATION;
     private static final ScopeKey SCOPE_INSTANCE_ID =
             new ScopeKey(SCOPE_TYPE, new MockWebContents());
 
@@ -301,6 +321,61 @@ public class MessageQueueManagerTest {
                 never().description(
                         "The message should stay on the screen when its target scope instance is activated."))
                 .hide(anyBoolean(), any());
+    }
+
+    /**
+     * Test that messages of multiple scope types can be correctly shown.
+     */
+    @Test
+    @SmallTest
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
+    public void testMessageOnMultipleScopeTypes() {
+        // DO not mock WindowAndroid on L
+        MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(delegate);
+        final ScopeKey navScopeKey =
+                new ScopeKey(MessageScopeType.NAVIGATION, new MockWebContents());
+        final ScopeKey windowScopeKey =
+                new ScopeKey(MessageScopeType.WEB_CONTENTS, new MockWindowAndroidWebContents());
+
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m1, m1, MessageScopeType.NAVIGATION, navScopeKey);
+
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m2, m2, MessageScopeType.WINDOW, windowScopeKey);
+
+        verify(m1, description("A message should be shown when the associated scope is active"))
+                .show();
+        verify(m1,
+                never().description(
+                        "The message should not be hidden when its scope is still active"))
+                .hide(anyBoolean(), any());
+
+        verify(m2,
+                never().description("The message should not be visible when its scope is inactive"))
+                .show();
+
+        queueManager.onScopeChange(new MessageScopeChange(
+                MessageScopeType.NAVIGATION, navScopeKey, ChangeType.DESTROY));
+
+        verify(m1, description("The message should be hidden when its scope is inactive"))
+                .hide(anyBoolean(), any());
+
+        verify(m1, description("The message should be dismissed when its scope is destroyed"))
+                .dismiss(anyInt());
+
+        verify(m2, description("A message should be shown when the associated scope is active"))
+                .show();
+
+        queueManager.onScopeChange(new MessageScopeChange(
+                MessageScopeType.WINDOW, windowScopeKey, ChangeType.DESTROY));
+
+        verify(m2, description("The message should be hidden when its scope is inactive"))
+                .hide(anyBoolean(), any());
+
+        verify(m2, description("The message should be dismissed when its scope is destroyed"))
+                .dismiss(anyInt());
     }
 
     /**
