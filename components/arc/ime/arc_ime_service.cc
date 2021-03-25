@@ -690,6 +690,13 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
                               event->properties()->end());
   if (from_vk && IsCharacterKeyEvent(event) && IsTextInputActive(ime_type_))
     event->SetHandled();
+
+  // Do no forward a fabricated key event which is not originated from a
+  // physical key event. Such a key event is a signal from IME to show they are
+  // going to insert/delete text. ARC apps should not see any key event caused
+  // by it.
+  if (event->key_code() == ui::VKEY_PROCESSKEY && IsTextInputActive(ime_type_))
+    event->SetHandled();
 }
 
 // static
