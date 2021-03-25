@@ -110,17 +110,6 @@ if (enable_scrambled_message_ids) {
     # The path to a file whose contents can be used as the basis for a message
     # ID scrambling salt.
     mojom_message_id_salt_path = "//chrome/VERSION"
-
-    # The path to a file whose contents will be concatenated to the contents of
-    # the file at |mojom_message_id_salt_path| to form a complete salt for
-    # message ID scrambling. May be the empty string, in which case the contents
-    # of the above file alone are used as the complete salt.
-    if (is_chrome_branded) {
-      mojom_message_id_salt_suffix_path =
-          "//mojo/internal/chrome-message-id-salt-suffix"
-    } else {
-      mojom_message_id_salt_suffix_path = ""
-    }
   }
 
   assert(mojom_message_id_salt_path != "")
@@ -129,14 +118,6 @@ if (enable_scrambled_message_ids) {
     rebase_path(mojom_message_id_salt_path, root_build_dir),
   ]
   message_scrambling_inputs = [ mojom_message_id_salt_path ]
-
-  if (mojom_message_id_salt_suffix_path != "") {
-    message_scrambling_args += [
-      "--scrambled_message_id_salt_path",
-      rebase_path(mojom_message_id_salt_suffix_path, root_build_dir),
-    ]
-    message_scrambling_inputs += [ mojom_message_id_salt_suffix_path ]
-  }
 } else {
   message_scrambling_args = []
   message_scrambling_inputs = []
