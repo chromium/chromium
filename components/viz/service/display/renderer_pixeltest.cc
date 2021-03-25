@@ -904,6 +904,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypesNoDawn()),
                          testing::PrintToStringParamName());
 
+// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GPURendererPixelTest);
+
 // Provides an exact comparator for GLRenderer and fuzzy comparator for Skia
 // based (eg. SoftwareRenderer and SkiaRenderer).
 class FuzzyForSkiaOnlyPixelComparator : public cc::PixelComparator {
@@ -1390,6 +1393,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypesNoDawn()),
                          testing::PrintToStringParamName());
 
+// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(IntersectingVideoQuadPixelTest);
+
 class IntersectingQuadSoftwareTest : public IntersectingQuadPixelTest {};
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -1857,6 +1863,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          // SkiaRenderer Dawn once video is supported.
                          testing::ValuesIn(GetGpuRendererTypesNoDawn()),
                          testing::PrintToStringParamName());
+
+// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VideoRendererPixelTest);
 
 TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
   gfx::Rect rect(this->device_viewport_size_);
@@ -4307,6 +4316,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    RendererPixelTestWithFlippedOutputSurface);
+
 TEST_P(RendererPixelTestWithFlippedOutputSurface, ExplicitFlipTest) {
   // This draws a blue rect above a yellow rect with an inverted output surface.
   gfx::Rect viewport_rect(this->device_viewport_size_);
@@ -4966,6 +4979,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    RendererPixelTestWithOverdrawFeedback);
+
 using PrimaryID = gfx::ColorSpace::PrimaryID;
 using TransferID = gfx::ColorSpace::TransferID;
 
@@ -5171,6 +5188,9 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(dst_color_spaces),
                      testing::Bool()));
 
+// GetGpuRendererTypesNoDawn() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ColorTransformPixelTest);
+
 class DelegatedInkTest : public VizPixelTestWithParam,
                          public DelegatedInkPointPixelTestHelper {
  public:
@@ -5230,6 +5250,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkTest,
                          testing::ValuesIn(GetRendererTypesSkiaOnly()),
                          testing::PrintToStringParamName());
+
+// GetRendererTypesSkiaOnly() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkTest);
 
 // Draw a single trail and erase it, making sure that no bits of trail are left
 // behind.

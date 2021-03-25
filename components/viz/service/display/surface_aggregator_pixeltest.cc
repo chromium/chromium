@@ -66,6 +66,9 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SurfaceAggregatorPixelTest);
+
 SharedQuadState* CreateAndAppendTestSharedQuadState(
     CompositorRenderPass* render_pass,
     const gfx::Transform& transform,
