@@ -53,8 +53,6 @@ const char HttpRequestHeaders::kReferer[] = "Referer";
 const char HttpRequestHeaders::kTransferEncoding[] = "Transfer-Encoding";
 const char HttpRequestHeaders::kUserAgent[] = "User-Agent";
 
-const char HttpRequestHeaders::kNoStoreDirective[] = "no-store";
-
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair() = default;
 
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair(

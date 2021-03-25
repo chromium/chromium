@@ -34036,6 +34036,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FreezingAttemptOutcome">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="Failure - Content doesn't exist"/>
   <int value="2" label="Failure - Page has notification permission"/>

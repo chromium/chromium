@@ -1672,13 +1672,6 @@ const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() {
   return last_committed_origin_;
 }
 
-const net::HttpResponseHeaders* RenderFrameHostImpl::GetLastResponseHeaders() {
-  // This shouldn't be called before committing the document.
-  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
-  return last_response_head_.get() ? last_response_head_->headers.get()
-                                   : nullptr;
-}
-
 const net::NetworkIsolationKey& RenderFrameHostImpl::GetNetworkIsolationKey() {
   DCHECK(!isolation_info_.IsEmpty());
   return isolation_info_.network_isolation_key();

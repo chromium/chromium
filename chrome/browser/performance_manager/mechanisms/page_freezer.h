@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_FREEZER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_FREEZER_H_
 
-#include "base/callback_forward.h"
-
 namespace performance_manager {
 
 class PageNode;
@@ -26,12 +24,6 @@ class PageFreezer {
 
   // Unfreeze |page_node|. Virtual for testing.
   virtual void UnfreezePageNode(const PageNode* page_node);
-
-  // Attempt to freeze |page_node| and run |reply_cb| to indicate if the freeze
-  // operation has been successful.
-  virtual void MaybeFreezePageNodeWithReplyForTesting(
-      const PageNode* page_node,
-      base::OnceCallback<void(bool)> reply_cb);
 };
 
 }  // namespace mechanism
