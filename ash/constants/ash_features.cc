@@ -309,7 +309,7 @@ const base::Feature kExoPointerLock{"ExoPointerLock",
 
 // Enable or disable bubble showing when an application gains any UI lock.
 const base::Feature kExoLockNotification{"ExoLockNotification",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
@@ -520,7 +520,7 @@ const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
 
 // Hides shelf in immersive mode and allows esc hold to exit.
 const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the camera permissions should be shown in the Plugin
 // VM app settings.
