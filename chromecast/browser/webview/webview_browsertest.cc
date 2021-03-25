@@ -172,7 +172,8 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, Navigate) {
 }
 
 // Verify the navigation request process
-IN_PROC_BROWSER_TEST_F(WebviewTest, VerifyNavigationDelegation) {
+// Disabled due to flakiness. http://crbug.com/1192724
+IN_PROC_BROWSER_TEST_F(WebviewTest, DISABLED_VerifyNavigationDelegation) {
   WebviewController webview(context_.get(), &client_, true);
 
   EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
