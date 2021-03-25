@@ -570,8 +570,8 @@ class AppListInternalAppSyncableServiceTest
 
   void SetUp() override {
     AppListSyncableServiceTest::SetUp();
-    web_app::test::InstallDummyWebApp(testing_profile(), kOsSettingsUrl,
-                                      GURL(kOsSettingsUrl));
+    web_app::InstallDummyWebApp(testing_profile(), kOsSettingsUrl,
+                                GURL(kOsSettingsUrl));
   }
 
   ~AppListInternalAppSyncableServiceTest() override = default;

@@ -11,7 +11,6 @@
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_registry.h"
@@ -63,7 +62,12 @@ void AppListTestBase::ConfigureWebAppProvider() {
       std::make_unique<web_app::PendingAppManagerImpl>(profile);
   pending_app_manager->SetUrlLoaderForTesting(std::move(url_loader));
 
+  auto system_web_app_manager =
+      std::make_unique<web_app::TestSystemWebAppManager>(profile);
+
   auto* const provider = web_app::TestWebAppProvider::Get(profile);
   provider->SetPendingAppManager(std::move(pending_app_manager));
-  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
+  provider->SetSystemWebAppManager(std::move(system_web_app_manager));
+  provider->SetRunSubsystemStartupTasks(true);
+  provider->Start();
 }
