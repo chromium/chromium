@@ -11,6 +11,7 @@ generate_jni("nonembedded_jni_headers") {
     "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
+    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
   ]
 }
 
@@ -89,6 +90,7 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/AwMinidumpUploadJobService.java",
     "java/src/org/chromium/android_webview/services/AwMinidumpUploaderDelegate.java",
     "java/src/org/chromium/android_webview/services/AwVariationsSeedFetcher.java",
+    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
     "java/src/org/chromium/android_webview/services/ComponentsProviderService.java",
     "java/src/org/chromium/android_webview/services/CrashReceiverService.java",
     "java/src/org/chromium/android_webview/services/DeveloperModeContentProvider.java",

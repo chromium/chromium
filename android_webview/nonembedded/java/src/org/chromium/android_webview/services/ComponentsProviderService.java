@@ -23,7 +23,6 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
-import org.chromium.base.PathUtils;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -45,7 +44,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ComponentsProviderService extends Service {
     private static final String TAG = "AW_CPS";
-    private static final String COMPONENTS_DIRECTORY_PATH = "components/cps";
 
     // This should be greater than or equal to the native component updater service interval.
     private static final long UPDATE_INTERVAL_MS = TimeUnit.HOURS.toMillis(5);
@@ -73,9 +71,9 @@ public class ComponentsProviderService extends Service {
 
     @Override
     public void onCreate() {
-        mDirectory = new File(PathUtils.getDataDirectory(), COMPONENTS_DIRECTORY_PATH);
+        mDirectory = new File(ComponentsProviderPathUtil.getComponentsServingDirectoryPath());
         if (!mDirectory.exists() && !mDirectory.mkdirs()) {
-            Log.e(TAG, "Failed to create directory " + COMPONENTS_DIRECTORY_PATH);
+            Log.e(TAG, "Failed to create directory " + mDirectory.getAbsolutePath());
             return;
         }
 
@@ -90,7 +88,7 @@ public class ComponentsProviderService extends Service {
         }
         final List<File> oldFiles = new LinkedList<>();
         for (File component : components) {
-            final File[] versions = getComponentsNewestFirst(component);
+            final File[] versions = ComponentsProviderPathUtil.getComponentsNewestFirst(component);
             if (versions == null || versions.length == 0) {
                 // This can happen if CUS created a parent directory but was killed before it could
                 // move content into it. In this case there's nothing old to delete.
@@ -131,7 +129,7 @@ public class ComponentsProviderService extends Service {
         }
         assert components.length == 1 : "Only one directory should have the name " + componentId;
 
-        final File[] versions = getComponentsNewestFirst(components[0]);
+        final File[] versions = ComponentsProviderPathUtil.getComponentsNewestFirst(components[0]);
         if (versions == null || versions.length == 0) {
             // This can happen if CUS created a parent directory but was killed before it could
             // move content into it. In this case there's nothing old to delete.
@@ -187,26 +185,6 @@ public class ComponentsProviderService extends Service {
                 Log.w(TAG, exception.getMessage());
             }
         }
-    }
-
-    private File[] getComponentsNewestFirst(File componentDirectory) {
-        // List files under componentDirectory that are a directory and its name matches
-        // <sequence_number>_<version>, where sequence number is composed only of numeric digits.
-        final File[] files = componentDirectory.listFiles(
-                file -> (file.isDirectory() && file.getName().matches("[0-9]+_.+")));
-
-        if (files != null && files.length > 1) {
-            // Sort the array in descending order of sequence numbers.
-            Arrays.sort(files,
-                    (v1, v2) -> sequenceNumberForDirectory(v2) - sequenceNumberForDirectory(v1));
-        }
-        return files;
-    }
-
-    private Integer sequenceNumberForDirectory(File directory) {
-        String name = directory.getName();
-        int separatorIndex = name.indexOf("_");
-        return Integer.parseInt(name.substring(0, separatorIndex));
     }
 
     private void maybeScheduleComponentUpdateService() {

@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "android_webview/common/aw_paths.h"
-#include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
+#include "android_webview/nonembedded/nonembedded_jni_headers/ComponentsProviderPathUtil_jni.h"
+#include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -21,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/update_client/utils.h"
@@ -29,30 +28,6 @@
 namespace android_webview {
 
 namespace {
-
-uint32_t GetHighestSequenceNumber(const base::FilePath& base_file_path) {
-  uint32_t highest_sequence_number = 0;
-  base::FileEnumerator file_enumerator(base_file_path, /* recursive= */ false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    uint32_t sequence_number = 0;
-    std::vector<std::string> dir_name_components =
-        base::SplitString(path.BaseName().MaybeAsASCII(), "_",
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (dir_name_components.size() >= 2 &&
-        base::StringToUint(dir_name_components[0], &sequence_number)) {
-      highest_sequence_number =
-          std::max(sequence_number, highest_sequence_number);
-    } else {
-      LOG(WARNING) << "FilePath.BaseName isn't on the format of "
-                      "<sequence_number>_<version_number>"
-                   << path;
-    }
-  }
-
-  return highest_sequence_number;
-}
 
 std::string GetVersionDirName(const uint32_t sequence_number,
                               const std::string& version) {
@@ -105,13 +80,12 @@ void AwComponentInstallerPolicyDelegate::ComponentReady(
     std::unique_ptr<base::DictionaryValue> manifest) {
   base::FilePath cps_component_base_path =
       GetComponentsProviderServiceDirectory();
-  if (cps_component_base_path.empty()) {
-    LOG(ERROR) << "Couldn't get component dir";
-    return;
-  }
 
-  uint32_t highest_sequence_number =
-      GetHighestSequenceNumber(cps_component_base_path);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  int highest_sequence_number =
+      Java_ComponentsProviderPathUtil_getTheHighestSequenceNumber(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, cps_component_base_path.MaybeAsASCII()));
 
   // Do nothing, if the highest sequence number refers to the same `version`.
   if (base::PathExists(cps_component_base_path.AppendASCII(
@@ -157,13 +131,12 @@ void AwComponentInstallerPolicyDelegate::ComponentReady(
 
 base::FilePath
 AwComponentInstallerPolicyDelegate::GetComponentsProviderServiceDirectory() {
-  base::FilePath path;
-  if (!base::android::GetDataDirectory(&path)) {
-    LOG(ERROR) << "Couldn't get Android data directory";
-    return path;
-  }
-  return path.AppendASCII("components")
-      .AppendASCII("cps")
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return base::FilePath(
+             base::android::ConvertJavaStringToUTF8(
+                 env,
+                 Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
+                     env)))
       .AppendASCII(component_id_);
 }
 
