@@ -41,7 +41,7 @@ class ValidationFunction : public ExtensionFunction {
  public:
   explicit ValidationFunction(bool should_succeed)
       : should_succeed_(should_succeed), did_respond_(false) {
-    set_response_callback(base::BindRepeating(
+    set_response_callback(base::BindOnce(
         (should_succeed ? &SuccessCallback : &FailCallback), &did_respond_));
   }
 

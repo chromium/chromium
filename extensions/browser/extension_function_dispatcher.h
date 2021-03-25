@@ -132,13 +132,13 @@ class ExtensionFunctionDispatcher
       const ProcessMap& process_map,
       ExtensionAPI* api,
       void* profile_id,
-      const ExtensionFunction::ResponseCallback& callback);
+      ExtensionFunction::ResponseCallback callback);
 
   void DispatchWithCallbackInternal(
       const mojom::RequestParams& params,
       content::RenderFrameHost* render_frame_host,
       int render_process_id,
-      const ExtensionFunction::ResponseCallback& callback);
+      ExtensionFunction::ResponseCallback callback);
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);
 

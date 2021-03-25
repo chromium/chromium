@@ -93,8 +93,9 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   }
 
   ExtensionFunction::ResponseCallback CreateCallback(int request_id) {
-    return base::Bind(&ResponseCallbackWrapper::OnExtensionFunctionCompleted,
-                      weak_ptr_factory_.GetWeakPtr(), request_id);
+    return base::BindOnce(
+        &ResponseCallbackWrapper::OnExtensionFunctionCompleted,
+        weak_ptr_factory_.GetWeakPtr(), request_id);
   }
 
  private:
@@ -147,7 +148,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
 
   ExtensionFunction::ResponseCallback CreateCallback(int request_id,
                                                      int worker_thread_id) {
-    return base::Bind(
+    return base::BindOnce(
         &WorkerResponseCallbackWrapper::OnExtensionFunctionCompleted,
         weak_ptr_factory_.GetWeakPtr(), request_id, worker_thread_id);
   }
@@ -291,7 +292,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
     int render_process_id,
-    const ExtensionFunction::ResponseCallback& callback) {
+    ExtensionFunction::ResponseCallback callback) {
   ProcessMap* process_map = ProcessMap::Get(browser_context_);
   if (!process_map)
     return;
@@ -312,7 +313,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       params, extension, render_process_id, rfh_url, *process_map,
-      ExtensionAPI::GetSharedInstance(), browser_context_, callback);
+      ExtensionAPI::GetSharedInstance(), browser_context_, std::move(callback));
   if (!function.get())
     return;
 
@@ -483,14 +484,15 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     const ProcessMap& process_map,
     ExtensionAPI* api,
     void* profile_id,
-    const ExtensionFunction::ResponseCallback& callback) {
+    ExtensionFunction::ResponseCallback callback) {
   constexpr char kCreationFailed[] = "Access to extension API denied.";
 
   scoped_refptr<ExtensionFunction> function =
       ExtensionFunctionRegistry::GetInstance().NewFunction(params.name);
   if (!function) {
     LOG(ERROR) << "Unknown Extension API - " << params.name;
-    callback.Run(ExtensionFunction::FAILED, base::ListValue(), kCreationFailed);
+    std::move(callback).Run(ExtensionFunction::FAILED, base::ListValue(),
+                            kCreationFailed);
     return nullptr;
   }
 
@@ -501,7 +503,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);
   function->set_profile_id(profile_id);
-  function->set_response_callback(callback);
+  function->set_response_callback(std::move(callback));
   function->set_source_context_type(process_map.GetMostLikelyContextType(
       extension, requesting_process_id, rfh_url));
   function->set_source_process_id(requesting_process_id);
