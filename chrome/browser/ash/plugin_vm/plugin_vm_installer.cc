@@ -321,7 +321,9 @@ PluginVmInstaller::~PluginVmInstaller() = default;
 void PluginVmInstaller::CheckLicense() {
   UpdateInstallingState(InstallingState::kCheckingLicense);
 
-  if (skip_license_check_for_testing_) {
+  // If the server has provided a license key, responsibility of validating is
+  // passed to the Plugin VM application.
+  if (!GetPluginVmLicenseKey().empty()) {
     OnLicenseChecked(true);
     return;
   }

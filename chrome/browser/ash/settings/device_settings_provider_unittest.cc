@@ -279,6 +279,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
+  void SetPluginVmLicenseKeySetting(const std::string& plugin_vm_license_key) {
+    em::PluginVmLicenseKeyProto* proto =
+        device_policy_->payload().mutable_plugin_vm_license_key();
+    proto->set_plugin_vm_license_key(plugin_vm_license_key);
+    BuildAndInstallDevicePolicy();
+  }
+
   void SetDeviceRebootOnUserSignout(
       em::DeviceRebootOnUserSignoutProto::RebootOnSignoutMode value) {
     EXPECT_CALL(*this, SettingChanged(_)).Times(AtLeast(1));
@@ -922,6 +929,11 @@ TEST_F(DeviceSettingsProviderTest, DecodePluginVmAllowedSetting) {
 
   SetPluginVmAllowedSetting(false);
   EXPECT_EQ(base::Value(false), *provider_->Get(kPluginVmAllowed));
+}
+
+TEST_F(DeviceSettingsProviderTest, DecodePluginVmLicenseKeySetting) {
+  SetPluginVmLicenseKeySetting("LICENSE_KEY");
+  EXPECT_EQ(base::Value("LICENSE_KEY"), *provider_->Get(kPluginVmLicenseKey));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceRebootAfterUserSignout) {
