@@ -338,7 +338,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   friend class LacrosChromeServiceImplNeverBlockingState;
 
   // Creates a new window on the affine sequence.
-  void NewWindowAffineSequence();
+  void NewWindowAffineSequence(bool incognito);
+
+  // Creates a new tab on the affine sequence.
+  void NewTabAffineSequence();
+
+  // Restores a tab on the affine sequence.
+  void RestoreTabAffineSequence();
 
   using GetFeedbackDataCallback = base::OnceCallback<void(base::Value)>;
   // Gets feedback data on the affine sequence.

@@ -23,7 +23,9 @@ class LacrosChromeServiceDelegateImpl
   // chromeos::LacrosChromeServiceDelegate:
   void OnInitialized(
       const crosapi::mojom::BrowserInitParams& init_params) override;
-  void NewWindow() override;
+  void NewWindow(bool incognito) override;
+  void NewTab() override;
+  void RestoreTab() override;
   std::string GetChromeVersion() override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
   void GetHistograms(GetHistogramsCallback callback) override;

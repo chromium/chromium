@@ -66,7 +66,9 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     std::move(callback).Run(crosapi_.BindNewPipeAndPassReceiver());
   }
 
-  void NewWindow(NewWindowCallback callback) override {}
+  void NewWindow(bool incognito, NewWindowCallback callback) override {}
+  void NewTab(NewTabCallback callback) override {}
+  void RestoreTab(RestoreTabCallback callback) override {}
   void GetFeedbackData(GetFeedbackDataCallback callback) override {}
   void GetHistograms(GetHistogramsCallback callback) override {}
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}

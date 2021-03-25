@@ -58,8 +58,8 @@ class CrosapiManager::LegacyInvitationFlow {
     // This is for backward compatibility.
     // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
     // becomes mature enough.
-    browser_service_->InitDeprecated(
-        browser_util::GetBrowserInitParams(environment_provider));
+    browser_service_->InitDeprecated(browser_util::GetBrowserInitParams(
+        environment_provider, browser_util::InitialBrowserAction::kOpenWindow));
 
     browser_service_->RequestCrosapiReceiver(
         base::BindOnce(&LegacyInvitationFlow::OnCrosapiReceiverReceived,

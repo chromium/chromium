@@ -31,7 +31,13 @@ class LacrosChromeServiceDelegate {
       const crosapi::mojom::BrowserInitParams& init_params) = 0;
 
   // Opens a new browser window.
-  virtual void NewWindow() = 0;
+  virtual void NewWindow(bool incognito) = 0;
+
+  // Opens a new browser tab.
+  virtual void NewTab() = 0;
+
+  // Restores a tab recently closed.
+  virtual void RestoreTab() = 0;
 
   // Returns version of lacros-chrome displayed to user in feedback report, etc.
   // It includes both browser version and channel in the format of:

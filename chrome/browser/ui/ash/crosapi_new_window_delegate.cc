@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
 
 #include "base/logging.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 
 CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
@@ -14,10 +15,7 @@ CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
 CrosapiNewWindowDelegate::~CrosapiNewWindowDelegate() = default;
 
 void CrosapiNewWindowDelegate::NewTab() {
-  // TODO(crbug.com/1188020): Forward to register browser via crosapi.
-  LOG(WARNING) << "CrosapiNewWindowDelegate::NewTab is currently forwarded "
-               << "to ash-chrome";
-  delegate_->NewTab();
+  crosapi::BrowserManager::Get()->NewTab();
 }
 
 void CrosapiNewWindowDelegate::NewTabWithUrl(const GURL& url,
@@ -30,10 +28,7 @@ void CrosapiNewWindowDelegate::NewTabWithUrl(const GURL& url,
 }
 
 void CrosapiNewWindowDelegate::NewWindow(bool incognito) {
-  // TODO(crbug.com/1188020): Forward to register browser via crosapi.
-  LOG(WARNING) << "CrosapiNewWindowDelegate::NewWindow is currently forwarded "
-               << "to ash-chrome";
-  delegate_->NewWindow(incognito);
+  crosapi::BrowserManager::Get()->NewWindow(incognito);
 }
 
 void CrosapiNewWindowDelegate::OpenFileManager() {
@@ -53,10 +48,7 @@ void CrosapiNewWindowDelegate::OpenGetHelp() {
 }
 
 void CrosapiNewWindowDelegate::RestoreTab() {
-  // TODO(crbug.com/1188020): Forward to register browser via crosapi.
-  LOG(WARNING) << "CrosapiNewWindowDelegate::RestoreTab is currently forwarded "
-               << "to ash-chrome";
-  delegate_->RestoreTab();
+  crosapi::BrowserManager::Get()->RestoreTab();
 }
 
 void CrosapiNewWindowDelegate::ShowKeyboardShortcutViewer() {

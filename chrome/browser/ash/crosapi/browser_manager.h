@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -87,7 +88,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // class, so there's no way for callers to handle such error cases properly.
   // This design often leads the flakiness behavior of the product and testing,
   // so should be avoided.
-  void NewWindow();
+  void NewWindow(bool incognito);
+
+  // Similar to NewWindow(), but opens a tab, instead.
+  // See crosapi::mojom::BrowserService::NewTab for more details
+  void NewTab();
+
+  // Similar to NewWindow(), but restores a tab recently closed.
+  // See crosapi::mojom::BrowserService::RestoreTab for more details
+  void RestoreTab();
 
   // Returns true if crosapi interface supports GetFeedbackData API.
   bool GetFeedbackDataSupported() const;
@@ -177,12 +186,29 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     uint32_t interface_version;
   };
 
+  enum class MaybeStartResult {
+    kNotStarted,
+    kStarting,
+    kRunning,
+  };
+  // Checks the precondition to start Lacros, and actually trigger to start
+  // if necessary.
+  // If the condition to start lacros is not met, kNotStarted is returned.
+  // If the condition to start lacros is met, and it is not yet started,
+  // or it is under starting, kStarting is returned.
+  // Otherwise, i.e., lacros is already running, kRunning is returned.
+  // |extra_args| will be passed to the argument to launch lacros.
+  MaybeStartResult MaybeStart(
+      browser_util::InitialBrowserAction initial_browser_action);
+
   // Posts CreateLogFile() and StartWithLogFile() to the thread pooll.
-  void Start();
+  void Start(browser_util::InitialBrowserAction initial_browser_action);
 
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
-  void StartWithLogFile(base::ScopedFD logfd);
+  void StartWithLogFile(
+      browser_util::InitialBrowserAction initial_browser_action,
+      base::ScopedFD logfd);
 
   // BrowserServiceHostObserver:
   void OnBrowserServiceConnected(CrosapiId id,

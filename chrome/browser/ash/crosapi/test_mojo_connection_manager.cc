@@ -110,8 +110,9 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
         LOG(WARNING) << "Mojo to lacros-chrome is disconnected";
       }));
 
-  base::ScopedFD startup_fd =
-      browser_util::CreateStartupData(environment_provider_.get());
+  base::ScopedFD startup_fd = browser_util::CreateStartupData(
+      environment_provider_.get(),
+      browser_util::InitialBrowserAction::kOpenWindow);
   if (!startup_fd.is_valid()) {
     LOG(ERROR) << "Failed to create startup data";
     return;

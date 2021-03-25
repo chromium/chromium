@@ -114,7 +114,7 @@ void LacrosApps::Launch(const std::string& app_id,
                         apps::mojom::LaunchSource launch_source,
                         apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
-  crosapi::BrowserManager::Get()->NewWindow();
+  crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
 }
 
 void LacrosApps::GetMenuModel(const std::string& app_id,

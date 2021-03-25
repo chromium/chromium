@@ -40,7 +40,9 @@ class LacrosChromeServiceImplNeverBlockingState
   // crosapi::mojom::BrowserService:
   void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override;
   void RequestCrosapiReceiver(RequestCrosapiReceiverCallback callback) override;
-  void NewWindow(NewWindowCallback callback) override;
+  void NewWindow(bool incognito, NewWindowCallback callback) override;
+  void NewTab(NewTabCallback callback) override;
+  void RestoreTab(RestoreTabCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
   void GetHistograms(GetHistogramsCallback callback) override;
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;

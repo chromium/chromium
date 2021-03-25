@@ -81,11 +81,29 @@ void LacrosChromeServiceDelegateImpl::OnInitialized(
   }
 }
 
-void LacrosChromeServiceDelegateImpl::NewWindow() {
+void LacrosChromeServiceDelegateImpl::NewWindow(bool incognito) {
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
-  chrome::NewEmptyWindow(profile);
+  chrome::NewEmptyWindow(incognito ? profile->GetPrimaryOTRProfile() : profile);
+}
+
+void LacrosChromeServiceDelegateImpl::NewTab() {
+  // TODO(crbug.com/1102815): Find what profile should be used.
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  DCHECK(profile) << "No last used profile is found.";
+  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  DCHECK(browser) << "No browser is found.";
+  chrome::NewTab(browser);
+}
+
+void LacrosChromeServiceDelegateImpl::RestoreTab() {
+  // TODO(crbug.com/1102815): Find what profile should be used.
+  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  DCHECK(profile) << "No last used profile is found.";
+  Browser* browser = chrome::FindBrowserWithProfile(profile);
+  DCHECK(browser) << "No browser is found.";
+  chrome::RestoreTab(browser);
 }
 
 std::string LacrosChromeServiceDelegateImpl::GetChromeVersion() {

@@ -373,6 +373,8 @@ struct BrowserInitParams {
 
 // BrowserService defines the APIs that live in a browser (such as
 // lacros-chrome) and are accessed from ash-chrome.
+// Next MinVersion: 11.
+// Next ID: 9
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
@@ -394,7 +396,23 @@ interface BrowserService {
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
-  NewWindow@1() => ();
+  NewWindow@1([MinVersion=10] bool incognito) => ();
+
+  // Opens a new tab in the browser with, currently, the last used profile.
+  // This may open a new window, if there's no window. Please see also
+  // the Chrome's NewTab command for details.
+  // The callback is called on the command execution.
+  // Added in M91.
+  [MinVersion=10]
+  NewTab@7() => ();
+
+  // Restores a tab (or a window) recently closed in the browser with,
+  // currently, the last used profile. Please see also RestoreTab command
+  // for details.
+  // The callback is called on the command execution.
+  // Added in M91.
+  [MinVersion=10]
+  RestoreTab@8() => ();
 
   // Returns the browser's feedback data used for generating feedback report in
   // a dictionary object, each entry representing a log entry in the feedback

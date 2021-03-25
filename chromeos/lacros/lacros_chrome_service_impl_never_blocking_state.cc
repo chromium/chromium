@@ -40,10 +40,29 @@ void LacrosChromeServiceImplNeverBlockingState::RequestCrosapiReceiver(
 }
 
 void LacrosChromeServiceImplNeverBlockingState::NewWindow(
+    bool incognito,
     NewWindowCallback callback) {
   owner_sequence_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&LacrosChromeServiceImpl::NewWindowAffineSequence, owner_),
+      base::BindOnce(&LacrosChromeServiceImpl::NewWindowAffineSequence, owner_,
+                     incognito),
+      std::move(callback));
+}
+
+void LacrosChromeServiceImplNeverBlockingState::NewTab(
+    NewTabCallback callback) {
+  owner_sequence_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&LacrosChromeServiceImpl::NewTabAffineSequence, owner_),
+      std::move(callback));
+}
+
+void LacrosChromeServiceImplNeverBlockingState::RestoreTab(
+    RestoreTabCallback callback) {
+  owner_sequence_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&LacrosChromeServiceImpl::RestoreTabAffineSequence,
+                     owner_),
       std::move(callback));
 }
 

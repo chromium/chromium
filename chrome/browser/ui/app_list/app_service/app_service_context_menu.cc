@@ -122,12 +122,13 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       if (app_type_ == apps::mojom::AppType::kLacros)
-        crosapi::BrowserManager::Get()->NewWindow();
+        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
       else
         controller()->CreateNewWindow(/*incognito=*/false);
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
+      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
       controller()->CreateNewWindow(/*incognito=*/true);
       break;
 

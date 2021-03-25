@@ -61,10 +61,6 @@ crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
   return result;
 }
 
-}  // namespace
-
-namespace {
-
 // This function binds a pending receiver by posting the corresponding task to
 // the never blocking sequence.
 template <typename PendingReceiverOrRemote,
@@ -617,9 +613,19 @@ void LacrosChromeServiceImpl::SetInitParamsForTests(
   init_params_ = std::move(init_params);
 }
 
-void LacrosChromeServiceImpl::NewWindowAffineSequence() {
+void LacrosChromeServiceImpl::NewWindowAffineSequence(bool incognito) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  delegate_->NewWindow();
+  delegate_->NewWindow(incognito);
+}
+
+void LacrosChromeServiceImpl::NewTabAffineSequence() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  delegate_->NewTab();
+}
+
+void LacrosChromeServiceImpl::RestoreTabAffineSequence() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  delegate_->RestoreTab();
 }
 
 void LacrosChromeServiceImpl::GetFeedbackDataAffineSequence(

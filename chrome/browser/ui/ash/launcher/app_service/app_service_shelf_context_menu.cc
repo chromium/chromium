@@ -132,13 +132,14 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       if (app_type_ == apps::mojom::AppType::kCrostini) {
         ShelfContextMenu::ExecuteCommand(ash::MENU_OPEN_NEW, event_flags);
       } else if (app_type_ == apps::mojom::AppType::kLacros) {
-        crosapi::BrowserManager::Get()->NewWindow();
+        crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
       } else {
         ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/false);
       }
       break;
 
     case ash::MENU_NEW_INCOGNITO_WINDOW:
+      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
       ash::NewWindowDelegate::GetInstance()->NewWindow(/*incognito=*/true);
       break;
 
