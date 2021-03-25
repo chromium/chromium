@@ -78,6 +78,10 @@ const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
 
 const char kColorEmojiLocale[] = "und-Zsye";
 
+#if defined(OS_ANDROID)
+extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
+#endif
+
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

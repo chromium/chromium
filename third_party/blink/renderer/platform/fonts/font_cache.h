@@ -109,6 +109,10 @@ typedef HashMap<FallbackListCompositeKey,
 // in UTS #51: https://unicode.org/reports/tr51/#Emoji_Script
 extern const char kColorEmojiLocale[];
 
+#if defined(OS_ANDROID)
+extern const char kNotoColorEmojiCompat[];
+#endif
+
 class PLATFORM_EXPORT FontCache {
   friend class FontCachePurgePreventer;
 

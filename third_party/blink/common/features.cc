@@ -22,6 +22,9 @@ const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{
 const base::Feature kCOLRV1Fonts{"COLRV1Fonts",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kGMSCoreEmoji{"GMSCoreEmoji",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable defer commits to avoid flash of unstyled content, for same origin
 // navigation only.
 const base::Feature kPaintHolding{"PaintHolding",
