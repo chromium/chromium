@@ -7,6 +7,9 @@ package org.chromium.ui.base;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
 
 import androidx.test.filters.SmallTest;
 
@@ -88,6 +91,38 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
             ClipboardManager clipboardManager =
                     (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
             clipboardManager.removePrimaryClipChangedListener(clipboardChangedListener);
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testPasteAsPlainTextForNormalText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Clipboard.getInstance().setText("SampleTextToCopy");
+            Assert.assertFalse(Clipboard.getInstance().canPasteAsPlainText());
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testPasteAsPlainTextForStyledText() {
+        SpannableString spanString = new SpannableString("SpannableString");
+        spanString.setSpan(new BackgroundColorSpan(0), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ClipData clipData =
+                ClipData.newPlainText("text", spanString.subSequence(0, spanString.length() - 1));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Clipboard.getInstance().setPrimaryClipNoException(clipData);
+            Assert.assertTrue(Clipboard.getInstance().canPasteAsPlainText());
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testPastePopupPasteAsPlainTextForHtmlText() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Clipboard.getInstance().setHTMLText(
+                    "<span style=\"color: red;\">HTMLTextToCopy</span>", "HTMLTextToCopy");
+            Assert.assertTrue(Clipboard.getInstance().canPasteAsPlainText());
         });
     }
 }

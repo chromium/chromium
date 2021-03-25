@@ -928,3 +928,13 @@
 -keepclassmembers,allowobfuscation class ** {
   @org.chromium.base.annotations.VerifiesOnR <methods>;
 }
+-keep @interface org.chromium.base.annotations.VerifiesOnS
+-if @org.chromium.base.annotations.VerifiesOnS class * {
+    *** *(...);
+}
+-keep,allowobfuscation class <1> {
+    *** <2>(...);
+}
+-keepclassmembers,allowobfuscation class ** {
+  @org.chromium.base.annotations.VerifiesOnS <methods>;
+}
