@@ -101,8 +101,9 @@ _RE_TEST_STATUS = re.compile(
 # Crash detection constants.
 _RE_TEST_ERROR = re.compile(r'FAILURES!!! Tests run: \d+,'
                                     r' Failures: \d+, Errors: 1')
-_RE_TEST_CURRENTLY_RUNNING = re.compile(r'\[ERROR:.*?\]'
-                                    r' Currently running: (.*)')
+_RE_TEST_CURRENTLY_RUNNING = re.compile(
+    r'\[ERROR:.*?\] Currently running: (.*)')
+_RE_TEST_DCHECK_FATAL = re.compile(r'\[.*:FATAL:.*\] (.*)')
 _RE_DISABLED = re.compile(r'DISABLED_')
 _RE_FLAKY = re.compile(r'FLAKY_')
 
@@ -202,10 +203,15 @@ def ParseGTestOutput(output, symbolizer, device_abi):
       duration = int(matcher.group(3)) if matcher.group(3) else 0
 
     else:
-      # Needs another matcher here to match crashes, like those of DCHECK.
-      matcher = _RE_TEST_CURRENTLY_RUNNING.match(l)
-      if matcher:
-        test_name = matcher.group(1)
+      # Can possibly add more matchers, such as different results from DCHECK.
+      currently_running_matcher = _RE_TEST_CURRENTLY_RUNNING.match(l)
+      dcheck_matcher = _RE_TEST_DCHECK_FATAL.match(l)
+
+      if currently_running_matcher:
+        test_name = currently_running_matcher.group(1)
+        result_type = base_test_result.ResultType.CRASH
+        duration = 0  # Don't know.
+      elif dcheck_matcher:
         result_type = base_test_result.ResultType.CRASH
         duration = 0 # Don't know.
 

@@ -137,6 +137,17 @@ class GtestTestInstanceTests(unittest.TestCase):
     self.assertEquals(0, actual[0].GetDuration())
     self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
 
+  def testParseGTestOutput_fatalDcheck(self):
+    raw_output = [
+        '[ RUN      ] FooTest.Bar',
+        '[0324/183029.116334:FATAL:test_timeouts.cc(103)] Check failed: !init',
+    ]
+    actual = gtest_test_instance.ParseGTestOutput(raw_output, None, None)
+    self.assertEquals(1, len(actual))
+    self.assertEquals('FooTest.Bar', actual[0].GetName())
+    self.assertEquals(0, actual[0].GetDuration())
+    self.assertEquals(base_test_result.ResultType.CRASH, actual[0].GetType())
+
   def testParseGTestOutput_unknown(self):
     raw_output = [
       '[ RUN      ] FooTest.Bar',
