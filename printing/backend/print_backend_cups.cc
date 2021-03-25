@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -204,14 +205,15 @@ std::string PrintBackendCUPS::GetPrinterDriverInfo(
   std::string result;
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  if (!dest)
-    return result;
+  if (dest) {
+    DCHECK_EQ(printer_name, dest->name);
+    // base::StringPiece will correctly handle nullptrs from cupsGetOption(),
+    // whereas std::string will not. Thus do not directly assign to `result`.
+    base::StringPiece info(
+        cupsGetOption(kDriverNameTagName, dest->num_options, dest->options));
+    result = std::string(info);
+  }
 
-  DCHECK_EQ(printer_name, dest->name);
-  const char* info =
-      cupsGetOption(kDriverNameTagName, dest->num_options, dest->options);
-  if (info)
-    result = *info;
   return result;
 }
 
