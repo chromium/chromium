@@ -194,7 +194,8 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 #endif
 
   if (sysno == __NR_futex
-#if defined(__NR_futex_time64)
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
       || sysno == __NR_futex_time64
 #endif
   ) {

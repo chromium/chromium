@@ -56,6 +56,10 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     // The baseline policy allows __NR_clock_gettime. Allow
     // clock_getres() for V8. crbug.com/329053.
     case __NR_clock_getres:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_clock_getres_time64:
+#endif
       return RestrictClockID();
     case __NR_ioctl:
       return RestrictIoctl();
