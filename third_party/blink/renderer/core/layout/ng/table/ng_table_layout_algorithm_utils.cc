@@ -506,6 +506,27 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   return builder.ToConstraintSpace();
 }
 
+// Computes maximum possible number of non-mergeable columns.
+wtf_size_t NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
+    const Vector<NGBlockNode>& columns,
+    bool is_fixed_layout) {
+  // Build column constraints.
+  scoped_refptr<NGTableTypes::Columns> column_constraints =
+      base::MakeRefCounted<NGTableTypes::Columns>();
+  ColumnConstraintsBuilder constraints_builder(column_constraints.get(),
+                                               is_fixed_layout);
+  VisitLayoutNGTableColumn(columns, UINT_MAX, &constraints_builder);
+  // Find last non-mergeable column.
+  if (column_constraints->data.size() == 0)
+    return 0;
+  wtf_size_t column_index = column_constraints->data.size() - 1;
+  while (column_index > 0 &&
+         column_constraints->data[column_index].is_mergeable) {
+    --column_index;
+  }
+  return column_index + 1;
+}
+
 scoped_refptr<NGTableTypes::Columns>
 NGTableAlgorithmUtils::ComputeColumnConstraints(
     const NGBlockNode& table,

@@ -194,8 +194,11 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
   bool hide_empty_cells = table_style.EmptyCells() == EEmptyCells::kHide;
   WritingDirectionMode table_writing_direction =
       table.Style().GetWritingDirection();
+
   wtf_size_t box_order = 0;
-  wtf_size_t table_column_count = 0;
+  wtf_size_t table_column_count =
+      NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
+          grouped_children.columns, table.Style().IsFixedTableLayout());
   wtf_size_t table_row_index = 0;
   // Mark cell borders.
   bool found_multispan_cells = false;
@@ -238,8 +241,8 @@ scoped_refptr<NGTableBorders> NGTableBorders::ComputeTableBorders(
     table_borders->AddSection(section_start_row,
                               table_row_index - section_start_row);
   }
-  table_borders->SetLastColumnIndex(table_column_count);
 
+  table_borders->SetLastColumnIndex(table_column_count);
   wtf_size_t table_row_count = table_row_index;
   table_row_index = 0;
 
