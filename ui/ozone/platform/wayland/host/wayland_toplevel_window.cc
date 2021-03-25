@@ -67,13 +67,11 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 }
 
 void WaylandToplevelWindow::ApplyPendingBounds() {
-  if (pending_bounds_dip_.IsEmpty())
+  if (pending_configures_.empty())
     return;
   DCHECK(shell_toplevel_);
 
-  SetBoundsDip(pending_bounds_dip_);
-  pending_bounds_dip_ = gfx::Rect();
-  connection()->ScheduleFlush();
+  SetBoundsDip(pending_configures_.back().bounds_dip);
 }
 
 void WaylandToplevelWindow::DispatchHostWindowDragMovement(
@@ -308,8 +306,8 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
-  if (pending_bounds_dip_.size() ==
-          gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / buffer_scale()) &&
+  if (pending_bounds_dip_ ==
+          gfx::ScaleToRoundedRect(GetBounds(), 1.f / buffer_scale()) &&
       pending_configures_.empty()) {
     // If |pending_bounds_dip_| matches GetBounds(), and |pending_configures_|
     // is empty, implying that the window is already rendering at
@@ -323,14 +321,26 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
     // that this window has been configured.
     shell_toplevel()->SetWindowGeometry(pending_bounds_dip_);
     shell_toplevel()->AckConfigure(serial);
+    connection()->ScheduleFlush();
+  } else if (!pending_configures_.empty() &&
+             pending_bounds_dip_.size() ==
+                 pending_configures_.back().bounds_dip.size()) {
+    // There is an existing pending_configure with the same size, do not push a
+    // new one. Instead, update the serial of the pending_configure.
+    pending_configures_.back().serial = serial;
   } else {
     // Otherwise, push the pending |configure| to |pending_configures_|, wait
     // for a frame update, which will invoke UpdateVisualSize().
-    DCHECK_LT(pending_configures_.size(), 25u);
-    pending_configures_.push_back({pending_bounds_dip_.size(), serial});
+    DCHECK_LT(pending_configures_.size(), 100u);
+    pending_configures_.push_back({pending_bounds_dip_, serial});
+    // The Wayland compositor can generate xdg-shell.configure events more
+    // frequently than frame updates from gpu process. Throttle
+    // ApplyPendingBounds() such that we forward new bounds to
+    // PlatformWindowDelegate at most once per frame.
+    if (pending_configures_.size() <= 1)
+      ApplyPendingBounds();
   }
-
-  ApplyPendingBounds();
+  pending_bounds_dip_ = gfx::Rect();
 }
 
 void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
@@ -339,16 +349,22 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
   if (!shell_toplevel_)
     return;
   auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / buffer_scale());
-  auto result = std::find_if(
-      pending_configures_.begin(), pending_configures_.end(),
-      [&size_dip](auto& configure) { return size_dip == configure.size_dip; });
+  auto result =
+      std::find_if(pending_configures_.begin(), pending_configures_.end(),
+                   [&size_dip](auto& configure) {
+                     return size_dip == configure.bounds_dip.size();
+                   });
 
-  if (result == pending_configures_.end())
-    return;
+  if (result != pending_configures_.end()) {
+    shell_toplevel()->SetWindowGeometry(gfx::Rect(size_dip));
+    shell_toplevel()->AckConfigure(result->serial);
+    connection()->ScheduleFlush();
+    pending_configures_.erase(pending_configures_.begin(), ++result);
+  }
 
-  shell_toplevel()->SetWindowGeometry(gfx::Rect(size_dip));
-  shell_toplevel()->AckConfigure(result->serial);
-  pending_configures_.erase(pending_configures_.begin(), ++result);
+  // UpdateVisualSize() indicates a frame update, which means we can forward new
+  // bounds now. Apply the latest pending_configure.
+  ApplyPendingBounds();
 }
 
 bool WaylandToplevelWindow::OnInitialize(

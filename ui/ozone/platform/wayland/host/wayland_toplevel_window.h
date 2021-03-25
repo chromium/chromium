@@ -167,10 +167,10 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 
-  // Pending xdg-shell configures, once this window is drawn to |size_dip|,
+  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
   // ack_configure with |serial| will be sent to the Wayland compositor.
   struct PendingConfigure {
-    gfx::Size size_dip;
+    gfx::Rect bounds_dip;
     uint32_t serial;
   };
   base::circular_deque<PendingConfigure> pending_configures_;
