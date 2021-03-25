@@ -33,8 +33,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -60,28 +58,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  public:
   ChromeBackForwardCacheBrowserTest() = default;
   ~ChromeBackForwardCacheBrowserTest() override = default;
-
-  void SetUp() override {
-    // Fake the BluetoothAdapter to say it's present.
-    // Used in WebBluetooth test.
-    adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // In CHROMEOS build, even when |adapter_| object is released at TearDown()
-    // it causes the test to fail on exit with an error indicating |adapter_| is
-    // leaked.
-    testing::Mock::AllowLeak(adapter_.get());
-#endif
-
-    InProcessBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    testing::Mock::VerifyAndClearExpectations(adapter_.get());
-    adapter_.reset();
-    InProcessBrowserTest::TearDown();
-  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -156,7 +132,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<device::MockBluetoothAdapter> adapter_;
   std::unordered_map<base::Feature,
                      std::map<std::string, std::string>,
                      FeatureHash,
@@ -251,43 +226,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, BasicIframe) {
   EXPECT_FALSE(delete_observer_rfh_b.deleted());
   EXPECT_EQ("rfh_a", content::EvalJs(rfh_a, "token"));
   EXPECT_EQ("rfh_b", content::EvalJs(rfh_b, "token"));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, WebBluetooth) {
-  // The test requires a mock Bluetooth adapter to perform a
-  // WebBluetooth API call. To avoid conflicts with the default Bluetooth
-  // adapter, e.g. Windows adapter, which is configured during Bluetooth
-  // initialization, the mock adapter is configured in SetUp().
-
-  // WebBluetooth requires HTTPS.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  ASSERT_TRUE(https_server.Start());
-  GURL url(https_server.GetURL("a.com", "/back_forward_cache/no-favicon.html"));
-
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  content::BackForwardCacheDisabledTester tester;
-
-  EXPECT_EQ("device not found", content::EvalJs(current_frame_host(), R"(
-    new Promise(resolve => {
-      navigator.bluetooth.requestDevice({
-        filters: [
-          { services: [0x1802, 0x1803] },
-        ]
-      })
-      .then(() => resolve("device found"))
-      .catch(() => resolve("device not found"))
-    });
-  )"));
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      current_frame_host()->GetProcess()->GetID(),
-      current_frame_host()->GetRoutingID(), "WebBluetooth"));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::RenderFrameDeletedObserver delete_observer(current_frame_host());
-  EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("b.com")));
-  delete_observer.WaitUntilDeleted();
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,

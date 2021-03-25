@@ -1319,6 +1319,7 @@ test("content_browsertests") {
     "//content/test:mojo_web_test_bindings",
     "//content/test:test_support",
     "//device/base/synchronization",
+    "//device/bluetooth:mocks",
     "//gin",
     "//gpu",
     "//gpu/ipc/host",

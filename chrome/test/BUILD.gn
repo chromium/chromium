@@ -859,7 +859,6 @@ if (!is_android) {
       "//content/test:test_support",
       "//crypto:platform",
       "//crypto:test_support",
-      "//device/bluetooth:mocks",
       "//device/fido:test_support",
       "//extensions/buildflags",
       "//google_apis:test_support",

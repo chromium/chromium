@@ -69,6 +69,8 @@
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/echo.test-mojom.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -199,6 +201,28 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
 
   void DisableFeature(base::Feature feature) {
     disabled_features_.push_back(feature);
+  }
+
+  void SetUp() override {
+    // Fake the BluetoothAdapter to say it's present.
+    // Used in WebBluetooth test.
+    adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In CHROMEOS build, even when |adapter_| object is released at TearDown()
+    // it causes the test to fail on exit with an error indicating |adapter_| is
+    // leaked.
+    testing::Mock::AllowLeak(adapter_.get());
+#endif
+
+    ContentBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    testing::Mock::VerifyAndClearExpectations(adapter_.get());
+    adapter_.reset();
+    ContentBrowserTest::TearDown();
   }
 
   void SetUpOnMainThread() override {
@@ -611,6 +635,8 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   // Whether we should fail the test if a message arrived at the browser from a
   // renderer for a bfcached page.
   bool fail_for_unexpected_messages_while_cached_ = true;
+
+  scoped_refptr<device::MockBluetoothAdapter> adapter_;
 };
 
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
@@ -6028,6 +6054,43 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NestedWebContents) {
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents}, {}, {},
       {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebBluetooth) {
+  // The test requires a mock Bluetooth adapter to perform a
+  // WebBluetooth API call. To avoid conflicts with the default Bluetooth
+  // adapter, e.g. Windows adapter, which is configured during Bluetooth
+  // initialization, the mock adapter is configured in SetUp().
+
+  // WebBluetooth requires HTTPS.
+  ASSERT_TRUE(CreateHttpsServer()->Start());
+  GURL url(https_server()->GetURL("a.com", "/back_forward_cache/empty.html"));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  BackForwardCacheDisabledTester tester;
+
+  EXPECT_EQ("device not found", EvalJs(current_frame_host(), R"(
+    new Promise(resolve => {
+      navigator.bluetooth.requestDevice({
+        filters: [
+          { services: [0x1802, 0x1803] },
+        ]
+      })
+      .then(() => resolve("device found"))
+      .catch(() => resolve("device not found"))
+    });
+  )"));
+  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
+      current_frame_host()->GetProcess()->GetID(),
+      current_frame_host()->GetRoutingID(), "WebBluetooth"));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            https_server()->GetURL("b.com", "/title1.html")));
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {"WebBluetooth"}, FROM_HERE);
 }
 
 // Check the BackForwardCache is disabled when the WebUSB feature is used.
