@@ -32,6 +32,7 @@ import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
+import {PTZPanel} from './views/ptz_panel.js';
 import {
   BaseSettings,
   PrimarySettings,
@@ -140,6 +141,7 @@ export class App {
     nav.setup([
       this.cameraView_,
       new PrimarySettings(),
+      new PTZPanel(),
       new BaseSettings(ViewName.GRID_SETTINGS),
       new BaseSettings(ViewName.TIMER_SETTINGS),
       resolutionSettings,

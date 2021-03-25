@@ -210,6 +210,11 @@ export class Camera extends View {
     this.banner_ = dom.get('#banner', HTMLElement);
 
     /**
+     * @type {!HTMLButtonElement}
+     */
+    this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
+
+    /**
      * @const {!Set<function(): void>}
      * @private
      */
@@ -278,6 +283,10 @@ export class Camera extends View {
         .addEventListener('click', () => {
           animate.cancel(this.banner_);
         });
+
+    this.openPTZPanel_.addEventListener('click', () => {
+      nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
+    });
 
     // Monitor the states to stop camera when locked/minimized.
     const idleDetector = new window.IdleDetector();

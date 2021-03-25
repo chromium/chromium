@@ -109,6 +109,7 @@ export const ViewName = {
   GRID_SETTINGS: 'view-grid-settings',
   MESSAGE_DIALOG: 'view-message-dialog',
   PHOTO_RESOLUTION_SETTINGS: 'view-photo-resolution-settings',
+  PTZ_PANEL: 'view-ptz-panel',
   RESOLUTION_SETTINGS: 'view-resolution-settings',
   SETTINGS: 'view-settings',
   SPLASH: 'view-splash',
