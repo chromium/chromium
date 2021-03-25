@@ -277,6 +277,7 @@ source_set("blink_heap_unittests_sources") {
       "impl/test/gc_info_test.cc",
       "impl/test/heap_stats_collector_test.cc",
       "impl/test/heap_thread_test.cc",
+      "impl/test/incremental_marking_internals_test.cc",
       "impl/test/marking_scheduling_oracle_test.cc",
       "impl/test/marking_verifier_test.cc",
       "impl/test/name_trait_test.cc",

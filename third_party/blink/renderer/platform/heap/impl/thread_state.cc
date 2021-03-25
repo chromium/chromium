@@ -1213,9 +1213,11 @@ void ThreadState::CollectGarbage(BlinkGC::CollectionType collection_type,
   // mentioned below. In this case we will follow up with a regular full
   // garbage collection.
   const bool should_do_full_gc =
-      !was_incremental_marking ||
-      reason == BlinkGC::GCReason::kForcedGCForTesting ||
-      reason == BlinkGC::GCReason::kThreadTerminationGC;
+      !no_followup_full_gc_for_testing_ &&
+      (!was_incremental_marking ||
+       reason == BlinkGC::GCReason::kForcedGCForTesting ||
+       reason == BlinkGC::GCReason::kThreadTerminationGC);
+  no_followup_full_gc_for_testing_ = false;
   if (should_do_full_gc) {
     CompleteSweep();
     SetGCState(kNoGCScheduled);

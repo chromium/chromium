@@ -87,6 +87,7 @@ void IncrementalMarkingTestDriver::FinishGC(bool complete_sweep) {
       BlinkGC::StackState::kNoHeapPointersOnStack);
   CHECK_EQ(ThreadState::kIncrementalMarkingFinalizeScheduled,
            thread_state_->GetGCState());
+  thread_state_->ForceNoFollowupFullGCForTesting();
   thread_state_->IncrementalMarkingFinalize();
   CHECK(!thread_state_->IsIncrementalMarking());
   if (complete_sweep) {
