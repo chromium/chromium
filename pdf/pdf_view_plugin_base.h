@@ -258,6 +258,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void DidStartLoading() = 0;
   virtual void DidStopLoading() = 0;
 
+  // Performs tasks necessary when the document is loaded in print preview mode.
+  virtual void OnPrintPreviewLoaded() = 0;
+
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 

@@ -454,6 +454,10 @@ void PdfViewWebPlugin::DidStopLoading() {
   NOTIMPLEMENTED();
 }
 
+void PdfViewWebPlugin::OnPrintPreviewLoaded() {
+  NOTIMPLEMENTED();
+}
+
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
 }

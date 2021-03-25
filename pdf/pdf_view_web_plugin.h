@@ -132,6 +132,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetContentRestrictions(int content_restrictions) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
+  void OnPrintPreviewLoaded() override;
   void UserMetricsRecordAction(const std::string& action) override;
 
  private:

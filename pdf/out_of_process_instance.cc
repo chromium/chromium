@@ -1042,18 +1042,8 @@ void OutOfProcessInstance::DocumentLoadComplete() {
   UserMetricsRecordAction("PDF.LoadSuccess");
   RecordDocumentMetrics();
 
-  // Note: If we are in print preview mode the scroll location is retained
-  // across document loads so we don't want to scroll again and override it.
-  if (IsPrintPreview()) {
-    if (IsPreviewingPDF(print_preview_page_count_)) {
-      SendPrintPreviewLoadedNotification();
-    } else {
-      DCHECK_EQ(0, print_preview_loaded_page_count_);
-      print_preview_loaded_page_count_ = 1;
-      AppendBlankPrintPreviewPages();
-    }
-    OnGeometryChanged(0, 0);
-  }
+  if (IsPrintPreview())
+    OnPrintPreviewLoaded();
 
   SendAttachments();
   SendBookmarks();
@@ -1465,6 +1455,19 @@ void OutOfProcessInstance::DidStopLoading() {
 
   pp::PDF::DidStopLoading(this);
   did_call_start_loading_ = false;
+}
+
+void OutOfProcessInstance::OnPrintPreviewLoaded() {
+  // Scroll location is retained across document loads in print preview mode, so
+  // there's no need to override the scroll position by scrolling again.
+  if (IsPreviewingPDF(print_preview_page_count_)) {
+    SendPrintPreviewLoadedNotification();
+  } else {
+    DCHECK_EQ(0, print_preview_loaded_page_count_);
+    print_preview_loaded_page_count_ = 1;
+    AppendBlankPrintPreviewPages();
+  }
+  OnGeometryChanged(0, 0);
 }
 
 void OutOfProcessInstance::SetContentRestrictions(int content_restrictions) {

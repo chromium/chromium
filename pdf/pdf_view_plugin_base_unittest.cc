@@ -119,6 +119,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, DidStopLoading, (), (override));
 
+  MOCK_METHOD(void, OnPrintPreviewLoaded, (), (override));
+
   MOCK_METHOD(void, UserMetricsRecordAction, (const std::string&), (override));
 
   base::Value sent_message_;
