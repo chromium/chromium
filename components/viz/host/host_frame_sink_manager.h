@@ -136,16 +136,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void UnregisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
                                     const FrameSinkId& child_frame_sink_id);
 
-  // Returns true if RegisterFrameSinkHierarchy() was called with the supplied
-  // arguments.
-  bool IsFrameSinkHierarchyRegistered(
-      const FrameSinkId& parent_frame_sink_id,
-      const FrameSinkId& child_frame_sink_id) const;
-
-  // Returns the first ancestor of |start| (including |start|) that is a root.
-  base::Optional<FrameSinkId> FindRootFrameSinkId(
-      const FrameSinkId& start) const;
-
   // Asks viz to send updates regarding video activity to |observer|.
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer);
@@ -210,7 +200,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // Returns true if there is nothing in FrameSinkData and it can be deleted.
     bool IsEmpty() const {
       return !IsFrameSinkRegistered() && !has_created_compositor_frame_sink &&
-             parents.empty() && children.empty();
+             children.empty();
     }
 
     // The client to be notified of changes to this FrameSink.
@@ -234,8 +224,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // will always be false if not using Mojo.
     bool has_created_compositor_frame_sink = false;
 
-    // Track frame sink hierarchy in both directions.
-    std::vector<FrameSinkId> parents;
+    // Track frame sink hierarchy.
     std::vector<FrameSinkId> children;
 
    private:

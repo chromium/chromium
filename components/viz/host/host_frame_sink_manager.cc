@@ -210,10 +210,6 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
   frame_sink_manager_->RegisterFrameSinkHierarchy(parent_frame_sink_id,
                                                   child_frame_sink_id);
 
-  FrameSinkData& child_data = frame_sink_data_map_[child_frame_sink_id];
-  DCHECK(!base::Contains(child_data.parents, parent_frame_sink_id));
-  child_data.parents.push_back(parent_frame_sink_id);
-
   FrameSinkData& parent_data = iter->second;
   DCHECK(!base::Contains(parent_data.children, child_frame_sink_id));
   parent_data.children.push_back(child_frame_sink_id);
@@ -225,50 +221,14 @@ void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
     const FrameSinkId& parent_frame_sink_id,
     const FrameSinkId& child_frame_sink_id) {
   // Unregister and clear the stored parent.
-  FrameSinkData& child_data = frame_sink_data_map_[child_frame_sink_id];
-  DCHECK(base::Contains(child_data.parents, parent_frame_sink_id));
-  base::Erase(child_data.parents, parent_frame_sink_id);
-
   FrameSinkData& parent_data = frame_sink_data_map_[parent_frame_sink_id];
   DCHECK(base::Contains(parent_data.children, child_frame_sink_id));
   base::Erase(parent_data.children, child_frame_sink_id);
+  if (parent_data.IsEmpty())
+    frame_sink_data_map_.erase(parent_frame_sink_id);
 
   frame_sink_manager_->UnregisterFrameSinkHierarchy(parent_frame_sink_id,
                                                     child_frame_sink_id);
-
-  // The reference parent_data will become invalid when the container is
-  // modified. So we have to call IsEmpty() in advance.
-  bool parent_data_is_empty = parent_data.IsEmpty();
-  if (child_data.IsEmpty())
-    frame_sink_data_map_.erase(child_frame_sink_id);
-
-  if (parent_data_is_empty)
-    frame_sink_data_map_.erase(parent_frame_sink_id);
-}
-
-bool HostFrameSinkManager::IsFrameSinkHierarchyRegistered(
-    const FrameSinkId& parent_frame_sink_id,
-    const FrameSinkId& child_frame_sink_id) const {
-  auto iter = frame_sink_data_map_.find(parent_frame_sink_id);
-  return iter != frame_sink_data_map_.end() &&
-         base::Contains(iter->second.children, child_frame_sink_id);
-}
-
-base::Optional<FrameSinkId> HostFrameSinkManager::FindRootFrameSinkId(
-    const FrameSinkId& start) const {
-  auto iter = frame_sink_data_map_.find(start);
-  if (iter == frame_sink_data_map_.end())
-    return base::nullopt;
-
-  if (iter->second.is_root)
-    return start;
-
-  for (const FrameSinkId& parent_id : iter->second.parents) {
-    base::Optional<FrameSinkId> root = FindRootFrameSinkId(parent_id);
-    if (root)
-      return root;
-  }
-  return base::nullopt;
 }
 
 void HostFrameSinkManager::AddVideoDetectorObserver(

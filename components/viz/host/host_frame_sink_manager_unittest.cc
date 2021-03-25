@@ -302,39 +302,6 @@ TEST_F(HostFrameSinkManagerTest, HierarchyMultipleParents) {
   FlushHostAndVerifyExpectations();
 }
 
-TEST_F(HostFrameSinkManagerTest, FindRootFrameSinkId) {
-  FakeHostFrameSinkClient host_client;
-
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkChild1));
-
-  // Register two FrameSinkIds, hierarchy between them and create a
-  // CompositorFrameSink for one.
-  host().RegisterFrameSinkId(kFrameSinkParent1, &host_client,
-                             ReportFirstSurfaceActivation::kYes);
-  host().RegisterFrameSinkId(kFrameSinkChild1, &host_client,
-                             ReportFirstSurfaceActivation::kYes);
-  host().RegisterFrameSinkHierarchy(kFrameSinkParent1, kFrameSinkChild1);
-
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_FALSE(host().FindRootFrameSinkId(kFrameSinkChild1));
-
-  RootCompositorFrameSinkData root_data;
-  host().CreateRootCompositorFrameSink(
-      root_data.BuildParams(kFrameSinkParent1));
-
-  MockCompositorFrameSinkClient compositor_frame_sink_client;
-  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  host().CreateCompositorFrameSink(
-      kFrameSinkChild1, compositor_frame_sink.BindNewPipeAndPassReceiver(),
-      compositor_frame_sink_client.BindInterfaceRemote());
-
-  EXPECT_EQ(base::Optional<FrameSinkId>(kFrameSinkParent1),
-            host().FindRootFrameSinkId(kFrameSinkParent1));
-  EXPECT_EQ(base::Optional<FrameSinkId>(kFrameSinkParent1),
-            host().FindRootFrameSinkId(kFrameSinkChild1));
-}
-
 // Verify that HostFrameSinkManager can handle restarting after a GPU crash.
 TEST_F(HostFrameSinkManagerTest, RestartOnGpuCrash) {
   FakeHostFrameSinkClient host_client;
