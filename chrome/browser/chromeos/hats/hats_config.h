@@ -15,9 +15,9 @@ namespace chromeos {
 
 struct HatsConfig {
   HatsConfig(const base::Feature& feature,
-             const base::TimeDelta& hatsThreshold,
-             const base::TimeDelta& hatsGooglerThreshold,
-             const base::TimeDelta& hatsNewDeviceThreshold);
+             const base::TimeDelta& hatsNewDeviceThreshold,
+             const char* const hatsIsSelectedPrefName,
+             const char* const hatsCycleEndTimestampPrefName);
   HatsConfig(const HatsConfig&) = delete;
   HatsConfig& operator=(const HatsConfig&) = delete;
 
@@ -25,16 +25,16 @@ struct HatsConfig {
   // survey is enabled or not, and its parameters.
   const base::Feature& feature;
 
-  // Minimum amount of time before the notification is displayed again after a
-  // user has interacted with it.
-  const base::TimeDelta hatsThreshold;
-
-  // The threshold for a Googler is less.
-  const base::TimeDelta hatsGooglerThreshold;
-
   // Minimum amount of time after initial login or oobe after which we can show
   // the HaTS notification.
   const base::TimeDelta hatsNewDeviceThreshold;
+
+  // Preference name for a boolean that stores whether we were selected for the
+  // current survey cycle.
+  const char* const hatsIsSelectedPrefName;
+
+  // Preference name for an int64 that stores the current survey cycle end.
+  const char* const hatsCycleEndTimestampPrefName;
 };
 
 // CrOS HaTS configs are declared here and defined in hats_config.cc

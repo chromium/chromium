@@ -5,31 +5,30 @@
 #include "chrome/browser/chromeos/hats/hats_config.h"
 
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 
 namespace chromeos {
 
 namespace {
-constexpr int MIN_DAYS_THRESHOLD = 1;
+constexpr int kMinDaysThreshold = 1;
 }
 
 HatsConfig::HatsConfig(const base::Feature& feature,
-                       const base::TimeDelta& hatsThreshold,
-                       const base::TimeDelta& hatsGooglerThreshold,
-                       const base::TimeDelta& hatsNewDeviceThreshold)
+                       const base::TimeDelta& hatsNewDeviceThreshold,
+                       const char* const hatsIsSelectedPrefName,
+                       const char* const hatsCycleEndTimestampPrefName)
     : feature(feature),
-      hatsThreshold(hatsThreshold),
-      hatsGooglerThreshold(hatsGooglerThreshold),
-      hatsNewDeviceThreshold(hatsNewDeviceThreshold) {
-  DCHECK(hatsThreshold.InDaysFloored() >= MIN_DAYS_THRESHOLD);
-  DCHECK(hatsGooglerThreshold.InDaysFloored() >= MIN_DAYS_THRESHOLD);
-  DCHECK(hatsNewDeviceThreshold.InDaysFloored() >= MIN_DAYS_THRESHOLD);
+      hatsNewDeviceThreshold(hatsNewDeviceThreshold),
+      hatsIsSelectedPrefName(hatsIsSelectedPrefName),
+      hatsCycleEndTimestampPrefName(hatsCycleEndTimestampPrefName) {
+  DCHECK(hatsNewDeviceThreshold.InDaysFloored() >= kMinDaysThreshold);
 }
 
 const HatsConfig kHatsGeneralSurvey = {
     ::features::kHappinessTrackingSystem,  // feature
-    base::TimeDelta::FromDays(90),         // hatsThreshold
-    base::TimeDelta::FromDays(30),         // hatsGooglerThreshold
     base::TimeDelta::FromDays(7),          // hatsNewDeviceThreshold
+    prefs::kHatsDeviceIsSelected,          // hatsIsSelectedPrefName
+    prefs::kHatsSurveyCycleEndTimestamp,   // hatsCycleEndTimestampPrefName
 };
 
 }  // namespace chromeos

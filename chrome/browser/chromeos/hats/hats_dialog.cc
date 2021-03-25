@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -94,7 +95,8 @@ std::string GetFormattedSiteContext(const std::string& user_locale,
 }  // namespace
 
 // static
-std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
+std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
+    const HatsConfig& hats_config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -104,9 +106,8 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
   if (!user_locale.length())
     user_locale = kDefaultProfileLocale;
 
-  std::unique_ptr<HatsDialog> hats_dialog(new HatsDialog(
-      HatsFinchHelper::GetTriggerID(features::kHappinessTrackingSystem),
-      profile));
+  std::unique_ptr<HatsDialog> hats_dialog(
+      new HatsDialog(HatsFinchHelper::GetTriggerID(hats_config), profile));
 
   // Raw pointer is used here since the dialog is owned by the hats
   // notification controller which lives until the end of the user session. The

@@ -44,6 +44,13 @@ const char kNotificationOriginUrl[] = "chrome://hats";
 
 const char kNotifierHats[] = "ash.hats";
 
+// Minimum amount of time before the notification is displayed again after a
+// user has interacted with it.
+constexpr base::TimeDelta kHatsThreshold = base::TimeDelta::FromDays(90);
+
+// The threshold for a Googler is less.
+constexpr base::TimeDelta kHatsGooglerThreshold = base::TimeDelta::FromDays(30);
+
 // Returns true if the given |profile| interacted with HaTS by either
 // dismissing the notification or taking the survey within a given
 // |threshold_time|.
@@ -81,7 +88,7 @@ const char HatsNotificationController::kNotificationId[] = "hats_notification";
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config)
-    : profile_(profile) {
+    : profile_(profile), hats_config_(hats_config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -155,14 +162,14 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
     return false;
 
   // Call finch helper only after all the profile checks are complete.
-  HatsFinchHelper hats_finch_helper(profile, hats_config.feature);
+  HatsFinchHelper hats_finch_helper(profile, hats_config);
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
   const base::TimeDelta threshold_time =
       gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
-          ? hats_config.hatsGooglerThreshold
-          : hats_config.hatsThreshold;
+          ? kHatsGooglerThreshold
+          : kHatsThreshold;
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.
   if (DidShowSurveyToProfileRecently(profile, threshold_time)) {
@@ -181,7 +188,7 @@ void HatsNotificationController::Click(
 
   UpdateLastInteractionTime();
 
-  hats_dialog_ = HatsDialog::CreateAndShow();
+  hats_dialog_ = HatsDialog::CreateAndShow(hats_config_);
 
   state_ = HatsState::kNotificationClicked;
 

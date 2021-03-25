@@ -82,6 +82,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastInteractionTime();
 
   Profile* const profile_;
+  const HatsConfig& hats_config_;
   std::unique_ptr<message_center::Notification> notification_;
   std::unique_ptr<HatsDialog> hats_dialog_;
 
