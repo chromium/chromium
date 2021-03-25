@@ -115,7 +115,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         Bundle freProperties = getPageDelegate().getProperties();
         @ChildAccountStatus.Status
         int childAccountStatus = freProperties.getInt(
-                SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
             tosText = SpanApplier.applySpans(getString(R.string.fre_tos_and_privacy_child_account),
                     new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),

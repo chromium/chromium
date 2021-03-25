@@ -24,13 +24,13 @@ import java.util.List;
 /**
  * Implementation of {@link SigninFragmentBase} for the first run experience.
  */
-public class SigninFirstRunFragment extends SigninFragmentBase implements FirstRunFragment {
+public class SyncConsentFirstRunFragment extends SigninFragmentBase implements FirstRunFragment {
     // Per-page parameters:
     // TODO(crbug/1168516): Remove CHILD_ACCOUNT_STATUS
     public static final String CHILD_ACCOUNT_STATUS = "ChildAccountStatus";
 
     // Every fragment must have a public default constructor.
-    public SigninFirstRunFragment() {}
+    public SyncConsentFirstRunFragment() {}
 
     @Override
     public void onAttach(Context context) {

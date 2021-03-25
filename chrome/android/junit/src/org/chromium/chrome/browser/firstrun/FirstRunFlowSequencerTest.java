@@ -171,7 +171,7 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 
@@ -196,7 +196,7 @@ public class FirstRunFlowSequencerTest {
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.REGULAR_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 
@@ -221,7 +221,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 
@@ -246,7 +246,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertEquals(ChildAccountStatus.NOT_CHILD,
-                bundle.getInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS));
+                bundle.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS));
         assertEquals(4, bundle.size());
     }
 }

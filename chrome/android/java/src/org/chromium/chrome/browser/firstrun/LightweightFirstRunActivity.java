@@ -87,8 +87,9 @@ public class LightweightFirstRunActivity
                 }
 
                 @ChildAccountStatus.Status
-                int childAccountStatus = freProperties.getInt(
-                        SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+                int childAccountStatus =
+                        freProperties.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
+                                ChildAccountStatus.NOT_CHILD);
                 initializeViews(ChildAccountStatus.isChild(childAccountStatus));
             }
         };

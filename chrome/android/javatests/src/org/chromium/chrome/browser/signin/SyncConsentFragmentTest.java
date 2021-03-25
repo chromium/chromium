@@ -49,7 +49,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
-import org.chromium.chrome.browser.firstrun.SigninFirstRunFragment;
+import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -77,9 +77,9 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncConsentFragmentTest {
     /**
-     * This class is used to test {@link SigninFirstRunFragment}.
+     * This class is used to test {@link SyncConsentFirstRunFragment}.
      */
-    public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
+    public static class CustomSyncConsentFirstRunFragment extends SyncConsentFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
 
         @Override
@@ -206,9 +206,10 @@ public class SyncConsentFragmentTest {
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -228,9 +229,10 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -250,10 +252,10 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(
-                SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -273,9 +275,10 @@ public class SyncConsentFragmentTest {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSigninFirstRunFragment fragment = new CustomSigninFirstRunFragment();
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 

@@ -157,7 +157,7 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         Bundle freProperties = new Bundle();
-        freProperties.putInt(SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
+        freProperties.putInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
 
         onFlowIsKnown(freProperties);
         if (ChildAccountStatus.isChild(mChildAccountStatus)) {
