@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/cfi_buildflags.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/search/ntp_features.h"
@@ -68,15 +69,27 @@ const char* kNotVisitCart[] = {
 };
 
 const char* kVisitCheckout[] = {
-  "https://www.amazon.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
-  "https://smile.amazon.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
+  "https://www.amazon.com/gp/buy/spc/handlers/display.html?",
+  "https://smile.amazon.com/gp/buy/spc/handlers/display.html?",
+  "https://pay.ebay.com/rgxo?action=view&sessionid=1111111111",
+  "https://www.example.com/chkout/rc",
+  "https://www.example.com/final-checkout",
+  "https://www.example.com/Secure-Checkout",
+  "https://www.example.com/Checkout-Begin",
+  "https://www.example.com/checkout-start",
   "http://example.com/us/checkout/",
   "http://example.com/checkout/",
   "https://example.com/123/checkouts/456",
   "http://example.com/123/checkouts/456",
+  "http://example.com/123/SPcheckouts",
+  "https://www.example.com/intlcheckout"
 };
 
 const char* kNotVisitCheckout[] = {
+  "https://www.amazon.com/gp/spc/handlers/display.html?",
+  "https://www.amazon.com/gp/aw/c?ref_=navm_hdr_cart",
+  "https://cart.ebay.com/rgxo",
+  "https://pay.ebay.com/api/xo",
   "https://example.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
   "http://example.com/checkoutput",
   "http://example.com/us/checkoutside/",
@@ -95,12 +108,26 @@ const char* kPurchaseText[] = {
   "PAY NOW",
   "PLACE ORDER",
   "Pay now",
+  "pay $24",
+  "pay $24.35",
+  "pay USD 24.35",
+  "make payment",
+  "confirm & pay",
+  "PURCHASE",
+  "MAKE THIS PURCHASE",
 };
 
 const char* kNotPurchaseText[] = {
   "I'd like to pay now",
   "replace order",
   "Pay nowadays",
+  "make payment later",
+  "confirm and continue"
+  "submit",
+  "Continue to Review Order",
+  "next step: review order"
+  "Process Order",
+  "",
 };
 
 const char* kSkipText[] = {
@@ -253,8 +280,10 @@ float BenchmarkShouldSkip(base::StringPiece str) {
 }
 
 // TSAN builds are 20~50X slower than Release build.
-#if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
+#if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) ||             \
+    defined(MEMORY_SANITIZER) || BUILDFLAG(CFI_CAST_CHECK) ||              \
+    BUILDFLAG(CFI_ICALL_CHECK) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || \
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP)
 #define MAYBE_RegexBenchmark DISABLED_RegexBenchmark
 #else
 #define MAYBE_RegexBenchmark RegexBenchmark
@@ -262,6 +291,12 @@ float BenchmarkShouldSkip(base::StringPiece str) {
 
 TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
   std::string str = "abcdefghijklmnop";
+  const GURL basic_url = GURL("http://example.com/");
+  // Compile regex before benchmark loop.
+  CommerceHintAgent::IsAddToCart(str);
+  CommerceHintAgent::IsVisitCart(basic_url);
+  CommerceHintAgent::IsVisitCheckout(basic_url);
+  CommerceHintAgent::IsPurchase(str);
   for (int length = 16; length <= (1L << 20); length *= 4) {
     const GURL url("http://example.com/" + str);
 
@@ -287,9 +322,9 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 
     elapsed_us = BenchmarkIsVisitCheckout(url);
-    // Typical value is ~0.2us.
-    // Without capping the length, it would take at least 30us.
-    EXPECT_LT(elapsed_us, 2.0 * slow_factor);
+    // Typical value is ~10us.
+    // Without capping the length, it would take at least 2000us.
+    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 
     elapsed_us = BenchmarkIsPurchase(str);
     // Typical value is ~0.1us.
