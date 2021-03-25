@@ -12,6 +12,13 @@ namespace scanning {
 // you're adding to any of these enums, update the corresponding enum listing in
 // tools/metrics/histograms/enums.xml.
 
+enum class ScanCompleteAction {
+  kDoneButtonClicked = 0,
+  kFilesAppOpened = 1,
+  kMediaAppOpened = 2,
+  kMaxValue = kMediaAppOpened,
+};
+
 enum class ScanJobFailureReason {
   kUnknownScannerError = 0,
   kScannerNotFound = 1,

@@ -10,6 +10,8 @@
 
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
+import {ScanCompleteAction} from './scanning_app_types.js';
+
 /**
  * @typedef {{
  *   baseName: string,
@@ -72,6 +74,12 @@ export class ScanningBrowserProxy {
    * @param {!Array<string>} filePaths
    */
   openFilesInMediaApp(filePaths) {}
+
+  /**
+   * Records the action taken after a completed scan job.
+   * @param {!ScanCompleteAction} action
+   */
+  recordScanCompleteAction(action) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -109,6 +117,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   openFilesInMediaApp(filePaths) {
     chrome.send('openFilesInMediaApp', [filePaths]);
+  }
+
+  /** @override */
+  recordScanCompleteAction(action) {
+    chrome.send('recordScanCompleteAction', [action]);
   }
 }
 

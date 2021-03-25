@@ -21,6 +21,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'recordScanJobSettings',
       'getMyFilesPath',
       'openFilesInMediaApp',
+      'recordScanCompleteAction',
     ]);
 
     /** @private {?SelectedPath} */
@@ -87,6 +88,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
     this.methodCalled('openFilesInMediaApp');
     assertArrayEquals(this.filePaths_, filePaths);
   }
+
+  /** @override */
+  recordScanCompleteAction() {}
 
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {

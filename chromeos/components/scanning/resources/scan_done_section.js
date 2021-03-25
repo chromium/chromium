@@ -12,7 +12,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppState} from './scanning_app_types.js';
+import {AppState, ScanCompleteAction} from './scanning_app_types.js';
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
@@ -71,16 +71,17 @@ Polymer({
 
   /** @private */
   onDoneClick_() {
+    this.browserProxy_.recordScanCompleteAction(
+        ScanCompleteAction.DONE_BUTTON_CLICKED);
     this.fire('done-click');
   },
 
   /** @private */
   showFileInLocation_() {
-    if (this.scannedFilePaths.length == 0) {
-      this.fire('file-not-found');
-      return;
-    }
+    assert(this.scannedFilePaths.length !== 0);
 
+    this.browserProxy_.recordScanCompleteAction(
+        ScanCompleteAction.FILES_APP_OPENED);
     this.browserProxy_
         .showFileInLocation(this.scannedFilePaths.slice(-1)[0].path)
         .then(
@@ -159,6 +160,8 @@ Polymer({
   openMediaApp_() {
     assert(this.scanAppMediaLinkEnabled_ && this.scannedFilePaths.length !== 0);
 
+    this.browserProxy_.recordScanCompleteAction(
+        ScanCompleteAction.MEDIA_APP_OPENED);
     this.browserProxy_.openFilesInMediaApp(
         this.scannedFilePaths.map(filePath => filePath.path));
   },

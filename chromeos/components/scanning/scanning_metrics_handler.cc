@@ -33,9 +33,24 @@ ScanningMetricsHandler::~ScanningMetricsHandler() = default;
 
 void ScanningMetricsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "recordScanCompleteAction",
+      base::BindRepeating(
+          &ScanningMetricsHandler::HandleRecordScanCompleteAction,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "recordScanJobSettings",
       base::BindRepeating(&ScanningMetricsHandler::HandleRecordScanJobSettings,
                           base::Unretained(this)));
+}
+
+void ScanningMetricsHandler::HandleRecordScanCompleteAction(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args->GetSize());
+  base::UmaHistogramEnumeration(
+      "Scanning.ScanCompleteAction",
+      static_cast<scanning::ScanCompleteAction>(args->GetList()[0].GetInt()));
 }
 
 void ScanningMetricsHandler::HandleRecordScanJobSettings(

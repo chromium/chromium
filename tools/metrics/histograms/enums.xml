@@ -68805,6 +68805,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Launcher"/>
 </enum>
 
+<enum name="ScanCompleteAction">
+  <int value="0" label="Done button clicked"/>
+  <int value="1" label="Files app opened"/>
+  <int value="2" label="Media app opened"/>
+</enum>
+
 <enum name="ScanJobFailureReason">
   <int value="0" label="Unknown scanner error"/>
   <int value="1" label="Scanner not found"/>

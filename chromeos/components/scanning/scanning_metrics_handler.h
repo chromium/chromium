@@ -26,6 +26,9 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
+  // Records the action taken after a completed scan job.
+  void HandleRecordScanCompleteAction(const base::ListValue* args);
+
   // Records the settings for a scan job.
   void HandleRecordScanJobSettings(const base::ListValue* args);
 };
