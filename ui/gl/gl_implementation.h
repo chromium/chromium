@@ -113,10 +113,11 @@ class GL_EXPORT DisableNullDrawGLBindings {
 };
 
 // Set the current GL and ANGLE implementation.
-GL_EXPORT void SetGLImplementationParts(GLImplementationParts& implementation);
+GL_EXPORT void SetGLImplementationParts(
+    const GLImplementationParts& implementation);
 
 // Get the current GL and ANGLE implementation.
-GL_EXPORT GLImplementationParts GetGLImplementationParts();
+GL_EXPORT const GLImplementationParts& GetGLImplementationParts();
 
 // Set the current GL implementation.
 GL_EXPORT void SetGLImplementation(GLImplementation implementation);

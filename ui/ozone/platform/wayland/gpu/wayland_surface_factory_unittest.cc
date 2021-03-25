@@ -227,7 +227,8 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   buffer_manager_gpu_->set_gbm_device(std::make_unique<MockGbmDevice>());
 
-  auto* gl_ozone = surface_factory_->GetGLOzone(gl::kGLImplementationEGLGLES2);
+  auto* gl_ozone = surface_factory_->GetGLOzone(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
   EXPECT_TRUE(gl_surface);
   gl_surface->SetRelyOnImplicitSync();
@@ -476,7 +477,8 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   buffer_manager_gpu_->set_gbm_device(std::make_unique<MockGbmDevice>());
 
-  auto* gl_ozone = surface_factory_->GetGLOzone(gl::kGLImplementationEGLGLES2);
+  auto* gl_ozone = surface_factory_->GetGLOzone(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
   EXPECT_TRUE(gl_surface);
   gl_surface->SetRelyOnImplicitSync();
@@ -768,7 +770,8 @@ TEST_P(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm) {
   // used.
   EXPECT_FALSE(buffer_manager_gpu_->gbm_device());
 
-  auto* gl_ozone = surface_factory_->GetGLOzone(gl::kGLImplementationEGLGLES2);
+  auto* gl_ozone = surface_factory_->GetGLOzone(
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   EXPECT_TRUE(gl_ozone);
   auto gl_surface = gl_ozone->CreateSurfacelessViewGLSurface(widget_);
   EXPECT_FALSE(gl_surface);

@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
 
   // Returns the GLOzone to use for the specified GL implementation, or null if
   // GL implementation doesn't exist.
-  virtual GLOzone* GetGLOzone(gl::GLImplementation implementation);
+  virtual GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // Creates the vulkan implementation. This object should be capable of

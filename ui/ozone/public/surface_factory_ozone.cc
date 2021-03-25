@@ -29,7 +29,8 @@ SurfaceFactoryOzone::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementation>();
 }
 
-GLOzone* SurfaceFactoryOzone::GetGLOzone(gl::GLImplementation implementation) {
+GLOzone* SurfaceFactoryOzone::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
   return nullptr;
 }
 

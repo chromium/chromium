@@ -19,24 +19,24 @@ inline ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() {
 }
 
 // Returns true if there is an GLOzone for the specified GL implementation.
-inline bool HasGLOzone(GLImplementation impl) {
+inline bool HasGLOzone(const GLImplementationParts& impl) {
   return GetSurfaceFactoryOzone() && GetSurfaceFactoryOzone()->GetGLOzone(impl);
 }
 
 // Returns true if there is an GLOzone for the set GL implementation.
 inline bool HasGLOzone() {
-  return HasGLOzone(GetGLImplementation());
+  return HasGLOzone(GetGLImplementationParts());
 }
 
 // Returns the GLOzone for the specified GL implementation or null if none
 // exists.
-inline ui::GLOzone* GetGLOzone(GLImplementation impl) {
+inline ui::GLOzone* GetGLOzone(const GLImplementationParts& impl) {
   return GetSurfaceFactoryOzone()->GetGLOzone(impl);
 }
 
 // Returns the GLOzone for the set GL implementation or null if none exists.
 inline ui::GLOzone* GetGLOzone() {
-  return GetGLOzone(GetGLImplementation());
+  return GetGLOzone(GetGLImplementationParts());
 }
 
 }  // namespace init

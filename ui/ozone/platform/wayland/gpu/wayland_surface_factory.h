@@ -28,7 +28,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
 
   // SurfaceFactoryOzone overrides:
   std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
-  GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
+  GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,

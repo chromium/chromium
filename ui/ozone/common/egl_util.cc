@@ -147,11 +147,12 @@ bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
 
 }  // namespace
 
-bool LoadDefaultEGLGLES2Bindings(gl::GLImplementation implementation) {
+bool LoadDefaultEGLGLES2Bindings(
+    const gl::GLImplementationParts& implementation) {
   base::FilePath glesv2_path;
   base::FilePath egl_path;
 
-  if (implementation == gl::kGLImplementationSwiftShaderGL) {
+  if (implementation.gl == gl::kGLImplementationSwiftShaderGL) {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
     base::FilePath module_path;
 #if !defined(OS_FUCHSIA)
@@ -165,7 +166,7 @@ bool LoadDefaultEGLGLES2Bindings(gl::GLImplementation implementation) {
 #else
     return false;
 #endif
-  } else if (implementation == gl::kGLImplementationEGLANGLE) {
+  } else if (implementation.gl == gl::kGLImplementationEGLANGLE) {
     glesv2_path = base::FilePath(kAngleGlesSoname);
     egl_path = base::FilePath(kAngleEglSoname);
   } else {

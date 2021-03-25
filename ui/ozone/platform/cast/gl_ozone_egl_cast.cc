@@ -132,7 +132,8 @@ bool GLOzoneEglCast::ResizeDisplay(gfx::Size size) {
   return true;
 }
 
-bool GLOzoneEglCast::LoadGLES2Bindings(gl::GLImplementation implementation) {
+bool GLOzoneEglCast::LoadGLES2Bindings(
+    const gl::GLImplementationParts& implementation) {
   InitializeHardwareIfNeeded();
 
   void* lib_egl = egl_platform_->GetEglLibrary();

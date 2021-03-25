@@ -225,12 +225,12 @@ const char* GetGLImplementationANGLEName(GLImplementationParts implementation) {
   return "";
 }
 
-void SetGLImplementationParts(GLImplementationParts& implementation) {
+void SetGLImplementationParts(const GLImplementationParts& implementation) {
   DCHECK(implementation.IsValid());
   g_gl_implementation = GLImplementationParts(implementation);
 }
 
-GLImplementationParts GetGLImplementationParts() {
+const GLImplementationParts& GetGLImplementationParts() {
   return g_gl_implementation;
 }
 

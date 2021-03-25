@@ -201,7 +201,8 @@ class GLOzoneEGLHeadless : public GLOzoneEGL {
     return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
   }
 
-  bool LoadGLES2Bindings(gl::GLImplementation implementation) override {
+  bool LoadGLES2Bindings(
+      const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
 
@@ -228,8 +229,8 @@ HeadlessSurfaceFactory::GetAllowedGLImplementations() {
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(
-    gl::GLImplementation implementation) {
-  switch (implementation) {
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
       return swiftshader_implementation_.get();

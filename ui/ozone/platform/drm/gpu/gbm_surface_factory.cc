@@ -162,7 +162,7 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     return native_display_;
   }
 
-  bool LoadGLES2Bindings(gl::GLImplementation impl) override {
+  bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override {
     return LoadDefaultEGLGLES2Bindings(impl);
   }
 
@@ -264,8 +264,9 @@ GbmSurfaceFactory::GetAllowedGLImplementations() {
                                            gl::kGLImplementationSwiftShaderGL};
 }
 
-GLOzone* GbmSurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* GbmSurfaceFactory::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLANGLE:

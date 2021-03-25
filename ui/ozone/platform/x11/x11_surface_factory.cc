@@ -34,8 +34,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
 
   // GLOzone:
   bool InitializeStaticGLBindings(
-      gl::GLImplementation implementation) override {
-    is_swiftshader_ = (implementation == gl::kGLImplementationSwiftShaderGL);
+      const gl::GLImplementationParts& implementation) override {
+    is_swiftshader_ = gl::IsSoftwareGLImplementation(implementation);
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
@@ -64,7 +64,8 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
         x11::Connection::Get()->GetXlibDisplay().display()));
   }
 
-  bool LoadGLES2Bindings(gl::GLImplementation implementation) override {
+  bool LoadGLES2Bindings(
+      const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
 
@@ -91,8 +92,9 @@ X11SurfaceFactory::GetAllowedGLImplementations() {
                                            gl::kGLImplementationSwiftShaderGL};
 }
 
-GLOzone* X11SurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* X11SurfaceFactory::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationDesktopGL:
       return glx_implementation_.get();
     case gl::kGLImplementationEGLGLES2:

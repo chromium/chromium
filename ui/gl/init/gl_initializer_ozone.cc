@@ -59,15 +59,15 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   // later switch to another GL implementation.
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
-  if (HasGLOzone(implementation.gl)) {
-    return GetGLOzone(implementation.gl)
-        ->InitializeStaticGLBindings(implementation.gl);
+  if (HasGLOzone(implementation)) {
+    return GetGLOzone(implementation)
+        ->InitializeStaticGLBindings(implementation);
   }
 
   switch (implementation.gl) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation.gl);
+      SetGLImplementationParts(implementation);
       InitializeStaticGLBindingsGL();
       return true;
     default:

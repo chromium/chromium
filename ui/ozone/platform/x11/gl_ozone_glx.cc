@@ -32,7 +32,7 @@ bool GLOzoneGLX::InitializeGLOneOffPlatform() {
 }
 
 bool GLOzoneGLX::InitializeStaticGLBindings(
-    gl::GLImplementation implementation) {
+    const gl::GLImplementationParts& implementation) {
   base::NativeLibrary library = nullptr;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

@@ -11,7 +11,7 @@
 
 namespace ui {
 
-bool LoadDefaultEGLGLES2Bindings(gl::GLImplementation impl);
+bool LoadDefaultEGLGLES2Bindings(const gl::GLImplementationParts& impl);
 
 void* /* EGLConfig */ ChooseEGLConfig(void* /* EGLConfig */ display,
                                       const int32_t* attributes);

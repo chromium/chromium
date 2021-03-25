@@ -24,11 +24,11 @@ bool GLOzoneEGL::InitializeGLOneOffPlatform() {
 }
 
 bool GLOzoneEGL::InitializeStaticGLBindings(
-    gl::GLImplementation implementation) {
+    const gl::GLImplementationParts& implementation) {
   if (!LoadGLES2Bindings(implementation))
     return false;
 
-  gl::SetGLImplementation(implementation);
+  gl::SetGLImplementationParts(implementation);
   gl::InitializeStaticGLBindingsGL();
   gl::InitializeStaticGLBindingsEGL();
 
