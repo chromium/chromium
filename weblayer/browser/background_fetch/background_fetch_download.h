@@ -9,17 +9,20 @@
 
 #include "weblayer/browser/download_impl.h"
 
+namespace background_fetch {
+struct JobDetails;
+}
+
 namespace weblayer {
 
 class BackgroundFetchDelegateImpl;
-struct JobDetails;
 
 // The UI object for an in-progress BackgroundFetch download job.
 class BackgroundFetchDownload : public DownloadImpl {
  public:
   BackgroundFetchDownload(BackgroundFetchDelegateImpl* controller,
                           const std::string& job_id,
-                          const JobDetails* job);
+                          const background_fetch::JobDetails* job);
   BackgroundFetchDownload(const BackgroundFetchDownload& other) = delete;
   BackgroundFetchDownload& operator=(const BackgroundFetchDownload& other) =
       delete;
@@ -48,7 +51,7 @@ class BackgroundFetchDownload : public DownloadImpl {
   BackgroundFetchDelegateImpl* controller_;
   std::string job_id_;
   int notification_id_ = 0;
-  const JobDetails* job_;
+  const background_fetch::JobDetails* job_;
 };
 
 }  // namespace weblayer

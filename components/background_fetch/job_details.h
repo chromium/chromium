@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_BACKGROUND_FETCH_JOB_DETAILS_H_
-#define WEBLAYER_BROWSER_BACKGROUND_FETCH_JOB_DETAILS_H_
+#ifndef COMPONENTS_BACKGROUND_FETCH_JOB_DETAILS_H_
+#define COMPONENTS_BACKGROUND_FETCH_JOB_DETAILS_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -13,9 +13,8 @@ namespace content {
 struct BackgroundFetchDescription;
 }
 
-namespace weblayer {
+namespace background_fetch {
 
-// TODO(estade): move to //components/background_fetch.
 struct JobDetails {
   enum class State {
     kPendingWillStartPaused,
@@ -92,6 +91,6 @@ struct JobDetails {
   base::OnceClosure on_resume;
 };
 
-}  // namespace weblayer
+}  // namespace background_fetch
 
-#endif  // WEBLAYER_BROWSER_BACKGROUND_FETCH_JOB_DETAILS_H_
+#endif  // COMPONENTS_BACKGROUND_FETCH_JOB_DETAILS_H_

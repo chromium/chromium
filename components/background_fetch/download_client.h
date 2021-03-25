@@ -2,39 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
-#define WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
+#ifndef COMPONENTS_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
+#define COMPONENTS_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
 
-#include <string>
-#include <vector>
-
-#include "base/macros.h"
+#include "base/callback.h"
 #include "components/download/public/background_service/client.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace weblayer {
+namespace background_fetch {
 
-class BackgroundFetchDelegateImpl;
+class BackgroundFetchDelegateBase;
 
 // A DownloadService client used by BackgroundFetch. Mostly this just forwards
-// calls to BackgroundFetchDelegateImpl. TODO(estade): this is mostly duplicated
-// from Chrome. Refactor and share.
-class BackgroundFetchDownloadClient : public download::Client {
+// calls to BackgroundFetchDelegateBase.
+class DownloadClient : public download::Client {
  public:
-  explicit BackgroundFetchDownloadClient(content::BrowserContext* context);
-  BackgroundFetchDownloadClient(const BackgroundFetchDownloadClient&) = delete;
-  BackgroundFetchDownloadClient& operator=(
-      const BackgroundFetchDownloadClient&) = delete;
-  ~BackgroundFetchDownloadClient() override;
+  // Create a client for |context|.
+  explicit DownloadClient(content::BrowserContext* context);
+  DownloadClient(const DownloadClient&) = delete;
+  DownloadClient& operator=(const DownloadClient&) = delete;
+  ~DownloadClient() override;
 
  private:
-  // Lazily initializes and returns |delegate_| as a raw pointer.
-  BackgroundFetchDelegateImpl* GetDelegate();
+  BackgroundFetchDelegateBase* GetDelegate();
 
-  // download::Client implementation
+  // download::Client:
   void OnServiceInitialized(
       bool state_lost,
       const std::vector<download::DownloadMetaData>& downloads) override;
@@ -59,6 +54,6 @@ class BackgroundFetchDownloadClient : public download::Client {
   content::BrowserContext* browser_context_;
 };
 
-}  // namespace weblayer
+}  // namespace background_fetch
 
-#endif  // WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_
+#endif  // COMPONENTS_BACKGROUND_FETCH_DOWNLOAD_CLIENT_H_

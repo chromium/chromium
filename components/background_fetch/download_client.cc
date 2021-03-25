@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/background_fetch/background_fetch_download_client.h"
+#include "components/background_fetch/download_client.h"
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/background_fetch/background_fetch_delegate_base.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_service.h"
 #include "content/public/browser/background_fetch_response.h"
@@ -17,10 +20,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "url/origin.h"
-#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
-#include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 
-namespace weblayer {
+namespace background_fetch {
 
 namespace {
 
@@ -44,13 +45,12 @@ BackgroundFetchFailureReason ToBackgroundFetchFailureReason(
 
 }  // namespace
 
-BackgroundFetchDownloadClient::BackgroundFetchDownloadClient(
-    content::BrowserContext* context)
+DownloadClient::DownloadClient(content::BrowserContext* context)
     : browser_context_(context) {}
 
-BackgroundFetchDownloadClient::~BackgroundFetchDownloadClient() = default;
+DownloadClient::~DownloadClient() = default;
 
-void BackgroundFetchDownloadClient::OnServiceInitialized(
+void DownloadClient::OnServiceInitialized(
     bool state_lost,
     const std::vector<download::DownloadMetaData>& downloads) {
   std::set<std::string> outstanding_guids =
@@ -74,7 +74,7 @@ void BackgroundFetchDownloadClient::OnServiceInitialized(
       // We need to resurface the notification in a paused state.
       content::BrowserThread::PostBestEffortTask(
           FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
-          base::BindOnce(&BackgroundFetchDelegateImpl::RestartPausedDownload,
+          base::BindOnce(&BackgroundFetchDelegateBase::RestartPausedDownload,
                          GetDelegate()->GetWeakPtr(), download.guid));
     }
   }
@@ -89,9 +89,9 @@ void BackgroundFetchDownloadClient::OnServiceInitialized(
   // nothing to do here.
 }
 
-void BackgroundFetchDownloadClient::OnServiceUnavailable() {}
+void DownloadClient::OnServiceUnavailable() {}
 
-void BackgroundFetchDownloadClient::OnDownloadStarted(
+void DownloadClient::OnDownloadStarted(
     const std::string& guid,
     const std::vector<GURL>& url_chain,
     const scoped_refptr<const net::HttpResponseHeaders>& headers) {
@@ -102,17 +102,15 @@ void BackgroundFetchDownloadClient::OnDownloadStarted(
   GetDelegate()->OnDownloadStarted(guid, std::move(response));
 }
 
-void BackgroundFetchDownloadClient::OnDownloadUpdated(
-    const std::string& guid,
-    uint64_t bytes_uploaded,
-    uint64_t bytes_downloaded) {
+void DownloadClient::OnDownloadUpdated(const std::string& guid,
+                                       uint64_t bytes_uploaded,
+                                       uint64_t bytes_downloaded) {
   GetDelegate()->OnDownloadUpdated(guid, bytes_uploaded, bytes_downloaded);
 }
 
-void BackgroundFetchDownloadClient::OnDownloadFailed(
-    const std::string& guid,
-    const download::CompletionInfo& info,
-    download::Client::FailureReason reason) {
+void DownloadClient::OnDownloadFailed(const std::string& guid,
+                                      const download::CompletionInfo& info,
+                                      download::Client::FailureReason reason) {
   auto response = std::make_unique<content::BackgroundFetchResponse>(
       info.url_chain, info.response_headers);
   auto result = std::make_unique<content::BackgroundFetchResult>(
@@ -121,9 +119,8 @@ void BackgroundFetchDownloadClient::OnDownloadFailed(
   GetDelegate()->OnDownloadFailed(guid, std::move(result));
 }
 
-void BackgroundFetchDownloadClient::OnDownloadSucceeded(
-    const std::string& guid,
-    const download::CompletionInfo& info) {
+void DownloadClient::OnDownloadSucceeded(const std::string& guid,
+                                         const download::CompletionInfo& info) {
   if (browser_context_->IsOffTheRecord())
     DCHECK(info.blob_handle);
   else
@@ -138,22 +135,21 @@ void BackgroundFetchDownloadClient::OnDownloadSucceeded(
   GetDelegate()->OnDownloadSucceeded(guid, std::move(result));
 }
 
-bool BackgroundFetchDownloadClient::CanServiceRemoveDownloadedFile(
-    const std::string& guid,
-    bool force_delete) {
+bool DownloadClient::CanServiceRemoveDownloadedFile(const std::string& guid,
+                                                    bool force_delete) {
   // If |force_delete| is true the file will be removed anyway.
   // TODO(rayankans): Add UMA to see how often this happens.
   return force_delete || GetDelegate()->IsGuidOutstanding(guid);
 }
 
-void BackgroundFetchDownloadClient::GetUploadData(
-    const std::string& guid,
-    download::GetUploadDataCallback callback) {
+void DownloadClient::GetUploadData(const std::string& guid,
+                                   download::GetUploadDataCallback callback) {
   GetDelegate()->GetUploadData(guid, std::move(callback));
 }
 
-BackgroundFetchDelegateImpl* BackgroundFetchDownloadClient::GetDelegate() {
-  return BackgroundFetchDelegateFactory::GetForBrowserContext(browser_context_);
+BackgroundFetchDelegateBase* DownloadClient::GetDelegate() {
+  return static_cast<BackgroundFetchDelegateBase*>(
+      browser_context_->GetBackgroundFetchDelegate());
 }
 
-}  // namespace weblayer
+}  // namespace background_fetch

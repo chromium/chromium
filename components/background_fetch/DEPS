@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/content_settings/core",
+  "+components/download/public/background_service",
+  "+content/public/browser",
+  "+mojo/public",
+  "+services/network/public",
+  "+third_party/blink/public",
+  "+ui/gfx",
+]

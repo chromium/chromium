@@ -5,10 +5,12 @@
 #include "weblayer/browser/background_fetch/background_fetch_download.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/background_fetch/job_details.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "url/origin.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
-#include "weblayer/browser/background_fetch/job_details.h"
+
+using background_fetch::JobDetails;
 
 namespace weblayer {
 

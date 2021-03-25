@@ -9,6 +9,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/background_fetch/download_client.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/public/background_service/basic_task_scheduler.h"
@@ -24,7 +25,6 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "weblayer/browser/background_fetch/background_fetch_download_client.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/system_network_context_manager.h"
@@ -137,9 +137,9 @@ KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
                               ->simple_factory_key();
 
   auto clients = std::make_unique<download::DownloadClientMap>();
-  clients->insert(
-      std::make_pair(download::DownloadClient::BACKGROUND_FETCH,
-                     std::make_unique<BackgroundFetchDownloadClient>(context)));
+  clients->insert(std::make_pair(
+      download::DownloadClient::BACKGROUND_FETCH,
+      std::make_unique<background_fetch::DownloadClient>(context)));
 
   // Build in memory download service for an off the record context.
   if (context->IsOffTheRecord()) {

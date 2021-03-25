@@ -5,6 +5,7 @@ include_rules = [
   "+components/autofill/content/common",
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
+  "+components/background_fetch",
   "+components/background_sync",
   "+components/base32",
   "+components/blocked_content",

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/background_fetch/job_details.h"
+#include "components/background_fetch/job_details.h"
 
 #include "content/public/browser/background_fetch_description.h"
 
-namespace weblayer {
+namespace background_fetch {
 
 JobDetails::RequestData::RequestData(bool has_upload_data)
     : status(has_upload_data ? Status::kIncluded : Status::kAbsent) {}
@@ -100,4 +100,4 @@ bool JobDetails::ShouldReportProgressBySize() const {
   return true;
 }
 
-}  // namespace weblayer
+}  // namespace background_fetch
