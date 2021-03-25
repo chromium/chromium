@@ -38,17 +38,24 @@ class HeavyAdService : public KeyedService,
   // already been loaded and has not subsequently been unloaded.
   void NotifyOnBlocklistLoaded(base::OnceClosure on_blocklist_loaded_callback);
 
+  // |on_blocklist_cleared| will be invoked when the heavy ad blocklist
+  // is cleared.
+  void NotifyOnBlocklistCleared(
+      base::OnceClosure on_blocklist_cleared_callback);
+
   HeavyAdBlocklist* heavy_ad_blocklist() { return heavy_ad_blocklist_.get(); }
 
  private:
   // blocklist::OptOutBlocklistDelegate:
   void OnLoadingStateChanged(bool is_loaded) override;
+  void OnBlocklistCleared(base::Time time) override;
 
   // The blocklist used to control triggering of the heavy ad intervention.
   // Created during Initialize().
   std::unique_ptr<HeavyAdBlocklist> heavy_ad_blocklist_;
 
   base::OnceClosure on_blocklist_loaded_callback_;
+  base::OnceClosure on_blocklist_cleared_callback_;
   bool blocklist_is_loaded_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(HeavyAdService);

@@ -82,9 +82,19 @@ void HeavyAdService::NotifyOnBlocklistLoaded(
   on_blocklist_loaded_callback_ = std::move(on_blocklist_loaded_callback);
 }
 
+void HeavyAdService::NotifyOnBlocklistCleared(
+    base::OnceClosure on_blocklist_cleared_callback) {
+  on_blocklist_cleared_callback_ = std::move(on_blocklist_cleared_callback);
+}
+
 void HeavyAdService::OnLoadingStateChanged(bool is_loaded) {
   blocklist_is_loaded_ = is_loaded;
 
   if (blocklist_is_loaded_ && !on_blocklist_loaded_callback_.is_null())
     std::move(on_blocklist_loaded_callback_).Run();
+}
+
+void HeavyAdService::OnBlocklistCleared(base::Time time) {
+  if (!on_blocklist_cleared_callback_.is_null())
+    std::move(on_blocklist_cleared_callback_).Run();
 }

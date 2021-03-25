@@ -32,6 +32,7 @@ class BrowsingDataRemoverDelegate : public content::BrowsingDataRemoverDelegate,
     DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN,
     DATA_TYPE_FAVICONS = DATA_TYPE_EMBEDDER_BEGIN << 1,
     DATA_TYPE_SITE_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 2,
+    DATA_TYPE_AD_INTERVENTIONS = DATA_TYPE_EMBEDDER_BEGIN << 4,
   };
 
   explicit BrowsingDataRemoverDelegate(
