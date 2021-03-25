@@ -240,10 +240,8 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
           return security_state::
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE;
         }
-        // If user has already changed Gaia password, returns the regular
-        // social engineering content status.
-        return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
 #endif
+        FALLTHROUGH;
       case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
@@ -252,10 +250,8 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
           return security_state::
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
         }
-        // If user has already changed Gaia password, returns the regular
-        // social engineering content status.
-        return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
 #endif
+        FALLTHROUGH;
       case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
@@ -264,10 +260,10 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
           return security_state::
               MALICIOUS_CONTENT_STATUS_ENTERPRISE_PASSWORD_REUSE;
         }
-        // If user has already changed Gaia password, returns the regular
-        // social engineering content status.
-        return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
 #endif
+        // If user has already changed password or FULL_SAFE_BROWSING isn't
+        // enabled, returns the regular social engineering content status.
+        return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
       case safe_browsing::SB_THREAT_TYPE_BILLING:
         return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
       case safe_browsing::

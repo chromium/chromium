@@ -144,7 +144,7 @@ class BubbleHeaderView : public views::View {
   // If |is_saved_password|, adds a check password button instead of
   // change password button.
   void AddPasswordReuseButtons(
-      bool is_saved_password,
+      PageInfo::SafeBrowsingStatus safe_browsing_status,
       views::Button::PressedCallback change_password_callback,
       views::Button::PressedCallback password_reuse_callback);
 
@@ -288,7 +288,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
 }
 
 void BubbleHeaderView::AddPasswordReuseButtons(
-    bool is_saved_password,
+    PageInfo::SafeBrowsingStatus safe_browsing_status,
     views::Button::PressedCallback change_password_callback,
     views::Button::PressedCallback password_reuse_callback) {
   if (!password_reuse_button_container_->children().empty()) {
@@ -296,9 +296,26 @@ void BubbleHeaderView::AddPasswordReuseButtons(
     password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
   }
 
-  int change_password_template = is_saved_password
-                                     ? IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON
-                                     : IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
+  int change_password_template = 0;
+  switch (safe_browsing_status) {
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON;
+      break;
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
+      break;
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case PageInfo::SafeBrowsingStatus::
+        SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
+      change_password_template = IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {
@@ -835,9 +852,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
   if (identity_info.show_change_password_buttons) {
     header_->AddPasswordReuseButtons(
-        identity_info.safe_browsing_status ==
-            PageInfo::SafeBrowsingStatus::
-                SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE,
+        identity_info.safe_browsing_status,
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
               view->presenter_->OnChangePasswordButtonPressed();

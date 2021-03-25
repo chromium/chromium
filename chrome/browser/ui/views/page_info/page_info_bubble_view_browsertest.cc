@@ -188,6 +188,7 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
     ui_test_utils::NavigateToURL(browser(), url);
     OpenPageInfoBubble(browser());
 
+    safe_browsing::ReusedPasswordAccountType reused_password_account_type;
     PageInfoUI::IdentityInfo identity;
     if (name == kInsecure) {
       identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_NO_CERT;
@@ -218,17 +219,29 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
       identity.safe_browsing_status =
           PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE;
     } else if (name == kSignInSyncPasswordReuse) {
+      reused_password_account_type.set_account_type(
+          safe_browsing::ReusedPasswordAccountType::GSUITE);
       identity.safe_browsing_status =
           PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE;
+      identity.show_change_password_buttons = true;
     } else if (name == kSignInNonSyncPasswordReuse) {
+      reused_password_account_type.set_account_type(
+          safe_browsing::ReusedPasswordAccountType::GMAIL);
       identity.safe_browsing_status =
           PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
+      identity.show_change_password_buttons = true;
     } else if (name == kEnterprisePasswordReuse) {
+      reused_password_account_type.set_account_type(
+          safe_browsing::ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
       identity.safe_browsing_status =
           PageInfo::SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE;
+      identity.show_change_password_buttons = true;
     } else if (name == kSavedPasswordReuse) {
+      reused_password_account_type.set_account_type(
+          safe_browsing::ReusedPasswordAccountType::SAVED_PASSWORD);
       identity.safe_browsing_status =
           PageInfo::SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE;
+      identity.show_change_password_buttons = true;
     } else if (name == kMalwareAndBadCert) {
       identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_ERROR;
       identity.certificate = net::ImportCertFromFile(
@@ -277,6 +290,16 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
 
       page_info_bubble_view->SetPermissionInfo(permissions_list,
                                                std::move(chosen_object_list));
+    }
+
+    if (name == kSignInSyncPasswordReuse ||
+        name == kSignInNonSyncPasswordReuse ||
+        name == kEnterprisePasswordReuse || name == kSavedPasswordReuse) {
+      safe_browsing::ChromePasswordProtectionService* service =
+          safe_browsing::ChromePasswordProtectionService::
+              GetPasswordProtectionService(browser()->profile());
+      service->set_reused_password_account_type_for_last_shown_warning(
+          reused_password_account_type);
     }
 
     if (name != kInsecure && name.find(kInternal) == std::string::npos &&
@@ -673,12 +696,6 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-// Shows the Page Info bubble Safe Browsing warning after detecting the user has
-// re-used an existing password on a site, e.g. due to phishing.
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, InvokeUi_PasswordReuse) {
-  ShowAndVerifyUi();
-}
-
 // Shows the Page Info bubble for a site flagged for malware that also has a bad
 // certificate.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
@@ -710,6 +727,36 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        InvokeUi_BlockAllPermissions) {
+  ShowAndVerifyUi();
+}
+
+// Shows the Page Info bubble Safe Browsing warning after detecting the user has
+// re-used an existing password on a site, e.g. due to phishing.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InvokeUi_SavedPasswordReuse) {
+  ShowAndVerifyUi();
+}
+
+// Shows the Page Info bubble Safe Browsing warning after detecting the
+// signed-in syncing user has re-used an existing password on a site, e.g. due
+// to phishing.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InvokeUi_SignInSyncPasswordReuse) {
+  ShowAndVerifyUi();
+}
+// Shows the Page Info bubble Safe Browsing warning after detecting the
+// signed-in not syncing user has re-used an existing password on a site, e.g.
+// due to phishing.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InvokeUi_SignInNonSyncPasswordReuse) {
+  ShowAndVerifyUi();
+}
+
+// Shows the Page Info bubble Safe Browsing warning after detecting the
+// enterprise user has re-used an existing password on a site, e.g. due to
+// phishing.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       InvokeUi_EnterprisePasswordReuse) {
   ShowAndVerifyUi();
 }
 
