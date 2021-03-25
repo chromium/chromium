@@ -13,6 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -34,6 +35,8 @@ import java.util.UUID;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)
+@Batch(Batch.PER_CLASS)
+@Batch.SplitByFeature
 public class DownloadInfoBarControllerTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
