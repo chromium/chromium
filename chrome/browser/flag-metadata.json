@@ -515,7 +515,7 @@
   {
     "name": "check-offline-capability",
     "owners": [ "asamidoi", "//content/browser/service_worker/OWNERS" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 93
   },
   {
     "name": "chrome-cleanup-scan-completed-notification",
