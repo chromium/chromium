@@ -35,7 +35,8 @@ bool TaskForwardingSequence::ShouldYield() {
 
 void TaskForwardingSequence::ScheduleTask(
     base::OnceClosure task,
-    std::vector<gpu::SyncToken> sync_token_fences) {
+    std::vector<gpu::SyncToken> sync_token_fences,
+    ReportingCallback report_callback) {
   uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
 
   // |sync_point_manager_| is global so it's safe to pass raw pointer.
@@ -49,7 +50,8 @@ void TaskForwardingSequence::ScheduleTask(
 
 void TaskForwardingSequence::ScheduleOrRetainTask(
     base::OnceClosure task,
-    std::vector<gpu::SyncToken> sync_token_fences) {
+    std::vector<gpu::SyncToken> sync_token_fences,
+    ReportingCallback report_callback) {
   uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
 
   // |sync_point_manager_| is global so it's safe to pass raw pointer.

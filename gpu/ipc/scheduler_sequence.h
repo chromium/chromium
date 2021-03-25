@@ -70,10 +70,14 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
   // SingleTaskSequence implementation.
   SequenceId GetSequenceId() override;
   bool ShouldYield() override;
-  void ScheduleTask(base::OnceClosure task,
-                    std::vector<SyncToken> sync_token_fences) override;
-  void ScheduleOrRetainTask(base::OnceClosure task,
-                            std::vector<SyncToken> sync_token_fences) override;
+  void ScheduleTask(
+      base::OnceClosure task,
+      std::vector<SyncToken> sync_token_fences,
+      ReportingCallback report_callback = ReportingCallback()) override;
+  void ScheduleOrRetainTask(
+      base::OnceClosure task,
+      std::vector<SyncToken> sync_token_fences,
+      ReportingCallback report_callback = ReportingCallback()) override;
   void ContinueTask(base::OnceClosure task) override;
 
  private:

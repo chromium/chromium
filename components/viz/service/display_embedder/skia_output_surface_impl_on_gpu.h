@@ -133,6 +133,9 @@ class SkiaOutputSurfaceImplOnGpu
           output_surface_plane);
   void SwapBuffers(base::TimeTicks post_task_timestamp,
                    OutputSurfaceFrame frame);
+
+  void SetDependenciesResolvedTimings(base::TimeTicks task_ready);
+
   // Runs |deferred_framebuffer_draw_closure| when SwapBuffers() or CopyOutput()
   // will not.
   void SwapBuffersSkipped();

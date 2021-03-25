@@ -770,6 +770,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(
   SwapBuffersInternal(std::move(frame));
 }
 
+void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
+    base::TimeTicks task_ready) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  output_device_->SetDependencyTimings(task_ready);
+}
+
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersSkipped() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SwapBuffersInternal(base::nullopt);

@@ -959,6 +959,23 @@ void Display::DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) {
         "Compositing.Display.VizScheduledDrawToGpuStartedDrawUs", delta,
         kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
   }
+
+  if (!timings.gpu_task_ready.is_null()) {
+    DCHECK(!timings.viz_scheduled_draw.is_null());
+    DCHECK(!timings.gpu_started_draw.is_null());
+    DCHECK_LE(timings.viz_scheduled_draw, timings.gpu_task_ready);
+    DCHECK_LE(timings.gpu_task_ready, timings.gpu_started_draw);
+    base::TimeDelta dependency_delta =
+        timings.gpu_task_ready - timings.viz_scheduled_draw;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Display.VizScheduledDrawToDependencyResolvedUs",
+        dependency_delta, kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+    base::TimeDelta scheduling_delta =
+        timings.gpu_started_draw - timings.gpu_task_ready;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs",
+        scheduling_delta, kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
+  }
 }
 
 void Display::DidReceiveTextureInUseResponses(

@@ -43,6 +43,9 @@ struct SwapTimings {
   // it's FinishPaintRenderPass/SwapBuffers.
   base::TimeTicks gpu_started_draw;
 
+  // When GPU scheduler removed the last required dependency.
+  base::TimeTicks gpu_task_ready;
+
   bool is_null() const { return swap_start.is_null() && swap_end.is_null(); }
 };
 

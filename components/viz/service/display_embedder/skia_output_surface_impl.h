@@ -183,6 +183,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                       std::vector<gpu::SyncToken> sync_tokens,
                       bool make_current,
                       bool need_framebuffer);
+
   void FlushGpuTasks(bool wait_for_finish);
   GrBackendFormat GetGrBackendFormatForTexture(
       ResourceFormat resource_format,
@@ -295,6 +296,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::Optional<gfx::Rect> draw_rectangle_;
 
   bool should_measure_next_post_task_ = false;
+
+  // whether thee is a measured post task enqueued.
+  bool has_enqueued_measured_post_task_ = false;
 
   // GPU tasks pending for flush.
   std::vector<GpuTask> gpu_tasks_;

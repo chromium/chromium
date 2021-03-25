@@ -64,7 +64,8 @@ bool SchedulerSequence::ShouldYield() {
 }
 
 void SchedulerSequence::ScheduleTask(base::OnceClosure task,
-                                     std::vector<SyncToken> sync_token_fences) {
+                                     std::vector<SyncToken> sync_token_fences,
+                                     ReportingCallback report_callback) {
   // If your CL is failing this DCHECK, then that means you are probably calling
   // ScheduleGpuTask at a point that cannot be supported by Android Webview.
   // Consider using ScheduleOrRetainGpuTask which will delay (not reorder) the
@@ -77,14 +78,17 @@ void SchedulerSequence::ScheduleTask(base::OnceClosure task,
          "delay (not reorder) the task in Android Webview until the next "
          "DrawAndSwap.";
 #endif
-  ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences));
+  ScheduleOrRetainTask(std::move(task), std::move(sync_token_fences),
+                       std::move(report_callback));
 }
 
 void SchedulerSequence::ScheduleOrRetainTask(
     base::OnceClosure task,
-    std::vector<gpu::SyncToken> sync_token_fences) {
+    std::vector<gpu::SyncToken> sync_token_fences,
+    ReportingCallback report_callback) {
   scheduler_->ScheduleTask(Scheduler::Task(sequence_id_, std::move(task),
-                                           std::move(sync_token_fences)));
+                                           std::move(sync_token_fences),
+                                           std::move(report_callback)));
 }
 
 void SchedulerSequence::ContinueTask(base::OnceClosure task) {

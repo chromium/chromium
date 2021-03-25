@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <vector>
 
 #include "base/bind.h"
@@ -36,10 +37,12 @@ uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
 
 Scheduler::Task::Task(SequenceId sequence_id,
                       base::OnceClosure closure,
-                      std::vector<SyncToken> sync_token_fences)
+                      std::vector<SyncToken> sync_token_fences,
+                      ReportingCallback report_callback)
     : sequence_id(sequence_id),
       closure(std::move(closure)),
-      sync_token_fences(std::move(sync_token_fences)) {}
+      sync_token_fences(std::move(sync_token_fences)),
+      report_callback(std::move(report_callback)) {}
 Scheduler::Task::Task(Task&& other) = default;
 Scheduler::Task::~Task() = default;
 Scheduler::Task& Scheduler::Task::operator=(Task&& other) = default;
@@ -59,10 +62,18 @@ Scheduler::SchedulingState::AsValue() const {
   return std::move(state);
 }
 
-Scheduler::Sequence::Task::Task(base::OnceClosure closure, uint32_t order_num)
-    : closure(std::move(closure)), order_num(order_num) {}
+Scheduler::Sequence::Task::Task(base::OnceClosure closure,
+                                uint32_t order_num,
+                                ReportingCallback report_callback)
+    : closure(std::move(closure)),
+      order_num(order_num),
+      report_callback(std::move(report_callback)) {}
+
 Scheduler::Sequence::Task::Task(Task&& other) = default;
-Scheduler::Sequence::Task::~Task() = default;
+Scheduler::Sequence::Task::~Task() {
+  DCHECK(report_callback.is_null());
+}
+
 Scheduler::Sequence::Task& Scheduler::Sequence::Task::operator=(Task&& other) =
     default;
 
@@ -174,16 +185,18 @@ void Scheduler::Sequence::UpdateRunningPriority() {
 void Scheduler::Sequence::ContinueTask(base::OnceClosure closure) {
   DCHECK_EQ(running_state_, RUNNING);
   uint32_t order_num = order_data_->current_order_num();
-  tasks_.push_front({std::move(closure), order_num});
+
+  tasks_.push_front({std::move(closure), order_num, ReportingCallback()});
   order_data_->PauseProcessingOrderNumber(order_num);
 }
 
-uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure) {
+uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure,
+                                           ReportingCallback report_callback) {
   uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::ScheduleTask",
                          GetTaskFlowId(sequence_id_.value(), order_num),
                          TRACE_EVENT_FLAG_FLOW_OUT);
-  tasks_.push_back({std::move(closure), order_num});
+  tasks_.push_back({std::move(closure), order_num, std::move(report_callback)});
   return order_num;
 }
 
@@ -210,6 +223,9 @@ uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
 
   *closure = std::move(tasks_.front().closure);
   uint32_t order_num = tasks_.front().order_num;
+  if (!tasks_.front().report_callback.is_null()) {
+    std::move(tasks_.front().report_callback).Run(tasks_.front().running_ready);
+  }
   tasks_.pop_front();
 
   return order_num;
@@ -448,7 +464,8 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  uint32_t order_num = sequence->ScheduleTask(std::move(task.closure));
+  uint32_t order_num = sequence->ScheduleTask(std::move(task.closure),
+                                              std::move(task.report_callback));
 
   for (const SyncToken& sync_token : task.sync_token_fences) {
     SequenceId release_sequence_id =

@@ -36,11 +36,17 @@ class SyncPointManager;
 struct GpuPreferences;
 
 class GPU_EXPORT Scheduler {
+  // A callback to be used for reporting when the task is ready to run (when the
+  // dependencies have been solved).
+  using ReportingCallback =
+      base::OnceCallback<void(base::TimeTicks task_ready)>;
+
  public:
   struct GPU_EXPORT Task {
     Task(SequenceId sequence_id,
          base::OnceClosure closure,
-         std::vector<SyncToken> sync_token_fences);
+         std::vector<SyncToken> sync_token_fences,
+         ReportingCallback report_callback = ReportingCallback());
     Task(Task&& other);
     ~Task();
     Task& operator=(Task&& other);
@@ -48,6 +54,7 @@ class GPU_EXPORT Scheduler {
     SequenceId sequence_id;
     base::OnceClosure closure;
     std::vector<SyncToken> sync_token_fences;
+    ReportingCallback report_callback;
   };
 
   Scheduler(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -186,7 +193,8 @@ class GPU_EXPORT Scheduler {
     void FinishTask();
 
     // Enqueues a task in the sequence and returns the generated order number.
-    uint32_t ScheduleTask(base::OnceClosure closure);
+    uint32_t ScheduleTask(base::OnceClosure closure,
+                          ReportingCallback report_callback);
 
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
@@ -242,15 +250,16 @@ class GPU_EXPORT Scheduler {
 
     struct Task {
       Task(Task&& other);
-      Task(base::OnceClosure closure, uint32_t order_num);
+      Task(base::OnceClosure closure,
+           uint32_t order_num,
+           ReportingCallback report_callback);
       ~Task();
       Task& operator=(Task&& other);
 
       base::OnceClosure closure;
       uint32_t order_num;
 
-      // TODO(b/181148082): add measuring callback to return values to task
-      // owner
+      ReportingCallback report_callback;
       // Note: this time is only correct once the last fence has been removed,
       // as it is updated for all fences.
       base::TimeTicks running_ready = base::TimeTicks::Now();

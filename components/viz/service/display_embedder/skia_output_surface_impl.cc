@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -447,6 +448,7 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   if (should_measure_next_post_task_) {
     should_measure_next_post_task_ = false;
     post_task_timestamp = base::TimeTicks::Now();
+    has_enqueued_measured_post_task_ = true;
   }
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
@@ -1008,11 +1010,23 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
       std::move(gpu_tasks_), event.get(),
       make_current_ ? impl_on_gpu_.get() : nullptr, need_framebuffer_);
 
+  gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
+  if (has_enqueued_measured_post_task_) {
+    // Note that the usage of base::Unretained() with the impl_on_gpu_ is
+    // considered safe as it is also owned by |callback| and share the same
+    // lifetime.
+    reporting_callback =
+        base::Bind(&SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings,
+                   base::Unretained(impl_on_gpu_.get()));
+  }
+
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback),
-                                       std::move(gpu_task_sync_tokens_));
+                                       std::move(gpu_task_sync_tokens_),
+                                       std::move(reporting_callback));
 
   make_current_ = false;
   need_framebuffer_ = false;
+  has_enqueued_measured_post_task_ = false;
   gpu_task_sync_tokens_.clear();
   gpu_tasks_.clear();
 
