@@ -20,6 +20,9 @@ const AUTO_SCAN_SPEED_RANGE_MS = [
   1600, 1500, 1400, 1300, 1200, 1100, 1000, 900,  800,  700
 ];
 
+/** @type {!Array<number>} */
+const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
+
 /**
  * @param {!Array<number>} ticksInMs
  * @return {!Array<!cr_slider.SliderTick>}
@@ -27,6 +30,14 @@ const AUTO_SCAN_SPEED_RANGE_MS = [
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
   return ticksInMs.map(x => ({label: `${x / 1000}`, value: x}));
+}
+
+/**
+ * @param {!Array<number>} ticks
+ * @return {!Array<!cr_slider.SliderTick>}
+ */
+function ticksWithCountingLabels(ticks) {
+  return ticks.map((x, i) => ({label: i + 1, value: x}));
 }
 
 Polymer({
@@ -77,6 +88,13 @@ Polymer({
       value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
     },
 
+    /** @private {Array<number>} */
+    pointScanSpeedRangeDipsPerSecond_: {
+      readOnly: true,
+      type: Array,
+      value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
+    },
+
     /** @private {Object} */
     formatter_: {
       type: Object,
@@ -116,6 +134,16 @@ Polymer({
         return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
       },
     },
+
+    /** @private {number} */
+    maxPointScanSpeed_: {
+      readOnly: true,
+      type: Number,
+      value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length
+    },
+
+    /** @private {number} */
+    minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
 
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
@@ -287,6 +315,14 @@ Polymer({
    */
   showSetupGuide_() {
     return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
+  },
+
+  /**
+   * @return {boolean} Whether Switch Access point scanning is enabled.
+   * @private
+   */
+  isSwitchAccessPointScanningEnabled_() {
+    return loadTimeData.getBoolean('isSwitchAccessPointScanningEnabled');
   },
 
   /**

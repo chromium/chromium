@@ -345,6 +345,11 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
+bool IsSwitchAccessPointScanningEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableSwitchAccessPointScanning);
+}
+
 bool IsSwitchAccessSetupGuideAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide);
@@ -584,6 +589,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_SPEED_LABEL},
       {"switchAccessAutoScanKeyboardSpeedLabel",
        IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD_SPEED_LABEL},
+      {"switchAccessPointScanSpeedLabel",
+       IDS_SETTINGS_SWITCH_ACCESS_POINT_SCAN_SPEED_LABEL},
       {"durationInSeconds", IDS_SETTINGS_DURATION_IN_SECONDS},
       {"manageAccessibilityFeatures",
        IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES},
@@ -661,6 +668,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
+
+  html_source->AddBoolean("isSwitchAccessPointScanningEnabled",
+                          IsSwitchAccessPointScanningEnabled());
 
   html_source->AddBoolean("showSwitchAccessSetupGuide",
                           IsSwitchAccessSetupGuideAllowed());

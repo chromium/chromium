@@ -107,6 +107,24 @@
             deep-link-focus-id$="[[Setting.kSwitchActionAutoScanKeyboard]]">
         </settings-slider>
       </div>
+      <template is="dom-if"
+          if="[[isSwitchAccessPointScanningEnabled_]]" restamp>
+        <div class="settings-box continuation list-item">
+          <div class="start sub-item settings-box-text" id="pointScanSpeed"
+              aria-hidden="true">
+            $i18n{switchAccessPointScanSpeedLabel}
+          </div>
+          <settings-slider id="pointScanSpeedSlider"
+              pref="{{prefs.settings.a11y.switch_access.point_scan.speed_dips_per_second}}"
+              ticks="[[pointScanSpeedRangeDipsPerSecond_]]"
+              min="[[minPointScanSpeed_]]"
+              max="[[maxPointScanSpeed_]]"
+              label-aria="$i18n{switchAccessPointScanSpeedLabel}"
+              label-min="[[minPointScanSpeed_]]"
+              label-max="[[maxPointScanSpeed_]]">
+          </settings-slider>
+        </div>
+      </template>
     </div>
   </template>
   <script src="switch_access_subpage.js"></script>

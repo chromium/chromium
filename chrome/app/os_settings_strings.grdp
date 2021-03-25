@@ -1023,6 +1023,9 @@
   <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD_SPEED_LABEL" desc="Label for slider which sets the time interval for Switch Access to automatically scan to the next element while navigating in the keyboard. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Keyboard scanning speed
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_POINT_SCAN_SPEED_LABEL" desc="Label for slider which sets the speed of point scanning cursors for Switch Access, which move across the screen, allowing the user to choose a precise point to click. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Point scanning speed
+  </message>
   <message name="IDS_SETTINGS_DURATION_IN_SECONDS" desc="A duration in seconds. Should be short.">
     <ph name="DURATION">$1<ex>1.5</ex></ph>s
   </message>
