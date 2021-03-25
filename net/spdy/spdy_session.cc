@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/abseil_string_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -48,6 +49,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/spdy/alps_decoder.h"
 #include "net/spdy/header_coalescer.h"
 #include "net/spdy/spdy_buffer_producer.h"
 #include "net/spdy/spdy_http_utils.h"
@@ -121,6 +123,16 @@ enum PushedStreamVaryResponseHeaderValues {
   kVaryHasNoAcceptEncoding = 5,
   // The number of entries above.
   kNumberOfVaryEntries = 6
+};
+
+// These values are persisted to logs. Entries should not be renumbered, and
+// numeric values should never be reused.
+enum class SpdyAcceptChEntries {
+  kNoEntries = 0,
+  kOnlyValidEntries = 1,
+  kOnlyInvalidEntries = 2,
+  kBothValidAndInvalidEntries = 3,
+  kMaxValue = kBothValidAndInvalidEntries,
 };
 
 // String literals for parsing the Vary header in a pushed response.
@@ -221,6 +233,10 @@ bool IsPushEnabled(const spdy::SettingsMap& initial_settings) {
     return true;
 
   return it->second == 1;
+}
+
+void LogSpdyAcceptChForOriginHistogram(bool value) {
+  base::UmaHistogramBoolean("Net.SpdySession.AcceptChForOrigin", value);
 }
 
 base::Value NetLogSpdyHeadersSentParams(const spdy::Http2HeaderBlock* headers,
@@ -1116,6 +1132,73 @@ void SpdySession::InitializeWithSocket(
   InitializeInternal(pool);
 }
 
+int SpdySession::ParseAlps() {
+  auto alps_data = socket_->GetPeerApplicationSettings();
+  if (!alps_data) {
+    return OK;
+  }
+
+  AlpsDecoder alps_decoder;
+  AlpsDecoder::Error error = alps_decoder.Decode(alps_data.value());
+  base::UmaHistogramEnumeration("Net.SpdySession.AlpsDecoderStatus", error);
+  if (error != AlpsDecoder::Error::kNoError) {
+    DoDrainSession(
+        ERR_HTTP2_PROTOCOL_ERROR,
+        base::StrCat({"Error parsing ALPS: ",
+                      base::NumberToString(static_cast<int>(error))}));
+    return ERR_HTTP2_PROTOCOL_ERROR;
+  }
+
+  base::UmaHistogramCounts100("Net.SpdySession.AlpsSettingParameterCount",
+                              alps_decoder.GetSettings().size());
+  for (const auto& setting : alps_decoder.GetSettings()) {
+    spdy::SpdySettingsId identifier = setting.first;
+    uint32_t value = setting.second;
+    net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_SETTING, [&] {
+      return NetLogSpdyRecvSettingParams(identifier, value);
+    });
+    HandleSetting(identifier, value);
+  }
+
+  bool has_valid_entry = false;
+  bool has_invalid_entry = false;
+  for (const auto& entry : alps_decoder.GetAcceptCh()) {
+    // |entry.origin| must be a valid origin.
+    GURL url(entry.origin);
+    if (!url.is_valid()) {
+      has_invalid_entry = true;
+      continue;
+    }
+    const url::Origin origin = url::Origin::Create(url);
+    std::string serialized = origin.Serialize();
+    if (serialized.empty() || entry.origin != serialized) {
+      has_invalid_entry = true;
+      continue;
+    }
+    has_valid_entry = true;
+    accept_ch_entries_received_via_alps_.insert(
+        std::make_pair(std::move(origin), entry.value));
+  }
+
+  SpdyAcceptChEntries value;
+  if (has_valid_entry) {
+    if (has_invalid_entry) {
+      value = SpdyAcceptChEntries::kBothValidAndInvalidEntries;
+    } else {
+      value = SpdyAcceptChEntries::kOnlyValidEntries;
+    }
+  } else {
+    if (has_invalid_entry) {
+      value = SpdyAcceptChEntries::kOnlyInvalidEntries;
+    } else {
+      value = SpdyAcceptChEntries::kNoEntries;
+    }
+  }
+  base::UmaHistogramEnumeration("Net.SpdySession.AlpsAcceptChEntries", value);
+
+  return OK;
+}
+
 bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
   if (availability_state_ == STATE_DRAINING)
     return false;
@@ -1428,8 +1511,14 @@ bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
 
 base::StringPiece SpdySession::GetAcceptChViaAlpsForOrigin(
     const url::Origin& origin) const {
-  // TODO(https://crbug.com/1184252): Implement.
-  return {};
+  auto it = accept_ch_entries_received_via_alps_.find(origin);
+  if (it == accept_ch_entries_received_via_alps_.end()) {
+    LogSpdyAcceptChForOriginHistogram(false);
+    return {};
+  }
+
+  LogSpdyAcceptChForOriginHistogram(true);
+  return it->second;
 }
 
 bool SpdySession::WasAlpnNegotiated() const {

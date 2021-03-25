@@ -2613,7 +2613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Records whether the QUIC session receives an Accept-CH entry for the given
+    Records whether the QUIC session received an Accept-CH entry for the given
     origin, which GetAcceptChViaAlps() returns. Logged every time
     QuicHttpStream::GetAcceptChViaAlps() is called, typically once for each
     request that is served over HTTP/3.
@@ -4738,6 +4738,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     HTTP status codes received in HTTP/2 HEADERS frames. If a stream contains
     one or more informational (1xx) response preceeding the main response, each
     status code is logged separately.
+  </summary>
+</histogram>
+
+<histogram name="Net.SpdySession.AcceptChForOrigin" enum="Boolean"
+    expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records whether the HTTP/2 session received an Accept-CH entry for the given
+    origin, which GetAcceptChViaAlps() returns. Logged every time
+    SpdyHttpStream::GetAcceptChViaAlps() is called, typically once for each
+    request that is served over HTTP/2.
+  </summary>
+</histogram>
+
+<histogram name="Net.SpdySession.AlpsAcceptChEntries" enum="AcceptChEntries"
+    expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records both whether there are any valid origin fields and whether there are
+    any invalid ones in ACCEPT_CH frames. Logged once for each TLS handshake of
+    a HTTP/2 connection if ALPS is negotiated, regardless of the number of
+    ACCEPT_CH frames received in ALPS.
+  </summary>
+</histogram>
+
+<histogram name="Net.SpdySession.AlpsDecoderStatus" enum="AlpsDecoderError"
+    expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the status (OK or error code) returned by AlpsDecoder when parsing
+    ALPS data. Logged once for each TLS handshake of a HTTP/2 connection if ALPS
+    is negotiated.
+  </summary>
+</histogram>
+
+<histogram name="Net.SpdySession.AlpsSettingParameterCount" units="parameters"
+    expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the total number of setting parameters received in SETTINGS frames
+    in ALPS. Logged once for each TLS handshake of a HTTP/2 connection if ALPS
+    is negotiated, regardless of the number of SETTINGS frames received in ALPS.
   </summary>
 </histogram>
 

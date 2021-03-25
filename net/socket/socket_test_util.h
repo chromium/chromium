@@ -488,6 +488,9 @@ struct SSLSocketDataProvider {
   // Result for GetNegotiatedProtocol().
   NextProto next_proto;
 
+  // Result for GetPeerApplicationSettings().
+  base::Optional<std::string> peer_application_settings;
+
   // Result for GetSSLInfo().
   SSLInfo ssl_info;
 
@@ -977,6 +980,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   int GetLocalAddress(IPEndPoint* address) const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
+  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;

@@ -51,6 +51,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
+#include "net/spdy/alps_decoder.h"
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_http_utils.h"
@@ -10848,6 +10849,32 @@ TEST_F(SpdyNetworkTransactionTest, NotAllowHTTP1NotBlockH2Post) {
   EXPECT_THAT(out.rv, IsOk());
   EXPECT_EQ("HTTP/1.1 200", out.status_line);
   EXPECT_EQ("hello!", out.response_data);
+}
+
+TEST_F(SpdyNetworkTransactionTest, AlpsFramingError) {
+  base::HistogramTester histogram_tester;
+
+  spdy::SpdySerializedFrame goaway(spdy_util_.ConstructSpdyGoAway(
+      0, spdy::ERROR_CODE_PROTOCOL_ERROR, "Error parsing ALPS: 3"));
+  MockWrite writes[] = {CreateMockWrite(goaway, 0)};
+  SequencedSocketData data(base::span<MockRead>(), writes);
+
+  auto ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Not a complete HTTP/2 frame.
+  ssl_provider->peer_application_settings = "boo";
+
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+  helper.RunToCompletionWithSSLData(&data, std::move(ssl_provider));
+
+  TransactionHelperResult out = helper.output();
+  EXPECT_THAT(out.rv, IsError(ERR_HTTP2_PROTOCOL_ERROR));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsDecoderStatus",
+      static_cast<int>(AlpsDecoder::Error::kNotOnFrameBoundary), 1);
+  histogram_tester.ExpectTotalCount("Net.SpdySession.AlpsAcceptChEntries", 0);
+  histogram_tester.ExpectTotalCount("Net.SpdySession.AlpsSettingParameterCount",
+                                    0);
 }
 
 }  // namespace net

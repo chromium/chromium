@@ -167,6 +167,13 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
   }
 
+  int rv = (*session)->ParseAlps();
+  if (rv != OK) {
+    DCHECK_NE(ERR_IO_PENDING, rv);
+    // ParseAlps() already closed the connection on error.
+    return rv;
+  }
+
   return OK;
 }
 

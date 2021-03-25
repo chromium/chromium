@@ -19,23 +19,25 @@ namespace net {
 // of the ALPS TLS extension.
 class NET_EXPORT_PRIVATE AlpsDecoder {
  public:
+  // These values are persisted to logs. Entries should not be renumbered, and
+  // numeric values should never be reused.
   enum class Error {
     // No error has occurred.
-    kNoError,
+    kNoError = 0,
     // HTTP/2 framing error detected by Http2DecoderAdapter.
-    kFramingError,
+    kFramingError = 1,
     // Forbidden HTTP/2 frame received.
-    kForbiddenFrame,
+    kForbiddenFrame = 2,
     // Input does not end on HTTP/2 frame boundary.
-    kNotOnFrameBoundary,
+    kNotOnFrameBoundary = 3,
     // SETTINGS frame with ACK received.
-    kSettingsWithAck,
+    kSettingsWithAck = 4,
     // ACCEPT_CH received on invalid stream.
-    kAcceptChInvalidStream,
+    kAcceptChInvalidStream = 5,
     // ACCEPT_CH received with flags.
-    kAcceptChWithFlags,
+    kAcceptChWithFlags = 6,
     // Malformed ACCEPT_CH payload.
-    kAcceptChMalformed,
+    kAcceptChMalformed = 7,
     kMaxValue = kAcceptChMalformed
   };
 

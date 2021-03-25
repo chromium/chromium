@@ -1392,6 +1392,17 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Warning canceled"/>
 </enum>
 
+<enum name="AlpsDecoderError">
+  <int value="0" label="NoError"/>
+  <int value="1" label="FramingError"/>
+  <int value="2" label="ForbiddenFrame"/>
+  <int value="3" label="NotOnFrameBoundary"/>
+  <int value="4" label="SettingsWithAck"/>
+  <int value="5" label="AcceptChInvalidStream"/>
+  <int value="6" label="AcceptChWithFlags"/>
+  <int value="7" label="AcceptChMalformed"/>
+</enum>
+
 <enum name="AlsaSampleFormatType">
   <int value="-1" label="SND_PCM_FORMAT_UNKNOWN"/>
   <int value="0" label="SND_PCM_FORMAT_S8"/>

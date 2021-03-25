@@ -1605,6 +1605,11 @@ NextProto MockSSLClientSocket::GetNegotiatedProtocol() const {
   return data_->next_proto;
 }
 
+base::Optional<base::StringPiece>
+MockSSLClientSocket::GetPeerApplicationSettings() const {
+  return data_->peer_application_settings;
+}
+
 bool MockSSLClientSocket::GetSSLInfo(SSLInfo* requested_ssl_info) {
   requested_ssl_info->Reset();
   *requested_ssl_info = data_->ssl_info;

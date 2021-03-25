@@ -409,6 +409,11 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
                             const LoadTimingInfo::ConnectTiming& connect_timing,
                             SpdySessionPool* pool);
 
+  // Parse ALPS application_data from TLS handshake.
+  // Returns OK on success.  Return a net error code on failure, and closes the
+  // connection with the same error code.
+  int ParseAlps();
+
   // Check to see if this SPDY session can support an additional domain.
   // If the session is un-authenticated, then this call always returns true.
   // For SSL-based sessions, verifies that the server certificate in use by
@@ -1295,6 +1300,9 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   TimeFunc time_func_;
 
   Http2PriorityDependencies priority_dependency_state_;
+
+  // Map of origin to Accept-CH header field values received via ALPS.
+  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
 
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.
