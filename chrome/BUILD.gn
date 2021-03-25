@@ -1163,9 +1163,14 @@ if (is_win) {
       args = [
         "--stamp=" + rebase_path(stamp_file, root_out_dir),
         "--binary=" + rebase_path(_framework_binary_path, root_out_dir),
-        "--mac-bin-path=" + mac_bin_path,
         "--symbol-file=" + rebase_path("app/framework.order", root_build_dir),
       ]
+      if (host_os == "mac") {
+        args += [ "--nm-path=$mac_bin_path/nm" ]
+      } else {
+        args += [ "--nm-path=" +
+                  rebase_path("$clang_base_path/bin/llvm-nm", root_build_dir) ]
+      }
       outputs = [ stamp_file ]
       public_deps = [ ":chrome_framework" ]
     }

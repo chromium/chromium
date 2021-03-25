@@ -125,7 +125,9 @@ template("apple_toolchain") {
 
     # Set the explicit search path for clang++ so it uses the right linker
     # binary.
-    ld += " -B " + invoker.bin_path
+    if (!use_lld) {
+      ld += " -B " + invoker.bin_path
+    }
 
     if (defined(toolchain_args.coverage_instrumentation_input_file)) {
       toolchain_coverage_instrumentation_input_file =
@@ -306,7 +308,11 @@ template("apple_toolchain") {
       # full CommandLineTools or Xcode install, and still may not choose the
       # appropriate binary if there are multiple installs.
       otool = invoker.bin_path + "otool"
-      nm = invoker.bin_path + "nm"
+      if (host_os == "mac") {
+        nm = invoker.bin_path + "nm"
+      } else {
+        nm = "${prefix}llvm-nm"
+      }
 
       does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 

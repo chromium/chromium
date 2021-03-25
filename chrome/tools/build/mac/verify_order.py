@@ -34,8 +34,7 @@ def parse_order_file(filename):
   return symbols
 
 
-def check_symbol_table(binary, allowed_symbols, mac_bin_path, symbol_file):
-  nm = os.path.join(mac_bin_path, 'nm')
+def check_symbol_table(binary, allowed_symbols, nm, symbol_file):
   actual_symbols = subprocess.check_output([nm, '-jUng', binary]).decode('utf8')
   actual_symbols = [s.rstrip() for s in actual_symbols.splitlines()]
   def print_syms(syms):
@@ -73,15 +72,14 @@ def main():
   parser.add_argument('--stamp', required=True,
     help='Touch this stamp file on success.')
   parser.add_argument('--binary', required=True, help='Check this binary.')
-  parser.add_argument('--mac-bin-path', required=True,
-    help='Directory containing nm, otool, llvm-objdump')
+  parser.add_argument('--nm-path', required=True, help='Path to nm')
   parser.add_argument('--symbol-file', required=True,
     help='Order file listing expected public symbols.')
   args = parser.parse_args()
 
   allowed_symbols = parse_order_file(args.symbol_file)
   check_symbol_table(
-      args.binary, allowed_symbols, args.mac_bin_path, args.symbol_file)
+      args.binary, allowed_symbols, args.nm_path, args.symbol_file)
   # TODO(thakis): Also verify global symbols in the binary's export trie.
 
   open(args.stamp, 'w').close()  # Update mtime on stamp file.
