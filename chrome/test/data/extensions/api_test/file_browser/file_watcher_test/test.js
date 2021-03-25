@@ -167,12 +167,19 @@ TestEventListener.prototype = {
   verifyReceivedEvent_: function(event) {
     var entryURL = event.entry.toURL();
     var expectedEvent = this.expectedEvents_[entryURL];
+
+    console.log('verifyReceivedEvent_: ' + event.eventType);
+    const state = JSON.stringify(this.expectedEvents_[entryURL]);
+    console.log('verifyReceivedEvent_: state ' + entryURL + ' ' + state);
+
     if (!expectedEvent) {
       this.onError('Event with unexpected entryURL: ' + entryURL + '\n' +
                    ' Event type: ' + event.eventType + '\n');
       return;
     }
 
+
+    console.log('verifyReceivedEvent_: delete expectedEvents_ ' + entryURL);
     delete this.expectedEvents_[entryURL];
 
     if (expectedEvent.eventType != event.eventType) {
