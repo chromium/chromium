@@ -42,6 +42,16 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // Sets a new target view to monitor for mouse cursor updates.
   void SetTargetView(gfx::NativeView view);
 
+  // If the target view is not a gfx::NativeView (which is the case when
+  // capturing a NSWindow on macOS), this function may be used to set the size
+  // of the target. This function will only have an effect if SetTargetView has
+  // not been called (it doesn't make sense to call both functions). The units
+  // for |target_size| are different on different platforms (DIPs on macOS,
+  // pixels on all other platforms).
+  void SetTargetSize(const gfx::Size& target_size) {
+    target_size_ = target_size;
+  }
+
   // Takes ownership of and starts controlling the given |overlay|, invoking its
   // methods (and destruction) via the given |task_runner|.
   void Start(std::unique_ptr<Overlay> overlay,
@@ -51,8 +61,15 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // destruction.
   void Stop();
 
-  // Returns true if the user has recently interacted with the view.
+  // Returns true if the user has recently interacted with the target (by
+  // moving or clicking the mouse).
   bool IsUserInteractingWithView() const;
+
+  // Called from platform-specific code to report on mouse events within the
+  // captured view. The units for |location| depend on the platform (DIPs on
+  // macOS and pixels on other platforms).
+  void OnMouseMoved(const gfx::PointF& location);
+  void OnMouseClicked(const gfx::PointF& location);
 
   // Returns a weak pointer.
   base::WeakPtr<MouseCursorOverlayController> GetWeakPtr();
@@ -69,11 +86,6 @@ class CONTENT_EXPORT MouseCursorOverlayController {
     kStartingToMove,          // Mouse has moved, but not significantly.
     kRecentlyMovedOrClicked,  // Sufficient mouse activity present.
   };
-
-  // Called from platform-specific code to report on mouse events within the
-  // captured view.
-  void OnMouseMoved(const gfx::PointF& location);
-  void OnMouseClicked(const gfx::PointF& location);
 
   // Called by the |mouse_activity_ended_timer_| once no mouse events have
   // occurred for kIdleTimeout. Also, called by platform-specific code when
@@ -140,6 +152,9 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // range [0.0,1.0). It can sometimes be a little bit outside of that range,
   // depending on the cursor's hotspot.
   gfx::RectF bounds_;
+
+  // The target's size, if set explicitly by SetTargetSize.
+  gfx::Size target_size_;
 
   // Everything except the constructor and IsUserInteractingWithView() must be
   // called on the UI BrowserThread.
