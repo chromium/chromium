@@ -50,9 +50,8 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
   ~PeripheralBatteryNotifierTest() override = default;
 
   void SetUp() override {
-    ui::DeviceDataManager::CreateInstance();
-
     AshTestBase::SetUp();
+    ASSERT_TRUE(ui::DeviceDataManager::HasInstance());
 
     // Simulate the complete listing of input devices, required by the listener.
     ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
@@ -71,8 +70,6 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
     battery_notifier_.reset();
     battery_listener_.reset();
     AshTestBase::TearDown();
-
-    ui::DeviceDataManager::DeleteInstance();
   }
 
   // Extracts the battery percentage from the message of a notification.

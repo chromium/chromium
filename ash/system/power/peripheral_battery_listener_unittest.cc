@@ -77,9 +77,8 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   ~PeripheralBatteryListenerTest() override = default;
 
   void SetUp() override {
-    ui::DeviceDataManager::CreateInstance();
-
     AshTestBase::SetUp();
+    ASSERT_TRUE(ui::DeviceDataManager::HasInstance());
 
     // Simulate the complete listing of input devices, required by the listener.
     if (complete_devices_)
@@ -100,7 +99,6 @@ class PeripheralBatteryListenerTest : public AshTestBase {
   void TearDown() override {
     battery_listener_.reset();
     AshTestBase::TearDown();
-    ui::DeviceDataManager::DeleteInstance();
   }
 
   base::TimeTicks GetTestingClock() { return base::TimeTicks::Now(); }
