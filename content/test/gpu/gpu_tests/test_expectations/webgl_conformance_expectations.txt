@@ -767,6 +767,9 @@ crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-prec
 # Flaky renderer hangs suspected due to some driver issue on Kevin devices.
 crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
 
+# Flaky driver crash on AMD.
+crbug.com/1186499 [ chromeos chromeos-board-amd64-generic ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+
 ###########################
 # Lacros/Wayland failures #
 ###########################
