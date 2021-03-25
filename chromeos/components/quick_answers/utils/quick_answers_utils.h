@@ -27,6 +27,10 @@ std::string BuildTranslationTitleText(const IntentInfo& intent_info);
 std::string BuildTranslationTitleText(const std::string& query_text,
                                       const std::string& locale_name);
 
+// Build display text for Quick Answers unit conversion result.
+std::string BuildUnitConversionResultText(const std::string& result_value,
+                                          const std::string& name);
+
 // Unescapes the following ampersand character codes from |string|:
 // &lt; &gt; &amp; &quot; &#39;
 std::string UnescapeStringForHTML(const std::string& string);

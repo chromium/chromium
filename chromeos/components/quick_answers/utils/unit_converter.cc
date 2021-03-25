@@ -18,8 +18,7 @@ using base::Value;
 
 constexpr char kCategoryPath[] = "category";
 constexpr char kConversionRateAPath[] = "conversionToSiA";
-// TODO(b/182389513): Move the template to grd file.
-constexpr char kConversionResultTemplate[] = "%.3f %s";
+constexpr char kResultValueTemplate[] = "%.3f";
 constexpr char kNamePath[] = "name";
 constexpr char kUnitsPath[] = "units";
 
@@ -48,9 +47,11 @@ const std::string UnitConverter::Convert(const double src_value,
     return std::string();
   }
 
-  return base::StringPrintf(
-      kConversionResultTemplate,
-      (src_rate_a.value() / dst_rate_a.value()) * src_value, dst_name->c_str());
+  const double result_value =
+      (src_rate_a.value() / dst_rate_a.value()) * src_value;
+
+  return BuildUnitConversionResultText(
+      base::StringPrintf(kResultValueTemplate, result_value), *dst_name);
 }
 
 const Value* UnitConverter::FindProperDestinationUnit(

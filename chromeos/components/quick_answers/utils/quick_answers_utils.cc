@@ -76,6 +76,13 @@ std::string BuildTranslationTitleText(const std::string& query_text,
                                    base::UTF8ToUTF16(locale_name));
 }
 
+std::string BuildUnitConversionResultText(const std::string& result_value,
+                                          const std::string& name) {
+  return l10n_util::GetStringFUTF8(
+      IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT,
+      base::UTF8ToUTF16(result_value), base::UTF8ToUTF16(name));
+}
+
 std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(net::UnescapeForHTML(base::UTF8ToUTF16(string)));
 }
