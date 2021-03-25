@@ -1128,16 +1128,18 @@ CommandHandler.COMMANDS_['drive-sync-settings'] =
 };
 
 /**
- * Deletes selected files.
+ * Delete / Move to Trash command.
+ * @private @const {FilesCommand}
  */
-CommandHandler.COMMANDS_['delete'] = new class extends FilesCommand {
+CommandHandler.deleteCommand_ = new class extends FilesCommand {
   execute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const permanentlyDelete = event.command.id === 'delete';
 
     // Execute might be called without a call of canExecute method, e.g.,
     // called directly from code, crbug.com/509483. See toolbar controller
     // delete button handling, for an example.
-    this.deleteEntries(entries, fileManager);
+    this.deleteEntries(entries, fileManager, permanentlyDelete);
   }
 
   /** @override */
@@ -1158,17 +1160,27 @@ CommandHandler.COMMANDS_['delete'] = new class extends FilesCommand {
     // space in the file list.
     const noEntries = entries.length === 0;
     event.command.setHidden(noEntries);
+
+    // Hide 'move-to-trash' if trash will not be used. E.g. drive or removable.
+    if (event.command.id === 'move-to-trash' &&
+        !fileManager.fileOperationManager.willUseTrash(
+            fileManager.volumeManager, entries)) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+    }
   }
 
   /**
    * Delete the entries (if the entries can be deleted).
    * @param {!Array<!Entry>} entries
    * @param {!CommandHandlerDeps} fileManager
+   * @param {boolean} permanentlyDelete if true, entries are permanently deleted
+   *     rather than moved to trash.
    * @param {?FilesConfirmDialog} dialog An optional delete confirm dialog.
    *    The default delete confirm dialog will be used if |dialog| is null.
    * @public
    */
-  deleteEntries(entries, fileManager, dialog = null) {
+  deleteEntries(entries, fileManager, permanentlyDelete, dialog = null) {
     // Verify that the entries are not fake or root entries, and that they
     // can be deleted.
     if (!entries.every(CommandUtil.shouldShowMenuItemsForEntry.bind(
@@ -1178,7 +1190,8 @@ CommandHandler.COMMANDS_['delete'] = new class extends FilesCommand {
     }
 
     // We show undo toast rather than dialog for entries which will use trash.
-    if (fileManager.fileOperationManager.willUseTrash(
+    if (!permanentlyDelete &&
+        fileManager.fileOperationManager.willUseTrash(
             fileManager.volumeManager, entries)) {
       fileManager.fileOperationManager.deleteEntries(entries);
       return;
@@ -1201,7 +1214,8 @@ CommandHandler.COMMANDS_['delete'] = new class extends FilesCommand {
 
     const deleteAction = () => {
       dialogDoneCallback();
-      fileManager.fileOperationManager.deleteEntries(entries);
+      fileManager.fileOperationManager.deleteEntries(
+          entries, permanentlyDelete);
     };
 
     const cancelAction = () => {
@@ -1261,6 +1275,9 @@ CommandHandler.COMMANDS_['delete'] = new class extends FilesCommand {
     });
   }
 };
+
+CommandHandler.COMMANDS_['delete'] = CommandHandler.deleteCommand_;
+CommandHandler.COMMANDS_['move-to-trash'] = CommandHandler.deleteCommand_;
 
 /**
  * Register listener on background for delete event, and show undo toast if

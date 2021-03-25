@@ -133,11 +133,14 @@ testcase.toolbarDeleteEntry = async () => {
       'selectFile', appId, ['My Desktop Background.png']));
 
   // Click delete button in the toolbar.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#delete-button']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#move-to-trash-button']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#delete-button']));
 
-  // Confirm that the confirmation dialog is shown.
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    // Confirm that the confirmation dialog is shown.
     await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
     // Press delete button.

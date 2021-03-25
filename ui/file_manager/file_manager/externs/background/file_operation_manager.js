@@ -65,8 +65,10 @@
    * Schedules the files deletion.
    *
    * @param {!Array<!Entry>} entries The entries.
+   * @param {boolean=} permanentlyDelete if true, entries will be deleted rather
+   *     than moved to trash.
    */
-  deleteEntries(entries) {}
+  deleteEntries(entries, permanentlyDelete = false) {}
 
   /**
    * Schedules the files to be restored.

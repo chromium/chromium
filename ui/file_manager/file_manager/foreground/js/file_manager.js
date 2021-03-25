@@ -667,8 +667,8 @@
     assert(this.selectionHandler_);
     assert(this.launchParams_);
     assert(this.volumeManager_);
+    assert(this.fileOperationManager_);
     assert(this.dialogDom_);
-    assert(this.fileFilter_);
 
     this.scanController_ = new ScanController(
         this.directoryModel_, this.ui_.listContainer, this.spinnerController_,
@@ -686,7 +686,7 @@
     this.toolbarController_ = new ToolbarController(
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
         assert(this.ui_.locationLine), this.selectionHandler_,
-        this.directoryModel_, this.volumeManager_,
+        this.directoryModel_, this.volumeManager_, this.fileOperationManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
     this.emptyFolderController_ = new EmptyFolderController(
         this.ui_.emptyFolder, this.directoryModel_, this.ui_.alertDialog);

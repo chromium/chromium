@@ -75,8 +75,14 @@
                shortcut="Space">
       <command id="rename" label="$i18n{RENAME_BUTTON_LABEL}"
                shortcut="Enter|Ctrl">
-      <command id="delete" shortcut="Backspace|Alt Delete">
-      <command id="restore-from-trash" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
+      <command id="move-to-trash" shortcut="Backspace|Alt Delete" label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}">
+      <command id="restore-from-trash" shortcut="Backspace|Alt Delete" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
+      <!-- TODO(crbug.com/953310): Remove 'Backspace|Alt' and 'Delete' from
+           'delete' once trash is permanently enabled. For now, these shortcuts
+           are left for backward-compatibility for when trash is not enabled,
+           but 'restore-from-trash' intentionally shadows these shortcuts when
+           trash is enabled -->
+      <command id="delete" shortcut="Backspace|Alt Delete Backspace|Alt|Shift Delete|Shift">
       <command id="empty-trash" shortcut="Backspace|Alt|Ctrl|Shift Delete|Ctrl|Shift" shortcut="" label="$i18n{EMPTY_TRASH_BUTTON_LABEL}">
       <command id="refresh" label="$i18n{REFRESH_BUTTON_LABEL}"
                shortcut="b|Ctrl" hidden>
@@ -204,6 +210,7 @@
         <cr-menu-item command="#get-info"></cr-menu-item>
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#pin-folder"></cr-menu-item>
+        <cr-menu-item command="#move-to-trash"></cr-menu-item>
         <cr-menu-item command="#delete" class="hide-on-toolbar">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#restore-from-trash"></cr-menu-item>
         <cr-menu-item command="#zip-selection"></cr-menu-item>
@@ -248,6 +255,7 @@
         <cr-menu-item command="#format"></cr-menu-item>
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#pin-folder"></cr-menu-item>
+        <cr-menu-item command="#move-to-trash"></cr-menu-item>
         <cr-menu-item command="#delete">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#empty-trash"></cr-menu-item>
         <hr visibleif="saveas-file full-page">
@@ -390,6 +398,13 @@
                 aria-label="$i18n{SHARESHEET_BUTTON_LABEL}"
                 visibleif="full-page"
                 command="#invoke-sharesheet"
+                has-tooltip>
+          <files-ripple></files-ripple>
+          <div class="icon"></div>
+        </cr-button>
+        <cr-button id="move-to-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                aria-label="$i18n{MOVE_TO_TRASH_BUTTON_LABEL}"
+                visibleif="full-page"
                 has-tooltip>
           <files-ripple></files-ripple>
           <div class="icon"></div>

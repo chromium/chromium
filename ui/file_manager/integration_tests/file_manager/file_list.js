@@ -317,8 +317,10 @@
         appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
     // Delete item and confirm delete.
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
-    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+      await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+    } else {
+      await remoteCall.waitAndClickElement(appId, '#delete-button');
       await remoteCall.waitAndClickElement(
           appId, '.files-confirm-dialog .cr-dialog-ok');
     }
@@ -343,8 +345,10 @@
     // Select and delete first item.
     await remoteCall.waitAndClickElement(
         appId, '#file-list [file-name="photos"]');
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
-    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+      await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+    } else {
+      await remoteCall.waitAndClickElement(appId, '#delete-button');
       await remoteCall.waitAndClickElement(
           appId, '.files-confirm-dialog .cr-dialog-ok');
     }

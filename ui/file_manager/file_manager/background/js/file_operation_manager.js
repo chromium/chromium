@@ -421,9 +421,12 @@
    * Schedules the files deletion.
    *
    * @param {!Array<!Entry>} entries The entries.
+   * @param {boolean=} permanentlyDelete if true, entries will be deleted rather
+   *     than moved to trash.
    */
-  deleteEntries(entries) {
-    this.deleteOrRestore_(util.FileOperationType.DELETE, entries);
+  deleteEntries(entries, permanentlyDelete = false) {
+    this.deleteOrRestore_(
+        util.FileOperationType.DELETE, entries, permanentlyDelete);
   }
 
   /**
@@ -431,9 +434,11 @@
    *
    * @param {!util.FileOperationType} operationType DELETE or RESTORE.
    * @param {!Array<!Entry|!TrashEntry>} entries The entries.
+   * @param {boolean=} permanentlyDelete if true, entries will be deleted rather
+   *     than moved to trash. Only applies to operationType DELETE.
    * @private
    */
-  deleteOrRestore_(operationType, entries) {
+  deleteOrRestore_(operationType, entries, permanentlyDelete = false) {
     const task =
         /** @type {!fileOperationUtil.DeleteTask} */ (Object.preventExtensions({
           operationType: operationType,
@@ -444,6 +449,7 @@
           processedBytes: 0,
           cancelRequested: false,
           trashedEntries: [],
+          permanentlyDelete
         }));
 
     // Obtains entry size and sum them up.
@@ -492,7 +498,7 @@
     const reader = root.createReader();
     const onRead = (entries) => {
       if (entries.length > 0) {
-        this.deleteEntries(entries);
+        this.deleteEntries(entries, /*permanentlyDelete=*/ true);
         reader.readEntries(onRead);
       }
     };
@@ -551,7 +557,7 @@
           operation = this.trash_
                           .removeFileOrDirectory(
                               assert(this.volumeManager_), task.entries[0],
-                              /*permanentlyDelete=*/ false)
+                              task.permanentlyDelete)
                           .then(trashEntry => {
                             if (trashEntry) {
                               task.trashedEntries.push(trashEntry);

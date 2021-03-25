@@ -429,32 +429,35 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     KeyboardOperations, /* keyboard_operations.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("keyboardDeleteDownloads").InGuestMode(),
-                      TestCase("keyboardDeleteDownloads"),
-                      TestCase("keyboardDeleteDownloads").DisableJsModules(),
-                      TestCase("keyboardDeleteDownloads").EnableTrash(),
-                      TestCase("keyboardDeleteDrive"),
-                      TestCase("keyboardDeleteDrive").EnableTrash(),
-                      TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
-                      TestCase("keyboardDeleteFolderDownloads"),
-                      TestCase("keyboardDeleteFolderDownloads").EnableTrash(),
-                      TestCase("keyboardDeleteFolderDrive"),
-                      TestCase("keyboardCopyDownloads").InGuestMode(),
-                      TestCase("keyboardCopyDownloads"),
-                      TestCase("keyboardCopyDownloads").EnableTrash(),
-                      TestCase("keyboardCopyDrive"),
-                      TestCase("keyboardFocusOutlineVisible"),
-                      TestCase("keyboardFocusOutlineVisibleMouse"),
-                      TestCase("keyboardSelectDriveDirectoryTree"),
-                      TestCase("keyboardDisableCopyWhenDialogDisplayed"),
-                      TestCase("keyboardOpenNewWindow"),
-                      TestCase("keyboardOpenNewWindow").InGuestMode(),
-                      TestCase("renameFileDownloads").InGuestMode(),
-                      TestCase("renameFileDownloads"),
-                      TestCase("renameFileDrive"),
-                      TestCase("renameNewFolderDownloads").InGuestMode(),
-                      TestCase("renameNewFolderDownloads"),
-                      TestCase("renameNewFolderDrive")));
+    ::testing::Values(
+        TestCase("keyboardDeleteDownloads").InGuestMode(),
+        TestCase("keyboardDeleteDownloads"),
+        TestCase("keyboardDeleteDownloads").DisableJsModules(),
+        TestCase("keyboardDeleteDownloads").EnableTrash(),
+        TestCase("keyboardDeleteDrive"),
+        TestCase("keyboardDeleteDrive").EnableTrash(),
+        TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
+        TestCase("keyboardDeleteFolderDownloads"),
+        TestCase("keyboardDeleteFolderDownloads").EnableTrash(),
+        TestCase("keyboardDeleteFolderDrive"),
+        TestCase("keyboardCopyDownloads").InGuestMode(),
+        TestCase("keyboardCopyDownloads"),
+        TestCase("keyboardCopyDownloads").EnableTrash(),
+        TestCase("keyboardCopyDrive"),
+        TestCase("keyboardFocusOutlineVisible"),
+        TestCase("keyboardFocusOutlineVisible").EnableTrash(),
+        TestCase("keyboardFocusOutlineVisibleMouse"),
+        TestCase("keyboardFocusOutlineVisibleMouse").EnableTrash(),
+        TestCase("keyboardSelectDriveDirectoryTree"),
+        TestCase("keyboardDisableCopyWhenDialogDisplayed"),
+        TestCase("keyboardOpenNewWindow"),
+        TestCase("keyboardOpenNewWindow").InGuestMode(),
+        TestCase("renameFileDownloads").InGuestMode(),
+        TestCase("renameFileDownloads"),
+        TestCase("renameFileDrive"),
+        TestCase("renameNewFolderDownloads").InGuestMode(),
+        TestCase("renameNewFolderDownloads"),
+        TestCase("renameNewFolderDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ContextMenu, /* context_menu.js for file list */
@@ -496,6 +499,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkDownloadsContextMenu"),
         TestCase("checkPlayFilesContextMenu"),
         TestCase("checkLinuxFilesContextMenu"),
+        TestCase("checkTrashContextMenu").EnableTrash(),
         TestCase("checkDeleteDisabledInDocProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("checkDeleteEnabledInDocProvider")
@@ -669,8 +673,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 #endif
         TestCase("dirContextMenuRecent"),
         TestCase("dirContextMenuMyFiles"),
+        TestCase("dirContextMenuMyFiles").EnableTrash(),
         TestCase("dirContextMenuMyFilesWithPaste"),
+        TestCase("dirContextMenuMyFilesWithPaste").EnableTrash(),
         TestCase("dirContextMenuCrostini"),
+        TestCase("dirContextMenuCrostini").EnableTrash(),
         TestCase("dirContextMenuPlayFiles"),
         TestCase("dirContextMenuUsbs"),
         TestCase("dirContextMenuUsbs").EnableSinglePartitionFormat(),
@@ -686,6 +693,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuSharedWithMe"),
         TestCase("dirContextMenuOffline"),
         TestCase("dirContextMenuComputers"),
+        TestCase("dirContextMenuTrash").EnableTrash(),
         TestCase("dirContextMenuShortcut"),
         TestCase("dirContextMenuFocus")));
 
@@ -1134,9 +1142,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
+                      TestCase("trashPermanentlyDelete").EnableTrash(),
                       TestCase("trashRestoreFromToast").EnableTrash(),
                       TestCase("trashRestoreFromTrash").EnableTrash(),
+                      TestCase("trashRestoreFromTrashShortcut").EnableTrash(),
                       TestCase("trashEmptyTrash").EnableTrash(),
+                      TestCase("trashEmptyTrashShortcut").EnableTrash(),
                       TestCase("trashDeleteFromTrash").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

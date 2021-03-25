@@ -6,6 +6,7 @@
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
 // #import {A11yAnnounce} from './ui/a11y_announce.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.m.js';
 // #import {ListContainer} from './ui/list_container.m.js';
@@ -15,6 +16,7 @@
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 // #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
 /**
@@ -33,11 +35,12 @@
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
+   * @param {!FileOperationManager} fileOperationManager
    * @param {!A11yAnnounce} a11y
    */
   constructor(
       toolbar, navigationList, listContainer, locationLine, selectionHandler,
-      directoryModel, volumeManager, a11y) {
+      directoryModel, volumeManager, fileOperationManager, a11y) {
     /**
      * @private {!HTMLElement}
      * @const
@@ -70,6 +73,13 @@
      * @const
      */
     this.deleteButton_ = queryRequiredElement('#delete-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.moveToTrashButton_ =
+        queryRequiredElement('#move-to-trash-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
@@ -112,6 +122,15 @@
     this.deleteCommand_ = assertInstanceof(
         queryRequiredElement(
             '#delete', assert(this.toolbar_.ownerDocument.body)),
+        cr.ui.Command);
+
+    /**
+     * @private {!cr.ui.Command}
+     * @const
+     */
+    this.moveToTrashCommand_ = assertInstanceof(
+        queryRequiredElement(
+            '#move-to-trash', assert(this.toolbar_.ownerDocument.body)),
         cr.ui.Command);
 
     /**
@@ -205,6 +224,12 @@
     this.volumeManager_ = volumeManager;
 
     /**
+     * @private {!FileOperationManager}
+     * @const
+     */
+    this.fileOperationManager_ = fileOperationManager;
+
+    /**
      * @private {!A11yAnnounce}
      * @const
      */
@@ -229,6 +254,9 @@
 
     this.deleteButton_.addEventListener(
         'click', this.onDeleteButtonClicked_.bind(this));
+
+    this.moveToTrashButton_.addEventListener(
+        'click', this.onMoveToTrashButtonClicked_.bind(this));
 
     this.restoreFromTrashButton_.addEventListener(
         'click', this.onRestoreFromTrashButtonClicked_.bind(this));
@@ -331,13 +359,22 @@
     }
     this.filesSelectedLabel_.textContent = text;
 
-    // Update visibility of the delete button.
+    // Update visibility of the delete and move to trash buttons.
     this.deleteButton_.hidden =
         (selection.totalCount === 0 ||
          !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
              entry => util.isNonModifiable(this.volumeManager_, entry)));
+    // Show 'Move to Trash' rather than 'Delete' if possible.
+    this.moveToTrashButton_.hidden = true;
+    if (!this.deleteButton_.hidden &&
+        loadTimeData.getBoolean('FILES_TRASH_ENABLED') &&
+        this.fileOperationManager_.willUseTrash(
+            this.volumeManager_, selection.entries)) {
+      this.deleteButton_.hidden = true;
+      this.moveToTrashButton_.hidden = false;
+    }
 
     // Update visibility of the restore-from-trash button.
     this.restoreFromTrashButton_.hidden = (selection.totalCount == 0) ||
@@ -388,6 +425,16 @@
   onDeleteButtonClicked_() {
     this.deleteCommand_.canExecuteChange(this.listContainer_.currentList);
     this.deleteCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
+   * Handles click event for move to trash button to execute the move to trash
+   * command.
+   * @private
+   */
+  onMoveToTrashButtonClicked_() {
+    this.moveToTrashCommand_.canExecuteChange(this.listContainer_.currentList);
+    this.moveToTrashCommand_.execute(this.listContainer_.currentList);
   }
 
   /**

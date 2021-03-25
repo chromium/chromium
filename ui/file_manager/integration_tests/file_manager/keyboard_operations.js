@@ -342,8 +342,13 @@ testcase.keyboardFocusOutlineVisible = async () => {
   await remoteCall.waitForElementsCount(appId, htmlFocusOutlineVisible, 1);
 
   // Send mousedown to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mousedown']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  }
 
   // Check: the html element should not have focus-outline-visible class.
   await remoteCall.waitForElementLost(appId, htmlFocusOutlineVisible);
@@ -359,8 +364,13 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send mousedown to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mousedown']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  }
 
   // Check: the html element should have pointer-active class.
   const htmlPointerActive = ['html.pointer-active'];
@@ -370,8 +380,13 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
   await remoteCall.waitForElementLost(appId, ['html.focus-outline-visible']);
 
   // Send mouseup to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mouseup']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mouseup']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mouseup']));
+  }
 
   // Check: the html element should not have pointer-active class.
   await remoteCall.waitForElementLost(appId, htmlPointerActive);

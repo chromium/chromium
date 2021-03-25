@@ -360,7 +360,8 @@
 
     // Delete the entry if the entry can be deleted.
     CommandHandler.getCommand('delete').deleteEntries(
-        [entry], this.fileManager_, this.deleteConfirmDialog_);
+        [entry], this.fileManager_, /*permanentlyDelete=*/ false,
+        this.deleteConfirmDialog_);
   }
 
   /**

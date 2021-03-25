@@ -666,6 +666,21 @@ testcase.checkLinuxFilesContextMenu = () => {
 };
 
 /**
+ * Check that mutating context menu items are not shown for Trash within
+ * My files.
+ */
+testcase.checkTrashContextMenu = () => {
+  const commands = {
+    copy: false,
+    cut: false,
+    delete: false,
+    rename: false,
+    'zip-selection': false,
+  };
+  return checkMyFilesRootItemContextMenu('Trash', commands);
+};
+
+/**
  * Tests that the specified menu item is in |expectedEnabledState| when the
  * entry at |path| is selected.
  *
