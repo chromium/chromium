@@ -31,4 +31,5 @@ include_rules = [
   "+content/public/common/content_features.h",
   "+content/public/common/drop_data.h",
   "+content/public/common/widget_type.h",
+  "+third_party/blink/public/mojom/webshare/webshare.mojom.h",
 ]

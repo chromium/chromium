@@ -6,6 +6,7 @@ module remote_cocoa.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
+import "third_party/blink/public/mojom/webshare/share_error.mojom";
 import "ui/base/mojom/attributed_string.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
@@ -92,6 +93,14 @@ interface RenderWidgetHostNSView {
 
   // Stop intercepting keyboard events.
   UnlockKeyboard();
+
+  // Show the NSSharingServicePicker using the requested data that is passed and
+  // returning the result of that action.
+  ShowSharingServicePicker(string title,
+                           string text,
+                           string url,
+                           array<string> file_paths)
+    => (blink.mojom.ShareError error);
 };
 
 // The interface through which the RenderWidgetHostViewCocoa NSView in the app

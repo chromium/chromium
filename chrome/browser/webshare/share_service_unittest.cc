@@ -155,6 +155,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
       const std::vector<base::FilePath>& file_paths,
       const std::string& text,
       const std::string& title,
+      const GURL& url,
       blink::mojom::ShareService::ShareCallback close_callback) {
     std::move(close_callback).Run(blink::mojom::ShareError::OK);
   }
