@@ -52,6 +52,9 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       std::unique_ptr<protocol::Array<int>>* node_ids) override;
   protocol::Response discardSearchResults(
       const protocol::String& search_id) override;
+  protocol::Response dispatchMouseEvent(
+      int node_id,
+      std::unique_ptr<protocol::DOM::MouseEvent> event) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;

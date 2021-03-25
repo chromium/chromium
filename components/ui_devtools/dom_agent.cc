@@ -393,4 +393,14 @@ Response DOMAgent::discardSearchResults(const protocol::String& search_id) {
   return Response::Success();
 }
 
+protocol::Response DOMAgent::dispatchMouseEvent(
+    int node_id,
+    std::unique_ptr<protocol::DOM::MouseEvent> event) {
+  if (node_id_to_ui_element_.count(node_id) == 0)
+    return Response::ServerError("Element not found on node id");
+  if (!node_id_to_ui_element_[node_id]->DispatchMouseEvent(event.get()))
+    return Response::ServerError("Failed to dispatch mouse event for node id");
+  return Response::Success();
+}
+
 }  // namespace ui_devtools
