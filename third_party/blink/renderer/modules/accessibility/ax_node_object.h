@@ -65,7 +65,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role DetermineTableCellRole() const;
   ax::mojom::blink::Role DetermineTableRowRole() const;
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
-  virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const;
   void AlterSliderOrSpinButtonValue(bool increase);
   AXObject* ActiveDescendant() override;
   String AriaAccessibilityDescription() const;

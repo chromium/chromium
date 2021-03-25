@@ -1761,8 +1761,8 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
 
   if (document.Lifecycle().GetState() != DocumentLifecycle::kInAccessibility) {
-    DCHECK(false) << "Deferred events should only be processed during the "
-                     "accessibility document lifecycle";
+    NOTREACHED() << "Deferred events should only be processed during the "
+                    "accessibility document lifecycle.";
     return;
   }
 
@@ -1814,10 +1814,10 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
   auto refresh = [this](AXObject* current) {
     Node* node = current->GetNode();
     DCHECK(node) << "Refresh() is currently only supported for objects "
-                    "with a backing node";
+                    "with a backing node.";
     AXID retained_axid = current->AXObjectID();
     // Remove from relevant maps, but not from relation cache, as the relations
-    // between AXIDs will still the same.
+    // between AXIDs will still be the same.
     node_object_mapping_.erase(node);
     if (current->GetLayoutObject()) {
       layout_object_mapping_.erase(current->GetLayoutObject());

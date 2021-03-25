@@ -428,10 +428,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   // cannot just call `AXObject::IsEditable()` since that will include the
   // contents of an editable region too. Only the editable root should always be
   // exposed.
-  //
-  // TODO(nektar): Switch to using `IsEditableRoot()` once lifecycle failures
-  // are resolved.
-  if (HasContentEditableAttributeSet())
+  if (IsEditableRoot())
     return kIncludeObject;
 
   static const HashSet<ax::mojom::blink::Role> always_included_computed_roles =
@@ -839,7 +836,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
   }
 
-  // Chrome exposes both table markup and table CSS as a tables, letting
+  // Chrome exposes both table markup and table CSS as a table, letting
   // the screen reader determine what to do for CSS tables.
   if (IsA<HTMLTableElement>(*GetNode())) {
     if (IsDataTable())
@@ -866,8 +863,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       return ax::mojom::blink::Role::kDate;
     if (type == input_type_names::kDatetime ||
         type == input_type_names::kDatetimeLocal ||
-        type == input_type_names::kMonth || type == input_type_names::kWeek)
+        type == input_type_names::kMonth || type == input_type_names::kWeek) {
       return ax::mojom::blink::Role::kDateTime;
+    }
     if (type == input_type_names::kFile)
       return ax::mojom::blink::Role::kButton;
     if (type == input_type_names::kRadio)
@@ -964,8 +962,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kMath;
 
   if (GetNode()->HasTagName(html_names::kRpTag) ||
-      GetNode()->HasTagName(html_names::kRtTag))
+      GetNode()->HasTagName(html_names::kRtTag)) {
     return ax::mojom::blink::Role::kRubyAnnotation;
+  }
 
   if (IsA<HTMLFormElement>(*GetNode()))
     return ax::mojom::blink::Role::kForm;
@@ -1082,8 +1081,10 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
   native_role_ = NativeRoleIgnoringAria();
 
   if ((aria_role_ = DetermineAriaRoleAttribute()) !=
-      ax::mojom::blink::Role::kUnknown)
+      ax::mojom::blink::Role::kUnknown) {
     return aria_role_;
+  }
+
   if (GetNode()->IsTextNode())
     return ax::mojom::blink::Role::kStaticText;
 
@@ -1426,7 +1427,7 @@ bool AXNodeObject::IsClickable() const {
   Node* node = GetNode();
   if (!node)
     return false;
-  auto* element = DynamicTo<Element>(node);
+  const Element* element = GetElement();
   if (element && element->IsDisabledFormControl()) {
     return false;
   }

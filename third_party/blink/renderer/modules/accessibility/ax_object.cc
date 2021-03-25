@@ -753,7 +753,7 @@ void AXObject::Init(AXObject* parent_if_known) {
   DCHECK(!parent_);
   DCHECK(!is_initializing_);
   base::AutoReset<bool> reentrancy_protector(&is_initializing_, true);
-#endif
+#endif  // DCHECK_IS_ON()
 
   // The role must be determined immediately.
   // Note: in order to avoid reentrancy, the role computation cannot use the
@@ -763,7 +763,7 @@ void AXObject::Init(AXObject* parent_if_known) {
   DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for\n"
                              << GetNode() << '\n'
                              << GetLayoutObject();
-#endif
+#endif  // DCHECK_IS_ON()
 
   // Determine the parent as soon as possible.
   // Every AXObject must have a parent unless it's the root.

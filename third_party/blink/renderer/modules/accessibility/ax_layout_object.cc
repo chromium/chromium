@@ -221,6 +221,7 @@ ax::mojom::blink::Role AXLayoutObject::DetermineAccessibilityRole() {
     NOTREACHED();
     return ax::mojom::blink::Role::kUnknown;
   }
+
   if (GetCSSAltText(GetNode())) {
     const ComputedStyle* style = GetNode()->GetComputedStyle();
     ContentData* content_data = style->GetContentData();
@@ -233,6 +234,7 @@ ax::mojom::blink::Role AXLayoutObject::DetermineAccessibilityRole() {
 
     return role;
   }
+
   native_role_ = NativeRoleIgnoringAria();
 
   if ((aria_role_ = DetermineAriaRoleAttribute()) !=
