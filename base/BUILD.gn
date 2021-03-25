@@ -1164,8 +1164,6 @@ component("base") {
       "mac/mac_util.mm",
       "mac/mach_logging.cc",
       "mac/mach_logging.h",
-      "mac/mach_o.cc",
-      "mac/mach_o.h",
       "mac/mach_port_rendezvous.cc",
       "mac/mach_port_rendezvous.h",
       "mac/objc_release_properties.h",
@@ -2783,15 +2781,6 @@ if (build_base_unittests) {
       "test/data/serializer_test.json",
       "test/data/serializer_test_nowhitespace.json",
     ]
-    if (is_mac) {
-      sources += [
-        "test/data/mac/arm64",
-        "test/data/mac/elf",
-        "test/data/mac/universal",
-        "test/data/mac/x86",
-        "test/data/mac/x86_64",
-      ]
-    }
     outputs = [ "{{bundle_resources_dir}}/" +
                 "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }
@@ -3282,7 +3271,6 @@ if (build_base_unittests) {
         "mac/dispatch_source_mach_unittest.cc",
         "mac/foundation_util_unittest.mm",
         "mac/mac_util_unittest.mm",
-        "mac/mach_o_unittest.cc",
         "mac/mach_port_rendezvous_unittest.cc",
         "mac/objc_release_properties_unittest.mm",
         "mac/scoped_mach_vm_unittest.cc",
@@ -3291,7 +3279,6 @@ if (build_base_unittests) {
         "mac/scoped_sending_event_unittest.mm",
         "message_loop/message_pump_mac_unittest.mm",
         "power_monitor/thermal_state_observer_mac_unittest.mm",
-        "process/launch_unittest_mac.cc",
         "process/memory_unittest_mac.h",
         "process/memory_unittest_mac.mm",
         "strings/sys_string_conversions_mac_unittest.mm",

@@ -61,10 +61,6 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Whether or not to enable CPU security mitigations against side-channel
   // attacks. See base::LaunchOptions::enable_cpu_security_mitigations.
   virtual bool EnableCpuSecurityMitigations();
-
-#if defined(ARCH_CPU_ARM64)
-  virtual bool LaunchX86_64();
-#endif  // ARCH_CPU_ARM64
 #endif  // OS_MAC
 };
 

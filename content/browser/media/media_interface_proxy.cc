@@ -197,11 +197,6 @@ media::mojom::CdmService& GetCdmService(const base::Token& guid,
   if (!remote) {
     ServiceProcessHost::Options options;
     options.WithDisplayName(display_name);
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-    if (cdm_info.launch_x86_64) {
-      options.WithChildFlags(ChildProcessHost::CHILD_LAUNCH_X86_64);
-    }
-#endif  // OS_MAC && ARCH_CPU_ARM64
     ServiceProcessHost::Launch(remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
     remote.set_disconnect_handler(base::BindOnce(&EraseCdmService, key));

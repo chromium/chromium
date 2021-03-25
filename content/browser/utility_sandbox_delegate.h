@@ -49,22 +49,12 @@ class UtilitySandboxedProcessLauncherDelegate
   base::EnvironmentMap GetEnvironment() override;
 #endif  // OS_POSIX
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-  // If true, the child process will be launched as x86_64 code under Rosetta
-  // translation.
-  void set_launch_x86_64(bool launch_x86_64) { launch_x86_64_ = launch_x86_64; }
-  bool LaunchX86_64() override;
-#endif  // OS_MAC && ARCH_CPU_ARM64
-
  private:
 #if defined(OS_POSIX)
   base::EnvironmentMap env_;
 #endif  // OS_POSIX
   sandbox::policy::SandboxType sandbox_type_;
   base::CommandLine cmd_line_;
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-  bool launch_x86_64_ = false;
-#endif  // OS_MAC && ARCH_CPU_ARM64
 };
 }  // namespace content
 
