@@ -23,17 +23,17 @@ namespace password_manager {
 
 namespace {
 
-template <typename StringT>
-StringT CanonicalizeUsernameT(base::BasicStringPiece<StringT> username) {
-  // String literal containing a single period (i.e. "."). Spelt out explicitly,
-  // because there is no short-form syntax for std::u16string.
-  static constexpr typename StringT::value_type kPeriod[] = {'.', '\0'};
+template <typename CharT>
+std::basic_string<CharT> CanonicalizeUsernameT(
+    base::BasicStringPiece<CharT> username) {
+  static constexpr CharT kPeriod = '.';
 
-  StringT email_lower = base::ToLowerASCII(username);
+  std::basic_string<CharT> email_lower = base::ToLowerASCII(username);
   // |email_lower| might be an email address. Strip off the mail-address host,
   // remove periods from the username and return the result.
-  StringT user_lower = email_lower.substr(0, email_lower.find_last_of('@'));
-  base::RemoveChars(user_lower, kPeriod, &user_lower);
+  std::basic_string<CharT> user_lower =
+      email_lower.substr(0, email_lower.find_last_of('@'));
+  base::RemoveChars(user_lower, {&kPeriod, 1}, &user_lower);
   return user_lower;
 }
 

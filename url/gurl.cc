@@ -68,8 +68,8 @@ GURL::GURL(std::string canonical_spec, const url::Parsed& parsed, bool is_valid)
   InitializeFromCanonicalSpec();
 }
 
-template<typename STR>
-void GURL::InitCanonical(base::BasicStringPiece<STR> input_spec,
+template <typename CharT>
+void GURL::InitCanonical(base::BasicStringPiece<CharT> input_spec,
                          bool trim_path_end) {
   url::StdStringCanonOutput output(&spec_);
   is_valid_ = url::Canonicalize(

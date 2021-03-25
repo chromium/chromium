@@ -40,19 +40,19 @@ bool ServerUrlFetcher::IsProdEndpoint() const {
 }
 
 GURL ServerUrlFetcher::GetSupportsScriptEndpoint() const {
-  url::StringPieceReplacements<std::string> script_replacements;
+  GURL::Replacements script_replacements;
   script_replacements.SetPathStr(kScriptEndpoint);
   return server_url_.ReplaceComponents(script_replacements);
 }
 
 GURL ServerUrlFetcher::GetNextActionsEndpoint() const {
-  url::StringPieceReplacements<std::string> action_replacements;
+  GURL::Replacements action_replacements;
   action_replacements.SetPathStr(kActionEndpoint);
   return server_url_.ReplaceComponents(action_replacements);
 }
 
 GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() const {
-  url::StringPieceReplacements<std::string> trigger_replacements;
+  GURL::Replacements trigger_replacements;
   trigger_replacements.SetPathStr(kTriggersEndpoint);
   return server_url_.ReplaceComponents(trigger_replacements);
 }

@@ -262,8 +262,7 @@ std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
   std::string contents;
   if (!base::ReadFileToStringWithMaxSize(deps, &contents, kDepsFileSizeMax))
     return {};
-  const base::flat_set<const wchar_t*,
-                       CaseInsensitiveASCIICompare<std::wstring>>
+  const base::flat_set<const wchar_t*, CaseInsensitiveASCIICompare>
       exclude_extensions = {L".pdb", L".js"};
   std::vector<base::FilePath> result;
   for (const auto& line :

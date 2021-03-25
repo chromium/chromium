@@ -38,8 +38,8 @@ class BASE_EXPORT CommandLine {
   using StringType = std::string;
 #endif
 
-  using StringPieceType = base::BasicStringPiece<StringType>;
   using CharType = StringType::value_type;
+  using StringPieceType = base::BasicStringPiece<CharType>;
   using StringVector = std::vector<StringType>;
   using SwitchMap = std::map<std::string, StringType, std::less<>>;
 

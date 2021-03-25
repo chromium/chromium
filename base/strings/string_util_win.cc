@@ -101,7 +101,7 @@ void ReplaceFirstSubstringAfterOffset(std::wstring* str,
                                       WStringPiece find_this,
                                       WStringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::wstring>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
 }
 
@@ -110,7 +110,7 @@ void ReplaceSubstringsAfterOffset(std::wstring* str,
                                   WStringPiece find_this,
                                   WStringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::wstring>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
 }
 

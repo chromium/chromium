@@ -15,7 +15,7 @@ namespace base {
 namespace internal {
 
 template <>
-inline WStringPiece WhitespaceForType<std::wstring>() {
+inline WStringPiece WhitespaceForType<wchar_t>() {
   return kWhitespaceWide;
 }
 

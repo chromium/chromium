@@ -127,7 +127,7 @@ std::vector<std::string> FeaturesFromSwitch(
     const base::CommandLine& command_line,
     const char* switch_name) {
   using NativeString = base::CommandLine::StringType;
-  using NativeStringPiece = base::BasicStringPiece<NativeString>;
+  using NativeStringPiece = base::CommandLine::StringPieceType;
 
   std::vector<std::string> features;
   if (!command_line.HasSwitch(switch_name))

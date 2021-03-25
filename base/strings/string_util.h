@@ -85,8 +85,8 @@ BASE_EXPORT bool IsWprintfFormatPortable(const wchar_t* format);
 
 // Simplified implementation of C++20's std::basic_string_view(It, End).
 // Reference: https://wg21.link/string.view.cons
-template <typename StringT, typename Iter>
-constexpr BasicStringPiece<StringT> MakeBasicStringPiece(Iter begin, Iter end) {
+template <typename CharT, typename Iter>
+constexpr BasicStringPiece<CharT> MakeBasicStringPiece(Iter begin, Iter end) {
   DCHECK_GE(end - begin, 0);
   return {base::to_address(begin), static_cast<size_t>(end - begin)};
 }
@@ -95,17 +95,17 @@ constexpr BasicStringPiece<StringT> MakeBasicStringPiece(Iter begin, Iter end) {
 // aliases defined in base/strings/string_piece_forward.h
 template <typename Iter>
 constexpr StringPiece MakeStringPiece(Iter begin, Iter end) {
-  return MakeBasicStringPiece<std::string>(begin, end);
+  return MakeBasicStringPiece<char>(begin, end);
 }
 
 template <typename Iter>
 constexpr StringPiece16 MakeStringPiece16(Iter begin, Iter end) {
-  return MakeBasicStringPiece<std::u16string>(begin, end);
+  return MakeBasicStringPiece<char16_t>(begin, end);
 }
 
 template <typename Iter>
 constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
-  return MakeBasicStringPiece<std::wstring>(begin, end);
+  return MakeBasicStringPiece<wchar_t>(begin, end);
 }
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,

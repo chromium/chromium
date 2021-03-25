@@ -101,7 +101,7 @@ void SendRequestNoAuth(
 
   std::string query_str = base::StrCat({"key=", api_key});
   // query_str must remain valid until ReplaceComponents() has returned.
-  url::StringPieceReplacements<std::string> add_key;
+  GURL::Replacements add_key;
   add_key.SetQueryStr(query_str);
   GURL modified_url = url.ReplaceComponents(add_key);
 

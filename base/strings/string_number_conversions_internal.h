@@ -179,8 +179,8 @@ class StringToNumberParser {
   };
 };
 
-template <typename Number, int kBase, typename Str>
-auto StringToNumber(BasicStringPiece<Str> input) {
+template <typename Number, int kBase, typename CharT>
+auto StringToNumber(BasicStringPiece<CharT> input) {
   using Parser = StringToNumberParser<Number, kBase>;
   using Result = typename Parser::Result;
 
@@ -212,15 +212,15 @@ auto StringToNumber(BasicStringPiece<Str> input) {
   return result;
 }
 
-template <typename STR, typename VALUE>
-bool StringToIntImpl(BasicStringPiece<STR> input, VALUE& output) {
+template <typename CharT, typename VALUE>
+bool StringToIntImpl(BasicStringPiece<CharT> input, VALUE& output) {
   auto result = StringToNumber<VALUE, 10>(input);
   output = result.value;
   return result.valid;
 }
 
-template <typename STR, typename VALUE>
-bool HexStringToIntImpl(BasicStringPiece<STR> input, VALUE& output) {
+template <typename CharT, typename VALUE>
+bool HexStringToIntImpl(BasicStringPiece<CharT> input, VALUE& output) {
   auto result = StringToNumber<VALUE, 16>(input);
   output = result.value;
   return result.valid;

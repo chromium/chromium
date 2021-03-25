@@ -226,10 +226,9 @@ void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
 }
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
-// UTF-16 input. The template type is the std::string type to use (it makes the
-// typedefs easier than using the character type).
-template <typename Str>
-size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<Str> host,
+// UTF-16 input.
+template <typename CharT>
+size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<CharT> host,
                                          UnknownRegistryFilter unknown_filter,
                                          PrivateRegistryFilter private_filter) {
   std::string canonical_host;  // Do not modify outside of canon_output.
@@ -445,15 +444,15 @@ size_t GetCanonicalHostRegistryLength(base::StringPiece canon_host,
 size_t PermissiveGetHostRegistryLength(base::StringPiece host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<std::string>(host, unknown_filter,
-                                                        private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 size_t PermissiveGetHostRegistryLength(base::StringPiece16 host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<std::u16string>(host, unknown_filter,
-                                                           private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 void SetFindDomainGraph() {

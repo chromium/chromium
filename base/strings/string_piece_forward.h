@@ -7,16 +7,13 @@
 #ifndef BASE_STRINGS_STRING_PIECE_FORWARD_H_
 #define BASE_STRINGS_STRING_PIECE_FORWARD_H_
 
-#include <string>
-
-
 namespace base {
 
-template <typename STRING_TYPE>
+template <typename CharT>
 class BasicStringPiece;
-typedef BasicStringPiece<std::string> StringPiece;
-typedef BasicStringPiece<std::u16string> StringPiece16;
-typedef BasicStringPiece<std::wstring> WStringPiece;
+typedef BasicStringPiece<char> StringPiece;
+typedef BasicStringPiece<char16_t> StringPiece16;
+typedef BasicStringPiece<wchar_t> WStringPiece;
 
 }  // namespace base
 

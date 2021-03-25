@@ -358,7 +358,7 @@ void ReplaceFirstSubstringAfterOffset(std::u16string* str,
                                       StringPiece16 find_this,
                                       StringPiece16 replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::u16string>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
 }
 
@@ -367,7 +367,7 @@ void ReplaceFirstSubstringAfterOffset(std::string* str,
                                       StringPiece find_this,
                                       StringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::string>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
 }
 
@@ -376,7 +376,7 @@ void ReplaceSubstringsAfterOffset(std::u16string* str,
                                   StringPiece16 find_this,
                                   StringPiece16 replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::u16string>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
 }
 
@@ -385,7 +385,7 @@ void ReplaceSubstringsAfterOffset(std::string* str,
                                   StringPiece find_this,
                                   StringPiece replace_with) {
   internal::DoReplaceMatchesAfterOffset(
-      str, start_offset, internal::SubstringMatcher<std::string>{find_this},
+      str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
 }
 

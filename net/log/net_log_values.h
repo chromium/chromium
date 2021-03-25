@@ -5,6 +5,7 @@
 #ifndef NET_LOG_NET_LOG_VALUES_H_
 #define NET_LOG_NET_LOG_VALUES_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "base/strings/string_piece_forward.h"

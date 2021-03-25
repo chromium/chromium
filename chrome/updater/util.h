@@ -51,12 +51,11 @@ void InitLogging(const base::FilePath::StringType& filename);
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
 // Functor used by associative containers of strings as a case-insensitive ASCII
-// compare. |T| could be std::string or std::u16string.
-template <typename T>
+// compare. |StringT| could be either UTF-8 or UTF-16.
 struct CaseInsensitiveASCIICompare {
  public:
-  bool operator()(base::BasicStringPiece<T> x,
-                  base::BasicStringPiece<T> y) const {
+  template <typename StringT>
+  bool operator()(const StringT& x, const StringT& y) const {
     return base::CompareCaseInsensitiveASCII(x, y) > 0;
   }
 };
