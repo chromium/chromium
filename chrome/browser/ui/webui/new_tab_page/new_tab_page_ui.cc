@@ -202,6 +202,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
 
       // Theme.
       {"themeCreatedBy", IDS_NEW_TAB_ATTRIBUTION_INTRO},
+      {"themeManagedDialogTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
+      {"themeManagedDialogBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
+      {"ok", IDS_OK},
 
       // Modules.
       {"dismissModuleToastMessage", IDS_NTP_MODULES_DISMISS_TOAST_MESSAGE},

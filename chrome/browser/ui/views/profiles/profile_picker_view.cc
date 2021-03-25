@@ -114,6 +114,12 @@ void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
                                  ->GetAvatarToolbarButton();
   DCHECK(anchor_view);
 
+  // Don't show the customization bubble if a valid policy theme is set.
+  if (ThemeServiceFactory::GetForProfile(browser->profile())
+          ->UsingPolicyTheme()) {
+    return;
+  }
+
   if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
           browser->profile())) {
     // For sync users, their profile color has not been applied yet. Call a
@@ -781,8 +787,13 @@ void ProfilePickerView::SwitchToSyncConfirmationFinished() {
   // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       sign_in_->contents->GetWebUI()->GetController());
+
+  // The new profile theme may be overridden by an existing policy theme. This
+  // check ensures the correct theme is applied to the sync confirmation window.
+  auto* theme_service = ThemeServiceFactory::GetForProfile(sign_in_->profile);
   sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(
-      sign_in_->profile_color);
+      theme_service->UsingPolicyTheme() ? theme_service->GetPolicyThemeColor()
+                                        : sign_in_->profile_color);
 }
 
 void ProfilePickerView::SwitchToProfileSwitch(

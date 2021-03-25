@@ -39,6 +39,8 @@
 #include "chrome/browser/signin/local_auth.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -303,7 +305,10 @@ void OnSyncSetupComplete(Profile* profile,
     }
     SetProfileName(profile->GetPath(), profile_name);
     Browser* browser = chrome::FindBrowserWithProfile(profile);
-    if (browser) {
+
+    // Don't show the customization bubble if a valid policy theme is set.
+    if (browser &&
+        !ThemeServiceFactory::GetForProfile(profile)->UsingPolicyTheme()) {
       ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
           browser, GenerateNewProfileColor().color);
     }

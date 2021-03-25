@@ -5575,6 +5575,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL" desc="The label for the color picker in the customization menu on the New Tab Page">
         Custom color
       </message>
+      <message name="IDS_NTP_THEME_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
+        Theme is set by your Organization
+      </message>
+      <message name="IDS_NTP_THEME_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
+        Your administrator has set a default theme which cannot be changed.
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
         Default color
       </message>

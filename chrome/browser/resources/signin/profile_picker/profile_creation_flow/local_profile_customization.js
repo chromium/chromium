@@ -322,6 +322,7 @@ Polymer({
       info: {
         chromeThemeId: this.profileThemeInfo.colorId,
       },
+      isForced: false,
     };
   },
 

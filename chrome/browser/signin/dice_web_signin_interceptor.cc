@@ -554,11 +554,17 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
   DCHECK(interception_bubble_handle_);
   interception_bubble_handle_.reset();  // Close the bubble now.
   session_startup_helper_.reset();
-  if (is_new_profile && !profile_->IsEphemeralGuestProfile()) {
-    Browser* browser = chrome::FindBrowserWithProfile(profile_);
-    DCHECK(browser);
-    delegate_->ShowProfileCustomizationBubble(browser);
-  }
+
+  if (!is_new_profile || profile_->IsEphemeralGuestProfile())
+    return;
+
+  // Don't show the customization bubble if a valid policy theme is set.
+  if (ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme())
+    return;
+
+  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  DCHECK(browser);
+  delegate_->ShowProfileCustomizationBubble(browser);
 }
 
 // static

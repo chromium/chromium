@@ -49,6 +49,7 @@ js_library("customize_themes") {
     "//skia/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/managed_dialog",
     "//ui/webui/resources/cr_elements/cr_grid",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

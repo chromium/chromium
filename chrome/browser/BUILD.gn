@@ -4119,6 +4119,8 @@ static_library("browser") {
       "themes/custom_theme_supplier.h",
       "themes/increased_contrast_theme_supplier.cc",
       "themes/increased_contrast_theme_supplier.h",
+      "themes/theme_color_policy_handler.cc",
+      "themes/theme_color_policy_handler.h",
       "themes/theme_helper.cc",
       "themes/theme_helper.h",
       "themes/theme_properties.cc",

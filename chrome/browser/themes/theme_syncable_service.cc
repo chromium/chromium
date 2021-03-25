@@ -312,6 +312,10 @@ bool ThemeSyncableService::GetThemeSpecificsFromCurrentTheme(
     return false;
   }
 
+  // If theme was set through policy, it should be unsyncable.
+  if (theme_service_->UsingPolicyTheme())
+    return false;
+
   theme_specifics->Clear();
   theme_specifics->set_use_custom_theme(false);
 
