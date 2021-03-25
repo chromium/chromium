@@ -966,6 +966,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9099154003160514616">Hi ha una actualització de Lacros disponible</translation>
+<translation id="9105450214093926548">Mentre s'executa el navegador Lacros, no s'admet l'inici de sessió amb un segon usuari. Utilitza un altre perfil del navegador o tanca Lacros i torna-ho a provar.</translation>
 <translation id="9133335900048457298">No es pot gravar contingut protegit</translation>
 <translation id="9151726767154816831">Reinicieu i feu un Powerwash per actualitzar.</translation>
 <translation id="9166331175924255663">Commuta la visibilitat alta de Compartició Nearby.</translation>

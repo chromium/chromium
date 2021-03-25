@@ -966,6 +966,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
 <translation id="9098969848082897657">Téléphone silencieux</translation>
 <translation id="9099154003160514616">Une mise à jour de Lacros est proposée</translation>
+<translation id="9105450214093926548">Un second utilisateur ne peut pas se connecter lorsque le navigateur Lacros est en cours d'exécution. Veuillez utiliser un second profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
 <translation id="9133335900048457298">Impossible d'enregistrer le contenu protégé</translation>
 <translation id="9151726767154816831">Redémarrer et utiliser PowerWash afin de mettre à jour</translation>
 <translation id="9166331175924255663">Basculer la haute visibilité du partage à proximité.</translation>

@@ -16,7 +16,7 @@
 <translation id="257674075312929031">Топ</translation>
 <translation id="2613747923081026172">Топ түзүү</translation>
 <translation id="2671423594960767771">Топту бөлүшүү</translation>
-<translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу <ph name="NUMBER_OF_TABS" /> өтмөктө жайылып көрсөтүлсүн.</translation>
+<translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу <ph name="NUMBER_OF_TABS" /> өтмөктө жайылып көрүнсүн.</translation>
 <translation id="2977480621796371840">Топтон алып салуу</translation>
 <translation id="3291470810748040983">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
@@ -59,7 +59,7 @@
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="8304833501377495048">Өтмөк тасмасы экинчи көрсөтүлбөсүнбү?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү жабуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү жабуу}}</translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобу жайылып көрсөтүлсүн.</translation>
+<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> өтмөктөн турган өтмөктөр тобу жайылып көрүнсүн.</translation>
 <translation id="860282621117673749">Баалардын түшкөнү жөнүндө эскертүүлөр</translation>
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8749939518995770034">Өтмөк тасмасы жабылды</translation>

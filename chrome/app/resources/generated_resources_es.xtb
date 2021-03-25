@@ -6329,7 +6329,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8168943654413034772">No se puede quitar el único interruptor asignado a la acción "Seleccionar". Pulsa cualquier tecla para salir.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Añadir pestaña a lista de lectura}other{Añadir pestañas a lista de lectura}}</translation>
 <translation id="8171334254070436367">Ocultar todas las tarjetas</translation>
-<translation id="8174047975335711832">Información sobre el dispositivo</translation>
+<translation id="8174047975335711832">Información del dispositivo</translation>
 <translation id="8174876712881364124">Crear copia de seguridad en Google Drive. Cambia de dispositivo o restaura datos fácilmente en cualquier momento. Esta copia de seguridad incluye datos de las aplicaciones. Los archivos de las copias de seguridad se suben a Google y se cifran con la contraseña de la cuenta de Google de tu hijo. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="8176332201990304395">Rosa y blanco</translation>
 <translation id="8177196903785554304">Información de la red</translation>

@@ -83,7 +83,7 @@
 <translation id="3115898365077584848">Informatie tonen</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
-<translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
@@ -124,7 +124,7 @@
 <translation id="4468959413250150279">Geluid uitzetten voor een specifieke site.</translation>
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4505788138578415521">URL uitgevouwen</translation>
-<translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Details</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -277,7 +277,7 @@
 <translation id="8394832520002899662">Tik hier om terug te gaan naar de site</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8441146129660941386">Achteruit zoeken</translation>
-<translation id="8444433999583714703">Als je <ph name="APP_NAME" /> toegang wilt geven tot je locatie, moet je je locatie ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="8444433999583714703">Als je <ph name="APP_NAME" /> toegang wilt geven tot je locatie, moet je je locatie ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Rechten voor apparaat intrekken</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie in gebruik}other{# cookies in gebruik}}</translation>
 <translation id="8463851957836045671">Site is snel</translation>

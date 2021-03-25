@@ -332,7 +332,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="3796746699333205839">Een app gebruikt je camera en microfoon</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
-<translation id="3799080171973636491">Je hebt op de sneltoets voor vergroten op volledige schermgrootte gedrukt. Wil je deze functie inschakelen?</translation>
+<translation id="3799080171973636491">Je hebt op de sneltoets van het vergrootglas voor volledig scherm gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="380165613292957338">Hoi, wat kan ik voor je doen?</translation>
 <translation id="3826099427150913765">Overschakelen naar wachtwoord</translation>
 <translation id="383058930331066723">Batterijbesparing is ingeschakeld</translation>
@@ -392,7 +392,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4302592941791324970">Niet beschikbaar</translation>
 <translation id="4303223480529385476">Statusgedeelte uitvouwen</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">Je hebt op de sneltoets voor hoog contrast gedrukt. Wil je deze functie inschakelen?</translation>
+<translation id="4321776623976362024">Je hebt op de sneltoets voor hoog contrast gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="4331809312908958774">Besturingssysteem Chrome</translation>
 <translation id="4333628967105022692">Lacros wordt niet ondersteund terwijl er meerdere gebruikers zijn ingelogd.</translation>
 <translation id="4338109981321384717">Vergrootglas</translation>
@@ -402,7 +402,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /> procent</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4379531060876907730">Dit zijn je stylustools</translation>
-<translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie inschakelen?</translation>
+<translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is uitgeschakeld.</translation>
 <translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe support.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
@@ -966,6 +966,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9098969848082897657">Geluid van telefoon uitzetten</translation>
 <translation id="9099154003160514616">Lacros-update beschikbaar</translation>
+<translation id="9105450214093926548">Een tweede gebruiker inloggen wordt niet ondersteund als de Lacros-browser actief is. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of sluit Lacros en probeer het opnieuw.</translation>
 <translation id="9133335900048457298">Kan geen beschermde content opnemen</translation>
 <translation id="9151726767154816831">Opnieuw opstarten en de functie Powerwash gebruiken om bij te werken</translation>
 <translation id="9166331175924255663">Hoge zichtbaarheid voor 'Dichtbij delen' in-/uitschakelen.</translation>

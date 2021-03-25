@@ -412,7 +412,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5327248766486351172">Naam</translation>
-<translation id="5339316356165661760">Synchroniseren inschakelen</translation>
+<translation id="5339316356165661760">Synchronisatie aanzetten</translation>
 <translation id="5360976571138293719">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
@@ -539,7 +539,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="6497772452874122664">Als je <ph name="TIME" /> vertrouwt, kun je een opgeslagen wachtwoord van een andere site gebruiken.
 
 Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
-<translation id="651505212789431520">Synchronisatie annuleren? Je kunt de synchronisatie op elk moment inschakelen via Instellingen.</translation>
+<translation id="651505212789431520">Synchronisatie annuleren? Je kunt de synchronisatie op elk moment aanzetten via Instellingen.</translation>
 <translation id="6524918542306337007">Incognitomodus is niet beschikbaar</translation>
 <translation id="6561262006871132942">Inzoomen</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
@@ -751,7 +751,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8870413625673593573">Recent gesloten</translation>
 <translation id="8881801611828450202">Zoeken op <ph name="SEARCH_ENGINE" /> naar deze afbeelding</translation>
 <translation id="8909135823018751308">Delen</translation>
-<translation id="8917490105272468696">Ja, inschakelen</translation>
+<translation id="8917490105272468696">Ja, aanzetten</translation>
 <translation id="895541991026785598">Een probleem melden</translation>
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8981454092730389528">Google-activiteitsopties</translation>

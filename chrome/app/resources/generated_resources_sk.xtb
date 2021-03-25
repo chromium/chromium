@@ -487,7 +487,7 @@
 <translation id="1526335046150927198">Povoliť zrýchlenie pri posúvaní touchpadom</translation>
 <translation id="1526560967942511387">Dokument bez názvu</translation>
 <translation id="1527336312600375509">Frekvencia obnovenia monitoru</translation>
-<translation id="152913213824448541">Kontakty pri zdieľaní nablízku</translation>
+<translation id="152913213824448541">Kontakty pri Zdieľaní nablízku</translation>
 <translation id="1529891865407786369">Zdroj napájania</translation>
 <translation id="1530838837447122178">Otvoriť nastavenia myši a touchpadu</translation>
 <translation id="1531275250079031713">Zobraziť dialógové okno Pridať novú sieť Wi‑Fi</translation>
@@ -597,7 +597,7 @@
 <translation id="1641113438599504367">Bezpečné prehliadanie</translation>
 <translation id="1642494467033190216">Pred aktiváciou ďalších funkcií ladenia je potrebné odstrániť ochranu rootfs a reštartovať zariadenie.</translation>
 <translation id="1643072738649235303">Podpis X9.62 ECDSA s SHA-1</translation>
-<translation id="1643921258693943800">Ak chcete použiť zdieľanie nablízku, zapnite Bluetooth a Wi-Fi</translation>
+<translation id="1643921258693943800">Ak chcete použiť Zdieľanie nablízku, zapnite Bluetooth a Wi-Fi</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1645516838734033527">V rámci zabezpečenia vášho zariadenia <ph name="DEVICE_TYPE" /> funkcia Smart Lock vyžaduje, aby bola v telefóne nastavená zámka obrazovky.</translation>
 <translation id="1646982517418478057">Zadajte heslo na zašifrovanie tohto certifikátu</translation>
@@ -1468,7 +1468,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="2616366145935564096">Čítať a meniť údaje pre <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">SIM karta je uzamknutá</translation>
-<translation id="2618797463720777311">Nastavenie zdieľania nablízku</translation>
+<translation id="2618797463720777311">Nastavenie Zdieľania nablízku</translation>
 <translation id="2619761439309613843">Obnovovať denne</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nie je možné bezpečne stiahnuť.</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -1798,7 +1798,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2962131322798295505">Výber tapety</translation>
 <translation id="2963151496262057773">Nasledujúci doplnok prestal reagovať: <ph name="PLUGIN_NAME" />. Chcete ho zastaviť?</translation>
 <translation id="2964193600955408481">Zakázať sieť Wi‑Fi</translation>
-<translation id="2964245677645334031">Viditeľnosť pri zdieľaní nablízku</translation>
+<translation id="2964245677645334031">Viditeľnosť pri Zdieľaní nablízku</translation>
 <translation id="2966216232069818096">Povoľte Asistentovi pomáhať vám informáciami na obrazovke</translation>
 <translation id="2966937470348689686">Spravovať predvoľby Androidu</translation>
 <translation id="2972581237482394796">&amp;Dopredu</translation>
@@ -2521,7 +2521,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3792890930871100565">Odpojiť tlačiarne</translation>
 <translation id="3793395331556663376">Príliš veľa otvorených systémov súborov.</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred 1 dňom}few{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_DAYS} dňami}many{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_DAYS} dňa}other{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_DAYS} dňami}}</translation>
-<translation id="379500251094592809">Ak chcete používať zdieľanie nablízku, obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. Ak zdieľate s Chromebookom, ktorý nie je vo vašich kontaktoch, uistite sa, či má zapnutú viditeľnosť nablízku (otvorte stavovú oblasť výberom času a potom zapnite Viditeľnosť nablízku).<ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">Ak chcete používať Zdieľanie nablízku, obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. Ak zdieľate s Chromebookom, ktorý nie je vo vašich kontaktoch, uistite sa, či má zapnutú viditeľnosť nablízku (otvorte stavovú oblasť výberom času a potom zapnite Viditeľnosť nablízku).<ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Vypnuté</translation>
 <translation id="3796648294839530037">Obľúbené siete:</translation>
 <translation id="3797739167230984533"><ph name="BEGIN_LINK" />Zariadenie <ph name="DEVICE_TYPE" /> spravuje<ph name="END_LINK" /> vaša organizácia</translation>
@@ -2607,7 +2607,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3873423927483480833">Zobraziť kódy PIN</translation>
 <translation id="3873915545594852654">Vyskytol sa problém s ARC++.</translation>
 <translation id="3874164307099183178">Zapnúť Asistenta Google</translation>
-<translation id="3877075909000773256">Nastavenia zdieľania nablízku v zariadení používateľa <ph name="USER_EMAIL" />, obsah sa zdieľa ako <ph name="USER_NAME" />.</translation>
+<translation id="3877075909000773256">Nastavenia Zdieľania nablízku v zariadení používateľa <ph name="USER_EMAIL" />, obsah sa zdieľa ako <ph name="USER_NAME" />.</translation>
 <translation id="3879748587602334249">Správca sťahovania</translation>
 <translation id="3881478300875776315">Zobraziť menej riadkov</translation>
 <translation id="3882165008614329320">Existujúce video z fotoaparátu alebo súboru</translation>
@@ -2765,7 +2765,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Prejsť na plochu</translation>
-<translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nie je k dispozícii. Ak s ním chcete použiť zdieľanie nablízku, pridajte e‑mailovú adresu spojenú s jeho účtom Google do svojich kontaktov.}few{# kontakty nie sú k dispozícii. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}many{# contacts are not available. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}other{# kontaktov nie je k dispozícii. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}}</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nie je k dispozícii. Ak s ním chcete použiť Zdieľanie nablízku, pridajte e‑mailovú adresu spojenú s jeho účtom Google do svojich kontaktov.}few{# kontakty nie sú k dispozícii. Ak s nimi chcete použiť Zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}many{# contacts are not available. Ak s nimi chcete použiť Zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}other{# kontaktov nie je k dispozícii. Ak s nimi chcete použiť Zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}}</translation>
 <translation id="4050225813016893843">Spôsob overenia</translation>
 <translation id="4050534976465737778">Obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. Ak zdieľate s Chromebookom, ktorý nie je vo vašich kontaktoch, skontrolujte, či má zapnutú viditeľnosť nablízku (otvorte stavovú oblasť a zapnite Viditeľnosť nablízku). <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Drobné</translation>
@@ -3872,7 +3872,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5372529912055771682">Poskytnutý režim registrácie v tejto verzii operačného systému už nie je podporovaný. Uistite sa, že používate najnovšiu verziu a skúste to znova.</translation>
 <translation id="5372579129492968947">Odopnúť rozšírenie</translation>
 <translation id="5372632722660566343">Pokračovať bez účtu</translation>
-<translation id="5375318608039113175">Ak chcete s týmito kontaktmi používať zdieľanie nablízku, pridajte e‑mailové adresy prepojené s ich účtami Google do svojich kontaktov.</translation>
+<translation id="5375318608039113175">Ak chcete s týmito kontaktmi používať Zdieľanie nablízku, pridajte e‑mailové adresy prepojené s ich účtami Google do svojich kontaktov.</translation>
 <translation id="5376169624176189338">Kliknutím prejdete naspäť. Pri dlhšom stlačení sa zobrazí história.</translation>
 <translation id="5376931455988532197">Súbor je príliš veľký</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{Do zariadenia <ph name="DEVICE_NAME" /> boli úspešne odoslané prílohy (<ph name="ATTACHMENTS" />)}few{Do zariadenia <ph name="DEVICE_NAME" /> boli úspešne odoslané prílohy (<ph name="ATTACHMENTS" />)}many{Do zariadenia <ph name="DEVICE_NAME" /> boli úspešne odoslané prílohy (<ph name="ATTACHMENTS" />)}other{Do zariadenia <ph name="DEVICE_NAME" /> boli úspešne odoslané prílohy (<ph name="ATTACHMENTS" />)}}</translation>
@@ -4123,7 +4123,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5646558797914161501">Obchodník</translation>
 <translation id="5648166631817621825">Posledných 7 dní</translation>
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
-<translation id="5651308944918885595">Viditeľnosť pri zdieľaní nablízku</translation>
+<translation id="5651308944918885595">Viditeľnosť pri Zdieľaní nablízku</translation>
 <translation id="5653154844073528838">Máte niekoľko uložených tlačiarní (<ph name="PRINTER_COUNT" />).</translation>
 <translation id="5656845498778518563">Odoslanie spätnej väzby Googlu</translation>
 <translation id="5657156137487675418">Povoliť všetky súbory cookie</translation>
@@ -4735,7 +4735,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6362853299801475928">Nahlásenie p&amp;roblému...</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Pridanie rodiny a priateľov</translation>
-<translation id="6367985768157257101">Chcete prijať obsah zdieľaním nablízku?</translation>
+<translation id="6367985768157257101">Chcete prijať obsah Zdieľaním nablízku?</translation>
 <translation id="636850387210749493">Registrácia podniku</translation>
 <translation id="6370021412472292592">Manifest sa nepodarilo načítať.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
@@ -5521,7 +5521,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7267044199012331848">Virtuálny počítač sa nepodarilo nainštalovať. Skúste to znova alebo kontaktujte správcu. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Zdvíhajte prst, aby ste pridali všetky odlišné časti odtlačku</translation>
 <translation id="7268127947535186412">Toto nastavenie spravuje vlastník zariadenia.</translation>
-<translation id="7269736181983384521">Spotreba dát pri zdieľaní nablízku</translation>
+<translation id="7269736181983384521">Spotreba dát pri Zdieľaní nablízku</translation>
 <translation id="7270858098575133036">Opýtať sa, keď bude chcieť web použiť na prístup k zariadeniam MIDI správy exkluzívne pre systém</translation>
 <translation id="7272674038937250585">Popis nie je k dispozícii</translation>
 <translation id="7273110280511444812">naposledy pripojené dňa <ph name="DATE" /></translation>
@@ -6358,7 +6358,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8201717382574620700">Vybrať albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>
 <translation id="8202160505685531999">Zadajte znova svoje heslo a aktualizujte tak profil zariadenia <ph name="DEVICE_TYPE" />.</translation>
-<translation id="8203152941016626022">Názov zariadenia pri zdieľaní nablízku</translation>
+<translation id="8203152941016626022">Názov zariadenia pri Zdieľaní nablízku</translation>
 <translation id="8203732864715032075">Odosiela upozornenia a predvolene si zapamätá tento počítač pre Správy. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="820568752112382238">Najviac navštevované stránky</translation>
 <translation id="8206745257863499010">Bluesový</translation>
