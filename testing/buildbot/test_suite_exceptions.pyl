@@ -2647,6 +2647,12 @@
         },
         'experiment_percentage': 100,
       },
+      'chromeos-eve-chrome': {
+        'args': [
+          # TODO(crbug.com/1191132): Re-enable.
+          '--skip=benchmarks.benchmark_smoke_unittest.BenchmarkSmokeTest.wasmpspdfkit',
+        ],
+      },
       'chromeos-kevin-chrome': {
         # TODO(crbug.com/1182948): Remove the experiment.
         'experiment_percentage': 100,
