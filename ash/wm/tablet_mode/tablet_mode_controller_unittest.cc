@@ -604,10 +604,10 @@ TEST_F(TabletModeControllerTest, VerticalHingeTest) {
   }
 }
 
-// Test if this case does not crash. See http://crbug.com/462806
+// Test if this case does not crash. See http://crbug.com/462806.
 TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   // Do not animate wallpaper on entering overview.
-  OverviewWallpaperController::SetDoNotChangeWallpaperForTests();
+  OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
 
   UpdateDisplay("800x600,800x600");
   std::unique_ptr<aura::Window> w1(
@@ -624,6 +624,8 @@ TEST_F(TabletModeControllerTest, DisplayDisconnectionDuringOverview) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_EQ(w1->GetRootWindow(), w2->GetRootWindow());
+
+  OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
 }
 
 // Test that the disabling of the internal display exits tablet mode, and that

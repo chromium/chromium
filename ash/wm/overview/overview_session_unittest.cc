@@ -197,10 +197,11 @@ class OverviewSessionTest : public AshTestBase {
         base::TimeDelta::FromMilliseconds(1));
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(
         /*immediate=*/true);
-    OverviewWallpaperController::SetDoNotChangeWallpaperForTests();
+    OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
     PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
   }
   void TearDown() override {
+    OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
     PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     trace_names_.clear();

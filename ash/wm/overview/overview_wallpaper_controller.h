@@ -23,8 +23,8 @@ class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
   OverviewWallpaperController();
   ~OverviewWallpaperController() override;
 
-  // There is no need to blur or dim the wallpaper for tests.
-  static void SetDoNotChangeWallpaperForTests();
+  // There may not be a need to blur or dim the wallpaper for tests.
+  static void SetDisableChangeWallpaperForTest(bool disable);
 
   void Blur(bool animate);
   void Unblur();
