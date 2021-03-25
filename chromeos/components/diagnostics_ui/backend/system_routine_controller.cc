@@ -35,6 +35,7 @@ constexpr uint32_t kCpuFloatingPointDurationInSeconds = 60;
 constexpr uint32_t kCpuPrimeDurationInSeconds = 60;
 constexpr uint32_t kCpuStressDurationInSeconds = 60;
 constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
+constexpr uint32_t kLanConnectivityDurationInSeconds = 1;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
 constexpr char kChargePercentKey[] = "chargePercent";
@@ -103,6 +104,8 @@ uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type) {
       return kCpuPrimeDurationInSeconds;
     case mojom::RoutineType::kCpuStress:
       return kCpuCacheDurationInSeconds;
+    case mojom::RoutineType::kLanConnectivity:
+      return kLanConnectivityDurationInSeconds;
     case mojom::RoutineType::kMemory:
       return kExpectedMemoryDurationInSeconds;
   }
@@ -130,6 +133,7 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kCpuCache:
     case healthd::DiagnosticRoutineEnum::kCpuStress:
     case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kMemory:
     case healthd::DiagnosticRoutineEnum::kPrimeSearch:
       return true;
@@ -146,7 +150,6 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
@@ -170,6 +173,8 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
       return mojom::RoutineType::kCpuStress;
     case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
       return mojom::RoutineType::kCpuFloatingPoint;
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
+      return mojom::RoutineType::kLanConnectivity;
     case healthd::DiagnosticRoutineEnum::kMemory:
       return mojom::RoutineType::kMemory;
     case healthd::DiagnosticRoutineEnum::kPrimeSearch:
@@ -187,7 +192,6 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
@@ -316,6 +320,11 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
           healthd::NullableUint32::New(kCpuStressDurationInSeconds),
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kLanConnectivity:
+      diagnostics_service_->RunLanConnectivityRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          weak_factory_.GetWeakPtr(), routine_type));
       break;

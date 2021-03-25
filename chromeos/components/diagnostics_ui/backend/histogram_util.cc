@@ -53,6 +53,10 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
       base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.CpuStressResult",
                                     result);
       return;
+    case mojom::RoutineType::kLanConnectivity:
+      base::UmaHistogramEnumeration(
+          "ChromeOS.DiagnosticsUi.LanConnectivityResult", result);
+      return;
     case mojom::RoutineType::kMemory:
       base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.MemoryResult",
                                     result);

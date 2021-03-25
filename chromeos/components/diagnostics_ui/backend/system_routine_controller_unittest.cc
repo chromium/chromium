@@ -527,12 +527,13 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
                         healthd::DiagnosticRoutineEnum::kPrimeSearch,
                         healthd::DiagnosticRoutineEnum::kAcPower,
                         healthd::DiagnosticRoutineEnum::kBatteryCapacity,
-                        healthd::DiagnosticRoutineEnum::kBatteryHealth});
+                        healthd::DiagnosticRoutineEnum::kBatteryHealth,
+                        healthd::DiagnosticRoutineEnum::kLanConnectivity});
 
   base::RunLoop run_loop;
   system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
       [&](const std::vector<mojom::RoutineType>& supported_routines) {
-        EXPECT_EQ(3u, supported_routines.size());
+        EXPECT_EQ(4u, supported_routines.size());
         EXPECT_FALSE(base::Contains(supported_routines,
                                     mojom::RoutineType::kBatteryCharge));
         EXPECT_FALSE(base::Contains(supported_routines,
@@ -545,6 +546,8 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
                                    mojom::RoutineType::kCpuFloatingPoint));
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kCpuPrime));
+        EXPECT_TRUE(base::Contains(supported_routines,
+                                   mojom::RoutineType::kLanConnectivity));
         EXPECT_TRUE(
             base::Contains(supported_routines, mojom::RoutineType::kMemory));
         run_loop.Quit();

@@ -33,7 +33,15 @@ Polymer({
     // TODO(michaelcheco): Wire up network routines.
     routines_: {
       type: Array,
-      value: [],
+      value: [
+        chromeos.diagnostics.mojom.RoutineType.kLanConnectivity,
+      ],
     },
+  },
+
+  /** @protected */
+  getEstimateRuntimeInMinutes_() {
+    // Connectivity routines will always last <= 1 minute.
+    return 1;
   },
 });

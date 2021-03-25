@@ -34,6 +34,9 @@ export function getRoutineType(routineType) {
       return loadTimeData.getString('cpuFloatingPointAccuracyRoutineText');
     case chromeos.diagnostics.mojom.RoutineType.kCpuPrime:
       return loadTimeData.getString('cpuPrimeSearchRoutineText');
+    case chromeos.diagnostics.mojom.RoutineType.kLanConnectivity:
+      // TODO(michaelcheco): Replace with localized string.
+      return 'Lan Connectivity';
     case chromeos.diagnostics.mojom.RoutineType.kMemory:
       return loadTimeData.getString('memoryRoutineText');
     default:
