@@ -341,9 +341,6 @@ class RepeatingCallbackList
   }
 };
 
-template <typename Signature>
-using CallbackList = RepeatingCallbackList<Signature>;
-
 // Syntactic sugar to parallel that used for Callbacks.
 // ClosureList explicitly not provided since it is not used, and CallbackList
 // is deprecated. {Once,Repeating}ClosureList should instead be used.
