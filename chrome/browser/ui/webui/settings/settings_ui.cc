@@ -259,11 +259,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
 
-  html_source->AddBoolean(
-      "editPasswordsInSettings",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kEditPasswordsInSettings));
-
   html_source->AddBoolean("showImportPasswords",
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
