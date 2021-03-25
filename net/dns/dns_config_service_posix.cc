@@ -214,7 +214,8 @@ DnsConfigServicePosix::DnsConfigServicePosix()
 }
 
 DnsConfigServicePosix::~DnsConfigServicePosix() {
-  config_reader_->Cancel();
+  if (config_reader_)
+    config_reader_->Cancel();
 }
 
 void DnsConfigServicePosix::RefreshConfig() {

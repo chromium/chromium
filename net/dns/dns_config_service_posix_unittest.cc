@@ -143,6 +143,17 @@ void InitializeExpectedConfig(DnsConfig* config) {
 #endif
 }
 
+TEST(DnsConfigServicePosixTest, CreateAndDestroy) {
+  // Regression test to verify crash does not occur if DnsConfigServicePosix
+  // instance is destroyed without calling WatchConfig()
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  auto service = std::make_unique<internal::DnsConfigServicePosix>();
+  service.reset();
+  task_environment.RunUntilIdle();
+}
+
 TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   struct __res_state res;
   InitializeResState(&res);
