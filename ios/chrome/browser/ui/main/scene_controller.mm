@@ -341,6 +341,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
          self.signinCoordinator.isSettingsViewPresented;
 }
 
+- (void)setStartupParameters:(AppStartupParameters*)parameters {
+  _startupParameters = parameters;
+  BOOL shouldShowPromo =
+      self.sceneState.appState.shouldShowDefaultBrowserPromo &&
+      (parameters.postOpeningAction == NO_ACTION);
+  self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
@@ -888,9 +896,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
 
-  // If skipping first run, not in Safe Mode, and the launch is not after a
-  // crash, consider showing the default browser promo.
+  // If skipping first run, not in Safe Mode, no post opening action and the
+  // launch is not after a crash, consider showing the default browser promo.
+  NTPTabOpeningPostOpeningAction postOpeningAction =
+      self.NTPActionAfterTabSwitcherDismissal;
+  if (self.startupParameters) {
+    postOpeningAction = self.startupParameters.postOpeningAction;
+  }
   if (!firstRun && !self.sceneState.appState.isInSafeMode &&
+      postOpeningAction == NO_ACTION &&
       !self.sceneState.appState.postCrashLaunch) {
     // Show the Default Browser promo UI if the user's past behavior fits
     // the categorization of potentially interested users or if the user is
@@ -903,6 +917,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                           ios::GetChromeBrowserProvider()
                               ->GetChromeIdentityService()
                               ->HasIdentities();
+
     if ((!IsChromeLikelyDefaultBrowser() &&
          !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) ||
         ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
