@@ -161,7 +161,7 @@ const base::FeatureParam<Prerender2Implementation>::Option
         {Prerender2Implementation::kMPArch, "mparch"}};
 const base::FeatureParam<Prerender2Implementation>
     kPrerender2ImplementationParam{&kPrerender2, "implementation",
-                                   Prerender2Implementation::kWebContents,
+                                   Prerender2Implementation::kMPArch,
                                    &prerender2_implementation_options};
 
 // Enable importing ES Modules for service workers (ModuleServiceWorker).
