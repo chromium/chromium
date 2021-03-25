@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
@@ -159,9 +160,16 @@ public class ChromeCachedFlags {
      * won't be tagged with their corresponding field trial experiments.
      */
     public void cacheMinimalBrowserFlags() {
+        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
+
         // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
-        CachedFeatureFlags.cacheNativeFlags(
-                Arrays.asList(ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD,
-                        ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH));
+        CachedFeatureFlags.cacheNativeFlags(Arrays.asList(ChromeFeatureList.EXPERIMENTS_FOR_AGSA,
+                ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD,
+                ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH));
+
+        // This is used by CustomTabsConnection implementation, which does not necessarily start
+        // chrome.
+        CachedFeatureFlags.cacheFieldTrialParameters(
+                Arrays.asList(CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS));
     }
 }

@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/AllCachedFieldTrialParameters.java",
     "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",

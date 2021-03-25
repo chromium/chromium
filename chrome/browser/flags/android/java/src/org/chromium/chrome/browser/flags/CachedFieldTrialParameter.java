@@ -24,13 +24,15 @@ public abstract class CachedFieldTrialParameter {
      * Data types of field trial parameters.
      */
     @IntDef({FieldTrialParameterType.STRING, FieldTrialParameterType.BOOLEAN,
-            FieldTrialParameterType.INT, FieldTrialParameterType.DOUBLE})
+            FieldTrialParameterType.INT, FieldTrialParameterType.DOUBLE,
+            FieldTrialParameterType.ALL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FieldTrialParameterType {
         int STRING = 0;
         int BOOLEAN = 1;
         int INT = 2;
         int DOUBLE = 3;
+        int ALL = 4;
     }
 
     @CheckDiscard("crbug.com/1067145")
@@ -44,6 +46,8 @@ public abstract class CachedFieldTrialParameter {
     CachedFieldTrialParameter(String featureName, String parameterName,
             @FieldTrialParameterType int type, String preferenceKeyOverride) {
         mFeatureName = featureName;
+        // parameterName does not apply to ALL (because it includes all parameters).
+        assert type != FieldTrialParameterType.ALL || parameterName.isEmpty();
         mParameterName = parameterName;
         mType = type;
         mPreferenceKeyOverride = preferenceKeyOverride;
