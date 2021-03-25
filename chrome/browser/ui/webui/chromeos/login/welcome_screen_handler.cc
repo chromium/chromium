@@ -367,7 +367,7 @@ void WelcomeScreenHandler::UpdateA11yState() {
   a11y_info.SetBoolean("virtualKeyboardEnabled",
                        AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
   if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
-    screen_->CancelChromeVoxHintIdleDetection();
+    screen_->CancelChromeVoxHintTimer();
   CallJS("login.WelcomeScreen.refreshA11yInfo", a11y_info);
 }
 

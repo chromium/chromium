@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/login/login_wizard.h"
-#include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -552,44 +551,20 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
     histogram_tester_.ExpectUniqueSample(
         "OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess", true, 1);
   }
-
-  void AssertChromeVoxHintDetector() {
-    ASSERT_TRUE(welcome_screen()->GetChromeVoxHintDetectorForTesting());
-  }
-
-  void GiveChromeVoxHintForTesting() {
-    AssertChromeVoxHintDetector();
-    welcome_screen()->GetChromeVoxHintDetectorForTesting()->OnIdle();
-  }
-
-  bool IdleDetectionActivatedForTesting() {
-    AssertChromeVoxHintDetector();
-    return welcome_screen()
-                   ->GetChromeVoxHintDetectorForTesting()
-                   ->idle_detector_
-               ? true
-               : false;
-  }
-
-  bool IdleDetectionCancelledForTesting() {
-    return !(welcome_screen()->GetChromeVoxHintDetectorForTesting());
-  }
 };
 
 // Assert that the ChromeVox hint gives speech output and shows a dialog.
 // Clicking the 'activate' button in the dialog should activate ChromeVox.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  // A sanity check to ensure the ChromeVox hint idle detector is disabled for
-  // this and similar tests.
-  ASSERT_FALSE(IdleDetectionActivatedForTesting());
+  // A sanity check to ensure the ChromeVox hint timer is disabled for this and
+  // similar tests.
+  ASSERT_FALSE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
-  // A sanity check to ensure we stop idle detection after the hint is given.
-  ASSERT_TRUE(IdleDetectionCancelledForTesting());
+  welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
   monitor.Call([this]() {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
@@ -617,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopSpaceBar) {
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
   monitor.Call([this]() {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
@@ -646,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
   test::ExecuteOobeJS(kSetAvailableVoices);
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   test::SpeechMonitor monitor;
-  GiveChromeVoxHintForTesting();
+  welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeech(
       "Do you want to activate ChromeVox, the built-in screen reader for "
       "Chrome OS? If so, press and hold both volume keys for five seconds.");
@@ -655,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
 }
 
 // Tests that the ChromeVox hint can be spoken, even if the necessary voice
-// hasn't loaded when the idle detector has fired.
+// hasn't loaded when the timer has fired.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
@@ -666,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
   test::ExecuteOobeJS(set_no_english_voice);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  welcome_screen()->GiveChromeVoxHintForTesting();
   // Wait for voiceschanged listener to register.
   test::OobeJS()
       .CreateWaiter(
@@ -691,33 +666,35 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
 // Assert that clicking on one of the three buttons on the welcome screen
 // cancels the ChromeVox hint.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, CancelHint) {
+  WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  ASSERT_FALSE(IdleDetectionCancelledForTesting());
+  ASSERT_FALSE(screen->GetChromeVoxHintTimerCancelledForTesting());
   test::OobeJS().ClickOnPath(
       {"connect", "welcomeScreen", "accessibilitySettingsButton"});
-  ASSERT_TRUE(IdleDetectionCancelledForTesting());
+  ASSERT_TRUE(screen->GetChromeVoxHintTimerCancelledForTesting());
 }
 
-// Assert that activating ChromeVox before the hint cancels the hint's idle
-// timeout.
+// Assert that activating ChromeVox before the hint cancels the hint's timeout.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest,
                        ActivateChromeVoxBeforeHint) {
+  WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  ASSERT_FALSE(IdleDetectionCancelledForTesting());
+  ASSERT_FALSE(screen->GetChromeVoxHintTimerCancelledForTesting());
   ToggleAccessibilityFeature("accessibility-spoken-feedback", true);
   ASSERT_TRUE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  ASSERT_TRUE(IdleDetectionCancelledForTesting());
+  ASSERT_TRUE(screen->GetChromeVoxHintTimerCancelledForTesting());
 }
 
 // Assert that activating ChromeVox (after the hint is given) closes the hint
 // dialog.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest,
                        ActivateChromeVoxAfterHint) {
+  WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  screen->GiveChromeVoxHintForTesting();
   WaitForChromeVoxHintDialogToOpen();
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
@@ -729,11 +706,12 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest,
 // Assert that we can dismiss the ChromeVox hint dialog and that the appropriate
 // metrics get recorded.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DismissAfterHint) {
+  WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  screen->GiveChromeVoxHintForTesting();
   WaitForChromeVoxHintDialogToOpen();
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
   test::OobeJS().ClickOnPath(kDismissChromeVoxButton);
@@ -747,11 +725,12 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DismissAfterHint) {
 // focus when using tab.
 // TODO(crbug/1161398): The test is flaky.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_TrapFocus) {
+  WelcomeScreen* screen = welcome_screen();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  screen->GiveChromeVoxHintForTesting();
   WaitForChromeVoxHintDialogToOpen();
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, true);
 
@@ -778,14 +757,14 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, DISABLED_TrapFocus) {
   test::OobeJS().CreateFocusWaiter(kActivateChromeVoxButton)->Wait();
 }
 
-// Verifies that the ChromeVox idle detector is cancelled when
-// skipToLoginForTesting is called.
+// Verifies that the ChromeVox timer is cancelled when skipToLoginForTesting is
+// called.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, SkipToLoginForTesting) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   test::ExecuteOobeJS("Oobe.skipToLoginForTesting()");
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
-  EXPECT_TRUE(IdleDetectionCancelledForTesting());
+  EXPECT_TRUE(welcome_screen()->GetChromeVoxHintTimerCancelledForTesting());
 }
 
 class WelcomeScreenInternationalChromeVoxHintTest
@@ -815,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest, SpeakHint) {
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
-  GiveChromeVoxHintForTesting();
+  welcome_screen()->GiveChromeVoxHintForTesting();
   monitor.ExpectSpeechPatternWithLocale("*", "fr");
   monitor.Replay();
   WaitForSpokenSuccessMetric();
@@ -840,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   test::ExecuteOobeJS(set_no_french_voice);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
-  GiveChromeVoxHintForTesting();
+  welcome_screen()->GiveChromeVoxHintForTesting();
   // Expect speech in English, even though the system locale is French.
   monitor.ExpectSpeechPatternWithLocale("*", "en-US");
   monitor.Replay();
@@ -849,8 +828,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
 
 // Tests the behavior of the ChromeVox hint in dev mode without the enabling
 // flag.
-class WelcomeScreenChromeVoxHintDevModeTest
-    : public WelcomeScreenChromeVoxHintTest {
+class WelcomeScreenChromeVoxHintDevModeTest : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenChromeVoxHintDevModeTest() = default;
   ~WelcomeScreenChromeVoxHintDevModeTest() override = default;
@@ -864,17 +842,17 @@ class WelcomeScreenChromeVoxHintDevModeTest
   }
 };
 
-// The ChromeVox hint idle detector should not be activated if the device is in
-// dev mode without the enabling flag.
+// The ChromeVox hint timer should not be activated if the device is in dev
+// mode without the enabling flag.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintDevModeTest,
-                       IdleDetectorNotActivated) {
+                       TimerNotActivated) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  EXPECT_FALSE(IdleDetectionActivatedForTesting());
+  EXPECT_FALSE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
 }
 
 // Tests the behavior of the ChromeVox hint in dev mode with the enabling flag.
 class WelcomeScreenChromeVoxHintDevModeWithFlagTest
-    : public WelcomeScreenChromeVoxHintTest {
+    : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenChromeVoxHintDevModeWithFlagTest() = default;
   ~WelcomeScreenChromeVoxHintDevModeWithFlagTest() override = default;
@@ -890,12 +868,12 @@ class WelcomeScreenChromeVoxHintDevModeWithFlagTest
   }
 };
 
-// The ChromeVox hint idle detector should be activated if the device is in dev
-// mode and the enabling flag is specified on the command line.
+// The ChromeVox hint timer should be activated if the device is in dev mode and
+// the enabling flag is specified on the command line.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintDevModeWithFlagTest,
-                       IdleDetectorActivated) {
+                       TimerActivated) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  EXPECT_TRUE(IdleDetectionActivatedForTesting());
+  EXPECT_TRUE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
 }
 
 }  // namespace chromeos
