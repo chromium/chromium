@@ -234,7 +234,7 @@ void CrashpadClient::ProcessIntermediateDumps(
 }
 
 // static
-void CrashpadClient::EnableUploading() {
+void CrashpadClient::StartProcesingPendingReports() {
   // TODO(justincohen): Start the CrashReportUploadThread.
 }
 
@@ -243,7 +243,17 @@ void CrashpadClient::DumpWithoutCrash(NativeCPUContext* context) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
   crash_handler->DumpWithoutCrash(context);
+  // TODO(justincohen): Change this to only process the dump from above, not all
+  // intermediate dump files.
   crash_handler->ProcessIntermediateDumps();
+}
+
+// static
+void CrashpadClient::DumpWithoutCrashAndDeferProcessing(
+    NativeCPUContext* context) {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->DumpWithoutCrash(context);
 }
 
 }  // namespace crashpad

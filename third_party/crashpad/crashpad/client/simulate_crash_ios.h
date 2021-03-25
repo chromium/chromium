@@ -20,12 +20,31 @@
 
 //! \file
 
-//! \brief Captures the CPU context and captures a dump without an exception.
+//! \brief Captures the CPU context and creates a minidump dump without an
+//!     exception. The minidump will immediately become eligible for further
+//!     processing, including upload.
+//!
+//! \sa CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING
 #define CRASHPAD_SIMULATE_CRASH()                             \
   do {                                                        \
     crashpad::NativeCPUContext cpu_context;                   \
     crashpad::CaptureContext(&cpu_context);                   \
     crashpad::CrashpadClient::DumpWithoutCrash(&cpu_context); \
+  } while (false)
+
+//! \brief Captures the CPU context and captures an intermediate dump without an
+//!     exception. Does not convert the intermediate dump into a minidump.
+//!
+//! Deferring processing is useful when the application may be in an unstable
+//! state, such as during a hang.
+//!
+//! \sa CRASHPAD_SIMULATE_CRASH
+#define CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING()            \
+  do {                                                            \
+    crashpad::NativeCPUContext cpu_context;                       \
+    crashpad::CaptureContext(&cpu_context);                       \
+    crashpad::CrashpadClient::DumpWithoutCrashAndDeferProcessing( \
+        &cpu_context);                                            \
   } while (false)
 
 #endif  // CRASHPAD_CLIENT_SIMULATE_CRASH_IOS_H_

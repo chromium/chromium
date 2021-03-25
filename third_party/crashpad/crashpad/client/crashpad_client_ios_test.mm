@@ -18,6 +18,7 @@
 
 #include <vector>
 
+#include "client/simulate_crash.h"
 #include "gtest/gtest.h"
 #include "test/scoped_temp_dir.h"
 #include "testing/platform_test.h"
@@ -33,9 +34,7 @@ TEST_F(CrashpadIOSClient, DumpWithoutCrash) {
   ScopedTempDir database_dir;
   client.StartCrashpadInProcessHandler(
       base::FilePath(database_dir.path()), "", {});
-  NativeCPUContext context;
-  CaptureContext(&context);
-  client.DumpWithoutCrash(&context);
+  CRASHPAD_SIMULATE_CRASH();
 }
 
 // This test is covered by a similar XCUITest, but for development purposes it's

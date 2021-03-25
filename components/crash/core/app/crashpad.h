@@ -146,6 +146,10 @@ void RequestSingleCrashUpload(const std::string& local_id);
 
 void DumpWithoutCrashing();
 
+#if defined(OS_IOS)
+void DumpWithoutCrashAndDeferProcessing();
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
 // crash dump.

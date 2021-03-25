@@ -191,7 +191,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     if (crash_reporter::IsCrashpadRunning()) {
       static crash_reporter::CrashKeyString<4> key("hang-report");
       crash_reporter::ScopedCrashKeyString auto_clear(&key, "yes");
-      crash_reporter::DumpWithoutCrashing();
+      crash_reporter::DumpWithoutCrashAndDeferProcessing();
       return;
     }
 
