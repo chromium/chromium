@@ -35,42 +35,37 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [
-    "array_data_model.js",
-    "command.js",
-    "context_menu_handler.js",
-    "dialogs.js",
-    "drag_wrapper.js",
-    "focus_grid.js",
-    "focus_manager.js",
-    "focus_outline_manager.js",
-    "focus_row.js",
-    "keyboard_shortcut_list.js",
-    "list_item.js",
-    "list.js",
-    "list_selection_controller.js",
-    "list_selection_model.js",
-    "list_single_selection_model.js",
-    "menu_button.js",
-    "menu_item.js",
-    "menu.js",
-    "position_util.js",
-    "splitter.js",
-    "store_client.js",
-    "store.js",
-    "tabs.js",
-    "tree.js",
-  ]
-
-  if (!is_android) {
-    in_files += [
-      "focus_row_behavior.js",
-      "focus_without_ink.js",
-    ]
-  }
+  in_files = [ "focus_outline_manager.js" ]
 
   if (is_chromeos_ash) {
-    in_files += [ "grid.js" ]
+    in_files += [
+      "array_data_model.js",
+      "command.js",
+      "context_menu_handler.js",
+      "dialogs.js",
+      "drag_wrapper.js",
+      "focus_grid.js",
+      "focus_manager.js",
+      "focus_row.js",
+      "focus_row_behavior.js",
+      "focus_without_ink.js",
+      "grid.js",
+      "keyboard_shortcut_list.js",
+      "list_item.js",
+      "list.js",
+      "list_selection_controller.js",
+      "list_selection_model.js",
+      "list_single_selection_model.js",
+      "menu_button.js",
+      "menu_item.js",
+      "menu.js",
+      "position_util.js",
+      "splitter.js",
+      "store_client.js",
+      "store.js",
+      "tabs.js",
+      "tree.js",
+    ]
   }
 }
 
