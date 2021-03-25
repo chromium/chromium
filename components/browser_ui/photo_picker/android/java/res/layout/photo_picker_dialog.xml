@@ -39,5 +39,6 @@
         android:id="@+id/playback_container"
         android:background="@android:color/black"
         android:clickable="true"
+        android:elevation="6dp"
         android:visibility="gone" />
 </org.chromium.ui.widget.OptimizedFrameLayout>
