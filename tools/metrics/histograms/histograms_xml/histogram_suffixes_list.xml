@@ -12293,6 +12293,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="Wrong-hwid" label=""/>
   <affected-histogram name="OOBE.StepCompletionTime"/>
+  <affected-histogram name="OOBE.StepShownStatus"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OobeScreenName_ExitReason" separator=".">

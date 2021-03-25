@@ -25,6 +25,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
@@ -281,6 +282,15 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::OobeScreen::SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED,
      "supervised-user-creation-flow"},
     {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
+
+void RecordUMAHistogramForOOBEStepShownStatus(
+    chromeos::OobeScreenId screen,
+    WizardController::ScreenShownStatus status) {
+  std::string screen_name = screen.name;
+  screen_name[0] = std::toupper(screen_name[0]);
+  std::string histogram_name = "OOBE.StepShownStatus." + screen_name;
+  base::UmaHistogramEnumeration(histogram_name, status);
+}
 
 void RecordUMAHistogramForOOBEStepCompletionTime(chromeos::OobeScreenId screen,
                                                  const std::string& exit_reason,
@@ -1723,8 +1733,12 @@ void WizardController::PerformOOBECompletedActions() {
 void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   VLOG(1) << "SetCurrentScreen: "
           << (new_current ? new_current->screen_id().name : "null");
-  if (new_current && new_current->MaybeSkip(wizard_context_.get()))
+
+  if (new_current && new_current->MaybeSkip(wizard_context_.get())) {
+    RecordUMAHistogramForOOBEStepShownStatus(new_current->screen_id(),
+                                             ScreenShownStatus::kSkipped);
     return;
+  }
 
   if (current_screen_ == new_current || GetOobeUI() == nullptr)
     return;
@@ -1751,6 +1765,8 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
+  RecordUMAHistogramForOOBEStepShownStatus(current_screen_->screen_id(),
+                                           ScreenShownStatus::kShown);
   current_screen_->Show(wizard_context_.get());
   NotifyScreenChanged();
 }

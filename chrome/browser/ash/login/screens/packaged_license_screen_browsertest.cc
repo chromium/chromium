@@ -19,6 +19,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using ::testing::ElementsAre;
 
 namespace chromeos {
 
@@ -100,6 +103,10 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, DontEnroll) {
       "OOBE.StepCompletionTimeByExitReason.Packaged-license.DontEnroll", 1);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Packaged-license",
                                      1);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
+      ElementsAre(base::Bucket(
+          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, Enroll) {
@@ -117,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, Enroll) {
       "OOBE.StepCompletionTimeByExitReason.Packaged-license.DontEnroll", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Packaged-license",
                                      1);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
+      ElementsAre(base::Bucket(
+          static_cast<int>(WizardController::ScreenShownStatus::kShown), 1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
@@ -131,6 +142,10 @@ IN_PROC_BROWSER_TEST_F(PackagedLicenseScreenTest, NoLicense) {
       "OOBE.StepCompletionTimeByExitReason.Packaged-license.DontEnroll", 0);
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Packaged-license",
                                      0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples("OOBE.StepShownStatus.Packaged-license"),
+      ElementsAre(base::Bucket(
+          static_cast<int>(WizardController::ScreenShownStatus::kSkipped), 1)));
 }
 
 }  // namespace chromeos

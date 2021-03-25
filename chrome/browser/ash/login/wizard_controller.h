@@ -87,6 +87,12 @@ class WizardController {
     virtual void OnShutdown() = 0;
   };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
+  enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
+
   WizardController();
   ~WizardController();
 
