@@ -174,14 +174,13 @@ static void JNI_BrowsingDataBridge_ClearSameSiteNoneData(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& jprofile,
-    const JavaParamRef<jobject>& jcallback,
-    jboolean jclear_storage) {
+    const JavaParamRef<jobject>& jcallback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearSameSiteNoneData");
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   content::ClearSameSiteNoneData(
       base::BindOnce(&base::android::RunRunnableAndroid,
                      ScopedJavaGlobalRef<jobject>(jcallback)),
-      profile, jclear_storage);
+      profile);
 }
 
 static void EnableDialogAboutOtherFormsOfBrowsingHistory(

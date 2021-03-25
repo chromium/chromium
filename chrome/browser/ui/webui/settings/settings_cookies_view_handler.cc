@@ -387,8 +387,7 @@ void CookiesViewHandler::HandleRemoveThirdParty(const base::ListValue* args) {
           content::ClearSameSiteNoneData,
           base::BindOnce(&CookiesViewHandler::RecreateCookiesTreeModel,
                          callback_weak_ptr_factory_.GetWeakPtr()),
-          profile,
-          /* clear_storage */ true),
+          profile),
       base::BindOnce(&CookiesViewHandler::ResolveJavascriptCallback,
                      callback_weak_ptr_factory_.GetWeakPtr(),
                      base::Value(callback_id), base::Value()));

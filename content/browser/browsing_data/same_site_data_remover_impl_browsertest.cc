@@ -66,10 +66,9 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
 
   net::EmbeddedTestServer* GetHttpsServer() { return https_server_.get(); }
 
-  void ClearData(bool clear_storage) {
+  void ClearData() {
     base::RunLoop run_loop;
-    ClearSameSiteNoneData(run_loop.QuitClosure(), GetBrowserContext(),
-                          clear_storage);
+    ClearSameSiteNoneData(run_loop.QuitClosure(), GetBrowserContext());
     run_loop.Run();
   }
 
@@ -94,8 +93,7 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithStorageRemoval) {
+IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
   StoragePartition* storage_partition = GetStoragePartition();
   CreateCookieForTest(
       "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
@@ -105,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
   browsing_data_browsertest_utils::AddServiceWorker(
       "www.google.com", storage_partition, GetHttpsServer());
 
-  ClearData(/* clear_storage= */ true);
+  ClearData();
 
   // Check that cookies were deleted.
   const std::vector<net::CanonicalCookie>& cookies =
@@ -116,32 +114,6 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
   std::vector<StorageUsageInfo> service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
   EXPECT_THAT(service_workers, IsEmpty());
-}
-
-IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithoutStorageRemoval) {
-  StoragePartition* storage_partition = GetStoragePartition();
-  CreateCookieForTest(
-      "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
-      net::CookieOptions::SameSiteCookieContext(
-          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
-      true /* is_cookie_secure */, GetBrowserContext());
-  browsing_data_browsertest_utils::AddServiceWorker(
-      "www.google.com", storage_partition, GetHttpsServer());
-
-  ClearData(/* clear_storage= */ false);
-
-  // Check that cookies were deleted.
-  const std::vector<net::CanonicalCookie>& cookies =
-      GetAllCookies(GetBrowserContext());
-  EXPECT_THAT(cookies, IsEmpty());
-
-  // Storage partition data should NOT have been cleared.
-  std::vector<StorageUsageInfo> service_workers =
-      browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
-  ASSERT_EQ(1u, service_workers.size());
-  EXPECT_EQ(service_workers[0].origin.GetURL(),
-            GetHttpsServer()->GetURL("www.google.com", "/"));
 }
 
 }  // namespace content

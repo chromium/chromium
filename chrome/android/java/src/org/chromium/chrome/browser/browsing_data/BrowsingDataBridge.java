@@ -126,9 +126,9 @@ public final class BrowsingDataBridge {
      * @param callback Invoked when the clearing is done.
      * @param clearStorage If true, clears any storage associated with SameSite=None cookies.
      */
-    public void clearSameSiteNoneData(Runnable callback, boolean clearStorage) {
+    public void clearSameSiteNoneData(Runnable callback) {
         BrowsingDataBridgeJni.get().clearSameSiteNoneData(
-                BrowsingDataBridge.this, getProfile(), callback, clearStorage);
+                BrowsingDataBridge.this, getProfile(), callback);
     }
 
     /**
@@ -263,8 +263,7 @@ public final class BrowsingDataBridge {
         void clearBrowsingData(BrowsingDataBridge caller, Profile profile, int[] dataTypes,
                 int timePeriod, String[] excludedDomains, int[] excludedDomainReasons,
                 String[] ignoredDomains, int[] ignoredDomainReasons);
-        void clearSameSiteNoneData(BrowsingDataBridge caller, Profile profile, Runnable callback,
-                boolean clearStorage);
+        void clearSameSiteNoneData(BrowsingDataBridge caller, Profile profile, Runnable callback);
         void requestInfoAboutOtherFormsOfBrowsingHistory(BrowsingDataBridge caller, Profile profile,
                 OtherFormsOfBrowsingHistoryListener listener);
         void fetchImportantSites(Profile profile, ImportantSitesCallback callback);

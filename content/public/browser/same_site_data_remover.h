@@ -12,10 +12,9 @@ namespace content {
 class BrowserContext;
 
 // Clears cookies available in third-party contexts where SameSite=None.
-// Also removes associated storage if |clear_storage| is set to true.
+// Also removes storage for domains with a SameSite=None cookie.
 CONTENT_EXPORT void ClearSameSiteNoneData(base::OnceClosure closure,
-                                          BrowserContext* context,
-                                          bool clear_storage);
+                                          BrowserContext* context);
 
 }  // namespace content
 

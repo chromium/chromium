@@ -62,17 +62,6 @@ bool DoesOriginMatchDomain(const std::set<std::string>& same_site_none_domains,
   return false;
 }
 
-void OnDeleteSameSiteNoneCookies(
-    base::OnceClosure closure,
-    std::unique_ptr<SameSiteDataRemoverImpl> remover,
-    bool clear_storage) {
-  if (clear_storage) {
-    remover->ClearStoragePartitionData(std::move(closure));
-  } else {
-    std::move(closure).Run();
-  }
-}
-
 }  // namespace
 
 SameSiteDataRemoverImpl::SameSiteDataRemoverImpl(
@@ -122,17 +111,15 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionData(
 
 // Defines the ClearSameSiteNoneData function declared in same_site_remover.h.
 // Clears cookies and associated data available in third-party contexts.
-void ClearSameSiteNoneData(base::OnceClosure closure,
-                           BrowserContext* context,
-                           bool clear_storage) {
+void ClearSameSiteNoneData(base::OnceClosure closure, BrowserContext* context) {
   base::RecordAction(
       base::UserMetricsAction("ClearBrowsingData_SameSiteNoneData"));
   auto same_site_remover = std::make_unique<SameSiteDataRemoverImpl>(context);
   SameSiteDataRemoverImpl* remover = same_site_remover.get();
 
   remover->DeleteSameSiteNoneCookies(
-      base::BindOnce(&OnDeleteSameSiteNoneCookies, std::move(closure),
-                     std::move(same_site_remover), clear_storage));
+      base::BindOnce(&SameSiteDataRemoverImpl::ClearStoragePartitionData,
+                     std::move(same_site_remover), std::move(closure)));
 }
 
 }  // namespace content

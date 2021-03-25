@@ -125,7 +125,7 @@ public class BrowsingDataBridgeTest {
     public void testSameSiteNoneCookiesDeleted() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowsingDataBridge.getInstance().clearSameSiteNoneData(
-                    () -> { mCallbackHelper.notifyCalled(); }, false);
+                    () -> { mCallbackHelper.notifyCalled(); });
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
