@@ -12,7 +12,6 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/x/x11_cursor.h"
-#include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_pointer_grab.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
@@ -166,11 +165,6 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   SetWmDragHandler(this, this);
 
   drag_drop_client_ = std::make_unique<XDragDropClient>(this, window());
-}
-
-void X11Window::SetXEventDelegate(XEventDelegate* delegate) {
-  DCHECK(!x_event_delegate_);
-  x_event_delegate_ = delegate;
 }
 
 void X11Window::OnXWindowLostCapture() {
@@ -743,15 +737,11 @@ void X11Window::OnXWindowLostPointerGrab() {
 }
 
 void X11Window::OnXWindowSelectionEvent(const x11::SelectionNotifyEvent& xev) {
-  if (x_event_delegate_)
-    x_event_delegate_->OnXWindowSelectionEvent(xev);
   DCHECK(drag_drop_client_);
   drag_drop_client_->OnSelectionNotify(xev);
 }
 
 void X11Window::OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) {
-  if (x_event_delegate_)
-    x_event_delegate_->OnXWindowDragDropEvent(xev);
   DCHECK(drag_drop_client_);
   drag_drop_client_->HandleXdndEvent(xev);
 }
@@ -914,6 +904,18 @@ void X11Window::OnMouseReleased() {
 
 void X11Window::OnMoveLoopEnded() {
   drag_drop_client_->HandleMoveLoopEnded();
+}
+
+void X11Window::SetBoundsOnMove(const gfx::Rect& requested_bounds) {
+  SetBounds(requested_bounds);
+}
+
+scoped_refptr<X11Cursor> X11Window::GetLastCursor() {
+  return last_cursor();
+}
+
+gfx::Size X11Window::GetSize() {
+  return bounds().size();
 }
 
 void X11Window::QuitDragLoop() {

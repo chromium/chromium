@@ -6,6 +6,7 @@
 #define UI_PLATFORM_WINDOW_X11_X11_WINDOW_H_
 
 #include "base/macros.h"
+#include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/base/x/x11_window.h"
@@ -24,43 +25,29 @@ namespace ui {
 
 class PlatformWindowDelegate;
 class X11ExtensionDelegate;
-class X11DesktopWindowMoveClient;
 class X11MoveLoop;
 class LocatedEvent;
 class WorkspaceExtensionDelegate;
 
-// Delegate interface used to communicate the X11PlatformWindow API client about
-// x11::Events of interest.
-class X11_WINDOW_EXPORT XEventDelegate {
- public:
-  virtual ~XEventDelegate() = default;
-
-  // TODO(crbug.com/990756): We need to implement/reuse ozone interface for
-  // these.
-  virtual void OnXWindowSelectionEvent(
-      const x11::SelectionNotifyEvent& xev) = 0;
-  virtual void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) = 0;
-};
-
 // PlatformWindow implementation for X11.
-class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
-                                    public WmMoveResizeHandler,
-                                    public XWindow,
-                                    public PlatformEventDispatcher,
-                                    public x11::EventObserver,
-                                    public WorkspaceExtension,
-                                    public X11Extension,
-                                    public WmDragHandler,
-                                    public XDragDropClient::Delegate,
-                                    public X11MoveLoopDelegate,
-                                    public WmMoveLoopHandler {
+class X11_WINDOW_EXPORT X11Window
+    : public PlatformWindow,
+      public WmMoveResizeHandler,
+      public XWindow,
+      public PlatformEventDispatcher,
+      public x11::EventObserver,
+      public WorkspaceExtension,
+      public X11Extension,
+      public WmDragHandler,
+      public XDragDropClient::Delegate,
+      public X11MoveLoopDelegate,
+      public WmMoveLoopHandler,
+      public X11DesktopWindowMoveClient::Delegate {
  public:
   explicit X11Window(PlatformWindowDelegate* platform_window_delegate);
   ~X11Window() override;
 
   virtual void Initialize(PlatformWindowInitProperties properties);
-
-  void SetXEventDelegate(XEventDelegate* delegate);
 
   // X11WindowManager calls this.
   // XWindow override:
@@ -196,6 +183,11 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void OnMouseReleased() override;
   void OnMoveLoopEnded() override;
 
+  // X11DesktopWindowMoveClient::Delegate:
+  void SetBoundsOnMove(const gfx::Rect& requested_bounds) override;
+  scoped_refptr<X11Cursor> GetLastCursor() override;
+  gfx::Size GetSize() override;
+
   void QuitDragLoop();
 
   // Handles |xevent| as a Atk Key Event
@@ -217,8 +209,6 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
 
   PlatformWindowDelegate* const platform_window_delegate_;
-
-  XEventDelegate* x_event_delegate_ = nullptr;
 
   WorkspaceExtensionDelegate* workspace_extension_delegate_ = nullptr;
 
