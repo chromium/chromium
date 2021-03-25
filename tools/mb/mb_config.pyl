@@ -296,7 +296,6 @@
       'Linux Builder (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux TSan Builder (goma cache silo)': 'tsan_disable_nacl_release_bot',
       'Linux TSan Builder (reclient)': 'tsan_disable_nacl_release_bot_reclient',
-      
       'Linux Viz': 'release_trybot',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
@@ -309,6 +308,7 @@
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'TSAN Debug (reclient)': 'tsan_disable_nacl_debug_bot_reclient',
       'TSAN Release (reclient)':  'tsan_disable_nacl_release_bot_reclient',
+      'TSAN Release (runsc-exp) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
       'UBSan Release (reclient)': 'ubsan_release_bot_reclient',
       'VR Linux': 'vr_release_bot',
       'VR Linux (reclient)': 'vr_release_bot_reclient',

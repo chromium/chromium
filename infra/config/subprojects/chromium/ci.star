@@ -3591,6 +3591,22 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "TSAN Release (runsc-exp) (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux tsan",
+        short_name = "rre",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 3,
+    ),
+    goma_backend = None,
+    reclient_instance = "rbe-chromium-gvisor-shadow",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.fyi_builder(
     name = "ASAN Debug (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
