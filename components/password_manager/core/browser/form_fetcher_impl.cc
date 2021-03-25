@@ -240,7 +240,8 @@ void FormFetcherImpl::SplitResults(
   for (auto& form : forms) {
     if (form->blocked_by_user) {
       // Ignore PSL matches for blocklisted entries.
-      if (!form->is_public_suffix_match) {
+      if (!form->is_public_suffix_match &&
+          form->scheme == form_digest_.scheme) {
         is_blocklisted_ = true;
       }
     } else if (form->IsFederatedCredential()) {

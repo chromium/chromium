@@ -3659,128 +3659,117 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, CorrectEntryForHttpAuth) {
 
 // Test that if HTTP auth login (i.e., credentials not put through web forms)
 // succeeds, and there is a blocklisted entry with the HTML PasswordForm::Scheme
-// for that origin, then
-// 1) The bubble is not shown if the auth realm is empty,
-// 2) The bubble is shown if the auth realm is not empty.
-// This inconsistency is a side-effect of only signon_realm, not
-// PasswordForm::Scheme, being used to match blocklisted entries to a form. It
-// is a bug, but so rare that it has not been worth fixing yet.
-// TODO(crbug.com/862930) If the inconsistency is fixed, please ensure that the
-// code for removing duplicates in password_manager_util.cc is updated and does
-// not remove blocklisted credentials which are no longer duplicates.
+// for that origin, then the bubble is shown.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       HTTPAuthEmptyRealmAfterHTMLBlocklisted) {
-  for (bool is_realm_empty : {false, true}) {
-    // The embedded_test_server() is already started at this point and adding
-    // the request handler to it would not be thread safe. Therefore, use a new
-    // server.
-    net::EmbeddedTestServer http_test_server;
+                       HTTPAuthRealmAfterHTMLBlocklistedIsNotBlocked) {
+  // The embedded_test_server() is already started at this point and adding
+  // the request handler to it would not be thread safe. Therefore, use a new
+  // server.
+  net::EmbeddedTestServer http_test_server;
 
-    // Teach the embedded server to handle requests by issuing the basic auth
-    // challenge.
-    http_test_server.RegisterRequestHandler(
-        base::BindRepeating(&HandleTestAuthRequest));
-    ASSERT_TRUE(http_test_server.Start());
+  // Teach the embedded server to handle requests by issuing the basic auth
+  // challenge.
+  http_test_server.RegisterRequestHandler(
+      base::BindRepeating(&HandleTestAuthRequest));
+  ASSERT_TRUE(http_test_server.Start());
 
-    LoginPromptBrowserTestObserver login_observer;
-    login_observer.Register(content::Source<content::NavigationController>(
-        &WebContents()->GetController()));
+  LoginPromptBrowserTestObserver login_observer;
+  login_observer.Register(content::Source<content::NavigationController>(
+      &WebContents()->GetController()));
 
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
 
-    password_manager::PasswordForm blocked_form;
-    blocked_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
-    blocked_form.signon_realm = http_test_server.base_url().spec();
-    blocked_form.blocked_by_user = true;
-    password_store->AddLogin(blocked_form);
-    WaitForPasswordStore();
-    ASSERT_FALSE(password_store->IsEmpty());
+  password_manager::PasswordForm blocked_form;
+  blocked_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  blocked_form.signon_realm = http_test_server.base_url().spec();
+  blocked_form.url = http_test_server.base_url();
+  blocked_form.blocked_by_user = true;
+  password_store->AddLogin(blocked_form);
 
-    std::string path("/basic_auth");
-    if (is_realm_empty)
-      path += "/empty_realm";
+  content::NavigationController* nav_controller =
+      &WebContents()->GetController();
+  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
+  // Navigate to a page requiring HTTP auth.
+  ui_test_utils::NavigateToURL(browser(),
+                               http_test_server.GetURL("/basic_auth"));
+  auth_needed_observer.Wait();
 
-    content::NavigationController* nav_controller =
-        &WebContents()->GetController();
-    WindowedAuthNeededObserver auth_needed_observer(nav_controller);
-    // Navigate to a page requiring HTTP auth.
-    ui_test_utils::NavigateToURL(browser(), http_test_server.GetURL(path));
-    auth_needed_observer.Wait();
+  NavigationObserver nav_observer(WebContents());
+  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
 
-    NavigationObserver nav_observer(WebContents());
-    WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
-
-    ASSERT_EQ(1u, login_observer.handlers().size());
-    LoginHandler* handler = *login_observer.handlers().begin();
-    ASSERT_TRUE(handler);
-    // Any username/password will work.
-    handler->SetAuth(u"user", u"pwd");
-    auth_supplied_observer.Wait();
-
-    nav_observer.Wait();
-    WaitForPasswordStore();
-    BubbleObserver bubble_observer(WebContents());
-    EXPECT_EQ(!is_realm_empty,
-              bubble_observer.IsSavePromptShownAutomatically());
-    if (bubble_observer.IsSavePromptShownAutomatically())
-      bubble_observer.AcceptSavePrompt();
-    WaitForPasswordStore();
-    password_store->Clear();
-  }
+  ASSERT_EQ(1u, login_observer.handlers().size());
+  LoginHandler* handler = *login_observer.handlers().begin();
+  ASSERT_TRUE(handler);
+  // Any username/password will work.
+  handler->SetAuth(u"user", u"pwd");
+  auth_supplied_observer.Wait();
+  nav_observer.Wait();
+  WaitForPasswordStore();
+  EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
-// Test that if HTML login succeeds, and there is a denylisted entry
+// Test that if HTML login succeeds, and there is a blocklisted entry
 // with the HTTP auth PasswordForm::Scheme (i.e., credentials not put
-// through web forms) for that origin, then
-// 1) The bubble is not shown if the auth realm is empty,
-// 2) The bubble is shown if the auth realm is not empty.
-// This inconsistency is a side-effect of only signon_realm, not
-// PasswordForm::Scheme, being used to match denylisted entries to a form.
-// It is a bug, but so rare that it has not been worth fixing yet.
-// TODO(crbug.com/862930) If the inconsistency is fixed, please ensure that the
-// code for removing duplicates in password_manager_util.cc is updated and does
-// not remove denylisted credentials which are no longer duplicates.
-//
-// Disabled due to flakiness: https://crbug.com/1030579.
+// through web forms) for that origin, then the bubble is shown.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       DISABLED_HTMLLoginAfterHTTPAuthIsDenylisted) {
-  for (bool is_realm_empty : {false, true}) {
-    scoped_refptr<password_manager::TestPasswordStore> password_store =
-        static_cast<password_manager::TestPasswordStore*>(
-            PasswordStoreFactory::GetForProfile(
-                browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-                .get());
+                       HTMLLoginAfterHTTPAuthBlocklistedIsNotBlocked) {
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
 
-    password_manager::PasswordForm blocked_form;
-    blocked_form.scheme = password_manager::PasswordForm::Scheme::kBasic;
-    blocked_form.signon_realm = embedded_test_server()->base_url().spec();
-    if (!is_realm_empty)
-      blocked_form.signon_realm += "test realm";
-    blocked_form.blocked_by_user = true;
-    password_store->AddLogin(blocked_form);
-    WaitForPasswordStore();
-    ASSERT_FALSE(password_store->IsEmpty());
+  password_manager::PasswordForm blocked_form;
+  blocked_form.scheme = password_manager::PasswordForm::Scheme::kBasic;
+  blocked_form.signon_realm =
+      embedded_test_server()->base_url().spec() + "test realm";
+  blocked_form.url = embedded_test_server()->base_url();
+  blocked_form.blocked_by_user = true;
+  password_store->AddLogin(blocked_form);
 
-    NavigateToFile("/password/password_form.html");
-    NavigationObserver observer(WebContents());
-    BubbleObserver bubble_observer(WebContents());
-    std::string fill_and_submit =
-        "document.getElementById('username_field').value = 'temp';"
-        "document.getElementById('password_field').value = 'pw';"
-        "document.getElementById('input_submit_button').click()";
-    ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
-    observer.Wait();
-    EXPECT_EQ(!is_realm_empty,
-              bubble_observer.IsSavePromptShownAutomatically());
-    if (bubble_observer.IsSavePromptShownAutomatically())
-      bubble_observer.AcceptSavePrompt();
-    WaitForPasswordStore();
-    password_store->Clear();
-  }
+  NavigateToFile("/password/password_form.html");
+  NavigationObserver observer(WebContents());
+  std::string fill_and_submit =
+      "document.getElementById('username_field').value = 'temp';"
+      "document.getElementById('password_field').value = 'pw';"
+      "document.getElementById('input_submit_button').click()";
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
+  observer.Wait();
+  BubbleObserver bubble_observer(WebContents());
+  EXPECT_TRUE(bubble_observer.IsSavePromptShownAutomatically());
+}
+
+// Tests that "blocklist site" feature works for the basic scenario.
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       HTMLLoginAfterHTMLBlocklistedIsBlocklisted) {
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+
+  password_manager::PasswordForm blocked_form;
+  blocked_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  blocked_form.signon_realm = embedded_test_server()->base_url().spec();
+  blocked_form.url = embedded_test_server()->base_url();
+  blocked_form.blocked_by_user = true;
+  password_store->AddLogin(blocked_form);
+
+  NavigateToFile("/password/password_form.html");
+  NavigationObserver observer(WebContents());
+  std::string fill_and_submit =
+      "document.getElementById('username_field').value = 'temp';"
+      "document.getElementById('password_field').value = 'pw';"
+      "document.getElementById('input_submit_button').click()";
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), fill_and_submit));
+  observer.Wait();
+  BubbleObserver bubble_observer(WebContents());
+  EXPECT_FALSE(bubble_observer.IsSavePromptShownAutomatically());
+  EXPECT_TRUE(bubble_observer.IsSavePromptAvailable());
 }
 
 // This test emulates what was observed in https://crbug.com/856543: Imagine the

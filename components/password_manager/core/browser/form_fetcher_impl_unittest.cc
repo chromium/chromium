@@ -318,16 +318,13 @@ TEST_P(FormFetcherImplTest, Federated) {
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
-// Check that blocked PasswordStore results are handled correctly. Blocked PSL
-// matches in the store should be ignored and not returned as a blocked match.
+// Check that blocked PasswordStore results are handled correctly.
 TEST_P(FormFetcherImplTest, Blocked) {
   Fetch();
   PasswordForm blocked = CreateBlocked();
-  PasswordForm blocked_psl = CreateBlockedPsl();
   form_fetcher_->AddConsumer(&consumer_);
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(blocked));
-  results.push_back(std::make_unique<PasswordForm>(blocked_psl));
   EXPECT_CALL(consumer_, OnFetchCompleted);
   store_consumer()->OnGetPasswordStoreResultsFrom(mock_store_.get(),
                                                   std::move(results));
@@ -335,6 +332,34 @@ TEST_P(FormFetcherImplTest, Blocked) {
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
+}
+
+// Blocked PSL matches in the store should be ignored.
+TEST_P(FormFetcherImplTest, BlockedPSL) {
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(CreateBlockedPsl()));
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  store_consumer()->OnGetPasswordStoreResultsFrom(mock_store_.get(),
+                                                  std::move(results));
+  EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+}
+
+// Blocked matches with a different scheme in the store should be ignored.
+TEST_P(FormFetcherImplTest, BlockedDifferentScheme) {
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  PasswordForm blocked_http_auth = CreateBlocked();
+  blocked_http_auth.scheme = PasswordForm::Scheme::kBasic;
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(blocked_http_auth));
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  store_consumer()->OnGetPasswordStoreResultsFrom(mock_store_.get(),
+                                                  std::move(results));
+  EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
 // Check that mixed PasswordStore results are handled correctly.

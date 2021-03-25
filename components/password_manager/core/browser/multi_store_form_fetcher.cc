@@ -183,6 +183,9 @@ void MultiStoreFormFetcher::SplitResults(
     // Ignore PSL matches for blocklisted entries.
     if (result->is_public_suffix_match)
       continue;
+    // Ignore different schemes.
+    if (result->scheme != form_digest_.scheme)
+      continue;
     if (result->IsUsingAccountStore())
       is_blocklisted_in_account_store_ = true;
     else
