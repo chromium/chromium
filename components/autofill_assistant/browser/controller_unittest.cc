@@ -144,6 +144,7 @@ class ControllerTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override {
     controller_->RemoveObserver(&mock_observer_);
+    controller_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 

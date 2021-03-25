@@ -102,6 +102,7 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
 
   void TearDown() override {
     coordinator_->RemoveObserver(&mock_observer_);
+    coordinator_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
