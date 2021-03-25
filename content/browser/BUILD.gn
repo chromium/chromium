@@ -1083,8 +1083,6 @@ source_set("browser") {
     "media/capture/desktop_capture_device_uma_types.h",
     "media/capture/desktop_streams_registry_impl.cc",
     "media/capture/desktop_streams_registry_impl.h",
-    "media/capture/web_contents_audio_muter.cc",
-    "media/capture/web_contents_audio_muter.h",
     "media/cdm_registry_impl.cc",
     "media/cdm_registry_impl.h",
     "media/desktop_media_window_registry.cc",
