@@ -5,10 +5,13 @@
 #ifndef UI_BASE_IME_FUCHSIA_VIRTUAL_KEYBOARD_CONTROLLER_FUCHSIA_H_
 #define UI_BASE_IME_FUCHSIA_VIRTUAL_KEYBOARD_CONTROLLER_FUCHSIA_H_
 
+#include <fuchsia/input/virtualkeyboard/cpp/fidl.h>
 #include <fuchsia/ui/input/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/view_ref_pair.h>
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 
 namespace ui {
@@ -17,11 +20,14 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
     : public VirtualKeyboardController {
  public:
-  // |ime_service| must outlive |this|.
-  explicit VirtualKeyboardControllerFuchsia(
-      fuchsia::ui::input::ImeService* ime_service);
-
+  // |input_method| must outlive |this|.
+  VirtualKeyboardControllerFuchsia(fuchsia::ui::views::ViewRef view_ref,
+                                   ui::InputMethodBase* input_method);
   ~VirtualKeyboardControllerFuchsia() override;
+
+  VirtualKeyboardControllerFuchsia(VirtualKeyboardControllerFuchsia&) = delete;
+  VirtualKeyboardControllerFuchsia operator=(
+      VirtualKeyboardControllerFuchsia&) = delete;
 
   // VirtualKeyboardController implementation.
   bool DisplayVirtualKeyboard() override;
@@ -31,11 +37,15 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerFuchsia
   bool IsKeyboardVisible() override;
 
  private:
-  fuchsia::ui::input::ImeService* const ime_service_;
-  fuchsia::ui::input::ImeVisibilityServicePtr ime_visibility_;
-  bool keyboard_visible_ = false;
+  // Initiates a "hanging get" request for virtual keyboard visibility.
+  void WatchVisibility();
 
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardControllerFuchsia);
+  // Handles the visibility change response from the service.
+  void OnVisibilityChange(bool is_visible);
+
+  ui::InputMethodBase* const input_method_;
+  fuchsia::input::virtualkeyboard::ControllerPtr controller_service_;
+  bool keyboard_visible_ = false;
 };
 
 }  // namespace ui

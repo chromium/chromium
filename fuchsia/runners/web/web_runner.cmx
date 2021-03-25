@@ -8,6 +8,7 @@
       "fuchsia.camera3.DeviceWatcher",
       "fuchsia.device.NameProvider",
       "fuchsia.fonts.Provider",
+      "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",

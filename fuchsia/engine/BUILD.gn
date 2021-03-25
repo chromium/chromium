@@ -362,6 +362,7 @@ test("web_engine_browsertests") {
     "browser/media_browsertest.cc",
     "browser/navigation_policy_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
+    "browser/virtual_keyboard_browsertest.cc",
   ]
 
   # TODO(crbug.com/1157909): Move to the list above when the bug is fixed.
@@ -388,6 +389,7 @@ test("web_engine_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx",
     "//ui/ozone",

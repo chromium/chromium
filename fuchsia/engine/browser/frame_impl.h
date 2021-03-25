@@ -104,6 +104,9 @@ class FrameImpl : public fuchsia::web::Frame,
   CastStreamingSessionClient* cast_streaming_session_client_for_test() {
     return cast_streaming_session_client_.get();
   }
+  FrameWindowTreeHost* window_tree_host_for_test() {
+    return window_tree_host_.get();
+  }
 
   // Enables explicit sites filtering and set the error page. If |error_page| is
   // empty, the default error page will be used.

@@ -2437,22 +2437,15 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
   // Show the virtual keyboard if needed.
   if (state && state->type != ui::TEXT_INPUT_TYPE_NONE &&
       state->mode != ui::TEXT_INPUT_MODE_NONE) {
-    bool show_virtual_keyboard = true;
-#if defined(OS_FUCHSIA)
-    show_virtual_keyboard =
-        GetLastPointerType() == ui::EventPointerType::kTouch;
-#endif
-
 #if !defined(OS_WIN)
     if (state->show_ime_if_needed &&
-        GetInputMethod()->GetTextInputClient() == this &&
-        show_virtual_keyboard) {
+        GetInputMethod()->GetTextInputClient() == this) {
       GetInputMethod()->ShowVirtualKeyboardIfEnabled();
     }
 // TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
 // is serviced
 #elif defined(OS_WIN)
-    if (GetInputMethod() && show_virtual_keyboard) {
+    if (GetInputMethod()) {
       if (!virtual_keyboard_controller_win_) {
         virtual_keyboard_controller_win_.reset(
             new VirtualKeyboardControllerWin(this, GetInputMethod()));

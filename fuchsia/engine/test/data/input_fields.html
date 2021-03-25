@@ -1,0 +1,19 @@
+<html>
+  <body>
+    <input id="input-text" />
+    <input id="input-tel" inputmode="tel" />
+    <input id="input-numeric" inputmode="numeric"/>
+    <input id="input-url" inputmode="url"/>
+    <input id="input-email" inputmode="email"/>
+    <input id="input-decimal" inputmode="decimal"/>
+    <input id="input-search" inputmode="search"/>
+
+    <script>
+      function getPointInsideText(id) {
+        var rect = document.getElementById(id).getBoundingClientRect();
+        return { 'x': rect.left + 8, 'y': rect.top + 8 };
+      }
+    </script>
+  </body>
+</html>
+
