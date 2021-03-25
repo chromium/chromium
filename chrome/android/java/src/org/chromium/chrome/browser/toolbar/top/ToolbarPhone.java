@@ -141,6 +141,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
     private boolean mIsShowingStartSurface;
+    private boolean mForceHideShadow;
 
     // This determines whether or not the toolbar draws as expected (false) or whether it always
     // draws as if it's showing the non-tabswitcher, non-animating toolbar. This is used in grabbing
@@ -2017,7 +2018,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         if (mToolbarShadow != null) {
-            animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, 0);
+            animator = ObjectAnimator.ofFloat(mToolbarShadow, ALPHA, urlHasFocus() ? 0 : 1);
             animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
             animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
             animators.add(animator);
@@ -2327,6 +2328,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return !isLocationBarShownInNTP() || mUrlExpansionFraction > 0;
     }
 
+    @Override
+    void setForceHideShadow(boolean forceHideShadow) {
+        mForceHideShadow = forceHideShadow;
+        updateShadowVisibility();
+    }
+
     /**
      * Update the visibility of the toolbar shadow.
      */
@@ -2345,10 +2352,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private boolean shouldDrawShadow() {
         // TODO(twellington): Move this shadow state information to ToolbarDataProvider and show
         // shadow when incognito NTP is scrolled.
-        return mTabSwitcherState == STATIC_TAB && !hideShadowForIncognitoNtp()
-                && !hideShadowForInterstitial()
-                && (getToolbarDataProvider() != null
-                        && !getToolbarDataProvider().isInOverviewAndShowingOmnibox());
+        return mTabSwitcherState == STATIC_TAB && !mForceHideShadow && !hideShadowForIncognitoNtp()
+                && !hideShadowForInterstitial() && getVisibility() == View.VISIBLE;
     }
 
     private boolean hideShadowForIncognitoNtp() {

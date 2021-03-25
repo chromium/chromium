@@ -56,6 +56,7 @@ import java.util.List;
 class TabListRecyclerView
         extends RecyclerView implements TabListMediator.TabGridAccessibilityHelper {
     private static final String TAG = "TabListRecyclerView";
+    private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
 
     private static final String MAX_DUTY_CYCLE_PARAM = "max-duty-cycle";
     private static final float DEFAULT_MAX_DUTY_CYCLE = 0.2f;
@@ -224,6 +225,7 @@ class TabListRecyclerView
             mShadowImageView.setImageDrawable(AppCompatResources.getDrawable(
                     context, org.chromium.chrome.R.drawable.modern_toolbar_shadow));
             mShadowImageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            mShadowImageView.setTag(SHADOW_VIEW_TAG);
             Resources res = context.getResources();
             if (getParent() instanceof FrameLayout) {
                 // Add shadow for grid tab switcher.

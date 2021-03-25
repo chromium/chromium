@@ -610,6 +610,12 @@ public abstract class ToolbarLayout
     void onStartSurfaceStateChanged(boolean isShowingStartSurface) {}
 
     /**
+     * Force to hide toolbar shadow.
+     * @param forceHideShadow Whether toolbar shadow should be hidden.
+     */
+    void setForceHideShadow(boolean forceHideShadow) {}
+
+    /**
      * Gives inheriting classes the chance to observe tab count changes.
      * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
      */
