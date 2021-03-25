@@ -263,14 +263,6 @@
           'shards': 25,
         },
       },
-      'Mac10.13 Tests (dbg)': {
-        'args': [
-          '--debug',
-        ],
-        'swarming': {
-          'shards': 25,
-        },
-      },
       'Mac10.15 Tests': {
         'swarming': {
           'dimension_sets': [
@@ -580,12 +572,6 @@
       'Mac ASan 64 Tests (1)': {
         'swarming': {
           'shards': 30,
-        },
-      },
-      'Mac10.13 Tests (dbg)': {
-        # https://crbug.com/1152770
-        'swarming': {
-          'shards': 40,
         },
       },
       'Mac10.15 Tests (dbg)': {
@@ -2064,7 +2050,6 @@
       # Only run network service tests on Mac 10.12 for capacity reasons.
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
@@ -2101,7 +2086,6 @@
       # Only run network service tests on Mac 10.12 for capacity reasons.
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
@@ -2119,7 +2103,6 @@
       # Only run network service tests on Mac 10.12 for capacity reasons.
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
@@ -2136,7 +2119,6 @@
       # Only run network service tests on Mac 10.12 for capacity reasons.
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
@@ -2158,7 +2140,6 @@
       # Only run network service tests on Mac 10.12 for capacity reasons.
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Mac ASan 64 Tests (1)',
@@ -2302,11 +2283,6 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Mac10.13 Tests (dbg)': {
-        'args': [
-          '--browser=debug',
-        ],
-      },
       'Mac10.15 Tests (dbg)': {
         'args': [
           '--browser=debug',
@@ -2685,7 +2661,6 @@
       # crbug.com/936540
       'Mac10.11 Tests',
       'Mac10.13 Tests',
-      'Mac10.13 Tests (dbg)',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
