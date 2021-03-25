@@ -27,7 +27,9 @@ namespace {
 std::set<media_session::mojom::MediaSessionAction> GetDefaultActions() {
   return {media_session::mojom::MediaSessionAction::kPlay,
           media_session::mojom::MediaSessionAction::kPause,
-          media_session::mojom::MediaSessionAction::kStop};
+          media_session::mojom::MediaSessionAction::kStop,
+          media_session::mojom::MediaSessionAction::kSeekTo,
+          media_session::mojom::MediaSessionAction::kScrubTo};
 }
 
 std::set<media_session::mojom::MediaSessionAction>

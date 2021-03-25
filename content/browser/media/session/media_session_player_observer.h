@@ -33,6 +33,9 @@ class MediaSessionPlayerObserver {
   // The given |player_id| has been seeked backward by the MediaSession.
   virtual void OnSeekBackward(int player_id, base::TimeDelta seek_time) = 0;
 
+  // The given |player_id| has been seeked to by the MediaSession.
+  virtual void OnSeekTo(int player_id, base::TimeDelta seek_time) = 0;
+
   // The given |player_id| has been set a new volume multiplier by
   // the MediaSession.
   virtual void OnSetVolumeMultiplier(int player_id,

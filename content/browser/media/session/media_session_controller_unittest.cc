@@ -118,6 +118,11 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     run_loop_->Quit();
   }
 
+  void RequestSeekTo(base::TimeDelta seek_time) override {
+    received_seek_to_time_ = seek_time;
+    run_loop_->Quit();
+  }
+
   void RequestEnterPictureInPicture() override {}
 
   void RequestExitPictureInPicture() override {}
@@ -149,6 +154,10 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     return received_seek_backward_time_;
   }
 
+  const base::TimeDelta& received_seek_to_time() const {
+    return received_seek_to_time_;
+  }
+
   double received_volume_multiplier() const {
     return received_volume_multiplier_;
   }
@@ -163,6 +172,7 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   PauseRequestType received_pause_type_{PauseRequestType::kNone};
   base::TimeDelta received_seek_forward_time_;
   base::TimeDelta received_seek_backward_time_;
+  base::TimeDelta received_seek_to_time_;
 };
 
 class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
@@ -233,6 +243,11 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     media_player_receiver_->WaitUntilReceivedMessage();
   }
 
+  void SeekTo(base::TimeDelta seek_time) {
+    controller_->OnSeekTo(controller_->get_player_id_for_testing(), seek_time);
+    media_player_receiver_->WaitUntilReceivedMessage();
+  }
+
   void SetVolumeMultiplier(double multiplier) {
     controller_->OnSetVolumeMultiplier(controller_->get_player_id_for_testing(),
                                        multiplier);
@@ -259,6 +274,11 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   bool ReceivedMessageSeekBackward(base::TimeDelta expected_seek_time) {
     return expected_seek_time ==
            media_player_receiver_->received_seek_backward_time();
+  }
+
+  bool ReceivedMessageSeekTo(base::TimeDelta expected_seek_time) {
+    return expected_seek_time ==
+           media_player_receiver_->received_seek_to_time();
   }
 
   bool ReceivedMessageVolume(double expected_volume_multiplier) {
@@ -307,6 +327,9 @@ TEST_F(MediaSessionControllerTest, BasicControls) {
   const base::TimeDelta kTestSeekBackwardTime = base::TimeDelta::FromSeconds(2);
   SeekBackward(kTestSeekBackwardTime);
   EXPECT_TRUE(ReceivedMessageSeekBackward(kTestSeekBackwardTime));
+  const base::TimeDelta kTestSeekToTime = base::TimeDelta::FromSeconds(3);
+  SeekTo(kTestSeekToTime);
+  EXPECT_TRUE(ReceivedMessageSeekTo(kTestSeekToTime));
 
   // Verify destruction of the controller removes its session.
   controller_.reset();

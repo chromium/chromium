@@ -44,6 +44,13 @@ void MockMediaSessionPlayerObserver::OnSeekBackward(int player_id,
   ++received_seek_backward_calls_;
 }
 
+void MockMediaSessionPlayerObserver::OnSeekTo(int player_id,
+                                              base::TimeDelta seek_time) {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  ++received_seek_to_calls_;
+}
+
 void MockMediaSessionPlayerObserver::OnSetVolumeMultiplier(
     int player_id,
     double volume_multiplier) {
@@ -148,6 +155,10 @@ int MockMediaSessionPlayerObserver::received_seek_forward_calls() const {
 
 int MockMediaSessionPlayerObserver::received_seek_backward_calls() const {
   return received_seek_backward_calls_;
+}
+
+int MockMediaSessionPlayerObserver::received_seek_to_calls() const {
+  return received_seek_to_calls_;
 }
 
 int MockMediaSessionPlayerObserver::received_enter_picture_in_picture_calls()

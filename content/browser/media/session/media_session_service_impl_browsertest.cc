@@ -52,6 +52,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnResume(int player_id) override {}
   void OnSeekForward(int player_id, base::TimeDelta seek_time) override {}
   void OnSeekBackward(int player_id, base::TimeDelta seek_time) override {}
+  void OnSeekTo(int player_id, base::TimeDelta seek_time) override {}
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
   }
   void OnEnterPictureInPicture(int player_id) override {}
@@ -153,6 +154,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kSeekForward);
 
@@ -266,6 +269,8 @@ class MediaSessionServiceImplWebRTCBrowserTest
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
     expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
     expected_actions.insert(
         media_session::mojom::MediaSessionAction::kToggleMicrophone);
     expected_actions.insert(

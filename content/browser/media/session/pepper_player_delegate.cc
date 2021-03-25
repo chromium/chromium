@@ -54,6 +54,10 @@ void PepperPlayerDelegate::OnSeekBackward(int player_id,
   // Cannot seek pepper player. Do nothing.
 }
 
+void PepperPlayerDelegate::OnSeekTo(int player_id, base::TimeDelta seek_time) {
+  // Cannot seek pepper player. Do nothing.
+}
+
 void PepperPlayerDelegate::OnSetVolumeMultiplier(int player_id,
                                                  double volume_multiplier) {
   if (!base::FeatureList::IsEnabled(media::kAudioFocusDuckFlash))

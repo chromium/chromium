@@ -29,6 +29,9 @@ interface MediaPlayer {
   // Requests the media player to move backward the media playback position.
   RequestSeekBackward(mojo_base.mojom.TimeDelta seek_time);
 
+  // Requests the media player to move to a specific time.
+  RequestSeekTo(mojo_base.mojom.TimeDelta seek_time);
+
   // Requests the media player to enter the Picture-in-Picture mode.
   RequestEnterPictureInPicture();
 

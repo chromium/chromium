@@ -1069,17 +1069,33 @@ void MediaSessionImpl::SkipAd() {
 }
 
 void MediaSessionImpl::SeekTo(base::TimeDelta seek_time) {
-  DidReceiveAction(
-      media_session::mojom::MediaSessionAction::kSeekTo,
-      blink::mojom::MediaSessionActionDetails::NewSeekTo(
-          blink::mojom::MediaSessionSeekToDetails::New(seek_time, false)));
+  // If the site has registered an action handler for seek to then we
+  // should pass it to the site and let them handle it.
+  if (ShouldRouteAction(media_session::mojom::MediaSessionAction::kSeekTo)) {
+    DidReceiveAction(media_session::mojom::MediaSessionAction::kSeekTo,
+                     blink::mojom::MediaSessionActionDetails::NewSeekTo(
+                         blink::mojom::MediaSessionSeekToDetails::New(
+                             seek_time, /*fast_seek=*/false)));
+    return;
+  }
+
+  for (const auto& it : normal_players_)
+    it.first.observer->OnSeekTo(it.first.player_id, seek_time);
 }
 
 void MediaSessionImpl::ScrubTo(base::TimeDelta seek_time) {
-  DidReceiveAction(
-      media_session::mojom::MediaSessionAction::kSeekTo,
-      blink::mojom::MediaSessionActionDetails::NewSeekTo(
-          blink::mojom::MediaSessionSeekToDetails::New(seek_time, true)));
+  // If the site has registered an action handler for seek to then we
+  // should pass it to the site and let them handle it.
+  if (ShouldRouteAction(media_session::mojom::MediaSessionAction::kSeekTo)) {
+    DidReceiveAction(media_session::mojom::MediaSessionAction::kSeekTo,
+                     blink::mojom::MediaSessionActionDetails::NewSeekTo(
+                         blink::mojom::MediaSessionSeekToDetails::New(
+                             seek_time, /*fast_seek=*/true)));
+    return;
+  }
+
+  for (const auto& it : normal_players_)
+    it.first.observer->OnSeekTo(it.first.player_id, seek_time);
 }
 
 void MediaSessionImpl::EnterPictureInPicture() {
@@ -1474,6 +1490,8 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     actions.insert(media_session::mojom::MediaSessionAction::kPlay);
     actions.insert(media_session::mojom::MediaSessionAction::kPause);
     actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -1490,12 +1508,6 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
       IsAudioOutputDeviceSwitchingSupported()) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kSwitchAudioDevice);
-  }
-
-  // If we support kSeekTo then we support kScrubTo as well.
-  if (base::Contains(actions,
-                     media_session::mojom::MediaSessionAction::kSeekTo)) {
-    actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
   if (actions_ == actions)

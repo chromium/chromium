@@ -79,6 +79,14 @@ void MediaSessionController::OnSeekBackward(int player_id,
       ->RequestSeekBackward(seek_time);
 }
 
+void MediaSessionController::OnSeekTo(int player_id,
+                                      base::TimeDelta seek_time) {
+  DCHECK_EQ(player_id_, player_id);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestSeekTo(seek_time);
+}
+
 void MediaSessionController::OnSetVolumeMultiplier(int player_id,
                                                    double volume_multiplier) {
   DCHECK_EQ(player_id_, player_id);

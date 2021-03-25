@@ -4534,6 +4534,10 @@ void HTMLMediaElement::RequestSeekBackward(base::TimeDelta seek_time) {
   setCurrentTime(currentTime() - seconds);
 }
 
+void HTMLMediaElement::RequestSeekTo(base::TimeDelta seek_time) {
+  setCurrentTime(seek_time.InSecondsF());
+}
+
 void HTMLMediaElement::SetVolumeMultiplier(double multiplier) {
   if (web_media_player_)
     web_media_player_->SetVolumeMultiplier(multiplier);

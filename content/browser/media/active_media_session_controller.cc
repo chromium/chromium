@@ -62,10 +62,8 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   for (const MediaSessionAction& action : actions_) {
     base::Optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
-
-    // We only store supported actions in |actions_|, so we should always get a
-    // value from |MediaSessionActionToKeyCode()| here.
-    DCHECK(action_key_code.has_value());
+    if (!action_key_code.has_value())
+      continue;
     if (std::find(actions.begin(), actions.end(), action) == actions.end())
       media_keys_listener_manager->StopWatchingMediaKey(*action_key_code, this);
   }
@@ -83,6 +81,11 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
                                                              this)) {
         actions_.insert(action);
       }
+    } else {
+      // If there is no media key associated with this action, then just add it
+      // to the list of actions we listen to (since we can receive certain
+      // non-key actions like SeekTo).
+      actions_.insert(action);
     }
   }
 }
