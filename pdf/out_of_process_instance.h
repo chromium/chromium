@@ -26,6 +26,7 @@
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/private/find_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -95,7 +96,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void FlushCallback(int32_t result);
 
   // PdfViewPluginBase:
-  void UpdateCursor(PP_CursorType_Dev cursor) override;
+  void UpdateCursor(ui::mojom::CursorType cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
@@ -204,8 +205,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
 
-  // The current cursor.
-  PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;
+  // The current cursor type.
+  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
 
   // True if the plugin is full-page.
   bool full_ = false;

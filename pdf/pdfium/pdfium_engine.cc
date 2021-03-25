@@ -62,6 +62,7 @@
 #include "third_party/pdfium/public/fpdf_ppo.h"
 #include "third_party/pdfium/public/fpdf_searchex.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -1323,7 +1324,7 @@ bool PDFiumEngine::OnMiddleMouseDown(const MouseInputEvent& event) {
 
   if (kViewerImplementedPanning) {
     // Switch to hand cursor when panning.
-    client_->UpdateCursor(PP_CURSORTYPE_HAND);
+    client_->UpdateCursor(ui::mojom::CursorType::kHand);
   }
 
   // Prevent middle mouse button from selecting texts.
@@ -1543,18 +1544,17 @@ bool PDFiumEngine::OnMouseMove(const MouseInputEvent& event) {
   return ExtendSelection(page_index, char_index);
 }
 
-PP_CursorType_Dev PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
-                                                    int form_type) const {
-  if (kViewerImplementedPanning && mouse_middle_button_down_) {
-    return PP_CURSORTYPE_HAND;
-  }
+ui::mojom::CursorType PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
+                                                        int form_type) const {
+  if (kViewerImplementedPanning && mouse_middle_button_down_)
+    return ui::mojom::CursorType::kHand;
 
   switch (area) {
     case PDFiumPage::TEXT_AREA:
-      return PP_CURSORTYPE_IBEAM;
+      return ui::mojom::CursorType::kIBeam;
     case PDFiumPage::WEBLINK_AREA:
     case PDFiumPage::DOCLINK_AREA:
-      return PP_CURSORTYPE_HAND;
+      return ui::mojom::CursorType::kHand;
     case PDFiumPage::NONSELECTABLE_AREA:
     case PDFiumPage::FORM_TEXT_AREA:
     default:
@@ -1564,9 +1564,9 @@ PP_CursorType_Dev PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
         case FPDF_FORMFIELD_RADIOBUTTON:
         case FPDF_FORMFIELD_COMBOBOX:
         case FPDF_FORMFIELD_LISTBOX:
-          return PP_CURSORTYPE_HAND;
+          return ui::mojom::CursorType::kHand;
         case FPDF_FORMFIELD_TEXTFIELD:
-          return PP_CURSORTYPE_IBEAM;
+          return ui::mojom::CursorType::kIBeam;
 #if defined(PDF_ENABLE_XFA)
         case FPDF_FORMFIELD_XFA_CHECKBOX:
         case FPDF_FORMFIELD_XFA_COMBOBOX:
@@ -1574,12 +1574,12 @@ PP_CursorType_Dev PDFiumEngine::DetermineCursorType(PDFiumPage::Area area,
         case FPDF_FORMFIELD_XFA_LISTBOX:
         case FPDF_FORMFIELD_XFA_PUSHBUTTON:
         case FPDF_FORMFIELD_XFA_SIGNATURE:
-          return PP_CURSORTYPE_HAND;
+          return ui::mojom::CursorType::kHand;
         case FPDF_FORMFIELD_XFA_TEXTFIELD:
-          return PP_CURSORTYPE_IBEAM;
+          return ui::mojom::CursorType::kIBeam;
 #endif
         default:
-          return PP_CURSORTYPE_POINTER;
+          return ui::mojom::CursorType::kPointer;
       }
   }
 }

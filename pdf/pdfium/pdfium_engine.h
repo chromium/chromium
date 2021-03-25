@@ -406,8 +406,8 @@ class PDFiumEngine : public PDFEngine,
   bool OnChar(const KeyboardInputEvent& event);
 
   // Decide what cursor should be displayed.
-  PP_CursorType_Dev DetermineCursorType(PDFiumPage::Area area,
-                                        int form_type) const;
+  ui::mojom::CursorType DetermineCursorType(PDFiumPage::Area area,
+                                            int form_type) const;
 
   bool ExtendSelection(int page_index, int char_index);
 

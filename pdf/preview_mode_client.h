@@ -43,7 +43,7 @@ class PreviewModeClient : public PDFEngine::Client {
   void ScrollToPage(int page) override;
   void NavigateTo(const std::string& url,
                   WindowOpenDisposition disposition) override;
-  void UpdateCursor(PP_CursorType_Dev cursor) override;
+  void UpdateCursor(ui::mojom::CursorType cursor_type) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;

@@ -54,6 +54,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
@@ -236,7 +237,7 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
-void PdfViewWebPlugin::UpdateCursor(PP_CursorType_Dev cursor) {}
+void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType cursor_type) {}
 
 void PdfViewWebPlugin::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {}

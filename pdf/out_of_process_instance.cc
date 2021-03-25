@@ -59,6 +59,7 @@
 #include "ppapi/cpp/var_dictionary.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -884,10 +885,10 @@ void OutOfProcessInstance::SetFormFieldInFocus(bool in_focus) {
                                          : PP_TEXTINPUT_TYPE_DEV_NONE);
 }
 
-void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {
-  if (cursor == cursor_)
+void OutOfProcessInstance::UpdateCursor(ui::mojom::CursorType cursor_type) {
+  if (cursor_type == cursor_type_)
     return;
-  cursor_ = cursor;
+  cursor_type_ = cursor_type;
 
   const PPB_CursorControl_Dev* cursor_interface =
       reinterpret_cast<const PPB_CursorControl_Dev*>(
@@ -898,7 +899,8 @@ void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {
     return;
   }
 
-  cursor_interface->SetCursor(pp_instance(), cursor_,
+  cursor_interface->SetCursor(pp_instance(),
+                              PPCursorTypeFromCursorType(cursor_type_),
                               pp::ImageData().pp_resource(), nullptr);
 }
 

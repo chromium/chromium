@@ -21,12 +21,12 @@
 #include "build/chromeos_buildflags.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/callback.h"
-#include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/cpp/completion_callback.h"
 #include "ppapi/cpp/private/pdf.h"
 #include "ppapi/cpp/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -156,7 +156,7 @@ class PDFEngine {
                                        const float* zoom) {}
 
     // Updates the cursor.
-    virtual void UpdateCursor(PP_CursorType_Dev cursor) {}
+    virtual void UpdateCursor(ui::mojom::CursorType cursor_type) {}
 
     // Updates the tick marks in the vertical scrollbar.
     virtual void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) {}

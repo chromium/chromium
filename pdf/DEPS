@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/blink/public",
   "+third_party/skia/include/core",
   "+ui/base/cursor/cursor.h",
+  "+ui/base/cursor/mojom",
   "+ui/base/text/bytes_formatting.h",
   "+ui/base/window_open_disposition.h",
   "+ui/events/keycodes/keyboard_codes.h",

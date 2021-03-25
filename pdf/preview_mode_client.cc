@@ -17,6 +17,7 @@
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace chrome_pdf {
 
@@ -56,7 +57,7 @@ void PreviewModeClient::NavigateTo(const std::string& url,
   NOTREACHED();
 }
 
-void PreviewModeClient::UpdateCursor(PP_CursorType_Dev cursor) {
+void PreviewModeClient::UpdateCursor(ui::mojom::CursorType cursor_type) {
   NOTREACHED();
 }
 

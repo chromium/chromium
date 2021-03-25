@@ -8,8 +8,10 @@
 
 #include "base/notreached.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
+#include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/cpp/input_event.h"
 #include "ppapi/cpp/var.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace {
@@ -215,6 +217,21 @@ TouchInputEvent GetTouchInputEvent(const pp::TouchInputEvent& event) {
   return TouchInputEvent(GetEventType(event.GetType()), event.GetTimeStamp(),
                          event.GetModifiers(), PointFFromPPFloatPoint(point),
                          event.GetTouchCount(PP_TOUCHLIST_TYPE_TARGETTOUCHES));
+}
+
+PP_CursorType_Dev PPCursorTypeFromCursorType(
+    ui::mojom::CursorType cursor_type) {
+  switch (cursor_type) {
+    case ui::mojom::CursorType::kPointer:
+      return PP_CURSORTYPE_POINTER;
+    case ui::mojom::CursorType::kHand:
+      return PP_CURSORTYPE_HAND;
+    case ui::mojom::CursorType::kIBeam:
+      return PP_CURSORTYPE_IBEAM;
+    default:
+      NOTREACHED();
+      return PP_CURSORTYPE_POINTER;
+  }
 }
 
 }  // namespace chrome_pdf
