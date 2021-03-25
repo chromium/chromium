@@ -28,6 +28,12 @@
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 
+// Supported on Linux 64 bits only for now, partly to see the impact on
+// performance and memory usage on bots, as this increases memory footprint.
+#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
+#define PA_THREAD_CACHE_LARGE_ALLOCATIONS
+#endif
+
 namespace base {
 
 namespace internal {
@@ -117,6 +123,11 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 
 ALWAYS_INLINE static constexpr int ConstexprLog2(size_t n) {
   return n < 1 ? -1 : (n < 2 ? 0 : (1 + ConstexprLog2(n >> 1)));
+}
+
+ALWAYS_INLINE static constexpr uint16_t BucketIndexForSize(size_t size) {
+  return ((ConstexprLog2(size) - kMinBucketedOrder + 1)
+          << kNumBucketsPerOrderBits);
 }
 
 #if DCHECK_IS_ON()
@@ -223,24 +234,27 @@ class BASE_EXPORT ThreadCache {
     return buckets_[index].count;
   }
 
+  // Sets the maximum size of allocations that may be cached by the thread
+  // cache. This applies to all threads. However, the maximum size is bounded by
+  // |kLargeSizeThreshold|.
+  static void SetLargestCachedSize(size_t size);
+
   // TODO(lizeb): Once we have periodic purge, lower the ratio.
   static constexpr uint16_t kBatchFillRatio = 8;
   static constexpr float kDefaultMultiplier = 2.;
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
-#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-  // TODO((lizeb): Tune this better. Right now this is set to a high value on
-  // Linux x86_64, partly to see the impact on performance and memory usage on
-  // bots.
-  //
+  // When trying to conserve memory, set the thread cache limit to this.
+  static constexpr size_t kDefaultSizeThreshold = 512;
+#if defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
   // 32kiB is chosen here as from local experiments, "zone" allocation in
   // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
   // each individual allocation.
-  static constexpr size_t kSizeThreshold = 1 << 15;
+  static constexpr size_t kLargeSizeThreshold = 1 << 15;
 #else
-  // TODO(lizeb): Optimize the threshold.
-  static constexpr size_t kSizeThreshold = 512;
-#endif
+  static constexpr size_t kLargeSizeThreshold = kDefaultSizeThreshold;
+#endif  // defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
+  static_assert(kDefaultSizeThreshold <= kLargeSizeThreshold, "");
 
  private:
   struct Bucket {
@@ -268,9 +282,7 @@ class BASE_EXPORT ThreadCache {
                               float multiplier);
 
   static constexpr uint16_t kBucketCount =
-      ((ConstexprLog2(kSizeThreshold) - kMinBucketedOrder + 1)
-       << kNumBucketsPerOrderBits) +
-      1;
+      BucketIndexForSize(kLargeSizeThreshold) + 1;
   static_assert(
       kBucketCount < kNumBuckets,
       "Cannot have more cached buckets than what the allocator supports");
@@ -289,6 +301,12 @@ class BASE_EXPORT ThreadCache {
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
 
   static uint8_t global_limits_[kBucketCount];
+  // Index of the largest active bucket. Not all processes/platforms will use
+  // all buckets, as using larger buckets increases the memory footprint.
+  //
+  // TODO(lizeb): Investigate making this per-thread rather than static, to
+  // improve locality, and open the door to per-thread settings.
+  static uint16_t largest_active_bucket_index_;
 
   Bucket buckets_[kBucketCount];
   std::atomic<bool> should_purge_;
@@ -312,9 +330,12 @@ class BASE_EXPORT ThreadCache {
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, RecordStats);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, ThreadCacheRegistry);
   FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, MultipleThreadCachesAccounting);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThreshold);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThresholdClamping);
-  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicThresholdMultipleThreads);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicCountPerBucket);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicCountPerBucketClamping);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest,
+                           DynamicCountPerBucketMultipleThreads);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThreshold);
+  FRIEND_TEST_ALL_PREFIXES(ThreadCacheTest, DynamicSizeThresholdPurge);
 };
 
 ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
@@ -322,7 +343,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (UNLIKELY(bucket_index >= kBucketCount)) {
+  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     INCREMENT_COUNTER(stats_.cache_fill_misses);
     return false;
   }
@@ -359,7 +380,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (UNLIKELY(bucket_index >= kBucketCount)) {
+  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     INCREMENT_COUNTER(stats_.alloc_misses);
     return nullptr;

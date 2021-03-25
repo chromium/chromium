@@ -46,6 +46,8 @@ constexpr size_t kDefaultCountForMediumBucket = kDefaultCountForSmallBucket / 2;
 constexpr size_t kFillCountForMediumBucket =
     kDefaultCountForMediumBucket / ThreadCache::kBatchFillRatio;
 
+static_assert(kMediumSize <= ThreadCache::kDefaultSizeThreshold, "");
+
 class LambdaThreadDelegate : public PlatformThread::Delegate {
  public:
   explicit LambdaThreadDelegate(OnceClosure f) : f_(std::move(f)) {}
@@ -100,6 +102,7 @@ class ThreadCacheTest : public ::testing::Test {
   void SetUp() override {
     ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         ThreadCache::kDefaultMultiplier);
+    ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
     // Make sure that enough slot spans have been touched, otherwise cache fill
     // becomes unpredictable (because it doesn't take slow paths in the
     // allocator), which is an issue for tests.
@@ -509,7 +512,7 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
             registry.purge_interval_for_testing());
 }
 
-TEST_F(ThreadCacheTest, DynamicThreshold) {
+TEST_F(ThreadCacheTest, DynamicCountPerBucket) {
   auto* tcache = g_root->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
@@ -542,7 +545,7 @@ TEST_F(ThreadCacheTest, DynamicThreshold) {
             kDefaultCountForMediumBucket / 2);
 }
 
-TEST_F(ThreadCacheTest, DynamicThresholdClamping) {
+TEST_F(ThreadCacheTest, DynamicCountPerBucketClamping) {
   auto* tcache = g_root->thread_cache_for_testing();
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
@@ -569,7 +572,7 @@ TEST_F(ThreadCacheTest, DynamicThresholdClamping) {
   }
 }
 
-TEST_F(ThreadCacheTest, DynamicThresholdMultipleThreads) {
+TEST_F(ThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> threshold_changed{false};
 
@@ -613,6 +616,75 @@ TEST_F(ThreadCacheTest, DynamicThresholdMultipleThreads) {
 
   PlatformThread::Join(thread_handle);
 }
+
+#if defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
+static_assert(ThreadCache::kLargeSizeThreshold >
+                  ThreadCache::kDefaultSizeThreshold,
+              "");
+
+TEST_F(ThreadCacheTest, DynamicSizeThreshold) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_too_large_counter{
+      tcache->stats_.alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+
+  // Default threshold at first.
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold);
+  EXPECT_EQ(0u, alloc_miss_too_large_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_counter.Delta());
+
+  // Too large to be cached.
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+
+  // Increase.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  // No new miss.
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+
+  // Lower.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  EXPECT_EQ(2u, alloc_miss_too_large_counter.Delta());
+
+  // Value is clamped.
+  size_t too_large = 1024 * 1024;
+  ThreadCache::SetLargestCachedSize(too_large);
+  FillThreadCacheAndReturnIndex(too_large);
+  EXPECT_EQ(3u, alloc_miss_too_large_counter.Delta());
+}
+
+TEST_F(ThreadCacheTest, DynamicSizeThresholdPurge) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_too_large_counter{
+      tcache->stats_.alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+
+  // Cache large allocations.
+  size_t large_allocation_size = ThreadCache::kLargeSizeThreshold;
+  ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+  size_t index = FillThreadCacheAndReturnIndex(large_allocation_size);
+  EXPECT_EQ(0u, alloc_miss_too_large_counter.Delta());
+
+  // Lower.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+  FillThreadCacheAndReturnIndex(large_allocation_size);
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+
+  // There is memory trapped in the cache bucket.
+  EXPECT_GT(tcache->buckets_[index].count, 0u);
+
+  // Which is reclaimed by Purge().
+  tcache->Purge();
+  EXPECT_EQ(0u, tcache->buckets_[index].count);
+}
+
+#endif  // defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
 
 }  // namespace internal
 }  // namespace base

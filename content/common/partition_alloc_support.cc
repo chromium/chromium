@@ -241,6 +241,14 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     }
 #endif  // defined(OS_ANDROID)
   }
+
+  // Renderer processes are more performance-sensitive, increase thread cache
+  // limits.
+  if (process_type == switches::kRendererProcess) {
+    base::internal::ThreadCache::SetLargestCachedSize(
+        base::internal::ThreadCache::kLargeSizeThreshold);
+  }
+
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

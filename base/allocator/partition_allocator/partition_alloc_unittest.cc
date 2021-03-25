@@ -3121,7 +3121,7 @@ TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
   // Continuously allocates / frees memory, bypassing the thread cache. This
   // makes it likely that this thread will own the lock, and that the
   // EXPECT_EXIT() part will deadlock.
-  constexpr size_t kAllocSize = ThreadCache::kSizeThreshold + 1;
+  constexpr size_t kAllocSize = ThreadCache::kLargeSizeThreshold + 1;
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     started_threads++;
     while (!please_stop.load(std::memory_order_relaxed)) {

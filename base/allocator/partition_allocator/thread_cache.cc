@@ -52,6 +52,10 @@ constexpr base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
 constexpr base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
 uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
+// Start with the normal size, not the maximum one.
+uint16_t ThreadCache::largest_active_bucket_index_ =
+    BucketIndexForSize(kDefaultSizeThreshold);
+
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
   return g_instance;
@@ -276,7 +280,9 @@ void ThreadCache::EnsureThreadSpecificDataInitialized() {
 
 // static
 void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
-  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kSizeThreshold);
+  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kLargeSizeThreshold);
+  PA_CHECK(root->buckets[largest_active_bucket_index_].slot_size ==
+           kDefaultSizeThreshold);
 
   EnsureThreadSpecificDataInitialized();
 
@@ -331,6 +337,15 @@ void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
     PA_DCHECK(global_limits_[index] >= kMinLimit);
     PA_DCHECK(global_limits_[index] <= kMaxLimit);
   }
+}
+
+// static
+void ThreadCache::SetLargestCachedSize(size_t size) {
+  if (size > ThreadCache::kLargeSizeThreshold)
+    size = ThreadCache::kLargeSizeThreshold;
+  largest_active_bucket_index_ =
+      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size);
+  PA_CHECK(largest_active_bucket_index_ < kBucketCount);
 }
 
 // static
@@ -566,6 +581,10 @@ void ThreadCache::Purge() {
 void ThreadCache::PurgeInternal() {
   should_purge_.store(false, std::memory_order_relaxed);
   // TODO(lizeb): Investigate whether lock acquisition should be less frequent.
+  //
+  // Note: iterate over all buckets, even the inactive ones. Since
+  // |largest_active_bucket_index_| can be lowered at runtime, there may be
+  // memory already cached in the inactive buckets. They should still be purged.
   for (auto& bucket : buckets_)
     ClearBucket(bucket, 0);
 }
