@@ -150,8 +150,4 @@ std::vector<UIElement::Source> UIElement::GetSources() {
   return sources_;
 }
 
-bool UIElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
-  return false;
-}
-
 }  // namespace ui_devtools
