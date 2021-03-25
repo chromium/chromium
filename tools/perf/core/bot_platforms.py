@@ -366,6 +366,7 @@ _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
 _WIN_10_AMD_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('kraken'),
     _GetBenchmarkConfig('octane'),
+    _GetBenchmarkConfig('system_health.common_desktop'),
 ])
 _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
     'loading.desktop',
