@@ -743,8 +743,10 @@
         StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
             ->most_recent_tab();
     DCHECK(most_recent_tab);
+    NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
     [self.contentSuggestionsMediator
-        configureMostRecentTabItemWithWebState:most_recent_tab];
+        configureMostRecentTabItemWithWebState:most_recent_tab
+                                     timeLabel:time_label];
     if (!_startSurfaceObserver) {
       _startSurfaceObserver =
           std::make_unique<StartSurfaceRecentTabObserverBridge>(

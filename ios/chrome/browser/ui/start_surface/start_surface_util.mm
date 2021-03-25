@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#include "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,6 +18,21 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
     @"StartSurfaceSceneEnterIntoBackgroundTime";
 
 }  // namespace
+
+NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
+    SceneState* sceneState) {
+  if (!IsStartSurfaceEnabled()) {
+    return 0;
+  }
+  NSDate* timestamp = (NSDate*)[sceneState
+      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
+
+  if (timestamp == nil || [[NSDate date] timeIntervalSinceDate:timestamp] <
+                              GetReturnToStartSurfaceDuration()) {
+    return 0;
+  }
+  return [[NSDate date] timeIntervalSinceDate:timestamp];
+}
 
 bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
   if (!IsStartSurfaceEnabled()) {
@@ -36,6 +53,24 @@ bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
   }
 
   return YES;
+}
+
+NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* sceneState) {
+  NSTimeInterval timeSinceOpen =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(sceneState);
+  if (timeSinceOpen == 0) {
+    return @"";
+  }
+  NSInteger time = (NSInteger)timeSinceOpen / 3600;
+  NSString* timeLabel =
+      l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS);
+  if (time > 24) {
+    // If it has been at least a day since the most recent tab was opened,
+    // then show days since instead of hours.
+    time = time / 24;
+    timeLabel = l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS);
+  }
+  return [NSString stringWithFormat:@" · %ld%@", (long)time, timeLabel];
 }
 
 void SetStartSurfaceSessionObjectForSceneState(SceneState* sceneState) {

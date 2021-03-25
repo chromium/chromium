@@ -119,8 +119,9 @@ class WebStateList;
 // configureMostRecentTabItemWithWebState: has been called.
 - (BOOL)mostRecentTabStartSurfaceTileIsShowing;
 
-// Configures the most recent tab item for |webState|.
-- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState;
+// Configures the most recent tab item with |webState| and |timeLabel|.
+- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
+                                     timeLabel:(NSString*)timeLabel;
 
 // Indicates that the "Return to Recent Tab" tile should be hidden.
 - (void)hideRecentTabTile;

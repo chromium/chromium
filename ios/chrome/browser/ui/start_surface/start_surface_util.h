@@ -10,6 +10,10 @@
 // Checks whether the Start Surface should be shown for the given scene state.
 bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState);
 
+// Returns the string label containing the time since the most recent tab was
+// open. Will return empty string if not applicable.
+NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* sceneState);
+
 // Sets the session related objects for the Start Surface.
 void SetStartSurfaceSessionObjectForSceneState(SceneState* sceneState);
 

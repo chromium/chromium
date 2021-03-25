@@ -280,7 +280,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return kMaxNumMostVisitedTiles;
 }
 
-- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState {
+- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState
+                                     timeLabel:(NSString*)timeLabel {
   DCHECK(IsStartSurfaceEnabled());
   self.returnToRecentTabSectionInfo = ReturnToRecentTabSectionInformation();
   if (!self.returnToRecentTabItem) {
@@ -303,8 +304,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   self.returnToRecentTabItem.title =
       l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TITLE);
-  self.returnToRecentTabItem.subtitle =
-      base::SysUTF16ToNSString(webState->GetTitle());
+  NSString* subtitle = [NSString
+      stringWithFormat:@"%@%@", base::SysUTF16ToNSString(webState->GetTitle()),
+                       timeLabel];
+  self.returnToRecentTabItem.subtitle = subtitle;
   self.showMostRecentTabStartSurfaceTile = YES;
 
   // TODO(crbug.com/1187303): Create insert section to add a section.
