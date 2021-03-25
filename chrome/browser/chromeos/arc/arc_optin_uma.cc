@@ -176,18 +176,17 @@ void UpdateAuthTiming(const char* histogram_name,
 }
 
 void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile) {
-  base::UmaHistogramSparse(
+  base::UmaHistogramExactLinear(
       GetHistogramNameByUserType("Arc.Auth.Checkin.Attempts", profile),
-      num_attempts);
+      num_attempts, 11 /* exclusive_max */);
 }
 
 void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile) {
   DCHECK_LE(status, mojom::AccountCheckStatus::CHECK_FAILED);
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       GetHistogramNameByUserType("Arc.Auth.AccountCheck.Status", profile),
-      static_cast<int>(status),
-      static_cast<int>(mojom::AccountCheckStatus::CHECK_FAILED) + 1);
+      status);
 }
 
 void UpdateMainAccountResolutionStatus(
@@ -201,7 +200,7 @@ void UpdateMainAccountResolutionStatus(
 }
 
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state) {
-  base::UmaHistogramSparse("Arc.OptInSilentAuthCode", static_cast<int>(state));
+  base::UmaHistogramEnumeration("Arc.OptInSilentAuthCode", state);
 }
 
 void UpdateSupervisionTransitionResultUMA(
@@ -210,13 +209,13 @@ void UpdateSupervisionTransitionResultUMA(
 }
 
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state) {
-  base::UmaHistogramSparse("Arc.OptInSilentAuthCode.Reauthorization",
-                           static_cast<int>(state));
+  base::UmaHistogramEnumeration("Arc.OptInSilentAuthCode.Reauthorization",
+                                state);
 }
 
 void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state) {
-  base::UmaHistogramSparse("Arc.OptInSilentAuthCode.SecondaryAccount",
-                           static_cast<int>(state));
+  base::UmaHistogramEnumeration("Arc.OptInSilentAuthCode.SecondaryAccount",
+                                state);
 }
 
 ProvisioningStatus GetProvisioningStatus(
