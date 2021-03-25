@@ -2,113 +2,120 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @suppress {checkTypes} */
-/* #export */ class StorageAdapter {
-  constructor() {
+// namespace
+/* #export */ const storage = {};
+
+/**
+ * If localStorage hasn't been loaded, read it and populate the storage
+ * for the specified type ('sync' or 'local').
+ * @param {string} type
+ */
+function getFromLocalStorage(type) {
+  const localData = window.localStorage.getItem(type);
+  return localData ? JSON.parse(localData) : {};
+}
+
+/**
+ * Write out the 'sync' and 'local' stores into localStorage.
+ * @param {string} type
+ * @param {Object} data
+ */
+function flushIntoLocalStorage(type, data) {
+  window.localStorage.setItem(type, JSON.stringify(data));
+}
+
+/**
+ * @type {{
+ *   addListener: function(Object),
+ * }}
+ */
+storage.onChanged = (window.isSWA) ? {addListener(callback) {}} : {
+  addListener(callback) {
+    chrome.storage.onChanged.addListener(callback);
+  }
+};
+
+/**
+ * @extends {StorageArea}
+ */
+class StorageAreaSWAImpl {
+  /**
+   * @param {string} type
+   */
+  constructor(type) {
     /** @private {boolean} */
-    this.storageHasBeenLoaded_ = false;
-
-    this.onChanged = {addListener() {}};
-
-    this.sync = {
-      /** @private {!Object} store */
-      store_: {},
-      /**
-       * @param {!Array<string>|string} keys
-       * @param {function(!Object)} callback
-       */
-      get(keys, callback) {
-        const inKeys = Array.isArray(keys) ? keys : [keys];
-        const result = {};
-        chrome.storage.loadStorageIfNeeded_();
-        inKeys.forEach(key => {
-          if (key in chrome.storage.sync.store_) {
-            result[key] = chrome.storage.sync.store_[key];
-          }
-        });
-        setTimeout(callback, 0, result);
-      },
-      /**
-       * @param {!Object<string>} items
-       * @param {function()=} opt_callback
-       */
-      set(items, opt_callback) {
-        for (const key in items) {
-          chrome.storage.sync.store_[key] = items[key];
-        }
-        chrome.storage.flushIntoLocalStorage_('sync');
-        if (opt_callback) {
-          setTimeout(opt_callback);
-        }
-      }
-    };
-
-    this.local = {
-      /** @private {!Object} store */
-      store_: {},
-      /**
-       * @param {!Array<string>|string} keys
-       * @param {function(!Object)} callback
-       */
-      get(keys, callback) {
-        const inKeys = Array.isArray(keys) ? keys : [keys];
-        const result = {};
-        chrome.storage.loadStorageIfNeeded_();
-        inKeys.forEach(key => {
-          if (key in chrome.storage.local.store_) {
-            result[key] = chrome.storage.local.store_[key];
-          }
-        });
-        setTimeout(callback, 0, result);
-      },
-      /**
-       * @param {!Object<string>} items
-       * @param {function()=} opt_callback
-       */
-      set(items, opt_callback) {
-        for (const key in items) {
-          chrome.storage.local.store_[key] = items[key];
-        }
-        chrome.storage.flushIntoLocalStorage_('local');
-        if (opt_callback) {
-          setTimeout(opt_callback);
-        }
-      }
-    };
+    this.loaded_ = false;
+    /** @private {!Object} */
+    this.store_ = {};
+    /** @private {string} */
+    this.type_ = type;
   }
 
   /**
-   * If localStorage hasn't been loaded, read it and populate the
-   * 'sync' and 'local' stores so they can be read.
-   * @private
+   * @override
    */
-  loadStorageIfNeeded_() {
-    if (this.storageHasBeenLoaded_ === false) {
-      const localData = window.localStorage.getItem('local');
-      if (localData) {
-        this.local.store_ = JSON.parse(localData);
-      }
-      const syncData = window.localStorage.getItem('sync');
-      if (syncData) {
-        this.sync.store_ = JSON.parse(syncData);
-      }
-      // Only do this once.
-      this.storageHasBeenLoaded_ = true;
+  get(keys, callback) {
+    this.load_();
+    const inKeys = Array.isArray(keys) ? keys : [keys];
+    const result = {};
+    for (const key of inKeys) {
+      result[key] = this.store_[key];
+    }
+    callback(result);
+  }
+
+  /**
+   * @override
+   */
+  set(items, opt_callback) {
+    this.load_();
+    for (const key in items) {
+      this.store_[key] = items[key];
+    }
+    flushIntoLocalStorage(this.type_, this.store_);
+    if (opt_callback) {
+      opt_callback();
     }
   }
 
   /**
-   * Write out the 'sync' and 'local' stores into localStorage.
-   * @param {string} which Which store key we're writing to.
-   * @private
+   * @override
    */
-  flushIntoLocalStorage_(which) {
-    let storeObjectString = null;
-    if (which === 'local') {
-      storeObjectString = JSON.stringify(this.local.store_);
-    } else {
-      storeObjectString = JSON.stringify(this.sync.store_);
+  remove(keys, callback) {
+    this.load_();
+    const keyList = Array.isArray(keys) ? keys : [keys];
+    for (const key of keyList) {
+      delete this.store_[key];
     }
-    window.localStorage.setItem(which, storeObjectString);
+    flushIntoLocalStorage(this.type_, this.store_);
   }
+
+  load_() {
+    if (!this.loaded_) {
+      this.store_ = getFromLocalStorage(this.type_);
+      this.loaded_ = true;
+    }
+  }
+}
+
+/**
+ * @type {!StorageArea}
+ */
+storage.sync;
+
+/**
+ * @type {!StorageArea}
+ */
+storage.local;
+
+if (window.isSWA) {
+  storage.sync = new StorageAreaSWAImpl('sync');
+  storage.local = new StorageAreaSWAImpl('local');
+} else if (chrome && chrome.storage) {
+  storage.sync = chrome.storage.sync;
+  storage.local = chrome.storage.local;
+} else {
+  console.warn('Creating sync and local stubs for tests');
+  storage.sync = new StorageAreaSWAImpl('test-sync');
+  storage.local = new StorageAreaSWAImpl('test-local');
 }

@@ -11,6 +11,7 @@
 // clang-format off
 // #import {BackgroundBase} from '../../externs/background/background_base.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {xfm} from './xfm.m.js';
 // clang-format on
 
 const appUtil = {};
@@ -25,7 +26,7 @@ appUtil.saveAppState = () => {
   const items = {};
 
   items[window.appID] = JSON.stringify(window.appState);
-  chrome.storage.local.set(items, () => {
+  xfm.storage.local.set(items, () => {
     if (chrome.runtime.lastError) {
       console.error(
           'Failed to save app state: ' + chrome.runtime.lastError.message);
@@ -126,7 +127,7 @@ appUtil.AppCache.update = (key, value, opt_lifetime) => {
  * @private
  */
 appUtil.AppCache.read_ = callback => {
-  chrome.storage.local.get(appUtil.AppCache.KEY, values => {
+  xfm.storage.local.get(appUtil.AppCache.KEY, values => {
     const json = values[appUtil.AppCache.KEY];
     if (json) {
       try {
@@ -146,7 +147,7 @@ appUtil.AppCache.read_ = callback => {
 appUtil.AppCache.write_ = map => {
   const items = {};
   items[appUtil.AppCache.KEY] = JSON.stringify(map);
-  chrome.storage.local.set(items);
+  xfm.storage.local.set(items);
 };
 
 /**

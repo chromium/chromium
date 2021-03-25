@@ -44,6 +44,7 @@ js_type_check("closure_compile_module") {
     ":trash",
     ":util",
     ":volume_manager_types",
+    ":xfm",
   ]
 }
 
@@ -66,6 +67,7 @@ js_type_check("closure_compile_jsmodules") {
     ":trash.m",
     ":util.m",
     ":volume_manager_types.m",
+    ":xfm.m",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
@@ -103,6 +105,7 @@ js_type_check("test_support_modules_type_check") {
 js_library("app_util") {
   deps = [
     ":volume_manager_types",
+    ":xfm",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
   externs_list = [
@@ -260,6 +263,7 @@ js_library("importer_common") {
   visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":file_type",
+    ":xfm",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
@@ -439,6 +443,17 @@ js_library("test_error_reporting.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("xfm") {
+  deps = [ ":storage_adapter" ]
+}
+
+js_library("xfm.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/xfm.m.js" ]
+  deps = [ ":storage_adapter.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("trash") {
   deps = [
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -612,6 +627,7 @@ js_modulizer("modulize") {
     "unittest_util.js",
     "util.js",
     "volume_manager_types.js",
+    "xfm.js",
   ]
 
   namespace_rewrites = cr_namespace_rewrites

@@ -10,6 +10,7 @@
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // clang-format on
 
 /* #export */ class HoldingSpaceUtil {
@@ -62,7 +63,7 @@
   static getTimeOfFirstPin_() {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_;
-      chrome.storage.local.get(key, values => {
+      xfm.storage.local.get(key, values => {
         resolve(values[key]);
       });
     });
@@ -78,7 +79,7 @@
   static getTimeOfFirstWelcomeBannerShow_() {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_;
-      chrome.storage.local.get(key, values => {
+      xfm.storage.local.get(key, values => {
         resolve(values[key]);
       });
     });
@@ -99,7 +100,7 @@
     // Store time of first pin.
     const values = {};
     values[HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_] = now;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
 
     // Record a metric of the interval from the first time the holding space
     // welcome banner was shown to the time of the first pin to holding space.
@@ -139,6 +140,6 @@
     // Store time of first show.
     const values = {};
     values[HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_] = now;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 }

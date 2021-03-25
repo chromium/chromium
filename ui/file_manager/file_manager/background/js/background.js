@@ -34,6 +34,7 @@
 // #import {importerHistory} from './import_history.m.js';
 // #import {ProgressCenterImpl} from './progress_center.m.js';
 // #import {BackgroundBaseImpl} from './background_base.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // clang-format on
 
 /**
@@ -397,11 +398,11 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
     return this.initializationPromise_.then(() => {
       if (nextFileManagerWindowID == 0) {
         // The app just launched. Remove unneeded window state records.
-        chrome.storage.local.get(items => {
+        xfm.storage.local.get(null, items => {
           for (const key in items) {
             if (items.hasOwnProperty(key)) {
               if (key.match(FILES_ID_PATTERN)) {
-                chrome.storage.local.remove(key);
+                xfm.storage.local.remove(key);
               }
             }
           }
@@ -438,7 +439,7 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
    */
   onRestarted_() {
     // Reopen file manager windows.
-    chrome.storage.local.get(items => {
+    xfm.storage.local.get(items => {
       for (const key in items) {
         if (items.hasOwnProperty(key)) {
           const match = key.match(FILES_ID_PATTERN);

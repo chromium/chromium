@@ -5,11 +5,12 @@
 // clang-format off
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // clang-format on
 
 /**
- * TaskHistory object keeps track of the histry of task executions.
- * This is responsible for keeping the history in persistent storage, too.
+ * TaskHistory object keeps track of the history of task executions.
+ * This is responsible for keeping the history in persistent xfm.storage, too.
  */
 /* #export */ class TaskHistory extends cr.EventTarget {
   constructor() {
@@ -22,8 +23,7 @@
      */
     this.lastExecutedTime_ = {};
 
-    chrome.storage.onChanged.addListener(
-        this.onLocalStorageChanged_.bind(this));
+    xfm.storage.onChanged.addListener(this.onLocalStorageChanged_.bind(this));
     this.load_();
   }
 
@@ -48,30 +48,29 @@
   }
 
   /**
-   * Loads current history from local storage.
+   * Loads current history from local xfm.storage.
    * @private
    */
   load_() {
-    chrome.storage.local.get(
-        TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME, value => {
-          this.lastExecutedTime_ =
-              value[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] || {};
-        });
+    xfm.storage.local.get(TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME, value => {
+      this.lastExecutedTime_ =
+          value[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] || {};
+    });
   }
 
   /**
-   * Saves current history to local storage.
+   * Saves current history to local xfm.storage.
    * @private
    */
   save_() {
     const objectToSave = {};
     objectToSave[TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME] =
         this.lastExecutedTime_;
-    chrome.storage.local.set(objectToSave);
+    xfm.storage.local.set(objectToSave);
   }
 
   /**
-   * Handles change event on storage to update current history.
+   * Handles change event on xfm.storage to update current history.
    * @param {!Object<string, !StorageChange>} changes
    * @param {string} areaName
    * @private
@@ -125,7 +124,7 @@ TaskHistory.EventType = {
 };
 
 /**
- * This key is used to store the history in chrome's local storage.
+ * This key is used to store the history in chrome's local xfm.storage.
  * @const {string}
  */
 TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME = 'task-last-executed-time';

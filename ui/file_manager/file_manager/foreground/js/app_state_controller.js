@@ -9,6 +9,7 @@
 // #import {appUtil} from '../../common/js/app_util.m.js';
 // #import {ListContainer} from './ui/list_container.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 
 /* #export */ class AppStateController {
   /**
@@ -48,7 +49,7 @@
   loadInitialViewOptions() {
     // Load initial view option.
     return new Promise((fulfill, reject) => {
-             chrome.storage.local.get(this.viewOptionStorageKey_, values => {
+             xfm.storage.local.get(this.viewOptionStorageKey_, values => {
                if (chrome.runtime.lastError) {
                  reject(
                      'Failed to load view options: ' +
@@ -143,7 +144,7 @@
     // Save the global default.
     const items = {};
     items[this.viewOptionStorageKey_] = JSON.stringify(prefs);
-    chrome.storage.local.set(items, () => {
+    xfm.storage.local.set(items, () => {
       if (chrome.runtime.lastError) {
         console.error(
             'Failed to save view options: ' + chrome.runtime.lastError.message);

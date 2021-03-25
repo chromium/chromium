@@ -89,6 +89,7 @@
 // <include src="../../common/js/storage_adapter.js">
 // <include src="../../common/js/importer_common.js">
 // <include src="../../common/js/trash.js">
+// <include src="../../common/js/xfm.js">
 //
 // <include src="constants.js">
 // <include src="crossover_search_utils.js">

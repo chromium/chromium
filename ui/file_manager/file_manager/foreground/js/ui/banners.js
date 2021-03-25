@@ -14,6 +14,7 @@
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {xfm} from '../../../common/js/xfm.m.js';
 // clang-format on
 
 
@@ -142,7 +143,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
     this.volumeManager_.addEventListener(
         'drive-connection-changed', this.onDriveConnectionChanged_.bind(this));
 
-    chrome.storage.onChanged.addListener(this.onStorageChange_.bind(this));
+    xfm.storage.onChanged.addListener(this.onStorageChange_.bind(this));
 
     /** @private {number} */
     this.holdingSpaceWelcomeBannerCounter_ =
@@ -171,8 +172,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
     this.photosWelcomeCounter_ = PHOTOS_WELCOME_COUNTER_LIMIT;
 
     this.ready_ = new Promise((resolve, reject) => {
-      chrome.storage.local.get(
-
+      xfm.storage.local.get(
           [
             HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY,
             WELCOME_HEADER_COUNTER_KEY,
@@ -184,7 +184,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
           values => {
             if (chrome.runtime.lastError) {
               reject(
-                  'Failed to load banner data from chrome.storage: ' +
+                  'Failed to load banner data from storage: ' +
                   chrome.runtime.lastError.message);
               return;
             }
@@ -255,7 +255,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   setHoldingSpaceWelcomeBannerCounter_(value) {
     const values = {};
     values[HOLDING_SPACE_WELCOME_BANNER_COUNTER_KEY] = value;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 
   /**
@@ -266,7 +266,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   setWelcomeHeaderCounter_(value) {
     const values = {};
     values[WELCOME_HEADER_COUNTER_KEY] = value;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 
   /**
@@ -276,7 +276,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   setWarningDismissedCounter_(value) {
     const values = {};
     values[DRIVE_WARNING_DISMISSED_KEY] = value;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 
   /**
@@ -287,7 +287,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   setOfflineInfoBannerCounter_(value) {
     const values = {};
     values[OFFLINE_INFO_BANNER_COUNTER_KEY] = value;
-    chrome.storage.local.set(values);
+    xfm.storage.local.set(values);
   }
 
   /**
@@ -304,6 +304,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
 
   /**
    * chrome.storage.onChanged event handler.
+   * xfm.storage.onChanged event handler.
    * @param {Object<Object>} changes Changes values.
    * @param {string} areaName "local" or "sync".
    * @private
@@ -569,7 +570,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
         close.addEventListener('click', () => {
           const values = {};
           values[DRIVE_WARNING_DISMISSED_KEY] = totalSize;
-          chrome.storage.local.set(values);
+          xfm.storage.local.set(values);
           box.hidden = true;
           this.requestRelayout_(100);
         });
@@ -604,7 +605,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
         close.addEventListener('click', () => {
           const values = {};
           values[DRIVE_WARNING_DISMISSED_KEY] = totalSize;
-          chrome.storage.local.set(values);
+          xfm.storage.local.set(values);
           box.hidden = true;
           this.requestRelayout_(100);
         });
@@ -1190,7 +1191,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
       close.addEventListener('click', () => {
         const values = {};
         values[DOWNLOADS_WARNING_DISMISSED_KEY] = Date.now();
-        chrome.storage.local.set(values);
+        xfm.storage.local.set(values);
         box.hidden = true;
         // We explicitly mark the banner-close element as hidden as due to the
         // use of position absolute in it's layout it does not get hidden by
