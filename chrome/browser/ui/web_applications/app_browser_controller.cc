@@ -572,6 +572,18 @@ gfx::ImageSkia AppBrowserController::GetFallbackAppIcon() const {
   return gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
 }
 
+void AppBrowserController::UpdateDraggableRegion(const SkRegion& region) {
+  draggable_region_ = region;
+
+  if (on_draggable_region_set_for_testing_)
+    std::move(on_draggable_region_set_for_testing_).Run();
+}
+
+void AppBrowserController::SetOnUpdateDraggableRegionForTesting(
+    base::OnceClosure done) {
+  on_draggable_region_set_for_testing_ = std::move(done);
+}
+
 void AppBrowserController::SetInitialURL(const GURL& initial_url) {
   DCHECK(initial_url_.is_empty());
   initial_url_ = initial_url;

@@ -77,6 +77,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void DidClearWindowObject() override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void OnDestruct() override;
+  void DraggableRegionsChanged() override;
 
   // chrome::mojom::ChromeRenderFrame:
   void SetWindowFeatures(

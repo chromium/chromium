@@ -29,6 +29,7 @@
 #include "chrome/browser/ssl/insecure_sensitive_input_driver_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
@@ -611,6 +612,14 @@ void PopulateChromeFrameBinders(
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
   map->Add<media::mojom::CdmInfobarService>(
       base::BindRepeating(&BindCdmInfobarServiceReceiver));
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay) &&
+      !render_frame_host->GetParent()) {
+    map->Add<chrome::mojom::DraggableRegions>(
+        base::BindRepeating(&DraggableRegionsHostImpl::CreateIfAllowed));
+  }
 #endif
 }
 

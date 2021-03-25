@@ -700,6 +700,7 @@ mojom("mojo_bindings") {
   sources = [
     "cache_stats_recorder.mojom",
     "chrome_render_frame.mojom",
+    "draggable_regions.mojom",
     "media/webrtc_logging.mojom",
     "metrics.mojom",
     "net/net_error_page_support.mojom",

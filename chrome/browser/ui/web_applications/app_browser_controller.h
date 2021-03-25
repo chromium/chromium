@@ -17,6 +17,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRegion.h"
 
 class Browser;
 class BrowserThemePack;
@@ -192,6 +193,13 @@ class AppBrowserController : public TabStripModelObserver,
   // BrowserThemeProviderDelegate:
   CustomThemeSupplier* GetThemeSupplier() const override;
 
+  void UpdateDraggableRegion(const SkRegion& region);
+  const base::Optional<SkRegion>& draggable_region() const {
+    return draggable_region_;
+  }
+
+  void SetOnUpdateDraggableRegionForTesting(base::OnceClosure done);
+
  protected:
   explicit AppBrowserController(Browser* browser,
                                 base::Optional<web_app::AppId> app_id);
@@ -225,6 +233,9 @@ class AppBrowserController : public TabStripModelObserver,
 
   const bool has_tab_strip_;
 
+  base::Optional<SkRegion> draggable_region_ = base::nullopt;
+
+  base::OnceClosure on_draggable_region_set_for_testing_;
 };
 
 }  // namespace web_app

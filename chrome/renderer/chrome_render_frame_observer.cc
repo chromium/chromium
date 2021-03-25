@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/draggable_regions.mojom.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
@@ -32,6 +33,7 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
@@ -41,6 +43,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -275,6 +278,35 @@ void ChromeRenderFrameObserver::DidMeaningfulLayout(
 
 void ChromeRenderFrameObserver::OnDestruct() {
   delete this;
+}
+
+void ChromeRenderFrameObserver::DraggableRegionsChanged() {
+  // The DraggableRegion interface is bound browser side when
+  // kWebAppWindowControlsOverlay feature is turned on.
+  if (!base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay))
+    return;
+
+  // Only the main frame is allowed to control draggable regions, to avoid other
+  // frames manipulate the regions in the browser process.
+  if (!render_frame()->IsMainFrame())
+    return;
+
+  blink::WebVector<blink::WebDraggableRegion> web_regions =
+      render_frame()->GetWebFrame()->GetDocument().DraggableRegions();
+  auto regions = std::vector<chrome::mojom::DraggableRegionPtr>();
+  for (blink::WebDraggableRegion& web_region : web_regions) {
+    render_frame()->ConvertViewportToWindow(&web_region.bounds);
+
+    auto region = chrome::mojom::DraggableRegion::New();
+    region->bounds = web_region.bounds;
+    region->draggable = web_region.draggable;
+    regions.emplace_back(std::move(region));
+  }
+
+  mojo::Remote<chrome::mojom::DraggableRegions> remote;
+  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+      remote.BindNewPipeAndPassReceiver());
+  remote->UpdateDraggableRegions(std::move(regions));
 }
 
 void ChromeRenderFrameObserver::SetWindowFeatures(

@@ -259,6 +259,16 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
+  // For PWAs with window-controls-overlay display override, see if we're in an
+  // app defined draggable region so we can return htcaption.
+  web_app::AppBrowserController* controller =
+      browser_view_->browser()->app_controller();
+  if (controller && controller->IsWindowControlsOverlayEnabled() &&
+      controller->draggable_region().has_value() &&
+      controller->draggable_region()->contains(point.x(), point.y())) {
+    return HTCAPTION;
+  }
+
   // If the point's y coordinate is below the top of the topmost view and
   // otherwise within the bounds of this view, the point is considered to be
   // within the client area.
