@@ -91,8 +91,9 @@ FONTS_DEVICE_PATH = '/system/fonts'
 # Number of CPU cores in qemu.
 CPU_CORES = 4
 
-# Number of content_shell instances to run in parallel. 1 per CPU core.
-MAX_WORKERS = CPU_CORES
+# Number of content_shell instances to run in parallel.
+# Allow for two CPU cores per instance.
+MAX_WORKERS = CPU_CORES / 2
 
 PROCESS_START_TIMEOUT = 20
 
