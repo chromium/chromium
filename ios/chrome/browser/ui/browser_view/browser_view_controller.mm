@@ -5210,10 +5210,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)onAddAccount {
-  signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(self.browserState)
-          ->GetState());
-  [self.dispatcher showAddAccountFromViewController:self];
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AUTHENTICATION_OPERATION_ADD_ACCOUNT
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
+  DCHECK(self.dispatcher);
+  [self.dispatcher showSignin:command baseViewController:self];
 }
 
 - (void)onGoIncognito:(const GURL&)url {

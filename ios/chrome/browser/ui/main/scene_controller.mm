@@ -1488,18 +1488,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
-// TODO(crbug.com/779791) : Remove settings commands from MainController.
-- (void)showAddAccountFromViewController:(UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator);
-  self.signinCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:baseViewController
-                                          browser:self.mainInterface.browser
-                                      accessPoint:signin_metrics::AccessPoint::
-                                                      ACCESS_POINT_UNKNOWN];
-
-  [self startSigninCoordinatorWithCompletion:nil];
-}
-
 - (void)showConsistencyPromoFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator);

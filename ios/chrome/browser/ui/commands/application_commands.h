@@ -154,10 +154,6 @@ enum class KeyRetrievalTriggerForUMA;
 - (void)forceSignOut;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Add Account UI, presenting from |baseViewController|.
-- (void)showAddAccountFromViewController:(UIViewController*)baseViewController;
-
-// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the consistency promo UI that allows users to sign in to Chrome using
 // the default accounts on the device.
 - (void)showConsistencyPromoFromViewController:
