@@ -177,10 +177,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
-    if (passwordManagerClient)
+    if (passwordManagerClient) {
       _passwordManagerClient = std::move(passwordManagerClient);
-    else
+    } else {
       _passwordManagerClient.reset(new IOSChromePasswordManagerClient(self));
+    }
     _passwordManager.reset(new PasswordManager(_passwordManagerClient.get()));
 
     PasswordFormHelper* formHelper =
@@ -306,8 +307,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 // Shows auto sign-in notification and schedules hiding it after 3 seconds.
 // TODO(crbug.com/435048): Animate appearance.
 - (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
-  if (!_webState)
+  if (!_webState) {
     return;
+  }
 
   // If a notification is already being displayed, hides the old one, then shows
   // the new one.
@@ -421,14 +423,15 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)showInfoBarForForm:(std::unique_ptr<PasswordFormManagerForUI>)form
                infoBarType:(PasswordInfoBarType)type
                     manual:(BOOL)manual {
-  if (!_webState)
+  if (!_webState) {
     return;
+  }
 
   bool isSyncUser = false;
   if (self.browserState) {
-    syncer::SyncService* sync_service =
+    syncer::SyncService* syncService =
         ProfileSyncServiceFactory::GetForBrowserState(self.browserState);
-    isSyncUser = password_bubble_experiment::IsSmartLockUser(sync_service);
+    isSyncUser = password_bubble_experiment::IsSmartLockUser(syncService);
   }
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
@@ -449,18 +452,18 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
         std::unique_ptr<InfoBarIOS> infobar;
 
         // If manual save, skip showing banner.
-        bool skip_banner = manual;
+        bool skipBanner = manual;
         if (IsInfobarOverlayUIEnabled()) {
           infobar = std::make_unique<InfoBarIOS>(
               InfobarType::kInfobarTypePasswordSave, std::move(delegate),
-              skip_banner);
+              skipBanner);
         } else {
           InfobarPasswordCoordinator* coordinator = [[InfobarPasswordCoordinator
               alloc]
               initWithInfoBarDelegate:delegate.get()
                                  type:InfobarType::kInfobarTypePasswordSave];
           infobar = std::make_unique<InfoBarIOS>(
-              coordinator, std::move(delegate), skip_banner);
+              coordinator, std::move(delegate), skipBanner);
         }
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);
