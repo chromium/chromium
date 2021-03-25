@@ -6854,16 +6854,8 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 // resets the reasing back to have alpha=0 and navigates back to the a-page and
 // catpures 3 more events and verifies that all events on the a-page have
 // alpha=1.
-// Flaky on Mac and Linux ASAN/TSAN. https://crbug.com/1029238
-#if defined(OS_MAC) ||                              \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
-#define MAYBE_SensorPausedWhileCached DISABLED_SensorPausedWhileCached
-#else
-#define MAYBE_SensorPausedWhileCached SensorPausedWhileCached
-#endif
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
-                       MAYBE_SensorPausedWhileCached) {
+                       SensorPausedWhileCached) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
