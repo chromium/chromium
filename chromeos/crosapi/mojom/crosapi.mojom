@@ -373,8 +373,14 @@ struct BrowserInitParams {
 
 // BrowserService defines the APIs that live in a browser (such as
 // lacros-chrome) and are accessed from ash-chrome.
+// IMPORTANT NOTE: If you are exposing a new capability from Lacros to Ash,
+// create a new mojom file. See automation.mojom for an example. This interface
+// has accidentally become a kitchen sink for different features. This was not
+// intentional.
+//
 // Next MinVersion: 11.
 // Next ID: 9
+//
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
