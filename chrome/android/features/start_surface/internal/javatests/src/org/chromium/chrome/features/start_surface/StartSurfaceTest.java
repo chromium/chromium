@@ -1973,7 +1973,7 @@ public class StartSurfaceTest {
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
-        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        waitForOverviewVisible();
         onViewWaiting(
                 allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
@@ -1992,8 +1992,8 @@ public class StartSurfaceTest {
         pressHomePageButton();
 
         // MV tiles and carousel tab switcher should not show anymore.
+        waitForOverviewVisible();
         onViewWaiting(withId(R.id.start_tab_switcher_button));
-        onViewWaiting(withId(R.id.feed_stream_recycler_view));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))
@@ -2009,7 +2009,7 @@ public class StartSurfaceTest {
     public void testNewSurfaceHideTabOnlyFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
-        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        waitForOverviewVisible();
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container));
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container));
         onViewWaiting(withId(R.id.start_tab_switcher_button));
@@ -2027,7 +2027,7 @@ public class StartSurfaceTest {
         pressHomePageButton();
 
         // MV tiles should shown and carousel tab switcher should not show anymore.
-        onViewWaiting(withId(R.id.feed_stream_recycler_view));
+        waitForOverviewVisible();
         onViewWaiting(withId(R.id.start_tab_switcher_button));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
