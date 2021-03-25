@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
@@ -89,7 +88,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeRecentlyClosedHeader = kItemTypeEnumZero,
   ItemTypeRecentlyClosed,
-  ItemTypeRecentlyClosedEmpty,
   ItemTypeOtherDevicesHeader,
   ItemTypeOtherDevicesSyncOff,
   ItemTypeOtherDevicesNoSessions,
@@ -273,6 +271,11 @@ API_AVAILABLE(ios(13.0))
       [[TableViewDisclosureHeaderFooterItem alloc]
           initWithType:ItemTypeRecentlyClosedHeader];
   header.text = l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED);
+  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
+      self.tabRestoreService->entries().empty()) {
+    header.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
+  }
   [model setHeader:header
       forSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   header.collapsed = [self.tableViewModel
@@ -318,18 +321,6 @@ API_AVAILABLE(ios(13.0))
     recentlyClosedTab.title = base::SysUTF16ToNSString(navigationEntry.title());
     recentlyClosedTab.URL = navigationEntry.virtual_url();
     [self.tableViewModel addItem:recentlyClosedTab
-         toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
-  }
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      self.tabRestoreService->entries().empty()) {
-    TableViewDetailTextItem* textItem = [[TableViewDetailTextItem alloc]
-        initWithType:ItemTypeRecentlyClosedEmpty];
-    textItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
-    textItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
-    textItem.detailTextColor = [UIColor colorNamed:kTextSecondaryColor];
-    [self.tableViewModel addItem:textItem
          toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   }
 }
@@ -825,7 +816,6 @@ API_AVAILABLE(ios(13.0))
         [self.presentationDelegate showHistoryFromRecentTabs];
       }
       break;
-    case ItemTypeRecentlyClosedEmpty:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:
     case ItemTypeOtherDevicesSigninPromo:
@@ -903,20 +893,6 @@ API_AVAILABLE(ios(13.0))
     cell.separatorInset =
         UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
   }
-  // Setup the cell for multiline and hide the separator.
-  if (itemTypeSelected == ItemTypeRecentlyClosedEmpty) {
-    // This cell should only exist when illustrated-empty-states is enabled.
-    DCHECK(base::FeatureList::IsEnabled(kIllustratedEmptyStates));
-    TableViewDetailTextCell* textCell =
-        base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-    textCell.detailTextLabel.numberOfLines = 0;
-    textCell.detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    textCell.selectionStyle = UITableViewCellSelectionStyleNone;
-    textCell.separatorInset =
-        UIEdgeInsetsMake(0, tableView.bounds.size.width, 0, 0);
-  }
-
   return cell;
 }
 
@@ -1005,7 +981,6 @@ API_AVAILABLE(ios(13.0))
     }
 
     case ItemTypeRecentlyClosedHeader:
-    case ItemTypeRecentlyClosedEmpty:
     case ItemTypeOtherDevicesHeader:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:

@@ -44,6 +44,7 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
           headerFooter);
   header.titleLabel.text = self.text;
   header.subtitleLabel.text = self.subtitleText;
+  header.subtitleLabel.numberOfLines = 0;
   header.isAccessibilityElement = YES;
   header.accessibilityTraits |= UIAccessibilityTraitButton;
   DisclosureDirection direction =
