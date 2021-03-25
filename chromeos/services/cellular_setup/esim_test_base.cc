@@ -66,7 +66,7 @@ void ESimTestBase::SetUp() {
       network_connection_handler_.get(), network_state_handler_.get());
   cellular_esim_profile_handler_ =
       std::make_unique<TestCellularESimProfileHandler>();
-  cellular_esim_profile_handler_->Init();
+  cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
 
   esim_manager_ = std::make_unique<ESimManager>(
       cellular_esim_connection_handler_.get(),

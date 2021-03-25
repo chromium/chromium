@@ -8,10 +8,12 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +62,9 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
         device_prefs_.registry());
 
+    cellular_inhibitor_.Init(helper_.network_state_handler(),
+                             helper_.network_device_handler());
+
     helper_.device_test()->AddDevice(kDefaultCellularDevicePath,
                                      shill::kTypeCellular, "cellular1");
   }
@@ -76,7 +81,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     handler_ = std::make_unique<CellularESimProfileHandlerImpl>();
     handler_->AddObserver(&observer_);
 
-    handler_->Init();
+    handler_->Init(&cellular_inhibitor_);
   }
 
   void SetDevicePrefs(bool set_to_null = false) {
@@ -106,12 +111,44 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
 
   size_t NumObserverEvents() const { return observer_.num_updates(); }
 
+  std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellularScanning() {
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
+    base::RunLoop inhibit_loop;
+
+    cellular_inhibitor_.InhibitCellularScanning(
+        CellularInhibitor::InhibitReason::kRefreshingProfileList,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<CellularInhibitor::InhibitLock> lock) {
+              inhibit_lock = std::move(lock);
+              inhibit_loop.Quit();
+            }));
+    inhibit_loop.Run();
+
+    EXPECT_TRUE(inhibit_lock);
+    return inhibit_lock;
+  }
+
+  void QueueEuiccErrorStatus() {
+    helper_.hermes_euicc_test()->QueueHermesErrorStatus(
+        HermesResponseStatus::kErrorUnknown);
+  }
+
+  void RefreshProfileList(
+      int euicc_num,
+      CellularESimProfileHandler::RefreshProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr) {
+    handler_->RefreshProfileList(
+        dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), std::move(callback),
+        std::move(inhibit_lock));
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_;
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
 
+  CellularInhibitor cellular_inhibitor_;
   std::unique_ptr<CellularESimProfileHandler> handler_;
 };
 
@@ -218,6 +255,95 @@ TEST_F(CellularESimProfileHandlerImplTest, Persistent) {
   // a profile available.
   SetDevicePrefs();
   EXPECT_EQ(1u, GetESimProfiles().size());
+}
+
+TEST_F(CellularESimProfileHandlerImplTest,
+       RefreshProfileList_AcquireLockInterally) {
+  AddEuicc(/*euicc_num=*/1);
+
+  Init();
+  SetDevicePrefs();
+
+  base::RunLoop run_loop;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            EXPECT_TRUE(inhibit_lock);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(CellularESimProfileHandlerImplTest,
+       RefreshProfileList_ProvideAlreadyAcquiredLock) {
+  AddEuicc(/*euicc_num=*/1);
+
+  Init();
+  SetDevicePrefs();
+
+  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock =
+      InhibitCellularScanning();
+
+  base::RunLoop run_loop;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            EXPECT_TRUE(inhibit_lock);
+            run_loop.Quit();
+          }),
+      std::move(inhibit_lock));
+  run_loop.Run();
+}
+
+TEST_F(CellularESimProfileHandlerImplTest, RefreshProfileList_Failure) {
+  AddEuicc(/*euicc_num=*/1);
+
+  Init();
+  SetDevicePrefs();
+
+  QueueEuiccErrorStatus();
+
+  base::RunLoop run_loop;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            // Failures are indicated via a null return value.
+            EXPECT_FALSE(inhibit_lock);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+TEST_F(CellularESimProfileHandlerImplTest,
+       RefreshProfileList_MultipleSimultaneousRequests) {
+  AddEuicc(/*euicc_num=*/1);
+
+  Init();
+  SetDevicePrefs();
+
+  base::RunLoop run_loop1;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            EXPECT_TRUE(inhibit_lock);
+            run_loop1.Quit();
+          }));
+
+  base::RunLoop run_loop2;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            EXPECT_TRUE(inhibit_lock);
+            run_loop2.Quit();
+          }));
+
+  run_loop1.Run();
+  run_loop2.Run();
 }
 
 }  // namespace chromeos

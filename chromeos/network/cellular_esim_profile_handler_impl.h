@@ -6,9 +6,6 @@
 #define CHROMEOS_NETWORK_CELLULAR_ESIM_PROFILE_HANDLER_IMPL_H_
 
 #include "base/component_export.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
-#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 
 class PrefService;
@@ -17,10 +14,7 @@ class PrefRegistrySimple;
 namespace chromeos {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
-    : public CellularESimProfileHandler,
-      public HermesManagerClient::Observer,
-      public HermesEuiccClient::Observer,
-      public HermesProfileClient::Observer {
+    : public CellularESimProfileHandler {
  public:
   CellularESimProfileHandlerImpl();
   CellularESimProfileHandlerImpl(const CellularESimProfileHandlerImpl&) =
@@ -33,21 +27,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
  private:
   // CellularESimProfileHandler:
-  void Init() override;
   std::vector<CellularESimProfile> GetESimProfiles() override;
   void SetDevicePrefs(PrefService* device_prefs) override;
-
-  // HermesManagerClient::Observer:
-  void OnAvailableEuiccListChanged() override;
-
-  // HermesEuiccClient::Observer:
-  void OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
-                              const std::string& property_name) override;
-
-  // HermesProfileClient::Observer:
-  void OnCarrierProfilePropertyChanged(
-      const dbus::ObjectPath& carrier_profile_path,
-      const std::string& property_name) override;
+  void OnHermesPropertiesUpdated() override;
 
   void UpdateProfilesFromHermes();
 

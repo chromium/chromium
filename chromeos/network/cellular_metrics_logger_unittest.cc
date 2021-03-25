@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_profile.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
@@ -73,6 +74,7 @@ class CellularMetricsLoggerTest : public testing::Test {
   void SetUp() override {
     LoginState::Initialize();
 
+    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
 
@@ -130,7 +132,7 @@ class CellularMetricsLoggerTest : public testing::Test {
     network_state_test_helper_.hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEidName, /*is_active=*/true,
         /*physical_slot=*/0);
-    cellular_esim_profile_handler_->Init();
+    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -183,9 +185,10 @@ class CellularMetricsLoggerTest : public testing::Test {
  private:
   NetworkStateTestHelper network_state_test_helper_{
       false /* use_default_devices_and_services */};
-  std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
+  std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   DISALLOW_COPY_AND_ASSIGN(CellularMetricsLoggerTest);
 };
 

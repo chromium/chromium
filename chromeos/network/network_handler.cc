@@ -40,8 +40,8 @@ NetworkHandler::NetworkHandler()
   network_state_handler_.reset(new NetworkStateHandler());
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
   if (features::IsCellularActivationUiEnabled()) {
-    cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
     cellular_inhibitor_.reset(new CellularInhibitor());
+    cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
     cellular_esim_connection_handler_.reset(
         new CellularESimConnectionHandler());
   }
@@ -74,9 +74,9 @@ void NetworkHandler::Init() {
   network_state_handler_->InitShillPropertyHandler();
   network_device_handler_->Init(network_state_handler_.get());
   if (features::IsCellularActivationUiEnabled()) {
-    cellular_esim_profile_handler_->Init();
     cellular_inhibitor_->Init(network_state_handler_.get(),
                               network_device_handler_.get());
+    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
     cellular_esim_connection_handler_->Init(network_state_handler_.get(),
                                             cellular_inhibitor_.get());
   }

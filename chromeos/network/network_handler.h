@@ -111,8 +111,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandlerImpl> network_device_handler_;
-  std::unique_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_;
   std::unique_ptr<CellularESimConnectionHandler>
       cellular_esim_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;

@@ -4,8 +4,7 @@
 
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
 
-#include <algorithm>
-#include <iterator>
+#include <vector>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
@@ -23,17 +22,7 @@ void CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
 
 CellularESimProfileHandlerImpl::CellularESimProfileHandlerImpl() = default;
 
-CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() {
-  HermesManagerClient::Get()->RemoveObserver(this);
-  HermesEuiccClient::Get()->RemoveObserver(this);
-  HermesProfileClient::Get()->RemoveObserver(this);
-}
-
-void CellularESimProfileHandlerImpl::Init() {
-  HermesManagerClient::Get()->AddObserver(this);
-  HermesEuiccClient::Get()->AddObserver(this);
-  HermesProfileClient::Get()->AddObserver(this);
-}
+CellularESimProfileHandlerImpl::~CellularESimProfileHandlerImpl() = default;
 
 std::vector<CellularESimProfile>
 CellularESimProfileHandlerImpl::GetESimProfiles() {
@@ -73,19 +62,7 @@ void CellularESimProfileHandlerImpl::SetDevicePrefs(PrefService* device_prefs) {
   UpdateProfilesFromHermes();
 }
 
-void CellularESimProfileHandlerImpl::OnAvailableEuiccListChanged() {
-  UpdateProfilesFromHermes();
-}
-
-void CellularESimProfileHandlerImpl::OnEuiccPropertyChanged(
-    const dbus::ObjectPath& euicc_path,
-    const std::string& property_name) {
-  UpdateProfilesFromHermes();
-}
-
-void CellularESimProfileHandlerImpl::OnCarrierProfilePropertyChanged(
-    const dbus::ObjectPath& carrier_profile_path,
-    const std::string& property_name) {
+void CellularESimProfileHandlerImpl::OnHermesPropertiesUpdated() {
   UpdateProfilesFromHermes();
 }
 
