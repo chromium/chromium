@@ -5,7 +5,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -32,8 +31,7 @@ class LargeStickyAdViolationBrowserTest
   void SetUp() override {
     std::vector<base::Feature> enabled = {
         subresource_filter::kAdTagging,
-        subresource_filter::kAdsInterventionsEnforced,
-        features::kSitePerProcess};
+        subresource_filter::kAdsInterventionsEnforced};
     std::vector<base::Feature> disabled = {
         blink::features::kFrequencyCappingForLargeStickyAdDetection};
 

@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
@@ -148,8 +147,7 @@ class AdsPageLoadMetricsObserverBrowserTest
 
   void SetUp() override {
     std::vector<base::Feature> enabled = {
-        subresource_filter::kAdTagging, features::kSitePerProcess,
-        features::kV8PerFrameMemoryMonitoring};
+        subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
     std::vector<base::Feature> disabled = {};
 
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
@@ -2194,8 +2192,7 @@ class AdsMemoryMeasurementBrowserTest
     performance_manager::v8_memory::internal::
         SetEagerMemoryMeasurementEnabledForTesting(true);
     std::vector<base::Feature> enabled = {
-        subresource_filter::kAdTagging, features::kSitePerProcess,
-        features::kV8PerFrameMemoryMonitoring};
+        subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
     std::vector<base::Feature> disabled = {};
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
 
