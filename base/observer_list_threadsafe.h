@@ -12,6 +12,7 @@
 #include "base/base_export.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -132,6 +133,13 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       const NotificationDataBase* current_notification =
           tls_current_notification_.Get().Get();
       if (current_notification && current_notification->observer_list == this) {
+        // TODO(http://crbug.com/1192296): This code is temporary added to
+        // ensure that TLS code is not used by any observer. Remove this code
+        // after the experiment.
+        if (!dump_already_reported_) {
+          debug::DumpWithoutCrashing();
+          dump_already_reported_ = true;
+        }
         const NotificationData* notification_data =
             static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
@@ -283,6 +291,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   mutable Lock lock_;
 
+  bool dump_already_reported_ GUARDED_BY(lock_) = false;
   size_t observer_id_counter_ GUARDED_BY(lock_) = 0;
 
   struct ObserverTaskRunnerInfo {
