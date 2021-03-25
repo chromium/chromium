@@ -274,6 +274,9 @@ bool IsSameDomainXHR(const std::string& host,
 
 void DetectAddToCart(content::RenderFrame* render_frame,
                      const blink::WebURLRequest& request) {
+  blink::WebLocalFrame* frame = render_frame->GetWebFrame();
+  const GURL& navigation_url(frame->GetDocument().Url());
+
   GURL url = request.Url();
   // Only handle XHR POST requests here.
   // Other matches like navigation is handled in DidStartNavigation().
@@ -287,6 +290,17 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     OnAddToCart(render_frame);
     return;
   }
+
+  // Per-site hard-coded exclusion rules:
+  if (navigation_url.DomainIs("costco.com") && url.DomainIs("clicktale.net"))
+    return;
+  if (navigation_url.DomainIs("lululemon.com") &&
+      url.DomainIs("launchdarkly.com"))
+    return;
+  if (navigation_url.DomainIs("qvc.com"))
+    return;
+  if (navigation_url.DomainIs("hsn.com") && url.DomainIs("granify.net"))
+    return;
 
   blink::WebHTTPBody body = request.HttpBody();
   if (body.IsNull())
@@ -303,8 +317,15 @@ void DetectAddToCart(content::RenderFrame* render_frame,
     std::vector<uint8_t> buf = element.data.Copy().ReleaseVector();
     base::StringPiece str(reinterpret_cast<char*>(buf.data()), buf.size());
 
+    // Per-site hard-coded exclusion rules:
+    if (navigation_url.DomainIs("groupon.com") && buf.size() > 10000)
+      return;
+
     if (CommerceHintAgent::IsAddToCart(str)) {
       RecordCommerceEvent(CommerceEvent::kAddToCartByForm);
+      DVLOG(2) << "Matched add-to-cart. Request from \"" << navigation_url
+               << "\" to \"" << url << "\" with payload (size = " << str.size()
+               << ") \"" << str << "\"";
       OnAddToCart(render_frame);
       return;
     }
@@ -461,16 +482,16 @@ void CommerceHintAgent::OnDestruct() {
 }
 
 void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  const GURL& url(frame->GetDocument().Url());
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
   DetectAddToCart(render_frame(), request);
 
   // TODO(crbug/1164236): use MutationObserver on cart instead.
   // Detect XHR in cart page.
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Don't do anything for subframes.
   if (frame->Parent())
-    return;
-  const GURL& url(frame->GetDocument().Url());
-  if (!url.SchemeIsHTTPOrHTTPS())
     return;
 
   if (IsVisitCart(url) && IsSameDomainXHR(url.host(), request)) {
