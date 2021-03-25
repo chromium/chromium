@@ -115,7 +115,11 @@ export class PeerConnectionUpdateTable {
       if (update.value !== this.getLastOfferAnswer_(tableElement)) {
         type += ' (munged)';
       }
+    } else if (update.type === 'setConfiguration') {
+      // Update the configuration that is displayed at the top.
+      peerConnectionElement.firstChild.children[2].textContent = update.value;
     }
+
     const summaryItem = $('summary-template').content.cloneNode(true);
     const summary = summaryItem.querySelector('summary');
     summary.textContent = type;

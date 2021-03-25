@@ -313,8 +313,13 @@ function addPeerConnection(data) {
   }
 
   const p = document.createElement('p');
-  p.textContent =
-      data.url + ', ' + data.rtcConfiguration + ', ' + data.constraints;
+  appendChildWithText(p, 'span', data.url);
+  appendChildWithText(p, 'span', ', ');
+  appendChildWithText(p, 'span', data.rtcConfiguration);
+  if (data.constraints !== '') {
+    appendChildWithText(p, 'span', ', ');
+    appendChildWithText(p, 'span', data.constraints);
+  }
   peerConnectionElement.appendChild(p);
 
   return peerConnectionElement;
