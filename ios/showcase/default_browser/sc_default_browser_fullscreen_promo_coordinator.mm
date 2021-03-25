@@ -4,7 +4,7 @@
 
 #import "ios/showcase/default_browser/sc_default_browser_fullscreen_promo_coordinator.h"
 
-#import "ios/chrome/browser/ui/whats_new/default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

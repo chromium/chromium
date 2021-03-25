@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"

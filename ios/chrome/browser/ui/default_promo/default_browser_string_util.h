@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_WHATS_NEW_DEFAULT_BROWSER_STRING_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_WHATS_NEW_DEFAULT_BROWSER_STRING_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_STRING_UTIL_H_
+#define IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_STRING_UTIL_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,4 +13,4 @@ NSString* GetDefaultBrowserPromoTitle();
 // Returns the right text for the learn more popover.
 NSString* GetDefaultBrowserLearnMoreText();
 
-#endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_DEFAULT_BROWSER_STRING_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_STRING_UTIL_H_

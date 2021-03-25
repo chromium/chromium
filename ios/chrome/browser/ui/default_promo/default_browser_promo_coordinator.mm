@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/whats_new/default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_promo_view_controller.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_string_util.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 

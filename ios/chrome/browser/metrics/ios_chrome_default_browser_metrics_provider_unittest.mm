@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

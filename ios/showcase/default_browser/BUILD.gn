@@ -11,7 +11,7 @@ source_set("default_browser") {
     "sc_default_browser_fullscreen_promo_coordinator.h",
     "sc_default_browser_fullscreen_promo_coordinator.mm",
   ]
-  deps += [ "//ios/chrome/browser/ui/whats_new" ]
+  deps += [ "//ios/chrome/browser/ui/default_promo" ]
   frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/x_callback_url.h"
 #include "ios/components/webui/web_ui_url_constants.h"
