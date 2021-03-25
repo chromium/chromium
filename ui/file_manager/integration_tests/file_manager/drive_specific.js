@@ -101,6 +101,24 @@ async function waitForLastDriveDialogResult(expectedResult) {
 }
 
 /**
+ * Waits for a given notification to appear.
+ *
+ * @param {string} notification_id ID of notification to wait for.
+ */
+async function waitForNotification(notification_id) {
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const idSet =
+        await remoteCall.callRemoteTestUtil('getNotificationIDs', null, []);
+    return !idSet[notification_id] ?
+        pending(
+            caller, 'Waiting for notification "%s" to appear.',
+            notification_id) :
+        null;
+  });
+}
+
+/**
  * Tests opening the "Offline" on the sidebar navigation by clicking the icon,
  * and checks contents of the file list. Only the entries "available offline"
  * should be shown. "Available offline" entries are hosted documents and the
@@ -406,13 +424,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   await remoteCall.waitForElement(appId, '[command="#toggle-pinned"][checked]');
   await remoteCall.waitForElement(
       appId, '#file-list .pinned[file-name="hello.txt"] .detail-pinned');
-  await repeatUntil(async () => {
-    const idSet =
-        await remoteCall.callRemoteTestUtil('getNotificationIDs', null, []);
-    return !idSet['disabled-mobile-sync'] ?
-        pending(caller, 'Sync disable notification is not found.') :
-        null;
-  });
+  await waitForNotification('disabled-mobile-sync');
   await sendTestMessage({
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
@@ -912,8 +924,8 @@ testcase.driveEnableDocsOfflineDialog = async () => {
 };
 
 /**
- * Tests that the Enable Docs Offline dialog launches a Files App window if
- * there are none open.
+ * Tests that the Enable Docs Offline dialog launches a Chrome notification if
+ * there are no Files App windows open.
  */
 testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
   // Wait for the background page to listen to events from the browser.
@@ -922,20 +934,61 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
   // Simulate Drive signalling Files App to open a dialog.
   await sendTestMessage({name: 'displayEnableDocsOfflineDialog'});
 
-  // Check: A Files App window should appear.
-  const appId = await remoteCall.waitForWindow('files#');
+  // Check: the Enable Docs Offline notification should appear.
+  await waitForNotification('enable-docs-offline');
 
-  // Check: the Enable Docs Offline dialog should appear.
+  // Click on the ok button.
+  await sendTestMessage({
+    name: 'clickNotificationButton',
+    extensionId: FILE_MANAGER_EXTENSIONS_ID,
+    notificationId: 'enable-docs-offline',
+    index: 1
+  });
+
+  // Check: the last dialog result should be 1 (accept).
+  await waitForLastDriveDialogResult('1');
+
+  // Simulate Drive signalling Files App to open a dialog.
+  await sendTestMessage({name: 'displayEnableDocsOfflineDialog'});
+
+  // Check: the Enable Docs Offline notification should appear.
+  await waitForNotification('enable-docs-offline');
+
+  // Click on the cancel button.
+  await sendTestMessage({
+    name: 'clickNotificationButton',
+    extensionId: FILE_MANAGER_EXTENSIONS_ID,
+    notificationId: 'enable-docs-offline',
+    index: 0
+  });
+
+  // Check: the last dialog result should be 2 (reject).
+  await waitForLastDriveDialogResult('2');
+
+  // Simulate Drive signalling Files App to open a dialog.
+  await sendTestMessage({name: 'displayEnableDocsOfflineDialog'});
+
+  // Check: the Enable Docs Offline notification should appear.
+  await waitForNotification('enable-docs-offline');
+
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+
+  // Check: the Enable Docs Offline dialog should appear in Files app.
   const dialogText = await remoteCall.waitForElement(
       appId, '.cr-dialog-container.shown .cr-dialog-text');
   chrome.test.assertEq(ENABLE_DOCS_OFFLINE_MESSAGE, dialogText.text);
 
-  // Click on the ok button.
-  await remoteCall.waitAndClickElement(
-      appId, '.cr-dialog-container.shown .cr-dialog-ok');
-
-  // Check: the last dialog result should be 1 (accept).
-  await waitForLastDriveDialogResult('1');
+  // Check: the Enable Docs Offline notification should disappear.
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const idSet =
+        await remoteCall.callRemoteTestUtil('getNotificationIDs', null, []);
+    return idSet['enable-docs-offline'] ?
+        pending(
+            caller, 'Waiting for Drive confirm notification to disappear.') :
+        null;
+  });
 };
 
 /**

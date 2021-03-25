@@ -86,6 +86,15 @@ mockChrome.fileManagerPrivate = {
     },
     listener_: null
   },
+  onMountCompleted: {
+    addListener: function(callback) {
+      mockChrome.fileManagerPrivate.onMountCompleted.listener_ = callback;
+    },
+    removeListener: function() {
+      mockChrome.fileManagerPrivate.onMountCompleted.listener_ = null;
+    },
+    listener_: null
+  },
   getPreferences: function() {},
   setPreferences: function() {},
 
@@ -101,6 +110,15 @@ mockChrome.notifications = {
     },
     removeListener: function() {
       mockChrome.notifications.onButtonClicked.listener_ = null;
+    },
+    listener_: null
+  },
+  onClosed: {
+    addListener: function(callback) {
+      mockChrome.notifications.onClosed.listener_ = callback;
+    },
+    removeListener: function() {
+      mockChrome.notifications.onClosed.listener_ = null;
     },
     listener_: null
   },
