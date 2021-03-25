@@ -33,6 +33,7 @@ public class WebViewCompatibilityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1191366")
     public void testBothLoadPageWebLayerFirst() throws Exception {
         mActivityTestRule.launchShellWithUrl(mActivityTestRule.getTestDataURL("simple_page.html"));
 
