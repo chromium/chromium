@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 enum class NGOutlineType;
 
@@ -233,6 +234,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // and change them to use NG geometry types once LayoutNG supports overflow.
   PhysicalRect OverflowClipRect(
       const PhysicalOffset& location,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
+  PhysicalRect OverflowClipRect(
+      const PhysicalOffset& location,
+      const NGBlockBreakToken* incoming_break_token,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   LayoutSize PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;

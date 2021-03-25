@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
@@ -531,6 +532,42 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
   DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   return box->OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+}
+
+PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
+    const PhysicalOffset& location,
+    const NGBlockBreakToken* incoming_break_token,
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
+  PhysicalRect clip_rect =
+      OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+  if (!incoming_break_token && !BreakToken())
+    return clip_rect;
+
+  // Clip the stitched box clip rectangle against the bounds of the fragment.
+  //
+  // TODO(layout-dev): It's most likely better to actually store the clip
+  // rectangle in each fragment, rather than post-processing the stitched clip
+  // rectangle like this.
+  auto writing_direction = Style().GetWritingDirection();
+  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
+  WritingModeConverter converter(writing_direction, PhysicalSize(box->Size()));
+  // Make the clip rectangle relative to the layout box.
+  clip_rect.offset -= location;
+  LogicalOffset stitched_offset;
+  if (incoming_break_token)
+    stitched_offset.block_offset = incoming_break_token->ConsumedBlockSize();
+  LogicalRect logical_fragment_rect(
+      stitched_offset,
+      Size().ConvertToLogical(writing_direction.GetWritingMode()));
+  PhysicalRect physical_fragment_rect =
+      converter.ToPhysical(logical_fragment_rect);
+  // Clip against the fragment's bounds.
+  clip_rect.Intersect(physical_fragment_rect);
+  // Make the clip rectangle relative to the fragment.
+  clip_rect.offset -= physical_fragment_rect.offset;
+  // Make the clip rectangle relative to whatever the caller wants.
+  clip_rect.offset += location;
+  return clip_rect;
 }
 
 bool NGPhysicalBoxFragment::MayIntersect(
