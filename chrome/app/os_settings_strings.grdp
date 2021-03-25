@@ -1278,8 +1278,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text for 'secondary accounts disabled' message in Settings page.">
     Your administrator has disabled the addition of more Google Accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Text for 'secondary accounts disabled' message in Settings page.">
-   Your administrator doesn’t allow additional Google Accounts
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Tooltip text for 'secondary accounts disabled' message in Settings page.">
+   Your administrator doesn’t allow additional Google Accounts.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_CHILD_TEXT" desc="Text for 'secondary accounts disabled' message for child accounts in Settings page.">
     Addition of more Google Accounts is disabled
