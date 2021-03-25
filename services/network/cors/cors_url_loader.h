@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void ResumeReadingBodyFromNet() override;
 
   // mojom::URLLoaderClient overrides:
-  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
+  void OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;

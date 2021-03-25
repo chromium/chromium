@@ -47,6 +47,7 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
+  bool has_received_early_hints() const { return has_received_early_hints_; }
   bool has_received_response() const { return has_received_response_; }
   bool has_received_redirect() const { return has_received_redirect_; }
   bool has_received_upload_progress() const {
@@ -107,6 +108,7 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   std::string cached_metadata_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   URLLoaderCompletionStatus completion_status_;
+  bool has_received_early_hints_ = false;
   bool has_received_response_ = false;
   bool has_received_redirect_ = false;
   bool has_received_upload_progress_ = false;

@@ -33,7 +33,9 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/cors.mojom.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -62,6 +64,18 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   base::WeakPtr<TestURLLoaderFactory> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
+  }
+
+  void NotifyClientOnReceiveEarlyHints(
+      const std::vector<std::pair<std::string, std::string>>& headers) {
+    DCHECK(client_remote_);
+    auto response_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+    for (const auto& header : headers)
+      response_headers->SetHeader(header.first, header.second);
+    auto hints = mojom::EarlyHints::New(
+        PopulateParsedHeaders(response_headers.get(), GetRequestedURL()));
+    client_remote_->OnReceiveEarlyHints(std::move(hints));
   }
 
   void NotifyClientOnReceiveResponse(
@@ -204,6 +218,12 @@ class CorsURLLoaderTest : public testing::Test {
   bool IsNetworkLoaderStarted() {
     DCHECK(test_url_loader_factory_);
     return test_url_loader_factory_->IsCreateLoaderAndStartCalled();
+  }
+
+  void NotifyLoaderClientOnReceiveEarlyHints(
+      const std::vector<std::pair<std::string, std::string>>& headers = {}) {
+    DCHECK(test_url_loader_factory_);
+    test_url_loader_factory_->NotifyClientOnReceiveEarlyHints(headers);
   }
 
   void NotifyLoaderClientOnReceiveResponse(
@@ -614,6 +634,30 @@ TEST_F(CorsURLLoaderTest, NavigateWithoutInitiator) {
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
+TEST_F(CorsURLLoaderTest, NavigateWithEarlyHints) {
+  ResetFactory(base::nullopt /* initiator */, mojom::kBrowserProcessId);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNavigate;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.url = GURL("https://example.com/");
+  request.request_initiator = base::nullopt;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveEarlyHints();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_TRUE(client().has_received_early_hints());
+  EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
 TEST_F(CorsURLLoaderTest, NavigationFromRenderer) {
   ResourceRequest request;
   request.mode = mojom::RequestMode::kNavigate;
@@ -646,6 +690,27 @@ TEST_F(CorsURLLoaderTest, SameOriginRequest) {
 
   EXPECT_TRUE(IsNetworkLoaderStarted());
   EXPECT_FALSE(client().has_received_redirect());
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, SameOriginRequestWithEarlyHints) {
+  const GURL url("https://example.com/foo.png");
+  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveEarlyHints();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+
+  EXPECT_TRUE(IsNetworkLoaderStarted());
+  EXPECT_FALSE(client().has_received_redirect());
+  // client() should not receive Early Hints since the request is not
+  // navigation.
+  EXPECT_FALSE(client().has_received_early_hints());
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);

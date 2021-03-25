@@ -20,6 +20,7 @@ void TestURLLoaderClient::OnReceiveEarlyHints(
   EXPECT_FALSE(has_received_response_);
   EXPECT_FALSE(has_received_cached_metadata_);
   EXPECT_FALSE(has_received_completion_);
+  has_received_early_hints_ = true;
   early_hints_.push_back(std::move(early_hints));
 }
 
