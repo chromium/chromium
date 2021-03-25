@@ -12,6 +12,7 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/pref_names.h"
+#include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -63,11 +64,15 @@ void MediaRouterActionController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes,
     const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
   has_local_display_route_ =
-      std::find_if(routes.begin(), routes.end(),
-                   [](const media_router::MediaRoute& route) {
-                     return route.is_local() && route.for_display();
-                   }) != routes.end();
-
+      std::find_if(
+          routes.begin(), routes.end(),
+          [](const media_router::MediaRoute& route) {
+            bool should_hide_presentation =
+                media_router::GlobalMediaControlsCastStartStopEnabled() &&
+                route.media_source().IsCastPresentationUrl();
+            return route.is_local() && route.for_display() &&
+                   !should_hide_presentation;
+          }) != routes.end();
   MaybeAddOrRemoveAction();
 }
 

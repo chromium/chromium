@@ -6,6 +6,8 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -52,12 +54,12 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
 
     SetAlwaysShowActionPref(false);
 
-    local_display_route_list_.push_back(media_router::MediaRoute(
-        "routeId1", source1_, "sinkId1", "description", true, true));
-    non_local_display_route_list_.push_back(media_router::MediaRoute(
-        "routeId2", source1_, "sinkId2", "description", false, true));
-    non_local_display_route_list_.push_back(media_router::MediaRoute(
-        "routeId3", source2_, "sinkId3", "description", true, false));
+    local_display_route_list_.emplace_back("routeId1", source1_, "sinkId1",
+                                           "description", true, true);
+    non_local_display_route_list_.emplace_back("routeId2", source1_, "sinkId2",
+                                               "description", false, true);
+    non_local_display_route_list_.emplace_back("routeId3", source2_, "sinkId3",
+                                               "description", true, false);
   }
 
   void TearDown() override {
@@ -92,6 +94,27 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   std::vector<media_router::MediaRoute::Id> empty_route_id_list_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterActionControllerUnitTest);
+};
+
+// TODO(b/161612403): Remove this class once
+// |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
+class MediaRouterActionControllerGMCUnitTest
+    : public MediaRouterActionControllerUnitTest {
+ public:
+  MediaRouterActionControllerGMCUnitTest() : cast_source_("cast:1234") {}
+  void SetUp() override {
+    MediaRouterActionControllerUnitTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        media_router::kGlobalMediaControlsCastStartStop);
+
+    local_display_cast_route_list_.emplace_back(
+        "routeId4", cast_source_, "sinkId4", "description", true, true);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  const media_router::MediaSource cast_source_;
+  std::vector<media_router::MediaRoute> local_display_cast_route_list_;
 };
 
 TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
@@ -198,4 +221,17 @@ TEST_F(MediaRouterActionControllerUnitTest, ObserveAlwaysShowPrefChange) {
 
   SetAlwaysShowActionPref(false);
   EXPECT_FALSE(IsIconShown());
+}
+
+TEST_F(MediaRouterActionControllerGMCUnitTest,
+       EphemeralIconForRoutesAndIssues) {
+  EXPECT_FALSE(IsIconShown());
+  // Creating a cast route should not show the action icon.
+  controller_->OnRoutesUpdated({local_display_cast_route_list_},
+                               empty_route_id_list_);
+  EXPECT_FALSE(IsIconShown());
+
+  // Creating a local mirroring route should show the action icon.
+  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
+  EXPECT_TRUE(IsIconShown());
 }
