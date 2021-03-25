@@ -289,20 +289,21 @@ public final class AwBrowserProcess {
         // again if anything goes wrong. This makes sense given that a failure
         // to copy a file usually means that retrying won't succeed either,
         // because e.g. the disk is full, or the file system is corrupted.
-        final ParcelFileDescriptor[] minidumpFds = new ParcelFileDescriptor[minidumpFiles.length];
+        final List<ParcelFileDescriptor> minidumpFds = new ArrayList<>(minidumpFiles.length);
         try {
             for (int i = 0; i < minidumpFiles.length; ++i) {
                 try {
-                    minidumpFds[i] = ParcelFileDescriptor.open(
-                            minidumpFiles[i], ParcelFileDescriptor.MODE_READ_ONLY);
+                    minidumpFds.add(ParcelFileDescriptor.open(
+                            minidumpFiles[i], ParcelFileDescriptor.MODE_READ_ONLY));
                 } catch (FileNotFoundException e) {
-                    minidumpFds[i] = null; // This is slightly ugly :)
+                    // Don't add null file descriptors to the array.
                 }
             }
             try {
                 List<Map<String, String>> crashesInfoList =
                         getCrashKeysForCrashFiles(minidumpFiles, crashesInfoMap);
-                service.transmitCrashes(minidumpFds, crashesInfoList);
+                service.transmitCrashes(
+                        (ParcelFileDescriptor[]) minidumpFds.toArray(), crashesInfoList);
             } catch (RemoteException e) {
                 // TODO(gsennton): add a UMA metric here to ensure we aren't losing
                 // too many minidumps because of this.
@@ -310,9 +311,9 @@ public final class AwBrowserProcess {
         } finally {
             deleteMinidumps(minidumpFiles);
             // Close FDs
-            for (int i = 0; i < minidumpFds.length; ++i) {
+            for (ParcelFileDescriptor fd : minidumpFds) {
                 try {
-                    if (minidumpFds[i] != null) minidumpFds[i].close();
+                    fd.close();
                 } catch (IOException e) {
                 }
             }
