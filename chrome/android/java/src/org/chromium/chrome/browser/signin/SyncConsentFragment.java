@@ -31,7 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Implementation of {@link SigninFragmentBase} for {@link SigninActivity}. */
-public class SigninFragment extends SigninFragmentBase {
+public class SyncConsentFragment extends SigninFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
             "SigninFragment.PersonalizedPromoAction";
 

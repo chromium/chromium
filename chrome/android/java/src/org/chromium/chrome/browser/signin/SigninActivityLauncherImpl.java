@@ -50,7 +50,7 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
     public void launchActivityForPromoDefaultFlow(
             Context context, @SigninAccessPoint int accessPoint, String accountName) {
         launchInternal(context,
-                SigninFragment.createArgumentsForPromoDefaultFlow(accessPoint, accountName));
+                SyncConsentFragment.createArgumentsForPromoDefaultFlow(accessPoint, accountName));
     }
 
     /**
@@ -63,7 +63,8 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
     public void launchActivityForPromoChooseAccountFlow(
             Context context, @SigninAccessPoint int accessPoint, String accountName) {
         launchInternal(context,
-                SigninFragment.createArgumentsForPromoChooseAccountFlow(accessPoint, accountName));
+                SyncConsentFragment.createArgumentsForPromoChooseAccountFlow(
+                        accessPoint, accountName));
     }
 
     /**
@@ -74,7 +75,8 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
     @Override
     public void launchActivityForPromoAddAccountFlow(
             Context context, @SigninAccessPoint int accessPoint) {
-        launchInternal(context, SigninFragment.createArgumentsForPromoAddAccountFlow(accessPoint));
+        launchInternal(
+                context, SyncConsentFragment.createArgumentsForPromoAddAccountFlow(accessPoint));
     }
 
     /**
