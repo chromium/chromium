@@ -640,9 +640,6 @@ URLLoader::URLLoader(
         &URLLoader::SetRawResponseHeaders, base::Unretained(this)));
   }
 
-  // TODO(crbug.com/671310): We may want to add
-  // ResourceRequest::report_early_response so that we can bypass setting
-  // EarlyResponseHeadersCallback if the client can't handle Early Hints.
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
 
