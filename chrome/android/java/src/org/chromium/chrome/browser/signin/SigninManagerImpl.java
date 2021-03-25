@@ -129,7 +129,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mIdentityManager.addObserver(this);
 
         AccountInfoService.init(mIdentityManager);
-
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
+            mAccountTrackerService.setOnAccountSeededListener(
+                    mIdentityManager::forceRefreshOfExtendedAccountInfo);
+        }
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
 

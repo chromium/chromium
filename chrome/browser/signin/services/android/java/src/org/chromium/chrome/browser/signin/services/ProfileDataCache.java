@@ -26,7 +26,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -204,19 +203,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     }
 
     private void populateCache() {
-        final Callback<String> fetchDataForAccount = accountEmail -> {
-            if (mProfileDataSource != null) {
-                ProfileData profileData = mProfileDataSource.getProfileDataForAccount(accountEmail);
-                if (profileData != null) {
-                    onProfileDataUpdated(profileData);
-                }
-            } else {
-                mAccountInfoService.startFetchingAccountInfoFor(accountEmail, this);
-            }
-        };
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
             for (Account account : accounts) {
-                fetchDataForAccount.onResult(account.name);
+                updateAccountInfoByEmail(account.name);
             }
         });
     }
@@ -249,6 +238,20 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         if (accountInfo.getAccountImage() != null) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName());
+        }
+    }
+
+    private void updateAccountInfoByEmail(String email) {
+        if (mProfileDataSource != null) {
+            ProfileData profileData = mProfileDataSource.getProfileDataForAccount(email);
+            if (profileData != null) {
+                onProfileDataUpdated(profileData);
+            }
+            return;
+        }
+        final AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(email);
+        if (accountInfo != null) {
+            onAccountInfoUpdated(accountInfo);
         }
     }
 

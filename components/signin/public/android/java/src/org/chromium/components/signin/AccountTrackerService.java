@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -16,6 +17,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.signin.base.CoreAccountId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -60,6 +62,7 @@ public class AccountTrackerService {
             new ObserverList<>();
     private final List<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayList<>();
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
+    private Callback<CoreAccountId> mOnAccountSeededListener;
     private AccountsChangeObserver mAccountsChangeObserver;
 
     @VisibleForTesting
@@ -67,6 +70,13 @@ public class AccountTrackerService {
     AccountTrackerService(long nativeAccountTrackerService) {
         mNativeAccountTrackerService = nativeAccountTrackerService;
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
+    }
+
+    /**
+     * Sets a listener that gets executed when an account is seeded.
+     */
+    public void setOnAccountSeededListener(Callback<CoreAccountId> onAccountSeededListener) {
+        mOnAccountSeededListener = onAccountSeededListener;
     }
 
     /**
@@ -167,7 +177,6 @@ public class AccountTrackerService {
         AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
                 gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
-        // TODO(crbug/1187458): Download account information in the end of account seeding
         for (OnSystemAccountsSeededListener observer : mSystemAccountsSeedingObservers) {
             observer.onSystemAccountsSeedingComplete();
         }
@@ -175,6 +184,12 @@ public class AccountTrackerService {
             runnable.run();
         }
         mRunnablesWaitingForAccountsSeeding.clear();
+
+        if (mOnAccountSeededListener != null) {
+            for (String gaiaId : gaiaIds) {
+                mOnAccountSeededListener.onResult(new CoreAccountId(gaiaId));
+            }
+        }
     }
 
     /**

@@ -50,7 +50,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -109,9 +108,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     private IdentityServicesProvider mIdentityServicesProviderMock;
 
     @Mock
-    private AccountTrackerService mAccountTrackerServiceMock;
-
-    @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
 
     @Mock
@@ -136,8 +132,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
                 .thenReturn(mIdentityManager);
-        when(mIdentityServicesProviderMock.getAccountTrackerService(mProfileMock))
-                .thenReturn(mAccountTrackerServiceMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         AccountInfoService.init(mIdentityManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -201,7 +195,6 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
     @Feature("RenderTest")
     public void testProfileDataPopulatedWithoutGmsProfileDataSource() throws IOException {
-        when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
         when(mIdentityManagerNativeMock
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 anyLong(), eq(ACCOUNT_EMAIL)))

@@ -38,6 +38,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -67,6 +68,9 @@ public class AccountTrackerServiceTest {
 
     @Mock
     private Runnable mRunnableMock;
+
+    @Mock
+    private Callback<CoreAccountId> mCallbackMock;
 
     @Captor
     private ArgumentCaptor<String[]> mGaiaIdsCaptor;
@@ -172,5 +176,17 @@ public class AccountTrackerServiceTest {
                 .tryGetGoogleAccounts(notNull());
         verify(mNativeMock, never()).seedAccountsInfo(anyLong(), any(), any());
         verify(mRunnableMock, never()).run();
+    }
+
+    @Test
+    public void testSeedAccountsWithOnAccountSeededListener() {
+        mService.setOnAccountSeededListener(mCallbackMock);
+        verify(mCallbackMock, never()).onResult(any());
+
+        mService.seedAccountsIfNeeded(() -> {});
+
+        final CoreAccountId accountId =
+                new CoreAccountId(mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+        verify(mCallbackMock).onResult(accountId);
     }
 }
