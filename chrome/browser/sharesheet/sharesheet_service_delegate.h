@@ -44,6 +44,8 @@ class SharesheetServiceDelegate : public SharesheetController {
   void ShowBubble(std::vector<TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
                   sharesheet::CloseCallback close_callback);
+  void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
+                             sharesheet::CloseCallback close_callback);
   void OnBubbleClosed(const std::u16string& active_action);
   void OnTargetSelected(const std::u16string& target_name,
                         const TargetType type,

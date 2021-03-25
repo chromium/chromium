@@ -65,6 +65,12 @@ class SharesheetService : public KeyedService {
                   bool contains_hosted_document,
                   SharesheetMetrics::LaunchSource source,
                   CloseCallback close_callback);
+  // Skips the generic Sharesheet bubble and directly displays the
+  // NearbyShare bubble dialog.
+  void ShowNearbyShareBubble(content::WebContents* web_contents,
+                             apps::mojom::IntentPtr intent,
+                             SharesheetMetrics::LaunchSource source,
+                             sharesheet::CloseCallback close_callback);
   void OnBubbleClosed(gfx::NativeWindow native_window,
                       const std::u16string& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,

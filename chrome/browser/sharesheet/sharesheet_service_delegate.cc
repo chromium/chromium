@@ -30,14 +30,29 @@ void SharesheetServiceDelegate::ShowBubble(
     apps::mojom::IntentPtr intent,
     sharesheet::CloseCallback close_callback) {
   if (is_bubble_open_) {
-    // TODO(melzhang@) Update by adding SharesheetAlreadyOpenCancel.
     if (close_callback) {
-      std::move(close_callback).Run(sharesheet::SharesheetResult::kCancel);
+      std::move(close_callback)
+          .Run(sharesheet::SharesheetResult::kErrorAlreadyOpen);
     }
     return;
   }
   sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
                                       std::move(close_callback));
+  is_bubble_open_ = true;
+}
+
+void SharesheetServiceDelegate::ShowNearbyShareBubble(
+    apps::mojom::IntentPtr intent,
+    sharesheet::CloseCallback close_callback) {
+  if (is_bubble_open_) {
+    if (close_callback) {
+      std::move(close_callback)
+          .Run(sharesheet::SharesheetResult::kErrorAlreadyOpen);
+    }
+    return;
+  }
+  sharesheet_bubble_view_->ShowNearbyShareBubble(std::move(intent),
+                                                 std::move(close_callback));
   is_bubble_open_ = true;
 }
 

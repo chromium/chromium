@@ -38,7 +38,8 @@ class SharesheetMetrics {
     kFilesAppShareButton = 1,
     kFilesAppContextMenu = 2,
     kWebShare = 3,
-    kMaxValue = kWebShare,
+    kArcNearbyShare = 4,
+    kMaxValue = kArcNearbyShare,
   };
 
   SharesheetMetrics();

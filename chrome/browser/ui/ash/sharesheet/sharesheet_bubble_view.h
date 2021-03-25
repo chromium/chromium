@@ -44,6 +44,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void ShowBubble(std::vector<TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
                   sharesheet::CloseCallback close_callback);
+  void ShowNearbyShareBubble(apps::mojom::IntentPtr intent,
+                             sharesheet::CloseCallback close_callback);
   void ShowActionView();
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble();

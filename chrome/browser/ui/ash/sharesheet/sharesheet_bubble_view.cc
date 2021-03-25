@@ -244,6 +244,15 @@ void SharesheetBubbleView::ShowBubble(
   UpdateAnchorPosition();
 }
 
+void SharesheetBubbleView::ShowNearbyShareBubble(
+    apps::mojom::IntentPtr intent,
+    sharesheet::CloseCallback close_callback) {
+  ShowBubble({}, std::move(intent), std::move(close_callback));
+  delegate_->OnTargetSelected(
+      l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME),
+      sharesheet::TargetType::kAction, std::move(intent_), share_action_view_);
+}
+
 std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     std::vector<TargetInfo> targets) {
   // Set up default and expanded views.
@@ -420,9 +429,13 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
   layer->SetTransform(gfx::Transform());
 }
 
-// This function is called from a ShareAction or after an app launches.
+// CloseBubble is called from a ShareAction or after an app launches.
 void SharesheetBubbleView::CloseBubble() {
   if (!is_bubble_closing_) {
+    // TODO(crbug.com/1188938): Add a close reason arg.
+    if (close_callback_) {
+      std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
+    }
     CloseWidgetWithAnimateFadeOut(
         views::Widget::ClosedReason::kAcceptButtonClicked);
   }
@@ -598,15 +611,14 @@ void SharesheetBubbleView::AnimateToExpandedState() {
 void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   user_selection_made_ = true;
   auto type = target.type;
-  if (type == sharesheet::TargetType::kAction)
+  if (type == sharesheet::TargetType::kAction) {
     active_target_ = target.launch_name;
-  else
+  } else {
     intent_->activity_name = target.activity_name;
+  }
   delegate_->OnTargetSelected(target.launch_name, type, std::move(intent_),
                               share_action_view_);
   intent_.reset();
-  if (close_callback_)
-    std::move(close_callback_).Run(sharesheet::SharesheetResult::kSuccess);
 }
 
 void SharesheetBubbleView::UpdateAnchorPosition() {

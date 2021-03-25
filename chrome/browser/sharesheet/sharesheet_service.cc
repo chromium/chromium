@@ -74,6 +74,28 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                          contains_hosted_document, std::move(close_callback));
 }
 
+void SharesheetService::ShowNearbyShareBubble(
+    content::WebContents* web_contents,
+    apps::mojom::IntentPtr intent,
+    SharesheetMetrics::LaunchSource source,
+    sharesheet::CloseCallback close_callback) {
+  DCHECK(intent->action == apps_util::kIntentActionSend ||
+         intent->action == apps_util::kIntentActionSendMultiple);
+
+  ShareAction* share_action = sharesheet_action_cache_->GetActionFromName(
+      l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
+  if (!share_action) {
+    std::move(close_callback).Run(SharesheetResult::kCancel);
+    return;
+  }
+  SharesheetMetrics::RecordSharesheetLaunchSource(source);
+
+  auto* sharesheet_service_delegate =
+      GetOrCreateDelegate(web_contents->GetTopLevelNativeWindow());
+  sharesheet_service_delegate->ShowNearbyShareBubble(std::move(intent),
+                                                     std::move(close_callback));
+}
+
 // Cleanup delegate when bubble closes.
 void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
                                        const std::u16string& active_action) {
