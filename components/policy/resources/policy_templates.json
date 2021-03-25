@@ -20415,8 +20415,7 @@
         'sensitiveValue': True,
         'type': 'string'
       },
-      'supported_on': ['chrome_os:73-90'],
-      'deprecated': True,
+      'supported_on': ['chrome_os:73-'],
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -20425,9 +20424,7 @@
       'id': 515,
       'caption': '''<ph name="PLUGIN_VM_NAME">PluginVm</ph> license key''',
       'tags': [],
-      'desc': '''Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key for this device.
-
-      This policy was removed in M91.''',
+      'desc': '''Setting the policy specifies the <ph name="PLUGIN_VM_NAME">PluginVm</ph> license key for this device.''',
     },
     {
       'name': 'PluginVmUserId',
