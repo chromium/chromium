@@ -9,9 +9,11 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_ACTION_HANDLER;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.ComponentStateDelegate;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,6 +27,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final CredentialEditMediator mMediator;
     private final UiDismissalHandler mDismissalHandler;
+    private final HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private PropertyModel mModel;
 
@@ -48,16 +51,18 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     }
 
     CredentialEditCoordinator(CredentialEntryFragmentViewBase fragmentView,
-            UiDismissalHandler dismissalHandler,
-            CredentialActionDelegate credentialActionDelegate) {
+            UiDismissalHandler dismissalHandler, CredentialActionDelegate credentialActionDelegate,
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mFragmentView = fragmentView;
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 fragmentView.getActivity(), fragmentView.getParentFragmentManager());
         mMediator = new CredentialEditMediator(mReauthenticationHelper,
                 new ConfirmationDialogHelper(new WeakReference<>(mFragmentView.getContext())),
-                credentialActionDelegate, fragmentView instanceof BlockedCredentialFragmentView);
+                credentialActionDelegate, this::handleHelp,
+                fragmentView instanceof BlockedCredentialFragmentView);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
+        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
     }
 
     void setCredential(String displayUrlOrAppName, String username, String password,
@@ -77,6 +82,12 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
 
     void dismiss() {
         mMediator.dismiss();
+    }
+
+    void handleHelp() {
+        mHelpAndFeedbackLauncher.show(mFragmentView.getActivity(),
+                mFragmentView.getActivity().getString(R.string.help_context_passwords),
+                Profile.getLastUsedRegularProfile(), null);
     }
 
     @Override

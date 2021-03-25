@@ -70,14 +70,17 @@ public class CredentialEditControllerTest {
     @Mock
     private CredentialActionDelegate mCredentialActionDelegate;
 
+    @Mock
+    private Runnable mHelpLauncher;
+
     CredentialEditMediator mMediator;
     PropertyModel mModel;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator = new CredentialEditMediator(
-                mReauthenticationHelper, mDeleteDialogHelper, mCredentialActionDelegate, false);
+        mMediator = new CredentialEditMediator(mReauthenticationHelper, mDeleteDialogHelper,
+                mCredentialActionDelegate, mHelpLauncher, false);
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, TEST_URL)
@@ -268,8 +271,8 @@ public class CredentialEditControllerTest {
 
     @Test
     public void testDeletingBlockedCredentialDoesntPromptDialog() {
-        mMediator = new CredentialEditMediator(
-                mReauthenticationHelper, mDeleteDialogHelper, mCredentialActionDelegate, true);
+        mMediator = new CredentialEditMediator(mReauthenticationHelper, mDeleteDialogHelper,
+                mCredentialActionDelegate, mHelpLauncher, true);
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, TEST_URL)
@@ -284,5 +287,11 @@ public class CredentialEditControllerTest {
                 .showConfirmation(
                         any(String.class), any(String.class), anyInt(), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
+    }
+
+    @Test
+    public void testHandleHelpCallsHelpLauncher() {
+        mMediator.handleHelp();
+        verify(mHelpLauncher).run();
     }
 }

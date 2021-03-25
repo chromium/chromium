@@ -57,6 +57,7 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
   deps = [
+    "//chrome/browser/feedback/android:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
@@ -65,7 +66,10 @@ android_resources("java_resources") {
 
 android_library_factory("factory_java") {
   # These deps will be inherited by the resulting android_library target.
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//chrome/browser/feedback/android:java",
+  ]
 
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.

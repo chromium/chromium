@@ -39,6 +39,7 @@ public class CredentialEditMediator implements UiActionHandler {
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final ConfirmationDialogHelper mDeleteDialogHelper;
     private final CredentialActionDelegate mCredentialActionDelegate;
+    private final Runnable mHelpLauncher;
     private final boolean mIsBlockedCredential;
     private PropertyModel mModel;
     private String mOriginalUsername;
@@ -46,10 +47,12 @@ public class CredentialEditMediator implements UiActionHandler {
 
     CredentialEditMediator(PasswordAccessReauthenticationHelper reauthenticationHelper,
             ConfirmationDialogHelper deleteDialogHelper,
-            CredentialActionDelegate credentialActionDelegate, boolean isBlockedCredential) {
+            CredentialActionDelegate credentialActionDelegate, Runnable helpLauncher,
+            boolean isBlockedCredential) {
         mReauthenticationHelper = reauthenticationHelper;
         mDeleteDialogHelper = deleteDialogHelper;
         mCredentialActionDelegate = credentialActionDelegate;
+        mHelpLauncher = helpLauncher;
         mIsBlockedCredential = isBlockedCredential;
     };
 
@@ -126,6 +129,11 @@ public class CredentialEditMediator implements UiActionHandler {
         mDeleteDialogHelper.showConfirmation(title, message,
                 R.string.password_entry_edit_delete_credential_dialog_confirm,
                 mCredentialActionDelegate::deleteCredential);
+    }
+
+    @Override
+    public void handleHelp() {
+        mHelpLauncher.run();
     }
 
     @Override

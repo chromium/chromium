@@ -17,7 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
  */
 public abstract class CredentialEntryFragmentViewBase extends PreferenceFragmentCompat {
     ComponentStateDelegate mComponentStateDelegate;
-    Runnable mDeleteDelegate;
+    UiActionHandler mUiActionHandler;
 
     /**
      * To be implemented by classes which need to know about the fragment's state
@@ -51,6 +51,9 @@ public abstract class CredentialEntryFragmentViewBase extends PreferenceFragment
         /** Called when the user clicks the button to delete the credential */
         void onDelete();
 
+        /** Called when the help icon is clicked */
+        void handleHelp();
+
         /** Called when the text in the username field changes */
         void onUsernameTextChanged(String username);
 
@@ -80,21 +83,27 @@ public abstract class CredentialEntryFragmentViewBase extends PreferenceFragment
     }
 
     void setUiActionHandler(UiActionHandler actionHandler) {
-        mDeleteDelegate = actionHandler::onDelete;
+        mUiActionHandler = actionHandler;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+
         inflater.inflate(R.menu.credential_edit_action_bar_menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mUiActionHandler == null) return super.onOptionsItemSelected(item);
+
         int id = item.getItemId();
         if (id == R.id.action_delete_saved_password) {
-            if (mDeleteDelegate != null) {
-                mDeleteDelegate.run();
-            }
+            mUiActionHandler.onDelete();
+            return true;
+        }
+        if (id == R.id.help_button) {
+            mUiActionHandler.handleHelp();
             return true;
         }
         return super.onOptionsItemSelected(item);

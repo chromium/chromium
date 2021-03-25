@@ -24,6 +24,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * This class is responsible for rendering the edit fragment where users can edit a saved password.
  */
 public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase {
+    private UiActionHandler mUiActionHandler;
     private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mUsernameField;
     private TextInputLayout mPasswordInputLayout;
@@ -64,6 +65,7 @@ public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase 
     @Override
     void setUiActionHandler(UiActionHandler uiActionHandler) {
         super.setUiActionHandler(uiActionHandler);
+
         ChromeImageButton usernameCopyButton = getView().findViewById(R.id.copy_username_button);
         usernameCopyButton.setOnClickListener(
                 (unusedView)

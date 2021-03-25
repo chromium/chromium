@@ -335,7 +335,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     () -> PasswordCheckFactory.getOrCreate(mSettingsLauncher));
         }
         if (fragment instanceof CredentialEntryFragmentViewBase) {
-            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment);
+            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment,
+                    HelpAndFeedbackLauncherImpl.getInstance());
         }
         if (fragment instanceof SearchEngineSettings) {
             SearchEngineSettings settings = (SearchEngineSettings) fragment;
