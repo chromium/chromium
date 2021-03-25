@@ -165,6 +165,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   bool IsSearchKeyAcceleratorReserved() const override { return false; }
 
   bool NotifyDeprecatedRightClickRewrite() override { return false; }
+  bool NotifyDeprecatedFKeyRewrite() override { return false; }
   bool NotifyDeprecatedAltBasedKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }

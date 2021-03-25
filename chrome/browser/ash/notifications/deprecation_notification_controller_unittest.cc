@@ -59,4 +59,19 @@ TEST_F(DeprecationNotificationControllerTest, AllNotificationsWorkAndNoDupes) {
   EXPECT_EQ(message_center_.NotificationCount(), 0);
 }
 
+// Only one notification is shown no matter which F-Key is triggered.
+TEST_F(DeprecationNotificationControllerTest, NoDuplicateFKeyNotifications) {
+  // First F-Key generates a notification.
+  controller_.NotifyDeprecatedFKeyRewrite();
+  EXPECT_EQ(message_center_.NotificationCount(), 1);
+
+  // Clear the messages from the message center.
+  message_center_.RemoveAllNotifications(
+      /*by_user=*/false, message_center::FakeMessageCenter::RemoveType::ALL);
+
+  // Subsequent times don't generate an additional notification.
+  controller_.NotifyDeprecatedFKeyRewrite();
+  EXPECT_EQ(message_center_.NotificationCount(), 0);
+}
+
 }  // namespace ash

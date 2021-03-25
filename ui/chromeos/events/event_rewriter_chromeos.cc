@@ -1640,7 +1640,7 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
           return;
         }
       }
-    } else if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
+    } else {
       // Remap Search + digit row to F1~F12.
       static const SearchToFunctionMap kNumberKeysToFkeys[] = {
           {DomCode::DIGIT1, {EF_NONE, DomCode::F1, DomKey::F1, VKEY_F1}},
@@ -1657,9 +1657,24 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
           {DomCode::EQUAL, {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}}};
       for (const auto& map : kNumberKeysToFkeys) {
         if (state->code == map.input_dom_code) {
-          state->flags &= ~EF_COMMAND_DOWN;
-          ApplyRemapping(map.result, state);
-          RecordSearchPlusDigitFKeyRewrite(key_event.type(), state->key_code);
+          if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
+            state->flags &= ~EF_COMMAND_DOWN;
+            ApplyRemapping(map.result, state);
+            RecordSearchPlusDigitFKeyRewrite(key_event.type(), state->key_code);
+          } else {
+            // Only trigger the notification for F1-F10.
+            //
+            // Because of this legacy remapping 2 virtual desk shortcuts
+            // implicitly used F11 and F12 because the shortcut included
+            // Search and either minus or equal. Do not trigger a
+            // notification for this case because it wasn't the users intent.
+            if (static_cast<int>(map.result.code) <=
+                static_cast<int>(DomCode::F10)) {
+              DCHECK_GE(static_cast<int>(map.result.code),
+                        static_cast<int>(DomCode::F1));
+              delegate_->NotifyDeprecatedFKeyRewrite();
+            }
+          }
           return;
         }
       }

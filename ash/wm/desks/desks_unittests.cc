@@ -3569,6 +3569,7 @@ class DesksAcceleratorsTest : public DesksTest,
   }
   bool IsSearchKeyAcceleratorReserved() const override { return true; }
   bool NotifyDeprecatedRightClickRewrite() override { return false; }
+  bool NotifyDeprecatedFKeyRewrite() override { return false; }
   bool NotifyDeprecatedAltBasedKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }

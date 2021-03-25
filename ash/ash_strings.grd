@@ -3513,6 +3513,10 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SHORTCUT_DEPRECATION_ALT_CLICK" desc="Message telling user to use search/launcher click instead of alt click to emulate a right click. The name of the launcher key varies by device and may be either Search or Launcher depending on the glyph on the keyboard." translateable="false">
         The Alt + click keyboard shortcut has changed. To use your keyboard to right-click, press the <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + click.
       </message>
+      <message name="IDS_ASH_SHORTCUT_DEPRECATION_FKEY" desc="Message telling user to use search/launcher + top row key instead of Search + a digit key to emulate a F-Key. The name of the launcher key varies by device and may be either Search or Launcher depending on the glyph on the keyboard." translateable="false">
+        The Search + Digit keyboard shortcut has changed. To generate F-Keys, press the <ph name="LAUNCHER_KEY_NAME">$1<ex>Launcher</ex></ph> key + a key on the top row.
+      </message>
+
 
       <!-- PciePeripheral notifications -->
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE" desc="Notification title to indicate to users that their peripheral device's performance may be limited.">

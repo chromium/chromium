@@ -122,6 +122,10 @@ bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
 }
 
+bool EventRewriterDelegateImpl::NotifyDeprecatedFKeyRewrite() {
+  return deprecation_controller_->NotifyDeprecatedFKeyRewrite();
+}
+
 bool EventRewriterDelegateImpl::NotifyDeprecatedAltBasedKeyRewrite(
     ui::KeyboardCode key_code) {
   return deprecation_controller_->NotifyDeprecatedAltBasedKeyRewrite(key_code);
