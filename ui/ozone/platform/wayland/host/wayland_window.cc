@@ -835,10 +835,15 @@ bool WaylandWindow::CommitOverlays(
   if (!num_primary_planes && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
   UpdateVisualSize((*split)->bounds_rect.size());
-  root_surface_->SetViewportDestination(visual_size_px_);
 
   if (!wayland_overlay_delegation_enabled_) {
     root_surface_->SetViewportSource((*split)->crop_rect);
+    // TODO(fangzhoug): Refactor some of this logic s.t. the decision of whether
+    //   to apply viewport.destination is made at commit time.
+    root_surface_->SetViewportDestination((*split)->crop_rect ==
+                                                  gfx::RectF(1.f, 1.f)
+                                              ? gfx::Size()
+                                              : (*split)->bounds_rect.size());
     connection_->buffer_manager_host()->CommitBufferInternal(
         root_surface(), (*split)->buffer_id, (*split)->damage_region,
         /*wait_for_frame_callback=*/true);
@@ -846,8 +851,15 @@ bool WaylandWindow::CommitOverlays(
   }
 
   if (num_primary_planes) {
+    // Mutter has incorrect damage when processing un-cropped buffer commits
+    // with viewport.destination == buffer.size. So do not set
+    // viewport.destination to primary planes if crop_rect is uniform.
+    // TODO(fangzhoug): Refactor some of this logic s.t. the decision of whether
+    //   to apply viewport.destination is made at commit time.
     primary_subsurface_->ConfigureAndShowSurface(
-        (*split)->transform, (*split)->crop_rect, (*split)->bounds_rect,
+        (*split)->transform, (*split)->crop_rect,
+        (*split)->crop_rect == gfx::RectF(1.f, 1.f) ? gfx::Rect()
+                                                    : (*split)->bounds_rect,
         (*split)->enable_blend, nullptr, nullptr);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
@@ -864,6 +876,7 @@ bool WaylandWindow::CommitOverlays(
     should_attach_background_buffer_ = true;
   }
 
+  root_surface_->SetViewportDestination(visual_size_px_);
   if (should_attach_background_buffer_) {
     connection_->buffer_manager_host()->EndFrame(background_buffer_id_,
                                                  background_damage);
