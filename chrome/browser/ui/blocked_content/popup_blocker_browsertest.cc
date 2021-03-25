@@ -75,7 +75,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
 #include "third_party/blink/public/common/switches.h"
 #endif
 
@@ -113,8 +113,8 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-#if defined(OS_CHROMEOS)
-  // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+  // ChromeOS testing via linux, chromeos and maybe others, is flaky
   // due to slower loading interacting with deferred commits.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
