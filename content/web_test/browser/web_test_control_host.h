@@ -86,8 +86,6 @@ class WebTestResultPrinter {
   void StartStateDump();
 
  private:
-  void PrintEncodedBinaryData(const std::vector<unsigned char>& data);
-
   enum State {
     DURING_TEST,
     DURING_STATE_DUMP,
@@ -96,13 +94,16 @@ class WebTestResultPrinter {
     IN_IMAGE_BLOCK,
     AFTER_TEST
   };
-  State state_;
 
-  bool capture_text_only_;
-  bool encode_binary_data_;
+  void PrintEncodedBinaryData(const std::vector<unsigned char>& data);
 
-  std::ostream* output_;
-  std::ostream* error_;
+  std::ostream* const output_;
+  std::ostream* const error_;
+
+  State state_ = DURING_TEST;
+
+  bool capture_text_only_ = false;
+  bool encode_binary_data_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WebTestResultPrinter);
 };
@@ -149,6 +150,28 @@ class WebTestControlHost : public WebContentsObserver,
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
+  const WebTestRuntimeFlags& web_test_runtime_flags() const {
+    return web_test_runtime_flags_;
+  }
+
+ private:
+  enum TestPhase { BETWEEN_TESTS, DURING_TEST, CLEAN_UP };
+
+  // Node structure to construct a RenderFrameHost tree.
+  struct Node {
+    explicit Node(RenderFrameHost* host);
+    ~Node();
+
+    Node(Node&& other);
+    Node& operator=(Node&& other);
+
+    RenderFrameHost* render_frame_host = nullptr;
+    GlobalFrameRoutingId render_frame_host_id;
+    std::vector<Node*> children;
+  };
+
+  class WebTestWindowObserver;
+
   // WebContentsObserver implementation.
   void PluginCrashed(const base::FilePath& plugin_path,
                      base::ProcessId plugin_pid) override;
@@ -173,30 +196,6 @@ class WebTestControlHost : public WebContentsObserver,
 
   // GpuDataManagerObserver implementation.
   void OnGpuProcessCrashed(base::TerminationStatus exit_code) override;
-
-  const WebTestRuntimeFlags& web_test_runtime_flags() const {
-    return web_test_runtime_flags_;
-  }
-
- private:
-  enum TestPhase { BETWEEN_TESTS, DURING_TEST, CLEAN_UP };
-
-  // Node structure to construct a RenderFrameHost tree.
-  struct Node {
-    explicit Node(RenderFrameHost* host);
-    ~Node();
-
-    Node(Node&& other);
-    Node& operator=(Node&& other);
-
-    RenderFrameHost* render_frame_host = nullptr;
-    GlobalFrameRoutingId render_frame_host_id;
-    std::vector<Node*> children;
-  };
-
-  class WebTestWindowObserver;
-
-  static WebTestControlHost* instance_;
 
   // WebTestControlHost implementation.
   void InitiateCaptureDump(
@@ -298,7 +297,6 @@ class WebTestControlHost : public WebContentsObserver,
   // reentrancy problems.
   void CompositeAllFramesThen(base::OnceCallback<void()> callback);
 
- private:
   Node* BuildFrameTree(WebContents* web_contents);
   void CompositeNodeQueueThen(base::OnceCallback<void()> callback);
   void BuildDepthFirstQueue(Node* node);
@@ -309,26 +307,27 @@ class WebTestControlHost : public WebContentsObserver,
   static void PlatformResizeWindowMac(Shell* shell, const gfx::Size& size);
 #endif
 
- public:
+  static WebTestControlHost* instance_;
+
   std::unique_ptr<WebTestResultPrinter> printer_;
 
   base::FilePath current_working_directory_;
   base::FilePath temp_path_;
 
-  Shell* main_window_;
-  Shell* secondary_window_;
+  Shell* main_window_ = nullptr;
+  Shell* secondary_window_ = nullptr;
 
   std::unique_ptr<WebTestDevToolsBindings> devtools_bindings_;
   std::unique_ptr<DevToolsProtocolTestBindings>
       devtools_protocol_test_bindings_;
 
   // What phase of running an individual test we are currently in.
-  TestPhase test_phase_;
+  TestPhase test_phase_ = BETWEEN_TESTS;
 
   // Per test config.
   std::string expected_pixel_hash_;
   GURL test_url_;
-  bool protocol_mode_;
+  bool protocol_mode_ = false;
 
   // Stores the default test-adapted WebPreferences which is then used to fully
   // reset the main window's preferences if and when it is reused.
@@ -336,10 +335,10 @@ class WebTestControlHost : public WebContentsObserver,
 
   // True if the WebPreferences of newly created RenderViewHost should be
   // overridden with prefs_.
-  bool should_override_prefs_;
+  bool should_override_prefs_ = false;
   blink::web_pref::WebPreferences prefs_;
 
-  bool crash_when_leak_found_;
+  bool crash_when_leak_found_ = false;
   std::unique_ptr<LeakDetector> leak_detector_;
 
   std::unique_ptr<WebTestBluetoothChooserFactory> bluetooth_chooser_factory_;

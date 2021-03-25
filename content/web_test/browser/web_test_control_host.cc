@@ -301,11 +301,7 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
 
 WebTestResultPrinter::WebTestResultPrinter(std::ostream* output,
                                            std::ostream* error)
-    : state_(DURING_TEST),
-      capture_text_only_(false),
-      encode_binary_data_(false),
-      output_(output),
-      error_(error) {}
+    : output_(output), error_(error) {}
 
 void WebTestResultPrinter::StartStateDump() {
   state_ = DURING_STATE_DUMP;
@@ -465,6 +461,7 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     }
   }
 
+ private:
   void WebContentsDestroyed() override {
     // Deletes |this| and removes the pointer to it from WebTestControlHost.
     web_test_control_->test_opened_window_observers_.erase(web_contents());
@@ -474,7 +471,6 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     web_test_control_->HandleNewRenderFrameHost(render_frame_host);
   }
 
- private:
   WebTestControlHost* const web_test_control_;
 };
 
@@ -487,11 +483,7 @@ WebTestControlHost* WebTestControlHost::Get() {
   return instance_;
 }
 
-WebTestControlHost::WebTestControlHost()
-    : main_window_(nullptr),
-      secondary_window_(nullptr),
-      test_phase_(BETWEEN_TESTS),
-      crash_when_leak_found_(false) {
+WebTestControlHost::WebTestControlHost() {
   CHECK(!instance_);
   instance_ = this;
 
