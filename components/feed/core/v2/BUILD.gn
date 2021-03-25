@@ -241,4 +241,12 @@ if (is_android) {
       "public/types.h",
     ]
   }
+
+  # Wrap feedv2_enums_java in an android_library so that only one
+  # android_library needs to depend on feedv2_enums_java. Otherwise, we will get
+  # classes define multiple times.
+  android_library("feedv2_core_java") {
+    srcjar_deps = [ ":feedv2_enums_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
 }

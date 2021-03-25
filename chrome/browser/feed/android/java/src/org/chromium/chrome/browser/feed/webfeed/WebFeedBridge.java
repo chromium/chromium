@@ -12,6 +12,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -21,20 +22,6 @@ public class WebFeedBridge {
     // TODO(crbug/1152592): remove members needed only for returning mock results.
     private static Random sRandom = new Random();
     private static int sCounter;
-
-    /**
-     * Returns a Web Feed identifier if the URL matches a recommended Web Feed.
-     * @param url The URL to be checked for being recommended.
-     * @return The identifier of the recommended Web Feed in case the URL matches one; null
-     * otherwise.
-     */
-    public @Nullable String getWebFeedIdIfRecommended(GURL url) {
-        // TODO(crbug/1152592): replace mock implementation. Current implementation will return
-        // stable results for each origin.
-        int originHash = url.getOrigin().getSpec().hashCode();
-        boolean isRecommended = originHash % 2 == 0;
-        return isRecommended ? Integer.toString(originHash) : null;
-    }
 
     /** Container for past visit counts. */
     public static class VisitCounts {
@@ -63,61 +50,60 @@ public class WebFeedBridge {
                                 sRandom.nextInt(100), sRandom.nextInt(pastDaysCount))));
     }
 
-    /** Container for identifiers for a followed Web Feed. */
-    public static class FollowedIds {
-        /** The follow subscription identifier. */
-        public final String followId;
-        /** The identifier of the followed Web Feed. */
-        public final String webFeedId;
-
-        @VisibleForTesting
-        public FollowedIds(String followId, String webFeedId) {
-            this.followId = followId;
-            this.webFeedId = webFeedId;
-        }
-    }
-
-    /**
-     * Returns the respective identifiers if the provided URL maps to a followed Web Feed.
-     * @param url The URL for which the status is being requested.
-     * @return A FollowedIds instance in case the URL maps to a followed Web Feed; null otherwise.
-     */
-    public @Nullable FollowedIds getFollowedIds(GURL url) {
-        // TODO(crbug/1152592): replace mock implementation.
-        boolean isFollowed = sRandom.nextBoolean();
-        FollowedIds ids = null;
-        if (isFollowed) {
-            ids = new FollowedIds(
-                    Long.toString(sRandom.nextLong()), Long.toString(sRandom.nextLong()));
-        }
-        return ids;
-    }
-
     /** Container for a Web Feed metadata. */
     public static class WebFeedMetadata {
+        /** Unique identifier of this web feed. */
+        public final String id;
         /** The title of the Web Feed. */
         public final String title;
-        /** The main URL for the publisher of the Web Feed. */
-        public final GURL publisherUrl;
+        /** The URL that best represents this Web Feed. */
+        public final GURL visitUrl;
+        /** Subscription status */
+        public final @WebFeedSubscriptionStatus int subscriptionStatus;
+        /** Whether the web feed has content available. */
+        public final boolean isActive;
+        /** Whether the web feed is recommended. */
+        public final boolean isRecommended;
 
-        WebFeedMetadata(String title, GURL publisherUrl) {
+        WebFeedMetadata(String id, String title, GURL visitUrl,
+                @WebFeedSubscriptionStatus int subscriptionStatus, boolean isActive) {
+            this.id = id;
             this.title = title;
-            this.publisherUrl = publisherUrl;
+            this.visitUrl = visitUrl;
+            this.subscriptionStatus = subscriptionStatus;
+            this.isActive = isActive;
+            this.isRecommended = false;
         }
 
         // TODO(crbug/1152592): remove mock implementation.
         private WebFeedMetadata() {
             sCounter += 1;
-            this.title = "Title #" + sCounter;
-            this.publisherUrl = new GURL("https://publisher-url-" + sCounter + ".com");
+            id = "Id" + sCounter;
+            title = "Title #" + sCounter;
+            visitUrl = new GURL("https://publisher-url-" + sCounter + ".com");
+            subscriptionStatus = (sCounter % 2) == 0 ? WebFeedSubscriptionStatus.SUBSCRIBED
+                                                     : WebFeedSubscriptionStatus.NOT_SUBSCRIBED;
+            isActive = true;
+            isRecommended = false;
         }
+    }
+
+    /**
+     * Returns the Web Feed metadata for the web feed associated with this page. May return a
+     * subscribed, recently subscribed, or recommended Web Feed.
+     * @param url The URL for which the status is being requested.
+     * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
+     */
+    public void getWebFeedMetadataForPage(GURL url, Callback<WebFeedMetadata> callback) {
+        // TODO(crbug/1152592): replace mock implementation.
+        getWebFeedMetadata("foo", callback);
     }
 
     /**
      * Returns Web Feed metadata respective to the provided identifier. The callback will receive
      * `null` if no matching recommended or followed Web Feed is found.
      * @param webFeedId The idenfitier of the Web Feed.
-     * @param callback The callback to receive the Web Feed metadata.
+     * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
     public void getWebFeedMetadata(String webFeedId, Callback<WebFeedMetadata> callback) {
         // TODO(crbug/1152592): replace mock implementation.
@@ -126,33 +112,32 @@ public class WebFeedBridge {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(metadata));
     }
 
+    /**
+     * Fetches the list of followed Web Feeds.
+     * @param callback The callback to receive the list of followed Web Feeds.
+     */
+    public void getAllFollowedWebFeeds(Callback<List<WebFeedMetadata>> callback) {
+        // TODO(crbug/1152592): implement this.
+    }
+
     /** Container for results from a follow request. */
     public static class FollowResults {
         // TODO(crbug/1152592): replace `boolean success` with `FollowUrlResponseStatus status`.
         /** `true` if the follow request was successful. */
-        public final boolean success;
-        /** The follow subscription identifier. `null` if the operation was not successful. */
-        public final @Nullable String followId;
-        /**
-         * `true` if the subscribed Web Feed has content available for fetching. Irrelevant if the
-         * operation was not successful.
-         */
-        public final boolean hasContentAvailable;
+        public final @WebFeedSubscriptionRequestStatus int requestStatus;
         /** The metadata from the followed Web Feed. `null` if the operation was not successful. */
         public final @Nullable WebFeedMetadata metadata;
 
-        FollowResults(boolean success, String followId, boolean hasContentAvailable,
-                WebFeedMetadata metadata) {
-            this.success = success;
-            this.followId = followId;
-            this.hasContentAvailable = hasContentAvailable;
+        FollowResults(
+                @WebFeedSubscriptionRequestStatus int requestStatus, WebFeedMetadata metadata) {
+            this.requestStatus = requestStatus;
             this.metadata = metadata;
         }
 
         // TODO(crbug/1152592): remove mock implementation.
         FollowResults(boolean success) {
-            this(success, success ? Long.toString(sRandom.nextLong()) : null,
-                    success ? sRandom.nextBoolean() : false,
+            this(success ? WebFeedSubscriptionRequestStatus.SUCCESS
+                         : WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR,
                     success ? new WebFeedMetadata() : null);
         }
     }
@@ -182,11 +167,11 @@ public class WebFeedBridge {
     /**
      * Requests the unfollowing of the Web Feed subscription from the provided identifier.
      * TODO(crbug/1152592): replace `boolean success` with `UnfollowUrlResponseStatus status`.
-     * @param followId The follow subscription identifier.
+     * @param webFeedId The Web Feed identifier.
      * @param callback The callback to receive the unfollow success/failure result (`true`/`false`
      *         respectively).
      */
-    public void unfollow(String followId, Callback<Boolean> callback) {
+    public void unfollow(String webFeedId, Callback<Boolean> callback) {
         // TODO(crbug/1152592): replace mock implementation.
         boolean success = sRandom.nextBoolean();
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(success));
@@ -200,5 +185,33 @@ public class WebFeedBridge {
     public boolean hasUnreadArticlesSinceLastFollow() {
         // TODO(crbug/1152592): replace mock implementation.
         return sRandom.nextBoolean();
+    }
+
+    /** This is deprecated, do not use. */
+    @Deprecated
+    public static class FollowedIds {
+        /** The follow subscription identifier. */
+        public final String followId;
+        /** The identifier of the followed Web Feed. */
+        public final String webFeedId;
+
+        @VisibleForTesting
+        public FollowedIds(String followId, String webFeedId) {
+            this.followId = followId;
+            this.webFeedId = webFeedId;
+        }
+    }
+
+    /** This is deprecated, do not use. */
+    @Deprecated
+    public @Nullable FollowedIds getFollowedIds(GURL url) {
+        // TODO(crbug/1152592): replace mock implementation.
+        boolean isFollowed = sRandom.nextBoolean();
+        FollowedIds ids = null;
+        if (isFollowed) {
+            ids = new FollowedIds(
+                    Long.toString(sRandom.nextLong()), Long.toString(sRandom.nextLong()));
+        }
+        return ids;
     }
 }

@@ -89,14 +89,14 @@ public class WebFeedFollowIntroController {
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
         bridge.followFromUrl(
-                url, result -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
+                url, results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override
                     public void onShowLoadingUIComplete() {}
 
                     @Override
                     public void onHideLoadingUIComplete() {
                         mWebFeedFollowIntroView.dismissBubble();
-                        if (result.success) {
+                        if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
                             mWebFeedFollowIntroView.showFollowingBubble();
                         }
                         // TODO(crbug/1152592): Add snackbar for failure.

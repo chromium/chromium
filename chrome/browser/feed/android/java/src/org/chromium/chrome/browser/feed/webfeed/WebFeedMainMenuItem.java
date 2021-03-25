@@ -91,6 +91,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         @DrawableRes
         int chipIconRes;
         OnClickListener onClickListener;
+        // TODO(crbug/1152592): Migrate away from getFollowedIds to getWebFeedMetadata.
         // TODO(crbug/1152592): Account for different loading/unknown cases and add
         // success/failure snackbars.
         WebFeedBridge.FollowedIds followedIds = mWebFeedBridge.getFollowedIds(mUrl);

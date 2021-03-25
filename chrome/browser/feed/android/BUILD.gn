@@ -23,6 +23,7 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
+    "//components/feed/core/v2:feedv2_core_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
