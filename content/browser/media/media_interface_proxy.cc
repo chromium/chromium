@@ -82,7 +82,7 @@ namespace {
 constexpr base::TimeDelta kMediaFoundationServiceIdleTimeout =
     base::TimeDelta::FromSeconds(5);
 
-// Gets an instance of the MF CDM Media service.
+// Gets an instance of the MediaFoundationService.
 // Instances are started lazily as needed.
 media::mojom::MediaService& GetMediaFoundationService() {
   // NOTE: We use sequence-local storage to limit the lifetime of this Remote to
@@ -491,7 +491,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": this=" << this;
 
-  InterfaceFactory* factory = GetMFMediaInterfaceFactory();
+  InterfaceFactory* factory = GetMediaFoundationServiceInterfaceFactory();
   DCHECK(factory);
   if (factory)
     factory->CreateMediaFoundationRenderer(
@@ -527,7 +527,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 #if defined(OS_WIN)
   DVLOG(1) << __func__ << ": this=" << this << " key_system=" << key_system;
   if (ShouldUseMediaFoundationServiceForCdm(key_system, cdm_config)) {
-    InterfaceFactory* factory = GetMFMediaInterfaceFactory();
+    InterfaceFactory* factory = GetMediaFoundationServiceInterfaceFactory();
     if (factory)
       factory->CreateCdm(key_system, cdm_config, std::move(callback));
     return;
@@ -566,36 +566,36 @@ MediaInterfaceProxy::GetFrameServices(const base::Token& cdm_guid,
 
 #if defined(OS_WIN)
 media::mojom::InterfaceFactory*
-MediaInterfaceProxy::GetMFMediaInterfaceFactory() {
+MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory() {
   DVLOG(3) << __func__ << ": this=" << this;
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!mf_interface_factory_remote_)
-    ConnectToMFMediaService();
+    ConnectToMediaFoundationService();
 
   return mf_interface_factory_remote_.get();
 }
 
-void MediaInterfaceProxy::ConnectToMFMediaService() {
+void MediaInterfaceProxy::ConnectToMediaFoundationService() {
   DVLOG(1) << __func__ << ": this=" << this;
   DCHECK(!mf_interface_factory_remote_);
   DCHECK(!mf_service_ptr_);
 
   mf_service_ptr_ = &GetMediaFoundationService();
-  // Passing empty arguments to GetFrameServices() as MF CDMs don't use
-  // CdmStorage currently.
+  // Passing empty arguments to GetFrameServices() as MediaFoundation-based
+  // CDMs don't use CdmStorage currently.
   mf_service_ptr_->CreateInterfaceFactory(
       mf_interface_factory_remote_.BindNewPipeAndPassReceiver(),
       GetFrameServices(base::Token{}, std::string()));
 
-  // Handle unexpected mojo pipe disconnection such as "mf_cdm" utility process
-  // crashed or killed in Browser task manager.
-  mf_interface_factory_remote_.set_disconnect_handler(
-      base::BindOnce(&MediaInterfaceProxy::OnMFMediaServiceConnectionError,
-                     base::Unretained(this)));
+  // Handle unexpected mojo pipe disconnection such as MediaFoundationService
+  // process crashed or killed in the browser task manager.
+  mf_interface_factory_remote_.set_disconnect_handler(base::BindOnce(
+      &MediaInterfaceProxy::OnMediaFoundationServiceConnectionError,
+      base::Unretained(this)));
 }
 
-void MediaInterfaceProxy::OnMFMediaServiceConnectionError() {
+void MediaInterfaceProxy::OnMediaFoundationServiceConnectionError() {
   DVLOG(1) << __func__ << ": this=" << this;
   DCHECK(thread_checker_.CalledOnValidThread());
 
