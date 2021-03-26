@@ -33,34 +33,9 @@ using NewSessionMojoCdmPromise =
     MojoCdmPromise<void(mojom::CdmPromiseResultPtr, const std::string&),
                    std::string>;
 
-// static
-void MojoCdmService::Create(CdmFactory* cdm_factory,
-                            MojoCdmServiceContext* context,
-                            const std::string& key_system,
-                            const CdmConfig& cdm_config,
-                            CdmServiceCreatedCB callback) {
-  std::unique_ptr<MojoCdmService> mojo_cdm_service(
-      new MojoCdmService(cdm_factory, context));
-  auto weak_this = mojo_cdm_service->weak_factory_.GetWeakPtr();
-  cdm_factory->Create(
-      key_system, cdm_config,
-      base::BindRepeating(&MojoCdmService::OnSessionMessage, weak_this),
-      base::BindRepeating(&MojoCdmService::OnSessionClosed, weak_this),
-      base::BindRepeating(&MojoCdmService::OnSessionKeysChange, weak_this),
-      base::BindRepeating(&MojoCdmService::OnSessionExpirationUpdate,
-                          weak_this),
-      base::BindOnce(&MojoCdmService::OnCdmCreated, weak_this,
-                     std::move(mojo_cdm_service),
-                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                         std::move(callback), nullptr, nullptr,
-                         "Mojo CDM Service creation failure")));
-}
-
-MojoCdmService::MojoCdmService(CdmFactory* cdm_factory,
-                               MojoCdmServiceContext* context)
-    : cdm_factory_(cdm_factory), context_(context) {
+MojoCdmService::MojoCdmService(MojoCdmServiceContext* context)
+    : context_(context) {
   DVLOG(1) << __func__;
-  DCHECK(cdm_factory_);
   DCHECK(context_);
 }
 
@@ -71,6 +46,24 @@ MojoCdmService::~MojoCdmService() {
     return;
 
   context_->UnregisterCdm(cdm_id_.value());
+}
+
+void MojoCdmService::Initialize(CdmFactory* cdm_factory,
+                                const std::string& key_system,
+                                const CdmConfig& cdm_config,
+                                InitializeCB init_cb) {
+  auto weak_this = weak_factory_.GetWeakPtr();
+  cdm_factory->Create(
+      key_system, cdm_config,
+      base::BindRepeating(&MojoCdmService::OnSessionMessage, weak_this),
+      base::BindRepeating(&MojoCdmService::OnSessionClosed, weak_this),
+      base::BindRepeating(&MojoCdmService::OnSessionKeysChange, weak_this),
+      base::BindRepeating(&MojoCdmService::OnSessionExpirationUpdate,
+                          weak_this),
+      base::BindOnce(&MojoCdmService::OnCdmCreated, weak_this,
+                     mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                         std::move(init_cb), nullptr,
+                         "Mojo CDM Service creation aborted")));
 }
 
 void MojoCdmService::SetClient(
@@ -144,8 +137,7 @@ scoped_refptr<ContentDecryptionModule> MojoCdmService::GetCdm() {
 }
 
 void MojoCdmService::OnCdmCreated(
-    std::unique_ptr<MojoCdmService> mojo_cdm_service,
-    CdmServiceCreatedCB callback,
+    InitializeCB init_cb,
     const scoped_refptr<::media::ContentDecryptionModule>& cdm,
     const std::string& error_message) {
   // TODO(xhwang): This should not happen when KeySystemInfo is properly
@@ -155,7 +147,7 @@ void MojoCdmService::OnCdmCreated(
     auto non_empty_error_message =
         error_message.empty() ? "CDM creation failed" : error_message;
     DVLOG(1) << __func__ << ": " << non_empty_error_message;
-    std::move(callback).Run(nullptr, nullptr, non_empty_error_message);
+    std::move(init_cb).Run(nullptr, non_empty_error_message);
     return;
   }
 
@@ -196,8 +188,7 @@ void MojoCdmService::OnCdmCreated(
 #endif  // defined(OS_WIN)
   }
 
-  std::move(callback).Run(std::move(mojo_cdm_service),
-                          std::move(mojo_cdm_context), "");
+  std::move(init_cb).Run(std::move(mojo_cdm_context), "");
 }
 
 void MojoCdmService::OnSessionMessage(const std::string& session_id,

@@ -168,10 +168,17 @@ void InterfaceFactoryImpl::CreateCdm(const std::string& key_system,
     return;
   }
 
-  MojoCdmService::Create(
-      cdm_factory, &cdm_service_context_, key_system, cdm_config,
-      base::BindOnce(&InterfaceFactoryImpl::OnCdmServiceCreated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto mojo_cdm_service =
+      std::make_unique<MojoCdmService>(&cdm_service_context_);
+  auto* raw_mojo_cdm_service = mojo_cdm_service.get();
+  DCHECK(!pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+  pending_mojo_cdm_services_[raw_mojo_cdm_service] =
+      std::move(mojo_cdm_service);
+  raw_mojo_cdm_service->Initialize(
+      cdm_factory, key_system, cdm_config,
+      base::BindOnce(&InterfaceFactoryImpl::OnCdmServiceInitialized,
+                     weak_ptr_factory_.GetWeakPtr(), raw_mojo_cdm_service,
+                     std::move(callback)));
 #else  // BUILDFLAG(ENABLE_MOJO_CDM)
   std::move(callback).Run(mojo::NullRemote(), nullptr,
                           "Mojo CDM not supported");
@@ -267,18 +274,26 @@ CdmFactory* InterfaceFactoryImpl::GetCdmFactory() {
   return cdm_factory_.get();
 }
 
-void InterfaceFactoryImpl::OnCdmServiceCreated(
+void InterfaceFactoryImpl::OnCdmServiceInitialized(
+    MojoCdmService* raw_mojo_cdm_service,
     CreateCdmCallback callback,
-    std::unique_ptr<MojoCdmService> cdm_service,
     mojom::CdmContextPtr cdm_context,
     const std::string& error_message) {
-  if (!cdm_service) {
+  DCHECK(raw_mojo_cdm_service);
+
+  // Remove pending MojoCdmService from the mapping in all cases.
+  DCHECK(pending_mojo_cdm_services_.count(raw_mojo_cdm_service));
+  auto mojo_cdm_service =
+      std::move(pending_mojo_cdm_services_[raw_mojo_cdm_service]);
+  pending_mojo_cdm_services_.erase(raw_mojo_cdm_service);
+
+  if (!cdm_context) {
     std::move(callback).Run(mojo::NullRemote(), nullptr, error_message);
     return;
   }
 
   mojo::PendingRemote<mojom::ContentDecryptionModule> remote;
-  cdm_receivers_.Add(std::move(cdm_service),
+  cdm_receivers_.Add(std::move(mojo_cdm_service),
                      remote.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(std::move(remote), std::move(cdm_context), "");
 }

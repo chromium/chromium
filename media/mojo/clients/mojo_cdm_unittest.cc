@@ -88,18 +88,17 @@ class MojoCdmTest : public ::testing::Test {
           &MojoCdmTest::ForceConnectionError, base::Unretained(this)));
     }
 
-    MojoCdmService::Create(
-        &cdm_factory_, &mojo_cdm_service_context_, kClearKeyKeySystem,
-        CdmConfig(),
-        base::BindOnce(&MojoCdmTest::OnCdmServiceCreated,
+    mojo_cdm_service_ =
+        std::make_unique<MojoCdmService>(&mojo_cdm_service_context_);
+    mojo_cdm_service_->Initialize(
+        &cdm_factory_, kClearKeyKeySystem, CdmConfig(),
+        base::BindOnce(&MojoCdmTest::OnCdmServiceInitialized,
                        base::Unretained(this), expected_result));
   }
 
-  void OnCdmServiceCreated(ExpectedResult expected_result,
-                           std::unique_ptr<MojoCdmService> cdm_service,
-                           mojom::CdmContextPtr cdm_context,
-                           const std::string& error_message) {
-    mojo_cdm_service_ = std::move(cdm_service);
+  void OnCdmServiceInitialized(ExpectedResult expected_result,
+                               mojom::CdmContextPtr cdm_context,
+                               const std::string& error_message) {
     cdm_receiver_ =
         std::make_unique<mojo::Receiver<mojom::ContentDecryptionModule>>(
             mojo_cdm_service_.get());

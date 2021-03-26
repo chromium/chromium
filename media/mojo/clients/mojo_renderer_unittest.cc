@@ -168,19 +168,17 @@ class MojoRendererTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnCdmServiceCreated(std::unique_ptr<MojoCdmService> cdm_service,
-                           mojom::CdmContextPtr cdm_context,
-                           const std::string& error_message) {
-    EXPECT_TRUE(cdm_service);
+  void OnCdmServiceInitialized(mojom::CdmContextPtr cdm_context,
+                               const std::string& error_message) {
     cdm_context_.set_cdm_id(cdm_context->cdm_id);
-    mojo_cdm_service_ = std::move(cdm_service);
   }
 
   void CreateCdm() {
-    MojoCdmService::Create(
-        &cdm_factory_, &mojo_cdm_service_context_, kClearKeyKeySystem,
-        CdmConfig(),
-        base::BindOnce(&MojoRendererTest::OnCdmServiceCreated,
+    mojo_cdm_service_ =
+        std::make_unique<MojoCdmService>(&mojo_cdm_service_context_);
+    mojo_cdm_service_->Initialize(
+        &cdm_factory_, kClearKeyKeySystem, CdmConfig(),
+        base::BindOnce(&MojoRendererTest::OnCdmServiceInitialized,
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }

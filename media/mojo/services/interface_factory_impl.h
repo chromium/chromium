@@ -101,10 +101,10 @@ class InterfaceFactoryImpl final
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   CdmFactory* GetCdmFactory();
-  void OnCdmServiceCreated(CreateCdmCallback callback,
-                           std::unique_ptr<MojoCdmService> cdm_service,
-                           mojom::CdmContextPtr cdm_context,
-                           const std::string& error_message);
+  void OnCdmServiceInitialized(MojoCdmService* raw_mojo_cdm_service,
+                               CreateCdmCallback callback,
+                               mojom::CdmContextPtr cdm_context,
+                               const std::string& error_message);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
   // Must be declared before the receivers below because the bound objects might
@@ -130,6 +130,10 @@ class InterfaceFactoryImpl final
 #if BUILDFLAG(ENABLE_MOJO_CDM)
   std::unique_ptr<CdmFactory> cdm_factory_;
   mojo::UniqueReceiverSet<mojom::ContentDecryptionModule> cdm_receivers_;
+
+  // MojoCdmServices pending initialization.
+  std::map<MojoCdmService*, std::unique_ptr<MojoCdmService>>
+      pending_mojo_cdm_services_;
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
   mojo::Remote<mojom::FrameInterfaceFactory> frame_interfaces_;
