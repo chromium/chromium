@@ -525,6 +525,7 @@ test("capture_unittests") {
       "mfplat.lib",
       "mfreadwrite.lib",
       "mfuuid.lib",
+      "dxguid.lib",
     ]
     ldflags = [
       "/DELAYLOAD:mf.dll",

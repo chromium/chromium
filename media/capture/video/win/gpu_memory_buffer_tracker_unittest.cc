@@ -156,6 +156,7 @@ TEST_F(GpuMemoryBufferTrackerTest, GetMemorySizeInBytes) {
   dxgi_device_manager_->GetMockDevice()->SetupDefaultMocks();
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
       std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
+
   EXPECT_EQ(tracker->Init(expected_buffer_size, PIXEL_FORMAT_NV12, nullptr),
             true);
 

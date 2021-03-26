@@ -504,10 +504,11 @@ IFACEMETHODIMP MockD3D11Device::CreateTexture2D(
     const D3D11_TEXTURE2D_DESC* desc,
     const D3D11_SUBRESOURCE_DATA* initial_data,
     ID3D11Texture2D** texture2D) {
-  OnCreateTexture2D(desc, initial_data, texture2D);
   Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_texture(
       new MockD3D11Texture2D());
-  return mock_texture.CopyTo(IID_PPV_ARGS(texture2D));
+  HRESULT hr = mock_texture.CopyTo(IID_PPV_ARGS(texture2D));
+  OnCreateTexture2D(desc, initial_data, texture2D);
+  return hr;
 }
 
 IFACEMETHODIMP MockD3D11Device::CreateTexture3D(
@@ -804,6 +805,13 @@ void MockD3D11Device::SetupDefaultMocks() {
   ON_CALL(*mock_immediate_context_.Get(), OnMap)
       .WillByDefault([](ID3D11Resource*, UINT, D3D11_MAP, UINT,
                         D3D11_MAPPED_SUBRESOURCE*) { return E_NOTIMPL; });
+  ON_CALL(*this, OnCreateTexture2D)
+      .WillByDefault([](const D3D11_TEXTURE2D_DESC*,
+                        const D3D11_SUBRESOURCE_DATA*,
+                        ID3D11Texture2D** texture) {
+        static_cast<MockD3D11Texture2D*>(*texture)->SetupDefaultMocks();
+        return S_OK;
+      });
 }
 
 IFACEMETHODIMP MockDXGIResource::CreateSubresourceSurface(
@@ -908,16 +916,20 @@ IFACEMETHODIMP MockD3D11Texture2D::GetPrivateData(REFGUID guid,
                                                   void* data) {
   return E_NOTIMPL;
 }
-IFACEMETHODIMP MockD3D11Texture2D::SetPrivateData(REFGUID guid,
-                                                  UINT data_size,
-                                                  const void* data) {
-  return E_NOTIMPL;
-}
 IFACEMETHODIMP MockD3D11Texture2D::SetPrivateDataInterface(
     REFGUID guid,
     const IUnknown* data) {
   return E_NOTIMPL;
 }
+
+void MockD3D11Texture2D::SetupDefaultMocks() {
+  ON_CALL(*this, SetPrivateData(testing::_, testing::_, testing::_))
+      .WillByDefault(testing::Return(E_NOTIMPL));
+  ON_CALL(*this,
+          SetPrivateData(WKPDID_D3DDebugObjectName, testing::_, testing::_))
+      .WillByDefault(testing::Return(S_OK));
+}
+
 MockD3D11Texture2D::~MockD3D11Texture2D() {}
 
 }  // namespace media

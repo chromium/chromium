@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,6 +39,12 @@ base::win::ScopedHandle CreateNV12Texture(ID3D11Device* d3d11_device,
   HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create D3D11 texture: "
+                << logging::SystemErrorCodeToString(hr);
+    return base::win::ScopedHandle();
+  }
+  hr = SetDebugName(d3d11_texture.Get(), "Camera_MemoryBufferTracker");
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to label D3D11 texture: "
                 << logging::SystemErrorCodeToString(hr);
     return base::win::ScopedHandle();
   }
