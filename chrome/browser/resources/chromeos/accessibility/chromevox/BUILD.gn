@@ -243,7 +243,8 @@ template("generate_deps_js") {
   }
 }
 
-action("chromevox_phonetic_dictionaries_js") {
+# TODO(crbug.com/1112471): Get this to run under Python3.
+python2_action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
   output_file = "$chromevox_out_dir/phonetic_dictionaries.js"

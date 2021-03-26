@@ -11,6 +11,7 @@ import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
+import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
@@ -6659,7 +6660,8 @@ grit("dev_ui_browser_resources") {
   }
 }
 
-action("expired_flags_list_gen") {
+# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+python2_action("expired_flags_list_gen") {
   script = "//tools/flags/generate_expired_list.py"
   sources = [ "flag-metadata.json" ]
   inputs = [ "//chrome/VERSION" ]
