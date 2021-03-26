@@ -162,6 +162,13 @@
         android:taskAffinity=""
         android:theme="@android:style/Theme.NoDisplay">
     </activity>  # DIFF-ANCHOR: 76686af9
+    <activity  # DIFF-ANCHOR: 9af505d2
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 9af505d2
     <activity  # DIFF-ANCHOR: 50c7105b
         android:excludeFromRecents="true"
         android:exported="false"

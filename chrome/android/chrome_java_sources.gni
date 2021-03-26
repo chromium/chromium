@@ -72,6 +72,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/appmenu/IncognitoMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/ManagedByMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/UpdateMenuItemViewBinder.java",
+  "java/src/org/chromium/chrome/browser/app/feedmanagement/FeedManagementActivity.java",
   "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
   "java/src/org/chromium/chrome/browser/app/metrics/LaunchCauseMetrics.java",
   "java/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetrics.java",

@@ -9,6 +9,11 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementCoordinator.java",
+    "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemProperties.java",
+    "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemView.java",
+    "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemViewBinder.java",
+    "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementMediator.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroController.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroView.java",
@@ -36,6 +41,8 @@ android_library("java") {
 
 android_resources("web_feed_java_resources") {
   sources = [
+    "java/res/layout/feed_management_activity.xml",
+    "java/res/layout/feed_management_list_item.xml",
     "java/res/layout/web_feed_main_menu_item.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
