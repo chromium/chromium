@@ -267,6 +267,7 @@ void HistogramSamples::RecordNegativeSample(NegativeSampleReason reason,
 base::DictionaryValue HistogramSamples::ToGraphDict(StringPiece histogram_name,
                                                     int32_t flags) const {
   base::DictionaryValue dict;
+  dict.SetString("name", histogram_name);
   dict.SetString("header", GetAsciiHeader(histogram_name, flags));
   dict.SetString("body", GetAsciiBody());
   return dict;

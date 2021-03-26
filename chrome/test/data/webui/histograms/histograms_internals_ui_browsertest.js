@@ -60,9 +60,10 @@ TEST_F('HistogramsInternalsUIBrowserTest', 'NoDummyHistograms', function() {
         });
         document.querySelector('#refresh').click();
         return whenRefreshed.then(() => {
-          document.querySelectorAll('h4').forEach(header => {
-            assertNotEquals(header.textContent, '');
-          });
+          document.querySelectorAll('.histogram-header-text')
+              .forEach(header => {
+                assertNotEquals(header.textContent, '');
+              });
         });
       });
 

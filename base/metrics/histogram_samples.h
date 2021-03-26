@@ -149,7 +149,7 @@ class BASE_EXPORT HistogramSamples {
 
   // Returns ASCII representation of histograms data for histogram samples.
   // The dictionary returned will be of the form
-  // {"header":<string>, "body": <string>}
+  // {"name":<string>, "header":<string>, "body": <string>}
   base::DictionaryValue ToGraphDict(StringPiece histogram_name,
                                     int32_t flags) const;
 

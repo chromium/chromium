@@ -26,6 +26,7 @@ Other resources that belong in this file:
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_touch_cursor_2x.png" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="browser/resources/histograms/histograms_internals.js" type="BINDATA" />
+      <include name="IDR_HISTOGRAMS_INTERNALS_CSS" file="browser/resources/histograms/histograms_internals.css" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" resource_path="mojo/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" resource_path="mojo/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />

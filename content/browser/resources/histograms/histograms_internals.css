@@ -1,0 +1,22 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.histograms {
+  margin-top: 10px;
+}
+
+.histogram-header {
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-size: large;
+  font-weight: bold;
+  margin: 2px;
+  padding-bottom: 5px;
+  padding-inline-start: 5px;
+  padding-top: 5px;
+}
+
+.histogram-body {
+  padding-inline-start: 15px;
+}

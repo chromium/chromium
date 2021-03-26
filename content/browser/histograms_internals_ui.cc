@@ -30,6 +30,7 @@ namespace content {
 namespace {
 
 const char kHistogramsUIJs[] = "histograms_internals.js";
+const char kHistogramsUICss[] = "histograms_internals.css";
 const char kHistogramsUIRequestHistograms[] = "requestHistograms";
 const char kHistogramsUIStartMonitoring[] = "startMonitoring";
 const char kHistogramsUIFetchDiff[] = "fetchDiff";
@@ -44,6 +45,7 @@ WebUIDataSource* CreateHistogramsHTMLSource() {
   WebUIDataSource* source = WebUIDataSource::Create(kChromeUIHistogramHost);
 
   source->AddResourcePath(kHistogramsUIJs, IDR_HISTOGRAMS_INTERNALS_JS);
+  source->AddResourcePath(kHistogramsUICss, IDR_HISTOGRAMS_INTERNALS_CSS);
   source->SetDefaultResource(IDR_HISTOGRAMS_INTERNALS_HTML);
   return source;
 }
