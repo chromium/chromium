@@ -50,17 +50,21 @@ void LayoutNGTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
 void LayoutNGTableColumn::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutBox::InsertedIntoTree();
-  DCHECK(Table());
+  LayoutNGTable* table = Table();
+  DCHECK(table);
   if (StyleRef().HasBackground())
-    Table()->SetBackgroundNeedsFullPaintInvalidation();
+    table->SetBackgroundNeedsFullPaintInvalidation();
+  table->TableGridStructureChanged();
 }
 
 void LayoutNGTableColumn::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   LayoutBox::WillBeRemovedFromTree();
-  DCHECK(Table());
+  LayoutNGTable* table = Table();
+  DCHECK(table);
   if (StyleRef().HasBackground())
-    Table()->SetBackgroundNeedsFullPaintInvalidation();
+    table->SetBackgroundNeedsFullPaintInvalidation();
+  table->TableGridStructureChanged();
 }
 
 bool LayoutNGTableColumn::IsChildAllowed(LayoutObject* child,
