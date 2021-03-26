@@ -209,6 +209,8 @@ static_library("protocol") {
     "webrtc_transport.h",
     "webrtc_video_renderer_adapter.cc",
     "webrtc_video_renderer_adapter.h",
+    "webrtc_video_track_source.cc",
+    "webrtc_video_track_source.h",
   ]
 
   configs += [
