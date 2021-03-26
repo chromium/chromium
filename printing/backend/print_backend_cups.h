@@ -5,11 +5,12 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 
+#include <cups/cups.h>
+
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
-#include "printing/backend/cups_helper.h"
+#include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
 #include "printing/printing_export.h"
 #include "url/gurl.h"
@@ -34,7 +35,7 @@ class PrintBackendCUPS : public PrintBackend {
   };
   using ScopedDestination = std::unique_ptr<cups_dest_t, DestinationDeleter>;
 
-  ~PrintBackendCUPS() override {}
+  ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
   bool EnumeratePrinters(PrinterList* printer_list) override;

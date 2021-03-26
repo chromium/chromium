@@ -12,9 +12,8 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -26,6 +25,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
+#include "base/feature_list.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_utils.h"
 #include "printing/backend/print_backend_cups_ipp.h"
@@ -42,6 +42,8 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
       print_server_url_(print_server_url),
       cups_encryption_(encryption),
       blocking_(blocking) {}
+
+PrintBackendCUPS::~PrintBackendCUPS() = default;
 
 // static
 bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
