@@ -4,6 +4,8 @@
 
 #include "components/error_page/common/alt_game_images.h"
 
+#include <cstring>
+
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/rand_util.h"
