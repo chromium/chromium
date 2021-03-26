@@ -231,9 +231,6 @@ class ToolbarButton : public views::LabelButton,
     gfx::SlideAnimation highlight_color_animation_;
   };
 
-  // TODO(pbos): See if VECTOR_ICON_TEMPLATE_CC can create constexpr VectorIcons
-  // so SetVectorIcon and friends can use constexpr to avoid potential lifetime
-  // problems if runtime-created gfx::VectorIcons were to become a thing.
   struct VectorIcons {
     const gfx::VectorIcon& icon;
     const gfx::VectorIcon& touch_icon;
