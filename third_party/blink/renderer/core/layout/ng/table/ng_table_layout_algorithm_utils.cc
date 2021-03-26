@@ -524,6 +524,8 @@ wtf_size_t NGTableAlgorithmUtils::ComputeMaximumNonMergeableColumnCount(
          column_constraints->data[column_index].is_mergeable) {
     --column_index;
   }
+  if (column_index == 0 && column_constraints->data[0].is_mergeable)
+    return 0;
   return column_index + 1;
 }
 
