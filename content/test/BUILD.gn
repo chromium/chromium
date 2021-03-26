@@ -2070,12 +2070,14 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
     "../browser/site_instance_impl_unittest.cc",
+    "../browser/site_isolation_policy_unittest.cc",
     "../browser/sms/sms_fetcher_impl_unittest.cc",
     "../browser/sms/sms_parser_unittest.cc",
     "../browser/sms/user_consent_handler_unittest.cc",
     "../browser/sms/webotp_service_unittest.cc",
     "../browser/speech/tts_controller_unittest.cc",
     "../browser/startup_task_runner_unittest.cc",
+    "../browser/storage_partition_config_unittest.cc",
     "../browser/storage_partition_impl_map_unittest.cc",
     "../browser/storage_partition_impl_unittest.cc",
     "../browser/tracing/background_startup_tracing_observer_unittest.cc",
@@ -2127,6 +2129,7 @@ test("content_unittests") {
     "../common/common_param_traits_unittest.cc",
     "../common/content_switches_internal_unittest.cc",
     "../common/cursors/webcursor_unittest.cc",
+    "../common/drop_data_unittest.cc",
     "../common/fetch/fetch_api_request_proto_unittest.cc",
     "../common/font_list_unittest.cc",
     "../common/input/actions_parser_test_driver_unittest.cc",
@@ -2136,14 +2139,9 @@ test("content_unittests") {
     "../common/input/touch_event_stream_validator_unittest.cc",
     "../common/service_worker/service_worker_utils_unittest.cc",
     "../common/state_transitions_unittest.cc",
+    "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
     "../common/webplugininfo_unittest.cc",
-    "../public/browser/site_isolation_policy_unittest.cc",
-    "../public/browser/storage_partition_config_unittest.cc",
-
-    # TODO(jam): move these network/ tests to services/network.
-    "../public/common/drop_data_unittest.cc",
-    "../public/common/url_utils_unittest.cc",
     "../public/test/browser_task_environment_unittest.cc",
     "../public/test/devtools_permission_overrides_unittest.cc",
     "../public/test/dump_accessibility_test_helper_unittest.cc",
@@ -2607,7 +2605,7 @@ test("content_unittests") {
 
 if (enable_nocompile_tests) {
   nocompile_test("content_nocompile_tests") {
-    sources = [ "../public/browser/browser_task_traits_unittest.nc" ]
+    sources = [ "../browser/browser_task_traits_unittest.nc" ]
 
     deps = [
       ":run_all_unittests",
