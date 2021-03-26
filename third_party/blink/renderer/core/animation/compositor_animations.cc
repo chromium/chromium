@@ -283,18 +283,28 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // Backdrop-filter pixel moving filters do not change the layer bounds
           // like regular filters do, so they can still be composited.
           break;
-        case CSSPropertyID::kBackgroundColor:
+        case CSSPropertyID::kBackgroundColor: {
+          // When this is true, we have a background-color animation in the body
+          // element, while the view is responsible for painting the body's
+          // background. In this case, we need to let the background-color
+          // animation run on the main thread because the body is not painted
+          // with BackgroundColorPaintWorklet.
+          bool background_transfers_to_view =
+              target_element.GetLayoutBoxModelObject() &&
+              target_element.GetLayoutBoxModelObject()
+                  ->BackgroundTransfersToView();
           // The table rows and table cols are painted into table cells, which
           // means their background is never painted using
           // BackgroundColorPaintWorklet, as a result, we should not composite
           // the background color animation on the table rows or cols.
           if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
               layout_object->IsLayoutTableCol() ||
-              layout_object->IsTableRow()) {
+              layout_object->IsTableRow() || background_transfers_to_view) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }
           break;
+        }
         case CSSPropertyID::kVariable: {
           // Custom properties are supported only in the case of
           // OffMainThreadCSSPaintEnabled, and even then only for some specific
