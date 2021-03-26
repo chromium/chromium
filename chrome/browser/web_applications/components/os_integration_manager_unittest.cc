@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,19 +155,23 @@ const base::FilePath::CharType kFakeProfilePath[] =
 #endif  // defined(OS_WIN)
 
 const char kFakeAppUrl[] = "https://fake.com";
+const std::u16string kFakeAppTitle(u"fake title");
 
 std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(const AppId& app_id) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->profile_path = base::FilePath(kFakeProfilePath);
   shortcut_info->extension_id = app_id;
   shortcut_info->url = GURL(kFakeAppUrl);
+  shortcut_info->title = kFakeAppTitle;
   return shortcut_info;
 }
 
 class OsIntegrationManagerTest : public testing::Test {
  public:
   OsIntegrationManagerTest() {
-    features_.InitAndEnableFeature(blink::features::kWebAppEnableUrlHandlers);
+    features_.InitWithFeatures({blink::features::kWebAppEnableUrlHandlers,
+                                ::features::kDesktopPWAsRunOnOsLogin},
+                               {});
   }
 
   ~OsIntegrationManagerTest() override = default;
@@ -226,6 +231,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
   EXPECT_CALL(manager, ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
                            app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_CALL(manager, RegisterRunOnOsLogin(app_id, testing::_)).Times(1);
 
   InstallOsHooksOptions options;
   options.add_to_desktop = true;
@@ -277,6 +283,10 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id))
       .WillOnce(testing::Return(true));
+  EXPECT_CALL(manager,
+              UnregisterRunOnOsLogin(app_id, base::FilePath(kFakeProfilePath),
+                                     kFakeAppTitle, testing::_))
+      .Times(1);
 
   manager.UninstallAllOsHooks(app_id, std::move(callback));
   run_loop.Run();
