@@ -4,7 +4,7 @@
 
 #include "remoting/host/clipboard.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -22,6 +22,8 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
  public:
   ClipboardX11();
   ~ClipboardX11() override;
+
+  void Init();
 
   // Clipboard interface.
   void Start(
@@ -55,15 +57,17 @@ ClipboardX11::~ClipboardX11() {
   }
 }
 
-void ClipboardX11::Start(
-    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
+void ClipboardX11::Init() {
   connection_ = x11::Connection::Get();
   connection_->AddEventObserver(this);
-  client_clipboard_.swap(client_clipboard);
-
   x_server_clipboard_.Init(
       connection_, base::BindRepeating(&ClipboardX11::OnClipboardChanged,
                                        base::Unretained(this)));
+}
+
+void ClipboardX11::Start(
+    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
+  client_clipboard_.swap(client_clipboard);
 }
 
 void ClipboardX11::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
@@ -86,7 +90,9 @@ void ClipboardX11::OnEvent(const x11::Event& event) {
 }
 
 std::unique_ptr<Clipboard> Clipboard::Create() {
-  return base::WrapUnique(new ClipboardX11());
+  auto clipboard = std::make_unique<ClipboardX11>();
+  clipboard->Init();
+  return clipboard;
 }
 
 }  // namespace remoting
