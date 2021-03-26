@@ -198,7 +198,11 @@ test("cast_runner_integration_tests") {
       "web_engine",
     ],
   ]
-  manifest = "runners_integration_tests.test-cmx"
+  additional_manifests = [
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+  ]
 }
 
 test("cast_runner_browsertests") {
@@ -222,6 +226,11 @@ test("cast_runner_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/ozone",
+  ]
+  additional_manifests = [
+    "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
   ]
 }
 
@@ -274,7 +283,11 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
-  manifest = "runners_integration_tests.test-cmx"
+  additional_manifests = [
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+  ]
 }
 
 if (is_official_build) {

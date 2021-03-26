@@ -376,10 +376,8 @@ test("aura_unittests") {
   }
 
   if (is_fuchsia) {
-    additional_manifests = [
-      "//build/config/fuchsia/test/present_capabilities.test-cmx",
-      "//build/config/fuchsia/test/view_creation_capabilities.test-cmx",
-    ]
+    additional_manifests =
+        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
   }
 
   data_deps = [ "//third_party/mesa_headers" ]

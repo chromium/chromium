@@ -1,0 +1,21 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+        "fuchsia.net.NameLookup": "fuchsia-pkg://fuchsia.com/dns-resolver#meta/dns-resolver.cmx",
+        "fuchsia.net.interfaces.State": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
+        "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx"
+      }
+    }
+  },
+  "sandbox": {
+    "features": [
+      "root-ssl-certificates"
+    ],
+    "services": [
+      "fuchsia.net.NameLookup",
+      "fuchsia.net.interfaces.State",
+      "fuchsia.posix.socket.Provider"
+    ]
+  }
+}

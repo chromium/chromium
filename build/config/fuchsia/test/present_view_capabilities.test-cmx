@@ -8,6 +8,7 @@
       },
       "system-services": [
         "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.policy.Presenter",
         "fuchsia.ui.scenic.Scenic"
       ]
     }
@@ -18,6 +19,7 @@
       "fuchsia.sysmem.Allocator",
       "fuchsia.ui.input.ImeService",
       "fuchsia.ui.input.ImeVisibilityService",
+      "fuchsia.ui.policy.Presenter",
       "fuchsia.ui.scenic.Scenic"
     ]
   }
