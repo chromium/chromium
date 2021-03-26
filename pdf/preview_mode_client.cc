@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
@@ -22,6 +21,8 @@
 namespace chrome_pdf {
 
 PreviewModeClient::PreviewModeClient(Client* client) : client_(client) {}
+
+PreviewModeClient::~PreviewModeClient() = default;
 
 void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
   // This will be invoked if the PreviewModeClient is used, which currently
@@ -177,10 +178,10 @@ bool PreviewModeClient::IsValidLink(const std::string& url) {
 }
 
 void PreviewModeClient::ScheduleTaskOnMainThread(
-    base::TimeDelta delay,
+    const base::Location& from_here,
     ResultCallback callback,
     int32_t result,
-    const base::Location& from_here) {
+    base::TimeDelta delay) {
   NOTREACHED();
 }
 

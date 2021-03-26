@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -70,7 +69,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void,
               ScheduleTaskOnMainThread,
-              (base::TimeDelta, ResultCallback, int32_t, const base::Location&),
+              (const base::Location&, ResultCallback, int32_t, base::TimeDelta),
               (override));
 
   MOCK_METHOD(base::WeakPtr<PdfViewPluginBase>, GetWeakPtr, (), (override));

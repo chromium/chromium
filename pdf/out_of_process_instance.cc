@@ -934,10 +934,10 @@ void OutOfProcessInstance::NotifyNumberOfFindResultsChanged(int total,
   SetTickmarks(tickmarks_);
   recently_sent_find_update_ = true;
   ScheduleTaskOnMainThread(
-      kFindResultCooldown,
+      FROM_HERE,
       base::BindOnce(&OutOfProcessInstance::ResetRecentlySentFindUpdate,
                      weak_factory_.GetWeakPtr()),
-      0);
+      /*result=*/0, kFindResultCooldown);
 }
 
 void OutOfProcessInstance::NotifySelectedFindResultChanged(
@@ -974,10 +974,10 @@ void OutOfProcessInstance::Print() {
     return;
   }
 
-  ScheduleTaskOnMainThread(base::TimeDelta(),
+  ScheduleTaskOnMainThread(FROM_HERE,
                            base::BindOnce(&OutOfProcessInstance::OnPrint,
                                           weak_factory_.GetWeakPtr()),
-                           0);
+                           /*result=*/0, base::TimeDelta());
 }
 
 void OutOfProcessInstance::SubmitForm(const std::string& url,
@@ -1344,12 +1344,12 @@ bool OutOfProcessInstance::BindPaintGraphics(Graphics& graphics) {
 }
 
 void OutOfProcessInstance::ScheduleTaskOnMainThread(
-    base::TimeDelta delay,
+    const base::Location& from_here,
     ResultCallback callback,
     int32_t result,
-    const base::Location& from_here) {
+    base::TimeDelta delay) {
   int64_t delay_in_msec = delay.InMilliseconds();
-  DCHECK(delay_in_msec <= INT32_MAX);
+  DCHECK_LE(delay_in_msec, INT32_MAX);
   pp::Module::Get()->core()->CallOnMainThread(
       static_cast<int32_t>(delay_in_msec),
       PPCompletionCallbackFromResultCallback(std::move(callback)), result);

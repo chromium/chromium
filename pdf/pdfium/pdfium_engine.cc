@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -1817,10 +1818,10 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
     ContinueFind(case_sensitive ? 1 : 0);
   } else {
     client_->ScheduleTaskOnMainThread(
-        base::TimeDelta(),
+        FROM_HERE,
         base::BindOnce(&PDFiumEngine::ContinueFind,
                        find_weak_factory_.GetWeakPtr()),
-        case_sensitive ? 1 : 0);
+        case_sensitive ? 1 : 0, base::TimeDelta());
   }
 }
 

@@ -5,7 +5,6 @@
 #ifndef PDF_PDF_VIEW_WEB_PLUGIN_H_
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "pdf/pdf_view_plugin_base.h"
@@ -15,14 +14,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
 #include "v8/include/v8.h"
-
-class SkImage;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace blink {
 class WebPluginContainer;
@@ -90,11 +82,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
-  void ScheduleTaskOnMainThread(
-      base::TimeDelta delay,
-      ResultCallback callback,
-      int32_t result,
-      const base::Location& from_here = base::Location::Current()) override;
+  void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                ResultCallback callback,
+                                int32_t result,
+                                base::TimeDelta delay) override;
 
   // BlinkUrlLoader::Client:
   bool IsValid() const override;
@@ -138,7 +129,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
-  void OnViewportChanged(gfx::Rect view_rect, float new_device_scale);
+  void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;

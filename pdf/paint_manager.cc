@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/location.h"
 #include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -163,10 +164,10 @@ void PaintManager::EnsureCallbackPending() {
     return;
 
   client_->ScheduleTaskOnMainThread(
-      base::TimeDelta(),
+      FROM_HERE,
       base::BindOnce(&PaintManager::OnManualCallbackComplete,
                      weak_factory_.GetWeakPtr()),
-      0);
+      /*result=*/0, base::TimeDelta());
   manual_callback_pending_ = true;
 }
 

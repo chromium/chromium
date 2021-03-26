@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -479,10 +480,10 @@ void PdfViewPluginBase::InvalidateAfterPaintDone() {
     return;
 
   ScheduleTaskOnMainThread(
-      base::TimeDelta(),
+      FROM_HERE,
       base::BindOnce(&PdfViewPluginBase::ClearDeferredInvalidates,
                      GetWeakPtr()),
-      0);
+      /*result=*/0, base::TimeDelta());
 }
 
 void PdfViewPluginBase::OnGeometryChanged(double old_zoom,
@@ -639,10 +640,10 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
 
   // Schedule loading the next page.
   ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
+      FROM_HERE,
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr()),
-      page_index + 1);
+      /*result=*/page_index + 1, kAccessibilityPageDelay);
 }
 
 void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
@@ -1110,10 +1111,10 @@ void PdfViewPluginBase::LoadAccessibility() {
 
   // Schedule loading the first page.
   ScheduleTaskOnMainThread(
-      kAccessibilityPageDelay,
+      FROM_HERE,
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr()),
-      0);
+      /*result=*/0, kAccessibilityPageDelay);
 }
 
 namespace {

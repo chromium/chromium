@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "pdf/ppapi_migration/callback.h"

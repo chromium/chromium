@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/location.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -41,11 +40,10 @@ class TestClient : public PDFEngine::Client {
   void SetSelectedText(const std::string& selected_text) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
-  void ScheduleTaskOnMainThread(
-      base::TimeDelta delay,
-      ResultCallback callback,
-      int32_t result,
-      const base::Location& from_here = base::Location::Current()) override;
+  void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                ResultCallback callback,
+                                int32_t result,
+                                base::TimeDelta delay) override;
 
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed

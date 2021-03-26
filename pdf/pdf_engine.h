@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/location.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -44,6 +43,10 @@ typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
 
 struct PP_PdfPrintSettings_Dev;
 class SkBitmap;
+
+namespace base {
+class Location;
+}  // namespace base
 
 namespace gfx {
 class Point;
@@ -119,7 +122,7 @@ class PDFEngine {
   // The interface that's provided to the rendering engine.
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Proposes a document layout to the client. For the proposed layout to
     // become effective, the client must call PDFEngine::ApplyDocumentLayout()
@@ -278,14 +281,13 @@ class PDFEngine {
     // not always needed. `delay` should be no longer than `INT32_MAX`
     // milliseconds for the Pepper plugin implementation to prevent integer
     // overflow.
-    virtual void ScheduleTaskOnMainThread(
-        base::TimeDelta delay,
-        ResultCallback callback,
-        int32_t result,
-        const base::Location& from_here = base::Location::Current()) = 0;
+    virtual void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                          ResultCallback callback,
+                                          int32_t result,
+                                          base::TimeDelta delay) = 0;
   };
 
-  virtual ~PDFEngine() {}
+  virtual ~PDFEngine() = default;
 
   // Most of these functions are similar to the Pepper functions of the same
   // name, so not repeating the description here unless it's different.

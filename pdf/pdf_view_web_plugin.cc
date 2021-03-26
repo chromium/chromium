@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/location.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -324,11 +323,10 @@ bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
   return false;
 }
 
-void PdfViewWebPlugin::ScheduleTaskOnMainThread(
-    base::TimeDelta delay,
-    ResultCallback callback,
-    int32_t result,
-    const base::Location& from_here) {
+void PdfViewWebPlugin::ScheduleTaskOnMainThread(const base::Location& from_here,
+                                                ResultCallback callback,
+                                                int32_t result,
+                                                base::TimeDelta delay) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       from_here, base::BindOnce(std::move(callback), result), delay);
 }
@@ -458,7 +456,7 @@ void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   base::RecordAction(base::UserMetricsAction(action.c_str()));
 }
 
-void PdfViewWebPlugin::OnViewportChanged(gfx::Rect view_rect,
+void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
                                          float new_device_scale) {
   UpdateGeometryOnViewChanged(view_rect, new_device_scale);
 

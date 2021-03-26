@@ -16,7 +16,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/preview_mode_client.h"
@@ -123,11 +122,10 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   bool IsValidLink(const std::string& url) override;
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
-  void ScheduleTaskOnMainThread(
-      base::TimeDelta delay,
-      ResultCallback callback,
-      int32_t result,
-      const base::Location& from_here = base::Location::Current()) override;
+  void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                ResultCallback callback,
+                                int32_t result,
+                                base::TimeDelta delay) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
