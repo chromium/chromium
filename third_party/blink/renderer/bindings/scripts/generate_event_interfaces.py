@@ -52,7 +52,7 @@ EXPORTED_EXTENDED_ATTRIBUTES = (
     'ImplementedAs',
     'RuntimeEnabled',
 )
-module_path = os.path.dirname(os.path.realpath(__file__))
+module_path = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT_DIR = os.path.normpath(
     os.path.join(module_path, os.pardir, os.pardir, os.pardir, os.pardir,
                  os.pardir))
