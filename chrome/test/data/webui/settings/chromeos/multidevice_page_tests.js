@@ -142,7 +142,7 @@ suite('Multidevice', function() {
     settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
 
     loadTimeData.overrideValues({
-      nearbySharingFeatureFlag: true,
+      isNearbyShareSupported: true,
     });
 
     multidevicePage = document.createElement('settings-multidevice-page');
