@@ -609,11 +609,6 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindCaptionContextHandler));
 #endif
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-  map->Add<media::mojom::CdmInfobarService>(
-      base::BindRepeating(&BindCdmInfobarServiceReceiver));
-#endif
-
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   if (base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay) &&
       !render_frame_host->GetParent()) {
