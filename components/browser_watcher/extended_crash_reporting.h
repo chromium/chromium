@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -61,8 +62,8 @@ class ExtendedCrashReporting {
   // activity report on exception - handled or not.
   void RegisterVEH();
 
-  void* veh_handle_ = nullptr;
-  base::debug::GlobalActivityTracker* const tracker_;
+  CheckedPtr<void> veh_handle_ = nullptr;
+  const CheckedPtr<base::debug::GlobalActivityTracker> tracker_;
 };
 
 }  // namespace browser_watcher

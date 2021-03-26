@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
@@ -67,7 +68,7 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
   }
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   base::RunLoop loop_;
 };
 
@@ -92,7 +93,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
   base::RunLoop run_loop_;
 };
 

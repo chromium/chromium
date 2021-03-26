@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -95,7 +96,7 @@ class SignedExchangePrefetchHandler final
 
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
-  network::mojom::URLLoaderClient* forwarding_client_;
+  CheckedPtr<network::mojom::URLLoaderClient> forwarding_client_;
 
   DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchHandler);
 };

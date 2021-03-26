@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -102,7 +103,7 @@ class FakeRelaunchNotificationController
     delegate_->OnRelaunchDeadlineExpired();
   }
 
-  ControllerDelegate* delegate_;
+  CheckedPtr<ControllerDelegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeRelaunchNotificationController);
 };
@@ -219,7 +220,7 @@ class RelaunchNotificationControllerTest : public ::testing::Test {
 
  private:
   // Owned by power_monitor_. Use this to simulate a power suspend and resume.
-  StubPowerMonitorSource* mock_power_monitor_source_ = nullptr;
+  CheckedPtr<StubPowerMonitorSource> mock_power_monitor_source_ = nullptr;
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_;
   FakeUpgradeDetector upgrade_detector_;

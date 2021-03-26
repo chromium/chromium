@@ -5,6 +5,7 @@
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
@@ -74,10 +75,10 @@ class MediaHistoryKeyedService::StoreHolder {
   }
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   scoped_refptr<MediaHistoryStore> local_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
-  MediaHistoryKeyedService* remote_ = nullptr;
+  CheckedPtr<MediaHistoryKeyedService> remote_ = nullptr;
 };
 
 MediaHistoryKeyedService::MediaHistoryKeyedService(Profile* profile)

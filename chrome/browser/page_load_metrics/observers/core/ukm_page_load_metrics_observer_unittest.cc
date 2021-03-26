@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/optional.h"
 #include "base/test/simple_test_clock.h"
@@ -245,7 +246,7 @@ class UkmPageLoadMetricsObserverTest
   UkmPageLoadMetricsObserver* observer() const { return observer_; }
 
  private:
-  UkmPageLoadMetricsObserver* observer_;  // Non-owning raw pointer.
+  CheckedPtr<UkmPageLoadMetricsObserver> observer_;  // Non-owning raw pointer.
 
   MockNetworkQualityProvider mock_network_quality_provider_;
 };

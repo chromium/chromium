@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -104,16 +105,16 @@ class EditableComboboxTest : public ViewsTestBase {
   void OnContentChanged() { ++change_count_; }
 
   // The widget where the control will appear.
-  Widget* widget_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
 
   // |combobox_| and |dummy_focusable_view_| are allocated in
   // |InitEditableCombobox| and then owned by |widget_|.
-  EditableCombobox* combobox_ = nullptr;
-  View* dummy_focusable_view_ = nullptr;
+  CheckedPtr<EditableCombobox> combobox_ = nullptr;
+  CheckedPtr<View> dummy_focusable_view_ = nullptr;
 
   // We make |combobox_| a child of another View to test different removal
   // scenarios.
-  View* parent_of_combobox_ = nullptr;
+  CheckedPtr<View> parent_of_combobox_ = nullptr;
 
   int change_count_ = 0;
 
@@ -175,9 +176,9 @@ void EditableComboboxTest::InitWidget() {
 
   widget_->Init(std::move(params));
   View* container = widget_->SetContentsView(std::make_unique<View>());
-  container->AddChildView(parent_of_combobox_);
-  parent_of_combobox_->AddChildView(combobox_);
-  container->AddChildView(dummy_focusable_view_);
+  container->AddChildView(parent_of_combobox_.get());
+  parent_of_combobox_->AddChildView(combobox_.get());
+  container->AddChildView(dummy_focusable_view_.get());
   widget_->Show();
 
 #if defined(OS_APPLE)
@@ -838,7 +839,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
   void SetItemCount(int item_count) { item_count_ = item_count; }
 
  private:
-  bool* const destroyed_;
+  const CheckedPtr<bool> destroyed_;
   int item_count_ = 0;
 };
 

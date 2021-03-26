@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -95,7 +96,7 @@ class SegregatedPrefStore : public PersistentPrefStore {
     void OnInitializationCompleted(bool succeeded) override;
 
    private:
-    SegregatedPrefStore* outer_;
+    CheckedPtr<SegregatedPrefStore> outer_;
     int failed_sub_initializations_;
     int successful_sub_initializations_;
 

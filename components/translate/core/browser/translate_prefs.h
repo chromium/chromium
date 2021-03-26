@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -401,7 +402,7 @@ class TranslatePrefs {
   // base::(List)Value.
   static base::Value GetDefaultBlockedLanguages();
 
-  PrefService* prefs_;  // Weak.
+  CheckedPtr<PrefService> prefs_;  // Weak.
 
   std::string country_;  // The country the app runs in.
 

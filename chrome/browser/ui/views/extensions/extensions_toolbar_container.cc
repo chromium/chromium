@@ -153,7 +153,7 @@ ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
                            [extension_id](const auto& info) {
                              return info.extension_id == extension_id;
                            });
-  return iter == anchored_widgets_.end() ? nullptr : iter->widget;
+  return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
 }
 
 bool ExtensionsToolbarContainer::ShouldForceVisibility(

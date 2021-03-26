@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -175,9 +176,9 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir test_gallery_;
 
-  const extensions::Extension* extension_ = nullptr;
+  CheckedPtr<const extensions::Extension> extension_ = nullptr;
 
-  content::RenderFrameHost* background_main_frame_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> background_main_frame_ = nullptr;
 };
 
 // TODO(crbug.com/1177103): Re-enable. Flaky on Linux and Windows.

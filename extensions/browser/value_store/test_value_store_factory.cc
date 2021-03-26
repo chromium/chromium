@@ -107,7 +107,7 @@ std::unique_ptr<ValueStore> TestValueStoreFactory::CreateRulesStore() {
     last_created_store_ = new TestingValueStore();
   else
     last_created_store_ = new LeveldbValueStore(kUMAClientName, db_path_);
-  return base::WrapUnique(last_created_store_);
+  return base::WrapUnique(last_created_store_.get());
 }
 
 std::unique_ptr<ValueStore> TestValueStoreFactory::CreateStateStore() {

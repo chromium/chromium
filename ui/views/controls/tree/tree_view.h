@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"
@@ -278,14 +279,14 @@ class VIEWS_EXPORT TreeView : public View,
 
    private:
     // The node from the model.
-    ui::TreeModelNode* model_node_ = nullptr;
+    CheckedPtr<ui::TreeModelNode> model_node_ = nullptr;
 
     // A virtual accessibility view that is used to expose information about
     // this node to assistive software.
     //
     // This is a weak pointer. This class doesn't own its virtual accessibility
     // view but the Views system does.
-    AXVirtualView* accessibility_view_ = nullptr;
+    CheckedPtr<AXVirtualView> accessibility_view_ = nullptr;
 
     // Whether the children have been loaded.
     bool loaded_children_ = false;
@@ -458,7 +459,7 @@ class VIEWS_EXPORT TreeView : public View,
   void SetHasFocusIndicator(bool);
 
   // The model, may be null.
-  ui::TreeModel* model_ = nullptr;
+  CheckedPtr<ui::TreeModel> model_ = nullptr;
 
   // Default icons for closed/open.
   gfx::ImageSkia closed_icon_;
@@ -471,24 +472,24 @@ class VIEWS_EXPORT TreeView : public View,
   InternalNode root_;
 
   // The selected node, may be null.
-  InternalNode* selected_node_ = nullptr;
+  CheckedPtr<InternalNode> selected_node_ = nullptr;
 
   // The current active node, may be null.
-  InternalNode* active_node_ = nullptr;
+  CheckedPtr<InternalNode> active_node_ = nullptr;
 
   bool editing_ = false;
 
   // The editor; lazily created and never destroyed (well, until TreeView is
   // destroyed). Hidden when no longer editing. We do this to avoid destruction
   // problems.
-  Textfield* editor_ = nullptr;
+  CheckedPtr<Textfield> editor_ = nullptr;
 
   // Preferred size of |editor_| with no content.
   gfx::Size empty_editor_size_;
 
   // If non-NULL we've attached a listener to this focus manager. Used to know
   // when focus is changing to another view so that we can cancel the edit.
-  FocusManager* focus_manager_ = nullptr;
+  CheckedPtr<FocusManager> focus_manager_ = nullptr;
 
   // Whether to automatically expand children when a parent node is expanded.
   bool auto_expand_children_ = false;
@@ -497,7 +498,7 @@ class VIEWS_EXPORT TreeView : public View,
   bool editable_ = true;
 
   // The controller.
-  TreeViewController* controller_ = nullptr;
+  CheckedPtr<TreeViewController> controller_ = nullptr;
 
   // Whether or not the root is shown in the tree.
   bool root_shown_ = true;

@@ -71,7 +71,7 @@ UntrustedSource::UntrustedSource(Profile* profile)
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_) {
-    one_google_bar_service_observation_.Observe(one_google_bar_service_);
+    one_google_bar_service_observation_.Observe(one_google_bar_service_.get());
   }
 }
 

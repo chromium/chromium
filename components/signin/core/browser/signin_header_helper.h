@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -175,8 +176,8 @@ class RequestAdapter {
  private:
   const GURL url_;
   const net::HttpRequestHeaders& original_headers_;
-  net::HttpRequestHeaders* const modified_headers_;
-  std::vector<std::string>* const headers_to_remove_;
+  const CheckedPtr<net::HttpRequestHeaders> modified_headers_;
+  const CheckedPtr<std::vector<std::string>> headers_to_remove_;
 
   DISALLOW_COPY_AND_ASSIGN(RequestAdapter);
 };

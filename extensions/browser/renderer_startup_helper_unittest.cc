@@ -4,6 +4,7 @@
 
 #include "extensions/browser/renderer_startup_helper.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -225,7 +226,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   std::unique_ptr<InterceptingRendererStartupHelper> helper_;
-  ExtensionRegistry* registry_;  // Weak.
+  CheckedPtr<ExtensionRegistry> registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
       incognito_render_process_host_;

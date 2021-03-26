@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
 
@@ -85,8 +86,8 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   void OnDownloadRemoved(DownloadItem* item) override;
   void OnDownloadDestroyed(DownloadItem* item) override;
 
-  content::DownloadManager* manager_;
-  AllDownloadItemNotifier::Observer* observer_;
+  CheckedPtr<content::DownloadManager> manager_;
+  CheckedPtr<AllDownloadItemNotifier::Observer> observer_;
   std::set<DownloadItem*> observing_;
 
   DISALLOW_COPY_AND_ASSIGN(AllDownloadItemNotifier);

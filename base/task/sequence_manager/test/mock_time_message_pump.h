@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_TEST_MOCK_TIME_MESSAGE_PUMP_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
@@ -68,7 +69,7 @@ class MockTimeMessagePump : public MessagePump {
   // another iteration of the DoWork-DoIdleWork-loop.
   bool MaybeAdvanceTime(TimeTicks target_time);
 
-  SimpleTestTickClock* const clock_;
+  const CheckedPtr<SimpleTestTickClock> clock_;
   // This flag is set to false when Run should return.
   bool keep_running_ = true;
 

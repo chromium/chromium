@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/no_destructor.h"
@@ -236,7 +237,7 @@ class ThreadProfiler::WorkIdRecorder : public metrics::WorkIdRecorder {
   WorkIdRecorder& operator=(const WorkIdRecorder&) = delete;
 
  private:
-  base::WorkIdProvider* const work_id_provider_;
+  const CheckedPtr<base::WorkIdProvider> work_id_provider_;
 };
 
 ThreadProfiler::~ThreadProfiler() {

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
@@ -56,7 +57,7 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
   const int kSpecificCallbackId = 1357;
   base::UnguessableToken dummy_token_;
 
-  ScopedSurfaceRequestManager* manager_;
+  CheckedPtr<ScopedSurfaceRequestManager> manager_;
 
   content::BrowserTaskEnvironment task_environment_;
 

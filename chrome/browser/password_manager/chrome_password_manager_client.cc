@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
@@ -238,7 +239,7 @@ class NavigationPasswordMetricsRecorder
     }
   }
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace
@@ -1179,7 +1180,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
           profile_),
       base::BindRepeating(
           &ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability,
-          base::Unretained(driver_factory_)));
+          base::Unretained(driver_factory_.get())));
 
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());

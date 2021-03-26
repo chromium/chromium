@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -191,7 +192,7 @@ class VideoDetectorTest : public testing::Test {
     return frame_sink;
   }
 
-  VideoDetector* detector_;
+  CheckedPtr<VideoDetector> detector_;
   TestObserver observer_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;

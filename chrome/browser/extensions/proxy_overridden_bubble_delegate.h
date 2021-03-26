@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -47,7 +48,7 @@ class ProxyOverriddenBubbleDelegate
   bool SupportsPolicyIndicator() override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // The ID of the extension we are showing the bubble for.
   std::string extension_id_;

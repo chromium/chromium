@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -128,7 +129,7 @@ class ManualFillingControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_ =
+  CheckedPtr<content::WebContents> web_contents_ =
       web_contents_factory_.CreateWebContents(&profile_);
 
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;

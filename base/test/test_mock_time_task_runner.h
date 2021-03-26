@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
@@ -236,7 +237,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     Time Now() const override;
 
    private:
-    TestMockTimeTaskRunner* task_runner_;
+    CheckedPtr<TestMockTimeTaskRunner> task_runner_;
 
     DISALLOW_COPY_AND_ASSIGN(MockClock);
   };

@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -67,7 +68,7 @@ class BookmarkCounterTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  bookmarks::BookmarkModel* model_;
+  CheckedPtr<bookmarks::BookmarkModel> model_;
   bool finished_ = false;
   browsing_data::BrowsingDataCounter::ResultInt result_ = 0;
 };

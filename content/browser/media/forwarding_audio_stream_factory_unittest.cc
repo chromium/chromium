@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/unguessable_token.h"
@@ -241,7 +242,7 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
   static const uint32_t kSharedMemoryCount;
   static const bool kEnableAgc;
   MockStreamFactory stream_factory_;
-  RenderFrameHost* other_rfh_;
+  CheckedPtr<RenderFrameHost> other_rfh_;
   std::unique_ptr<MockBrokerFactory> broker_factory_;
 };
 

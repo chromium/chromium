@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -137,7 +138,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
   bool should_fail_on_init_;
-  FakeSyncManager** fake_manager_;
+  CheckedPtr<FakeSyncManager*> fake_manager_;
 };
 
 class MockInvalidationService : public invalidation::InvalidationService {

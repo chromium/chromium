@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
@@ -127,7 +128,7 @@ class CookieChangeListener : public network::mojom::CookieChangeListener {
     MaybeStartListening();
   }
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   CookieCallback const callback_;
 
   THREAD_CHECKER(thread_checker_);

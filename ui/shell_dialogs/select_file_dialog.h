@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
@@ -225,7 +226,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       void* params) = 0;
 
   // The listener to be notified of selection completion.
-  Listener* listener_;
+  CheckedPtr<Listener> listener_;
 
  private:
   // Tests if the file selection dialog can be displayed by

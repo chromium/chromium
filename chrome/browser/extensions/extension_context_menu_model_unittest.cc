@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -173,8 +174,8 @@ class MenuBuilder {
 
  private:
   scoped_refptr<const Extension> extension_;
-  Browser* browser_;
-  MenuManager* menu_manager_;
+  CheckedPtr<Browser> browser_;
+  CheckedPtr<MenuManager> menu_manager_;
   int cur_id_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuBuilder);

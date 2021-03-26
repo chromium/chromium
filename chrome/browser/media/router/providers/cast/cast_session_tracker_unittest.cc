@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/cast_channel/cast_message_util.h"
@@ -119,7 +120,7 @@ class CastSessionTrackerTest : public testing::Test {
   MockCastSessionObserver observer_;
 
   MediaSinkInternal sink_ = CreateCastSink(1);
-  CastSession* session_;
+  CheckedPtr<CastSession> session_;
 };
 
 TEST_F(CastSessionTrackerTest, QueryReceiverOnSinkAdded) {

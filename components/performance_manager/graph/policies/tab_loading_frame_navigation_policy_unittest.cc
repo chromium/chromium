@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/graph/policies/tab_loading_frame_navigation_policy.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -133,7 +134,7 @@ class TabLoadingFrameNavigationPolicyTest
 
     // Call into the graph to get the throttled page count, bounce back to
     // the UI thread, then continue.
-    auto* policy = policy_;
+    auto* policy = policy_.get();
     PerformanceManager::CallOnGraph(
         FROM_HERE,
         base::BindLambdaForTesting([policy, on_ui_thread](Graph* graph_unused) {
@@ -186,7 +187,7 @@ class TabLoadingFrameNavigationPolicyTest
   }
 
   // This is graph owned.
-  TabLoadingFrameNavigationPolicy* policy_ = nullptr;
+  CheckedPtr<TabLoadingFrameNavigationPolicy> policy_ = nullptr;
   base::RepeatingClosure quit_closure_;
   base::TimeTicks start_;
 };

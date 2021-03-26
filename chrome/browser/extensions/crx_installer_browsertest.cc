@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -120,7 +121,7 @@ class MockPromptProxy {
 
  private:
   // Data used to create a prompt.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
@@ -187,7 +188,7 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
   }
 
  private:
-  MockPromptProxy* proxy_;
+  CheckedPtr<MockPromptProxy> proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(MockInstallPrompt);
 };

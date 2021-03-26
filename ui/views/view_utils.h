@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/debug/debugger_utils.h"
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/view.h"
@@ -35,7 +36,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   void ForAllProperties(PropCallback callback) override;
 
  private:
-  const View* const view_;
+  const CheckedPtr<const View> view_;
   std::vector<std::unique_ptr<ViewDebugWrapperImpl>> children_;
 };
 

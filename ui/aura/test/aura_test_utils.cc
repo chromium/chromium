@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/aura/test/aura_test_utils.h"
+#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -28,7 +29,7 @@ class WindowTreeHostTestApi {
   void disable_ime() { host_->dispatcher_->set_skip_ime(true); }
 
  private:
-  WindowTreeHost* host_;
+  CheckedPtr<WindowTreeHost> host_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowTreeHostTestApi);
 };

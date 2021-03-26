@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -435,7 +436,8 @@ class MediaDevicesDispatcherHostTest
 
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  media::FakeVideoCaptureDeviceFactory* video_capture_device_factory_;
+  CheckedPtr<media::FakeVideoCaptureDeviceFactory>
+      video_capture_device_factory_;
   MediaDeviceEnumeration physical_devices_;
   url::Origin origin_;
 

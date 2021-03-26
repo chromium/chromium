@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -247,7 +248,7 @@ class CommandBufferHelperImpl
     stub->channel()->scheduler()->DestroySequence(wait_sequence_id_);
   }
 
-  gpu::CommandBufferStub* stub_;
+  CheckedPtr<gpu::CommandBufferStub> stub_;
   // Wait tasks are scheduled on our own sequence so that we can't inadvertently
   // block the command buffer.
   gpu::SequenceId wait_sequence_id_;

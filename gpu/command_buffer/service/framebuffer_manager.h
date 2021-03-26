@@ -14,6 +14,7 @@
 
 #include "base/containers/small_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -273,7 +274,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   void AdjustDrawBuffersImpl(uint32_t desired_mask);
 
   // The managers that owns this.
-  FramebufferManager* manager_;
+  CheckedPtr<FramebufferManager> manager_;
 
   bool deleted_;
 
@@ -400,7 +401,7 @@ class GPU_GLES2_EXPORT FramebufferManager {
   uint32_t max_draw_buffers_;
   uint32_t max_color_attachments_;
 
-  FramebufferCompletenessCache* framebuffer_combo_complete_cache_;
+  CheckedPtr<FramebufferCompletenessCache> framebuffer_combo_complete_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(FramebufferManager);
 };

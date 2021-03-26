@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/base_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -131,8 +132,8 @@ class BASE_EXPORT BigEndianWriter {
   template<typename T>
   bool Write(T v);
 
-  char* ptr_;
-  char* end_;
+  CheckedPtr<char> ptr_;
+  CheckedPtr<char> end_;
 };
 
 }  // namespace base

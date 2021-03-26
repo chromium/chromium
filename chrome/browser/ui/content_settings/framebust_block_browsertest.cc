@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -115,7 +116,7 @@ class FramebustBlockBrowserTest
   base::Optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
-  Browser* current_browser_;
+  CheckedPtr<Browser> current_browser_;
 };
 
 // Tests that clicking an item in the list of blocked URLs trigger a navigation

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -66,9 +67,9 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   // zoom levels (if any) managed by this class (for its associated partition).
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
-  content::HostZoomMap* host_zoom_map_;
+  CheckedPtr<content::HostZoomMap> host_zoom_map_;
   base::CallbackListSubscription zoom_subscription_;
   std::string partition_key_;
   base::RepeatingClosureList default_zoom_changed_callbacks_;

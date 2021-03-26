@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -67,7 +68,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
   ui::NativeTheme::Part GetNativeThemePart() const;
   ui::NativeTheme::State GetNativeThemeState() const;
 
-  ScrollBar* scroll_bar_;
+  CheckedPtr<ScrollBar> scroll_bar_;
 };
 
 ScrollBarButton::ScrollBarButton(PressedCallback callback, Type type)

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -540,10 +541,10 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
   // Mojo implementation fakes for the renderer-side service workers. Their
   // lifetime is bound to the Mojo connection.
-  FakeEmbeddedWorkerInstanceClient* version_1_client_ = nullptr;
-  FakeServiceWorker* version_1_service_worker_ = nullptr;
-  FakeEmbeddedWorkerInstanceClient* version_2_client_ = nullptr;
-  FakeServiceWorker* version_2_service_worker_ = nullptr;
+  CheckedPtr<FakeEmbeddedWorkerInstanceClient> version_1_client_ = nullptr;
+  CheckedPtr<FakeServiceWorker> version_1_service_worker_ = nullptr;
+  CheckedPtr<FakeEmbeddedWorkerInstanceClient> version_2_client_ = nullptr;
+  CheckedPtr<FakeServiceWorker> version_2_service_worker_ = nullptr;
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint_;

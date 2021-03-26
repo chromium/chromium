@@ -6,6 +6,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -85,7 +86,7 @@ class TestWebDialogView : public views::WebDialogView {
   // Whether we should quit message loop when size change is detected.
   bool should_quit_on_size_change_;
   gfx::Size last_size_;
-  bool* observed_destroy_;
+  CheckedPtr<bool> observed_destroy_;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebDialogView);
 };
@@ -100,10 +101,10 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
  protected:
   void SimulateEscapeKey();
 
-  TestWebDialogView* view_ = nullptr;
+  CheckedPtr<TestWebDialogView> view_ = nullptr;
   bool web_dialog_delegate_destroyed_ = false;
   bool web_dialog_view_destroyed_ = false;
-  ui::test::TestWebDialogDelegate* delegate_ = nullptr;
+  CheckedPtr<ui::test::TestWebDialogDelegate> delegate_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebDialogBrowserTest);

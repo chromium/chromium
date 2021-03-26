@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -334,7 +335,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
                                             reason);
     }
 
-    Browser* browser_;  // Weak ptr.
+    CheckedPtr<Browser> browser_;  // Weak ptr.
     BookmarkBar::State bookmark_bar_state_;
 
     DISALLOW_COPY_AND_ASSIGN(BookmarkBarStateTestBrowserWindow);

@@ -10,6 +10,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -116,7 +117,7 @@ class BASE_EXPORT DelayedTaskManager {
 
   const RepeatingClosure process_ripe_tasks_closure_;
 
-  const TickClock* const tick_clock_;
+  const CheckedPtr<const TickClock> tick_clock_;
 
   // Synchronizes access to |delayed_task_queue_| and the setting of
   // |service_thread_task_runner_|. Once |service_thread_task_runner_| is set,

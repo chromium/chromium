@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui.h"
@@ -71,7 +72,7 @@ class CompleteWnd : public OmahaWnd {
   HRESULT SetControlState(bool is_success);
 
   std::u16string help_url_;
-  CompleteWndEvents* events_sink_ = nullptr;
+  CheckedPtr<CompleteWndEvents> events_sink_ = nullptr;
   const DWORD control_classes_;
 };
 

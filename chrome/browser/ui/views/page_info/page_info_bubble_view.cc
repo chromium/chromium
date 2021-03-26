@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -150,27 +151,27 @@ class BubbleHeaderView : public views::View {
 
  private:
   // Owns |this|.
-  PageInfoBubbleView* bubble_;
+  CheckedPtr<PageInfoBubbleView> bubble_;
 
   // The label that displays the status of the identity check for this site.
   // Includes a link to open the Chrome Help Center article about connection
   // security.
-  views::StyledLabel* security_details_label_ = nullptr;
+  CheckedPtr<views::StyledLabel> security_details_label_ = nullptr;
 
   // A container for the styled label containing organization name and
   // jurisdiction details, if the site has an EV certificate.
   // This is only shown sometimes, so we use a container to keep track of where
   // to place it (if needed).
-  views::View* ev_certificate_label_container_ = nullptr;
+  CheckedPtr<views::View> ev_certificate_label_container_ = nullptr;
 
   // A container for the styled label with a link for resetting cert decisions.
   // This is only shown sometimes, so we use a container to keep track of
   // where to place it (if needed).
-  views::View* reset_decisions_label_container_ = nullptr;
+  CheckedPtr<views::View> reset_decisions_label_container_ = nullptr;
 
   // A container for the label buttons used to change password or mark the site
   // as safe.
-  views::View* password_reuse_button_container_ = nullptr;
+  CheckedPtr<views::View> password_reuse_button_container_ = nullptr;
 };
 
 // The regular PageInfoBubbleView is not supported for internal Chrome pages and
@@ -243,7 +244,7 @@ void BubbleHeaderView::SetDetails(const std::u16string& details_text) {
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           base::BindRepeating(&PageInfoBubbleView::SecurityDetailsClicked,
-                              base::Unretained(bubble_)));
+                              base::Unretained(bubble_.get())));
 
   security_details_label_->AddStyleRange(details_range, link_style);
 }
@@ -273,7 +274,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           base::BindRepeating(&PageInfoBubbleView::ResetDecisionsClicked,
-                              base::Unretained(bubble_)));
+                              base::Unretained(bubble_.get())));
   link_style.disable_line_wrapping = false;
 
   reset_cert_decisions_label->AddStyleRange(link_range, link_style);

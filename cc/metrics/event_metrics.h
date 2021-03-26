@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -166,7 +167,7 @@ class CC_EXPORT EventMetrics {
   // for the event.
   base::Optional<ScrollType> scroll_type_;
 
-  const base::TickClock* const tick_clock_;
+  const CheckedPtr<const base::TickClock> tick_clock_;
 
   // Timestamps of different stages of event dispatch. Timestamps are set as the
   // event moves forward in the pipeline. In the end, some stages might not have

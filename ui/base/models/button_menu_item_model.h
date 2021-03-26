@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   struct Item;
   std::vector<Item> items_;
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ButtonMenuItemModel);
 };

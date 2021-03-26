@@ -42,7 +42,7 @@ void ManifestUpdateManager::SetSubsystems(
 }
 
 void ManifestUpdateManager::Start() {
-  registrar_observer_.Add(registrar_);
+  registrar_observer_.Add(registrar_.get());
 
   DCHECK(!started_);
   started_ = true;

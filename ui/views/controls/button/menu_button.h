@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -43,7 +44,7 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
   void NotifyClick(const ui::Event& event) final;
 
  private:
-  MenuButtonController* menu_button_controller_;
+  CheckedPtr<MenuButtonController> menu_button_controller_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MenuButton, LabelButton)

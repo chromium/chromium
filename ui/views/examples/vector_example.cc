@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -140,12 +141,12 @@ class VectorIconGallery : public View, public TextfieldController {
   int size_ = 36;
   SkColor color_ = SK_ColorRED;
 
-  ImageView* image_view_;
-  View* image_view_container_;
-  Textfield* size_input_;
-  Textfield* color_input_;
-  Textfield* file_chooser_;
-  Button* file_go_button_;
+  CheckedPtr<ImageView> image_view_;
+  CheckedPtr<View> image_view_container_;
+  CheckedPtr<Textfield> size_input_;
+  CheckedPtr<Textfield> color_input_;
+  CheckedPtr<Textfield> file_chooser_;
+  CheckedPtr<Button> file_go_button_;
   std::string contents_;
 
   DISALLOW_COPY_AND_ASSIGN(VectorIconGallery);

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -338,7 +339,7 @@ class SynchronousCompositorHost::ScopedSendZeroMemory {
   ~ScopedSendZeroMemory() { host_->SendZeroMemory(); }
 
  private:
-  SynchronousCompositorHost* const host_;
+  const CheckedPtr<SynchronousCompositorHost> host_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSendZeroMemory);
 };
@@ -535,7 +536,7 @@ SynchronousCompositorHost::GetCopyViewCallback() {
   // Unretained is safe since callback is helped by ViewAndroid which has same
   // lifetime as this, and client outlives this.
   return base::BindRepeating(&SynchronousCompositorClient::CopyOutput,
-                             base::Unretained(client_), this);
+                             base::Unretained(client_.get()), this);
 }
 
 void SynchronousCompositorHost::DidOverscroll(

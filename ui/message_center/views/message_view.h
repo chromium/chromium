@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -209,7 +210,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   void UpdateBackgroundPainter();
 
   std::string notification_id_;
-  views::ScrollView* scroller_ = nullptr;
+  CheckedPtr<views::ScrollView> scroller_ = nullptr;
 
   std::u16string accessible_name_;
 
@@ -234,8 +235,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
-  views::FocusManager* focus_manager_ = nullptr;
-  views::FocusRing* focus_ring_ = nullptr;
+  CheckedPtr<views::FocusManager> focus_manager_ = nullptr;
+  CheckedPtr<views::FocusRing> focus_ring_ = nullptr;
 
   // Radius values used to determine the rounding for the rounded rectangular
   // shape of the notification.

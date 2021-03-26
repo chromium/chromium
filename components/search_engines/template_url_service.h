@@ -18,6 +18,7 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
@@ -683,7 +684,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   bool MatchesDefaultSearchProvider(TemplateURL* turl) const;
 
   // ---------- Browser state related members ---------------------------------
-  PrefService* prefs_ = nullptr;
+  CheckedPtr<PrefService> prefs_ = nullptr;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();
@@ -738,7 +739,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Essentially all direct usages of this variable need to first check that
   // |loading_| is true, and should call GetDefaultSearchProvider() instead.
   // Example of a regression due to this mistake: https://crbug.com/1164024.
-  TemplateURL* default_search_provider_ = nullptr;
+  CheckedPtr<TemplateURL> default_search_provider_ = nullptr;
 
   // A temporary location for the DSE until Web Data has been loaded and it can
   // be merged into |template_urls_|.

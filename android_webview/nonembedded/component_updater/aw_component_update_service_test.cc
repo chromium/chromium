@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/android/url_utils.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -278,7 +279,7 @@ class TestAwComponentUpdateService : public AwComponentUpdateService {
   }
 
  private:
-  MockInstallerPolicy* mock_policy_;
+  CheckedPtr<MockInstallerPolicy> mock_policy_;
 };
 
 class AwComponentUpdateServiceTest : public testing::Test {

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -102,9 +103,9 @@ class SurfaceUpdater : public StreamModel::Observer {
   std::map<std::string, std::string> xsurface_datastore_entries_;
 
   // Owned by |FeedStream|. Null when the model is not loaded.
-  StreamModel* model_ = nullptr;
+  CheckedPtr<StreamModel> model_ = nullptr;
   // Owned by |FeedStream|.
-  MetricsReporter* metrics_reporter_;
+  CheckedPtr<MetricsReporter> metrics_reporter_;
 
   // Attached surfaces.
   base::ObserverList<FeedStreamSurface> surfaces_;

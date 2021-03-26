@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -119,7 +120,7 @@ class TestWebUI : public WebUI {
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
   std::u16string temp_string_;
-  WebContents* web_contents_;
+  CheckedPtr<WebContents> web_contents_;
   std::unique_ptr<WebUIController> controller_;
 
   // Observers to be notified on all javascript calls.

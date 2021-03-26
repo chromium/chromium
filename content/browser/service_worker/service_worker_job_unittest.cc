@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -1298,7 +1299,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
     }
 
    private:
-    ScriptFailureEmbeddedWorkerInstanceClient* client_;
+    CheckedPtr<ScriptFailureEmbeddedWorkerInstanceClient> client_;
   };
 
   ServiceWorkerJobCoordinator* job_coordinator() {
@@ -1443,7 +1444,7 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
 
  protected:
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
-  UpdateJobTestHelper* update_helper_;
+  CheckedPtr<UpdateJobTestHelper> update_helper_;
 };
 
 // Make sure that the same registration is used and the update_via_cache value

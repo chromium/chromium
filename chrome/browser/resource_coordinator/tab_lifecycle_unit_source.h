@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
@@ -135,17 +136,17 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
   // Pretend that this is the TabStripModel of the focused window, for testing.
-  TabStripModel* focused_tab_strip_model_for_testing_ = nullptr;
+  CheckedPtr<TabStripModel> focused_tab_strip_model_for_testing_ = nullptr;
 
   // The currently focused TabLifecycleUnit. Updated by UpdateFocusedTab().
-  TabLifecycleUnit* focused_lifecycle_unit_ = nullptr;
+  CheckedPtr<TabLifecycleUnit> focused_lifecycle_unit_ = nullptr;
 
   // Observers notified when the discarded or auto-discardable state of a tab
   // changes.
   base::ObserverList<TabLifecycleObserver>::Unchecked tab_lifecycle_observers_;
 
   // A clock that advances when Chrome is in use.
-  UsageClock* const usage_clock_;
+  const CheckedPtr<UsageClock> usage_clock_;
 
   // The enterprise policy for setting a limit on total physical memory usage.
   bool memory_limit_enterprise_policy_ = false;

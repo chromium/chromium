@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -172,7 +173,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
   disk_cache::Backend* backend_ = nullptr;
 
  private:
-  net::HttpCache* cache_;
+  CheckedPtr<net::HttpCache> cache_;
 };
 
 class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {

@@ -21,6 +21,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -454,7 +455,7 @@ class MidiManagerWin::InPort final : public Port {
   }
 
  private:
-  MidiManagerWin* manager_;
+  CheckedPtr<MidiManagerWin> manager_;
   HMIDIIN in_handle_;
   ScopedMIDIHDR hdr_;
   base::TimeTicks start_time_;

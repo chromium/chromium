@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -129,7 +130,7 @@ class BubbleDialogModelHost::LayoutConsensusView : public View {
   }
 
  private:
-  LayoutConsensusGroup* const group_;
+  const CheckedPtr<LayoutConsensusGroup> group_;
 };
 
 BEGIN_METADATA(BubbleDialogModelHost, LayoutConsensusView, View)

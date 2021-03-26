@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "weblayer/browser/download_impl.h"
 
 namespace background_fetch {
@@ -48,10 +49,10 @@ class BackgroundFetchDownload : public DownloadImpl {
   void OnFinished(bool activated) override;
 
  private:
-  BackgroundFetchDelegateImpl* controller_;
+  CheckedPtr<BackgroundFetchDelegateImpl> controller_;
   std::string job_id_;
   int notification_id_ = 0;
-  const background_fetch::JobDetails* job_;
+  CheckedPtr<const background_fetch::JobDetails> job_;
 };
 
 }  // namespace weblayer

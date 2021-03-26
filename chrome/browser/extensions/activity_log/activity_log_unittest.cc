@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -277,7 +278,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  ExtensionService* extension_service_;
+  CheckedPtr<ExtensionService> extension_service_;
 };
 
 TEST_F(ActivityLogTest, Construct) {

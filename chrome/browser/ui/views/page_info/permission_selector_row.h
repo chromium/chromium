@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/page_info/permission_menu_model.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
@@ -75,9 +76,9 @@ class PermissionSelectorRow {
   std::unique_ptr<internal::ComboboxModelAdapter> combobox_model_adapter_;
 
   // These are all owned by the views hierarchy:
-  PermissionIcon* icon_ = nullptr;
-  views::Label* label_ = nullptr;
-  views::Combobox* combobox_ = nullptr;
+  CheckedPtr<PermissionIcon> icon_ = nullptr;
+  CheckedPtr<views::Label> label_ = nullptr;
+  CheckedPtr<views::Combobox> combobox_ = nullptr;
 
   base::ObserverList<PermissionSelectorRowObserver, false>::Unchecked
       observer_list_;

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -126,7 +127,7 @@ class ExtensionWebContentsObserver
                  const mojom::RequestParams& params);
 
   // The BrowserContext associated with the WebContents being observed.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   ExtensionFunctionDispatcher dispatcher_;
 
