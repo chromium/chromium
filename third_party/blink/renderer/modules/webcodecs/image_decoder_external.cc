@@ -374,7 +374,7 @@ void ImageDecoderExternal::CreateImageDecoder() {
   DCHECK(IsTypeSupportedInternal(mime_type_));
   decoder_ = ImageDecoder::CreateByMimeType(
       mime_type_, segment_reader_, data_complete_, alpha_option_,
-      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior_, desired_size_,
+      ImageDecoder::kDefaultBitDepth, color_behavior_, desired_size_,
       animation_option_);
 
   // CreateByImageType() can't fail if we use a supported image type. Which we

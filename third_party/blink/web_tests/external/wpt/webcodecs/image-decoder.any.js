@@ -88,6 +88,11 @@ promise_test(t => {
 }, 'Test AVIF image decoding.');
 
 promise_test(t => {
+  return testFourColorsDecode(
+      'four-colors-full-range-bt2020-pq-444-10bpc.avif', 'image/avif');
+}, 'Test high bit depth HDR AVIF image decoding.');
+
+promise_test(t => {
   return testFourColorsDecode('four-colors-flip.avif', 'image/avif', false);
 }, 'Test multi-track AVIF image decoding w/ preferAnimation=false.');
 
