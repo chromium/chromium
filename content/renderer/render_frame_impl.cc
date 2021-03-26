@@ -5100,8 +5100,16 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // renderer has committed a different document. In such case, the navigation
     // cannot be loaded as a same-document navigation. The browser shouldn't let
     // this happen.
-    CHECK_EQ(GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber(),
-             item_for_history_navigation->DocumentSequenceNumber());
+    // TODO(crbug.com/1188513): A same document history navigation was performed
+    // but the renderer thinks there's a different document loaded. Where did
+    // this bad state of a different document + same-document navigation come
+    // from? Figure it out, make this a CHECK again, and drop the Restart.
+    DCHECK_EQ(GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber(),
+              item_for_history_navigation->DocumentSequenceNumber());
+    if (GetWebFrame()->GetCurrentHistoryItem().DocumentSequenceNumber() !=
+        item_for_history_navigation->DocumentSequenceNumber()) {
+      return blink::mojom::CommitResult::RestartCrossDocument;
+    }
   }
 
   // Note: we used to check that initial history navigation in the child frame
