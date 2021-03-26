@@ -176,7 +176,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &AppBannerController::BindMojoRequest, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &TextSuggestionBackendImpl::Create, WrapWeakPersistent(&frame)));
+      &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
 #if defined(OS_ANDROID)
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
