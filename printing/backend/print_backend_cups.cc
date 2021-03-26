@@ -105,6 +105,16 @@ bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   return true;
 }
 
+// static
+std::string PrintBackendCUPS::PrinterDriverInfoFromCUPS(
+    const cups_dest_t& printer) {
+  // base::StringPiece will correctly handle nullptrs from cupsGetOption(),
+  // whereas std::string will not. Thus do not directly assign to `result`.
+  base::StringPiece info(
+      cupsGetOption(kDriverNameTagName, printer.num_options, printer.options));
+  return std::string(info);
+}
+
 void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
   cupsFreeDests(1, dest);
 }
@@ -209,11 +219,7 @@ std::string PrintBackendCUPS::GetPrinterDriverInfo(
   ScopedDestination dest = GetNamedDest(printer_name);
   if (dest) {
     DCHECK_EQ(printer_name, dest->name);
-    // base::StringPiece will correctly handle nullptrs from cupsGetOption(),
-    // whereas std::string will not. Thus do not directly assign to `result`.
-    base::StringPiece info(
-        cupsGetOption(kDriverNameTagName, dest->num_options, dest->options));
-    result = std::string(info);
+    result = PrinterDriverInfoFromCUPS(*dest);
   }
 
   return result;

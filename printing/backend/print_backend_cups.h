@@ -24,10 +24,12 @@ class PrintBackendCUPS : public PrintBackend {
                    bool blocking,
                    const std::string& locale);
 
-  // This static function is exposed here for use in the tests.
+  // These static functions are exposed here for use in the tests.
   PRINTING_EXPORT static bool PrinterBasicInfoFromCUPS(
       const cups_dest_t& printer,
       PrinterBasicInfo* printer_info);
+  PRINTING_EXPORT static std::string PrinterDriverInfoFromCUPS(
+      const cups_dest_t& printer);
 
  private:
   struct DestinationDeleter {
