@@ -35367,6 +35367,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1936155204" label="gap.device_name"/>
   <int value="1940300093"
       label="Tacx trainer; 6e40fec2-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1941001682"
+      label="LEGO Hub Boot Loader Characteristic;
+             00001626-1212-efde-1623-785feabcd123"/>
   <int value="1945497075"
       label="PocketLab; f000aa24-0452-4000-b000-000000000000"/>
   <int value="1954594648" label="temperature"/>
@@ -35428,6 +35431,8 @@ Called by update_permissions_policy_enum.py.-->
       label="PocketLab (from service 11);
              f000aa12-0452-4000-b000-000000000000"/>
   <int value="2125906618" label="gap.appearance"/>
+  <int value="2129421706"
+      label="LEGO Hub Characteristic; 00001624-1212-efde-1623-785feabcd123"/>
   <int value="2140490935" label="gatt.service_changed"/>
 </enum>
 
@@ -35507,6 +35512,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="91953454" label="fe7b"/>
   <int value="107684477"
       label="PocketLab; f000aa2d-0452-4000-b000-000000000000"/>
+  <int value="108999394"
+      label="LEGO Hub Boot Loader Service;
+             00001625-1212-efde-1623-785feabcd123"/>
   <int value="109066436" label="Printer; 18f0"/>
   <int value="117033282" label="fe1e"/>
   <int value="119232939" label="fe16"/>
@@ -35679,6 +35687,8 @@ Called by update_permissions_policy_enum.py.-->
       label="PocketLab; f000aa2a-0452-4000-b000-000000000000"/>
   <int value="869059214" label="next_dst_change"/>
   <int value="869682406" label="fe60"/>
+  <int value="873412183"
+      label="LEGO Hub Service; 00001623-1212-efde-1623-785feabcd123"/>
   <int value="876407493" label="location_and_navigation"/>
   <int value="878416856" label="fe85"/>
   <int value="879242624"
@@ -35768,6 +35778,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1276692887" label="fe09"/>
   <int value="1280998251" label="blood_pressure"/>
   <int value="1289827687" label="fe7c"/>
+  <int value="1291799273"
+      label="littleBits; ded1c5a0-536c-11e6-beb8-9e71128cae77"/>
   <int value="1293391247" label="fea4"/>
   <int value="1295501517" label="fef3"/>
   <int value="1300474367" label="fe70"/>
