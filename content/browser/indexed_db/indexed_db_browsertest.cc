@@ -997,8 +997,8 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
       std::string(s_corrupt_db_test_prefix) + "corrupted_open_db_recovery.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
 }
-#endif
 
+// Only instantiate on platforms that run the parameterized test.
 INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                          IndexedDBBrowserTest,
                          ::testing::Values("failGetBlobJournal",
@@ -1007,6 +1007,7 @@ INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                                            "iterate",
                                            "failTransactionCommit",
                                            "clearObjectStore"));
+#endif  // !defined(OS_WIN)
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteCompactsBackingStore) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "delete_compact.html");
