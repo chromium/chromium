@@ -18,13 +18,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -83,7 +86,7 @@ class LocatedEventHandlerView : public views::View {
   // Handles an event (mouse or gesture) at the specified location.
   virtual void ProcessEventAtLocation(const gfx::Point& location) = 0;
 
-  // views::View overrides:
+  // views::View
   bool OnMousePressed(const ui::MouseEvent& event) override {
     ProcessEventAtLocation(event.location());
     return true;
@@ -142,23 +145,38 @@ class HueView : public LocatedEventHandlerView {
   explicit HueView(const HueChangedCallback& changed_callback);
   HueView(const HueView&) = delete;
   HueView& operator=(const HueView&) = delete;
+  ~HueView() override = default;
+
+  // views::View
+  void OnThemeChanged() override;
 
   void OnHueChanged(SkScalar hue);
 
  private:
-  // LocatedEventHandlerView overrides:
+  // LocatedEventHandlerView
   void ProcessEventAtLocation(const gfx::Point& point) override;
 
-  // View overrides:
+  // views::View
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   HueChangedCallback changed_callback_;
   int level_;
+  SkColor background_color_;
+  SkColor indicator_color_;
 };
 
 HueView::HueView(const HueChangedCallback& changed_callback)
     : changed_callback_(changed_callback), level_(0) {}
+
+void HueView::OnThemeChanged() {
+  LocatedEventHandlerView::OnThemeChanged();
+  background_color_ = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_WindowBackground);
+  indicator_color_ = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_MenuDropIndicator);
+  SchedulePaint();
+}
 
 void HueView::OnHueChanged(SkScalar hue) {
   SkScalar height = SkIntToScalar(kSaturationValueSize - 1);
@@ -194,7 +212,7 @@ void HueView::OnPaint(gfx::Canvas* canvas) {
 
   canvas->FillRect(gfx::Rect(kHueIndicatorSize, 0, kHueBarWidth + kBorderWidth,
                              height() - 1),
-                   SK_ColorGRAY);
+                   background_color_);
   int base_left = kHueIndicatorSize + kBorderWidth;
   for (int y = 0; y < kSaturationValueSize; ++y) {
     hsv[0] =
@@ -224,7 +242,7 @@ void HueView::OnPaint(gfx::Canvas* canvas) {
                               SkIntToScalar(level_ - kHueIndicatorSize));
 
   cc::PaintFlags indicator_flags;
-  indicator_flags.setColor(SK_ColorBLACK);
+  indicator_flags.setColor(indicator_color_);
   indicator_flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawPath(left_indicator_path, indicator_flags);
   canvas->DrawPath(right_indicator_path, indicator_flags);
@@ -249,15 +267,19 @@ class SaturationValueView : public LocatedEventHandlerView {
       const SaturationValueChangedCallback& changed_callback);
   SaturationValueView(const SaturationValueView&) = delete;
   SaturationValueView& operator=(const SaturationValueView&) = delete;
+  ~SaturationValueView() override = default;
+
+  // views::View
+  void OnThemeChanged() override;
 
   void OnHueChanged(SkScalar hue);
   void OnSaturationValueChanged(SkScalar saturation, SkScalar value);
 
  private:
-  // LocatedEventHandlerView overrides:
+  // LocatedEventHandlerView
   void ProcessEventAtLocation(const gfx::Point& point) override;
 
-  // View overrides:
+  // views::View
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -269,7 +291,14 @@ class SaturationValueView : public LocatedEventHandlerView {
 SaturationValueView::SaturationValueView(
     const SaturationValueChangedCallback& changed_callback)
     : changed_callback_(changed_callback), hue_(0) {
-  SetBorder(CreateSolidBorder(kBorderWidth, SK_ColorGRAY));
+  SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
+}
+
+void SaturationValueView::OnThemeChanged() {
+  LocatedEventHandlerView::OnThemeChanged();
+  border()->set_color(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_UnfocusedBorderColor));
+  SchedulePaint();
 }
 
 void SaturationValueView::OnHueChanged(SkScalar hue) {
@@ -354,13 +383,24 @@ class SelectedColorPatchView : public views::View {
   SelectedColorPatchView();
   SelectedColorPatchView(const SelectedColorPatchView&) = delete;
   SelectedColorPatchView& operator=(const SelectedColorPatchView&) = delete;
+  ~SelectedColorPatchView() override = default;
+
+  // views::View
+  void OnThemeChanged() override;
 
   void SetColor(SkColor color);
 };
 
 SelectedColorPatchView::SelectedColorPatchView() {
   SetVisible(true);
-  SetBorder(CreateSolidBorder(kBorderWidth, SK_ColorGRAY));
+  SetBorder(CreateSolidBorder(kBorderWidth, gfx::kPlaceholderColor));
+}
+
+void SelectedColorPatchView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  border()->set_color(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_UnfocusedBorderColor));
+  SchedulePaint();
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {
@@ -377,7 +417,8 @@ END_METADATA
 std::unique_ptr<View> ColorChooser::BuildView() {
   auto view = std::make_unique<View>();
   tracker_.SetView(view.get());
-  view->SetBackground(CreateSolidBackground(SK_ColorLTGRAY));
+  view->SetBackground(CreateThemedSolidBackground(
+      view.get(), ui::NativeTheme::kColorId_WindowBackground));
   view->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                   gfx::Insets(kMarginWidth), kMarginWidth));
@@ -468,7 +509,7 @@ void ColorChooser::ContentsChanged(Textfield* sender,
                                    const std::u16string& new_contents) {
   DCHECK(IsViewAttached());
 
-  SkColor color = SK_ColorBLACK;
+  SkColor color = gfx::kPlaceholderColor;
   if (GetColorFromText(new_contents, &color)) {
     SetColor(color);
     hue_->OnHueChanged(hue());
