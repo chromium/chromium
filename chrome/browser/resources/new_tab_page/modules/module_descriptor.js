@@ -74,6 +74,9 @@ export class ModuleDescriptor {
     if (!this.element_) {
       return;
     }
+    if (this.element_.height !== undefined) {
+      this.heightPx_ = this.element_.height;
+    }
     const loadEndTime = WindowProxy.getInstance().now();
     const duration = loadEndTime - loadStartTime;
     recordLoadDuration('NewTabPage.Modules.Loaded', loadEndTime);

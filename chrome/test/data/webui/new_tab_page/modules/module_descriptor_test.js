@@ -83,4 +83,20 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     assertEquals(null, moduleDescriptor.element);
     assertEquals(123, timeout);
   });
+
+  test('module update height in initialization', async () => {
+    // Arrange.
+    const element = document.createElement('div');
+    let moduleDescriptor = new ModuleDescriptor('foo', 'bar', 100, () => {
+      element.height = 200;
+      return Promise.resolve(element);
+    });
+
+    // Act.
+    await moduleDescriptor.initialize();
+
+    // Assert.
+    assertEquals(element, moduleDescriptor.element);
+    assertEquals(200, moduleDescriptor.heightPx);
+  });
 });
