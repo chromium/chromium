@@ -38,7 +38,6 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
-    // TODO(crbug.com/1123947): remove this since on_dismissed is not a property of the view?
     /**
      * The callback invoked when the message is dismissed. DismissReason is passed through the
      * callback's parameter.

@@ -47,12 +47,12 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     @Nullable
     private ModalDialogManager mModalDialogManager;
 
+    // TODO(crbug.com/1192907): Remove logic that suspends message queue on entering fullscreen
+    // mode.
     private FullscreenManager.Observer mFullScreenObserver = new Observer() {
         private int mToken = TokenHolder.INVALID_TOKEN;
         @Override
         public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-            // TODO(crbug.com/1123947): may not suspend when displaying a permission request
-            //                            message.
             mToken = suspendQueue();
         }
 

@@ -137,7 +137,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         mMessageQueueDelegate = delegate;
     }
 
-    // TODO(crbug.com/1163289): Handle the case in which the scope becomes inactive when the
+    // TODO(crbug.com/1163290): Handle the case in which the scope becomes inactive when the
     //         message is already running the animation.
     @Override
     public void onScopeChange(MessageScopeChange change) {
@@ -228,7 +228,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     static class MessageState {
         private static int sIdNext;
 
-        // TODO(crbug.com/1168693): add priority if necessary.
+        // TODO(crbug.com/1188980): add priority if necessary.
         public final int id;
         public final ScopeKey scopeKey;
         public final Object messageKey;
