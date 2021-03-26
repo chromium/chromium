@@ -16,7 +16,7 @@ import org.chromium.base.annotations.VerifiesOnR;
 import java.io.File;
 
 /**
- * Utility class to use new APIs that were added in Q (API level 29). These need to exist in a
+ * Utility class to use new APIs that were added in R (API level 30). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
