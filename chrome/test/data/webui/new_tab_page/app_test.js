@@ -603,6 +603,14 @@ suite('NewTabPageAppTest', () => {
       assertTrue(restoreCalled);
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
       assertEquals(1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
+
+      // Act.
+      window.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'z',
+        ctrlKey: true,
+      }));
+
+      // Assert: no crash.
     });
 
     test('modules can open customize dialog', async () => {

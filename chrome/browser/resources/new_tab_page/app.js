@@ -961,6 +961,10 @@ class AppElement extends PolymerElement {
    * @private
    */
   onUndoRemoveModuleButtonClick_() {
+    if (!this.removedModuleData_) {
+      return;
+    }
+
     // Restore the module.
     this.removedModuleData_.undo();
 
