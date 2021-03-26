@@ -213,9 +213,7 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
 }
 
 bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
-  if (!layout_text.Parent())
-    return false;
-
+  DCHECK(layout_text.Parent());
   Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
@@ -1115,7 +1113,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
-  AXObject* parent = obj->CachedParentObject();
+  ChildrenChanged(obj->CachedParentObject());
 
   obj->Detach();
   RemoveAXID(obj);
@@ -1126,8 +1124,6 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!objects_.Take(ax_id))
     return;
 
-  ChildrenChanged(parent);
-
   DCHECK_GE(objects_.size(), ids_in_use_.size());
 }
 
@@ -1136,23 +1132,18 @@ void AXObjectCacheImpl::Remove(AccessibleNode* accessible_node) {
     return;
 
   AXID ax_id = accessible_node_mapping_.at(accessible_node);
-  accessible_node_mapping_.erase(accessible_node);
-
   Remove(ax_id);
+  accessible_node_mapping_.erase(accessible_node);
 }
 
-bool AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
+void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
   if (!layout_object)
-    return false;
+    return;
 
   AXID ax_id = layout_object_mapping_.at(layout_object);
-  if (!ax_id)
-    return false;
 
-  layout_object_mapping_.erase(layout_object);
   Remove(ax_id);
-
-  return true;
+  layout_object_mapping_.erase(layout_object);
 }
 
 void AXObjectCacheImpl::Remove(Node* node) {
@@ -1161,10 +1152,11 @@ void AXObjectCacheImpl::Remove(Node* node) {
 
   // This is all safe even if we didn't have a mapping.
   AXID ax_id = node_object_mapping_.at(node);
+  Remove(ax_id);
   node_object_mapping_.erase(node);
 
-  if (!Remove(node->GetLayoutObject()))
-    Remove(ax_id);
+  if (node->GetLayoutObject())
+    Remove(node->GetLayoutObject());
 }
 
 void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
@@ -1172,9 +1164,8 @@ void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
     return;
 
   AXID ax_id = inline_text_box_object_mapping_.at(inline_text_box);
-  inline_text_box_object_mapping_.erase(inline_text_box);
-
   Remove(ax_id);
+  inline_text_box_object_mapping_.erase(inline_text_box);
 }
 
 AXID AXObjectCacheImpl::GenerateAXID() const {
@@ -1629,10 +1620,8 @@ void AXObjectCacheImpl::ChildrenChanged(const AXObject* obj) {
 }
 
 void AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
-  if (!obj || obj->IsDetached())
+  if (!obj)
     return;
-
-  obj->SetNeedsToUpdateChildren();
 
   Node* node = obj->GetNode();
   if (node && !nodes_with_pending_children_changed_.insert(node).is_new_entry)

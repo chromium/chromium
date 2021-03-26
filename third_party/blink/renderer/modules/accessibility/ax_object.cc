@@ -776,11 +776,6 @@ void AXObject::Init(AXObject* parent_if_known) {
 }
 
 void AXObject::Detach() {
-  // Not strictly necessary, but prevents LastKnown*() methods from returning
-  // the wrong values.
-  cached_is_ignored_ = true;
-  cached_is_ignored_but_included_in_tree_ = false;
-
 #if DCHECK_IS_ON()
   // Only mock objects can end up being detached twice, because their owner
   // may have needed to detach them when they were detached, but couldn't
@@ -2584,12 +2579,10 @@ const AXObject* AXObject::DatetimeAncestor(int max_levels_to_check) const {
 }
 
 bool AXObject::LastKnownIsIgnoredValue() const {
-  DCHECK(cached_is_ignored_ || !IsDetached());
   return cached_is_ignored_;
 }
 
 bool AXObject::LastKnownIsIgnoredButIncludedInTreeValue() const {
-  DCHECK(!cached_is_ignored_but_included_in_tree_ || !IsDetached());
   return cached_is_ignored_but_included_in_tree_;
 }
 
@@ -5515,10 +5508,6 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isInert";
     if (NeedsToUpdateChildren())
       string_builder = string_builder + " needsToUpdateChildren";
-    if (children_.size()) {
-      string_builder =
-          string_builder + " numChildren=" + String::Number(children_.size());
-    }
     if (!GetLayoutObject())
       string_builder = string_builder + " missingLayout";
 
