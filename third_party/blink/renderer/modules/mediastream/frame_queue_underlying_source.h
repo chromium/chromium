@@ -40,6 +40,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // Must be called on |realm_task_runner_|.
   void Close();
 
+  bool IsClosed() { return is_closed_; }
+
   // Adds a frame to |queue_|, dropping the oldest frame if it is full.
   // Can be called from any task runner, and will jump to |realm_task_runner_|.
   void QueueFrame(NativeFrameType media_frame);
@@ -92,6 +94,8 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // |transfer_frames_cb|, and clears |transfer_frames_cb|.
   // QueueFrame() should never be called after this.
   void FinalizeQueueTransferOnTransferRunner();
+
+  bool is_closed_ = false;
 
   // Main task runner for the window or worker context.
   const scoped_refptr<base::SequencedTaskRunner> realm_task_runner_;

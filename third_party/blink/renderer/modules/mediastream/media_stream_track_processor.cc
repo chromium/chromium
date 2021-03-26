@@ -61,47 +61,33 @@ class MediaStreamTrackProcessor::UnderlyingSourceCloser
     : public GarbageCollected<UnderlyingSourceCloser>,
       public MediaStreamTrack::Observer {
  public:
-  UnderlyingSourceCloser(
-      MediaStreamTrack* track,
-      MediaStreamAudioTrackUnderlyingSource* audio_underlying_source)
-      : track_(track),
-        audio_underlying_source_(audio_underlying_source),
-        video_underlying_source_() {}
-  UnderlyingSourceCloser(
-      MediaStreamTrack* track,
-      MediaStreamVideoTrackUnderlyingSource* video_underlying_source)
-      : track_(track),
-        audio_underlying_source_(),
-        video_underlying_source_(video_underlying_source) {}
+  UnderlyingSourceCloser(MediaStreamTrack* track,
+                         MediaStreamTrackProcessor* processor)
+      : track_(track), processor_(processor) {}
 
   void TrackChangedState() override {
     if (track_->GetReadyState() == MediaStreamSource::kReadyStateEnded) {
-      if (audio_underlying_source_ != nullptr) {
-        audio_underlying_source_->Close();
-      }
-      if (video_underlying_source_ != nullptr) {
-        video_underlying_source_->Close();
-      }
+      processor_->CloseSources();
     }
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(track_);
-    visitor->Trace(audio_underlying_source_);
-    visitor->Trace(video_underlying_source_);
+    visitor->Trace(processor_);
   }
 
  private:
   Member<MediaStreamTrack> track_;
-  Member<MediaStreamAudioTrackUnderlyingSource> audio_underlying_source_;
-  Member<MediaStreamVideoTrackUnderlyingSource> video_underlying_source_;
+  Member<MediaStreamTrackProcessor> processor_;
 };
 
 MediaStreamTrackProcessor::MediaStreamTrackProcessor(
     ScriptState* script_state,
     MediaStreamTrack* input_track,
     uint16_t buffer_size)
-    : input_track_(input_track), buffer_size_(buffer_size) {
+    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
+      input_track_(input_track),
+      buffer_size_(buffer_size) {
   DCHECK(input_track_);
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kMediaStreamTrackProcessor);
@@ -117,6 +103,10 @@ ReadableStream* MediaStreamTrackProcessor::readable(ScriptState* script_state) {
   } else {
     CreateAudioSourceStream(script_state);
   }
+
+  source_closer_ =
+      MakeGarbageCollected<UnderlyingSourceCloser>(input_track_, this);
+  input_track_->AddObserver(source_closer_);
 
   return source_stream_;
 }
@@ -145,10 +135,6 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
       script_state, video_underlying_source_,
       /*high_water_mark=*/0,
       video_underlying_source_->GetStreamTransferOptimizer());
-
-  source_closer_ = MakeGarbageCollected<UnderlyingSourceCloser>(
-      input_track_, video_underlying_source_);
-  input_track_->AddObserver(source_closer_);
 }
 
 void MediaStreamTrackProcessor::CreateAudioSourceStream(
@@ -159,10 +145,6 @@ void MediaStreamTrackProcessor::CreateAudioSourceStream(
           script_state, input_track_->Component(), buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, audio_underlying_source_, /*high_water_mark=*/0);
-
-  source_closer_ = MakeGarbageCollected<UnderlyingSourceCloser>(
-      input_track_, audio_underlying_source_);
-  input_track_->AddObserver(source_closer_);
 }
 
 void MediaStreamTrackProcessor::CreateVideoControlStream(
@@ -236,6 +218,24 @@ MediaStreamTrackProcessor* MediaStreamTrackProcessor::Create(
   return Create(script_state, init->track(), exception_state);
 }
 
+void MediaStreamTrackProcessor::CloseSources() {
+  if (audio_underlying_source_ != nullptr) {
+    audio_underlying_source_->Close();
+  }
+  if (video_underlying_source_ != nullptr) {
+    video_underlying_source_->Close();
+  }
+}
+
+void MediaStreamTrackProcessor::ContextDestroyed() {
+  CloseSources();
+}
+
+bool MediaStreamTrackProcessor::HasPendingActivity() const {
+  return (audio_underlying_source_ && !audio_underlying_source_->IsClosed()) ||
+         (video_underlying_source_ && !video_underlying_source_->IsClosed());
+}
+
 void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(input_track_);
   visitor->Trace(audio_underlying_source_);
@@ -245,6 +245,7 @@ void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(control_stream_);
   visitor->Trace(source_closer_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

@@ -79,12 +79,17 @@ void FrameQueueUnderlyingSource<NativeFrameType>::CloseController() {
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  if (is_closed_)
+    return;
+
   StopFrameDelivery();
   CloseController();
   queue_.clear();
   pending_transfer_queue_.clear();
   transfer_frames_cb_.Reset();
   transfer_done_cb_.Reset();
+
+  is_closed_ = true;
 }
 
 template <typename NativeFrameType>

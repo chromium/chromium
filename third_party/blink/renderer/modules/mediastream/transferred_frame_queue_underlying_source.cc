@@ -45,9 +45,8 @@ template <typename NativeFrameType>
 void TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StopFrameDelivery() {
   if (auto host = host_.Lock()) {
-    PostCrossThreadTask(
-        *host_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&FrameQueueHost::StopFrameDelivery, host));
+    PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
+                        CrossThreadBindOnce(&FrameQueueHost::Close, host));
   }
 }
 

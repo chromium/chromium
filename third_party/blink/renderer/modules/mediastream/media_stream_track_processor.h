@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_PROCESSOR_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -21,7 +23,10 @@ class ScriptState;
 class UnderlyingSinkBase;
 class WritableStream;
 
-class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
+class MODULES_EXPORT MediaStreamTrackProcessor
+    : public ScriptWrappable,
+      public ActiveScriptWrappable<MediaStreamTrackProcessor>,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -45,6 +50,16 @@ class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
   WritableStream* writableControl(ScriptState* script_state);
+
+  // ScriptWrappable interface
+  bool HasPendingActivity() const final;
+
+  // ExecutionContextLifecycleObserver interface
+  void ContextDestroyed() override;
+
+  // Closes |audio_underlying_source_| and |video_underlying_source_| if they
+  // exist.
+  void CloseSources();
 
   MediaStreamTrack* InputTrack() { return input_track_; }
 
