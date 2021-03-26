@@ -77,10 +77,7 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
   WriterSet writers_;
 
   mojo::Remote<device::mojom::blink::NFC> nfc_remote_;
-  HeapMojoReceiver<device::mojom::blink::NFCClient,
-                   NFCProxy,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
-      client_receiver_;
+  HeapMojoReceiver<device::mojom::blink::NFCClient, NFCProxy> client_receiver_;
 };
 
 }  // namespace blink

@@ -874,10 +874,7 @@ class CORE_EXPORT LocalFrame final
   // them explicitly or the pipe closing to delete them.
   //
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoUniqueReceiverSet<
-      blink::mojom::blink::PauseSubresourceLoadingHandle,
-      std::default_delete<blink::mojom::blink::PauseSubresourceLoadingHandle>,
-      HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoUniqueReceiverSet<blink::mojom::blink::PauseSubresourceLoadingHandle>
       pause_handle_receivers_{nullptr};
 
   // Keeps track of all the registered VK observers.
@@ -941,15 +938,12 @@ class CORE_EXPORT LocalFrame final
   // const methods.
   //
   // LocalFrame can be reused by multiple ExecutionContext.
-  mutable HeapMojoRemote<mojom::blink::ReportingServiceProxy,
-                         HeapMojoWrapperMode::kWithoutContextObserver>
+  mutable HeapMojoRemote<mojom::blink::ReportingServiceProxy>
       reporting_service_{nullptr};
 
 #if defined(OS_MAC)
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoRemote<mojom::blink::TextInputHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      text_input_host_{nullptr};
+  HeapMojoRemote<mojom::blink::TextInputHost> text_input_host_{nullptr};
 #endif
 
   mojom::blink::ViewportIntersectionState intersection_state_;
@@ -980,32 +974,23 @@ class CORE_EXPORT LocalFrame final
   std::unique_ptr<WebPrescientNetworking> prescient_networking_;
 
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
       local_frame_host_remote_{nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
       back_forward_cache_controller_host_remote_{nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedReceiver<mojom::blink::LocalFrame,
-                             LocalFrame,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
-      receiver_{this, nullptr};
+  HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrame> receiver_{
+      this, nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame,
-                             LocalFrame,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame, LocalFrame>
       main_frame_receiver_{this, nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame,
-                   LocalFrame,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame, LocalFrame>
       high_priority_frame_receiver_{this, nullptr};
   // LocalFrame can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler,
-                             LocalFrame,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+                             LocalFrame>
       fullscreen_video_receiver_{this, nullptr};
 
   // Variable to control burst of download requests.

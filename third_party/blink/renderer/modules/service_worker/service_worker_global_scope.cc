@@ -1581,9 +1581,7 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForSubresource(
 
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));
-  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
+  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback> remote(this);
   remote.Bind(std::move(response_callback),
               GetThread()->GetTaskRunner(TaskType::kNetworking));
   fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
@@ -1975,9 +1973,7 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
   const int event_id = event_queue_->NextEventId();
   fetch_event_callbacks_.Set(event_id, std::move(callback));
 
-  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
+  HeapMojoRemote<mojom::blink::ServiceWorkerFetchResponseCallback> remote(this);
   remote.Bind(std::move(response_callback),
               GetThread()->GetTaskRunner(TaskType::kNetworking));
   fetch_response_callbacks_.Set(event_id, WrapDisallowNew(std::move(remote)));
@@ -2252,9 +2248,8 @@ void ServiceWorkerGlobalScope::StartAbortPaymentEvent(
         response_callback,
     int event_id) {
   DCHECK(IsContextThread());
-  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
+  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback> remote(
+      this);
   // Payment task need to be processed on the user interaction task
   // runner (TaskType::kUserInteraction).
   // See:
@@ -2306,9 +2301,8 @@ void ServiceWorkerGlobalScope::StartCanMakePaymentEvent(
         response_callback,
     int event_id) {
   DCHECK(IsContextThread());
-  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
+  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback> remote(
+      this);
   // Payment task need to be processed on the user interaction task
   // runner (TaskType::kUserInteraction).
   // See:
@@ -2362,9 +2356,8 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
         response_callback,
     int event_id) {
   DCHECK(IsContextThread());
-  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      remote(this);
+  HeapMojoRemote<payments::mojom::blink::PaymentHandlerResponseCallback> remote(
+      this);
   // Payment task need to be processed on the user interaction task
   // runner (TaskType::kUserInteraction).
   // See:

@@ -99,8 +99,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
 
   Member<ScriptPromiseResolver> change_payment_request_details_resolver_;
   Member<RespondWithObserver> observer_;
-  HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost>
       payment_handler_host_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentRequestEvent);

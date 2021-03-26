@@ -97,8 +97,7 @@ ScriptPromise RejectNotAllowedToUsePaymentFeatures(
 }  // namespace
 
 PaymentInstruments::PaymentInstruments(
-    const HeapMojoRemote<payments::mojom::blink::PaymentManager,
-                         HeapMojoWrapperMode::kWithoutContextObserver>& manager,
+    const HeapMojoRemote<payments::mojom::blink::PaymentManager>& manager,
     ExecutionContext* context)
     : manager_(manager), permission_service_(context) {}
 

@@ -1255,8 +1255,6 @@ component("platform") {
     "mojo/bluetooth_mojom_traits.h",
     "mojo/drag_mojom_traits.cc",
     "mojo/drag_mojom_traits.h",
-    "mojo/features.cc",
-    "mojo/features.h",
     "mojo/fetch_api_request_headers_mojom_traits.h",
     "mojo/heap_mojo_associated_receiver.h",
     "mojo/heap_mojo_associated_receiver_set.h",

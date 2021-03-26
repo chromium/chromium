@@ -48,9 +48,7 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
 
   void OnConnectionError();
 
-  HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetection,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
+  HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetection> service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> detect_requests_;
 };

@@ -43,9 +43,7 @@ class MODULES_EXPORT WakeLockManager final
 
   // An actual platform WakeLock. If bound, it means there is an active wake
   // lock for a given type.
-  HeapMojoRemote<device::mojom::blink::WakeLock,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      wake_lock_;
+  HeapMojoRemote<device::mojom::blink::WakeLock> wake_lock_;
   WakeLockType wake_lock_type_;
 
   // ExecutionContext from which we will connect to |wake_lock_service_|.

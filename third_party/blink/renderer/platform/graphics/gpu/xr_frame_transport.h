@@ -74,9 +74,7 @@ class PLATFORM_EXPORT XRFrameTransport final
   void OnSubmitFrameRendered() override;
   void OnSubmitFrameGpuFence(gfx::GpuFenceHandle) override;
 
-  HeapMojoReceiver<device::mojom::blink::XRPresentationClient,
-                   XRFrameTransport,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<device::mojom::blink::XRPresentationClient, XRFrameTransport>
       submit_frame_client_receiver_;
 
   // Used to keep the image alive until the next frame if using

@@ -86,19 +86,14 @@ class PLATFORM_EXPORT BeginFrameProvider
   bool requested_needs_begin_frame_;
 
   HeapMojoReceiver<viz::mojom::blink::CompositorFrameSinkClient,
-                   BeginFrameProvider,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+                   BeginFrameProvider>
       cfs_receiver_;
 
-  HeapMojoReceiver<mojom::blink::EmbeddedFrameSinkClient,
-                   BeginFrameProvider,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<mojom::blink::EmbeddedFrameSinkClient, BeginFrameProvider>
       efs_receiver_;
   viz::FrameSinkId frame_sink_id_;
   viz::FrameSinkId parent_frame_sink_id_;
-  HeapMojoRemote<viz::mojom::blink::CompositorFrameSink,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      compositor_frame_sink_;
+  HeapMojoRemote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
   Member<BeginFrameProviderClient> begin_frame_client_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;

@@ -102,9 +102,7 @@ class SerialPort final : public EventTargetWithInlineData,
 
   uint32_t buffer_size_ = 0;
   HeapMojoRemote<device::mojom::blink::SerialPort> port_;
-  HeapMojoReceiver<device::mojom::blink::SerialPortClient,
-                   SerialPort,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<device::mojom::blink::SerialPortClient, SerialPort>
       client_receiver_;
 
   Member<ReadableStream> readable_;

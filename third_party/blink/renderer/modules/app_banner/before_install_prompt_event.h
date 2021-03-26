@@ -80,12 +80,8 @@ class BeforeInstallPromptEvent final
   void BannerAccepted(const String& platform) override;
   void BannerDismissed() override;
 
-  HeapMojoRemote<mojom::blink::AppBannerService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      banner_service_remote_;
-  HeapMojoReceiver<mojom::blink::AppBannerEvent,
-                   BeforeInstallPromptEvent,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<mojom::blink::AppBannerService> banner_service_remote_;
+  HeapMojoReceiver<mojom::blink::AppBannerEvent, BeforeInstallPromptEvent>
       receiver_;
   Vector<String> platforms_;
   Member<UserChoiceProperty> user_choice_;

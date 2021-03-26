@@ -92,9 +92,7 @@ class USB final : public EventTargetWithInlineData,
   HeapMojoRemote<mojom::blink::WebUsbService> service_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_requests_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_permission_requests_;
-  HeapMojoAssociatedReceiver<device::mojom::blink::UsbDeviceManagerClient,
-                             USB,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<device::mojom::blink::UsbDeviceManagerClient, USB>
       client_receiver_;
   HeapHashMap<String, WeakMember<USBDevice>> device_cache_;
 };

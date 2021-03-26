@@ -144,22 +144,19 @@ class MODULES_EXPORT MediaCapabilities final
   // mapping in |pending_cb_map_|.
   int CreateCallbackId();
 
-  HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<media::mojom::blink::VideoDecodePerfHistory>
       decode_history_service_;
 
   // Connection to a browser-process LearningTaskController for predicting the
   // number of consecutive "bad" dropped frame windows during a playback. See
   // media::SmoothnessHelper.
-  HeapMojoRemote<media::learning::mojom::blink::LearningTaskController,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<media::learning::mojom::blink::LearningTaskController>
       bad_window_predictor_;
 
   // Connects to a browser-process LearningTaskController for predicting the
   // number of consecutive non-network re-buffers (NNRs). See
   // media::SmoothnessHelper.
-  HeapMojoRemote<media::learning::mojom::blink::LearningTaskController,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<media::learning::mojom::blink::LearningTaskController>
       nnr_predictor_;
 
   // Holds the last key for callbacks in the map below. Incremented for each

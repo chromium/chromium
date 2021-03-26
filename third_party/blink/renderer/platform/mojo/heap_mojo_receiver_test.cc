@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
-#include "third_party/blink/renderer/platform/mojo/features.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
@@ -156,9 +155,6 @@ class HeapMojoReceiverGCWithoutContextObserverTest
 class HeapMojoReceiverDestroyContextWithContextObserverTest
     : public HeapMojoReceiverDestroyContextBaseTest<
           HeapMojoWrapperMode::kWithContextObserver> {};
-class HeapMojoReceiverDestroyContextWithoutContextObserverTest
-    : public HeapMojoReceiverDestroyContextBaseTest<
-          HeapMojoWrapperMode::kWithoutContextObserver> {};
 class HeapMojoReceiverDestroyContextForceWithoutContextObserverTest
     : public HeapMojoReceiverDestroyContextBaseTest<
           HeapMojoWrapperMode::kForceWithoutContextObserver> {};
@@ -210,29 +206,6 @@ TEST_F(HeapMojoReceiverDestroyContextWithContextObserverTest,
   EXPECT_TRUE(owner_->receiver().is_bound());
   context_->NotifyContextDestroyed();
   EXPECT_FALSE(owner_->receiver().is_bound());
-}
-
-// Destroy the context with context observer and check that the connection is
-// disconnected.
-TEST_F(HeapMojoReceiverDestroyContextWithoutContextObserverTest,
-       ResetsOnContextDestroyedWhenFinchEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kHeapMojoUseContextObserver, {}}}, {});
-  EXPECT_TRUE(owner_->receiver().is_bound());
-  context_->NotifyContextDestroyed();
-  EXPECT_FALSE(owner_->receiver().is_bound());
-}
-
-// Destroy the context without context observer and check that the connection is
-// still connected.
-TEST_F(HeapMojoReceiverDestroyContextWithoutContextObserverTest,
-       ResetsOnContextDestroyedWhenFinchDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters({}, {kHeapMojoUseContextObserver});
-  EXPECT_TRUE(owner_->receiver().is_bound());
-  context_->NotifyContextDestroyed();
-  EXPECT_TRUE(owner_->receiver().is_bound());
 }
 
 // Destroy the context without context observer and check that the connection is

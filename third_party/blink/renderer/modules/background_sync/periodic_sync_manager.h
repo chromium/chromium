@@ -59,8 +59,7 @@ class PeriodicSyncManager final : public ScriptWrappable {
 
   Member<ServiceWorkerRegistration> registration_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::PeriodicBackgroundSyncService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<mojom::blink::PeriodicBackgroundSyncService>
       background_sync_service_;
 };
 

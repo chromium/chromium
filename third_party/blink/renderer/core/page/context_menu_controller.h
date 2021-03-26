@@ -115,8 +115,7 @@ class CORE_EXPORT ContextMenuController final
   void UpdateTextFragmentSelectorGenerator(LocalFrame*);
 
   HeapMojoAssociatedReceiver<mojom::blink::ContextMenuClient,
-                             ContextMenuController,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+                             ContextMenuController>
       context_menu_client_receiver_{this, nullptr};
 
   Member<Page> page_;

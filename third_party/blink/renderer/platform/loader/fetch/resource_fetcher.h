@@ -475,9 +475,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   uint32_t inflight_keepalive_bytes_ = 0;
 
-  HeapMojoRemote<mojom::blink::BlobRegistry,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      blob_registry_remote_;
+  HeapMojoRemote<mojom::blink::BlobRegistry> blob_registry_remote_;
 
   HeapHashSet<Member<SubresourceWebBundle>> subresource_web_bundles_;
 

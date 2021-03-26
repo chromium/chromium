@@ -69,9 +69,7 @@ class ContentIndex final : public ScriptWrappable {
 
   Member<ServiceWorkerRegistration> registration_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::ContentIndexService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      content_index_service_;
+  HeapMojoRemote<mojom::blink::ContentIndexService> content_index_service_;
 };
 
 }  // namespace blink

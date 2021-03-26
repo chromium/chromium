@@ -135,9 +135,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
 
   TaskHandle lock_to_any_task_;
 
-  HeapMojoRemote<device::mojom::blink::ScreenOrientationListener,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      monitor_;
+  HeapMojoRemote<device::mojom::blink::ScreenOrientationListener> monitor_;
 
   base::Optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
 

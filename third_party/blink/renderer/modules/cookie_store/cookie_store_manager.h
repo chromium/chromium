@@ -67,9 +67,7 @@ class CookieStoreManager final : public ScriptWrappable,
   Member<ServiceWorkerRegistration> registration_;
 
   // Wraps a Mojo pipe for managing service worker cookie change subscriptions.
-  HeapMojoRemote<mojom::blink::CookieStore,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      backend_;
+  HeapMojoRemote<mojom::blink::CookieStore> backend_;
 
   // Default for cookie_url in CookieStoreGetOptions.
   //

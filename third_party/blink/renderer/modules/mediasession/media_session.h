@@ -91,9 +91,7 @@ class MODULES_EXPORT MediaSession final
   Member<MediaMetadata> metadata_;
   HeapHashMap<String, Member<V8MediaSessionActionHandler>> action_handlers_;
   mojo::Remote<mojom::blink::MediaSessionService> service_;
-  HeapMojoReceiver<blink::mojom::blink::MediaSessionClient,
-                   MediaSession,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<blink::mojom::blink::MediaSessionClient, MediaSession>
       client_receiver_;
 };
 

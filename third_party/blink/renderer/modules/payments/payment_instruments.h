@@ -28,8 +28,7 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
 
  public:
   explicit PaymentInstruments(
-      const HeapMojoRemote<payments::mojom::blink::PaymentManager,
-                           HeapMojoWrapperMode::kWithoutContextObserver>&,
+      const HeapMojoRemote<payments::mojom::blink::PaymentManager>&,
       ExecutionContext*);
 
   ScriptPromise deleteInstrument(ScriptState*,
@@ -72,12 +71,9 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   void onClearPaymentInstruments(ScriptPromiseResolver*,
                                  payments::mojom::blink::PaymentHandlerStatus);
 
-  const HeapMojoRemote<payments::mojom::blink::PaymentManager,
-                       HeapMojoWrapperMode::kWithoutContextObserver>& manager_;
+  const HeapMojoRemote<payments::mojom::blink::PaymentManager>& manager_;
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentInstruments);
 };

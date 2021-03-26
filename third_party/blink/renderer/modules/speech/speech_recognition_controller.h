@@ -68,9 +68,7 @@ class SpeechRecognitionController final
  private:
   mojom::blink::SpeechRecognizer* GetSpeechRecognizer();
 
-  HeapMojoRemote<mojom::blink::SpeechRecognizer,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      speech_recognizer_;
+  HeapMojoRemote<mojom::blink::SpeechRecognizer> speech_recognizer_;
 };
 
 }  // namespace blink

@@ -42,9 +42,7 @@ class CORE_EXPORT RawSystemClipboard final
   void Trace(Visitor*) const;
 
  private:
-  HeapMojoRemote<mojom::blink::RawClipboardHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      clipboard_;
+  HeapMojoRemote<mojom::blink::RawClipboardHost> clipboard_;
 };
 
 }  // namespace blink

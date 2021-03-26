@@ -36,9 +36,7 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
-  HeapMojoRemote<shape_detection::mojom::blink::TextDetection,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      text_service_;
+  HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
 };

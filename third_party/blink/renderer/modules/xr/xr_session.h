@@ -564,13 +564,10 @@ class XRSession final
   uint32_t stage_parameters_id_ = 0;
   device::mojom::blink::VRStageParametersPtr stage_parameters_;
 
-  HeapMojoReceiver<device::mojom::blink::XRSessionClient,
-                   XRSession,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<device::mojom::blink::XRSessionClient, XRSession>
       client_receiver_;
   HeapMojoAssociatedReceiver<device::mojom::blink::XRInputSourceButtonListener,
-                             XRSession,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+                             XRSession>
       input_receiver_;
 
   // Used to schedule video.rVFC callbacks for immersive sessions.

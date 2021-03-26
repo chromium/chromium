@@ -926,17 +926,12 @@ class CORE_EXPORT WebFrameWidgetImpl
   scoped_refptr<base::SingleThreadTaskRunner> paint_task_runner_;
 
   // WebFrameWidgetImpl is not tied to ExecutionContext
-  HeapMojoAssociatedRemote<mojom::blink::FrameWidgetHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
-      frame_widget_host_{nullptr};
+  HeapMojoAssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host_{
+      nullptr};
   // WebFrameWidgetImpl is not tied to ExecutionContext
-  HeapMojoAssociatedReceiver<mojom::blink::FrameWidget,
-                             WebFrameWidgetImpl,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<mojom::blink::FrameWidget, WebFrameWidgetImpl>
       receiver_{this, nullptr};
-  HeapMojoReceiver<viz::mojom::blink::InputTargetClient,
-                   WebFrameWidgetImpl,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<viz::mojom::blink::InputTargetClient, WebFrameWidgetImpl>
       input_target_receiver_{this, nullptr};
 
   // Different consumers in the browser process makes different assumptions, so

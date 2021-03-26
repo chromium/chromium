@@ -81,9 +81,7 @@ class CORE_EXPORT ColorChooserPopupUIController final
   Member<ChromeClient> chrome_client_;
   PagePopup* popup_;
   Locale& locale_;
-  HeapMojoRemote<mojom::blink::EyeDropperChooser,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      eye_dropper_chooser_;
+  HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
 };
 
 }  // namespace blink

@@ -66,9 +66,7 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
 
   virtual void DidStartIfPossible();
 
-  HeapMojoRemote<device::mojom::blink::SensorProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      sensor_provider_;
+  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

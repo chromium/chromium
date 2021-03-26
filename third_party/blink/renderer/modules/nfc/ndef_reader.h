@@ -98,9 +98,7 @@ class MODULES_EXPORT NDEFReader : public EventTargetWithInlineData,
   // mojo::WrapCallbackWithDefaultInvokeIfNotRun() is forbidden in Blink.
   Member<ScriptPromiseResolver> scan_resolver_;
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   mojom::blink::PermissionService* GetPermissionService();
 
   // |write_requests_| are kept here to handle Mojo connection failures because

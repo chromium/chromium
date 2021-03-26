@@ -72,9 +72,7 @@ class CORE_EXPORT TextSuggestionController final
 
   bool is_suggestion_menu_open_;
   const Member<LocalDOMWindow> window_;
-  HeapMojoRemote<mojom::blink::TextSuggestionHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      text_suggestion_host_;
+  HeapMojoRemote<mojom::blink::TextSuggestionHost> text_suggestion_host_;
 
   DISALLOW_COPY_AND_ASSIGN(TextSuggestionController);
 };

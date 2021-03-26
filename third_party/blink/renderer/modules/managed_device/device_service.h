@@ -84,9 +84,7 @@ class MODULES_EXPORT DeviceService final
   void OnServiceConnectionError();
   void StopObserving();
 
-  HeapMojoRemote<mojom::blink::DeviceAPIService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      device_api_service_;
+  HeapMojoRemote<mojom::blink::DeviceAPIService> device_api_service_;
   HeapMojoReceiver<mojom::blink::ManagedConfigurationObserver, DeviceService>
       configuration_observer_;
   HeapHashSet<Member<ScriptPromiseResolver>> pending_promises_;

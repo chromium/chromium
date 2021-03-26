@@ -127,8 +127,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
       picture_in_picture_service_;
 
   // Instance of the Picture-in-Picture session sent back by the service.
-  HeapMojoRemote<mojom::blink::PictureInPictureSession,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<mojom::blink::PictureInPictureSession>
       picture_in_picture_session_;
 
   DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerImpl);

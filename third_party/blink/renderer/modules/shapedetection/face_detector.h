@@ -37,9 +37,7 @@ class MODULES_EXPORT FaceDetector final : public ShapeDetector {
       Vector<shape_detection::mojom::blink::FaceDetectionResultPtr>);
   void OnFaceServiceConnectionError();
 
-  HeapMojoRemote<shape_detection::mojom::blink::FaceDetection,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      face_service_;
+  HeapMojoRemote<shape_detection::mojom::blink::FaceDetection> face_service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> face_service_requests_;
 };

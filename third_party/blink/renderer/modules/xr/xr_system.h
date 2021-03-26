@@ -469,8 +469,7 @@ class XRSystem final : public EventTargetWithInlineData,
   HeapHashSet<WeakMember<XRSession>> sessions_;
   HeapMojoRemote<device::mojom::blink::VRService> service_;
   HeapMojoAssociatedRemote<
-      device::mojom::blink::XREnvironmentIntegrationProvider,
-      HeapMojoWrapperMode::kWithoutContextObserver>
+      device::mojom::blink::XREnvironmentIntegrationProvider>
       environment_provider_;
   HeapMojoReceiver<device::mojom::blink::VRServiceClient, XRSystem> receiver_;
 

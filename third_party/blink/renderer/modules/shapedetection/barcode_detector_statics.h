@@ -46,8 +46,7 @@ class BarcodeDetectorStatics final
       const Vector<shape_detection::mojom::blink::BarcodeFormat>&);
   void OnConnectionError();
 
-  HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetectionProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<shape_detection::mojom::blink::BarcodeDetectionProvider>
       service_;
 
   // Holds Promises returned by EnumerateSupportedFormats() so that they can be

@@ -55,8 +55,7 @@ class FileSystemDirectoryIterator final
   Member<ScriptPromiseResolver> pending_next_;
   Member<FileSystemDirectoryHandle> directory_;
   HeapMojoReceiver<mojom::blink::FileSystemAccessDirectoryEntriesListener,
-                   FileSystemDirectoryIterator,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+                   FileSystemDirectoryIterator>
       receiver_;
 };
 

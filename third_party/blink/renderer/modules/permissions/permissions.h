@@ -54,9 +54,7 @@ class Permissions final : public ScriptWrappable,
                          Vector<int>,
                          const Vector<mojom::blink::PermissionStatus>&);
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
+  HeapMojoRemote<mojom::blink::PermissionService> service_;
 };
 
 }  // namespace blink

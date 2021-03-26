@@ -69,10 +69,7 @@ class CacheStorageBlobClientList::Client
   }
 
   WeakMember<CacheStorageBlobClientList> owner_;
-  HeapMojoReceiver<mojom::blink::BlobReaderClient,
-                   Client,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
-      client_receiver_;
+  HeapMojoReceiver<mojom::blink::BlobReaderClient, Client> client_receiver_;
   Member<DataPipeBytesConsumer::CompletionNotifier> completion_notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(Client);

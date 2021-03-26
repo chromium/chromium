@@ -130,9 +130,7 @@ class MODULES_EXPORT StorageNamespace final
   String namespace_id_;
   // |StorageNamespace| is a per-Page object and doesn't have any
   // |ExecutionContext|.
-  HeapMojoRemote<mojom::blink::SessionStorageNamespace,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      namespace_{nullptr};
+  HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};
   HashMap<scoped_refptr<const SecurityOrigin>,
           scoped_refptr<CachedStorageArea>,
           SecurityOriginHash>

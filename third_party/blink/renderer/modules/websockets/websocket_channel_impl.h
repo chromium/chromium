@@ -325,16 +325,11 @@ class MODULES_EXPORT WebSocketChannelImpl final
   // throttle response when DidConnect is called.
   std::unique_ptr<ConnectInfo> connect_info_;
 
-  HeapMojoRemote<network::mojom::blink::WebSocket,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      websocket_;
+  HeapMojoRemote<network::mojom::blink::WebSocket> websocket_;
   HeapMojoReceiver<network::mojom::blink::WebSocketHandshakeClient,
-                   WebSocketChannelImpl,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+                   WebSocketChannelImpl>
       handshake_client_receiver_;
-  HeapMojoReceiver<network::mojom::blink::WebSocketClient,
-                   WebSocketChannelImpl,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoReceiver<network::mojom::blink::WebSocketClient, WebSocketChannelImpl>
       client_receiver_;
 
   mojo::ScopedDataPipeConsumerHandle readable_;

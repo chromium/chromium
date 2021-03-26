@@ -83,9 +83,7 @@ class HID : public EventTargetWithInlineData,
   void FinishRequestDevice(ScriptPromiseResolver*,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
-  HeapMojoRemote<mojom::blink::HidService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
+  HeapMojoRemote<mojom::blink::HidService> service_;
   mojo::AssociatedReceiver<device::mojom::blink::HidManagerClient> receiver_{
       this};
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;
