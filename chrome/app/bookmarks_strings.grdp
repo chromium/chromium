@@ -27,6 +27,9 @@
     <message name="IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT" desc="Name shown in the context menu to hide/show the apps shortcut in the bookmark bar">
       Show apps shortcut
     </message>
+    <message name="IDS_BOOKMARK_BAR_SHOW_READING_LIST" desc="Name shown in the context menu to hide/show the reading list in the bookmark bar">
+      Show reading list
+    </message>
     <message name="IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME" desc="Name shown in the context menu to hide/show the managed bookmarks in the bookmark bar">
       Show managed bookmarks
     </message>
@@ -37,6 +40,9 @@
   <if expr="use_titlecase">
     <message name="IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT" desc="In Title Case: Name shown in the context menu to hide/show the apps shortcut in the bookmark bar">
       Show Apps Shortcut
+    </message>
+    <message name="IDS_BOOKMARK_BAR_SHOW_READING_LIST" desc="In Title Case: Name shown in the context menu to hide/show the reading list in the bookmark bar">
+      Show Reading List
     </message>
     <message name="IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME" desc="In Title Case: Name shown in the context menu to hide/show the managed bookmarks in the bookmark bar">
       Show Managed Bookmarks

@@ -62,6 +62,9 @@ bool IsAppsShortcutEnabled(Profile* profile);
 // Returns true if the Apps shortcut should be displayed in the bookmark bar.
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile);
 
+// Returns true if the reading list should be displayed in the bookmark bar.
+bool ShouldShowReadingListInBookmarkBar(Profile* profile);
+
 // Returns the drag operations for the specified node.
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,
                              const bookmarks::BookmarkNode* node);
