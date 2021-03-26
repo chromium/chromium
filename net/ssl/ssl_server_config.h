@@ -79,6 +79,10 @@ struct NET_EXPORT SSLServerConfig {
   // used in unit tests.
   base::Optional<uint16_t> signature_algorithm_for_testing;
 
+  // curves_for_testing, if not empty, specifies the list of NID values (e.g.
+  // NID_X25519) to configure as supported curves for the TLS connection.
+  std::vector<int> curves_for_testing;
+
   // Sets the requirement for client certificates during handshake.
   ClientCertType client_cert_type;
 

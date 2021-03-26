@@ -3203,6 +3203,16 @@
     "note": "This policy has been removed, see https://crbug.com/939760."
   },
 
+  "CECPQ2Enabled": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "CECPQ2Enabled": true },
+        "prefs": { "ssl.cecpq2_enabled": { "location": "local_state" } }
+      }
+    ]
+  },
+
   "CertificateTransparencyEnforcementDisabledForUrls": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_tests": [

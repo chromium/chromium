@@ -37,6 +37,7 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
+  net_config.cecpq2_enabled = mojo_config->cecpq2_enabled;
   return net_config;
 }
 
