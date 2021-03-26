@@ -121,15 +121,6 @@ std::string GetChromeOsChannelFromLsbRelease() {
   return value.erase(value.find(kChannelSuffix), kChannelSuffix.size());
 }
 
-std::string MonotonicTimestamp() {
-  struct timespec ts;
-  const int ret = clock_gettime(CLOCK_BOOTTIME, &ts);
-  DPCHECK(ret == 0);
-  const int64_t time =
-      ts.tv_sec * base::Time::kNanosecondsPerSecond + ts.tv_nsec;
-  return base::NumberToString(time);
-}
-
 ArcBinaryTranslationType IdentifyBinaryTranslationType(
     const StartParams& start_params) {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -227,7 +218,6 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf("androidboot.disable_system_default_app=%d",
                          start_params.arc_disable_system_default_app),
       "androidboot.chromeos_channel=" + channel,
-      "androidboot.boottime_offset=" + MonotonicTimestamp(),
       base::StringPrintf("androidboot.iioservice_present=%d",
                          BUILDFLAG(USE_IIOSERVICE)),
   };
