@@ -45,6 +45,8 @@ class PowerMetricsReporter
   }
   void AwaitFirstSampleForTesting(base::OnceClosure closure);
 
+  static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
+
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
   // and ukm.xml
