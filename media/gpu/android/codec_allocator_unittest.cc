@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -392,7 +393,13 @@ TEST_F(CodecAllocatorTest, LowResolutionGetsSoftware) {
                      base::Unretained(this), run_loop.QuitClosure()),
       std::move(config));
 
-  EXPECT_CALL(*this, OnCodecCreated(CodecType::kSoftware));
+  bool lollipop = base::android::BuildInfo::GetInstance()->sdk_int() <
+                  base::android::SDK_VERSION_MARSHMALLOW;
+  if (lollipop)
+    EXPECT_CALL(*this, OnCodecCreated(CodecType::kAny));
+  else
+    EXPECT_CALL(*this, OnCodecCreated(CodecType::kSoftware));
+
   run_loop.Run();
 }
 
