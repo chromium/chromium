@@ -53,6 +53,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
     static final String TRANSLATION_ADVANCED_SECTION = "translation_advanced_settings_section";
     static final String TARGET_LANGUAGE_KEY = "translate_settings_target_language";
     static final String ALWAYS_LANGUAGES_KEY = "translate_settings_always_languages";
+    static final String NEVER_LANGUAGES_KEY = "translate_settings_never_languages";
 
     private static final String TAG = "LanguageSettings";
 
@@ -182,6 +183,14 @@ public class LanguageSettings extends PreferenceFragmentCompat
         mPrefChangeRegistrar.addObserver(
                 Pref.PREF_ALWAYS_TRANSLATE_LIST, alwaysTranslatePreference);
         setLanguageListPreferenceClickListener(alwaysTranslatePreference);
+
+        // Setup never translate preference.
+        LanguageItemListPreference neverTranslatePreference =
+                (LanguageItemListPreference) findPreference(NEVER_LANGUAGES_KEY);
+        neverTranslatePreference.setFragmentListDelegate(
+                new NeverTranslateListFragment.ListDelegate());
+        mPrefChangeRegistrar.addObserver(Pref.FLUENT_LANGUAGES, neverTranslatePreference);
+        setLanguageListPreferenceClickListener(neverTranslatePreference);
 
         // Setup translate switch to toggle advanced section on and off.
         ChromeSwitchPreference translateSwitch =

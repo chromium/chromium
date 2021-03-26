@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,9 +53,11 @@ public class ContentLanguagesPreference extends Preference {
             showDragIndicatorInRow((LanguageRowViewHolder) holder);
             ModelList menuItems = new ModelList();
 
-            // Show "Offer to translate" option if "Chrome Translate" is enabled.
+            // Show "Offer to translate" option if "Chrome Translate" is enabled and
+            // the detailed languages settings page is not active.
             if (UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .getBoolean(Pref.OFFER_TRANSLATE_ENABLED)) {
+                            .getBoolean(Pref.OFFER_TRANSLATE_ENABLED)
+                    && !ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
                 // Set this row checked if the language is unblocked.
                 int endIconResId = TranslateBridge.isBlockedLanguage(info.getCode())
                         ? 0

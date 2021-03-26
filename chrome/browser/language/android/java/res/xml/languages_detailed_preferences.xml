@@ -62,6 +62,12 @@
               app:allowDividerAbove="false"
               app:allowDividerBelow="false" />
 
+            <org.chromium.chrome.browser.language.settings.LanguageItemListPreference
+              android:key="translate_settings_never_languages"
+              android:title="@string/languages_settings_dont_offer_langs"
+              app:allowDividerAbove="false"
+              app:allowDividerBelow="false" />
+
         </PreferenceCategory>
 
     </PreferenceCategory>

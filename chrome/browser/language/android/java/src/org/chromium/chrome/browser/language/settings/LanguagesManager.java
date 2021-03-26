@@ -168,11 +168,24 @@ public class LanguagesManager {
      * @return List of LanguageItems.
      */
     public Collection<LanguageItem> getAlwaysTranslateLanguageItems() {
-        // Always read the latest always translate code list from native. This list has no
-        // guaranteed order.
+        // Get the latest always translate list from native. This list has no guaranteed order.
         List<String> codes = TranslateBridge.getAlwaysTranslateLanguages();
         TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
-        // Keep the same order as always translate list
+        for (String code : codes) {
+            if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
+        }
+        return results;
+    }
+
+    /**
+     * Get a list of LanguageItems that the user has set to never prompt for translation. The list
+     * is sorted alphabetically by display name.
+     * @return List of LanguageItems.
+     */
+    public Collection<LanguageItem> getNeverTranslateLanguageItems() {
+        // Get the latest never translate list from native. This list has no guaranteed order.
+        List<String> codes = TranslateBridge.getNeverTranslateLanguages();
+        TreeSet<LanguageItem> results = new TreeSet(LanguageItem.COMPARE_BY_DISPLAY_NAME);
         for (String code : codes) {
             if (mLanguagesMap.containsKey(code)) results.add(mLanguagesMap.get(code));
         }
