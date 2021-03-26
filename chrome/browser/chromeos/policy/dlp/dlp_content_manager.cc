@@ -15,7 +15,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
@@ -85,7 +84,7 @@ bool DlpContentManager::IsVideoCaptureRestricted(
 
 bool DlpContentManager::IsPrintingRestricted(
     content::WebContents* web_contents) const {
-  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedded
+  // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedder
   // WebContents.
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
@@ -94,13 +93,9 @@ bool DlpContentManager::IsPrintingRestricted(
 
   const bool restricted = GetConfidentialRestrictions(web_contents)
                               .HasRestriction(DlpContentRestriction::kPrint);
-  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, restricted);
-  if (restricted) {
+  if (restricted)
     SYSLOG(INFO) << "DLP blocked printing";
-    DlpReportingManager::Get()->ReportPrintingEvent(
-        web_contents, DlpRulesManager::Level::kBlock);
-  }
-
+  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, restricted);
   return restricted;
 }
 
