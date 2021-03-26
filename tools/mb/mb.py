@@ -461,13 +461,16 @@ class MetaBuildWrapper(object):
     return 0
 
   def RtsSelect(self):
-    exe = self.PathJoin(self.chromium_src_dir, 'testing', 'rts', 'rts-chromium')
+    model_dir = self.PathJoin(
+        self.chromium_src_dir, 'testing', 'rts', self._CipdPlatform())
+
+    exe = self.PathJoin(model_dir, 'rts-chromium')
     if self.platform == 'win32':
       exe += '.exe'
 
     args = [
        exe, 'select',
-      '-model-dir', self.PathJoin(self.chromium_src_dir, 'testing', 'rts'), \
+      '-model-dir', model_dir, \
       '-out', self.PathJoin(self.ToAbsPath(self.args.path), self.rts_out_dir),
       '-checkout', self.chromium_src_dir,
     ]
@@ -1517,7 +1520,6 @@ class MetaBuildWrapper(object):
       cmd += ['--dotfile=' + self.args.dotfile]
     return cmd + [path] + list(args)
 
-
   def GNArgs(self, vals, expand_imports=False):
     gn_args = vals['gn_args']
 
@@ -1893,7 +1895,6 @@ class MetaBuildWrapper(object):
       raise MBErr('Error %s writing to the output path "%s"' %
                  (e, path))
 
-
   def PrintCmd(self, cmd):
     if self.platform == 'win32':
       shell_quoter = QuoteForCmd
@@ -1950,6 +1951,17 @@ class MetaBuildWrapper(object):
       p.wait()
       out = err = ''
     return p.returncode, out, err
+
+  def _CipdPlatform(self):
+    """Returns current CIPD platform, e.g. linux-amd64.
+
+    Assumes AMD64.
+    """
+    if self.platform == 'win32':
+      return 'windows-amd64'
+    if self.platform == 'darwin':
+      return 'mac-amd64'
+    return 'linux-amd64'
 
   def ExpandUser(self, path):
     # This function largely exists so it can be overridden for testing.

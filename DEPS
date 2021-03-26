@@ -632,15 +632,37 @@ deps = {
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
 
-  'src/testing/rts': {
+  'src/testing/rts/linux-amd64': {
       'packages': [
         {
-          'package': 'chromium/rts/model/${{platform}}',
-          'version': 'latest',
+          'package': 'chromium/rts/model/linux-amd64',
+          'version': 'Jwj7x5-mH4gjDNBNh-QU2H3zdVSpbffIIzJAvGPSZzsC',
         },
       ],
       'dep_type': 'cipd',
-      'condition': 'checkout_rts_model',
+      'condition': 'checkout_rts_model and checkout_linux',
+  },
+
+  'src/testing/rts/mac-amd64': {
+      'packages': [
+        {
+          'package': 'chromium/rts/model/mac-amd64',
+          'version': 'vUbSV1P-bdoTVfesLnAyUCfWlr2uMk1ZzxMg-Eju6YUC',
+        },
+      ],
+      'dep_type': 'cipd',
+      'condition': 'checkout_rts_model and checkout_mac',
+  },
+
+  'src/testing/rts/windows-amd64': {
+      'packages': [
+        {
+          'package': 'chromium/rts/model/windows-amd64',
+          'version': 'qPS2sCiiuvr7ZljFS2dOOKoJCHeXZC8ILxoFR8g0Ve8C',
+        },
+      ],
+      'dep_type': 'cipd',
+      'condition': 'checkout_rts_model and checkout_win',
   },
 
   'src/tools/luci-go': {
