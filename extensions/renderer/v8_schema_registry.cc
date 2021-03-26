@@ -18,6 +18,7 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "v8/include/v8-inspector.h"
 
 using content::V8ValueConverter;
 
@@ -919,12 +920,69 @@ static void RecordReplayLog(const v8::FunctionCallbackInfo<v8::Value>& args) {
   recordreplay::Print("%s", *text);
 }
 
+// Function to invoke on CDP responses and events.
+static v8::Eternal<v8::Function>* gCDPMessageCallback;
+
 static void RecordReplaySetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  recordreplay::Print("CALL_SET_CDP_MESSAGE_CALLBACK");
+  CHECK(!gCDPMessageCallback);
+  v8::Isolate* isolate = args.GetIsolate();
+  CHECK(args[0]->IsFunction());
+  v8::Local<v8::Function> callback = args[0].As<v8::Function>();
+  gCDPMessageCallback = new v8::Eternal<v8::Function>(isolate, callback);
 }
 
+static void SendMessageToFrontend(const v8_inspector::StringView& message) {
+  CHECK(v8::IsMainThread());
+
+  CHECK(gCDPMessageCallback);
+  CHECK(!message.is8Bit());
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope scope(isolate);
+
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Value> arg = v8::String::NewFromTwoByte(isolate, message.characters16(),
+                                                        v8::NewStringType::kNormal,
+                                                        message.length()).ToLocalChecked();
+  v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
+  v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 1, &arg);
+  CHECK(!rv.IsEmpty());
+}
+
+struct InspectorClient : public v8_inspector::V8InspectorClient {
+};
+
+struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
+  void sendResponse(int callId,
+                    std::unique_ptr<v8_inspector::StringBuffer> message) final {
+    SendMessageToFrontend(message->string());
+  }
+  void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) final {
+    SendMessageToFrontend(message->string());
+  }
+  void flushProtocolNotifications() final {}
+};
+
+const int CONTEXT_GROUP_ID = 1;
+
+static v8_inspector::V8Inspector* gInspector;
+static v8_inspector::V8InspectorSession* gInspectorSession;
+
 static void RecordReplaySendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  recordreplay::Print("CALL_SEND_CDP_MESSAGE");
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "must be called with a single string");
+  v8::String::Utf8Value message(args.GetIsolate(), args[0]);
+
+  if (!gInspectorSession) {
+    gInspector = v8_inspector::V8Inspector::create(args.GetIsolate(),
+                                                   new InspectorClient()).release();
+    gInspectorSession = gInspector->connect(CONTEXT_GROUP_ID, new InspectorChannel(),
+                                            v8_inspector::StringView()).release();
+  }
+
+  std::string nmessage(*message);
+  v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());
+  gInspectorSession->dispatchProtocolMessage(messageView);
 }
 
 static void SetupRecordReplayCommands(v8::Isolate* isolate) {
