@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +19,8 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "base/stl_util.h"
+#include "base/token.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/automation.mojom.h"
@@ -105,10 +109,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // Each of these functions guards usage of access to the corresponding remote.
   // Keep these in alphabetical order.
+  // Most use-cases of these methods can be replaced by IsAvailable(). See
+  // crosapi::mojom::Clipboard for an example.
   bool IsAutomationAvailable() const;
   bool IsAccountManagerAvailable() const;
   bool IsCertDbAvailable() const;
-  bool IsClipboardAvailable() const;
   bool IsDeviceAttributesAvailable() const;
   bool IsFeedbackAvailable() const;
   bool IsFileManagerAvailable() const;
@@ -132,12 +137,40 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
+  // Returns whether this interface uses the automatic registration system to be
+  // available for immediate use at startup. Any crosapi interface can be
+  // registered by using ConstructRemote.
+  template <typename CrosapiInterface>
+  bool IsRegistered() const {
+    return base::Contains(interfaces_, CrosapiInterface::Uuid_);
+  }
+
+  // Gaurds usage to the corresponding crosapi interface. Can only be used with
+  // automatically registered interfaces. See IsRegistered().
+  template <typename CrosapiInterface>
+  bool IsAvailable() const {
+    DCHECK(IsRegistered<CrosapiInterface>());
+    return interfaces_.find(CrosapiInterface::Uuid_)->second->IsAvailable();
+  }
+
+  // Returns the automatically registered remote for a given crosapi interface.
+  // Can only be used with automatically registered features that are also
+  // available. This method can only be called from the affine sequence (main
+  // thread). The returned remote can only be used on the affine sequence (main
+  // thread).
+  template <typename CrosapiInterface>
+  mojo::Remote<CrosapiInterface>& GetRemote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsAvailable<CrosapiInterface>());
+    return interfaces_.find(CrosapiInterface::Uuid_)
+        ->second->template Get<CrosapiInterface>();
+  }
+
   // --------------------------------------------------------------------------
   // mojo::Remote is sequence affine. The following methods are convenient
   // helpers that expose pre-established Remotes that can only be used from the
   // affine sequence (main thread).
   // --------------------------------------------------------------------------
-
   // This must be called on the affine sequence.
   mojo::Remote<crosapi::mojom::Automation>& automation_remote() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
@@ -150,14 +183,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
     DCHECK(IsCertDbAvailable());
     return cert_database_remote_;
-  }
-
-  // This must be called on the affine sequence. It exposes a remote that can
-  // be used to interface with the clipboard
-  mojo::Remote<crosapi::mojom::Clipboard>& clipboard_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsClipboardAvailable());
-    return clipboard_remote_;
   }
 
   // This must be called on the affine sequence. It exposes a remote that can
@@ -333,9 +358,50 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void SetInitParamsForTests(crosapi::mojom::BrowserInitParamsPtr init_params);
 
  private:
+  using Crosapi = crosapi::mojom::Crosapi;
+
+  // This class is a wrapper around a crosapi remote, e.g.
+  // mojo::Remote<crosapi::mojom::Automation>. This base class uses type erasure
+  // to allow us to store all instances in a single container.
+  class InterfaceEntryBase {
+   public:
+    virtual ~InterfaceEntryBase();
+
+    // Returns the remote that is being wrapped.
+    template <typename CrosapiInterface>
+    mojo::Remote<CrosapiInterface>& Get() {
+      return *reinterpret_cast<mojo::Remote<CrosapiInterface>*>(GetInternal());
+    }
+
+    // Returns whether Ash is sufficiently recent to support the crosapi
+    // protocol that the remote is based on.
+    bool IsAvailable() const { return available_; }
+
+    // Initialization for the remote and |available_|.
+    virtual void MaybeBind(uint32_t crosapi_version,
+                           LacrosChromeServiceImpl* impl) = 0;
+
+   protected:
+    InterfaceEntryBase();
+    InterfaceEntryBase(const InterfaceEntryBase&) = delete;
+    InterfaceEntryBase& operator=(const InterfaceEntryBase&) = delete;
+
+    // Returns a raw pointer to a mojo::Remote<CrosapiInterface>.
+    virtual void* GetInternal() = 0;
+
+    // See |IsAvailable|.
+    bool available_ = false;
+  };
+
   // LacrosChromeServiceImplNeverBlockingState is an implementation detail of
   // this class.
   friend class LacrosChromeServiceImplNeverBlockingState;
+
+  // Forward declare inner class to give it access to private members.
+  template <typename CrosapiInterface,
+            void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
+            uint32_t MethodMinVersion>
+  class InterfaceEntry;
 
   // Creates a new window on the affine sequence.
   void NewWindowAffineSequence(bool incognito);
@@ -372,6 +438,28 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Requests ash-chrome to send idle info updates.
   void StartSystemIdleCache();
 
+  // This function binds a pending receiver or remote by posting the
+  // corresponding bind task to the |never_blocking_sequence_|.
+  template <typename PendingReceiverOrRemote,
+            void (Crosapi::*bind_func)(PendingReceiverOrRemote)>
+  void BindPendingReceiverOrRemote(
+      PendingReceiverOrRemote pending_receiver_or_remote);
+
+  // This function initializes a remote for a given CrosapiInterface.
+  // It performs the following operations:
+  //   1) Calls BindNewPipeAndPassReceiver() on the remote.
+  //   2) Calls BindPendingReceiverOrRemote() on the PendingReceiver.
+  template <typename CrosapiInterface,
+            void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>)>
+  void InitializeAndBindRemote(mojo::Remote<CrosapiInterface>* remote);
+
+  // This function constructs a new remote for a crosapi interface and stashes
+  // it in |interfaces_|. This remote will later be bound during BindReceiver().
+  template <typename CrosapiInterface,
+            void (Crosapi::*bind_func)(mojo::PendingReceiver<CrosapiInterface>),
+            uint32_t MethodMinVersion>
+  void ConstructRemote();
+
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.
   std::unique_ptr<LacrosChromeServiceDelegate> delegate_;
@@ -384,9 +472,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // These members are affine to the affine sequence. They are initialized in
   // the constructor and are immediately available for use.
+  // DEPRECATED. Do not add more instances of these methods. Instead, use
+  // ConstructRemote. See crosapi::mojom::Clipboard for an example.
   mojo::Remote<crosapi::mojom::Automation> automation_remote_;
   mojo::Remote<crosapi::mojom::CertDatabase> cert_database_remote_;
-  mojo::Remote<crosapi::mojom::Clipboard> clipboard_remote_;
   mojo::Remote<crosapi::mojom::DeviceAttributes> device_attributes_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
@@ -420,6 +509,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
 
   // The list of observers.
   scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
+
+  // Each element of |interfaces_| corresponds to a crosapi interface remote
+  // (e.g. mojo::Remote<crosapi::mojom::Automation>). The key of the element is
+  // the UUID of the crosapi interface. The value is a wrapper around the
+  // mojo::Remote. Each element can only be used on the affine sequence. Each
+  // element is automatically bound to the corresponding receiver in ash.
+  std::map<base::Token, std::unique_ptr<InterfaceEntryBase>> interfaces_;
 
   // Checks that the method is called on the affine sequence.
   SEQUENCE_CHECKER(affine_sequence_checker_);

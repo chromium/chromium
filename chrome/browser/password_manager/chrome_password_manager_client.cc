@@ -1262,12 +1262,13 @@ void ChromePasswordManagerClient::OnPaste() {
   // TODO(https://crbug.com/913422): This logic can be removed once all
   // clipboard APIs are async.
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
-  if (service->IsClipboardAvailable()) {
+  if (service->IsAvailable<crosapi::mojom::Clipboard>()) {
     used_crosapi_workaround = true;
     std::string text_utf8;
     {
       crosapi::ScopedAllowSyncCall allow_sync_call;
-      service->clipboard_remote()->GetCopyPasteText(&text_utf8);
+      service->GetRemote<crosapi::mojom::Clipboard>()->GetCopyPasteText(
+          &text_utf8);
     }
     text = base::UTF8ToUTF16(text_utf8);
   }
