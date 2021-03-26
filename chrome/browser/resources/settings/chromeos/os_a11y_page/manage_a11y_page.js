@@ -15,6 +15,7 @@ Polymer({
 
   behaviors: [
     DeepLinkingBehavior,
+    I18nBehavior,
     settings.RouteObserverBehavior,
     settings.RouteOriginBehavior,
     WebUIListenerBehavior,
@@ -210,6 +211,16 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isGuest');
+      }
+    },
+
+    /** @private */
+    screenMagnifierHintLabel_: {
+      type: String,
+      value() {
+        return this.i18n(
+            'screenMagnifierHintLabel',
+            this.i18n('screenMagnifierHintSearchKey'));
       }
     },
 

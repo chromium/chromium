@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
@@ -44,6 +45,10 @@
       settings-toggle-button.indented {
         margin-inline-start: calc(var(--cr-section-indent-padding) +
                                   var(--cr-section-indent-width));
+      }
+
+      #screenMagnifierZoomHintLabel {
+        white-space: pre-line;
       }
     </style>
     <template is="dom-if" if="[[!isKioskModeActive_]]">
@@ -98,6 +103,7 @@
         class="hr"
         pref="{{prefs.settings.a11y.screen_magnifier}}"
         label="$i18n{screenMagnifierLabel}"
+        sub-label="[[screenMagnifierHintLabel_]]"
         disabled="[[prefs.ash.docked_magnifier.enabled.value]]"
         deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
     </settings-toggle-button>
@@ -140,8 +146,9 @@
         </settings-toggle-button>
       </template>
       <div class="settings-box indented">
-        <div class="start settings-box-text" aria-hidden="true">
-          $i18n{screenMagnifierZoomLabel}
+        <div class="flex start settings-box-text" id="labelWrapper">
+          <div class="label" aria-hidden="true">$i18n{screenMagnifierZoomLabel}</div>
+          <div class="secondary label" id="screenMagnifierZoomHintLabel">$i18n{screenMagnifierZoomHintLabel}</div>
         </div>
         <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
             pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
