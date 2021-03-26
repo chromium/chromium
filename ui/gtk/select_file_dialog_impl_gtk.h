@@ -5,6 +5,8 @@
 #ifndef UI_GTK_SELECT_FILE_DIALOG_IMPL_GTK_H_
 #define UI_GTK_SELECT_FILE_DIALOG_IMPL_GTK_H_
 
+#include <map>
+
 #include "base/macros.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_util.h"
@@ -139,8 +141,8 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
   GtkWidget* preview_ = nullptr;
 #endif
 
-  // All our dialogs.
-  std::set<GtkWidget*> dialogs_;
+  // Maps from dialogs to signal handler IDs.
+  std::map<GtkWidget*, unsigned long> dialogs_;
 
   // The set of all parent windows for which we are currently running dialogs.
   std::set<aura::Window*> parents_;

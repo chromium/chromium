@@ -513,20 +513,16 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
     auto* paintable = GDK_PAINTABLE(icon_paintable);
     auto* snapshot = gtk_snapshot_new();
     gdk_paintable_snapshot(paintable, snapshot, size, size);
-    auto node = TakeGObject(gtk_snapshot_free_to_node(snapshot));
-    auto rect = GRAPHENE_RECT_INIT(0, 0, size, size);
-    auto renderer = TakeGObject(gsk_cairo_renderer_new());
-    auto texture =
-        TakeGObject(gsk_renderer_render_texture(renderer, node, &rect));
+    auto* node = gtk_snapshot_free_to_node(snapshot);
+    GdkTexture* texture = GetTextureFromRenderNode(node);
 
     SkBitmap bitmap;
-    bitmap.allocN32Pixels(size, size);
-    bitmap.eraseColor(SK_ColorTRANSPARENT);
+    bitmap.allocN32Pixels(gdk_texture_get_width(texture),
+                          gdk_texture_get_height(texture));
+    gdk_texture_download(texture, static_cast<guchar*>(bitmap.getAddr(0, 0)),
+                         bitmap.rowBytes());
 
-    CairoSurface surface(bitmap);
-    cairo_t* cr = surface.cairo();
-    gtk_render_icon(gtk_widget_get_style_context(GetDummyWindow()), cr, texture,
-                    0, 0);
+    gsk_render_node_unref(node);
 #else
     auto icon_info = TakeGObject(gtk_icon_theme_lookup_by_gicon(
         theme, icon.get(), size,
@@ -1002,8 +998,7 @@ void GtkUi::UpdateColors() {
 void GtkUi::UpdateDefaultFont() {
   gfx::SetFontRenderParamsDeviceScaleFactor(device_scale_factor_);
 
-  GtkWidget* fake_label = gtk_label_new(nullptr);
-  g_object_ref_sink(fake_label);  // Remove the floating reference.
+  auto fake_label = TakeGObject(gtk_label_new(nullptr));
   PangoContext* pc = gtk_widget_get_pango_context(fake_label);
   const PangoFontDescription* desc = pango_context_get_font_description(pc);
 
@@ -1040,9 +1035,6 @@ void GtkUi::UpdateDefaultFont() {
   default_font_render_params_ =
       gfx::GetFontRenderParams(query, &default_font_family_);
   default_font_style_ = query.style;
-
-  GtkWindowDestroy(fake_label);
-  g_object_unref(fake_label);
 }
 
 float GtkUi::GetRawDeviceScaleFactor() {

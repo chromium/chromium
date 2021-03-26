@@ -11,7 +11,6 @@
 #include "ui/gtk/gtk_ui_delegate.h"
 
 using GdkDisplay = struct _GdkDisplay;
-using GtkWidget = struct _GtkWidget;
 
 namespace ui {
 
@@ -33,7 +32,7 @@ class COMPONENT_EXPORT(UI_GTK_X) GtkUiDelegateX11 : public GtkUiDelegate {
   void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGdkWindowTransientFor(GdkWindow* window,
+  bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;

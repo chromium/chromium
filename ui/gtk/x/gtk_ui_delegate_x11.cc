@@ -11,6 +11,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -68,8 +69,8 @@ GdkKeymap* GtkUiDelegateX11::GetGdkKeymap() {
 
 GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
 #if BUILDFLAG(GTK_VERSION) >= 4
-  // GTK4 dropped support for foreign windows.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // This function is only used by InputMethodContextImplGtk with GTK3.
+  NOTREACHED();
   return nullptr;
 #else
   GdkDisplay* display = GetGdkDisplay();
@@ -84,16 +85,19 @@ GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
 #endif
 }
 
-bool GtkUiDelegateX11::SetGdkWindowTransientFor(GdkWindow* window,
+bool GtkUiDelegateX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
 #if BUILDFLAG(GTK_VERSION) >= 4
   auto x11_window = static_cast<x11::Window>(gdk_x11_surface_get_xid(
-      gtk_native_get_surface(gtk_widget_get_native(GTK_WIDGET(window)))));
+      gtk_native_get_surface(gtk_widget_get_native(widget))));
 #else
-  auto x11_window = static_cast<x11::Window>(gdk_x11_window_get_xid(window));
+  auto x11_window = static_cast<x11::Window>(
+      gdk_x11_window_get_xid(gtk_widget_get_window(widget)));
 #endif
   SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
               parent);
+  SetProperty(x11_window, x11::GetAtom("_NET_WM_WINDOW_TYPE"), x11::Atom::ATOM,
+              x11::GetAtom("_NET_WM_WINDOW_TYPE_DIALOG"));
 
   ui::X11Window* parent_window =
       ui::X11WindowManager::GetInstance()->GetWindow(parent);

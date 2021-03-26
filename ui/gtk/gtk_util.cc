@@ -88,20 +88,14 @@ GdkModifierType GetIbusFlags(const ui::KeyEvent& key_event) {
                                       << ui::kPropertyKeyboardIBusFlagOffset);
 }
 
-#if BUILDFLAG(GTK_VERSION) < 4
-float GetDeviceScaleFactor() {
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
-}
-#endif
-
 GtkCssContext AppendCssNodeToStyleContextImpl(
     GtkCssContext context,
     GType gtype,
     const std::string& name,
     const std::string& object_name,
     const std::vector<std::string>& classes,
-    GtkStateFlags state) {
+    GtkStateFlags state,
+    float scale) {
 #if BUILDFLAG(GTK_VERSION) >= 4
   // GTK_TYPE_BOX is used instead of GTK_TYPE_WIDGET because:
   // 1. Widgets are abstract and cannot be created directly.
@@ -127,6 +121,9 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
 
   if (context)
     gtk_widget_set_parent(widget, context);
+
+  gtk_style_context_set_scale(gtk_widget_get_style_context(widget), scale);
+
   return GtkCssContext(widget, context ? context.root() : widget);
 #else
   GtkWidgetPath* path =
@@ -166,8 +163,11 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
     }
     gtk_style_context_set_state(child_context, child_state);
   }
-  gtk_style_context_set_scale(child_context, std::ceil(GetDeviceScaleFactor()));
+
+  gtk_style_context_set_scale(child_context, scale);
+
   gtk_style_context_set_parent(child_context, context);
+
   gtk_widget_path_unref(path);
   return GtkCssContext(child_context);
 #endif
@@ -194,13 +194,8 @@ void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
     return;
 
   gtk_widget_realize(dialog);
-#if BUILDFLAG(GTK_VERSION) >= 4
-  GdkWindow* gdk_window = gtk_native_get_surface(gtk_widget_get_native(dialog));
-#else
-  GdkWindow* gdk_window = gtk_widget_get_window(dialog);
-#endif
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetDelegate()->SetGdkWindowTransientFor(gdk_window, parent_id);
+  GtkUi::GetDelegate()->SetGtkWidgetTransientFor(dialog, parent_id);
 
   // We also set the |parent| as a property of |dialog|, so that we can unlink
   // the two later.
@@ -436,8 +431,10 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
   // widgets specially if they want to.
   classes.push_back("chromium");
 
+  float scale = std::round(GetDeviceScaleFactor());
+
   return AppendCssNodeToStyleContextImpl(context, gtype, name, object_name,
-                                         classes, state);
+                                         classes, state, scale);
 }
 
 GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
@@ -453,7 +450,7 @@ GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
   return context;
 }
 
-SkColor GetFgColorFromStyleContext(GtkCssContext context) {
+SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
   GdkRGBA color;
 #if GTK_CHECK_VERSION(3, 90, 0)
   gtk_style_context_get_color(context, &color);
@@ -713,5 +710,62 @@ gfx::Size GetSeparatorSize(bool horizontal) {
   gtk_widget_get_preferred_size(widget, nullptr, &natural_size);
   return {natural_size.width, natural_size.height};
 }
+
+float GetDeviceScaleFactor() {
+  views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
+}
+
+#if BUILDFLAG(GTK_VERSION) >= 4
+GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
+  struct {
+    GskRenderNodeType node_type;
+    GskRenderNode* (*get_child)(GskRenderNode*);
+  } constexpr simple_getters[] = {
+      {GSK_TRANSFORM_NODE, gsk_transform_node_get_child},
+      {GSK_OPACITY_NODE, gsk_opacity_node_get_child},
+      {GSK_COLOR_MATRIX_NODE, gsk_color_matrix_node_get_child},
+      {GSK_REPEAT_NODE, gsk_repeat_node_get_child},
+      {GSK_CLIP_NODE, gsk_clip_node_get_child},
+      {GSK_ROUNDED_CLIP_NODE, gsk_rounded_clip_node_get_child},
+      {GSK_SHADOW_NODE, gsk_shadow_node_get_child},
+      {GSK_BLUR_NODE, gsk_blur_node_get_child},
+      {GSK_DEBUG_NODE, gsk_debug_node_get_child},
+  };
+  struct {
+    GskRenderNodeType node_type;
+    guint (*get_n_children)(GskRenderNode*);
+    GskRenderNode* (*get_child)(GskRenderNode*, guint);
+  } constexpr container_getters[] = {
+      {GSK_CONTAINER_NODE, gsk_container_node_get_n_children,
+       gsk_container_node_get_child},
+      {GSK_GL_SHADER_NODE, gsk_gl_shader_node_get_n_children,
+       gsk_gl_shader_node_get_child},
+  };
+
+  if (!node)
+    return nullptr;
+
+  auto node_type = gsk_render_node_get_node_type(node);
+  if (node_type == GSK_TEXTURE_NODE)
+    return gsk_texture_node_get_texture(node);
+  for (const auto& getter : simple_getters) {
+    if (node_type == getter.node_type) {
+      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node)))
+        return texture;
+    }
+  }
+  for (const auto& getter : container_getters) {
+    if (node_type != getter.node_type)
+      continue;
+    for (guint i = 0; i < getter.get_n_children(node); ++i) {
+      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node, i)))
+        return texture;
+    }
+    return nullptr;
+  }
+  return nullptr;
+}
+#endif
 
 }  // namespace gtk

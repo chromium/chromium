@@ -14,13 +14,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gtk/gtk_buildflags.h"
 
-typedef struct _GtkIMContext GtkIMContext;
-
-#if BUILDFLAG(GTK_VERSION) == 3
+using GtkIMContext = struct _GtkIMContext;
 using GdkWindow = struct _GdkWindow;
-#else
-using GdkWindow = struct _GdkSurface;
-#endif
 
 namespace gtk {
 
@@ -84,7 +79,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   gpointer gdk_last_set_client_window_ = nullptr;
 #endif
 
-  // Last known caret bounds relative to the screen coordinates.
+  // Last known caret bounds relative to the screen coordinates, in DIPs.
   gfx::Rect last_caret_bounds_;
 
   DISALLOW_COPY_AND_ASSIGN(InputMethodContextImplGtk);

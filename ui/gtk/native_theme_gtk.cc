@@ -14,6 +14,16 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 
+#if BUILDFLAG(GTK_VERSION) >= 4
+#define CSS_MENU "#popover.background.menu #contents"
+#define CSS_MENUITEM "#modelbutton.flat"
+#define CSS_SCROLLBAR "#scrollbar #range"
+#else
+#define CSS_MENU "GtkMenu#menu"
+#define CSS_MENUITEM "GtkMenuItem#menuitem"
+#define CSS_SCROLLBAR "GtkScrollbar#scrollbar #trough"
+#endif
+
 namespace gtk {
 
 namespace {
@@ -101,57 +111,56 @@ base::Optional<SkColor> SkColorFromColorId(ui::NativeTheme::ColorId color_id) {
     case ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor:
     case ui::NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor:
     case ui::NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor:
-      return GetBgColor("GtkMenu#menu");
+      return GetBgColor(CSS_MENU);
     case ui::NativeTheme::kColorId_MenuBorderColor:
-      return GetBorderColor("GtkMenu#menu");
+      return GetBorderColor(CSS_MENU);
     case ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor:
-      return GetBgColor("GtkMenu#menu GtkMenuItem#menuitem:hover");
+      return GetBgColor(CSS_MENU " " CSS_MENUITEM ":hover");
     case ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor:
     case ui::NativeTheme::kColorId_MenuDropIndicator:
     case ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem GtkLabel#label");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM " GtkLabel#label");
     case ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor:
-      return GetFgColor(
-          "GtkMenu#menu GtkMenuItem#menuitem:hover GtkLabel#label");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ":hover GtkLabel#label");
     case ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor:
-      return GetFgColor(
-          "GtkMenu#menu GtkMenuItem#menuitem:disabled GtkLabel#label");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ":disabled GtkLabel#label");
     case ui::NativeTheme::kColorId_AvatarIconGuest:
     case ui::NativeTheme::kColorId_MenuItemMinorTextColor:
       if (GtkCheckVersion(3, 20)) {
-        return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #accelerator");
+        return GetFgColor(CSS_MENU " " CSS_MENUITEM " #accelerator");
       }
-      return GetFgColor(
-          "GtkMenu#menu GtkMenuItem#menuitem GtkLabel#label.accelerator");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM
+                                 " GtkLabel#label.accelerator");
     case ui::NativeTheme::kColorId_MenuSeparatorColor:
     case ui::NativeTheme::kColorId_AvatarHeaderArt:
       if (GtkCheckVersion(3, 20)) {
-        return GetSeparatorColor(
-            "GtkMenu#menu GtkSeparator#separator.horizontal");
+        return GetSeparatorColor(CSS_MENU " GtkSeparator#separator.horizontal");
       }
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem.separator");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ".separator");
 
     // Dropdown
     case ui::NativeTheme::kColorId_DropdownBackgroundColor:
       return GetBgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) GtkMenuItem#menuitem "
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          " "
           "GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownForegroundColor:
       return GetFgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) GtkMenuItem#menuitem "
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          " "
           "GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownSelectedBackgroundColor:
       return GetBgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) "
-          "GtkMenuItem#menuitem:hover GtkCellView#cellview");
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          ":hover GtkCellView#cellview");
     case ui::NativeTheme::kColorId_DropdownSelectedForegroundColor:
       return GetFgColor(
           "GtkComboBoxText#combobox GtkWindow#window.background.popup "
-          "GtkTreeMenu#menu(gtk-combobox-popup-menu) "
-          "GtkMenuItem#menuitem:hover GtkCellView#cellview");
+          "GtkTreeMenu#menu(gtk-combobox-popup-menu) " CSS_MENUITEM
+          ":hover GtkCellView#cellview");
 
     // Label
     case ui::NativeTheme::kColorId_LabelEnabledColor:
@@ -381,8 +390,8 @@ base::Optional<SkColor> SkColorFromColorId(ui::NativeTheme::ColorId color_id) {
 
     case ui::NativeTheme::kColorId_MenuIconColor:
       if (GtkCheckVersion(3, 20))
-        return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #radio");
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem.radio");
+        return GetFgColor(CSS_MENU " " CSS_MENUITEM " #radio");
+      return GetFgColor(CSS_MENU " " CSS_MENUITEM ".radio");
 
     case ui::NativeTheme::kColorId_DefaultIconColor:
       return GetFgColor("GtkButton#button.flat.scale GtkImage#image");
@@ -563,10 +572,12 @@ void NativeThemeGtk::PaintArrowButton(
     State state,
     ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& arrow) const {
+  // Add the "flat" styleclass to avoid drawing a border.
   auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? "GtkScrollbar#scrollbar #contents GtkButton#button"
-          : "GtkRange.scrollbar.button");
+      GtkCheckVersion(3, 20) ? CSS_SCROLLBAR " #range GtkButton#button.flat"
+                             : "GtkRange.scrollbar.button.flat");
+  // Remove any rounded corners since arrow scrollbar buttons are tiny.
+  ApplyCssToContext(context, "* { border-radius: 0px; }");
   GtkStateFlags state_flags = StateToStateFlags(state);
   gtk_style_context_set_state(context, state_flags);
 
@@ -587,7 +598,7 @@ void NativeThemeGtk::PaintArrowButton(
       NOTREACHED();
   }
 
-  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
+  PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, false);
   PaintArrow(canvas, rect, direction, GetFgColorFromStyleContext(context));
 }
 
@@ -598,12 +609,11 @@ void NativeThemeGtk::PaintScrollbarTrack(
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  PaintWidget(
-      canvas, rect,
-      GetStyleContextFromCss(GtkCheckVersion(3, 20)
-                                 ? "GtkScrollbar#scrollbar #contents #trough"
-                                 : "GtkScrollbar.scrollbar.trough"),
-      BG_RENDER_NORMAL, true);
+  PaintWidget(canvas, rect,
+              GetStyleContextFromCss(GtkCheckVersion(3, 20)
+                                         ? CSS_SCROLLBAR " #trough"
+                                         : "GtkScrollbar.scrollbar.trough"),
+              BG_RENDER_NORMAL, true);
 }
 
 void NativeThemeGtk::PaintScrollbarThumb(
@@ -613,10 +623,9 @@ void NativeThemeGtk::PaintScrollbarThumb(
     const gfx::Rect& rect,
     NativeTheme::ScrollbarOverlayColorTheme theme,
     ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss(
-      GtkCheckVersion(3, 20)
-          ? "GtkScrollbar#scrollbar #contents #trough #slider"
-          : "GtkScrollbar.scrollbar.slider");
+  auto context = GetStyleContextFromCss(GtkCheckVersion(3, 20)
+                                            ? CSS_SCROLLBAR " #trough #slider"
+                                            : "GtkScrollbar.scrollbar.slider");
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
 }
@@ -637,8 +646,10 @@ void NativeThemeGtk::PaintMenuPopupBackground(
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
-  PaintWidget(canvas, gfx::Rect(size), GetStyleContextFromCss("GtkMenu#menu"),
-              BG_RENDER_RECURSIVE, false);
+  auto context = GetStyleContextFromCss(CSS_MENU);
+  // Chrome menus aren't rendered with transparency, so avoid rounded corners.
+  ApplyCssToContext(context, "* { border-radius: 0px; }");
+  PaintWidget(canvas, gfx::Rect(size), context, BG_RENDER_RECURSIVE, false);
 }
 
 void NativeThemeGtk::PaintMenuItemBackground(
@@ -647,7 +658,7 @@ void NativeThemeGtk::PaintMenuItemBackground(
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
     ColorScheme color_scheme) const {
-  auto context = GetStyleContextFromCss("GtkMenu#menu GtkMenuItem#menuitem");
+  auto context = GetStyleContextFromCss(CSS_MENU " " CSS_MENUITEM);
   gtk_style_context_set_state(context, StateToStateFlags(state));
   PaintWidget(canvas, rect, context, BG_RENDER_NORMAL, true);
 }
@@ -680,8 +691,8 @@ void NativeThemeGtk::PaintMenuSeparator(
     }
   };
   if (GtkCheckVersion(3, 20)) {
-    auto context = GetStyleContextFromCss(
-        "GtkMenu#menu GtkSeparator#separator.horizontal");
+    auto context =
+        GetStyleContextFromCss(CSS_MENU " GtkSeparator#separator.horizontal");
     GtkBorder margin, border, padding;
     int min_height = 1;
 #if GTK_CHECK_VERSION(3, 90, 0)
@@ -705,8 +716,8 @@ void NativeThemeGtk::PaintMenuSeparator(
     PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
   } else {
 #if !GTK_CHECK_VERSION(3, 90, 0)
-    auto context = GetStyleContextFromCss(
-        "GtkMenu#menu GtkMenuItem#menuitem.separator.horizontal");
+    auto context = GetStyleContextFromCss(CSS_MENU " " CSS_MENUITEM
+                                                   ".separator.horizontal");
     gboolean wide_separators = false;
     gint separator_height = 0;
     gtk_style_context_get_style(context, "wide-separators", &wide_separators,

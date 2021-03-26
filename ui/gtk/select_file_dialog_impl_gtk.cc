@@ -4,6 +4,7 @@
 
 #include "ui/gtk/select_file_dialog_impl_gtk.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <stddef.h>
 #include <sys/stat.h>
@@ -17,6 +18,8 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,19 +39,45 @@
 namespace {
 
 #if GTK_CHECK_VERSION(3, 90, 0)
-// GTK stock items have been deprecated.  The docs say to switch to using the
-// strings "_Open", etc.  However this breaks i18n.  We could supply our own
-// internationalized strings, but the "_" in these strings is significant: it's
-// the keyboard shortcut to select these actions.  TODO(thomasanderson): Provide
-// internationalized strings when GTK provides support for it.
-const char kCancelLabel[] = "_Cancel";
-const char kOpenLabel[] = "_Open";
-const char kSaveLabel[] = "_Save";
+// TODO(https://crbug.com/981309): These getters will be unnecessary after
+// migrating to GtkFileChooserNative.
+const char* GettextPackage() {
+  static base::NoDestructor<std::string> gettext_package(
+      "gtk" + base::NumberToString(BUILDFLAG(GTK_VERSION)) + "0");
+  return gettext_package->c_str();
+}
+
+const char* GtkGettext(const char* str) {
+  return g_dgettext(GettextPackage(), str);
+}
+
+const char* GetCancelLabel() {
+  static const char* cancel = GtkGettext("_Cancel");
+  return cancel;
+}
+
+const char* GetOpenLabel() {
+  static const char* open = GtkGettext("_Open");
+  return open;
+}
+
+const char* GetSaveLabel() {
+  static const char* save = GtkGettext("_Save");
+  return save;
+}
 #else
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-const char* const kCancelLabel = GTK_STOCK_CANCEL;
-const char* const kOpenLabel = GTK_STOCK_OPEN;
-const char* const kSaveLabel = GTK_STOCK_SAVE;
+const char* GetCancelLabel() {
+  return GTK_STOCK_CANCEL;
+}
+
+const char* GetOpenLabel() {
+  return GTK_STOCK_OPEN;
+}
+
+const char* GetSaveLabel() {
+  return GTK_STOCK_SAVE;
+}
 G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
@@ -147,7 +176,7 @@ namespace gtk {
 #if !GTK_CHECK_VERSION(3, 90, 0)
 // The size of the preview we display for selected image files. We set height
 // larger than width because generally there is more free space vertically
-// than horiztonally (setting the preview image will alway expand the width of
+// than horiztonally (setting the preview image will always expand the width of
 // the dialog, but usually not the height). The image's aspect ratio will always
 // be preserved.
 static const int kPreviewWidth = 256;
@@ -168,9 +197,13 @@ SelectFileDialogImplGTK::SelectFileDialogImplGTK(
 SelectFileDialogImplGTK::~SelectFileDialogImplGTK() {
   for (auto* window : parents_)
     window->RemoveObserver(this);
-  while (!dialogs_.empty()) {
-    auto* widget = *(dialogs_.begin());
-    GtkWindowDestroy(widget);
+  auto dialogs = dialogs_;
+  for (auto dialog_signal : dialogs) {
+    auto* dialog = dialog_signal.first;
+    auto signal_id = dialog_signal.second;
+    g_signal_handler_disconnect(dialog, signal_id);
+    GtkWindowDestroy(dialog);
+    OnFileChooserDestroy(dialog);
   }
 }
 
@@ -184,7 +217,8 @@ bool SelectFileDialogImplGTK::HasMultipleFileTypeChoicesImpl() {
 
 void SelectFileDialogImplGTK::OnWindowDestroying(aura::Window* window) {
   // Remove the |parent| property associated with the |dialog|.
-  for (auto* dialog : dialogs_) {
+  for (auto dialog_signal : dialogs_) {
+    auto* dialog = dialog_signal.first;
     aura::Window* parent = GetAuraTransientParent(dialog);
     if (parent == window)
       ClearAuraTransientParent(dialog, parent);
@@ -247,10 +281,9 @@ void SelectFileDialogImplGTK::SelectFileImpl(
   g_signal_connect(dialog, "delete-event",
                    G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
 #endif
-  dialogs_.insert(dialog);
 
-  g_signal_connect(dialog, "destroy", G_CALLBACK(OnFileChooserDestroyThunk),
-                   this);
+  dialogs_[dialog] = g_signal_connect(
+      dialog, "destroy", G_CALLBACK(OnFileChooserDestroyThunk), this);
 
 #if !GTK_CHECK_VERSION(3, 90, 0)
   preview_ = gtk_image_new();
@@ -383,8 +416,8 @@ GtkWidget* SelectFileDialogImplGTK::CreateFileOpenHelper(
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
-      title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, kCancelLabel,
-      GTK_RESPONSE_CANCEL, kOpenLabel, GTK_RESPONSE_ACCEPT, nullptr);
+      title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
+      GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT, nullptr);
   SetGtkTransientForAura(dialog, parent);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
@@ -419,11 +452,11 @@ GtkWidget* SelectFileDialogImplGTK::CreateSelectFolderDialog(
       (type == SELECT_UPLOAD_FOLDER)
           ? l10n_util::GetStringUTF8(
                 IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)
-          : kOpenLabel;
+          : GetOpenLabel();
 
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-      kCancelLabel, GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
+      GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
       GTK_RESPONSE_ACCEPT, nullptr);
   SetGtkTransientForAura(dialog, parent);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
@@ -486,8 +519,9 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
                      : l10n_util::GetStringUTF8(IDS_SAVE_AS_DIALOG_TITLE);
 
   GtkWidget* dialog = gtk_file_chooser_dialog_new(
-      title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE, kCancelLabel,
-      GTK_RESPONSE_CANCEL, kSaveLabel, GTK_RESPONSE_ACCEPT, nullptr);
+      title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE,
+      GetCancelLabel(), GTK_RESPONSE_CANCEL, GetSaveLabel(),
+      GTK_RESPONSE_ACCEPT, nullptr);
   SetGtkTransientForAura(dialog, parent);
 
   AddFilters(GTK_FILE_CHOOSER(dialog));

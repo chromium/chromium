@@ -180,7 +180,7 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
 // must g_object_unref() the returned context.
 GtkCssContext GetStyleContextFromCss(const std::string& css_selector);
 
-SkColor GetFgColorFromStyleContext(GtkCssContext context);
+SkColor GetFgColorFromStyleContext(GtkStyleContext* context);
 
 SkColor GetBgColorFromStyleContext(GtkCssContext context);
 
@@ -253,6 +253,12 @@ void GtkWindowDestroy(GtkWidget* widget);
 GtkWidget* GetDummyWindow();
 
 gfx::Size GetSeparatorSize(bool horizontal);
+
+float GetDeviceScaleFactor();
+
+#if BUILDFLAG(GTK_VERSION) >= 4
+GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
+#endif
 
 }  // namespace gtk
 

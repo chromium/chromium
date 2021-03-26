@@ -12,12 +12,7 @@
 using GdkKeymap = struct _GdkKeymap;
 using GtkWindow = struct _GtkWindow;
 using GtkWidget = struct _GtkWidget;
-
-#if BUILDFLAG(GTK_VERSION) == 3
 using GdkWindow = struct _GdkWindow;
-#else
-using GdkWindow = struct _GdkSurface;
-#endif
 
 namespace ui {
 
@@ -56,7 +51,7 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
-  virtual bool SetGdkWindowTransientFor(GdkWindow* window,
+  virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 

@@ -58,8 +58,8 @@ GdkWindow* GtkUiDelegateWayland::GetGdkWindow(
   return nullptr;
 }
 
-bool GtkUiDelegateWayland::SetGdkWindowTransientFor(
-    GdkWindow* window,
+bool GtkUiDelegateWayland::SetGtkWidgetTransientFor(
+    GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
 #if !GTK_CHECK_VERSION(3, 90, 0)
   if (!gdk_wayland_window_set_transient_for_exported) {
@@ -80,7 +80,7 @@ bool GtkUiDelegateWayland::SetGdkWindowTransientFor(
 
   foreign->ExportSurfaceToForeign(
       parent_window, base::BindOnce(&GtkUiDelegateWayland::OnHandle,
-                                    weak_factory_.GetWeakPtr(), window));
+                                    weak_factory_.GetWeakPtr(), widget));
   return true;
 }
 
@@ -99,13 +99,16 @@ int GtkUiDelegateWayland::GetGdkKeyState() {
   return connection_->event_source()->keyboard_modifiers();
 }
 
-void GtkUiDelegateWayland::OnHandle(GdkWindow* window,
+void GtkUiDelegateWayland::OnHandle(GtkWidget* widget,
                                     const std::string& handle) {
   char* parent = const_cast<char*>(handle.c_str());
 #if GTK_CHECK_VERSION(3, 90, 0)
-  gdk_wayland_toplevel_set_transient_for_exported(GDK_TOPLEVEL(window), parent);
+  auto* toplevel =
+      GDK_TOPLEVEL(gtk_native_get_surface(gtk_widget_get_native(widget)));
+  gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);
 #else
-  gdk_wayland_window_set_transient_for_exported(window, parent);
+  gdk_wayland_window_set_transient_for_exported(gtk_widget_get_window(widget),
+                                                parent);
 #endif
 }
 

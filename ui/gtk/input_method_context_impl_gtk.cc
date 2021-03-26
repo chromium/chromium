@@ -116,20 +116,13 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
 
   // Convert the last known caret bounds relative to the screen coordinates
   // to a GdkRectangle relative to the client window.
-  gint win_x = 0;
-  gint win_y = 0;
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gint factor = gtk_widget_get_scale_factor(GetDummyWindow());
-#else
-  gdk_window_get_origin(target_window, &win_x, &win_y);
-  gint factor = gdk_window_get_scale_factor(target_window);
-#endif
-
-  gint caret_x = last_caret_bounds_.x() / factor;
-  gint caret_y = last_caret_bounds_.y() / factor;
-  gint caret_w = last_caret_bounds_.width() / factor;
-  gint caret_h = last_caret_bounds_.height() / factor;
-
+  aura::Window* window = static_cast<aura::Window*>(key_event.target());
+  gint win_x = window->GetBoundsInScreen().x();
+  gint win_y = window->GetBoundsInScreen().y();
+  gint caret_x = last_caret_bounds_.x();
+  gint caret_y = last_caret_bounds_.y();
+  gint caret_w = last_caret_bounds_.width();
+  gint caret_h = last_caret_bounds_.height();
   GdkRectangle gdk_rect = {caret_x - win_x, caret_y - win_y, caret_w, caret_h};
   gtk_im_context_set_cursor_location(gtk_context_, &gdk_rect);
 
@@ -183,14 +176,9 @@ void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
   // Remember the caret bounds so that we can set the cursor location later.
   // gtk_im_context_set_cursor_location() takes the location relative to the
   // client window, which is unknown at this point.  So we'll call
-  // gtk_im_context_set_cursor_location() later in ProcessKeyEvent() where
+  // gtk_im_context_set_cursor_location() later in DispatchKeyEvent() where
   // (and only where) we know the client window.
-  if (views::LinuxUI::instance()) {
-    last_caret_bounds_ = gfx::ToEnclosingRect(gfx::ConvertRectToPixels(
-        rect, views::LinuxUI::instance()->GetDeviceScaleFactor()));
-  } else {
-    last_caret_bounds_ = rect;
-  }
+  last_caret_bounds_ = rect;
 }
 
 void InputMethodContextImplGtk::SetSurroundingText(
