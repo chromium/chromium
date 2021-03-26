@@ -343,7 +343,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (BOOL)isSettingsViewPresented {
   return self.settingsNavigationController ||
-         self.signinCoordinator.isSettingsViewPresented;
+         self.signinCoordinator.isSettingsViewPresented ||
+         self.welcomeToChromeController;
 }
 
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
@@ -2517,9 +2518,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  completion:nil];
 }
 
+// TODO(crbug.com/1192019): Rename this method in -[SceneController
+// closeUIAnimated:completion:].
 - (void)closeSettingsAnimated:(BOOL)animated
                    completion:(ProceduralBlock)completion {
   if (self.settingsNavigationController) {
+    DCHECK(!self.welcomeToChromeController);
     ProceduralBlock dismissSettings = ^() {
       [self.settingsNavigationController cleanUpSettings];
       UIViewController* presentingViewController =
@@ -2540,20 +2544,30 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     } else if (dismissSettings) {
       dismissSettings();
     }
-    return;
+  } else if (self.welcomeToChromeController) {
+    DCHECK(!self.signinCoordinator);
+    // If kSSOAccountCreationInChromeTab is set, the FRE has to be interrupted,
+    // to open the account creation URL.
+    [self.welcomeToChromeController
+        interruptSigninCoordinatorWithCompletion:completion];
+  } else if (self.signinCoordinator) {
+    // |self.signinCoordinator| can also present settings, like
+    // the advanced sign-in settings navigation controller. If the settings has
+    // to be closed, it is thus the responsibility of the main controller to
+    // dismiss the advanced sign-in settings by dismssing the settings
+    // presented by |self.signinCoordinator|.
+    // To reproduce this case:
+    //  - open Bookmark view
+    //  - start sign-in
+    //  - tap on "Settings" to open the advanced sign-in settings
+    //  - tap on "Manage Your Google Account"
+    [self interruptSigninCoordinatorAnimated:animated completion:completion];
+  } else {
+    // This can happens when starting a reauth coordinator and the user choose
+    // "Create account". The coordinator dismisses itself, calls its completion
+    // block and then open the create account URL.
+    completion();
   }
-  // |self.signinCoordinator| can also present settings, like
-  // the advanced sign-in settings navigation controller. If the settings has
-  // to be closed, it is thus the responsibility of the main controller to
-  // dismiss the advanced sign-in settings by dismssing the settings
-  // presented by |self.signinCoordinator|.
-  // To reproduce this case:
-  //  - open Bookmark view
-  //  - start sign-in
-  //  - tap on "Settings" to open the advanced sign-in settings
-  //  - tap on "Manage Your Google Account"
-  DCHECK(self.signinCoordinator);
-  [self interruptSigninCoordinatorAnimated:animated completion:completion];
 }
 
 - (UIViewController*)topPresentedViewController {
@@ -2567,6 +2581,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // with or without animation.
 - (void)interruptSigninCoordinatorAnimated:(BOOL)animated
                                 completion:(ProceduralBlock)completion {
+  DCHECK(self.signinCoordinator);
   SigninCoordinatorInterruptAction action =
       animated ? SigninCoordinatorInterruptActionDismissWithAnimation
                : SigninCoordinatorInterruptActionDismissWithoutAnimation;
