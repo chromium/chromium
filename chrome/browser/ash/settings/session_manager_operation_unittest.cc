@@ -70,7 +70,7 @@ class SessionManagerOperationTest : public testing::Test {
  public:
   SessionManagerOperationTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         validated_(false) {
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
@@ -114,7 +114,7 @@ class SessionManagerOperationTest : public testing::Test {
   ObservableFakeSessionManagerClient session_manager_client_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   std::unique_ptr<TestingProfile> profile_;

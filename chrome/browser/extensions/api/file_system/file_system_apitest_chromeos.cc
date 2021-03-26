@@ -260,7 +260,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   // Creates a testing file system in a testing directory.
@@ -286,7 +286,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
 
   // Simulates entering the kiosk session.
   void EnterKioskSession() {
-    fake_user_manager_ = new chromeos::FakeChromeUserManager();
+    fake_user_manager_ = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 

@@ -178,7 +178,7 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
 
   void SetUpOnMainThread() override {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(AccountId::FromUserEmail(kTestProfileName));
     GetFakeUserManager()->AddArcKioskAppUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
@@ -200,8 +200,8 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
   int accepted_response_count() const { return accepted_response_count_; }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

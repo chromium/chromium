@@ -41,7 +41,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
  public:
   TPMAutoUpdateModePolicyHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
   }
@@ -75,7 +75,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Set up fake install attributes to pretend the machine is enrolled.

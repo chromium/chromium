@@ -143,8 +143,7 @@ class ChromeOSMetricsProviderTest : public testing::Test {
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {
   // |scoped_enabler| takes over the lifetime of |user_manager|.
-  chromeos::FakeChromeUserManager* user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* user_manager = new ash::FakeChromeUserManager();
   // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
@@ -164,8 +163,7 @@ TEST_F(ChromeOSMetricsProviderTest, MultiProfileUserCount) {
 
 TEST_F(ChromeOSMetricsProviderTest, MultiProfileCountInvalidated) {
   // |scoped_enabler| takes over the lifetime of |user_manager|.
-  chromeos::FakeChromeUserManager* user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* user_manager = new ash::FakeChromeUserManager();
   // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));
@@ -202,8 +200,7 @@ TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
       chromeos::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
 
   // |scoped_enabler| takes over the lifetime of |user_manager|.
-  chromeos::FakeChromeUserManager* user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* user_manager = new ash::FakeChromeUserManager();
   // TODO(crbug/1154780): Overload operator-> in ScopedUserManager.
   user_manager::ScopedUserManager scoped_enabler(
       base::WrapUnique(user_manager));

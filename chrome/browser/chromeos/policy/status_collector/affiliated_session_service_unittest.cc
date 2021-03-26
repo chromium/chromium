@@ -25,7 +25,7 @@ class AffiliatedSessionServiceTest
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -85,7 +85,7 @@ class AffiliatedSessionServiceTest
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   session_manager::SessionManager session_manager_;

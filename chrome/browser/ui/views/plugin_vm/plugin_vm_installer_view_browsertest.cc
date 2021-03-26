@@ -172,7 +172,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   void SetUserWithAffiliation() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         browser()->profile()->GetProfileUserName(), "id"));
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager->AddUserWithAffiliation(account_id, true);
     user_manager->LoginUser(account_id);
     chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(

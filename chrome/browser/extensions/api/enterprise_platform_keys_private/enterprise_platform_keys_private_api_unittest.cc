@@ -34,7 +34,7 @@ const char kUserEmail[] = "test@google.com";
 class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
  protected:
   EPKPChallengeKeyTestBase()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager()),
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     extension_ = ExtensionBuilder("Test").Build();
   }
@@ -70,7 +70,7 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   scoped_refptr<const Extension> extension_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   PrefService* prefs_ = nullptr;
 };

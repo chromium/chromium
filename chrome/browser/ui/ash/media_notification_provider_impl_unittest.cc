@@ -120,8 +120,7 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
  private:
   session_manager::SessionManager session_manager_;
-  chromeos::FakeChromeUserManager* user_manager_{
-      new chromeos::FakeChromeUserManager()};
+  ash::FakeChromeUserManager* user_manager_{new ash::FakeChromeUserManager()};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   views::LayoutProvider layout_provider_;

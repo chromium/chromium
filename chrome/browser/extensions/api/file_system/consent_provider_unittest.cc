@@ -116,7 +116,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
     testing_pref_service_.reset(new TestingPrefServiceSimple);
     TestingBrowserProcess::GetGlobal()->SetLocalState(
         testing_pref_service_.get());
-    user_manager_ = new chromeos::FakeChromeUserManager;
+    user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_enabler_ =
         std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(user_manager_));
@@ -134,8 +134,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
  protected:
   base::WeakPtr<Volume> volume_;
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
-  chromeos::FakeChromeUserManager*
-      user_manager_;  // Owned by the scope enabler.
+  ash::FakeChromeUserManager* user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;

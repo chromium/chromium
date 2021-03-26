@@ -337,7 +337,7 @@ void UserActiveDirectoryPolicyManager::OnPublishPolicy() {
       policy_data->user_affiliation_ids().begin(),
       policy_data->user_affiliation_ids().end());
 
-  chromeos::ChromeUserManager::Get()->SetUserAffiliation(
+  ash::ChromeUserManager::Get()->SetUserAffiliation(
       account_id_, set_of_user_affiliation_ids);
 }
 

@@ -54,7 +54,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
 
     // Initialize the UserManager singleton to a fresh FakeUserManager instance.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 
     message_center::MessageCenter::Initialize();
   }
@@ -104,8 +104,8 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
   std::vector<ash::NotifierMetadata> notifiers_;
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

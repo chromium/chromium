@@ -34,7 +34,7 @@ class InputMethodPersistenceTest : public testing::Test {
  protected:
   InputMethodPersistenceTest()
       : mock_profile_manager_(TestingBrowserProcess::GetGlobal()),
-        fake_user_manager_(new chromeos::FakeChromeUserManager()),
+        fake_user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   void SetUp() override {
@@ -71,7 +71,7 @@ class InputMethodPersistenceTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable* mock_user_prefs_;
   MockInputMethodManagerImpl mock_manager_;
   TestingProfileManager mock_profile_manager_;
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

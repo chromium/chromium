@@ -16,7 +16,7 @@ namespace policy {
 namespace {
 
 ash::UserImageManager* GetUserImageManager(const std::string& user_id) {
-  return chromeos::ChromeUserManager::Get()->GetUserImageManager(
+  return ash::ChromeUserManager::Get()->GetUserImageManager(
       CloudExternalDataPolicyHandler::GetAccountId(user_id));
 }
 
@@ -57,7 +57,7 @@ void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
 
 void UserAvatarImageExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  chromeos::ChromeUserManager::Get()
+  ash::ChromeUserManager::Get()
       ->GetUserImageManager(account_id)
       ->DeleteUserImage();
 }

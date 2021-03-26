@@ -117,6 +117,7 @@ using base::TimeDelta;
 namespace em = enterprise_management;
 
 namespace {
+
 // How many seconds of inactivity triggers the idle state.
 const int kIdleStateThresholdSeconds = 300;
 
@@ -1966,8 +1967,7 @@ std::string DeviceStatusCollector::GetUserForActivityReporting() const {
 
   // Report only affiliated users for enterprise reporting.
   std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
-  if (!chromeos::ChromeUserManager::Get()->ShouldReportUser(
-          primary_user_email)) {
+  if (!ash::ChromeUserManager::Get()->ShouldReportUser(primary_user_email)) {
     return std::string();
   }
   return primary_user_email;
@@ -2206,7 +2206,7 @@ bool DeviceStatusCollector::GetNetworkInterfaces(
 
 bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
   const user_manager::UserList& users =
-      chromeos::ChromeUserManager::Get()->GetUsers();
+      ash::ChromeUserManager::Get()->GetUsers();
 
   bool anything_reported = false;
   for (auto* user : users) {
@@ -2215,7 +2215,7 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
       continue;
 
     em::DeviceUser* device_user = status->add_users();
-    if (chromeos::ChromeUserManager::Get()->ShouldReportUser(
+    if (ash::ChromeUserManager::Get()->ShouldReportUser(
             user->GetAccountId().GetUserEmail())) {
       device_user->set_type(em::DeviceUser::USER_TYPE_MANAGED);
       device_user->set_email(user->GetAccountId().GetUserEmail());

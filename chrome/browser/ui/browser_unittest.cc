@@ -257,8 +257,7 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 
   // Setting up user manager state to be in kiosk mode:
   // Creating a new user manager.
-  chromeos::FakeChromeUserManager* user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager manager{
       std::unique_ptr<user_manager::UserManager>(user_manager)};
   const user_manager::User* user =

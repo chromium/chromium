@@ -45,7 +45,7 @@ class ReportClientTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set up fake primary profile.
     auto mock_user_manager =
-        std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
+        std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(

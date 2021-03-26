@@ -122,11 +122,10 @@ class ChromePermissionRequestManagerTest
       const GURL& app_url) {
     const AccountId account_id = AccountId::FromUserEmail("lala@example.com");
 
-    auto fake_user_manager =
-        std::make_unique<chromeos::FakeChromeUserManager>();
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     // Stealing the pointer from unique ptr before it goes to the scoped user
     // manager.
-    chromeos::FakeChromeUserManager* user_manager = fake_user_manager.get();
+    ash::FakeChromeUserManager* user_manager = fake_user_manager.get();
     auto scoped_user_manager =
         std::make_unique<user_manager::ScopedUserManager>(
             std::move(fake_user_manager));

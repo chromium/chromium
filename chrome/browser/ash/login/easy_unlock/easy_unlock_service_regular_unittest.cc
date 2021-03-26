@@ -148,8 +148,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
     account_id_ = AccountId::FromUserEmail(profile_->GetProfileUserName());
 
-    auto fake_chrome_user_manager =
-        std::make_unique<chromeos::FakeChromeUserManager>();
+    auto fake_chrome_user_manager = std::make_unique<FakeChromeUserManager>();
     fake_chrome_user_manager_ = fake_chrome_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_chrome_user_manager));
@@ -249,7 +248,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   AccountId account_id_;
-  chromeos::FakeChromeUserManager* fake_chrome_user_manager_;
+  FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   const multidevice::RemoteDeviceRef test_local_device_;

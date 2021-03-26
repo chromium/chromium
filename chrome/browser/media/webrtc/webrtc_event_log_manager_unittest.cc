@@ -4006,7 +4006,7 @@ WebRtcEventLogManagerTestPolicy::GetScopedUserManager(
     user_manager::UserType user_type) {
   const AccountId kAccountId = AccountId::FromUserEmailGaiaId("name", "id");
   auto mock_user_manager =
-      std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
+      std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
   // On Chrome OS, there are different user types, some of which can be
   // affiliated with the device if the device is enterprise-enrolled, i.e. the
   // logged in account belongs to the org that owns the device. For our

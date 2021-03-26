@@ -73,7 +73,7 @@ class WilcoDtcSupportdNotificationControllerTest
     ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
 
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<FakeChromeUserManager>());
 
     auto account = AccountId::FromUserEmail(kProfileName);
     GetFakeUserManager()->AddUser(account);
@@ -109,8 +109,8 @@ class WilcoDtcSupportdNotificationControllerTest
   }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

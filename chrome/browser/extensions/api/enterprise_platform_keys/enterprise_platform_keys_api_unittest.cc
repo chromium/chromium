@@ -50,7 +50,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
  protected:
   EPKChallengeKeyTestBase()
       : extension_(ExtensionBuilder("Test").Build()),
-        fake_user_manager_(new chromeos::FakeChromeUserManager),
+        fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     stub_install_attributes_.SetCloudManaged("google.com", "device_id");
   }
@@ -122,7 +122,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> extension_;
   chromeos::StubInstallAttributes stub_install_attributes_;
   // fake_user_manager_ is owned by user_manager_enabler_.
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   PrefService* prefs_ = nullptr;
   ash::attestation::MockTpmChallengeKey* mock_tpm_challenge_key_ = nullptr;

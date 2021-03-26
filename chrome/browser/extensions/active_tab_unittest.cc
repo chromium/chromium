@@ -570,7 +570,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     wallpaper_controller_client_.reset();
 
     ash::ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting();
-    chromeos::ChromeUserManager::Get()->Shutdown();
+    ash::ChromeUserManager::Get()->Shutdown();
 
     ActiveTabTest::TearDown();
   }

@@ -41,7 +41,7 @@ class ScopedSpoofGoogleBrandedDevice {
   ~ScopedSpoofGoogleBrandedDevice() { OverrideIsGoogleDeviceForTesting(false); }
 };
 
-class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
  public:
   explicit FakeUserManagerWithLocalState(
       TestingProfileManager* testing_profile_manager)

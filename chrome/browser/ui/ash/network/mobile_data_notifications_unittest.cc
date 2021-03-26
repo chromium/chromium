@@ -103,7 +103,7 @@ class MobileDataNotificationsTest : public testing::Test {
         nullptr /* profile */);
   }
   void SetupUserManagerAndProfileManager() {
-    user_manager_ = new chromeos::FakeChromeUserManager;
+    user_manager_ = new ash::FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_));
 
@@ -162,7 +162,7 @@ class MobileDataNotificationsTest : public testing::Test {
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 

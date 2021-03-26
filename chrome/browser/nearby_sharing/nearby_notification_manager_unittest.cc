@@ -1330,7 +1330,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
  public:
   NearbyFilesHoldingSpaceTest()
       : session_controller_(std::make_unique<TestSessionController>()),
-        user_manager_(new chromeos::FakeChromeUserManager) {
+        user_manager_(new ash::FakeChromeUserManager) {
     scoped_feature_list_.InitWithFeatures(
         {features::kNearbySharing, ash::features::kTemporaryHoldingSpace}, {});
 
@@ -1369,7 +1369,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   std::unique_ptr<NearbyNotificationManager> manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<ash::HoldingSpaceController> holding_space_controller_;
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
 };
 
 TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {

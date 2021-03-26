@@ -23,7 +23,7 @@ using ::testing::HasSubstr;
 class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
  public:
   PowerwashRequirementsCheckerTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager()),
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
   void SetUp() override {
@@ -69,7 +69,7 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
  private:
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service=*/false};
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

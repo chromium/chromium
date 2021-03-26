@@ -493,8 +493,7 @@ void UserCloudPolicyManagerChromeOS::OnClientError(
     RegistrationResultUMA(RegistrationResult::kReregistrationUnsuccessful);
     LOG(ERROR) << "Re-registration failed, requiring the user to perform an "
                   "online sign-in.";
-    chromeos::ChromeUserManager::Get()->SaveForceOnlineSignin(account_id_,
-                                                              true);
+    ash::ChromeUserManager::Get()->SaveForceOnlineSignin(account_id_, true);
   }
 }
 
@@ -539,14 +538,13 @@ void UserCloudPolicyManagerChromeOS::OnStoreLoaded(
         policy_data->user_affiliation_ids().begin(),
         policy_data->user_affiliation_ids().end());
 
-    chromeos::ChromeUserManager::Get()->SetUserAffiliation(
+    ash::ChromeUserManager::Get()->SetUserAffiliation(
         account_id_, set_of_user_affiliation_ids);
   }
 }
 
 void UserCloudPolicyManagerChromeOS::SetPolicyRequired(bool policy_required) {
-  chromeos::ChromeUserManager* user_manager =
-      chromeos::ChromeUserManager::Get();
+  auto* user_manager = ash::ChromeUserManager::Get();
   user_manager::known_user::SetProfileRequiresPolicy(
       account_id_,
       policy_required

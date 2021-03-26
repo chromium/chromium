@@ -84,7 +84,7 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 
     const AccountId account_id(AccountId::FromUserEmail(kFakeUserName));
     GetFakeUserManager()->AddArcKioskAppUser(account_id);
@@ -111,8 +111,8 @@ class ArcRobotAuthCodeFetcherBrowserTest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override { user_manager_enabler_.reset(); }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

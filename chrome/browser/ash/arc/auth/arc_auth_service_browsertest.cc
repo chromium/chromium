@@ -209,7 +209,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     // Init ArcSessionManager for testing.
     ArcServiceLauncher::Get()->ResetForTesting();
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -229,7 +229,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
     // TODO(nya): Consider removing all users from ProfileHelper in the
-    // destructor of FakeChromeUserManager.
+    // destructor of ash::FakeChromeUserManager.
     GetFakeUserManager()->RemoveUserFromList(
         GetFakeUserManager()->GetActiveUser()->GetAccountId());
     // Since ArcServiceLauncher is (re-)set up with profile() in
@@ -245,8 +245,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

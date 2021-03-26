@@ -183,7 +183,7 @@ class TestUpdater : public OnDemandUpdater {
 class CrOSComponentInstallerTest : public testing::Test {
  public:
   CrOSComponentInstallerTest()
-      : user_manager_(std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   void SetUp() override {
     ASSERT_TRUE(base_component_paths_.CreateUniqueTempDir());

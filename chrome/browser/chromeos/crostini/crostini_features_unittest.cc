@@ -91,7 +91,7 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
 class CrostiniFeaturesAllowedTest : public testing::Test {
  protected:
   CrostiniFeaturesAllowedTest()
-      : user_manager_(new chromeos::FakeChromeUserManager()),
+      : user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {}
 
   void SetUp() override {
@@ -111,7 +111,7 @@ class CrostiniFeaturesAllowedTest : public testing::Test {
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -150,7 +150,7 @@ TEST_F(CrostiniFeaturesAllowedTest, TestPolicyAffiliatedUserBehaviour) {
 class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest()
-      : user_manager_(new chromeos::FakeChromeUserManager()),
+      : user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {}
 
   void SetFeatureFlag(bool is_enabled) {
@@ -251,7 +251,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper scoped_settings_helper_{
       /* create_settings_service=*/false};
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

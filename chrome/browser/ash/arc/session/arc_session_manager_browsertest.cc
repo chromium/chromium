@@ -122,7 +122,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     // Init ArcSessionManager for testing.
     ArcServiceLauncher::Get()->ResetForTesting();
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -178,7 +178,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
     // TODO(nya): Consider removing all users from ProfileHelper in the
-    // destructor of FakeChromeUserManager.
+    // destructor of ash::FakeChromeUserManager.
     const AccountId account_id(
         AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
     GetFakeUserManager()->RemoveUserFromList(account_id);
@@ -197,8 +197,8 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

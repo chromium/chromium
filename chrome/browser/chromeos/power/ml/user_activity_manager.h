@@ -84,7 +84,7 @@ class UserActivityManager : public ui::UserActivityObserver,
       chromeos::PowerManagerClient* power_manager_client,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-      const chromeos::ChromeUserManager* user_manager);
+      const ChromeUserManager* user_manager);
   ~UserActivityManager() override;
 
   // ui::UserActivityObserver overrides.
@@ -198,7 +198,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
-  const chromeos::ChromeUserManager* const user_manager_;
+  const ChromeUserManager* const user_manager_;
 
   chromeos::PowerManagerClient* const power_manager_client_;
 

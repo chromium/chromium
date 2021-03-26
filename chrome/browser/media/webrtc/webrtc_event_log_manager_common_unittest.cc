@@ -683,9 +683,9 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
   TestingProfile::Builder profile_builder;
   profile_builder.OverridePolicyConnectorIsManagedForTesting(true);
   std::unique_ptr<TestingProfile> testing_profile = profile_builder.Build();
-  std::unique_ptr<testing::NiceMock<chromeos::FakeChromeUserManager>>
-      fake_user_manager_ = std::make_unique<
-          testing::NiceMock<chromeos::FakeChromeUserManager>>();
+  std::unique_ptr<testing::NiceMock<ash::FakeChromeUserManager>>
+      fake_user_manager_ =
+          std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
   // We use a standard Gaia account by default:
   AccountId account_id = AccountId::FromUserEmailGaiaId("name", "id");
 

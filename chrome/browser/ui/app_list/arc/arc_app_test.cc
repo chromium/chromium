@@ -59,15 +59,15 @@ std::vector<arc::mojom::ArcPackageInfoPtr> ArcAppTest::ClonePackages(
 
 ArcAppTest::ArcAppTest() {
   user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<chromeos::FakeChromeUserManager>());
+      std::make_unique<ash::FakeChromeUserManager>());
   CreateFakeAppsAndPackages();
 }
 
 ArcAppTest::~ArcAppTest() {
 }
 
-chromeos::FakeChromeUserManager* ArcAppTest::GetUserManager() {
-  return static_cast<chromeos::FakeChromeUserManager*>(
+ash::FakeChromeUserManager* ArcAppTest::GetUserManager() {
+  return static_cast<ash::FakeChromeUserManager*>(
       user_manager::UserManager::Get());
 }
 

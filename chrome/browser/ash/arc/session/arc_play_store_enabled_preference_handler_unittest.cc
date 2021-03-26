@@ -51,8 +51,7 @@ constexpr char kTestGaiaId[] = "1234567890";
 class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
   ArcPlayStoreEnabledPreferenceHandlerTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
   void SetUp() override {
     // Need to initialize DBusThreadManager before ArcSessionManager's
@@ -109,8 +108,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   ArcPlayStoreEnabledPreferenceHandler* preference_handler() const {
     return preference_handler_.get();
   }
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

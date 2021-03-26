@@ -136,7 +136,7 @@ class UserCloudPolicyManagerChromeOSTest
         task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
         profile_(nullptr),
         signin_profile_(nullptr),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         test_signin_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -378,7 +378,7 @@ class UserCloudPolicyManagerChromeOSTest
       identity_test_env_profile_adaptor_;
   user_manager::UserType user_type_ = user_manager::UserType::USER_TYPE_REGULAR;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.

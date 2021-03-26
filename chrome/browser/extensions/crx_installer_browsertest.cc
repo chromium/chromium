@@ -1046,8 +1046,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
   EXPECT_FALSE(InstallExtension(crx_path, 0));
   // Simulate ChromeOS kiosk mode. |scoped_user_manager| will take over
   // lifetime of |user_manager|.
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   const AccountId account_id(AccountId::FromUserEmail("example@example.com"));
   fake_user_manager->AddKioskAppUser(account_id);
   fake_user_manager->LoginUser(account_id);

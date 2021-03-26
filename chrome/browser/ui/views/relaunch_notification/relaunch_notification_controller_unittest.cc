@@ -824,7 +824,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
     init_params.start_session = false;
     ash_test_helper_.SetUp(std::move(init_params));
 
-    user_manager_ = new chromeos::FakeChromeUserManager();
+    user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_));
 
@@ -871,7 +871,7 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   RelaunchNotificationControllerPlatformImpl impl_;
   ash::AshTestHelper ash_test_helper_;
   session_manager::SessionManager session_manager_;
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<display::test::ActionLogger> logger_;
   display::NativeDisplayDelegate* native_display_delegate_;

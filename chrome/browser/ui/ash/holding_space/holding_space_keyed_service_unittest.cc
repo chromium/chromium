@@ -271,7 +271,7 @@ class MockDownloadManager : public content::MockDownloadManager {
 class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
         download_manager_(
             std::make_unique<testing::NiceMock<MockDownloadManager>>()) {
@@ -443,7 +443,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
         .WillByDefault(testing::Return(true));
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   std::unique_ptr<MockDownloadManager> download_manager_;
 

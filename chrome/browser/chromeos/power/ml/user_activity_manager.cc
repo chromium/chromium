@@ -105,7 +105,7 @@ UserActivityManager::UserActivityManager(
     chromeos::PowerManagerClient* power_manager_client,
     session_manager::SessionManager* session_manager,
     mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-    const chromeos::ChromeUserManager* user_manager)
+    const ChromeUserManager* user_manager)
     : ukm_logger_(ukm_logger),
       user_activity_observer_(this),
       power_manager_client_observer_(this),

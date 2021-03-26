@@ -20,6 +20,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+namespace chromeos {
 namespace {
 
 // URL parameter specifying frame index.
@@ -147,8 +148,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
     }
     if (user->HasDefaultImage()) {
       return LoadUserImageFrameForScaleFactor(
-          chromeos::default_user_image::kDefaultImageResourceIDs
-              [user->image_index()],
+          default_user_image::kDefaultImageResourceIDs[user->image_index()],
           frame, scale_factor);
     }
     NOTREACHED() << "User with custom image missing data bytes";
@@ -160,8 +160,6 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
 }
 
 }  // namespace
-
-namespace chromeos {
 
 // Static.
 scoped_refptr<base::RefCountedMemory> UserImageSource::GetUserImage(

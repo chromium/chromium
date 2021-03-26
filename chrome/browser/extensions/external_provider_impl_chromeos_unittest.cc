@@ -53,7 +53,7 @@ const char kTestUserAccount[] = "user@test";
 class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
  public:
   ExternalProviderImplChromeOSTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager()),
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
   ~ExternalProviderImplChromeOSTest() override {}
@@ -131,14 +131,14 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     EXPECT_EQ(providers.size(), expected_count);
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager() const {
+  ash::FakeChromeUserManager* fake_user_manager() const {
     return fake_user_manager_;
   }
 
  private:
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProviderImplChromeOSTest);

@@ -213,7 +213,7 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
   std::unique_ptr<TpmChallengeKeySubtle> challenge_key_subtle_;
 
   TestingProfileManager testing_profile_manager_;
-  chromeos::FakeChromeUserManager fake_user_manager_;
+  FakeChromeUserManager fake_user_manager_;
   // A sign-in Profile is always created in SetUp().
   TestingProfile* signin_profile_ = nullptr;
   // The profile that will be passed to TpmChallengeKeySubtle - can be nullptr.

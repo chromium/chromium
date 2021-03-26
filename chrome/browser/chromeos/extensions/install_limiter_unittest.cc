@@ -28,8 +28,7 @@ class InstallLimiterTest
     : public testing::TestWithParam<chromeos::DemoSession::DemoModeConfig> {
  public:
   InstallLimiterTest()
-      : scoped_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~InstallLimiterTest() override = default;
 
  private:

@@ -23,8 +23,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 constexpr char kFakeUserName[] = "test@example.com";
 constexpr char kFakeGaiaId[] = "1234567890";
+
 }  // namespace
 
 namespace policy {
@@ -36,7 +38,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   AdbSideloadingAllowanceModePolicyHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         mock_notification_(
             new chromeos::MockAdbSideloadingPolicyChangeNotification()) {
@@ -110,7 +112,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;

@@ -91,16 +91,15 @@ class MockUserCloudPolicyManagerChromeOS
 
 class UserCloudPolicyTokenForwarderTest : public testing::Test {
  protected:
-  static chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  static ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
   UserCloudPolicyTokenForwarderTest()
       : mock_time_task_runner_(
             base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()),
+        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         store_(std::make_unique<MockCloudPolicyStore>()) {}
@@ -140,7 +139,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakeUnconsentedPrimaryAccountAvailable(kEmail);
 
-    chromeos::FakeChromeUserManager* user_manager = GetFakeUserManager();
+    auto* user_manager = GetFakeUserManager();
     user_manager->AddUser(account_id);
     user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false /* is_affiliated */, user_type, profile);

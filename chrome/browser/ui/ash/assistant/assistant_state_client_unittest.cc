@@ -25,8 +25,7 @@
 class AssistantStateClientTest : public ChromeAshTestBase {
  public:
   AssistantStateClientTest()
-      : fake_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~AssistantStateClientTest() override = default;
 
   void SetUp() override {
@@ -75,8 +74,8 @@ class AssistantStateClientTest : public ChromeAshTestBase {
   }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

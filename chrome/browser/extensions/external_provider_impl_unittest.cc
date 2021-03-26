@@ -100,7 +100,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   void InitService() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::ScopedUserManager scoped_user_manager(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 #endif
     InitializeExtensionServiceWithUpdaterAndPrefs();
 

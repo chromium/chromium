@@ -168,7 +168,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
   }
 
   void SetUp() override {
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
     profile_ = std::make_unique<TestingProfile>();

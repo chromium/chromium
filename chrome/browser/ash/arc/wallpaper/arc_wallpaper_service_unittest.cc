@@ -62,7 +62,7 @@ class ArcWallpaperServiceTest : public testing::Test {
  public:
   ArcWallpaperServiceTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {}
   ~ArcWallpaperServiceTest() override = default;
 
@@ -120,7 +120,7 @@ class ArcWallpaperServiceTest : public testing::Test {
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  chromeos::FakeChromeUserManager* const user_manager_ = nullptr;
+  ash::FakeChromeUserManager* const user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   arc::ArcServiceManager arc_service_manager_;
   // testing_profile_ needs to be deleted before arc_service_manager_.

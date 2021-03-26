@@ -33,8 +33,8 @@ CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
 
   chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<chromeos::FakeChromeUserManager>());
-  auto* fake_user_manager = static_cast<chromeos::FakeChromeUserManager*>(
+      std::make_unique<ash::FakeChromeUserManager>());
+  auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
       user_manager::UserManager::Get());
   auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
   fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(

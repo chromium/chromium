@@ -141,10 +141,9 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
 
-    fake_chrome_user_manager_ = new chromeos::FakeChromeUserManager();
+    fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::unique_ptr<chromeos::FakeChromeUserManager>(
-            fake_chrome_user_manager_));
+        std::unique_ptr<ash::FakeChromeUserManager>(fake_chrome_user_manager_));
     mock_login_display_host_ =
         std::make_unique<chromeos::MockLoginDisplayHost>();
     mock_existing_user_controller_ =
@@ -189,7 +188,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
 
-  chromeos::FakeChromeUserManager* fake_chrome_user_manager_;
+  ash::FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<chromeos::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;

@@ -34,7 +34,7 @@ const char kSAMLUserEmail2[] = "bob@corp.example.com";
 constexpr base::TimeDelta kSamlOnlineShortDelay =
     base::TimeDelta::FromSeconds(10);
 
-class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:
   FakeUserManagerWithLocalState()
       : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {

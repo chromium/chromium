@@ -34,8 +34,7 @@ namespace policy {
 class ActiveDirectoryPolicyManagerTest : public testing::Test {
  public:
   ActiveDirectoryPolicyManagerTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()),
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
         install_attributes_(
             chromeos::StubInstallAttributes::CreateActiveDirectoryManaged(
                 "realm.com",

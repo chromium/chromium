@@ -63,7 +63,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile()),
         "testing@account.com");

@@ -258,7 +258,7 @@ class CryptohomeAuthenticatorTest : public testing::Test {
   CryptohomeAuthenticatorTest()
       : user_context_(user_manager::USER_TYPE_REGULAR,
                       AccountId::FromUserEmail("me@nowhere.org")),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         consumer_(run_loop_.QuitClosure()),
         owner_key_util_(new ownership::MockOwnerKeyUtil()) {

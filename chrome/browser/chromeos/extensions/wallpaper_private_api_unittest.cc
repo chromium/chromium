@@ -31,7 +31,7 @@ class WallpaperPrivateApiUnittest : public testing::Test {
  public:
   WallpaperPrivateApiUnittest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
-        fake_user_manager_(new chromeos::FakeChromeUserManager()),
+        fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
   ~WallpaperPrivateApiUnittest() override = default;
@@ -46,16 +46,14 @@ class WallpaperPrivateApiUnittest : public testing::Test {
   }
 
  protected:
-  chromeos::FakeChromeUserManager* fake_user_manager() {
-    return fake_user_manager_;
-  }
+  ash::FakeChromeUserManager* fake_user_manager() { return fake_user_manager_; }
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
 
   user_manager::ScopedUserManager scoped_user_manager_;
 

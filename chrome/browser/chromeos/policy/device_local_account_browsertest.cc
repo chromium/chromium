@@ -2388,14 +2388,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ManagedSessionsDisabled) {
 
   // Check that managed sessions mode is disabled.
   EXPECT_FALSE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Check that disabled managed sessions mode hides full management disclosure
   // warning.
   EXPECT_FALSE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ManagedSessionsEnabledNonRisky) {
@@ -2415,14 +2413,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ManagedSessionsEnabledNonRisky) {
 
   // Check that managed sessions mode is enabled.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Management disclosure warning is shown in the beginning, because
   // kManagedSessionUseFullLoginWarning pref is set to true in the beginning.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   WaitForSessionStart();
@@ -2431,8 +2427,7 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ManagedSessionsEnabledNonRisky) {
   // Check that management disclosure warning is not shown when managed sessions
   // are enabled, but policy settings are not risky.
   ASSERT_FALSE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledSafeExtension) {
@@ -2455,14 +2450,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledSafeExtension) {
   // Check that 'DeviceLocalAccountManagedSessionEnabled' policy was applied
   // correctly.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Management disclosure warning is shown in the beginning, because
   // kManagedSessionUseFullLoginWarning pref is set to true in the beginning.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 
   ExtensionInstallObserver install_observer(kHostedAppID);
 
@@ -2475,8 +2468,7 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledSafeExtension) {
   // Check that force-installed extension activates managed session mode for
   // device-local users.
   EXPECT_FALSE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledUnsafeExtension) {
@@ -2499,14 +2491,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledUnsafeExtension) {
   // Check that 'DeviceLocalAccountManagedSessionEnabled' policy was applied
   // correctly.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Management disclosure warning is shown in the beginning, because
   // kManagedSessionUseFullLoginWarning pref is set to true in the beginning.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 
   ExtensionInstallObserver install_observer(kGoodExtensionID);
 
@@ -2519,8 +2509,7 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, ForceInstalledUnsafeExtension) {
   // Check that force-installed extension activates managed session mode for
   // device-local users.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, WhitelistedExtension) {
@@ -2543,14 +2532,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, WhitelistedExtension) {
   // Check that 'DeviceLocalAccountManagedSessionEnabled' policy was applied
   // correctly.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Management disclosure warning is shown in the beginning, because
   // kManagedSessionUseFullLoginWarning pref is set to true in the beginning.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 
   ExtensionInstallObserver install_observer(kShowManagedStorageID);
 
@@ -2563,8 +2550,7 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, WhitelistedExtension) {
   // Check that white-listed extension is not considered risky and doesn't
   // activate managed session mode.
   EXPECT_FALSE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, NetworkCertificate) {
@@ -2588,14 +2574,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, NetworkCertificate) {
   // Check that 'DeviceLocalAccountManagedSessionEnabled' policy was applied
   // correctly.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Check that network certificate pushed via policy activates managed sessions
   // mode.
   EXPECT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, AllowCrossOriginAuthPrompt) {
@@ -2620,14 +2604,12 @@ IN_PROC_BROWSER_TEST_F(ManagedSessionsTest, AllowCrossOriginAuthPrompt) {
   // Check that 'DeviceLocalAccountManagedSessionEnabled' policy was applied
   // correctly.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(
-          *user));
+      ash::ChromeUserManager::Get()->IsManagedSessionEnabledForUser(*user));
 
   // Check that setting a value to 'AllowCrossOriginAuthPrompt' activates
   // managed sessions mode.
   ASSERT_TRUE(
-      chromeos::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(
-          broker));
+      ash::ChromeUserManager::Get()->IsFullManagementDisclosureNeeded(broker));
 }
 
 class TermsOfServiceDownloadTest : public DeviceLocalAccountTest,

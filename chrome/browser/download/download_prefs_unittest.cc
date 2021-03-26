@@ -432,7 +432,7 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
   {
     // Create new profile for enabled feature to work.
     TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
-    chromeos::FakeChromeUserManager user_manager;
+    ash::FakeChromeUserManager user_manager;
     DownloadPrefs prefs2(&profile2);
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345");

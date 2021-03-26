@@ -25,11 +25,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
+
 class ArcBootPhaseThrottleObserverTest : public testing::Test {
  public:
   ArcBootPhaseThrottleObserverTest()
-      : scoped_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
@@ -43,7 +43,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
         base::CommandLine::ForCurrentProcess());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         testing_profile_->GetProfileUserName(), ""));
-    auto* user_manager = static_cast<chromeos::FakeChromeUserManager*>(
+    auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
     user_manager->AddUser(account_id);
     user_manager->LoginUser(account_id);

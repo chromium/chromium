@@ -121,7 +121,7 @@ namespace ash {
 class MultiProfileSupportTest : public ChromeAshTestBase {
  public:
   MultiProfileSupportTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   // ChromeAshTestBase:
@@ -173,7 +173,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     return MultiUserWindowManagerHelper::GetWindowManager();
   }
 
-  chromeos::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
+  FakeChromeUserManager* user_manager() { return fake_user_manager_; }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
 
@@ -276,7 +276,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
   aura::Window::Windows windows_;
 
   // Owned by |user_manager_enabler_|.
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  FakeChromeUserManager* fake_user_manager_ = nullptr;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

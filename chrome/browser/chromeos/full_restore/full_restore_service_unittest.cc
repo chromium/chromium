@@ -63,8 +63,7 @@ syncer::SyncData CreatePrefSyncData(const std::string& name,
 class FullRestoreServiceTest : public testing::Test {
  protected:
   FullRestoreServiceTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
   ~FullRestoreServiceTest() override = default;
 
@@ -97,7 +96,7 @@ class FullRestoreServiceTest : public testing::Test {
   void TearDown() override { profile_.reset(); }
 
   FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

@@ -45,8 +45,7 @@ constexpr char kActionLocaionEnabled[] =
 class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
  public:
   ArcSettingsServiceTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ArcSettingsServiceTest(const ArcSettingsServiceTest&) = delete;
   ArcSettingsServiceTest& operator=(const ArcSettingsServiceTest&) = delete;
   ~ArcSettingsServiceTest() override = default;
@@ -121,8 +120,8 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     WaitForInstanceReady(arc_bridge_service()->intent_helper());
   }
 
-  chromeos::FakeChromeUserManager* user_manager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* user_manager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
   ArcBridgeService* arc_bridge_service() {

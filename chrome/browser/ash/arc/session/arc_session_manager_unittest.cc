@@ -152,8 +152,7 @@ class ShowErrorObserver : public ArcSessionManagerObserver {
 class ArcSessionManagerInLoginScreenTest : public testing::Test {
  public:
   ArcSessionManagerInLoginScreenTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
     chromeos::DBusThreadManager::Initialize();
@@ -238,8 +237,7 @@ class ArcSessionManagerTestBase : public testing::Test {
  public:
   ArcSessionManagerTestBase()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()),
+        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
         test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
     arc::prefs::RegisterLocalStatePrefs(test_local_state_->registry());
   }
@@ -283,8 +281,8 @@ class ArcSessionManagerTestBase : public testing::Test {
     chromeos::DBusThreadManager::Shutdown();
   }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

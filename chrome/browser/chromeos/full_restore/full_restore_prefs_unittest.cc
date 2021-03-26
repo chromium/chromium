@@ -21,8 +21,7 @@ namespace full_restore {
 class FullRestorePrefsTest : public testing::Test {
  public:
   FullRestorePrefsTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kFullRestore);
@@ -34,7 +33,7 @@ class FullRestorePrefsTest : public testing::Test {
   }
 
   FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

@@ -48,8 +48,7 @@ class OnStartupHandlerTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::FakeChromeUserManager* fake_user_manager =
-        new chromeos::FakeChromeUserManager;
+    auto* fake_user_manager = new ash::FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
     constexpr char kFakeEmail[] = "fake_id@gmail.com";

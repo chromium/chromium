@@ -83,7 +83,7 @@ bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {
 
   // If at least one logged in user won't be allowed after OffHours,
   // the session will be terminated.
-  return !chromeos::chrome_user_manager_util::AreAllUsersAllowed(
+  return !ash::chrome_user_manager_util::AreAllUsersAllowed(
       users_to_check, device_settings_proto_);
 }
 

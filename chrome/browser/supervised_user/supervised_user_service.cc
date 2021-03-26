@@ -209,7 +209,7 @@ std::string SupervisedUserService::GetCustodianEmailAddress() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |GetActiveUser()| can return null in unit tests.
   if (email.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
-    email = chromeos::ChromeUserManager::Get()
+    email = ash::ChromeUserManager::Get()
                 ->GetSupervisedUserManager()
                 ->GetManagerDisplayEmail(user_manager::UserManager::Get()
                                              ->GetActiveUser()

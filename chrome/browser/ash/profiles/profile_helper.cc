@@ -43,13 +43,11 @@
 #include "extensions/browser/extension_system.h"
 
 namespace ash {
-
 namespace {
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
 namespace login = ::chromeos::login;
-using ::chromeos::ChromeUserManager;
 using ::chromeos::FileFlusher;
 using ::chromeos::OAuth2LoginManager;
 

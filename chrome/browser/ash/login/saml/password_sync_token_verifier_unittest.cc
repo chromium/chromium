@@ -34,7 +34,7 @@ constexpr base::TimeDelta kSyncTokenCheckInterval =
 constexpr base::TimeDelta kSyncTokenCheckBelowInterval =
     base::TimeDelta::FromMinutes(4);
 
-class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:
   FakeUserManagerWithLocalState()
       : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {

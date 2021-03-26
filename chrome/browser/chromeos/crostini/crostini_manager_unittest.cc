@@ -217,7 +217,7 @@ class CrostiniManagerTest : public testing::Test {
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
 
     // Login user for crostini, link gaia for DriveFS.
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     AccountId account_id = AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "12345");
     user_manager->AddUser(account_id);
@@ -255,8 +255,8 @@ class CrostiniManagerTest : public testing::Test {
   CrostiniManager* crostini_manager() { return crostini_manager_; }
   const ContainerId& container_id() { return container_id_; }
 
-  chromeos::FakeChromeUserManager* fake_user_manager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* fake_user_manager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

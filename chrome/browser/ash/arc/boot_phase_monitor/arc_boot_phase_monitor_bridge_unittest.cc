@@ -32,8 +32,7 @@ namespace {
 class ArcBootPhaseMonitorBridgeTest : public testing::Test {
  public:
   ArcBootPhaseMonitorBridgeTest()
-      : scoped_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()),
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         record_uma_counter_(0) {
     // Need to initialize DBusThreadManager before ArcSessionManager's
     // constructor calls DBusThreadManager::Get().
@@ -102,8 +101,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     DISALLOW_COPY_AND_ASSIGN(TestDelegateImpl);
   };
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

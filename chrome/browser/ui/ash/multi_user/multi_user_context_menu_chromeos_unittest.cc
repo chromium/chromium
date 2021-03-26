@@ -28,7 +28,7 @@ namespace ash {
 class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
  public:
   MultiUserContextMenuChromeOSTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   void SetUp() override;
@@ -57,7 +57,7 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
   aura::Window* window_;
 
   // Owned by |user_manager_enabler_|.
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  FakeChromeUserManager* fake_user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiUserContextMenuChromeOSTest);

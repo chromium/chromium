@@ -62,8 +62,7 @@ class TestObserver : public arc::ArcSessionManagerObserver {
 class ArcDataSnapshotdDelegateTest : public testing::Test {
  public:
   ArcDataSnapshotdDelegateTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::EnableCheckAndroidManagementForTesting(false);
@@ -135,8 +134,8 @@ class ArcDataSnapshotdDelegateTest : public testing::Test {
   ArcDataSnapshotdDelegate* delegate() { return delegate_.get(); }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

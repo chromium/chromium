@@ -20,8 +20,7 @@ namespace {
 class ArcDemoModeDelegateImplTest : public testing::Test {
  public:
   ArcDemoModeDelegateImplTest()
-      : user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~ArcDemoModeDelegateImplTest() override = default;
   ArcDemoModeDelegateImplTest(const ArcDemoModeDelegateImplTest&) = delete;
   ArcDemoModeDelegateImplTest& operator=(const ArcDemoModeDelegateImplTest&) =

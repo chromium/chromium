@@ -48,7 +48,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
 
  protected:
   void EnterKioskSession() {
-    fake_user_manager_ = new chromeos::FakeChromeUserManager();
+    fake_user_manager_ = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
 
@@ -66,7 +66,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
 
   ash::KioskAppManager* manager() const { return ash::KioskAppManager::Get(); }
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   ash::ScopedCrosSettingsTestHelper settings_helper_;

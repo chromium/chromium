@@ -326,8 +326,7 @@ TEST_F(ExtensionInstallEventLoggerTest, AddSetsTimestampAndDiskSpaceInfo) {
 }
 
 TEST_F(ExtensionInstallEventLoggerTest, UpdatePolicy) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);

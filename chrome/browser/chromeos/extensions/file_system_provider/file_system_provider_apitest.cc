@@ -146,7 +146,7 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
  private:
-  chromeos::FakeChromeUserManager user_manager_;
+  ash::FakeChromeUserManager user_manager_;
   DISALLOW_COPY_AND_ASSIGN(FileSystemProviderApiTest);
 };
 

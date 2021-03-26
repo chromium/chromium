@@ -25,7 +25,7 @@ const char kSyncToken[] = "sync-token-1";
 
 constexpr base::TimeDelta kSamlTokenDelay = base::TimeDelta::FromSeconds(60);
 
-class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:
   FakeUserManagerWithLocalState()
       : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
