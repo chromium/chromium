@@ -12,6 +12,7 @@
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/element_utility.h"
+#include "ui/events/event_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/widget/widget.h"
@@ -31,6 +32,58 @@ void StripPrefix(std::string& property_name) {
     }
   }
   property_name.erase(property_name.cbegin(), cur);
+}
+
+ui::EventType GetMouseEventType(const std::string& type) {
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MousePressed)
+    return ui::ET_MOUSE_PRESSED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseDragged)
+    return ui::ET_MOUSE_DRAGGED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseReleased)
+    return ui::ET_MOUSE_RELEASED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseMoved)
+    return ui::ET_MOUSE_MOVED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseEntered)
+    return ui::ET_MOUSE_ENTERED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseExited)
+    return ui::ET_MOUSE_EXITED;
+  if (type == protocol::DOM::MouseEvent::TypeEnum::MouseWheel)
+    return ui::ET_MOUSEWHEEL;
+  return ui::ET_UNKNOWN;
+}
+
+int GetButtonFlags(const std::string& button) {
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Left)
+    return ui::EF_LEFT_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Right)
+    return ui::EF_RIGHT_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Middle)
+    return ui::EF_MIDDLE_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Back)
+    return ui::EF_BACK_MOUSE_BUTTON;
+  if (button == protocol::DOM::MouseEvent::ButtonEnum::Forward)
+    return ui::EF_FORWARD_MOUSE_BUTTON;
+  return ui::EF_NONE;
+}
+
+int GetMouseWheelXOffset(const std::string& mouse_wheel_direction) {
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Left)
+    return ui::MouseWheelEvent::kWheelDelta;
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Right)
+    return -ui::MouseWheelEvent::kWheelDelta;
+  return 0;
+}
+
+int GetMouseWheelYOffset(const std::string& mouse_wheel_direction) {
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Up)
+    return ui::MouseWheelEvent::kWheelDelta;
+  if (mouse_wheel_direction ==
+      protocol::DOM::MouseEvent::WheelDirectionEnum::Down)
+    return -ui::MouseWheelEvent::kWheelDelta;
+  return 0;
 }
 
 }  // namespace
@@ -222,6 +275,28 @@ void ViewElement::InitSources() {
       AddSource(metadata->file(), metadata->line());
     }
   }
+}
+
+bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
+  ui::EventType event_type = GetMouseEventType(event->getType());
+  int button_flags = GetButtonFlags(event->getButton());
+  if (event_type == ui::ET_UNKNOWN)
+    return false;
+  gfx::Point location(event->getX(), event->getY());
+  if (event_type == ui::ET_MOUSEWHEEL) {
+    int x_offset = GetMouseWheelXOffset(event->getWheelDirection());
+    int y_offset = GetMouseWheelYOffset(event->getWheelDirection());
+    ui::MouseWheelEvent mouse_wheel_event(
+        gfx::Vector2d(x_offset, y_offset), location, location,
+        ui::EventTimeForNow(), button_flags, button_flags);
+    view_->OnMouseWheel(mouse_wheel_event);
+  } else {
+    ui::MouseEvent mouse_event(event_type, location, location,
+                               ui::EventTimeForNow(), button_flags,
+                               button_flags);
+    view_->OnMouseEvent(&mouse_event);
+  }
+  return true;
 }
 
 }  // namespace ui_devtools

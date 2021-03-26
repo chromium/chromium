@@ -1392,7 +1392,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     void PossibleDrag(const gfx::Point& p);
 
     // Whether the press may generate a drag.
-    bool possible_drag;
+    bool possible_drag = false;
 
     // Coordinates of the mouse press.
     gfx::Point start_pt;
