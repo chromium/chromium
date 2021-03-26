@@ -371,7 +371,7 @@ void PrintDialogGtk::ShowDialog(
   gtk::SetGtkTransientForAura(dialog_, parent_view);
   if (parent_view)
     parent_view->AddObserver(this);
-#if GTK_CHECK_VERSION(3, 94, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_window_set_hide_on_close(GTK_WINDOW(dialog_), true);
 #else
   g_signal_connect(dialog_, "delete-event",

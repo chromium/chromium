@@ -17,7 +17,7 @@ namespace gtk {
 
 namespace {
 
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
 using NavButtonIcon = ScopedGObject<GdkTexture>;
 #else
 using NavButtonIcon = ScopedGObject<GdkPixbuf>;
@@ -86,7 +86,7 @@ gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
 gfx::Insets PaddingFromStyleContext(GtkStyleContext* context,
                                     GtkStateFlags state) {
   GtkBorder padding;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_style_context_get_padding(context, &padding);
 #else
   gtk_style_context_get_padding(context, state, &padding);
@@ -97,7 +97,7 @@ gfx::Insets PaddingFromStyleContext(GtkStyleContext* context,
 gfx::Insets BorderFromStyleContext(GtkStyleContext* context,
                                    GtkStateFlags state) {
   GtkBorder border;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_style_context_get_border(context, &border);
 #else
   gtk_style_context_get_border(context, state, &border);
@@ -108,7 +108,7 @@ gfx::Insets BorderFromStyleContext(GtkStyleContext* context,
 gfx::Insets MarginFromStyleContext(GtkStyleContext* context,
                                    GtkStateFlags state) {
   GtkBorder margin;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_style_context_get_margin(context, &margin);
 #else
   gtk_style_context_get_margin(context, state, &margin);
@@ -122,7 +122,7 @@ gfx::Size LoadNavButtonIcon(
     int scale,
     NavButtonIcon* icon = nullptr) {
   const char* icon_name = IconNameFromButtonType(type);
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto icon_paintable = TakeGObject(gtk_icon_theme_lookup_icon(
       GetDefaultIconTheme(), icon_name, nullptr, kNavButtonIconSize, scale,
       GTK_TEXT_DIR_NONE, static_cast<GtkIconLookupFlags>(0)));
@@ -299,7 +299,7 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     // "contain" if clipping would occur.
     int bg_width = 0;
     int bg_height = 0;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
     auto* snapshot = gtk_snapshot_new();
     gtk_snapshot_render_background(snapshot, button_context, 0, 0,
                                    button_size_.width(), button_size_.height());

@@ -52,7 +52,7 @@ void CommonInitFromCommandLine(const base::CommandLine& command_line) {
   // This prevent GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_init();
 #else
   const std::vector<std::string>& args = command_line.argv();
@@ -452,7 +452,7 @@ GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
 
 SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
   GdkRGBA color;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_style_context_get_color(context, &color);
 #else
   gtk_style_context_get_color(context, gtk_style_context_get_state(context),
@@ -486,7 +486,7 @@ SkColor GetFgColor(const std::string& css_selector) {
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
   auto provider = TakeGObject(gtk_css_provider_new());
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_css_provider_load_from_data(provider, css.c_str(), -1);
 #else
   GError* error = nullptr;
@@ -570,7 +570,7 @@ SkColor GetSeparatorColor(const std::string& css_selector) {
 
   int w = 1, h = 1;
   GtkBorder border, padding;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto size = GetSeparatorSize(horizontal);
   w = size.width();
   h = size.height();
@@ -683,7 +683,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
 #endif
 
 GtkIconTheme* GetDefaultIconTheme() {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   return gtk_icon_theme_get_for_display(gdk_display_get_default());
 #else
   return gtk_icon_theme_get_default();
@@ -691,7 +691,7 @@ GtkIconTheme* GetDefaultIconTheme() {
 }
 
 void GtkWindowDestroy(GtkWidget* widget) {
-#if GTK_CHECK_VERSION(3, 98, 4)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_window_destroy(GTK_WINDOW(widget));
 #else
   gtk_widget_destroy(widget);

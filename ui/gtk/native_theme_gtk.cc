@@ -188,7 +188,7 @@ base::Optional<SkColor> SkColorFromColorId(ui::NativeTheme::ColorId color_id) {
     case ui::NativeTheme::kColorId_LinkEnabled: {
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link");
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
       auto link_context = GetStyleContextFromCss("GtkLabel#label.view");
       GdkColor* color;
       gtk_style_context_get_style(link_context, "link-color", &color, nullptr);
@@ -695,7 +695,7 @@ void NativeThemeGtk::PaintMenuSeparator(
         GetStyleContextFromCss(CSS_MENU " GtkSeparator#separator.horizontal");
     GtkBorder margin, border, padding;
     int min_height = 1;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
     gtk_style_context_get_margin(context, &margin);
     gtk_style_context_get_border(context, &border);
     gtk_style_context_get_padding(context, &padding);
@@ -715,7 +715,7 @@ void NativeThemeGtk::PaintMenuSeparator(
     int y = separator_offset(h);
     PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
   } else {
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
     auto context = GetStyleContextFromCss(CSS_MENU " " CSS_MENUITEM
                                                    ".separator.horizontal");
     gboolean wide_separators = false;

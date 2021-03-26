@@ -38,7 +38,7 @@
 
 namespace {
 
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
 // TODO(https://crbug.com/981309): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
 const char* GettextPackage() {
@@ -90,7 +90,7 @@ void OnFilePickerDestroy(base::OnceClosure* callback_raw) {
 
 void GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                     const base::FilePath& path) {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
   gtk_file_chooser_set_current_folder(dialog, file, nullptr);
 #else
@@ -100,7 +100,7 @@ void GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
 
 void GtkFileChooserSetFilename(GtkFileChooser* dialog,
                                const base::FilePath& path) {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
   gtk_file_chooser_set_file(dialog, file, nullptr);
 #else
@@ -111,7 +111,7 @@ void GtkFileChooserSetFilename(GtkFileChooser* dialog,
 int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
   GtkFileFilter* selected_filter =
       gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto filters =
       TakeGObject(gtk_file_chooser_get_filters(GTK_FILE_CHOOSER(dialog)));
   int size = g_list_model_get_n_items(filters);
@@ -130,7 +130,7 @@ int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
 
 std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
   const char* filename = nullptr;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto file = TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)));
   if (file)
     filename = g_file_peek_path(file);
@@ -147,7 +147,7 @@ std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
 
 std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
   std::vector<base::FilePath> filenames_fp;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto files =
       TakeGObject(gtk_file_chooser_get_files(GTK_FILE_CHOOSER(dialog)));
   auto size = g_list_model_get_n_items(files);
@@ -173,7 +173,7 @@ std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
 
 namespace gtk {
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
 // The size of the preview we display for selected image files. We set height
 // larger than width because generally there is more free space vertically
 // than horiztonally (setting the preview image will always expand the width of
@@ -275,7 +275,7 @@ void SelectFileDialogImplGTK::SelectFileImpl(
       NOTREACHED();
       return;
   }
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   gtk_window_set_hide_on_close(GTK_WINDOW(dialog), true);
 #else
   g_signal_connect(dialog, "delete-event",
@@ -285,7 +285,7 @@ void SelectFileDialogImplGTK::SelectFileImpl(
   dialogs_[dialog] = g_signal_connect(
       dialog, "destroy", G_CALLBACK(OnFileChooserDestroyThunk), this);
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   preview_ = gtk_image_new();
   g_signal_connect(dialog, "update-preview", G_CALLBACK(OnUpdatePreviewThunk),
                    this);
@@ -316,7 +316,7 @@ void SelectFileDialogImplGTK::SelectFileImpl(
     }
   }
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   gtk_widget_show_all(dialog);
 #endif
   gtk::GtkUi::GetDelegate()->ShowGtkWindow(GTK_WINDOW(dialog));
@@ -544,7 +544,7 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
   }
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), FALSE);
   // Overwrite confirmation is always enabled in GTK4.
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog),
                                                  TRUE);
 #endif
@@ -647,7 +647,7 @@ void SelectFileDialogImplGTK::OnFileChooserDestroy(GtkWidget* dialog) {
   }
 }
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
 void SelectFileDialogImplGTK::OnUpdatePreview(GtkWidget* chooser) {
   gchar* filename =
       gtk_file_chooser_get_preview_filename(GTK_FILE_CHOOSER(chooser));

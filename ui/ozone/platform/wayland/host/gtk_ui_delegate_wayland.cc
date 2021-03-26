@@ -20,7 +20,7 @@
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
 #include <gdk/wayland/gdkwayland.h>
 #else
 #include <gdk/gdkwayland.h>
@@ -61,7 +61,7 @@ GdkWindow* GtkUiDelegateWayland::GetGdkWindow(
 bool GtkUiDelegateWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   if (!gdk_wayland_window_set_transient_for_exported) {
     LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
                  << GTK_MAJOR_VERSION << '.' << GTK_MINOR_VERSION << '.'
@@ -102,7 +102,7 @@ int GtkUiDelegateWayland::GetGdkKeyState() {
 void GtkUiDelegateWayland::OnHandle(GtkWidget* widget,
                                     const std::string& handle) {
   char* parent = const_cast<char*>(handle.c_str());
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto* toplevel =
       GDK_TOPLEVEL(gtk_native_get_surface(gtk_widget_get_native(widget)));
   gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);

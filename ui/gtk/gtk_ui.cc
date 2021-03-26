@@ -79,7 +79,7 @@
 #include "printing/printing_context_linux.h"
 #endif
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #endif
 
@@ -145,7 +145,7 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
     if (focus_) {
       gfx::Rect focus_rect(width, height);
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
       if (!GtkCheckVersion(3, 14)) {
         gint focus_pad;
         gtk_style_context_get_style(context, "focus-padding", &focus_pad,
@@ -167,7 +167,7 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
 
       if (!GtkCheckVersion(3, 20)) {
         GtkBorder border;
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
         gtk_style_context_get_border(context, &border);
 #else
         gtk_style_context_get_border(context, state_flags, &border);
@@ -503,7 +503,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
   for (size_t i = 0; i < base::size(content_types); ++i) {
     auto icon = TakeGObject(g_content_type_get_icon(content_type.c_str()));
-#if GTK_CHECK_VERSION(3, 98, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
     auto icon_paintable = TakeGObject(gtk_icon_theme_lookup_by_gicon(
         theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
         static_cast<GtkIconLookupFlags>(0)));
@@ -710,7 +710,7 @@ static struct {
 
 base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
   GdkDisplay* display = gdk_display_get_default();
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   GdkKeymap* keymap = gdk_keymap_get_for_display(display);
   if (!keymap)
     return {};
@@ -730,7 +730,7 @@ base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
 // The order of the layouts is based on the system default ordering in
 // Keyboard Settings. The currently active layout does not affect this
 // order.
-#if GTK_CHECK_VERSION(3, 98, 3)
+#if BUILDFLAG(GTK_VERSION) >= 4
     const bool success =
         gdk_display_map_keycode(display, keycode, &keys, &keyvals, &n_entries);
 #else
@@ -781,7 +781,7 @@ int GtkUi::GetCursorThemeSize() {
 
 bool GtkUi::MatchEvent(const ui::Event& event,
                        std::vector<ui::TextEditCommandAuraLinux>* commands) {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   // GTK4 dropped custom key bindings.
   return false;
 #else

@@ -124,7 +124,7 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
                      OnFileChooserDestroy,
                      GtkWidget*);
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   // Callback for when we update the preview for the selection.
   CHROMEG_CALLBACK_0(SelectFileDialogImplGTK,
                      void,
@@ -136,7 +136,7 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
   std::map<GtkWidget*, void*> params_map_;
 
   // GTK4 provides its own preview.
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
   // The GtkImage widget for showing previews of selected images.
   GtkWidget* preview_ = nullptr;
 #endif

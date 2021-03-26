@@ -13,7 +13,7 @@ namespace gtk {
 namespace {
 
 std::string GetDecorationLayoutFromGtkWindow() {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   NOTREACHED();
   static const char kDefaultGtkLayout[] = "menu:minimize,maximize,close";
   return kDefaultGtkLayout;

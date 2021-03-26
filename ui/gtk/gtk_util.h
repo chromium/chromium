@@ -131,7 +131,7 @@ class GtkCssContext {
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
-#if !GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) < 4
 }  // namespace gtk
 
 // Template override cannot be in the gtk namespace.

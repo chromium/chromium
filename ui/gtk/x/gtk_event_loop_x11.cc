@@ -12,7 +12,7 @@
 #include "ui/gfx/x/event.h"
 
 extern "C" {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
 unsigned long gdk_x11_surface_get_xid(GdkSurface* surface);
 #else
 unsigned long gdk_x11_window_get_xid(GdkWindow* window);
@@ -29,7 +29,7 @@ x11::KeyButMask BuildXkbStateFromGdkEvent(unsigned int state,
 }
 
 x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   GdkKeymapKey* keys = nullptr;
   guint* keyvals = nullptr;
   gint n_entries = 0;
@@ -94,7 +94,7 @@ void ProcessGdkEvent(GdkEvent* gdk_event) {
   // corresponding key event in the X event queue.  So we have to handle this
   // case.  ibus-gtk is used through gtk-immodule to support IMEs.
 
-#if GTK_CHECK_VERSION(3, 90, 0)
+#if BUILDFLAG(GTK_VERSION) >= 4
   auto event_type = gdk_event_get_event_type(gdk_event);
 #else
   auto event_type = gdk_event->type;
