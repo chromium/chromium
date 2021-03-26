@@ -9,7 +9,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(AffiliationTest, HaveCommonElementEmptySet) {
   // Empty sets don't have common elements.
@@ -96,4 +96,4 @@ TEST(AffiliationTest, Generic) {
   EXPECT_FALSE(IsUserAffiliated(user_ids, device_ids, "user"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

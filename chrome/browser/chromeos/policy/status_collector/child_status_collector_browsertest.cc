@@ -175,7 +175,7 @@ namespace policy {
 class ChildStatusCollectorTest : public testing::Test {
  public:
   ChildStatusCollectorTest()
-      : user_manager_(new chromeos::MockUserManager()),
+      : user_manager_(new ash::MockUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         user_data_dir_override_(chrome::DIR_USER_DATA),
         update_engine_client_(new chromeos::FakeUpdateEngineClient) {
@@ -426,7 +426,7 @@ class ChildStatusCollectorTest : public testing::Test {
   // local_state_ should be destructed after TestingProfile.
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  chromeos::MockUserManager* const user_manager_;
+  ash::MockUserManager* const user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   em::ChildStatusReportRequest child_status_;
   std::unique_ptr<TestingChildStatusCollector> status_collector_;

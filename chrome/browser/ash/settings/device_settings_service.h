@@ -304,4 +304,9 @@ namespace chromeos {
 using ::ash::DeviceSettingsService;
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace ash {
+using ::chromeos::DeviceSettingsService;
+}
+
 #endif  // CHROME_BROWSER_ASH_SETTINGS_DEVICE_SETTINGS_SERVICE_H_

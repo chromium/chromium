@@ -20,7 +20,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 namespace default_user_image {
 
 // Resource IDs of default user images.
@@ -430,4 +430,4 @@ int GetFirstDefaultImage() {
 }
 
 }  // namespace default_user_image
-}  // namespace chromeos
+}  // namespace ash

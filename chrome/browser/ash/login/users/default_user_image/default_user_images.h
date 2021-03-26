@@ -19,7 +19,7 @@ namespace gfx {
 class ImageSkia;
 }
 
-namespace chromeos {
+namespace ash {
 namespace default_user_image {
 
 // Returns the URL to a default user image with the specified index. If the
@@ -84,6 +84,11 @@ std::unique_ptr<base::ListValue> GetAsDictionary(bool all);
 int GetFirstDefaultImage();
 
 }  // namespace default_user_image
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace chromeos {
+namespace default_user_image = ::ash::default_user_image;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_DEFAULT_USER_IMAGE_DEFAULT_USER_IMAGES_H_

@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedTestUserManager::ScopedTestUserManager() {
   chrome_user_manager_ = ChromeUserManagerImpl::CreateChromeUserManager();
@@ -23,4 +23,4 @@ ScopedTestUserManager::~ScopedTestUserManager() {
   chrome_user_manager_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -29,7 +29,7 @@ class ReleaseNotesStorageTest : public testing::Test,
   ReleaseNotesStorageTest()
       : user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(
-            std::unique_ptr<chromeos::FakeChromeUserManager>(user_manager_)) {}
+            std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
   ~ReleaseNotesStorageTest() override {}
 
   std::unique_ptr<Profile> CreateProfile(std::string email) {

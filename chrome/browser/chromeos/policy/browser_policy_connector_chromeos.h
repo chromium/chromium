@@ -239,7 +239,7 @@ class BrowserPolicyConnectorChromeOS
   // TODO(crbug.com/1187628): Combine the following two functions into one to
   // simplify the API.
   base::flat_set<std::string> device_affiliation_ids() const override;
-  chromeos::AffiliationIDSet GetDeviceAffiliationIDs() const;
+  ash::AffiliationIDSet GetDeviceAffiliationIDs() const;
 
   // BrowserPolicyConnector:
   // Always returns true as command line flag can be set under dev mode only.

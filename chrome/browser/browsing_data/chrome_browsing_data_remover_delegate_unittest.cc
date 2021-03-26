@@ -1741,8 +1741,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestCacheClear) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ContentProtectionPlatformKeysRemoval) {
-  chromeos::MockUserManager* mock_user_manager =
-      new testing::NiceMock<chromeos::MockUserManager>();
+  ash::MockUserManager* mock_user_manager =
+      new testing::NiceMock<ash::MockUserManager>();
   mock_user_manager->SetActiveUser(
       AccountId::FromUserEmail("test@example.com"));
   user_manager::ScopedUserManager user_manager_enabler(

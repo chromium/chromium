@@ -771,7 +771,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
   ash::cert_provisioning::RegisterLocalStatePrefs(registry);
   chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(registry);
-  chromeos::ChromeUserManagerImpl::RegisterPrefs(registry);
+  ash::ChromeUserManagerImpl::RegisterPrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   chromeos::DemoModeDetector::RegisterPrefs(registry);
   chromeos::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
@@ -794,7 +794,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       RegisterLocalStatePrefs(registry);
   chromeos::login::SecurityTokenSessionController::RegisterLocalStatePrefs(
       registry);
-  chromeos::MultiProfileUserController::RegisterPrefs(registry);
+  ash::MultiProfileUserController::RegisterPrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::NetworkThrottlingObserver::RegisterPrefs(registry);
   chromeos::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
@@ -811,7 +811,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
   chromeos::TimeZoneResolver::RegisterPrefs(registry);
-  chromeos::UserImageManager::RegisterPrefs(registry);
+  ash::UserImageManager::RegisterPrefs(registry);
   chromeos::UserSessionManager::RegisterPrefs(registry);
   ash::WebKioskAppManager::RegisterPrefs(registry);
   component_updater::MetadataTable::RegisterPrefs(registry);
@@ -1100,7 +1100,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   chromeos::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
-  chromeos::MultiProfileUserController::RegisterProfilePrefs(registry);
+  ash::MultiProfileUserController::RegisterProfilePrefs(registry);
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   chromeos::ReleaseNotesStorage::RegisterProfilePrefs(registry);
   chromeos::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
@@ -1119,7 +1119,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::ServicesCustomizationDocument::RegisterProfilePrefs(registry);
   chromeos::settings::OSSettingsUI::RegisterProfilePrefs(registry);
   chromeos::StartupUtils::RegisterOobeProfilePrefs(registry);
-  chromeos::UserImageSyncObserver::RegisterProfilePrefs(registry);
+  ash::UserImageSyncObserver::RegisterProfilePrefs(registry);
   crostini::prefs::RegisterProfilePrefs(registry);
   ash::attestation::TpmChallengeKey::RegisterProfilePrefs(registry);
 #if defined(USE_CUPS)

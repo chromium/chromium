@@ -262,7 +262,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
     // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.reset(new chromeos::ScopedTestUserManager());
+    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
     // Creating a DBus thread manager setter has the side effect of
     // creating a DBusThreadManager, which is needed for testing.
     // We don't actually need the setter so we ignore the return value.
@@ -416,7 +416,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
   Waiter waiter_;

@@ -23,7 +23,7 @@ namespace user_manager {
 class UserImage;
 }
 
-namespace chromeos {
+namespace ash {
 
 class UserImageSyncObserver;
 
@@ -108,6 +108,6 @@ class UserImageManager {
   const std::string user_id_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_H_

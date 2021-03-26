@@ -57,4 +57,10 @@ void RecordStoredSessionLength();
 }  // namespace enterprise_user_session_metrics
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace ash {
+namespace enterprise_user_session_metrics =
+    ::chromeos::enterprise_user_session_metrics;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENTERPRISE_USER_SESSION_METRICS_H_

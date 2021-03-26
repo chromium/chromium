@@ -1316,7 +1316,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
 
-    mock_user_manager_ = new chromeos::MockUserManager;
+    mock_user_manager_ = new ash::MockUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(mock_user_manager_));
 
@@ -1326,7 +1326,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*mock_user_manager_, GetLoggedInUsers())
         .WillRepeatedly(testing::Invoke(mock_user_manager_,
-                                        &chromeos::MockUserManager::GetUsers));
+                                        &ash::MockUserManager::GetUsers));
   }
 
   void TearDownOnMainThread() override {
@@ -1343,7 +1343,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   }
 
  private:
-  chromeos::MockUserManager* mock_user_manager_ = nullptr;
+  ash::MockUserManager* mock_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 

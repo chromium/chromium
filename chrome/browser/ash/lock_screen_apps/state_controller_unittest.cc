@@ -377,7 +377,7 @@ class TestAppWindow : public content::WebContentsObserver {
 class LockScreenAppStateTest : public BrowserWithTestWindowTest {
  public:
   LockScreenAppStateTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new ash::FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   ~LockScreenAppStateTest() override = default;
@@ -620,9 +620,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     lock_screen_profile_creator_->CreateProfile();
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager() {
-    return fake_user_manager_;
-  }
+  ash::FakeChromeUserManager* fake_user_manager() { return fake_user_manager_; }
 
   Profile* LockScreenProfile() {
     return lock_screen_profile_creator_->lock_screen_profile();
@@ -664,7 +662,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Run loop used to throttle test until async state controller initialization

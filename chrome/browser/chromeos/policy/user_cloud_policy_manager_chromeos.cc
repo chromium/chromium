@@ -227,7 +227,7 @@ void UserCloudPolicyManagerChromeOS::Connect(
   std::unique_ptr<CloudPolicyClient> cloud_policy_client =
       std::make_unique<CloudPolicyClient>(
           device_management_service, system_url_loader_factory,
-          chromeos::GetDeviceDMTokenForUserPolicyGetter(account_id_));
+          ash::GetDeviceDMTokenForUserPolicyGetter(account_id_));
   CreateComponentCloudPolicyService(
       dm_protocol::kChromeExtensionPolicyType, component_policy_cache_path_,
       POLICY_SOURCE_CLOUD, cloud_policy_client.get(), schema_registry());
@@ -535,7 +535,7 @@ void UserCloudPolicyManagerChromeOS::OnStoreLoaded(
     enforcement_type_ = PolicyEnforcement::kPolicyOptional;
 
     DCHECK(policy_data->has_username());
-    chromeos::AffiliationIDSet set_of_user_affiliation_ids(
+    ash::AffiliationIDSet set_of_user_affiliation_ids(
         policy_data->user_affiliation_ids().begin(),
         policy_data->user_affiliation_ids().end());
 

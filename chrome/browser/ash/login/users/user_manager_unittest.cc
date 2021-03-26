@@ -38,7 +38,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove after the class is migrated
+using ::chromeos::SystemSaltGetter;
 
 class UnittestProfileManager : public ::ProfileManagerWithoutInit {
  public:
@@ -332,7 +335,7 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
-  profile->GetPrefs()->SetBoolean(ash::prefs::kAllowScreenLock, false);
+  profile->GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
   EXPECT_FALSE(user_manager::UserManager::Get()->CanCurrentUserLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
@@ -349,4 +352,4 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
   ResetUserManager();
 }
 
-}  // namespace chromeos
+}  // namespace ash

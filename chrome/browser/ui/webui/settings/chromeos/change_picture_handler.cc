@@ -273,7 +273,7 @@ void ChangePictureHandler::SendProfileImage(const gfx::ImageSkia& image,
 }
 
 void ChangePictureHandler::UpdateProfileImage() {
-  UserImageManager* user_image_manager =
+  auto* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
   // If we have a downloaded profile image and haven't sent it in
   // |SendSelectedImage|, send it now (without selecting).
@@ -307,7 +307,7 @@ void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
   // |image_url| may be empty unless |image_type| is "default".
   DCHECK(!image_type.empty());
 
-  UserImageManager* user_image_manager =
+  auto* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
   bool waiting_for_camera_photo = false;
 

@@ -569,7 +569,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     // ChromeRenderViewHostTestHarness::TearDown.
     wallpaper_controller_client_.reset();
 
-    chromeos::ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting();
+    ash::ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting();
     chromeos::ChromeUserManager::Get()->Shutdown();
 
     ActiveTabTest::TearDown();

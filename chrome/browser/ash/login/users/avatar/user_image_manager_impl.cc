@@ -46,7 +46,7 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -897,4 +897,4 @@ bool UserImageManagerImpl::IsUserLoggedInAndHasGaiaAccount() const {
   return user->is_logged_in() && user->HasGaiaAccount();
 }
 
-}  // namespace chromeos
+}  // namespace ash

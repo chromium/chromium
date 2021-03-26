@@ -59,7 +59,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   GalleryWatchManagerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        test_user_manager_(std::make_unique<chromeos::ScopedTestUserManager>()),
+        test_user_manager_(std::make_unique<ash::ScopedTestUserManager>()),
 #endif
         profile_(new TestingProfile()),
         gallery_prefs_(nullptr),
@@ -201,7 +201,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
   storage_monitor::TestStorageMonitor* monitor_;

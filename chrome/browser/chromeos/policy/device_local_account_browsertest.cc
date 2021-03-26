@@ -1348,8 +1348,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   // verify that the underlying policy subsystem will start a fetch
   // without this request as well, the user_manager::UserManager must be
   // prevented from seeing the policy change.
-  static_cast<chromeos::ChromeUserManagerImpl*>(
-      user_manager::UserManager::Get())
+  static_cast<ash::ChromeUserManagerImpl*>(user_manager::UserManager::Get())
       ->StopPolicyObserverForTesting();
 
   UploadDeviceLocalAccountPolicy();
@@ -1461,7 +1460,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::ReadFileToString(
-        test_dir.Append(chromeos::test::kUserAvatarImage1RelativePath),
+        test_dir.Append(ash::test::kUserAvatarImage1RelativePath),
         &image_data));
   }
 
@@ -1470,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
       *test::ConstructExternalDataReference(
           embedded_test_server()
               ->GetURL(std::string("/") +
-                       chromeos::test::kUserAvatarImage1RelativePath)
+                       ash::test::kUserAvatarImage1RelativePath)
               .spec(),
           image_data),
       &policy);
@@ -1488,8 +1487,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   WaitUntilLocalStateChanged();
 
   gfx::ImageSkia policy_image =
-      chromeos::test::ImageLoader(
-          test_dir.Append(chromeos::test::kUserAvatarImage1RelativePath))
+      ash::test::ImageLoader(
+          test_dir.Append(ash::test::kUserAvatarImage1RelativePath))
           .Load();
   ASSERT_FALSE(policy_image.isNull());
 
@@ -1504,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
 
   EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user->image_index());
-  EXPECT_TRUE(chromeos::test::AreImagesEqual(policy_image, user->GetImage()));
+  EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
   const base::DictionaryValue* images_pref =
       g_browser_process->local_state()->GetDictionary("user_image_info");
   ASSERT_TRUE(images_pref);
@@ -1518,8 +1517,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, image_index);
   EXPECT_EQ(saved_image_path.value(), image_path);
 
-  gfx::ImageSkia saved_image =
-      chromeos::test::ImageLoader(saved_image_path).Load();
+  gfx::ImageSkia saved_image = ash::test::ImageLoader(saved_image_path).Load();
   ASSERT_FALSE(saved_image.isNull());
 
   // Check image dimensions. Images can't be compared since JPEG is lossy.

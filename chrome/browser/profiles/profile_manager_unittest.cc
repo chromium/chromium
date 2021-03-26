@@ -266,7 +266,7 @@ class ProfileManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedTestUserManager test_user_manager_;
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
@@ -326,8 +326,7 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   constexpr char kTestUserGaiaId[] = "0123456789";
   const AccountId test_account_id(
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId));
-  chromeos::FakeChromeUserManager* user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
 
   const user_manager::User* active_user =
@@ -625,8 +624,8 @@ class ProfileManagerGuestTest : public ProfileManagerTest,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 #endif

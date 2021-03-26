@@ -77,4 +77,9 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove once the migratin is finished.
+namespace ash {
+using ::chromeos::SessionLengthLimiter;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_SESSION_LENGTH_LIMITER_H_

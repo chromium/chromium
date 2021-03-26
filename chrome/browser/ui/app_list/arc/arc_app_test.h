@@ -22,7 +22,7 @@ class ArcSessionManager;
 class FakeAppInstance;
 }  // namespace arc
 
-namespace chromeos {
+namespace ash {
 class FakeChromeUserManager;
 }
 
@@ -78,7 +78,7 @@ class ArcAppTest {
     return fake_shortcuts_;
   }
 
-  chromeos::FakeChromeUserManager* GetUserManager();
+  ash::FakeChromeUserManager* GetUserManager();
 
   arc::FakeAppInstance* app_instance() { return app_instance_.get(); }
 

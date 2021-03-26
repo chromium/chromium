@@ -15,7 +15,7 @@ namespace policy {
 
 namespace {
 
-chromeos::UserImageManager* GetUserImageManager(const std::string& user_id) {
+ash::UserImageManager* GetUserImageManager(const std::string& user_id) {
   return chromeos::ChromeUserManager::Get()->GetUserImageManager(
       CloudExternalDataPolicyHandler::GetAccountId(user_id));
 }

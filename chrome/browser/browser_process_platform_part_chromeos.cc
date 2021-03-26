@@ -92,8 +92,7 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
 
 void BrowserProcessPlatformPart::InitializeChromeUserManager() {
   DCHECK(!chrome_user_manager_);
-  chrome_user_manager_ =
-      chromeos::ChromeUserManagerImpl::CreateChromeUserManager();
+  chrome_user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
   chrome_user_manager_->Initialize();
 }
 

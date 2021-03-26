@@ -19,8 +19,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 
-namespace chromeos {
-
+namespace ash {
 class FakeSupervisedUserManager;
 
 // Fake chrome user manager with a barebones implementation. Users can be added
@@ -246,11 +245,11 @@ class FakeChromeUserManager : public ChromeUserManager {
   DISALLOW_COPY_AND_ASSIGN(FakeChromeUserManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::FakeChromeUserManager;
+// TODO(https://crbug.com/1164001): remove when then migration is finished.
+namespace chromeos {
+using ::ash::FakeChromeUserManager;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_CHROME_USER_MANAGER_H_

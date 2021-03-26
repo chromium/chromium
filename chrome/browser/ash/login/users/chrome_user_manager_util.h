@@ -8,7 +8,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user.h"
 
-namespace chromeos {
+namespace ash {
 namespace chrome_user_manager_util {
 
 // Returns true if all `users` are allowed depending on the provided device
@@ -33,6 +33,11 @@ bool IsUserAllowed(const user_manager::User& user,
 bool IsPublicSessionOrEphemeralLogin();
 
 }  // namespace chrome_user_manager_util
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace chrome_user_manager_util = ::ash::chrome_user_manager_util;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_UTIL_H_

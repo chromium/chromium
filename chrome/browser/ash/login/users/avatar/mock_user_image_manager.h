@@ -12,7 +12,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class MockUserImageManager : public UserImageManager {
  public:
@@ -27,6 +27,6 @@ class MockUserImageManager : public UserImageManager {
   MOCK_CONST_METHOD0(DownloadedProfileImage, const gfx::ImageSkia&(void));
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_MOCK_USER_IMAGE_MANAGER_H_

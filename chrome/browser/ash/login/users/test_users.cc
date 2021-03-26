@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/login/users/test_users.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace saml_test_users {
 
 const char kFirstUserCorpExampleComEmail[] = "alice@corp.example.com";
@@ -15,5 +14,4 @@ const char kFourthUserCorpExampleTestEmail[] = "dan@corp.example.test";
 const char kFifthUserExampleTestEmail[] = "eve@example.test";
 
 }  // namespace saml_test_users
-
-}  // namespace chromeos
+}  // namespace ash

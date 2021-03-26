@@ -58,7 +58,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     const AccountInfo primary_account_info =
         identity_test_env->MakeUnconsentedPrimaryAccountAvailable(
             kFakePrimaryUsername);
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<FakeChromeUserManager>();
     primary_account_id_ = AccountId::FromUserEmailGaiaId(
         primary_account_info.email, primary_account_info.gaia);
     const user_manager::User* user = user_manager->AddUser(primary_account_id_);

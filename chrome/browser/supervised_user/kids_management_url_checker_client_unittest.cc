@@ -103,11 +103,11 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
     ASSERT_TRUE(test_profile_manager_->SetUp());
 
-// ChromeOS requires a chromeos::FakeChromeUserManager for the tests to work.
+// ChromeOS requires an ash::FakeChromeUserManager for the tests to work.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const char kEmail[] = "account@gmail.com";
     const AccountId test_account_id(AccountId::FromUserEmail(kEmail));
-    user_manager_ = new chromeos::FakeChromeUserManager;
+    user_manager_ = new ash::FakeChromeUserManager;
     user_manager_->AddUser(test_account_id);
     user_manager_->LoginUser(test_account_id);
     user_manager_->SwitchActiveUser(test_account_id);
@@ -156,7 +156,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 

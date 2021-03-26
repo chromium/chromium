@@ -22,7 +22,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace chromeos {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove once this file is migrated.
+using ::ash::MultiProfileUserController;
+using ::ash::MultiProfileUserControllerDelegate;
 
 const size_t kMaxUsers = 50;  // same as in user_selection_screen.cc
 const char* kOwner = "owner@gmail.com";
@@ -33,8 +38,6 @@ std::string GenerateUserEmail(int number) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 class SigninPrepareUserListTest : public testing::Test,
                                   public MultiProfileUserControllerDelegate {

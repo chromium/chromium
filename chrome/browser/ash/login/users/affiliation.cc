@@ -17,8 +17,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 std::string GetDeviceDMTokenIfAffiliated(
@@ -94,4 +93,4 @@ GetDeviceDMTokenForUserPolicyGetter(const AccountId& account_id) {
   return base::BindRepeating(&GetDeviceDMTokenIfAffiliated, account_id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

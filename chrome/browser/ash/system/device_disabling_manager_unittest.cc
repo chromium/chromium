@@ -76,7 +76,7 @@ class DeviceDisablingManagerTestBase : public testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::FakeChromeUserManager fake_user_manager_;
+  FakeChromeUserManager fake_user_manager_;
   std::unique_ptr<DeviceDisablingManager> device_disabling_manager_;
   chromeos::system::FakeStatisticsProvider statistics_provider_;
 

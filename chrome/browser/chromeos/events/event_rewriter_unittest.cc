@@ -171,7 +171,7 @@ namespace chromeos {
 class EventRewriterTest : public ChromeAshTestBase {
  public:
   EventRewriterTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
   ~EventRewriterTest() override {}
 
@@ -3540,7 +3540,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
  public:
   EventRewriterAshTest()
       : source_(&buffer_),
-        fake_user_manager_(new chromeos::FakeChromeUserManager),
+        fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
   ~EventRewriterAshTest() override {}
 
@@ -3613,7 +3613,7 @@ class EventRewriterAshTest : public ChromeAshTestBase {
   EventBuffer buffer_;
   TestEventSource source_;
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;  // Not owned.
+  FakeChromeUserManager* fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 

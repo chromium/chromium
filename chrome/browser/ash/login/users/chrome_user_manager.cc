@@ -17,7 +17,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 
 ChromeUserManager::ChromeUserManager(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -123,4 +123,4 @@ ChromeUserManager* ChromeUserManager::Get() {
   return user_manager ? static_cast<ChromeUserManager*>(user_manager) : NULL;
 }
 
-}  // namespace chromeos
+}  // namespace ash

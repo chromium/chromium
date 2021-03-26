@@ -53,6 +53,9 @@ namespace em = enterprise_management;
 namespace chromeos {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove once this file is migrated.
+using ::ash::ChromeUserManagerImpl;
+
 struct Params {
   Params(std::string login_screen_isolate_origins,
          std::string user_policy_isolate_origins,

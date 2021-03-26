@@ -96,7 +96,7 @@ TEST_P(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile->GetPrimaryOTRProfile()));
 
-  using MockUserManager = testing::NiceMock<chromeos::MockUserManager>;
+  using MockUserManager = testing::NiceMock<ash::MockUserManager>;
   {
     auto user_manager = std::make_unique<MockUserManager>();
     user_manager::ScopedUserManager enabler(std::move(user_manager));

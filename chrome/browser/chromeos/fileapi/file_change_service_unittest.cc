@@ -229,7 +229,7 @@ class TempFileSystem {
 class FileChangeServiceTest : public BrowserWithTestWindowTest {
  public:
   FileChangeServiceTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager),
+      : fake_user_manager_(new FakeChromeUserManager),
         user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {}
 
   FileChangeServiceTest(const FileChangeServiceTest& other) = delete;
@@ -251,7 +251,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

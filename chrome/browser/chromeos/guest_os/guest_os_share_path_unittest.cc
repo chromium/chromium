@@ -266,7 +266,7 @@ class GuestOsSharePathTest : public testing::Test {
 
     // Setup for DriveFS.
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     account_id_ = AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "12345");
     GetFakeUserManager()->AddUser(account_id_);
@@ -302,8 +302,8 @@ class GuestOsSharePathTest : public testing::Test {
     component_manager_.reset();
   }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/users/avatar/mock_user_image_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 MockUserImageManager::MockUserImageManager(const std::string& user_id)
     : UserImageManager(user_id) {}
 
 MockUserImageManager::~MockUserImageManager() {}
 
-}  // namespace chromeos
+}  // namespace ash

@@ -247,8 +247,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, NoEventsByDefault) {
 }
 
 TEST_F(ExtensionInstallEventLogCollectorTest, LoginLogout) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
@@ -279,8 +278,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginLogout) {
 }
 
 TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
@@ -364,8 +362,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, SuspendResume) {
 // Then, pass the captive portal. Verify that a connectivity change is recorded.
 TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
   SetNetworkState(nullptr, kEthernetServicePath, shill::kStateOnline);
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);

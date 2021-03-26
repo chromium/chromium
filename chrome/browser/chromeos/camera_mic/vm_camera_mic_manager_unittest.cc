@@ -122,7 +122,7 @@ class VmCameraMicManagerTest : public testing::Test {
   VmCameraMicManagerTest() {
     // Make the profile the primary one.
     auto mock_user_manager =
-        std::make_unique<testing::NiceMock<chromeos::MockUserManager>>();
+        std::make_unique<testing::NiceMock<MockUserManager>>();
     mock_user_manager->AddUser(AccountId::FromUserEmailGaiaId(
         testing_profile_.GetProfileUserName(), "id"));
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

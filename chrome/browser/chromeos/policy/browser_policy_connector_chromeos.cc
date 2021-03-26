@@ -580,7 +580,7 @@ BrowserPolicyConnectorChromeOS::device_affiliation_ids() const {
   return {};
 }
 
-chromeos::AffiliationIDSet
+ash::AffiliationIDSet
 BrowserPolicyConnectorChromeOS::GetDeviceAffiliationIDs() const {
   base::flat_set<std::string> affiliation_ids = device_affiliation_ids();
   return {affiliation_ids.begin(), affiliation_ids.end()};

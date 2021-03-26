@@ -451,7 +451,7 @@ class LockScreenAppManagerImplTest
   content::BrowserTaskEnvironment task_environment_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager user_manager_;
+  ash::ScopedTestUserManager user_manager_;
 
   TestingProfileManager profile_manager_;
   TestingProfile* profile_ = nullptr;

@@ -16,17 +16,13 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
-namespace ash {
-enum class MultiProfileUserBehavior;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace chromeos {
-
+namespace ash {
 class MultiProfileUserControllerDelegate;
+enum class MultiProfileUserBehavior;
 
 // MultiProfileUserController decides whether a user is allowed to be in a
 // multi-profiles session. It caches the multi-profile user behavior pref backed
@@ -67,7 +63,7 @@ class MultiProfileUserController {
   static UserAllowedInSessionReason GetPrimaryUserPolicy();
 
   // Returns the user behavior in MultiProfileUserBehavior enum.
-  static ash::MultiProfileUserBehavior UserBehaviorStringToEnum(
+  static MultiProfileUserBehavior UserBehaviorStringToEnum(
       const std::string& behavior);
 
   // Returns true if user allowed to be in the current session. If `reason` not
@@ -107,6 +103,11 @@ class MultiProfileUserController {
   DISALLOW_COPY_AND_ASSIGN(MultiProfileUserController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace chromeos {
+using ::ash::MultiProfileUserController;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_MULTI_PROFILE_USER_CONTROLLER_H_

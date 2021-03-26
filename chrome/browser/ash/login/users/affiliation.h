@@ -13,7 +13,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 typedef std::set<std::string> AffiliationIDSet;
 
@@ -37,6 +37,6 @@ bool IsUserAffiliated(const AffiliationIDSet& user_affiliation_ids,
 base::RepeatingCallback<std::string(const std::vector<std::string>&)>
 GetDeviceDMTokenForUserPolicyGetter(const AccountId& account_id);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AFFILIATION_H_

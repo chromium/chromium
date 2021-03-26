@@ -622,7 +622,7 @@ class FileManagerFileTasksComplexTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedTestUserManager test_user_manager_;
   TestingProfile test_profile_;
   base::CommandLine command_line_;
   extensions::ExtensionService* extension_service_;  // Owned by test_profile_;

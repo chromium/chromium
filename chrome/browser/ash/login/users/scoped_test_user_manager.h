@@ -9,8 +9,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
-
+namespace ash {
 class ChromeUserManager;
 
 // Helper class for unit tests. Initializes the UserManager singleton on
@@ -26,6 +25,6 @@ class ScopedTestUserManager {
   DISALLOW_COPY_AND_ASSIGN(ScopedTestUserManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_SCOPED_TEST_USER_MANAGER_H_

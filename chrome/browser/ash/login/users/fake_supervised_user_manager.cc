@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 FakeSupervisedUserManager::FakeSupervisedUserManager() {}
 
@@ -32,4 +32,4 @@ std::string FakeSupervisedUserManager::GetManagerDisplayEmail(
   return std::string();
 }
 
-}  // namespace chromeos
+}  // namespace ash

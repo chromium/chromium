@@ -23,7 +23,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skbitmap_operations.h"
 
-namespace chromeos {
+namespace ash {
 namespace user_image_loader {
 namespace {
 
@@ -262,4 +262,4 @@ void StartWithData(
 }
 
 }  // namespace user_image_loader
-}  // namespace chromeos
+}  // namespace ash

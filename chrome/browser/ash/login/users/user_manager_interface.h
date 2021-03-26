@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_
 
 #include "base/macros.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when fixed.
+#include "chrome/browser/ash/login/user_flow.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 
 class AccountId;
 
-namespace chromeos {
-
+namespace ash {
 class MultiProfileUserController;
 class SupervisedUserManager;
-class UserFlow;
 class UserImageManager;
 
 // ChromeOS specific add-ons interface for the UserManager.
@@ -51,6 +51,6 @@ class UserManagerInterface {
   DISALLOW_COPY_AND_ASSIGN(UserManagerInterface);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_INTERFACE_H_

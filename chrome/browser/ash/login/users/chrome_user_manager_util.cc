@@ -15,7 +15,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 namespace chrome_user_manager_util {
 
 bool AreAllUsersAllowed(const user_manager::UserList& users,
@@ -87,4 +87,4 @@ bool IsPublicSessionOrEphemeralLogin() {
 }
 
 }  // namespace chrome_user_manager_util
-}  // namespace chromeos
+}  // namespace ash

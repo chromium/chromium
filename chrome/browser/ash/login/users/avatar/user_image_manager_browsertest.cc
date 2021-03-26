@@ -82,8 +82,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kRandomTokenStrForTesting[] = "random-token-str-for-testing";
@@ -559,7 +558,7 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     // Override FakeSessionManagerClient. This will be shut down by the browser.
-    SessionManagerClient::InitializeFakeInMemory();
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
 
@@ -841,4 +840,4 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   EXPECT_EQ(policy_image_.height(), saved_image.height());
 }
 
-}  // namespace chromeos
+}  // namespace ash

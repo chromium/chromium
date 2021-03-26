@@ -170,7 +170,7 @@ class ExtensionActionIconFactoryTest
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActionIconFactoryTest);

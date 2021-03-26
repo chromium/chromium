@@ -149,7 +149,7 @@ void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
       testing_profile_->GetProfileUserName(), "id"));
   auto mock_user_manager =
-      std::make_unique<testing::NiceMock<chromeos::MockUserManager>>();
+      std::make_unique<testing::NiceMock<ash::MockUserManager>>();
   mock_user_manager->AddUserWithAffiliationAndType(
       account_id, true, user_manager::USER_TYPE_REGULAR);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

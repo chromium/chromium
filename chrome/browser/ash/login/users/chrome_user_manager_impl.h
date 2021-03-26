@@ -28,6 +28,8 @@
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when fixed.
+#include "chrome/browser/chromeos/session_length_limiter.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
@@ -49,11 +51,9 @@ namespace policy {
 class CloudExternalDataPolicyHandler;
 }  // namespace policy
 
-namespace chromeos {
-
+namespace ash {
 class MultiProfileUserController;
 class SupervisedUserManagerImpl;
-class SessionLengthLimiter;
 
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
@@ -281,6 +281,6 @@ class ChromeUserManagerImpl
   DISALLOW_COPY_AND_ASSIGN(ChromeUserManagerImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_IMPL_H_

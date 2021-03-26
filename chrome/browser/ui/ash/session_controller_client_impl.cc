@@ -386,8 +386,8 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   if (user_manager->GetUsersAllowedForMultiProfile().empty())
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
 
-  if (chromeos::MultiProfileUserController::GetPrimaryUserPolicy() !=
-      chromeos::MultiProfileUserController::ALLOWED) {
+  if (ash::MultiProfileUserController::GetPrimaryUserPolicy() !=
+      ash::MultiProfileUserController::ALLOWED) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 

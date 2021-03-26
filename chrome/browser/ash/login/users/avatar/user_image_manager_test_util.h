@@ -16,7 +16,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 extern const char kUserAvatarImage1RelativePath[];
@@ -48,6 +48,6 @@ class ImageLoader : public ImageDecoder::ImageRequest {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_TEST_UTIL_H_

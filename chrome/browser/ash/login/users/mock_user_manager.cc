@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
+namespace ash {
 namespace {
 
 class FakeTaskRunner : public base::SingleThreadTaskRunner {
@@ -33,8 +34,6 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 };
 
 }  // namespace
-
-namespace chromeos {
 
 MockUserManager::MockUserManager()
     : ChromeUserManager(new FakeTaskRunner()),
@@ -169,4 +168,4 @@ bool MockUserManager::ShouldReportUser(const std::string& user_id) const {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

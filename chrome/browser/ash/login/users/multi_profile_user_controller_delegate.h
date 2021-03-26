@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_MULTI_PROFILE_USER_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_MULTI_PROFILE_USER_CONTROLLER_DELEGATE_H_
 
-namespace chromeos {
+namespace ash {
 
 class MultiProfileUserControllerDelegate {
  public:
@@ -16,6 +16,6 @@ class MultiProfileUserControllerDelegate {
   virtual ~MultiProfileUserControllerDelegate() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_MULTI_PROFILE_USER_CONTROLLER_DELEGATE_H_

@@ -2781,7 +2781,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, GranularPermissionsResponse) {
 class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
  public:
   GetAuthTokenFunctionPublicSessionTest()
-      : user_manager_(new chromeos::MockUserManager) {}
+      : user_manager_(new ash::MockUserManager) {}
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -2793,8 +2793,8 @@ class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
     EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*user_manager_, GetLoggedInUsers())
-        .WillRepeatedly(testing::Invoke(user_manager_,
-                                        &chromeos::MockUserManager::GetUsers));
+        .WillRepeatedly(
+            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
   }
 
   scoped_refptr<const Extension> CreateTestExtension(const std::string& id) {
@@ -2815,7 +2815,7 @@ class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
                                                           "fake-id")};
 
   // Owned by |user_manager_enabler|.
-  chromeos::MockUserManager* user_manager_;
+  ash::MockUserManager* user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {

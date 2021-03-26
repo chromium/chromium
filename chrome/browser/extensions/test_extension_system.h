@@ -117,7 +117,7 @@ class TestExtensionSystem : public ExtensionSystem {
       in_process_data_decoder_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 };
 

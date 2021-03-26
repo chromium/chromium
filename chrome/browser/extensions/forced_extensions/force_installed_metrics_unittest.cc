@@ -892,8 +892,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionStuckInCreatedStage) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   const AccountId account_id =
@@ -920,8 +919,7 @@ TEST_F(ForceInstalledMetricsTest, ReportManagedGuestSessionOnExtensionFailure) {
 }
 
 TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   const AccountId account_id =
@@ -950,8 +948,7 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
 // extension stuck in NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage.
 TEST_F(ForceInstalledMetricsTest,
        ReportGuestSessionForExtensionsStuckInCreatedStage) {
-  chromeos::FakeChromeUserManager* fake_user_manager =
-      new chromeos::FakeChromeUserManager();
+  auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
   const AccountId account_id =

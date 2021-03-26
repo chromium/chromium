@@ -21,7 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -104,17 +104,16 @@ MultiProfileUserController::GetPrimaryUserPolicy() {
 }
 
 // static
-ash::MultiProfileUserBehavior
-MultiProfileUserController::UserBehaviorStringToEnum(
+MultiProfileUserBehavior MultiProfileUserController::UserBehaviorStringToEnum(
     const std::string& behavior) {
   if (behavior == kBehaviorPrimaryOnly)
-    return ash::MultiProfileUserBehavior::PRIMARY_ONLY;
+    return MultiProfileUserBehavior::PRIMARY_ONLY;
   if (behavior == kBehaviorNotAllowed)
-    return ash::MultiProfileUserBehavior::NOT_ALLOWED;
+    return MultiProfileUserBehavior::NOT_ALLOWED;
   if (behavior == kBehaviorOwnerPrimaryOnly)
-    return ash::MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
+    return MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
 
-  return ash::MultiProfileUserBehavior::UNRESTRICTED;
+  return MultiProfileUserBehavior::UNRESTRICTED;
 }
 
 bool MultiProfileUserController::IsUserAllowedInSession(
@@ -219,4 +218,4 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
   CheckSessionUsers();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -16,7 +16,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
 
-namespace chromeos {
+namespace ash {
 
 // Chrome specific interface of the UserManager.
 class ChromeUserManager : public user_manager::UserManagerBase,
@@ -69,6 +69,11 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   DISALLOW_COPY_AND_ASSIGN(ChromeUserManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ChromeUserManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_CHROME_USER_MANAGER_H_

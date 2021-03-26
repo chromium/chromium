@@ -134,8 +134,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
  private:
   ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
-  chromeos::FakeChromeUserManager* fake_user_manager_{
-      new chromeos::FakeChromeUserManager()};
+  ash::FakeChromeUserManager* fake_user_manager_{
+      new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_)};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;

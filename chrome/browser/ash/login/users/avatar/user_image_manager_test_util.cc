@@ -16,7 +16,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 const char kUserAvatarImage1RelativePath[] = "chromeos/avatar1.jpg";
@@ -76,4 +76,4 @@ void ImageLoader::OnDecodeImageFailed() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

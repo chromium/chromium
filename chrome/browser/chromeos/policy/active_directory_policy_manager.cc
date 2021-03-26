@@ -333,7 +333,7 @@ void UserActiveDirectoryPolicyManager::OnPublishPolicy() {
     return;
 
   // Update user affiliation IDs.
-  chromeos::AffiliationIDSet set_of_user_affiliation_ids(
+  ash::AffiliationIDSet set_of_user_affiliation_ids(
       policy_data->user_affiliation_ids().begin(),
       policy_data->user_affiliation_ids().end());
 

@@ -157,7 +157,7 @@ class SiteSettingsHandlerTest : public testing::Test {
             ContentSettingsType::COOKIES)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::MockUserManager>());
+        std::make_unique<ash::MockUserManager>());
 #endif
 
     // Fully initialize |profile_| in the constructor since some children

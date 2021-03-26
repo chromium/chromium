@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/test_extension_system.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -54,7 +55,7 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
       app_sorting_(new ChromeAppSorting(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized())
-    test_user_manager_.reset(new chromeos::ScopedTestUserManager);
+    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
 #endif
 }
 

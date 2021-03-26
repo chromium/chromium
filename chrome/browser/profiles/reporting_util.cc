@@ -90,7 +90,7 @@ std::string GetDeviceDmToken(Profile* profile) {
     return std::string();
 
   DeviceDMTokenCallback device_dm_token_callback =
-      chromeos::GetDeviceDMTokenForUserPolicyGetter(user->GetAccountId());
+      ash::GetDeviceDMTokenForUserPolicyGetter(user->GetAccountId());
   if (!device_dm_token_callback)
     return std::string();
 

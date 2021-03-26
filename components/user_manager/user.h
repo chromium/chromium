@@ -18,15 +18,18 @@
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class MockUserManager;
+class UserImageManagerImpl;
+}  // namespace ash
+
+namespace chromeos {
 class SupervisedUserManagerImpl;
 class UserAddingScreenTest;
-class UserImageManagerImpl;
 class UserSessionManager;
-}
+}  // namespace chromeos
 
 namespace gfx {
 class ImageSkia;
@@ -210,15 +213,15 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
  protected:
   friend class UserManagerBase;
-  friend class chromeos::ChromeUserManagerImpl;
+  friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
-  friend class chromeos::UserImageManagerImpl;
+  friend class ash::UserImageManagerImpl;
   friend class chromeos::UserSessionManager;
 
   // For testing:
   friend class FakeUserManager;
-  friend class chromeos::FakeChromeUserManager;
-  friend class chromeos::MockUserManager;
+  friend class ash::FakeChromeUserManager;
+  friend class ash::MockUserManager;
   friend class chromeos::UserAddingScreenTest;
   friend class policy::ProfilePolicyConnectorTest;
   FRIEND_TEST_ALL_PREFIXES(UserTest, DeviceLocalAccountAffiliation);

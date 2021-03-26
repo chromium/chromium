@@ -35,8 +35,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char* const kUsers[] = {"a@gmail.com", "b@gmail.com"};
@@ -439,4 +438,4 @@ TEST_F(MultiProfileUserControllerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

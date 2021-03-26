@@ -560,8 +560,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   void InitializeKioskAppUser() {
     const AccountId kiosk_account_id(
         AccountId::FromUserEmail(kTestUserAccount));
-    auto fake_user_manager_ =
-        std::make_unique<chromeos::FakeChromeUserManager>();
+    auto fake_user_manager_ = std::make_unique<FakeChromeUserManager>();
     fake_user_manager_->AddKioskAppUser(kiosk_account_id);
     fake_user_manager_->LoginUser(kiosk_account_id);
 

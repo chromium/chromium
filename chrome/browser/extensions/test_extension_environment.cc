@@ -80,7 +80,7 @@ class TestExtensionEnvironment::ChromeOSEnv {
 
  private:
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedTestUserManager test_user_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSEnv);
 };

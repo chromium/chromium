@@ -34,7 +34,7 @@ class UserImage;
 class UserManager;
 }  // namespace user_manager
 
-namespace chromeos {
+namespace ash {
 
 class UserImageSyncObserver;
 
@@ -211,6 +211,6 @@ class UserImageManagerImpl : public UserImageManager,
   DISALLOW_COPY_AND_ASSIGN(UserImageManagerImpl);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_MANAGER_IMPL_H_

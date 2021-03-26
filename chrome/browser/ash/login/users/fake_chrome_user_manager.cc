@@ -61,7 +61,7 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class FakeSupervisedUserManager;
 
@@ -728,4 +728,4 @@ user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   return users_[0];
 }
 
-}  // namespace chromeos
+}  // namespace ash

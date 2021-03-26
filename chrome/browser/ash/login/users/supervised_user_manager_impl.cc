@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -65,7 +66,7 @@ const char kSupervisedUserIncompleteKey[] = "SupervisedUserHasIncompleteKey";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 const char kSchemaVersion[] = "SchemaVersion";
 const char kPasswordRevision[] = "PasswordRevision";
@@ -259,4 +260,4 @@ bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
   return prefs_new_users_update->Remove(base::Value(user_id), NULL);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake supervised user manager with a barebones implementation.
 class FakeSupervisedUserManager : public SupervisedUserManager {
@@ -32,6 +32,6 @@ class FakeSupervisedUserManager : public SupervisedUserManager {
   DISALLOW_COPY_AND_ASSIGN(FakeSupervisedUserManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_SUPERVISED_USER_MANAGER_H_

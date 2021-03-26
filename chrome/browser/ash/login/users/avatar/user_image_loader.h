@@ -22,7 +22,7 @@ class UserImage;
 
 // Helper functions that read, decode and optionally resize an image on a
 // background thread. The image is returned in the form of a UserImage.
-namespace chromeos {
+namespace ash {
 namespace user_image_loader {
 
 using LoadedCallback =
@@ -50,6 +50,11 @@ void StartWithData(
     LoadedCallback loaded_cb);
 
 }  // namespace user_image_loader
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace user_image_loader = ::ash::user_image_loader;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_LOADER_H_

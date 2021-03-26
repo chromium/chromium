@@ -47,7 +47,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    mock_user_manager_ = new chromeos::MockUserManager();
+    mock_user_manager_ = new ash::MockUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(mock_user_manager_));
 
@@ -84,7 +84,7 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  chromeos::MockUserManager* mock_user_manager_;  // Not owned.
+  ash::MockUserManager* mock_user_manager_;  // Not owned.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;

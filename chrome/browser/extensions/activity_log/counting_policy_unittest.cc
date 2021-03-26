@@ -51,7 +51,7 @@ class CountingPolicyTest : public testing::Test {
   CountingPolicyTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.reset(new chromeos::ScopedTestUserManager());
+    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
 #endif
     profile_.reset(new TestingProfile());
     base::CommandLine::ForCurrentProcess()->
@@ -389,7 +389,7 @@ class CountingPolicyTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 };
 

@@ -14,7 +14,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // Keys in dictionary with supervised password information.
 extern const char kSchemaVersion[];
@@ -71,6 +71,6 @@ class SupervisedUserManager {
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_SUPERVISED_USER_MANAGER_H_

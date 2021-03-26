@@ -18,8 +18,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
-
+namespace ash {
 class FakeSupervisedUserManager;
 
 class MockUserManager : public ChromeUserManager {
@@ -137,7 +136,7 @@ class MockUserManager : public ChromeUserManager {
   UserFlow* GetUserFlow(const AccountId&) const override;
   MOCK_METHOD2(SetUserAffiliation,
                void(const AccountId& account_id,
-                    const chromeos::AffiliationIDSet& user_affiliation_ids));
+                    const AffiliationIDSet& user_affiliation_ids));
 
   bool ShouldReportUser(const std::string& user_id) const override;
   MOCK_CONST_METHOD1(IsManagedSessionEnabledForUser,
@@ -188,11 +187,11 @@ class MockUserManager : public ChromeUserManager {
   user_manager::UserList user_list_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::MockUserManager;
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace chromeos {
+using ::ash::MockUserManager;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_MOCK_USER_MANAGER_H_

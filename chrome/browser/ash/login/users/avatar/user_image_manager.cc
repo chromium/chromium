@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 UserImageManager::UserImageManager(const std::string& user_id)
     : user_id_(user_id) {}
 
 UserImageManager::~UserImageManager() {}
 
-}  // namespace chromeos
+}  // namespace ash

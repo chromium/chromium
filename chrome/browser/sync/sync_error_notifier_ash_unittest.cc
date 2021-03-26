@@ -87,7 +87,7 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   FakeLoginUI login_ui_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<chromeos::MockUserManager>()};
+      std::make_unique<ash::MockUserManager>()};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifierTest);

@@ -171,7 +171,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // session controller, because the session controller triggers the loading
   // of users, which itself calls a code path which eventually reaches the
   // WallpaperControllerClientImpl singleton instance via
-  // chromeos::ChromeUserManagerImpl.
+  // ash::ChromeUserManagerImpl.
   wallpaper_controller_client_ =
       std::make_unique<WallpaperControllerClientImpl>();
   wallpaper_controller_client_->Init();

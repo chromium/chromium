@@ -70,4 +70,9 @@ class LoginManagerTest : public MixinBasedInProcessBrowserTest {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove once the migration is finished.
+namespace ash {
+using ::chromeos::LoginManagerTest;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_MANAGER_TEST_H_

@@ -33,7 +33,7 @@ class BrowserUtilTest : public testing::Test {
   ~BrowserUtilTest() override = default;
 
   void SetUp() override {
-    fake_user_manager_ = new chromeos::FakeChromeUserManager;
+    fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
   }
@@ -52,7 +52,7 @@ class BrowserUtilTest : public testing::Test {
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-  chromeos::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   ScopedTestingLocalState local_state_;

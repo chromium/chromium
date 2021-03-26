@@ -30,7 +30,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for keeping local user image synced with
 // image saved in syncable preference.
@@ -85,6 +85,6 @@ class UserImageSyncObserver
   bool local_image_changed_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_SYNC_OBSERVER_H_
