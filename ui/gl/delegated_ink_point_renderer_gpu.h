@@ -8,7 +8,11 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 // Required for SFINAE to check if these Win10 types exist.
 // TODO(1171374): Remove this when the types are available in the Win10 SDK.
@@ -44,6 +48,11 @@ class DelegatedInkPointRendererGpu {
       const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) const {
     return false;
   }
+
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+    NOTREACHED();
+  }
 };
 
 // This class will call the OS delegated ink trail APIs when they become
@@ -71,6 +80,14 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   bool Initialize(
       const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device2,
       const Microsoft::WRL::ComPtr<IDXGISwapChain1>& root_swap_chain) {
+    if (dcomp_device_ == dcomp_device2.Get() &&
+        swap_chain_ == root_swap_chain.Get() && HasBeenInitialized()) {
+      return true;
+    }
+
+    dcomp_device_ = dcomp_device2.Get();
+    swap_chain_ = root_swap_chain.Get();
+
     Microsoft::WRL::ComPtr<InkTrailDevice> ink_trail_device;
     TraceEventOnFailure(dcomp_device2.As(&ink_trail_device),
                         "DelegatedInkPointRendererGpu::Initialize - "
@@ -126,6 +143,16 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     return hr == S_OK;
   }
 
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+    TRACE_EVENT1("gpu",
+                 "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
+                 "metadata", metadata->ToString());
+    metadata_ = std::move(metadata);
+    // TODO(1052145): Start using OS APIs to inform of the starting point of the
+    // ink trail.
+  }
+
  private:
   // Note that this returns true if the HRESULT is anything other than S_OK,
   // meaning that it returns true when an event is traced (because of a
@@ -145,6 +172,17 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // The delegated ink trail object that the ink trail is drawn on. This is the
   // content of the ink visual.
   Microsoft::WRL::ComPtr<DelegatedInkTrail> delegated_ink_trail_;
+
+  // The most recent metadata received. The metadata marks the last point of
+  // the app rendered stroke, which corresponds to the first point of the
+  // delegated ink trail that will be drawn.
+  std::unique_ptr<gfx::DelegatedInkMetadata> metadata_;
+
+  // Remember the dcomp device and swap chain used to create
+  // |delegated_ink_trail_| and |ink_visual_| so that we can avoid recreating
+  // them when it isn't necessary.
+  IDCompositionDevice2* dcomp_device_ = nullptr;
+  IDXGISwapChain1* swap_chain_ = nullptr;
 };
 
 }  // namespace gl

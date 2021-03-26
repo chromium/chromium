@@ -896,6 +896,11 @@ bool DirectCompositionSurfaceWin::SupportsDelegatedInk() {
   return layer_tree_->SupportsDelegatedInk();
 }
 
+void DirectCompositionSurfaceWin::SetDelegatedInkTrailStartPoint(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  layer_tree_->SetDelegatedInkTrailStartPoint(std::move(metadata));
+}
+
 scoped_refptr<base::TaskRunner>
 DirectCompositionSurfaceWin::GetWindowTaskRunnerForTesting() {
   return child_window_.GetTaskRunnerForTesting();

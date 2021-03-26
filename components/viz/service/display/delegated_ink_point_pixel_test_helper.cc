@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "components/viz/service/display/delegated_ink_point_pixel_test_helper.h"
+
+#include <memory>
+#include <utility>
 
 #include "components/viz/service/display/direct_renderer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,18 +19,19 @@ DelegatedInkPointPixelTestHelper::~DelegatedInkPointPixelTestHelper() = default;
 DelegatedInkPointPixelTestHelper::DelegatedInkPointPixelTestHelper(
     DirectRenderer* renderer)
     : renderer_(renderer) {
-  renderer_->CreateDelegatedInkPointRenderer();
+  CreateInkRenderer();
 }
 
 void DelegatedInkPointPixelTestHelper::SetRendererAndCreateInkRenderer(
     DirectRenderer* renderer) {
   renderer_ = renderer;
-  renderer_->CreateDelegatedInkPointRenderer();
+  CreateInkRenderer();
 }
 
-DelegatedInkPointRendererBase*
-DelegatedInkPointPixelTestHelper::GetInkRenderer() {
-  return renderer_->GetDelegatedInkPointRenderer();
+void DelegatedInkPointPixelTestHelper::CreateInkRenderer() {
+  auto ink_renderer = std::make_unique<DelegatedInkPointRendererSkia>();
+  ink_renderer_ = ink_renderer.get();
+  renderer_->SetDelegatedInkPointRendererSkiaForTest(std::move(ink_renderer));
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
@@ -42,7 +44,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
   metadata_ = gfx::DelegatedInkMetadata(
       point, diameter, color, timestamp, presentation_area,
       base::TimeTicks::Now(), /*hovering*/ false);
-  GetInkRenderer()->SetDelegatedInkMetadata(
+  ink_renderer_->SetDelegatedInkMetadata(
       std::make_unique<gfx::DelegatedInkMetadata>(metadata_));
 }
 
@@ -72,7 +74,7 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPoint(
     int32_t pointer_id) {
   DCHECK(renderer_);
   ink_points_[pointer_id].emplace_back(point, timestamp, pointer_id);
-  GetInkRenderer()->StoreDelegatedInkPoint(ink_points_[pointer_id].back());
+  ink_renderer_->StoreDelegatedInkPoint(ink_points_[pointer_id].back());
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(

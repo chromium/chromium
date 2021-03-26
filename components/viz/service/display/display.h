@@ -198,7 +198,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // Return the delegated ink point renderer from |renderer_|, creating it if
   // one doesn't exist. Should only be used when the delegated ink trails web
   // API has been used.
-  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer();
+  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
+      bool create_if_necessary);
 
  private:
   friend class DisplayTest;

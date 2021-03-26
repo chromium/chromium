@@ -79,6 +79,8 @@ void FakeSkiaOutputSurface::Reshape(const gfx::Size& size,
 
 void FakeSkiaOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (frame.delegated_ink_metadata)
+    last_delegated_ink_metadata_ = std::move(frame.delegated_ink_metadata);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FakeSkiaOutputSurface::SwapBuffersAck,
                                 weak_ptr_factory_.GetWeakPtr()));

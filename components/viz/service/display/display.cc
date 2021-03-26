@@ -1334,8 +1334,9 @@ void Display::PreserveChildSurfaceControls() {
   }
 }
 
-DelegatedInkPointRendererBase* Display::GetDelegatedInkPointRenderer() {
-  return renderer_->GetDelegatedInkPointRenderer();
+DelegatedInkPointRendererBase* Display::GetDelegatedInkPointRenderer(
+    bool create_if_necessary) {
+  return renderer_->GetDelegatedInkPointRenderer(create_if_necessary);
 }
 
 }  // namespace viz

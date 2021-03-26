@@ -18,7 +18,7 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/delegated_ink_point_renderer_base.h"
+#include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
@@ -141,9 +141,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return last_root_render_pass_scissor_rect_;
   }
 
-  virtual DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer();
-  void SetDelegatedInkMetadata(
-      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
+  virtual DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
+      bool create_if_necessary);
+  virtual void SetDelegatedInkMetadata(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
 
   // Returns true if composite time tracing is enabled. This measures a detailed
   // trace log for draw time spent per quad.
@@ -159,6 +160,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   friend class BspWalkActionDrawPolygon;
   friend class SkiaDelegatedInkRendererTest;
   friend class DelegatedInkPointPixelTestHelper;
+  friend class DelegatedInkDisplayTest;
 
   enum SurfaceInitializationMode {
     SURFACE_INITIALIZATION_MODE_PRESERVE,
@@ -336,10 +338,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   }
   gfx::ColorSpace reshape_color_space() const { return reshape_color_space_; }
 
-  // Return a bool to inform the caller if the delegated ink renderer was
-  // actually created or not. If the renderer doesn't support drawing delegated
-  // ink trails, then the delegated ink renderer won't be created.
-  virtual bool CreateDelegatedInkPointRenderer();
+  // Sets a DelegatedInkPointRendererSkiaForTest to be used for testing only, in
+  // order to save delegated ink metadata values that would otherwise be reset.
+  virtual void SetDelegatedInkPointRendererSkiaForTest(
+      std::unique_ptr<DelegatedInkPointRendererSkia> renderer) {}
 
  private:
   virtual void DrawDelegatedInkTrail();

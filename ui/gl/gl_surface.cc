@@ -4,6 +4,8 @@
 
 #include "ui/gl/gl_surface.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
@@ -543,6 +545,11 @@ bool GLSurfaceAdapter::IsCurrent() {
 
 bool GLSurfaceAdapter::SupportsDelegatedInk() {
   return surface_->SupportsDelegatedInk();
+}
+
+void GLSurfaceAdapter::SetDelegatedInkTrailStartPoint(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  surface_->SetDelegatedInkTrailStartPoint(std::move(metadata));
 }
 
 GLSurfaceAdapter::~GLSurfaceAdapter() = default;

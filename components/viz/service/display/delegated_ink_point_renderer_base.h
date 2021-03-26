@@ -43,7 +43,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
       mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver);
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override;
-  void SetDelegatedInkMetadata(
+  virtual void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
 
   virtual void FinalizePathForDraw() = 0;
@@ -63,6 +63,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata_;
 
  private:
+  friend class DelegatedInkDisplayTest;
   friend class SkiaDelegatedInkRendererTest;
 
   const std::unordered_map<int32_t, DelegatedInkTrailData>&

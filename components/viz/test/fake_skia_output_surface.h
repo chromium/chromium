@@ -133,6 +133,14 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) override;
 
+  void UsePlatformDelegatedInkForTesting() {
+    capabilities_.supports_delegated_ink = true;
+  }
+
+  gfx::DelegatedInkMetadata* last_delegated_ink_metadata() const {
+    return last_delegated_ink_metadata_.get();
+  }
+
  private:
   explicit FakeSkiaOutputSurface(
       scoped_refptr<ContextProvider> context_provider);
@@ -154,6 +162,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
   // SkSurfaces for render passes, sk_surfaces_[0] is the root surface.
   base::flat_map<AggregatedRenderPassId, sk_sp<SkSurface>> sk_surfaces_;
+
+  // Most recent delegated ink metadata to have arrived via a SwapBuffers call.
+  std::unique_ptr<gfx::DelegatedInkMetadata> last_delegated_ink_metadata_;
 
   THREAD_CHECKER(thread_checker_);
 

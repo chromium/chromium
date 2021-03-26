@@ -27,7 +27,7 @@ namespace viz {
 class AggregatedRenderPassDrawQuad;
 class DebugBorderDrawQuad;
 class DelegatedInkPointRendererBase;
-class DelegatedInkPointRendererSkia;
+class DelegatedInkHandler;
 class PictureDrawQuad;
 class SkiaOutputSurface;
 class SolidColorDrawQuad;
@@ -59,7 +59,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     disable_picture_quad_image_filtering_ = disable;
   }
 
-  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer() override;
+  DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer(
+      bool create_if_necessary) override;
+  void SetDelegatedInkMetadata(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
 
  protected:
   bool CanPartialSwap() override;
@@ -91,9 +94,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void DidChangeVisibility() override;
   void FinishDrawingQuadList() override;
   void GenerateMipmap() override;
-  bool CreateDelegatedInkPointRenderer() override;
+  void SetDelegatedInkPointRendererSkiaForTest(
+      std::unique_ptr<DelegatedInkPointRendererSkia> renderer) override;
 
-  std::unique_ptr<DelegatedInkPointRendererSkia> delegated_ink_point_renderer_;
+  std::unique_ptr<DelegatedInkHandler> delegated_ink_handler_;
 
  private:
   enum class BypassMode;
@@ -346,6 +350,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   base::flat_map<gfx::ColorSpace,
                  base::flat_map<gfx::ColorSpace, sk_sp<SkRuntimeEffect>>>
       color_filter_cache_;
+
+  bool UsingSkiaForDelegatedInk() const;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaRenderer);
 };

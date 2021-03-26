@@ -120,6 +120,11 @@ const base::Feature kUseX11Present{"UseX11Present",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Enables platform supported delegated ink trails instead of Skia backed
+// delegated ink trails.
+const base::Feature kUsePlatformDelegatedInk{"UsePlatformDelegatedInk",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to debug Android WebView Vulkan composite. Composite to an intermediate
 // buffer and draw the intermediate buffer to the secondary command buffer.
 const base::Feature kWebViewVulkanIntermediateBuffer{
@@ -249,6 +254,10 @@ base::Optional<int> ShouldDrawPredictedInkPoints() {
 
   NOTREACHED();
   return base::nullopt;
+}
+
+bool ShouldUsePlatformDelegatedInk() {
+  return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
 
 }  // namespace features

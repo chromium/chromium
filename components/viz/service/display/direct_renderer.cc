@@ -252,8 +252,8 @@ void DirectRenderer::DrawFrame(
     current_frame()->root_damage_rect.Union(
         overlay_processor_->GetAndResetOverlayDamage());
   }
-  if (DelegatedInkPointRendererBase* ink_renderer =
-          GetDelegatedInkPointRenderer()) {
+  if (auto* ink_renderer =
+          GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
     // The path must be finalized before GetDamageRect() can return an accurate
     // rect that will allow the old trail to be removed and the new trail to
     // be drawn at the same time.
@@ -986,20 +986,9 @@ gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
       current_frame()->current_render_pass->content_color_usage);
 }
 
-bool DirectRenderer::CreateDelegatedInkPointRenderer() {
-  return false;
-}
-
-DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer() {
+DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
+    bool create_if_necessary) {
   return nullptr;
-}
-
-void DirectRenderer::SetDelegatedInkMetadata(
-    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
-  if (!GetDelegatedInkPointRenderer() && !CreateDelegatedInkPointRenderer())
-    return;
-
-  GetDelegatedInkPointRenderer()->SetDelegatedInkMetadata(std::move(metadata));
 }
 
 void DirectRenderer::DrawDelegatedInkTrail() {
@@ -1013,10 +1002,12 @@ bool DirectRenderer::CompositeTimeTracingEnabled() {
 void DirectRenderer::AddCompositeTimeTraces(base::TimeTicks ready_timestamp) {}
 
 gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
-  if (!GetDelegatedInkPointRenderer())
-    return gfx::Rect();
+  if (auto* ink_renderer =
+          GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
+    return ink_renderer->GetDamageRect();
+  }
 
-  return GetDelegatedInkPointRenderer()->GetDamageRect();
+  return gfx::Rect();
 }
 
 }  // namespace viz

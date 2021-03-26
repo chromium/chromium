@@ -19,6 +19,10 @@
 #include "ui/gl/delegated_ink_point_renderer_gpu.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
+namespace gfx {
+class DelegatedInkMetadata;
+}  // namespace gfx
+
 namespace gl {
 
 class DirectCompositionChildSurfaceWin;
@@ -109,6 +113,9 @@ class DCLayerTree {
   HWND window() const { return window_; }
 
   bool SupportsDelegatedInk();
+
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata>);
 
  private:
   // This will add an ink visual to the visual tree to enable delegated ink

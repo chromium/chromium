@@ -322,8 +322,10 @@ void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
 
 void RootCompositorFrameSinkImpl::SetDelegatedInkPointRenderer(
     mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
-  if (auto* ink_renderer = display_->GetDelegatedInkPointRenderer())
+  if (auto* ink_renderer = display_->GetDelegatedInkPointRenderer(
+          /*create_if_necessary=*/true)) {
     ink_renderer->InitMessagePipeline(std::move(receiver));
+  }
 }
 
 void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {

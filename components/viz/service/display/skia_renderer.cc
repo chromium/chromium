@@ -35,6 +35,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/skia_helper.h"
+#include "components/viz/service/display/delegated_ink_handler.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -793,6 +794,10 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     output_frame.sub_buffer_rect = swap_buffer_rect_;
   } else if (swap_buffer_rect_.IsEmpty() && allow_empty_swap_) {
     output_frame.sub_buffer_rect = gfx::Rect();
+  }
+  if (delegated_ink_handler_ && !UsingSkiaForDelegatedInk()) {
+    output_frame.delegated_ink_metadata =
+        delegated_ink_handler_->TakeMetadata();
   }
 
   skia_output_surface_->SwapBuffers(std::move(output_frame));
@@ -2617,7 +2622,7 @@ void SkiaRenderer::FinishDrawingQuadList() {
   // FlushBatchedQuads() call so that the trail can always be on top of
   // everything else that has already been drawn on the page. For the same
   // reason, it should only happen on the root render pass.
-  if (is_root_render_pass && delegated_ink_point_renderer_)
+  if (is_root_render_pass && UsingSkiaForDelegatedInk())
     DrawDelegatedInkTrail();
 
   base::OnceClosure on_finished_callback;
@@ -2907,22 +2912,47 @@ gfx::Size SkiaRenderer::GetRenderPassBackingPixelSize(
   return it->second.size;
 }
 
-bool SkiaRenderer::CreateDelegatedInkPointRenderer() {
-  DCHECK(!delegated_ink_point_renderer_);
-  delegated_ink_point_renderer_ =
-      std::make_unique<DelegatedInkPointRendererSkia>();
-  return true;
+void SkiaRenderer::SetDelegatedInkPointRendererSkiaForTest(
+    std::unique_ptr<DelegatedInkPointRendererSkia> renderer) {
+  DCHECK(!delegated_ink_handler_);
+  delegated_ink_handler_ = std::make_unique<DelegatedInkHandler>(
+      output_surface_->capabilities().supports_delegated_ink);
+  delegated_ink_handler_->SetDelegatedInkPointRendererForTest(
+      std::move(renderer));
 }
 
 void SkiaRenderer::DrawDelegatedInkTrail() {
-  delegated_ink_point_renderer_->DrawDelegatedInkTrail(current_canvas_);
+  if (!delegated_ink_handler_ || !delegated_ink_handler_->GetInkRenderer())
+    return;
+
+  delegated_ink_handler_->GetInkRenderer()->DrawDelegatedInkTrail(
+      current_canvas_);
 }
 
-DelegatedInkPointRendererBase* SkiaRenderer::GetDelegatedInkPointRenderer() {
-  if (!delegated_ink_point_renderer_ && !CreateDelegatedInkPointRenderer())
+DelegatedInkPointRendererBase* SkiaRenderer::GetDelegatedInkPointRenderer(
+    bool create_if_necessary) {
+  if (!delegated_ink_handler_ && !create_if_necessary)
     return nullptr;
 
-  return delegated_ink_point_renderer_.get();
+  if (!delegated_ink_handler_) {
+    delegated_ink_handler_ = std::make_unique<DelegatedInkHandler>(
+        output_surface_->capabilities().supports_delegated_ink);
+  }
+
+  return delegated_ink_handler_->GetInkRenderer();
+}
+
+void SkiaRenderer::SetDelegatedInkMetadata(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  if (!delegated_ink_handler_) {
+    delegated_ink_handler_ = std::make_unique<DelegatedInkHandler>(
+        output_surface_->capabilities().supports_delegated_ink);
+  }
+  delegated_ink_handler_->SetDelegatedInkMetadata(std::move(metadata));
+}
+
+bool SkiaRenderer::UsingSkiaForDelegatedInk() const {
+  return delegated_ink_handler_ && delegated_ink_handler_->GetInkRenderer();
 }
 
 #if defined(OS_APPLE)

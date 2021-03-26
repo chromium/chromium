@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -322,6 +323,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   static bool ExtensionsContain(const char* extensions, const char* name);
 
   virtual bool SupportsDelegatedInk();
+  virtual void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {}
 
  protected:
   virtual ~GLSurface();
@@ -419,6 +422,8 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   bool IsCurrent() override;
 
   bool SupportsDelegatedInk() override;
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
 
   GLSurface* surface() const { return surface_.get(); }
 

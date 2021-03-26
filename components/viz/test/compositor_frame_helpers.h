@@ -63,6 +63,9 @@ class CompositorFrameBuilder {
   CompositorFrameBuilder& SetDeadline(const FrameDeadline& deadline);
   CompositorFrameBuilder& SetSendFrameTokenToEmbedder(bool send);
 
+  CompositorFrameBuilder& AddDelegatedInkMetadata(
+      const gfx::DelegatedInkMetadata& metadata);
+
  private:
   CompositorFrame MakeInitCompositorFrame() const;
 

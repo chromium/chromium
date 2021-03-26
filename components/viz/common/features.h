@@ -38,6 +38,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
 VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
+VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
 
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
 #if defined(OS_ANDROID)
@@ -57,6 +58,7 @@ VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // OS_WIN
 VIZ_COMMON_EXPORT base::Optional<int> ShouldDrawPredictedInkPoints();
+VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 
 }  // namespace features
 

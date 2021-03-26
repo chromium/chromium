@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <map>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -17,8 +18,10 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -46,6 +49,7 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
+#include "components/viz/test/delegated_ink_point_renderer_skia_for_test.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
@@ -4535,13 +4539,18 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     SetUpGpuDisplaySkia(settings);
 
     // Initialize the renderer and create an ink renderer.
-    StubDisplayClient client;
-    display_->Initialize(&client, manager_.surface_manager());
-    display_->renderer_for_testing()->CreateDelegatedInkPointRenderer();
+    display_->Initialize(&client_, manager_.surface_manager());
+
+    auto renderer = std::make_unique<DelegatedInkPointRendererSkiaForTest>();
+    ink_renderer_ = renderer.get();
+    display_->renderer_for_testing()->SetDelegatedInkPointRendererSkiaForTest(
+        std::move(renderer));
   }
 
   DelegatedInkPointRendererBase* ink_renderer() {
-    return display_->renderer_for_testing()->GetDelegatedInkPointRenderer();
+    return display_->renderer_for_testing()
+        ->GetDelegatedInkPointRenderer(/*create_if_necessary=*/
+                                       false);
   }
 
   int UniqueStoredPointerIds() {
@@ -4694,6 +4703,12 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
     return ink_points_[pointer_id].size();
   }
+
+ protected:
+  DelegatedInkPointRendererSkiaForTest* ink_renderer_ = nullptr;
+
+  // Stub client kept in scope to prevent access violations during DrawAndSwap.
+  StubDisplayClient client_;
 
  private:
   std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
@@ -4970,6 +4985,126 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
       kPointerId);
   FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
                                  base::TimeDelta::Min());
+}
+
+enum class DelegatedInkType { kPlatformInk, kSkiaInk };
+
+class DelegatedInkDisplayTest
+    : public SkiaDelegatedInkRendererTest,
+      public testing::WithParamInterface<DelegatedInkType> {
+ public:
+  void SetUpGpuDisplaySkiaWithPlatformInk(const RendererSettings& settings) {
+    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
+    provider->BindToCurrentThread();
+    std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
+        FakeSkiaOutputSurface::Create3d(std::move(provider));
+    // Set the delegated ink capability on the output surface to true so that
+    // path can be tested in Display::DrawAndSwap
+    skia_output_surface->UsePlatformDelegatedInkForTesting();
+    skia_output_surface_ = skia_output_surface.get();
+
+    CreateDisplaySchedulerAndDisplay(settings, kArbitraryFrameSinkId,
+                                     std::move(skia_output_surface));
+  }
+
+  void SetUpGpuDisplay() {
+    if (GetParam() == DelegatedInkType::kSkiaInk) {
+      SetUpRenderers();
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUsePlatformDelegatedInk);
+
+      // Set up the display to use the Skia renderer.
+      RendererSettings settings;
+      settings.use_skia_renderer = true;
+      SetUpGpuDisplaySkiaWithPlatformInk(settings);
+
+      display_->Initialize(&client_, manager_.surface_manager());
+    }
+  }
+
+  void SubmitCompositorFrameWithInkMetadata(
+      CompositorRenderPassList* pass_list,
+      const LocalSurfaceId& local_surface_id,
+      const gfx::DelegatedInkMetadata& metadata) {
+    CompositorFrame frame = CompositorFrameBuilder()
+                                .SetRenderPassList(std::move(*pass_list))
+                                .AddDelegatedInkMetadata(metadata)
+                                .Build();
+    pass_list->clear();
+
+    support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
+  }
+
+  const gfx::DelegatedInkMetadata* GetMetadataFromTestRenderer() {
+    return ink_renderer_->last_metadata();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+struct DelegatedInkDisplayTestPassToString {
+  std::string operator()(
+      const testing::TestParamInfo<DelegatedInkType> type) const {
+    return type.param == DelegatedInkType::kPlatformInk ? "PlatformInk"
+                                                        : "SkiaInk";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(DelegatedInkTrails,
+                         DelegatedInkDisplayTest,
+                         testing::Values(DelegatedInkType::kPlatformInk,
+                                         DelegatedInkType::kSkiaInk),
+                         DelegatedInkDisplayTestPassToString());
+
+// Confirm that delegated ink metadata is not ever sent to both the delegated
+// ink renderer and the output surface (for platform delegated ink), only one
+// or the other.
+TEST_P(DelegatedInkDisplayTest, MetadataOnlySentToSkiaRendererOrOutputSurface) {
+  SetUpGpuDisplay();
+
+  id_allocator_.GenerateId();
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
+  display_->Resize(gfx::Size(100, 100));
+
+  CompositorRenderPassList pass_list;
+  auto pass = CompositorRenderPass::Create();
+  pass->output_rect = gfx::Rect(0, 0, 100, 100);
+  pass->damage_rect = gfx::Rect(10, 10, 1, 1);
+  pass->id = CompositorRenderPassId{1u};
+  pass_list.push_back(std::move(pass));
+
+  gfx::DelegatedInkMetadata metadata(
+      gfx::PointF(5, 5), 3.5f, SK_ColorBLACK, base::TimeTicks::Now(),
+      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false);
+
+  SubmitCompositorFrameWithInkMetadata(
+      &pass_list, id_allocator_.GetCurrentLocalSurfaceId(), metadata);
+  display_->DrawAndSwap(base::TimeTicks::Now());
+
+  // Confirm that the metadata correctly made it to either the skia output
+  // surface, or the delegated ink renderer.
+  const gfx::DelegatedInkMetadata* retrieved_metadata =
+      GetParam() == DelegatedInkType::kPlatformInk
+          ? skia_output_surface_->last_delegated_ink_metadata()
+          : GetMetadataFromTestRenderer();
+  EXPECT_TRUE(retrieved_metadata);
+  EXPECT_EQ(retrieved_metadata->point(), metadata.point());
+  EXPECT_EQ(retrieved_metadata->diameter(), metadata.diameter());
+  EXPECT_EQ(retrieved_metadata->color(), metadata.color());
+  EXPECT_EQ(retrieved_metadata->timestamp(), metadata.timestamp());
+  EXPECT_EQ(retrieved_metadata->presentation_area(),
+            metadata.presentation_area());
+  EXPECT_EQ(retrieved_metadata->is_hovering(), metadata.is_hovering());
+
+  // Confirm that metadata wasn't sent to the SkiaOutputSurface if Skia was
+  // used for drawing, or confirm that the DelegatedInkPointRenderer wasn't
+  // created if platform ink is being used.
+  if (GetParam() == DelegatedInkType::kPlatformInk)
+    EXPECT_FALSE(ink_renderer());
+  else
+    EXPECT_FALSE(skia_output_surface_->last_delegated_ink_metadata());
 }
 
 }  // namespace viz

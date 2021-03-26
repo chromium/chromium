@@ -34,7 +34,6 @@ class DelegatedInkPointPixelTestHelper {
 
   explicit DelegatedInkPointPixelTestHelper(DirectRenderer* renderer);
   void SetRendererAndCreateInkRenderer(DirectRenderer* renderer);
-  DelegatedInkPointRendererBase* GetInkRenderer();
 
   void CreateAndSendMetadata(const gfx::PointF& point,
                              float diameter,
@@ -62,7 +61,10 @@ class DelegatedInkPointPixelTestHelper {
   const gfx::DelegatedInkMetadata& metadata() { return metadata_; }
 
  private:
+  void CreateInkRenderer();
+
   DirectRenderer* renderer_ = nullptr;
+  DelegatedInkPointRendererBase* ink_renderer_ = nullptr;
   std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
   gfx::DelegatedInkMetadata metadata_;
 };

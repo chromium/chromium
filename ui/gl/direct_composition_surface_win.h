@@ -19,6 +19,10 @@
 #include "ui/gl/gpu_switching_observer.h"
 #include "ui/gl/vsync_observer.h"
 
+namespace gfx {
+class DelegatedInkMetadata;
+}  // namespace gfx
+
 namespace gl {
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
@@ -157,6 +161,8 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   void OnDisplayMetricsChanged() override;
 
   bool SupportsDelegatedInk() override;
+  void SetDelegatedInkTrailStartPoint(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
 
   HWND window() const { return window_; }
 
