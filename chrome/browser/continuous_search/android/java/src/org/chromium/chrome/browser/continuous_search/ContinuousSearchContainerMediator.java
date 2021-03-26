@@ -53,6 +53,8 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
      */
     void updateTabObscured(boolean isObscured) {
         mIsTabObscured = isObscured;
+        if (mModel == null) return;
+
         mModel.set(ContinuousSearchContainerProperties.ANDROID_VIEW_VISIBILITY,
                 !mIsTabObscured && mIsVisible ? View.VISIBLE : View.INVISIBLE);
     }
