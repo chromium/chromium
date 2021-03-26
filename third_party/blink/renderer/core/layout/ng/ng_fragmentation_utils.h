@@ -287,7 +287,9 @@ const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
 
 // Return true if this is the child that we had previously determined to break
 // before.
-bool IsEarlyBreakTarget(const NGBlockNode& child, const NGEarlyBreak&);
+bool IsEarlyBreakTarget(const NGEarlyBreak&,
+                        const NGBoxFragmentBuilder&,
+                        const NGLayoutInputNode& child);
 
 // Calculate the constraint space for columns of a multi-column layout.
 NGConstraintSpace CreateConstraintSpaceForColumns(

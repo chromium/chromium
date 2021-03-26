@@ -417,7 +417,8 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
 
     // If this is the child we had previously determined to break before, do so
     // now and finish layout.
-    if (early_break_ && IsEarlyBreakTarget(spanner_node, *early_break_))
+    if (early_break_ &&
+        IsEarlyBreakTarget(*early_break_, container_builder_, spanner_node))
       break;
 
     NGBreakStatus break_status =

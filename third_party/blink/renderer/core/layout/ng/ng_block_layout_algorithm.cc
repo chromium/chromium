@@ -186,16 +186,6 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
           child_bfc_offset.block_offset - parent_bfc_offset.block_offset};
 }
 
-inline bool IsEarlyBreakpoint(const NGEarlyBreak& breakpoint,
-                              const NGBoxFragmentBuilder& builder,
-                              NGLayoutInputNode child) {
-  if (breakpoint.Type() == NGEarlyBreak::kLine)
-    return child.IsInline() && breakpoint.LineNumber() == builder.LineCount();
-  if (breakpoint.IsBreakBefore())
-    return breakpoint.BlockNode() == child;
-  return false;
-}
-
 }  // namespace
 
 NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
@@ -640,7 +630,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       // so now and finish layout.
       if (UNLIKELY(
               early_break_ &&
-              IsEarlyBreakpoint(*early_break_, container_builder_, child))) {
+              IsEarlyBreakTarget(*early_break_, container_builder_, child))) {
         if (!ResolveBfcBlockOffset(&previous_inflow_position)) {
           // However, the predetermined breakpoint may be exactly where the BFC
           // block-offset gets resolved. If that hasn't yet happened, we need to
