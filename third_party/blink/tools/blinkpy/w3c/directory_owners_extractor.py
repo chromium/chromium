@@ -1,7 +1,7 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""A limited finder & parser for Chromium OWNERS files.
+"""A limited finder & parser for Chromium OWNERS and DIR_METADATA files.
 
 This module is intended to be used within web_tests/external and is
 informative only. For authoritative uses, please rely on `git cl owners`.
@@ -19,11 +19,12 @@ from blinkpy.common.path_finder import PathFinder
 # In our use case (under external/wpt), we only process the first enclosing
 # OWNERS file for any given path (i.e. always assuming "set noparent"), and we
 # ignore "per-file:" lines, "file:" directives, etc.
+#
+# For DIR_METADATA files, we rely on the dirmd tool from depot_tools to parse
+# them into a JSON blob.
 
 # Recognizes 'X@Y' email addresses. Very simplistic. (from owners.py)
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
-WPT_NOTIFY_REGEXP = r'^# *WPT-NOTIFY: *true$'
-COMPONENT_REGEXP = r'^# *COMPONENT: *(.+)$'
 
 
 class DirectoryOwnersExtractor(object):
@@ -120,40 +121,31 @@ class DirectoryOwnersExtractor(object):
                 addresses.append(line)
         return addresses
 
-    def extract_component(self, owners_file):
-        """Extracts the component from an OWNERS file.
+    def extract_component(self, metadata_file):
+        """Extracts the component from an DIR_METADATA file.
 
         Args:
-            owners_file: An absolute path to an OWNERS file.
+            metadata_file: An absolute path to an DIR_METADATA file.
 
         Returns:
             A string, or None if not found.
         """
-        dir_metadata = self._read_dir_metadata(owners_file)
+        dir_metadata = self._read_dir_metadata(metadata_file)
         if dir_metadata and dir_metadata.component:
             return dir_metadata.component
-
-        contents = self._read_text_file(owners_file)
-        search = re.search(COMPONENT_REGEXP, contents, re.MULTILINE)
-        if search:
-            return search.group(1)
         return None
 
-    def is_wpt_notify_enabled(self, owners_file):
-        """Checks if the OWNERS file enables WPT-NOTIFY.
+    def is_wpt_notify_enabled(self, metadata_file):
+        """Checks if the DIR_METADATA file enables WPT-NOTIFY.
 
         Args:
-            owners_file: An absolute path to an OWNERS file.
+            metadata_file: An absolute path to an DIR_METADATA file.
 
         Returns:
             A boolean.
         """
-        dir_metadata = self._read_dir_metadata(owners_file)
-        if dir_metadata and dir_metadata.should_notify is not None:
-            return dir_metadata.should_notify
-
-        contents = self._read_text_file(owners_file)
-        return bool(re.search(WPT_NOTIFY_REGEXP, contents, re.MULTILINE))
+        dir_metadata = self._read_dir_metadata(metadata_file)
+        return dir_metadata and dir_metadata.should_notify
 
     @memoized
     def _read_text_file(self, path):
@@ -169,16 +161,19 @@ class DirectoryOwnersExtractor(object):
         Returns:
             A WPTDirMetadata object, or None if not found.
         """
+        print('_read_dir_metadata %s' % path)
         root_path = self.finder.web_tests_dir()
         dir_path = self.filesystem.dirname(path)
 
         # dirmd starts with an absolute directory path, `dir_path`, traverses all
         # parent directories and stops at `root_path` to find the first available DIR_METADATA
         # file. `root_path` is the web_tests directory.
+        print(self.executive)
         json_data = self.executive.run_command([
             self.finder.path_from_depot_tools_base('dirmd'), 'compute',
             '-root', root_path, dir_path
         ])
+        print(json_data)
         try:
             data = json.loads(json_data)
         except ValueError:
