@@ -52,6 +52,8 @@ struct AutoDisallowEvents {
   ~AutoDisallowEvents() { EndDisallowEvents(); }
 };
 
+bool HasDivergedFromRecording();
+
 void RegisterPointer(void* ptr);
 void UnregisterPointer(void* ptr);
 int PointerId(void* ptr);
