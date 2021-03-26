@@ -20,11 +20,26 @@ buildflag_header("gtk_buildflags") {
   flags = [ "GTK_VERSION=$gtk_version" ]
 }
 
-generate_stubs("gdk_pixbuf") {
-  sigs = [ "gdk_pixbuf.sigs" ]
-  extra_header = "gdk_pixbuf.fragment"
-  output_name = "gdk_pixbuf"
-  deps = [ "//build/config/linux/gtk" ]
+source_set("gtk_types") {
+  sources = [ "gtk_types.h" ]
+  deps = [ ":gtk_buildflags" ]
+}
+
+generate_stubs("gtk_stubs") {
+  sigs = [
+    "gdk_pixbuf.sigs",
+    "gdk.sigs",
+    "gsk.sigs",
+    "gtk.sigs",
+  ]
+  extra_header = "gtk.fragment"
+  output_name = "gtk_stubs"
+  deps = [
+    ":gtk_types",
+    "//build/config/linux/gtk",
+  ]
+  logging_function = "LogNoop()"
+  logging_include = "ui/gtk/log_noop.h"
 }
 
 component("gtk_ui_delegate") {
@@ -41,6 +56,8 @@ component("gtk_ui_delegate") {
 component("gtk") {
   public = [ "gtk_ui.h" ]
   sources = [
+    "gtk_compat.cc",
+    "gtk_compat.h",
     "gtk_ui.cc",
     "gtk_util.cc",
     "gtk_util.h",
@@ -85,7 +102,8 @@ component("gtk") {
   }
 
   deps = [
-    ":gdk_pixbuf",
+    ":gtk_stubs",
+    ":gtk_types",
     "//base",
     "//build/config/linux/gtk:gtkprint",
     "//printing",

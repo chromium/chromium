@@ -13,6 +13,7 @@
 
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gtk/gtk_buildflags.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
@@ -78,10 +79,6 @@ class CairoSurface {
   cairo_surface_t* surface_;
   cairo_t* cairo_;
 };
-
-// Returns true iff the runtime version of Gtk used meets
-// |major|.|minor|.|micro|.
-bool GtkCheckVersion(int major, int minor = 0, int micro = 0);
 
 class GtkCssContext {
  public:

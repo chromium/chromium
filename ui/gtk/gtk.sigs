@@ -1,0 +1,1 @@
+GtkSettings* gtk_settings_get_default(void);

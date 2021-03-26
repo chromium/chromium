@@ -46,7 +46,7 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/gtk/gdk_pixbuf.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
@@ -311,6 +311,9 @@ GtkUi::GtkUi(ui::GtkUiDelegate* delegate) : delegate_(delegate) {
       {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
       {ActionSource::kRightClick, Action::kMenu}};
 
+  static bool loaded = LoadGtk(BUILDFLAG(GTK_VERSION));
+  CHECK(loaded);
+
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -341,9 +344,6 @@ void GtkUi::Initialize() {
       ui::LinuxInputMethodContextFactory::SetInstance(this);
   }
 #endif
-
-  CHECK(ui_gtk::InitializeStubs(
-      {{ui_gtk::kModuleGdk_pixbuf, {"libgdk_pixbuf-2.0.so.0"}}}));
 
   GtkSettings* settings = gtk_settings_get_default();
   g_signal_connect_after(settings, "notify::gtk-theme-name",

@@ -4,7 +4,6 @@
 
 #include "ui/gtk/gtk_util.h"
 
-#include <dlfcn.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include <locale.h>
@@ -14,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/debug/leak_annotations.h"
 #include "base/environment.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -49,32 +47,10 @@ void CommonInitFromCommandLine(const base::CommandLine& command_line) {
   // setlocale(LC_NUMERIC, "C") by now. Chrome does this in
   // service_manager::Main.
   DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, nullptr), "C"), 0);
-  // This prevent GTK from calling setlocale(LC_ALL, ""), which potentially
+  // This prevents GTK from calling setlocale(LC_ALL, ""), which potentially
   // overwrites the LC_NUMERIC locale to something other than "C".
   gtk_disable_setlocale();
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_init();
-#else
-  const std::vector<std::string>& args = command_line.argv();
-  int argc = args.size();
-  std::unique_ptr<char*[]> argv(new char*[argc + 1]);
-  for (size_t i = 0; i < args.size(); ++i) {
-    // TODO(piman@google.com): can gtk_init modify argv? Just being safe
-    // here.
-    argv[i] = strdup(args[i].c_str());
-  }
-  argv[argc] = nullptr;
-  char** argv_pointer = argv.get();
-
-  {
-    // http://crbug.com/423873
-    ANNOTATE_SCOPED_MEMORY_LEAK;
-    gtk_init(&argc, &argv_pointer);
-  }
-  for (size_t i = 0; i < args.size(); ++i) {
-    free(argv[i]);
-  }
-#endif
+  GtkInit(command_line.argv());
 }
 
 GdkModifierType GetIbusFlags(const ui::KeyEvent& key_event) {
@@ -290,13 +266,6 @@ SkColor CairoSurface::GetAveragePixelValue(bool frame) {
     return SK_ColorTRANSPARENT;
   return SkColorSetARGB(frame ? max_alpha : a / (width * height), r * 255 / a,
                         g * 255 / a, b * 255 / a);
-}
-
-bool GtkCheckVersion(int major, int minor, int micro) {
-  static auto version =
-      std::make_tuple(gtk_get_major_version(), gtk_get_minor_version(),
-                      gtk_get_micro_version());
-  return version >= std::make_tuple(major, minor, micro);
 }
 
 #if BUILDFLAG(GTK_VERSION) >= 4

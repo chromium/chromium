@@ -1,0 +1,5 @@
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
+#include "ui/gtk/gtk_types.h"
