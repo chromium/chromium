@@ -184,7 +184,10 @@ const {
   setCommandCallback,
   setClearPauseDataCallback,
   ignoreScript,
+  dump,
 } = __RECORD_REPLAY_ARGUMENTS__;
+
+window.dump = dump;
 
 try {
 
@@ -228,6 +231,7 @@ function addEventListener(method, callback) {
 
 function messageCallback(message) {
   try {
+    log(`MessageCallback ${message}`);
     message = JSON.parse(message);
 
     if (message.id) {
@@ -950,6 +954,10 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
 }
 
 struct InspectorClient : public v8_inspector::V8InspectorClient {
+  v8::Local<v8::Context> ensureDefaultContextInGroup(int context_group_id) final {
+    recordreplay::Print("InspectorClient::ensureDefaultContextInGroup");
+    return v8::Local<v8::Context>();
+  }
 };
 
 struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
@@ -974,8 +982,14 @@ static void RecordReplaySendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
 
   if (!gInspectorSession) {
+    v8::Local<v8::Context> context = args.GetIsolate()->GetCurrentContext();
+
     gInspector = v8_inspector::V8Inspector::create(args.GetIsolate(),
                                                    new InspectorClient()).release();
+
+    v8_inspector::V8ContextInfo context_info(context, CONTEXT_GROUP_ID, v8_inspector::StringView());
+    gInspector->contextCreated(context_info);
+
     gInspectorSession = gInspector->connect(CONTEXT_GROUP_ID, new InspectorChannel(),
                                             v8_inspector::StringView()).release();
   }
@@ -983,6 +997,19 @@ static void RecordReplaySendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>
   std::string nmessage(*message);
   v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());
   gInspectorSession->dispatchProtocolMessage(messageView);
+}
+
+extern "C" void V8RecordReplayFinishRecording();
+
+// Mimic the gecko test runner behavior when using window.dump() to signal that the
+// recording is finished. This is pretty hacky.
+static void RecordReplayDump(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() == 1 && args[0]->IsString()) {
+    v8::String::Utf8Value message(args.GetIsolate(), args[0]);
+    if (!strcmp(*message, "RecReplaySendAsyncMessage Example__Finished")) {
+      V8RecordReplayFinishRecording();
+    }
+  }
 }
 
 static void SetupRecordReplayCommands(v8::Isolate* isolate) {
@@ -1007,6 +1034,8 @@ static void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
   SetFunctionProperty(isolate, args, "ignoreScript",
                       v8::FunctionCallbackRecordReplayIgnoreScript);
+  SetFunctionProperty(isolate, args, "dump",
+                      RecordReplayDump);
 
   v8::Local<v8::String> source =
     v8::String::NewFromUtf8(isolate, gRecordReplayScript,
@@ -1035,7 +1064,7 @@ v8::Local<v8::Context> V8SchemaRegistry::GetOrCreateContext(
     // After creating the first context, we are ready to set up the state used
     // to process driver commands when recording/replaying, and to create
     // checkpoints. Create the first checkpoint at which execution can pause.
-    if (!gHasContext) {
+    if (recordreplay::IsRecordingOrReplaying() && !gHasContext) {
       gHasContext = true;
       SetupRecordReplayCommands(isolate);
       recordreplay::NewCheckpoint();
