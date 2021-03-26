@@ -219,22 +219,98 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
 
 // =============================================================================
 
-class OmniboxPedalCreateGoogleDoc : public OmniboxPedal {
+class OmniboxPedalAuthRequired : public OmniboxPedal {
  public:
-  OmniboxPedalCreateGoogleDoc()
-      : OmniboxPedal(
-            OmniboxPedalId::CREATE_GOOGLE_DOC,
-            OmniboxPedal::LabelStrings(
-                IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT,
-                IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC),
-            GURL()) {}
+  explicit OmniboxPedalAuthRequired(OmniboxPedalId id)
+      : OmniboxPedal(id, OmniboxPedal::LabelStrings(), GURL()) {}
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
     return client.IsAuthenticated();
   }
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleDoc()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_DOC) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleSheet()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SHEET) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleSlide()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SLIDE) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleCalendarEvent()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT) {
+  }
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleSite()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SITE) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleKeepNote()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalCreateGoogleForm()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_FORM) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalSeeChromeTips : public OmniboxPedal {
+ public:
+  OmniboxPedalSeeChromeTips()
+      : OmniboxPedal(OmniboxPedalId::SEE_CHROME_TIPS,
+                     OmniboxPedal::LabelStrings(),
+                     GURL()) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalManageGoogleAccount()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
+ public:
+  OmniboxPedalChangeGooglePassword()
+      : OmniboxPedalAuthRequired(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) {}
 };
 
 // =============================================================================
@@ -262,6 +338,21 @@ GetPedalImplementations() {
     add(OmniboxPedalId::MANAGE_SITE_SETTINGS,
         new OmniboxPedalManageSiteSettings());
     add(OmniboxPedalId::CREATE_GOOGLE_DOC, new OmniboxPedalCreateGoogleDoc());
+    add(OmniboxPedalId::CREATE_GOOGLE_SHEET,
+        new OmniboxPedalCreateGoogleSheet());
+    add(OmniboxPedalId::CREATE_GOOGLE_SLIDE,
+        new OmniboxPedalCreateGoogleSlide());
+    add(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT,
+        new OmniboxPedalCreateGoogleCalendarEvent());
+    add(OmniboxPedalId::CREATE_GOOGLE_SITE, new OmniboxPedalCreateGoogleSite());
+    add(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE,
+        new OmniboxPedalCreateGoogleKeepNote());
+    add(OmniboxPedalId::CREATE_GOOGLE_FORM, new OmniboxPedalCreateGoogleForm());
+    add(OmniboxPedalId::SEE_CHROME_TIPS, new OmniboxPedalSeeChromeTips());
+    add(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT,
+        new OmniboxPedalManageGoogleAccount());
+    add(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD,
+        new OmniboxPedalChangeGooglePassword());
   }
   return pedals;
 }

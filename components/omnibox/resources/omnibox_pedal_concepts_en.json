@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 3,
-  "data_version": 15787889,
+  "data_version": 15789351,
   "tokenize_each_character": false,
   "dictionary": [
     "a",
@@ -72,6 +72,7 @@
     "inside",
     "install",
     "invite",
+    "keep",
     "keys",
     "language",
     "launch",
@@ -79,6 +80,7 @@
     "make",
     "manage",
     "manager",
+    "meeting",
     "message",
     "methods",
     "mode",
@@ -185,7 +187,7 @@
               36
             ],
             [
-              98
+              100
             ],
             [
               26
@@ -194,7 +196,7 @@
               47
             ],
             [
-              144
+              146
             ]
           ]
         },
@@ -250,28 +252,28 @@
           "single": true,
           "synonyms": [
             [
-              74
+              75
             ],
             [
               22
             ],
             [
-              73
+              74
             ],
             [
-              134
+              136
             ],
             [
               43
             ],
             [
-              104
+              106
             ],
             [
-              114
+              116
             ],
             [
-              138
+              140
             ]
           ]
         },
@@ -283,10 +285,10 @@
               31
             ],
             [
-              89
+              91
             ],
             [
-              88
+              90
             ]
           ]
         }
@@ -321,16 +323,16 @@
               22
             ],
             [
-              73
+              74
             ],
             [
-              134
+              136
             ],
             [
               43
             ],
             [
-              104
+              106
             ]
           ]
         },
@@ -353,8 +355,8 @@
               64
             ],
             [
-              90,
-              76
+              92,
+              78
             ],
             [
               32,
@@ -369,10 +371,10 @@
               63
             ],
             [
-              91
+              93
             ],
             [
-              90
+              92
             ],
             [
               19
@@ -410,16 +412,16 @@
               30
             ],
             [
-              70
+              71
             ],
             [
               46
             ],
             [
-              119
+              121
             ],
             [
-              85
+              87
             ]
           ]
         },
@@ -429,27 +431,27 @@
           "synonyms": [
             [
               62,
-              143
+              145
             ],
             [
               62,
-              77
+              79
             ],
             [
-              96,
-              143
+              98,
+              145
             ],
             [
               62,
-              124
+              126
             ],
             [
-              96,
-              77
+              98,
+              79
             ],
             [
-              96,
-              124
+              98,
+              126
             ],
             [
               62
@@ -485,10 +487,10 @@
           "synonyms": [
             [
               22,
-              69
+              70
             ],
             [
-              131
+              133
             ]
           ]
         },
@@ -497,21 +499,21 @@
           "single": true,
           "synonyms": [
             [
-              127,
-              86
+              129,
+              88
             ],
             [
-              140,
-              86
+              142,
+              88
             ],
             [
-              141
+              143
             ],
             [
-              86
+              88
             ],
             [
-              127
+              129
             ]
           ]
         }
@@ -546,13 +548,13 @@
               66
             ],
             [
-              135
+              137
+            ],
+            [
+              138
             ],
             [
               136
-            ],
-            [
-              134
             ]
           ]
         }
@@ -571,13 +573,13 @@
               2
             ],
             [
-              92
+              94
             ],
             [
-              100
+              102
             ],
             [
-              137
+              139
             ]
           ]
         },
@@ -617,16 +619,16 @@
           "single": true,
           "synonyms": [
             [
-              89
+              91
             ],
             [
-              108
+              110
             ],
             [
-              88
+              90
             ],
             [
-              103
+              105
             ]
           ]
         }
@@ -650,7 +652,7 @@
               14
             ],
             [
-              73
+              74
             ],
             [
               12
@@ -662,7 +664,7 @@
               9
             ],
             [
-              137
+              139
             ]
           ]
         },
@@ -691,40 +693,45 @@
           "synonyms": [
             [
               45,
-              97
+              99
             ],
             [
-              118,
-              97
+              120,
+              99
+            ],
+            [
+              110,
+              113
+            ],
+            [
+              110,
+              69
             ],
             [
               108,
-              111
-            ],
-            [
-              108,
-              68
-            ],
-            [
-              106,
               39
             ],
             [
               21
             ],
             [
-              107
+              109
             ],
             [
-              102
+              104
             ],
             [
-              101
+              103
             ]
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Manage security settings",
+        "description_text": "Manage your Safe Browsing and more in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your Safe Browsing and more in Chrome settings",
+        "spoken_button_focus_announcement": "Manage security settings button, press Enter to manage your Safe Browsing and more in Chrome settings"
+      },
       "url": "chrome://settings/security"
     },
     {
@@ -745,7 +752,7 @@
               28
             ],
             [
-              73
+              74
             ],
             [
               11
@@ -757,7 +764,7 @@
               9
             ],
             [
-              137
+              139
             ]
           ]
         },
@@ -766,8 +773,8 @@
           "single": true,
           "synonyms": [
             [
-              81,
-              130
+              83,
+              132
             ],
             [
               29
@@ -798,8 +805,8 @@
           "single": false,
           "synonyms": [
             [
-              126,
-              87
+              128,
+              89
             ],
             [
               7
@@ -807,7 +814,12 @@
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Manage cookies",
+        "description_text": "Manage your cookie preferences in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your cookie preferences in Chrome settings",
+        "spoken_button_focus_announcement": "Manage cookies button, press Enter to manage your cookie preferences in Chrome settings"
+      },
       "url": "chrome://settings/cookies"
     },
     {
@@ -821,7 +833,7 @@
               28
             ],
             [
-              73
+              74
             ],
             [
               6
@@ -833,7 +845,7 @@
               22
             ],
             [
-              120
+              122
             ],
             [
               43
@@ -848,11 +860,11 @@
           "single": true,
           "synonyms": [
             [
-              113,
+              115,
               4
             ],
             [
-              80,
+              82,
               4
             ],
             [
@@ -883,7 +895,12 @@
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Manage addresses",
+        "description_text": "Add and manage addresses in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to add and manage addresses in Chrome settings",
+        "spoken_button_focus_announcement": "Manage addresses button, press Enter to add and manage addresses in Chrome settings"
+      },
       "url": "chrome://settings/addresses"
     },
     {
@@ -903,7 +920,7 @@
               37
             ],
             [
-              73
+              74
             ],
             [
               6
@@ -924,7 +941,7 @@
           "single": true,
           "synonyms": [
             [
-              123
+              125
             ]
           ]
         },
@@ -948,7 +965,12 @@
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Manage sync",
+        "description_text": "Manage what info you sync in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage what info you sync in Chrome settings",
+        "spoken_button_focus_announcement": "Manage sync button, press Enter to manage what info you sync in Chrome settings"
+      },
       "url": "chrome://settings/syncSetup/advanced"
     },
     {
@@ -965,7 +987,7 @@
               28
             ],
             [
-              73
+              74
             ],
             [
               6
@@ -983,15 +1005,15 @@
           "single": true,
           "synonyms": [
             [
-              115,
-              93
+              117,
+              95
             ],
             [
-              115,
-              111
+              117,
+              113
             ],
             [
-              93
+              95
             ]
           ]
         },
@@ -1015,7 +1037,12 @@
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Manage site settings",
+        "description_text": "Manage permissions and data stored across sites in Chrome settings",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage permissions and data stored across sites in Chrome settings",
+        "spoken_button_focus_announcement": "Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings"
+      },
       "url": "chrome://settings/content"
     },
     {
@@ -1027,7 +1054,7 @@
           "synonyms": [
             [
               56,
-              146
+              148
             ],
             [
               56,
@@ -1035,10 +1062,10 @@
             ],
             [
               54,
-              121
+              123
             ],
             [
-              146
+              148
             ],
             [
               13
@@ -1062,16 +1089,16 @@
               30
             ],
             [
-              119
+              121
             ],
             [
-              85
+              87
             ],
             [
-              72
+              73
             ],
             [
-              80
+              82
             ]
           ]
         },
@@ -1088,8 +1115,629 @@
           ]
         }
       ],
-      "omnibox_ui_strings": null,
+      "omnibox_ui_strings": {
+        "button_text": "Create doc",
+        "description_text": "Create a new Google Doc quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Doc quickly",
+        "spoken_button_focus_announcement": "Create doc button, press Enter to create a new Google Doc quickly"
+      },
       "url": "https://docs.google.com/document/u/0/create?usp=chrome_actions"
+    },
+    {
+      "id": 14,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              56,
+              148
+            ],
+            [
+              56,
+              25
+            ],
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              13
+            ],
+            [
+              56
+            ],
+            [
+              25
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              119
+            ],
+            [
+              114
+            ],
+            [
+              134
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create sheet",
+        "description_text": "Create a new Google Sheet quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Sheet quickly",
+        "spoken_button_focus_announcement": "Create sheet button, press Enter to create a new Google Sheet quickly"
+      },
+      "url": "https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions"
+    },
+    {
+      "id": 15,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              96
+            ],
+            [
+              118
+            ],
+            [
+              97
+            ],
+            [
+              35
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              13
+            ],
+            [
+              56
+            ],
+            [
+              25
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create presentation",
+        "description_text": "Create a new Google presentation in Slides quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google presentation in Slides quickly",
+        "spoken_button_focus_announcement": "Create presentation button, press Enter to create a new Google presentation in Slides quickly"
+      },
+      "url": "https://docs.google.com/presentation/u/0/create?usp=chrome_actions"
+    },
+    {
+      "id": 16,
+      "groups": [
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              107
+            ],
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ],
+            [
+              3
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              17
+            ],
+            [
+              13
+            ],
+            [
+              56
+            ],
+            [
+              25
+            ],
+            [
+              16
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              76
+            ],
+            [
+              67
+            ],
+            [
+              48
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create event",
+        "description_text": "Create a new event in Google Calendar quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new event in Google Calendar quickly",
+        "spoken_button_focus_announcement": "Create event button, press Enter to create a new event in Google Calendar quickly"
+      },
+      "url": "https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions"
+    },
+    {
+      "id": 17,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              13
+            ],
+            [
+              56
+            ],
+            [
+              25
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              144
+            ],
+            [
+              117
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create site",
+        "description_text": "Create a new site in Google Site quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new site in Google Site quickly",
+        "spoken_button_focus_announcement": "Create site button, press Enter to create a new site in Google Site quickly"
+      },
+      "url": "https://sites.google.com/u/0/create?usp=chrome_actions"
+    },
+    {
+      "id": 18,
+      "groups": [
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              13
+            ],
+            [
+              56
+            ],
+            [
+              25
+            ],
+            [
+              68
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              84
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create note",
+        "description_text": "Create a new note in Google Keep quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new note in Google Keep quickly",
+        "spoken_button_focus_announcement": "Create note button, press Enter to create a new note in Google Keep quickly"
+      },
+      "url": "https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE"
+    },
+    {
+      "id": 19,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              30
+            ],
+            [
+              121
+            ],
+            [
+              87
+            ],
+            [
+              73
+            ],
+            [
+              82
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": false,
+          "synonyms": [
+            [
+              54,
+              123
+            ],
+            [
+              148
+            ],
+            [
+              13
+            ],
+            [
+              25
+            ],
+            [
+              56
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              124
+            ],
+            [
+              53
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Create form",
+        "description_text": "Create a new form in Google Form quickly",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new form in Google Form quickly",
+        "spoken_button_focus_announcement": "Create form button, press Enter to create a new form in Google Form quickly"
+      },
+      "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions"
+    },
+    {
+      "id": 21,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              73,
+              80,
+              85
+            ],
+            [
+              135
+            ],
+            [
+              49
+            ],
+            [
+              72
+            ],
+            [
+              141
+            ],
+            [
+              111
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": false,
+          "synonyms": [
+            [
+              13
+            ],
+            [
+              56
+            ]
+          ]
+        },
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              82,
+              25,
+              50
+            ],
+            [
+              25,
+              130,
+              20
+            ],
+            [
+              25,
+              50
+            ],
+            [
+              25,
+              130
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "See Chrome tips",
+        "description_text": "Learn about Chrome features",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to learn about Chrome features",
+        "spoken_button_focus_announcement": "See Chrome tips button, press Enter to learn about Chrome features"
+      },
+      "url": "https://www.google.com/chrome/tips/"
+    },
+    {
+      "id": 22,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              28,
+              56,
+              1
+            ],
+            [
+              74,
+              56,
+              1
+            ],
+            [
+              6,
+              56,
+              1
+            ],
+            [
+              51,
+              56,
+              1
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": false,
+          "synonyms": [
+            [
+              13
+            ],
+            [
+              25
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Manage Google Account",
+        "description_text": "Manage your info, privacy, and security in your Google Account",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your info, privacy, and security in your Google Account",
+        "spoken_button_focus_announcement": "Manage Google Account, press Enter to manage your info, privacy, and security in your Google Account"
+      },
+      "url": "https://myaccount.google.com/?utm_source=ga-chrome-actions&utm_medium=manageGA"
+    },
+    {
+      "id": 24,
+      "groups": [
+        {
+          "required": true,
+          "single": true,
+          "synonyms": [
+            [
+              1,
+              90,
+              22
+            ],
+            [
+              22,
+              56,
+              90
+            ],
+            [
+              22,
+              55,
+              90
+            ],
+            [
+              56,
+              101,
+              90
+            ],
+            [
+              55,
+              101,
+              90
+            ]
+          ]
+        },
+        {
+          "required": false,
+          "single": false,
+          "synonyms": [
+            [
+              13
+            ],
+            [
+              25
+            ],
+            [
+              56
+            ]
+          ]
+        }
+      ],
+      "omnibox_ui_strings": {
+        "button_text": "Change Google password",
+        "description_text": "Change the password for your Google Account",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
+        "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
+      },
+      "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW"
     }
   ],
   "ignore_group": {
@@ -1100,7 +1748,7 @@
         65
       ],
       [
-        145
+        147
       ],
       [
         52
@@ -1109,7 +1757,7 @@
         59
       ],
       [
-        125
+        127
       ],
       [
         10
@@ -1121,13 +1769,13 @@
         61
       ],
       [
-        79
+        81
       ],
       [
-        84
+        86
       ],
       [
-        129
+        131
       ],
       [
         0

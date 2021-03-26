@@ -10,6 +10,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/stl_util.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,15 @@ OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client)
       pedals_(GetPedalImplementations()),
       ignore_group_(false, false, 0) {
   LoadPedalConcepts();
+
+  // Cull Pedals with incomplete data; they won't trigger if not enabled,
+  // but there's no need to keep them in the collection (iterated frequently).
+  base::EraseIf(pedals_, [](const auto& it) {
+    const OmniboxPedal::LabelStrings& labels = it.second->GetLabelStrings();
+    return labels.hint.empty() || labels.suggestion_contents.empty() ||
+           labels.accessibility_hint.empty() ||
+           labels.accessibility_suffix.empty();
+  });
 }
 
 OmniboxPedalProvider::~OmniboxPedalProvider() {}
@@ -201,8 +211,9 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
+    // These IDs are the first and last for batch 2.
     if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
-        id <= static_cast<int>(OmniboxPedalId::CLEAR_YOUTUBE_HISTORY) &&
+        id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
         !OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
       continue;
     }

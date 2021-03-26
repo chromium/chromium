@@ -44,6 +44,7 @@ class OmniboxPedal {
                  int id_suggestion_contents,
                  int id_accessibility_suffix,
                  int id_accessibility_hint);
+    LabelStrings();
     LabelStrings(const LabelStrings&);
     ~LabelStrings();
     std::u16string hint;

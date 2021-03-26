@@ -53,6 +53,8 @@ OmniboxPedal::LabelStrings::LabelStrings(int id_hint,
       accessibility_suffix(l10n_util::GetStringUTF16(id_accessibility_suffix)),
       accessibility_hint(l10n_util::GetStringUTF16(id_accessibility_hint)) {}
 
+OmniboxPedal::LabelStrings::LabelStrings() = default;
+
 OmniboxPedal::LabelStrings::LabelStrings(const LabelStrings&) = default;
 
 OmniboxPedal::LabelStrings::~LabelStrings() = default;

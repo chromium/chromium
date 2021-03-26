@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-03-24T01:34:39.962Z",
+  "time_generated": "2021-03-25T19:25:52.349Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -6757,12 +6757,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage security settings",
+            "description_text": "Manage your Safe Browsing and more in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your Safe Browsing and more in Chrome settings",
+            "spoken_button_focus_announcement": "Manage security settings button, press Enter to manage your Safe Browsing and more in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:16:35.207Z"
         },
         {
           "id": 9,
@@ -6814,12 +6814,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage cookies",
+            "description_text": "Manage your cookie preferences in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your cookie preferences in Chrome settings",
+            "spoken_button_focus_announcement": "Manage cookies button, press Enter to manage your cookie preferences in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:17:27.469Z"
         },
         {
           "id": 10,
@@ -6864,12 +6864,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage addresses",
+            "description_text": "Add and manage addresses in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to add and manage addresses in Chrome settings",
+            "spoken_button_focus_announcement": "Manage addresses button, press Enter to add and manage addresses in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:18:19.579Z"
         },
         {
           "id": 11,
@@ -6911,12 +6911,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage sync",
+            "description_text": "Manage what info you sync in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage what info you sync in Chrome settings",
+            "spoken_button_focus_announcement": "Manage sync button, press Enter to manage what info you sync in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:19:20.161Z"
         },
         {
           "id": 12,
@@ -6958,12 +6958,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Manage site settings",
+            "description_text": "Manage permissions and data stored across sites in Chrome settings",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage permissions and data stored across sites in Chrome settings",
+            "spoken_button_focus_announcement": "Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:20:00.231Z"
         },
         {
           "id": 13,
@@ -7007,12 +7007,12 @@
           ],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "",
-            "description_text": "",
-            "spoken_suggestion_description_suffix": "$1",
-            "spoken_button_focus_announcement": ""
+            "button_text": "Create doc",
+            "description_text": "Create a new Google Doc quickly",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to create a new Google Doc quickly",
+            "spoken_button_focus_announcement": "Create doc button, press Enter to create a new Google Doc quickly"
           },
-          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
+          "date_modified_omnibox_ui_strings": "2021-03-25T19:20:40.431Z"
         },
         {
           "id": 14,
@@ -7054,7 +7054,7 @@
           "cover_cases": [
             "create google sheet"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create sheet",
             "description_text": "Create a new Google Sheet quickly",
@@ -7102,7 +7102,7 @@
           "cover_cases": [
             "create google slide"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create presentation",
             "description_text": "Create a new Google presentation in Slides quickly",
@@ -7116,7 +7116,7 @@
           "groups": [
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "schedule",
                 "create",
@@ -7132,27 +7132,29 @@
               "single": false,
               "synonyms": [
                 "workspace",
+                "calendar",
                 "browser",
                 "g suite",
                 "google",
-                "chrome"
+                "chrome",
+                "cal"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "calendar",
+                "meeting",
                 "invite",
-                "event",
-                "cal"
+                "event"
               ]
             }
           ],
           "cover_cases": [
-            "create google calendar event"
+            "create google calendar event",
+            "create new cal invite"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create event",
             "description_text": "Create a new event in Google Calendar quickly",
@@ -7198,7 +7200,7 @@
           "cover_cases": [
             "create google site"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create site",
             "description_text": "Create a new site in Google Site quickly",
@@ -7212,7 +7214,7 @@
           "groups": [
             {
               "required": true,
-              "single": true,
+              "single": false,
               "synonyms": [
                 "create",
                 "start",
@@ -7229,7 +7231,8 @@
                 "browser",
                 "g suite",
                 "google",
-                "chrome"
+                "chrome",
+                "keep"
               ]
             },
             {
@@ -7241,9 +7244,10 @@
             }
           ],
           "cover_cases": [
-            "create google keep note"
+            "create google keep note",
+            "make new google keep note"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create note",
             "description_text": "Create a new note in Google Keep quickly",
@@ -7289,7 +7293,7 @@
           "cover_cases": [
             "create google form"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Create form",
             "description_text": "Create a new form in Google Form quickly",
@@ -7386,7 +7390,7 @@
           "cover_cases": [
             "see chrome tips"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "See Chrome tips",
             "description_text": "Learn about Chrome features",
@@ -7420,7 +7424,7 @@
           "cover_cases": [
             "manage google account"
           ],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage Google Account",
             "description_text": "Manage your info, privacy, and security in your Google Account",
@@ -7488,7 +7492,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Change Google password",
             "description_text": "Change the password for your Google Account",
