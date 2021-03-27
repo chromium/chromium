@@ -32,8 +32,10 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -145,6 +147,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   lifecycle_ = next_status;
 }
 
+static bool gHasContext;
+
 void LocalWindowProxy::Initialize() {
   TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
                GetFrame()->IsMainFrame());
@@ -192,6 +196,15 @@ void LocalWindowProxy::Initialize() {
     origin = world_->IsolatedWorldSecurityOrigin(
         GetFrame()->DomWindow()->GetAgentClusterID());
     SetSecurityToken(origin.get());
+  }
+
+  // After creating the first context, we are ready to set up the state used
+  // to process driver commands when recording/replaying, and to create
+  // checkpoints. Create the first checkpoint at which execution can pause.
+  if (recordreplay::IsRecordingOrReplaying() && !gHasContext) {
+    gHasContext = true;
+    SetupRecordReplayCommands(GetIsolate());
+    recordreplay::NewCheckpoint();
   }
 
   {

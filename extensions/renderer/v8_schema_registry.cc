@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/record_replay.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_api.h"
@@ -18,7 +17,6 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/v8_helpers.h"
-#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "v8/include/v8-inspector.h"
 
 using content::V8ValueConverter;
@@ -168,8 +166,6 @@ v8::Local<v8::Object> V8SchemaRegistry::GetSchema(const std::string& api) {
   return handle_scope.Escape(v8_schema_object);
 }
 
-static bool gHasContext;
-
 v8::Local<v8::Context> V8SchemaRegistry::GetOrCreateContext(
     v8::Isolate* isolate) {
   // It's ok to create local handles in this function, since this is only called
@@ -178,16 +174,6 @@ v8::Local<v8::Context> V8SchemaRegistry::GetOrCreateContext(
     context_holder_.reset(new gin::ContextHolder(isolate));
     context_holder_->SetContext(v8::Context::New(isolate));
     schema_cache_.reset(new SchemaCache(isolate));
-
-    // After creating the first context, we are ready to set up the state used
-    // to process driver commands when recording/replaying, and to create
-    // checkpoints. Create the first checkpoint at which execution can pause.
-    if (recordreplay::IsRecordingOrReplaying() && !gHasContext) {
-      gHasContext = true;
-      blink::SetupRecordReplayCommands(isolate);
-      recordreplay::NewCheckpoint();
-    }
-
     return context_holder_->context();
   }
   return context_holder_->context();

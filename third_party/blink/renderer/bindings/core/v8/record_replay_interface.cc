@@ -55,9 +55,9 @@ const {
   dump,
 } = __RECORD_REPLAY_ARGUMENTS__;
 
-window.dump = dump;
-
 try {
+
+window.dump = dump;
 
 ///////////////////////////////////////////////////////////////////////////////
 // utils.js
@@ -99,7 +99,6 @@ function addEventListener(method, callback) {
 
 function messageCallback(message) {
   try {
-    log(`MessageCallback ${message}`);
     message = JSON.parse(message);
 
     if (message.id) {
