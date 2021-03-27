@@ -553,6 +553,7 @@ if (is_android) {
       "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",

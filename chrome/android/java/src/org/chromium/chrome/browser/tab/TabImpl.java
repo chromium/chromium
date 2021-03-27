@@ -1334,12 +1334,12 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @CalledByNative
-    private static long[] getAllNativePtrs(TabImpl[] tabsArray) {
+    private static long[] getAllNativePtrs(Tab[] tabsArray) {
         if (tabsArray == null) return null;
 
         long[] tabsPtrArray = new long[tabsArray.length];
         for (int i = 0; i < tabsArray.length; i++) {
-            tabsPtrArray[i] = tabsArray[i].getNativePtr();
+            tabsPtrArray[i] = ((TabImpl) tabsArray[i]).getNativePtr();
         }
         return tabsPtrArray;
     }

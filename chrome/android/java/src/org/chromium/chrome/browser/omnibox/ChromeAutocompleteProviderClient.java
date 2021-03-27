@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
@@ -17,27 +16,18 @@ import java.util.List;
  */
 public class ChromeAutocompleteProviderClient {
     @CalledByNative
-    private static TabImpl[] getAllHiddenAndNonCCTTabs(TabModel[] tabModels) {
+    private static Tab[] getAllHiddenTabs(TabModel[] tabModels) {
         if (tabModels == null) return null;
-        List<Tab> tabList = new ArrayList<Tab>();
+        List<Tab> tabList = new ArrayList<>();
 
         for (TabModel tabModel : tabModels) {
             if (tabModel == null) continue;
+
             for (int i = 0; i < tabModel.getCount(); ++i) {
-                TabImpl tab = (TabImpl) tabModel.getTabAt(i);
-                if (tab.isHidden() && !tab.isCustomTab()) {
-                    tabList.add(tab);
-                }
+                Tab tab = tabModel.getTabAt(i);
+                if (tab.isHidden()) tabList.add(tab);
             }
         }
-        if (tabList.size() == 0) {
-            return null;
-        }
-
-        TabImpl[] tabImplArray = new TabImpl[tabList.size()];
-        for (int i = 0; i < tabList.size(); i++) {
-            tabImplArray[i] = (TabImpl) tabList.get(i);
-        }
-        return tabImplArray;
+        return tabList.isEmpty() ? null : tabList.toArray(new Tab[0]);
     }
 }

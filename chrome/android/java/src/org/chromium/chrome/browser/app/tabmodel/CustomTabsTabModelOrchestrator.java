@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -38,8 +39,8 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         // Instantiate TabModelSelectorImpl
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
         mTabModelSelector = new TabModelSelectorImpl(windowAndroidSupplier, tabCreatorManager,
-                tabModelFilterFactory, nextTabPolicySupplier, asyncTabParamsManager, false, false,
-                false);
+                tabModelFilterFactory, nextTabPolicySupplier, asyncTabParamsManager, false,
+                ActivityType.CUSTOM_TAB, false);
 
         // Instantiate TabPersistentStore
         mTabPersistentStore =

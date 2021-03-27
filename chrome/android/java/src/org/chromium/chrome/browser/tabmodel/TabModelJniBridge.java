@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -28,25 +29,22 @@ import org.chromium.url.Origin;
 public abstract class TabModelJniBridge implements TabModel {
     private final boolean mIsIncognito;
 
+    /** The type of the Activity for which this tab model works. */
+    private final @ActivityType int mActivityType;
+
     /** Native TabModelJniBridge pointer, which will be set by {@link #initializeNative()}. */
     private long mNativeTabModelJniBridge;
 
-    /**
-     * Whether this tab model is part of a tabbed activity.
-     * This is consumed by Sync as part of restoring sync data from a previous session.
-     */
-    private boolean mIsTabbedActivityForSync;
-
-    public TabModelJniBridge(@NonNull Profile profile, boolean isTabbedActivity) {
+    public TabModelJniBridge(@NonNull Profile profile, @ActivityType int activityType) {
         mIsIncognito = profile.isOffTheRecord();
-        mIsTabbedActivityForSync = isTabbedActivity;
+        mActivityType = activityType;
     }
 
     /** Initializes the native-side counterpart to this class. */
     protected void initializeNative(Profile profile) {
         assert mNativeTabModelJniBridge == 0;
-        mNativeTabModelJniBridge = TabModelJniBridgeJni.get().init(
-                TabModelJniBridge.this, profile, mIsTabbedActivityForSync);
+        mNativeTabModelJniBridge =
+                TabModelJniBridgeJni.get().init(TabModelJniBridge.this, profile, mActivityType);
     }
 
     /** @return Whether the native-side pointer has been initialized. */
@@ -197,7 +195,7 @@ public abstract class TabModelJniBridge implements TabModel {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(TabModelJniBridge caller, Profile profile, boolean isTabbedActivity);
+        long init(TabModelJniBridge caller, Profile profile, @ActivityType int activityType);
         Profile getProfileAndroid(long nativeTabModelJniBridge, TabModelJniBridge caller);
         void broadcastSessionRestoreComplete(
                 long nativeTabModelJniBridge, TabModelJniBridge caller);

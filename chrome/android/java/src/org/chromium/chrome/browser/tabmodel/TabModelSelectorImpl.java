@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,9 +39,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     private boolean mIsUndoSupported;
 
-    // Whether the Activity that owns that TabModelSelector is tabbed or not.
-    // Used by sync to determine how to handle restore on cold start.
-    private boolean mIsTabbedActivityForSync;
+    // Type of the Activity for this tab model. Used by sync to determine how to handle restore
+    // on cold start.
+    private final @ActivityType int mActivityType;
 
     private final TabModelOrderController mOrderController;
 
@@ -64,20 +65,21 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param tabModelFilterFactory
      * @param nextTabPolicySupplier
      * @param asyncTabParamsManager
+     * @param activityType Type of the activity for the tab model selector.
      * @param supportUndo Whether a tab closure can be undone.
      */
     public TabModelSelectorImpl(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
             TabCreatorManager tabCreatorManager, TabModelFilterFactory tabModelFilterFactory,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, boolean supportUndo,
-            boolean isTabbedActivity, boolean startIncognito) {
+            @ActivityType int activityType, boolean startIncognito) {
         super(tabCreatorManager, tabModelFilterFactory, startIncognito);
         mWindowAndroidSupplier = windowAndroidSupplier;
         mIsUndoSupported = supportUndo;
-        mIsTabbedActivityForSync = isTabbedActivity;
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
+        mActivityType = activityType;
     }
 
     @Override
@@ -115,15 +117,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         ChromeTabCreator incognitoTabCreator =
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
         TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
-                mIsTabbedActivityForSync, regularTabCreator, incognitoTabCreator, mOrderController,
+                mActivityType, regularTabCreator, incognitoTabCreator, mOrderController,
                 mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
                 mIsUndoSupported);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
-        IncognitoTabModel incognitoModel =
-                new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(mWindowAndroidSupplier,
-                        regularTabCreator, incognitoTabCreator, mOrderController,
-                        mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this));
+        IncognitoTabModel incognitoModel = new IncognitoTabModelImpl(
+                new IncognitoTabModelImplCreator(mWindowAndroidSupplier, regularTabCreator,
+                        incognitoTabCreator, mOrderController, mTabContentManager,
+                        mNextTabPolicySupplier, mAsyncTabParamsManager, mActivityType, this));
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }

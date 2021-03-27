@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelImpl.IncognitoTabModelDelegate;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -33,6 +34,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     @Nullable
     private final Supplier<WindowAndroid> mWindowAndroidSupplier;
 
+    private final @ActivityType int mActivityType;
     /**
      * Constructor for an IncognitoTabModelImplCreator, used by {@link IncognitoTabModelImpl}.
      *
@@ -47,13 +49,15 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param tabContentManager   Manages the display content of the tab.
      * @param nextTabPolicySupplier Supplies the policy to pick a next tab if the current is closed
      * @param asyncTabParamsManager An {@link AsyncTabParamsManager} instance.
-     * @param modelDelegate       Delegate to handle external dependencies and interactions.
+     * @param activityType Type of the activity for the tab model.
+     * @param modelDelegate Delegate to handle external dependencies and interactions.
      */
     IncognitoTabModelImplCreator(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             NextTabPolicySupplier nextTabPolicySupplier,
-            AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
+            AsyncTabParamsManager asyncTabParamsManager, @ActivityType int activityType,
+            TabModelDelegate modelDelegate) {
         mWindowAndroidSupplier = windowAndroidSupplier;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
@@ -61,6 +65,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         mTabContentManager = tabContentManager;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
+        mActivityType = activityType;
         mModelDelegate = modelDelegate;
     }
 
@@ -81,9 +86,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
 
     @Override
     public TabModel createTabModel() {
-        Profile otrProfile = getOTRProfile();
-        return new TabModelImpl(otrProfile, false, mRegularTabCreator, mIncognitoTabCreator,
-                mOrderController, mTabContentManager, mNextTabPolicySupplier,
+        return new TabModelImpl(getOTRProfile(), mActivityType, mRegularTabCreator,
+                mIncognitoTabCreator, mOrderController, mTabContentManager, mNextTabPolicySupplier,
                 mAsyncTabParamsManager, mModelDelegate, false);
     }
 

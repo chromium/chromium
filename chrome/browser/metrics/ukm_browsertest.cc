@@ -69,6 +69,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -106,12 +107,17 @@ ukm::UkmService* GetUkmService() {
 }
 
 #if defined(OS_ANDROID)
+
+// ActivityType that doesn't restore tabs on cold start.
+// Any type other than kTabbed is fine.
+const auto TEST_ACTIVITY_TYPE = chrome::android::ActivityType::kCustomTab;
+
 // TestTabModel provides a means of creating a tab associated with a given
 // profile. The new tab can then be added to Android's TabModelList.
 class TestTabModel : public TabModel {
  public:
   explicit TestTabModel(Profile* profile)
-      : TabModel(profile, /*is_tabbed_activity=*/false),
+      : TabModel(profile, TEST_ACTIVITY_TYPE),
         web_contents_(content::WebContents::Create(
             content::WebContents::CreateParams(GetProfile()))) {}
 

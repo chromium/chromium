@@ -824,6 +824,7 @@ static_library("ui") {
     deps += [
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources/webapks:resources",
       "//components/autofill_assistant/browser",

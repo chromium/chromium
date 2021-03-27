@@ -13,6 +13,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -85,13 +86,13 @@ public class TabModelImpl extends TabModelJniBridge {
     private boolean mIsUndoSupported = true;
     private boolean mActive;
 
-    public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
+    public TabModelImpl(@NonNull Profile profile, @ActivityType int activityType,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
             boolean supportUndo) {
-        super(profile, isTabbedActivity);
+        super(profile, activityType);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;

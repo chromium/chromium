@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -55,6 +56,10 @@ public class ContextMenuLoadUrlParamsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
+    // Test activity type that does not restore tab on cold restart.
+    // Any type other than ActivityType.TABBED works.
+    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+
     private static final String HTML_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
     private static final Pattern SCHEME_SEPARATOR_RE = Pattern.compile("://");
@@ -77,7 +82,7 @@ public class ContextMenuLoadUrlParamsTest {
             super(null, tabCreatorManager, tabModelFilterFactory,
                     ()
                             -> NextTabPolicy.HIERARCHICAL,
-                    AsyncTabParamsManagerSingleton.getInstance(), false, false, false);
+                    AsyncTabParamsManagerSingleton.getInstance(), false, NO_RESTORE_TYPE, false);
         }
     }
 

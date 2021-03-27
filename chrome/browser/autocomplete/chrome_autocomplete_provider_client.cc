@@ -63,6 +63,7 @@
 #include "chrome/android/chrome_jni_headers/ChromeAutocompleteProviderClient_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_android_user_data.h"
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -71,6 +72,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#endif
+
+#if defined(OS_ANDROID)
+using chrome::android::ActivityType;
 #endif
 
 namespace {
@@ -577,15 +582,20 @@ ChromeAutocompleteProviderClient::GetAllHiddenAndNonCCTTabs(
   jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
   base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
       env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
+  // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
   for (size_t i = 0; i < tab_models.size(); ++i) {
+    ActivityType type = tab_models[i]->activity_type();
+    if (type == ActivityType::kCustomTab ||
+        type == ActivityType::kTrustedWebActivity) {
+      continue;
+    }
     env->SetObjectArrayElement(j_tab_model_array.obj(), i,
                                tab_models[i]->GetJavaObject().obj());
   }
 
-  // Get all the hidden and non CCT tabs.
   base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
-      Java_ChromeAutocompleteProviderClient_getAllHiddenAndNonCCTTabs(
-          env, j_tab_model_array);
+      Java_ChromeAutocompleteProviderClient_getAllHiddenTabs(env,
+                                                             j_tab_model_array);
   if (j_tabs.is_null())
     return std::vector<TabAndroid*>();
 

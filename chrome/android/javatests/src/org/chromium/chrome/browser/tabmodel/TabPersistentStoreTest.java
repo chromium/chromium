@@ -87,6 +87,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class TabPersistentStoreTest {
+    // Test activity type that does not restore tab on cold restart.
+    // Any type other than ActivityType.TABBED works.
+    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
@@ -149,7 +153,7 @@ public class TabPersistentStoreTest {
             Callable<TabModelImpl> callable = new Callable<TabModelImpl>() {
                 @Override
                 public TabModelImpl call() {
-                    return new TabModelImpl(Profile.getLastUsedRegularProfile(), false,
+                    return new TabModelImpl(Profile.getLastUsedRegularProfile(), NO_RESTORE_TYPE,
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
                             null, nextTabPolicySupplier,
@@ -163,7 +167,7 @@ public class TabPersistentStoreTest {
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
                             null, nextTabPolicySupplier,
-                            AsyncTabParamsManagerSingleton.getInstance(), this));
+                            AsyncTabParamsManagerSingleton.getInstance(), NO_RESTORE_TYPE, this));
             initialize(regularTabModel, incognitoTabModel);
         }
 

@@ -24,7 +24,7 @@ class FakeTabModel : public TabModel {
   explicit FakeTabModel(
       Profile* profile,
       const std::vector<content::WebContents*>& web_contents_list)
-      : TabModel(profile, /*is_tabbed_activity=*/false),
+      : TabModel(profile, chrome::android::ActivityType::kCustomTab),
         web_contents_list_(web_contents_list) {}
 
   int GetTabCount() const override {

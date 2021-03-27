@@ -30,13 +30,14 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using chrome::android::ActivityType;
 using content::WebContents;
 
 TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      jobject jobj,
                                      Profile* profile,
-                                     bool is_tabbed_activity)
-    : TabModel(profile, is_tabbed_activity),
+                                     ActivityType activity_type)
+    : TabModel(profile, activity_type),
       java_object_(env, env->NewWeakGlobalRef(jobj)) {
   TabModelList::AddTabModel(this);
 }
@@ -230,9 +231,9 @@ TabModelJniBridge::~TabModelJniBridge() {
 static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
                                         const JavaParamRef<jobject>& j_profile,
-                                        jboolean is_tabbed_activity) {
+                                        jint j_activity_type) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, ProfileAndroid::FromProfileAndroid(j_profile),
-      is_tabbed_activity);
+      static_cast<ActivityType>(j_activity_type));
   return reinterpret_cast<intptr_t>(tab_model);
 }

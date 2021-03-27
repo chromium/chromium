@@ -19,6 +19,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -34,6 +35,10 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelSelectorImplTest {
+    // Test activity type that does not restore tab on cold restart.
+    // Any type other than ActivityType.TABBED works.
+    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+
     @Mock
     TabModelFilterFactory mMockTabModelFilterFactory;
     @Mock
@@ -54,12 +59,12 @@ public class TabModelSelectorImplTest {
                 .when(mMockTabModelFilterFactory)
                 .createTabModelFilter(any());
         mTabCreatorManager = new MockTabCreatorManager();
+
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
         mTabModelSelector = new TabModelSelectorImpl(null, mTabCreatorManager,
                 mMockTabModelFilterFactory, mNextTabPolicySupplier, realAsyncTabParamsManager,
-                /*supportUndo=*/false,
-                /*isTabbedActivity=*/false, /*startIncognito=*/false);
+                /*supportUndo=*/false, NO_RESTORE_TYPE, /*startIncognito=*/false);
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(mMockTabContentManager,
                 new MockTabModel(false, null), new MockTabModel(true, null));
