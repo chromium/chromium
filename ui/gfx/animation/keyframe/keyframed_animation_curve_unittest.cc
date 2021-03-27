@@ -916,6 +916,98 @@ TEST(KeyframedAnimationCurveTest, RepeatedSizeKeyFrame) {
   EXPECT_SIZEF_EQ(size_b, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
 }
 
+// Tests that a rect animation with one keyframe works as expected.
+TEST(KeyframedAnimationCurveTest, OneRectKeyFrame) {
+  gfx::Rect rect = gfx::Rect(1, 2, 101, 102);
+  std::unique_ptr<KeyframedRectAnimationCurve> curve(
+      KeyframedRectAnimationCurve::Create());
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta(), rect, nullptr));
+
+  EXPECT_EQ(rect, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  EXPECT_EQ(rect, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  EXPECT_EQ(rect, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  EXPECT_EQ(rect, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  EXPECT_EQ(rect, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+}
+
+// Tests that a rect animation with two keyframes works as expected.
+TEST(KeyframedAnimationCurveTest, TwoRectKeyFrame) {
+  gfx::Rect rect_a = gfx::Rect(1, 2, 100, 100);
+  gfx::Rect rect_b = gfx::Rect(11, 12, 100, 0);
+  gfx::Rect rect_midpoint = gfx::Tween::RectValueBetween(0.5, rect_a, rect_b);
+  std::unique_ptr<KeyframedRectAnimationCurve> curve(
+      KeyframedRectAnimationCurve::Create());
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta(), rect_a, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
+                                          rect_b, nullptr));
+
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  EXPECT_EQ(rect_midpoint,
+            curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+}
+
+// Tests that a rect animation with three keyframes works as expected.
+TEST(KeyframedAnimationCurveTest, ThreeRectKeyFrame) {
+  gfx::Rect rect_a = gfx::Rect(1, 2, 100, 100);
+  gfx::Rect rect_b = gfx::Rect(11, 12, 100, 0);
+  gfx::Rect rect_c = gfx::Rect(101, 102, 200, 0);
+  gfx::Rect rect_midpoint1 = gfx::Tween::RectValueBetween(0.5, rect_a, rect_b);
+  gfx::Rect rect_midpoint2 = gfx::Tween::RectValueBetween(0.5, rect_b, rect_c);
+  std::unique_ptr<KeyframedRectAnimationCurve> curve(
+      KeyframedRectAnimationCurve::Create());
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta(), rect_a, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
+                                          rect_b, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(2.0),
+                                          rect_c, nullptr));
+
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  EXPECT_EQ(rect_midpoint1,
+            curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(1.f)));
+  EXPECT_EQ(rect_midpoint2,
+            curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
+  EXPECT_EQ(rect_c, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  EXPECT_EQ(rect_c, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
+}
+
+// Tests that a rect animation with multiple keys at a given time works sanely.
+TEST(KeyframedAnimationCurveTest, RepeatedRectKeyFrame) {
+  gfx::Rect rect_a = gfx::Rect(10, 20, 100, 64);
+  gfx::Rect rect_b = gfx::Rect(30, 40, 100, 192);
+
+  std::unique_ptr<KeyframedRectAnimationCurve> curve(
+      KeyframedRectAnimationCurve::Create());
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta(), rect_a, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
+                                          rect_a, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(1.0),
+                                          rect_b, nullptr));
+  curve->AddKeyframe(RectKeyframe::Create(base::TimeDelta::FromSecondsD(2.0),
+                                          rect_b, nullptr));
+
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(-1.f)));
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(0.f)));
+  EXPECT_EQ(rect_a, curve->GetValue(base::TimeDelta::FromSecondsD(0.5f)));
+
+  gfx::Rect value = curve->GetValue(base::TimeDelta::FromSecondsD(1.0f));
+  EXPECT_EQ(100, value.width());
+  EXPECT_LE(64, value.height());
+  EXPECT_GE(192, value.height());
+  EXPECT_LE(10, value.x());
+  EXPECT_GE(30, value.x());
+  EXPECT_LE(20, value.y());
+  EXPECT_GE(40, value.y());
+
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(1.5f)));
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(2.f)));
+  EXPECT_EQ(rect_b, curve->GetValue(base::TimeDelta::FromSecondsD(3.f)));
+}
+
 // Tests that the computing of tick interval for STEPS TimingFunction works
 // correctly.
 TEST(KeyFrameAnimationCurveTest, TickIntervalForStepsTimingFunction) {

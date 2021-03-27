@@ -13,6 +13,7 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/transform_operations.h"
 
@@ -116,6 +117,26 @@ class GFX_KEYFRAME_ANIMATION_EXPORT SizeKeyframe : public Keyframe {
                std::unique_ptr<TimingFunction> timing_function);
 
   gfx::SizeF value_;
+};
+
+class GFX_KEYFRAME_ANIMATION_EXPORT RectKeyframe : public Keyframe {
+ public:
+  static std::unique_ptr<RectKeyframe> Create(
+      base::TimeDelta time,
+      const gfx::Rect& value,
+      std::unique_ptr<TimingFunction> timing_function);
+  ~RectKeyframe() override;
+
+  const gfx::Rect& Value() const;
+
+  std::unique_ptr<RectKeyframe> Clone() const;
+
+ private:
+  RectKeyframe(base::TimeDelta time,
+               const gfx::Rect& value,
+               std::unique_ptr<TimingFunction> timing_function);
+
+  gfx::Rect value_;
 };
 
 class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedColorAnimationCurve
@@ -285,6 +306,45 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   std::vector<std::unique_ptr<SizeKeyframe>> keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
+};
+
+class GFX_KEYFRAME_ANIMATION_EXPORT KeyframedRectAnimationCurve
+    : public RectAnimationCurve {
+ public:
+  // It is required that the keyframes be sorted by time.
+  static std::unique_ptr<KeyframedRectAnimationCurve> Create();
+
+  KeyframedRectAnimationCurve(const KeyframedRectAnimationCurve&) = delete;
+  ~KeyframedRectAnimationCurve() override;
+
+  KeyframedRectAnimationCurve& operator=(const KeyframedRectAnimationCurve&) =
+      delete;
+
+  void AddKeyframe(std::unique_ptr<RectKeyframe> keyframe);
+  void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
+    timing_function_ = std::move(timing_function);
+  }
+  double scaled_duration() const { return scaled_duration_; }
+  void set_scaled_duration(double scaled_duration) {
+    scaled_duration_ = scaled_duration;
+  }
+
+  // AnimationCurve implementation
+  base::TimeDelta Duration() const override;
+  std::unique_ptr<AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
+
+  // RectAnimationCurve implementation
+  gfx::Rect GetValue(base::TimeDelta t) const override;
+
+ private:
+  KeyframedRectAnimationCurve();
+
+  // Always sorted in order of increasing time. No two keyframes have the
+  // same time.
+  std::vector<std::unique_ptr<RectKeyframe>> keyframes_;
+  std::unique_ptr<TimingFunction> timing_function_;
+  double scaled_duration_ = 0.;
 };
 
 }  // namespace gfx

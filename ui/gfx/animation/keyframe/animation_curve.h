@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/transform.h"
 #include "ui/gfx/transform_operations.h"
@@ -31,13 +32,11 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
     FLOAT,
     TRANSFORM,
     SIZE,
+    RECT,
 
     // cc:: curve types.
     FILTER,
     SCROLL_OFFSET,
-
-    // This must be last
-    LAST_CURVE_TYPE = SIZE,
   };
 
   virtual ~AnimationCurve() = default;
@@ -102,6 +101,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT SizeAnimationCurve : public AnimationCurve {
 class GFX_KEYFRAME_ANIMATION_EXPORT TransformAnimationCurve
     : public AnimationCurve {
   DECLARE_ANIMATION_CURVE_BODY(gfx::TransformOperations, Transform)
+};
+
+class GFX_KEYFRAME_ANIMATION_EXPORT RectAnimationCurve : public AnimationCurve {
+  DECLARE_ANIMATION_CURVE_BODY(gfx::Rect, Rect)
 };
 
 }  // namespace gfx

@@ -132,6 +132,32 @@ std::unique_ptr<SizeKeyframe> SizeKeyframe::Clone() const {
   return SizeKeyframe::Create(Time(), Value(), std::move(func));
 }
 
+std::unique_ptr<RectKeyframe> RectKeyframe::Create(
+    base::TimeDelta time,
+    const gfx::Rect& value,
+    std::unique_ptr<TimingFunction> timing_function) {
+  return base::WrapUnique(
+      new RectKeyframe(time, value, std::move(timing_function)));
+}
+
+RectKeyframe::RectKeyframe(base::TimeDelta time,
+                           const gfx::Rect& value,
+                           std::unique_ptr<TimingFunction> timing_function)
+    : Keyframe(time, std::move(timing_function)), value_(value) {}
+
+RectKeyframe::~RectKeyframe() = default;
+
+const gfx::Rect& RectKeyframe::Value() const {
+  return value_;
+}
+
+std::unique_ptr<RectKeyframe> RectKeyframe::Clone() const {
+  std::unique_ptr<TimingFunction> func;
+  if (timing_function())
+    func = timing_function()->Clone();
+  return RectKeyframe::Create(Time(), Value(), std::move(func));
+}
+
 std::unique_ptr<KeyframedColorAnimationCurve>
 KeyframedColorAnimationCurve::Create() {
   return base::WrapUnique(new KeyframedColorAnimationCurve);
@@ -371,6 +397,61 @@ gfx::SizeF KeyframedSizeAnimationCurve::GetValue(base::TimeDelta t) const {
 
   return gfx::Tween::SizeFValueBetween(progress, keyframes_[i]->Value(),
                                        keyframes_[i + 1]->Value());
+}
+
+std::unique_ptr<KeyframedRectAnimationCurve>
+KeyframedRectAnimationCurve::Create() {
+  return base::WrapUnique(new KeyframedRectAnimationCurve);
+}
+
+KeyframedRectAnimationCurve::KeyframedRectAnimationCurve()
+    : scaled_duration_(1.0) {}
+
+KeyframedRectAnimationCurve::~KeyframedRectAnimationCurve() = default;
+
+void KeyframedRectAnimationCurve::AddKeyframe(
+    std::unique_ptr<RectKeyframe> keyframe) {
+  InsertKeyframe(std::move(keyframe), &keyframes_);
+}
+
+base::TimeDelta KeyframedRectAnimationCurve::Duration() const {
+  return (keyframes_.back()->Time() - keyframes_.front()->Time()) *
+         scaled_duration();
+}
+
+base::TimeDelta KeyframedRectAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
+}
+
+std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Clone() const {
+  std::unique_ptr<KeyframedRectAnimationCurve> to_return =
+      KeyframedRectAnimationCurve::Create();
+  for (const auto& keyframe : keyframes_)
+    to_return->AddKeyframe(keyframe->Clone());
+
+  if (timing_function_)
+    to_return->SetTimingFunction(timing_function_->Clone());
+
+  to_return->set_scaled_duration(scaled_duration());
+
+  return std::move(to_return);
+}
+
+gfx::Rect KeyframedRectAnimationCurve::GetValue(base::TimeDelta t) const {
+  if (t <= (keyframes_.front()->Time() * scaled_duration()))
+    return keyframes_.front()->Value();
+
+  if (t >= (keyframes_.back()->Time() * scaled_duration()))
+    return keyframes_.back()->Value();
+
+  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
+                               t);
+  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
+  double progress =
+      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
+
+  return gfx::Tween::RectValueBetween(progress, keyframes_[i]->Value(),
+                                      keyframes_[i + 1]->Value());
 }
 
 }  // namespace gfx
