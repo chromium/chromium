@@ -189,10 +189,13 @@ void NDEFReader::OnReading(const String& serial_number,
 }
 
 void NDEFReader::OnReadingError(const String& message) {
-  DispatchEvent(*Event::Create(event_type_names::kReadingerror));
   GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kInfo, message));
+
+  // Dispatch the event as the final step in this method as it may cause script
+  // to run that destroys the execution context.
+  DispatchEvent(*Event::Create(event_type_names::kReadingerror));
 }
 
 void NDEFReader::ContextDestroyed() {
