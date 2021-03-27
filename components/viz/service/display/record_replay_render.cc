@@ -4,12 +4,14 @@
 
 #include "components/viz/service/display/record_replay_render.h"
 
+#include "base/base64.h"
 #include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 
 namespace viz {
 
@@ -23,8 +25,6 @@ static SharedBitmapInfoVector* gSharedBitmaps;
 
 void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
                                     void* memory, size_t size) {
-  recordreplay::Print("RecordReplayNotifyRasterBuffer %s %p %lu",
-                      shared_bitmap_id.ToDebugString().c_str(), memory, size);
   if (!gSharedBitmaps) {
     gSharedBitmaps = new SharedBitmapInfoVector();
   }
@@ -73,32 +73,7 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
     recordreplay::Print("Ignoring composite to unknown surface %s, expected %s",
                         SurfaceIdString(local_surface_id).c_str(),
                         SurfaceIdString(*gSurfaceId).c_str());
-  }
-
-  recordreplay::Print("RecordReplaySubmitCompositorFrame %d %d NumResources %lu NumRenderPasses %lu",
-                      frame.size_in_pixels().width(), frame.size_in_pixels().height(),
-                      frame.resource_list.size(),
-                      frame.render_pass_list.size());
-
-  for (const TransferableResource& resource : frame.resource_list) {
-    recordreplay::Print("CompositorFrameResource Id %u Software %d TextureTarget %u Mailbox %s",
-                        resource.id,
-                        resource.is_software,
-                        resource.mailbox_holder.texture_target,
-                        resource.mailbox_holder.mailbox.ToDebugString().c_str());
-    if (gSharedBitmaps) {
-      for (const SharedBitmapInfo& info : *gSharedBitmaps) {
-        if (info.id_ == resource.mailbox_holder.mailbox) {
-          size_t numNonZeroBytes = 0;
-          for (size_t i = 0; i < info.size_; i++) {
-            if (info.memory_[i]) {
-              numNonZeroBytes++;
-            }
-          }
-          recordreplay::Print("FoundBitmapInfo NumBytes %lu", numNonZeroBytes);
-        }
-      }
-    }
+    return;
   }
 
   AggregatedRenderPassList render_passes;
@@ -142,6 +117,17 @@ void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId re
                                  transferable->size.height());
   bool pixels_installed = sk_bitmap->installPixels(info, pixels, info.minRowBytes());
   CHECK(pixels_installed);
+}
+
+void RecordReplayPaintFinished(const SkPixmap& pixmap) {
+  std::vector<unsigned char> data;
+  if (!gfx::JPEGCodec::Encode(pixmap, 50, SkJpegEncoder::Downsample::k444, &data)) {
+    recordreplay::Print("JPEG encoding failed, ignoring paint");
+    return;
+  }
+
+  std::string encoded = base::Base64Encode(data);
+  fprintf(stderr, "JPEG %s\n", encoded.c_str());
 }
 
 } // namespace viz

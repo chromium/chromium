@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/vsync_provider.h"
@@ -48,7 +49,14 @@ SkCanvas* SoftwareOutputDevice::BeginPaint(const gfx::Rect& damage_rect) {
   return surface_ ? surface_->getCanvas() : nullptr;
 }
 
-void SoftwareOutputDevice::EndPaint() {}
+void SoftwareOutputDevice::EndPaint() {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    SkPixmap pixmap;
+    if (surface_ && surface_->peekPixels(&pixmap)) {
+      RecordReplayPaintFinished(pixmap);
+    }
+  }
+}
 
 gfx::VSyncProvider* SoftwareOutputDevice::GetVSyncProvider() {
   return vsync_provider_.get();

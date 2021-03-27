@@ -10,6 +10,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace viz {
 
@@ -21,13 +22,19 @@ namespace viz {
 // can then be encoded to base64 images and reported to the record/replay
 // driver and sent to clients inspecting the recording.
 
-void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
-                                       const viz::CompositorFrame& frame);
-
+// Called when a shared memory buffer for rasterization has been created.
 void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
                                     void* memory, size_t size);
 
+// Called when a CompositorFrame is being submitted to the GPU process.
+void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
+                                       const viz::CompositorFrame& frame);
+
+// Called to populate a bitmap with information for the given resource in the current frame.
 void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id);
+
+// Called when painting to the software output device has finished.
+void RecordReplayPaintFinished(const SkPixmap& pixmap);
 
 } // namespace viz
 
