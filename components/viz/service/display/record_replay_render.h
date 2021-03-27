@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_RECORD_REPLAY_RENDER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_RECORD_REPLAY_RENDER_H_
 
+#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/quads/compositor_frame.h"
 
@@ -20,6 +21,9 @@ namespace viz {
 
 void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
                                        const viz::CompositorFrame& frame);
+
+void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
+                                    void* memory, size_t size);
 
 } // namespace viz
 

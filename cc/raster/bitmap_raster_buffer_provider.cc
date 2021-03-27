@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/shared_memory_mapping.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -19,6 +20,7 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/service/display/record_replay_render.h"
 
 namespace cc {
 namespace {
@@ -119,6 +121,12 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     backing->mapping = std::move(shm.mapping);
     frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                          backing->shared_bitmap_id);
+
+    if (recordreplay::IsRecordingOrReplaying()) {
+      viz::RecordReplayNotifyRasterBuffer(backing->shared_bitmap_id,
+                                          backing->mapping.memory(),
+                                          backing->mapping.size());
+    }
 
     resource.set_software_backing(std::move(backing));
   }
