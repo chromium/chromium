@@ -375,6 +375,22 @@ bool ConsumeNumbers(CSSParserTokenRange& args,
   return true;
 }
 
+bool ConsumeNumbersOrPercents(CSSParserTokenRange& args,
+                              const CSSParserContext& context,
+                              CSSFunctionValue*& transform_value,
+                              unsigned number_of_arguments) {
+  do {
+    CSSValue* parsed_value =
+        ConsumeNumberOrPercent(args, context, kValueRangeAll);
+    if (!parsed_value)
+      return false;
+    transform_value->Append(*parsed_value);
+    if (--number_of_arguments && !ConsumeCommaIncludingWhitespace(args))
+      return false;
+  } while (number_of_arguments);
+  return true;
+}
+
 bool ConsumePerspective(CSSParserTokenRange& args,
                         const CSSParserContext& context,
                         CSSFunctionValue*& transform_value,
@@ -841,18 +857,22 @@ CSSPrimitiveValue* ConsumePercent(CSSParserTokenRange& range,
   return nullptr;
 }
 
-CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange& range,
-                                     const CSSParserContext& context) {
-  if (CSSPrimitiveValue* value =
-          ConsumeNumber(range, context, kValueRangeAll)) {
+CSSPrimitiveValue* ConsumeNumberOrPercent(CSSParserTokenRange& range,
+                                          const CSSParserContext& context,
+                                          ValueRange value_range) {
+  if (CSSPrimitiveValue* value = ConsumeNumber(range, context, value_range)) {
     return value;
   }
-  if (CSSPrimitiveValue* value =
-          ConsumePercent(range, context, kValueRangeAll)) {
+  if (CSSPrimitiveValue* value = ConsumePercent(range, context, value_range)) {
     return CSSNumericLiteralValue::Create(value->GetDoubleValue() / 100.0,
                                           CSSPrimitiveValue::UnitType::kNumber);
   }
   return nullptr;
+}
+
+CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
+  return ConsumeNumberOrPercent(range, context, kValueRangeAll);
 }
 
 bool CanConsumeCalcValue(CalculationCategory category,
@@ -4706,13 +4726,13 @@ CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,
     case CSSValueID::kScaleY:
     case CSSValueID::kScaleZ:
     case CSSValueID::kScale:
-      parsed_value = ConsumeNumber(args, context, kValueRangeAll);
+      parsed_value = ConsumeNumberOrPercent(args, context, kValueRangeAll);
       if (!parsed_value)
         return nullptr;
       if (function_id == CSSValueID::kScale &&
           ConsumeCommaIncludingWhitespace(args)) {
         transform_value->Append(*parsed_value);
-        parsed_value = ConsumeNumber(args, context, kValueRangeAll);
+        parsed_value = ConsumeNumberOrPercent(args, context, kValueRangeAll);
         if (!parsed_value)
           return nullptr;
       }
@@ -4748,7 +4768,7 @@ CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,
       }
       break;
     case CSSValueID::kScale3d:
-      if (!ConsumeNumbers(args, context, transform_value, 3))
+      if (!ConsumeNumbersOrPercents(args, context, transform_value, 3))
         return nullptr;
       break;
     case CSSValueID::kRotate3d:

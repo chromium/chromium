@@ -15,13 +15,14 @@ expect('5').parsesAs('5').isComputedTo('5');
 expect('5 5').parsesAs('5').isComputedTo('5');
 expect('1 -2.3').parsesAs('1 -2.3').isComputedTo('1 -2.3');
 expect('1 -2.3 4').parsesAs('1 -2.3 4').isComputedTo('1 -2.3 4');
+expect('30%').parsesAs('0.3').isComputedTo('0.3');
 
 expect('calc(1 * 2)').parsesAs('2').isComputedTo('2');
 expect('calc(1 * 2) calc(2 / 4)').parsesAs('2 0.5').isComputedTo('2 0.5');
 expect('calc(1 * 2) calc(2 / 4) calc(0.5)').parsesAs('2 0.5 0.5').isComputedTo('2 0.5 0.5');
+expect('calc(1 * 2) calc(2 / 4) calc(0.5%)').parsesAs('2 0.5 0.005').isComputedTo('2 0.5 0.005');
 
 expect('2px').isInvalid();
-expect('30%').isInvalid();
 expect('1 1 1 1').isInvalid();
 expect('1 2 3deg').isInvalid();
 expect('1 + 1').isInvalid();
@@ -29,5 +30,4 @@ expect('1,').isInvalid();
 expect('1, 2,').isInvalid();
 expect('calc(1 * 2 + 4px) calc(2 / 4) calc(0.5)').isInvalid();
 expect('calc(1 * 2) calc(2 / 4 * 4deg) calc(0.5)').isInvalid();
-expect('calc(1 * 2) calc(2 / 4) calc(0.5%)').isInvalid();
 </script>

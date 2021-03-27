@@ -5635,24 +5635,23 @@ const CSSValue* Scale::ParseSingleValue(CSSParserTokenRange& range,
   if (id == CSSValueID::kNone)
     return css_parsing_utils::ConsumeIdent(range);
 
-  CSSValue* x_scale =
-      css_parsing_utils::ConsumeNumber(range, context, kValueRangeAll);
+  CSSPrimitiveValue* x_scale =
+      css_parsing_utils::ConsumeNumberOrPercent(range, context, kValueRangeAll);
   if (!x_scale)
     return nullptr;
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*x_scale);
 
-  CSSValue* y_scale =
-      css_parsing_utils::ConsumeNumber(range, context, kValueRangeAll);
+  CSSPrimitiveValue* y_scale =
+      css_parsing_utils::ConsumeNumberOrPercent(range, context, kValueRangeAll);
   if (y_scale) {
-    CSSValue* z_scale =
-        css_parsing_utils::ConsumeNumber(range, context, kValueRangeAll);
+    CSSPrimitiveValue* z_scale = css_parsing_utils::ConsumeNumberOrPercent(
+        range, context, kValueRangeAll);
     if (z_scale) {
       list->Append(*y_scale);
       list->Append(*z_scale);
-    } else if (To<CSSPrimitiveValue>(x_scale)->GetDoubleValue() !=
-               To<CSSPrimitiveValue>(y_scale)->GetDoubleValue()) {
+    } else if (x_scale->GetDoubleValue() != y_scale->GetDoubleValue()) {
       list->Append(*y_scale);
     }
   }

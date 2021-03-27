@@ -88,6 +88,12 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange&,
 CSSPrimitiveValue* ConsumePercent(CSSParserTokenRange&,
                                   const CSSParserContext&,
                                   ValueRange);
+
+// Any percentages are converted to numbers.
+CSSPrimitiveValue* ConsumeNumberOrPercent(CSSParserTokenRange&,
+                                          const CSSParserContext&,
+                                          ValueRange);
+
 CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange&,
                                      const CSSParserContext&);
 CSSPrimitiveValue* ConsumeLengthOrPercent(

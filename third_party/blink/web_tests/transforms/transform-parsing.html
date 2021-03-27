@@ -54,25 +54,25 @@ expect('translateY(1px, 2px)').isInvalid();
 // scale()
 expect('scale(1)').parsesAs('scale(1)');
 expect('scale(2, 3)').parsesAs('scale(2, 3)').isComputedTo('matrix(2, 0, 0, 3, 0, 0)');
+expect('scale(20%, 50%)').parsesAs('scale(0.2, 0.5)').isComputedTo('matrix(0.2, 0, 0, 0.5, 0, 0)');
 expect('scale()').isInvalid();
 expect('scale(1,)').isInvalid();
 expect('scale(1, 2, 3)').isInvalid();
 expect('scale(1px, 2px)').isInvalid();
-expect('scale(20%, 50%)').isInvalid();
 
 // scaleX()
 expect('scaleX(2)').parsesAs('scaleX(2)').isComputedTo('matrix(2, 0, 0, 1, 0, 0)');
+expect('scaleX(50%)').parsesAs('scaleX(0.5)').isComputedTo('matrix(0.5, 0, 0, 1, 0, 0)');
 expect('scaleX()').isInvalid();
 expect('scaleX(1, 2)').isInvalid();
 expect('scaleX(1px)').isInvalid();
-expect('scaleX(50%)').isInvalid();
 
 // scaleY()
 expect('scaleY(2)').parsesAs('scaleY(2)').isComputedTo('matrix(1, 0, 0, 2, 0, 0)');
+expect('scaleY(50%)').parsesAs('scaleY(0.5)').isComputedTo('matrix(1, 0, 0, 0.5, 0, 0)');
 expect('scaleY()').isInvalid();
 expect('scaleY(1, 2)').isInvalid();
 expect('scaleY(1px)').isInvalid();
-expect('scaleY(50%)').isInvalid();
 
 // rotate()
 expect('rotate(0)').parsesAs('rotate(0deg)');
@@ -146,18 +146,20 @@ expect('translateZ(1px, 2px)').isInvalid();
 // scale3d()
 expect('scale3d(2, 3, 4)').parsesAs('scale3d(2, 3, 4)').
     isComputedTo('matrix3d(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1)');
+expect('scale3d(20%, 50%, 60%)').parsesAs('scale3d(0.2, 0.5, 0.6)').
+    isComputedTo('matrix3d(0.2, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.6, 0, 0, 0, 0, 1)');
 expect('scale3d()').isInvalid();
 expect('scale3d(1, 2, 3, 4)').isInvalid();
 expect('scale3d(1px, 2px, 3px)').isInvalid();
-expect('scale3d(20%, 50%, 60%)').isInvalid();
 
 // scaleZ()
 expect('scaleZ(2)').parsesAs('scaleZ(2)').
     isComputedTo('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1)');
+expect('scaleZ(50%)').parsesAs('scaleZ(0.5)').
+    isComputedTo('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1)');
 expect('scaleZ()').isInvalid();
 expect('scaleZ(1, 2)').isInvalid();
 expect('scaleZ(1px)').isInvalid();
-expect('scaleZ(50%)').isInvalid();
 
 // rotate3d()
 expect('rotate3d(0, 0, 0, 0)').parsesAs('rotate3d(0, 0, 0, 0deg)');
