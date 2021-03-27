@@ -169,7 +169,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
       &FileHandlingExpiryImpl::Create, WrapWeakPersistent(&frame)));
 
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &InstallationServiceImpl::Create, WrapWeakPersistent(&frame)));
+      &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   // TODO(dominickn): This interface should be document-scoped rather than
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
