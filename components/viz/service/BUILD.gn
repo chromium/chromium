@@ -76,6 +76,8 @@ viz_component("service") {
     "display/overlay_processor_stub.h",
     "display/program_binding.cc",
     "display/program_binding.h",
+    "display/record_replay_render.cc",
+    "display/record_replay_render.h",
     "display/render_pass_id_remapper.cc",
     "display/render_pass_id_remapper.h",
     "display/renderer_utils.cc",

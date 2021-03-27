@@ -10,6 +10,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/histograms.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -17,6 +18,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/service/display/record_replay_render.h"
 
 namespace cc {
 namespace mojo_embedder {
@@ -195,6 +197,10 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          "Event.Pipeline", TRACE_ID_GLOBAL(trace_id),
                          TRACE_EVENT_FLAG_FLOW_OUT, "step",
                          "SubmitHitTestData");
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    RecordReplaySubmitCompositorFrame(local_surface_id_, frame);
+  }
 
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
