@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -247,6 +248,46 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
       const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
       copy_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad,
                                                      pass_quad->render_pass_id);
+    } else {
+      copy_pass->CopyFromAndAppendDrawQuad(quad);
+    }
+  }
+  return copy_pass;
+}
+
+std::unique_ptr<AggregatedRenderPass> CompositorRenderPass::DeepCopyAggregated() const {
+  std::unique_ptr<AggregatedRenderPass> copy_pass =
+    std::make_unique<AggregatedRenderPass>(shared_quad_state_list.size(),
+                                           quad_list.size());
+  copy_pass->SetAll(AggregatedRenderPassId::FromUnsafeValue(id.GetUnsafeValue()),
+                    output_rect, damage_rect, transform_to_root_target,
+                    filters, backdrop_filters, backdrop_filter_bounds,
+                    gfx::ContentColorUsage::kSRGB,
+                    has_transparent_background, cache_render_pass,
+                    has_damage_from_contributing_content, generate_mipmap);
+
+  if (shared_quad_state_list.empty()) {
+    DCHECK(quad_list.empty());
+    return copy_pass;
+  }
+
+  SharedQuadStateList::ConstIterator sqs_iter = shared_quad_state_list.begin();
+  SharedQuadState* copy_shared_quad_state =
+      copy_pass->CreateAndAppendSharedQuadState();
+  *copy_shared_quad_state = **sqs_iter;
+  for (auto* quad : quad_list) {
+    while (quad->shared_quad_state != *sqs_iter) {
+      ++sqs_iter;
+      DCHECK(sqs_iter != shared_quad_state_list.end());
+      copy_shared_quad_state = copy_pass->CreateAndAppendSharedQuadState();
+      *copy_shared_quad_state = **sqs_iter;
+    }
+    DCHECK(quad->shared_quad_state == *sqs_iter);
+
+    if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
+      const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
+      auto nid = AggregatedRenderPassId::FromUnsafeValue(pass_quad->render_pass_id.GetUnsafeValue());
+      copy_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad, nid);
     } else {
       copy_pass->CopyFromAndAppendDrawQuad(quad);
     }

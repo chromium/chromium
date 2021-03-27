@@ -9,6 +9,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -870,6 +872,16 @@ DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
+  // When recording/replaying we don't have a resoure provider, and need to get
+  // the bitmap directly from the record/replay renderer.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    SkBitmap sk_bitmap;
+    RecordReplayPopulateSkBitmapWithResource(&sk_bitmap, resource_id);
+    sk_bitmap.setImmutable();
+    sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
+    return;
+  }
+
   const ChildResource* resource =
       resource_provider->LockForRead(resource_id, false /* overlay_only */);
   DCHECK(resource);
@@ -920,6 +932,9 @@ DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
 }
 
 DisplayResourceProvider::ScopedReadLockSkImage::~ScopedReadLockSkImage() {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
   resource_provider_->UnlockForRead(resource_id_, false /* overlay_only */);
 }
 

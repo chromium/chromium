@@ -96,6 +96,10 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // A deep copy of the render pass that includes quads.
   std::unique_ptr<CompositorRenderPass> DeepCopy() const;
 
+  // Used when recording/replaying, where render passes are not aggregated
+  // before being drawn.
+  std::unique_ptr<AggregatedRenderPass> DeepCopyAggregated() const;
+
  protected:
   // This is essentially "using RenderPassInternal::RenderPassInternal", but
   // since that generates inline (complex) ctors, the chromium-style plug-in
