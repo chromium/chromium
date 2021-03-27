@@ -30,8 +30,7 @@ using WithExtendedStable = base::StrongAlias<class WithExtendedStableTag, bool>;
 // installs appear identical to regular stable unless `with_extended_stable` is
 // true.
 // Prefer version_info::GetVersionNumber() if only the version number is needed.
-std::string GetVersionString(
-    WithExtendedStable with_extended_stable = WithExtendedStable(false));
+std::string GetVersionString(WithExtendedStable with_extended_stable);
 
 // Returns the name of the browser's update channel. For a branded build, this
 // modifier is the channel ("canary", "dev", or "beta", but "" for stable).
@@ -49,8 +48,7 @@ std::string GetVersionString(
 // cannot be determined, "unknown" will be returned. In unbranded builds, the
 // modifier is usually an empty string (""), although on Linux, it may vary in
 // certain distributions. To simply test the channel, use GetChannel().
-std::string GetChannelName(
-    WithExtendedStable with_extended_stable = WithExtendedStable(false));
+std::string GetChannelName(WithExtendedStable with_extended_stable);
 
 // Returns the channel for the installation. In branded builds, this will be
 // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or
