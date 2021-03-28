@@ -49,6 +49,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -199,6 +200,8 @@ TEST_F(AppListControllerImplTest, HideRoundingCorners) {
 // Verify that when the emoji panel shows and AppListView is in Peeking state,
 // AppListView's rounded corners should be hidden (see https://crbug.com/950468)
 TEST_F(AppListControllerImplTest, HideRoundingCornersWhenEmojiShows) {
+  ui::SetShowEmojiKeyboardCallback(
+      base::BindRepeating(ui::ShowTabletModeEmojiPanel));
   // Set IME client. Otherwise the emoji panel is unable to show.
   ImeController* ime_controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
