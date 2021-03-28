@@ -23,10 +23,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -73,9 +73,9 @@ class EncryptionMigrationTest : public OobeBaseTest {
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
 
-    FakeCryptohomeClient::Get()->SetEcryptfsUserHome(GetTestCryptohomeId(),
-                                                     true);
-    FakeCryptohomeClient::Get()->set_run_default_dircrypto_migration(false);
+    FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(GetTestCryptohomeId(),
+                                                       true);
+    FakeUserDataAuthClient::Get()->set_run_default_dircrypto_migration(false);
 
     // Configure encryption migration screen for test.
     EncryptionMigrationScreen* screen =
@@ -122,23 +122,25 @@ class EncryptionMigrationTest : public OobeBaseTest {
 
     EXPECT_EQ(
         GetTestCryptohomeId(),
-        FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-    EXPECT_FALSE(FakeCryptohomeClient::Get()->minimal_migration());
+        FakeUserDataAuthClient::Get()->get_id_for_disk_migrated_to_dircrypto());
+    EXPECT_FALSE(FakeUserDataAuthClient::Get()->minimal_migration());
 
     EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
     // Simulate successful migration - restart should be requested immediately
     // after success is reported.
-    FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-        cryptohome::DIRCRYPTO_MIGRATION_INITIALIZING, 0 /*current*/,
-        5 /*total*/);
+    FakeUserDataAuthClient::Get()->NotifyDircryptoMigrationProgress(
+        ::user_data_auth::DircryptoMigrationStatus::
+            DIRCRYPTO_MIGRATION_INITIALIZING,
+        0 /*current*/, 5 /*total*/);
     EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
     test::OobeJS().ExpectAttributeEQ("indeterminate", kMigrationProgress, true);
 
-    FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-        cryptohome::DIRCRYPTO_MIGRATION_IN_PROGRESS, 3 /*current*/,
-        5 /*total*/);
+    FakeUserDataAuthClient::Get()->NotifyDircryptoMigrationProgress(
+        ::user_data_auth::DircryptoMigrationStatus::
+            DIRCRYPTO_MIGRATION_IN_PROGRESS,
+        3 /*current*/, 5 /*total*/);
     EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
     test::OobeJS().ExpectAttributeEQ("indeterminate", kMigrationProgress,
@@ -146,8 +148,9 @@ class EncryptionMigrationTest : public OobeBaseTest {
     test::OobeJS().ExpectAttributeEQ("value * 100", kMigrationProgress, 60);
     test::OobeJS().ExpectAttributeEQ("max", kMigrationProgress, 1);
 
-    FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-        cryptohome::DIRCRYPTO_MIGRATION_SUCCESS, 5 /*current*/, 5 /*total*/);
+    FakeUserDataAuthClient::Get()->NotifyDircryptoMigrationProgress(
+        ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
+        5 /*current*/, 5 /*total*/);
 
     EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
   }
@@ -198,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
 
   WaitForActiveSession();
 
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -216,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithNoUserPolicySet) {
   test::OobeJS().ExpectVisiblePath(kSkipButton);
   test::OobeJS().ExpectVisiblePath(kUpgradeButton);
 
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 
@@ -271,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().TapOnPath(kInsufficientSpaceSkipButton);
 
   WaitForActiveSession();
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -295,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -319,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   test::OobeJS().TapOnPath(kInsufficientSpaceRestartButton);
 
   EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -336,9 +339,10 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
 
   EXPECT_EQ(
       GetTestCryptohomeId(),
-      FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-  FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-      cryptohome::DIRCRYPTO_MIGRATION_FAILED, 5 /*current*/, 5 /*total*/);
+      FakeUserDataAuthClient::Get()->get_id_for_disk_migrated_to_dircrypto());
+  FakeUserDataAuthClient::Get()->NotifyDircryptoMigrationProgress(
+      ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_FAILED,
+      5 /*current*/, 5 /*total*/);
 
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 
@@ -376,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForActiveSession();
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -398,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().ExpectPathDisplayed(false, kSkipButton);
   test::OobeJS().ExpectPathDisplayed(false, kUpgradeButton);
 
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 }
@@ -417,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
 
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
+  EXPECT_FALSE(FakeUserDataAuthClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()
                    .has_account_id());
 

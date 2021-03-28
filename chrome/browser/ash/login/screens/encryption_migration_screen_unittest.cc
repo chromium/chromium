@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -126,8 +126,8 @@ class EncryptionMigrationScreenTest : public testing::Test {
             base::WrapUnique(mock_user_manager));
 
     // Set up fake dbus clients.
-    CryptohomeClient::InitializeFake();
-    fake_cryptohome_client_ = FakeCryptohomeClient::Get();
+    UserDataAuthClient::InitializeFake();
+    fake_userdataauth_client_ = FakeUserDataAuthClient::Get();
     PowerManagerClient::InitializeFake();
 
     PowerPolicyController::Initialize(PowerManagerClient::Get());
@@ -152,7 +152,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
 
     PowerPolicyController::Shutdown();
     PowerManagerClient::Shutdown();
-    CryptohomeClient::Shutdown();
+    UserDataAuthClient::Shutdown();
   }
 
  protected:
@@ -166,7 +166,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
-  FakeCryptohomeClient* fake_cryptohome_client_ = nullptr;  // unowned
+  FakeUserDataAuthClient* fake_userdataauth_client_ = nullptr;  // unowned
 
   // Will be set to true in ContinueLogin.
   bool skip_migration_callback_called_ = false;

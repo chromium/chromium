@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
@@ -19,6 +20,7 @@
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/user_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -32,7 +34,7 @@ class UserContext;
 
 class EncryptionMigrationScreen : public BaseScreen,
                                   public PowerManagerClient::Observer,
-                                  public CryptohomeClient::Observer {
+                                  public UserDataAuthClient::Observer {
  public:
   using TView = EncryptionMigrationScreenView;
 
@@ -81,10 +83,9 @@ class EncryptionMigrationScreen : public BaseScreen,
   // PowerManagerClient::Observer implementation:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
-  // CryptohomeClient::Observer implementation:
-  void DircryptoMigrationProgress(cryptohome::DircryptoMigrationStatus status,
-                                  uint64_t current,
-                                  uint64_t total) override;
+  // UserDataAuthClient::Observer implementation:
+  void DircryptoMigrationProgress(
+      const ::user_data_auth::DircryptoMigrationProgress& progress) override;
   // Handlers for user actions.
   void HandleStartMigration();
   void HandleSkipMigration();
@@ -99,10 +100,10 @@ class EncryptionMigrationScreen : public BaseScreen,
   void OnGetAvailableStorage(int64_t size);
   void WaitBatteryAndMigrate();
   void StartMigration();
-  void OnMountExistingVault(base::Optional<cryptohome::BaseReply> reply);
+  void OnMountExistingVault(base::Optional<user_data_auth::MountReply> reply);
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
-  void OnRemoveCryptohome(base::Optional<cryptohome::BaseReply> reply);
+  void OnRemoveCryptohome(base::Optional<user_data_auth::RemoveReply> reply);
 
   // Creates authorization request for MountEx method using |user_context_|.
   cryptohome::AuthorizationRequest CreateAuthorizationRequest();
@@ -111,7 +112,8 @@ class EncryptionMigrationScreen : public BaseScreen,
   bool IsArcKiosk() const;
 
   // Handlers for cryptohome API callbacks.
-  void OnMigrationRequested(bool success);
+  void OnMigrationRequested(
+      base::Optional<user_data_auth::StartMigrateToDircryptoReply> reply);
 
   // Records UMA about visible screen after delay.
   void OnDelayedRecordVisibleScreen(
@@ -159,8 +161,9 @@ class EncryptionMigrationScreen : public BaseScreen,
 
   FreeDiskSpaceFetcher free_disk_space_fetcher_;
 
-  std::unique_ptr<ScopedObserver<CryptohomeClient, CryptohomeClient::Observer>>
-      cryptohome_observer_;
+  std::unique_ptr<
+      base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>>
+      userdataauth_observer_;
 
   std::unique_ptr<
       ScopedObserver<PowerManagerClient, PowerManagerClient::Observer>>

@@ -31,11 +31,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/homedir_methods.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -250,7 +252,7 @@ EncryptionMigrationScreen::EncryptionMigrationScreen(
 }
 
 EncryptionMigrationScreen::~EncryptionMigrationScreen() {
-  cryptohome_observer_.reset();
+  userdataauth_observer_.reset();
   power_manager_observer_.reset();
   if (view_)
     view_->SetDelegate(nullptr);
@@ -484,7 +486,9 @@ void EncryptionMigrationScreen::StartMigration() {
     initial_battery_percent_ = *current_battery_percent_;
 
   // Mount the existing eCryptfs vault to a temporary location for migration.
-  cryptohome::MountRequest mount;
+  user_data_auth::MountRequest mount;
+  *mount.mutable_account() = cryptohome::CreateAccountIdentifierFromAccountId(
+      user_context_.GetAccountId());
   cryptohome::AuthorizationRequest auth_request;
   mount.set_to_migrate_from_ecryptfs(true);
   if (IsArcKiosk()) {
@@ -492,18 +496,15 @@ void EncryptionMigrationScreen::StartMigration() {
   } else {
     auth_request = CreateAuthorizationRequest();
   }
-  CryptohomeClient::Get()->MountEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_.GetAccountId()),
-      auth_request, mount,
-      base::BindOnce(&EncryptionMigrationScreen::OnMountExistingVault,
-                     weak_ptr_factory_.GetWeakPtr()));
+  *mount.mutable_authorization() = auth_request;
+  UserDataAuthClient::Get()->Mount(
+      mount, base::BindOnce(&EncryptionMigrationScreen::OnMountExistingVault,
+                            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptionMigrationScreen::OnMountExistingVault(
-    base::Optional<cryptohome::BaseReply> reply) {
-  cryptohome::MountError return_code =
-      cryptohome::MountExReplyToMountError(reply);
+    base::Optional<user_data_auth::MountReply> reply) {
+  cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
   if (return_code != cryptohome::MOUNT_ERROR_NONE) {
     RecordMigrationResultMountFailure(IsResumingIncompleteMigration(),
                                       IsArcKiosk());
@@ -512,16 +513,16 @@ void EncryptionMigrationScreen::OnMountExistingVault(
     return;
   }
 
-  cryptohome::MigrateToDircryptoRequest request;
-  cryptohome_observer_ = std::make_unique<
-      ScopedObserver<CryptohomeClient, CryptohomeClient::Observer>>(this);
-  cryptohome_observer_->Add(CryptohomeClient::Get());
-  CryptohomeClient::Get()->MigrateToDircrypto(
+  user_data_auth::StartMigrateToDircryptoRequest request;
+  *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_.GetAccountId()),
-      request,
-      base::BindOnce(&EncryptionMigrationScreen::OnMigrationRequested,
-                     weak_ptr_factory_.GetWeakPtr()));
+          user_context_.GetAccountId());
+  userdataauth_observer_ = std::make_unique<base::ScopedObservation<
+      UserDataAuthClient, UserDataAuthClient::Observer>>(this);
+  userdataauth_observer_->Observe(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->StartMigrateToDircrypto(
+      request, base::BindOnce(&EncryptionMigrationScreen::OnMigrationRequested,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 device::mojom::WakeLock* EncryptionMigrationScreen::GetWakeLock() {
@@ -553,24 +554,21 @@ void EncryptionMigrationScreen::RemoveCryptohome() {
 
   const cryptohome::Identification cryptohome_id(user_context_.GetAccountId());
 
-  cryptohome::AccountIdentifier account_id_proto;
-  account_id_proto.set_account_id(cryptohome_id.id());
-
-  CryptohomeClient::Get()->RemoveEx(
-      account_id_proto,
-      base::BindOnce(&EncryptionMigrationScreen::OnRemoveCryptohome,
-                     weak_ptr_factory_.GetWeakPtr()));
+  user_data_auth::RemoveRequest request;
+  request.mutable_identifier()->set_account_id(cryptohome_id.id());
+  UserDataAuthClient::Get()->Remove(
+      request, base::BindOnce(&EncryptionMigrationScreen::OnRemoveCryptohome,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EncryptionMigrationScreen::OnRemoveCryptohome(
-    base::Optional<cryptohome::BaseReply> reply) {
-  cryptohome::MountError error = BaseReplyToMountError(reply);
+    base::Optional<user_data_auth::RemoveReply> reply) {
+  cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
   if (error == cryptohome::MOUNT_ERROR_NONE) {
     RecordRemoveCryptohomeResultSuccess(IsResumingIncompleteMigration(),
                                         IsArcKiosk());
   } else {
-    LOG(ERROR) << "Removing cryptohome failed. return code: "
-               << reply.value().error();
+    LOG(ERROR) << "Removing cryptohome failed. return code: " << reply->error();
     RecordRemoveCryptohomeResultFailure(IsResumingIncompleteMigration(),
                                         IsArcKiosk());
   }
@@ -601,22 +599,24 @@ bool EncryptionMigrationScreen::IsArcKiosk() const {
 }
 
 void EncryptionMigrationScreen::DircryptoMigrationProgress(
-    cryptohome::DircryptoMigrationStatus status,
-    uint64_t current,
-    uint64_t total) {
-  switch (status) {
-    case cryptohome::DIRCRYPTO_MIGRATION_INITIALIZING:
+    const ::user_data_auth::DircryptoMigrationProgress& progress) {
+  switch (progress.status()) {
+    case user_data_auth::DircryptoMigrationStatus::
+        DIRCRYPTO_MIGRATION_INITIALIZING:
       UpdateUIState(EncryptionMigrationScreenView::MIGRATING);
       break;
-    case cryptohome::DIRCRYPTO_MIGRATION_IN_PROGRESS:
+    case user_data_auth::DircryptoMigrationStatus::
+        DIRCRYPTO_MIGRATION_IN_PROGRESS:
       UpdateUIState(EncryptionMigrationScreenView::MIGRATING);
-      view_->SetMigrationProgress(static_cast<double>(current) / total);
+      view_->SetMigrationProgress(
+          static_cast<double>(progress.current_bytes()) /
+          progress.total_bytes());
       break;
-    case cryptohome::DIRCRYPTO_MIGRATION_SUCCESS:
+    case user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS:
       RecordMigrationResultSuccess(IsResumingIncompleteMigration(),
                                    IsArcKiosk());
       // Stop listening to the progress updates.
-      cryptohome_observer_.reset();
+      userdataauth_observer_.reset();
       // If the battery level decreased during migration, record the consumed
       // battery level.
       if (current_battery_percent_ &&
@@ -631,11 +631,11 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
           power_manager::REQUEST_RESTART_OTHER,
           "login encryption migration success");
       break;
-    case cryptohome::DIRCRYPTO_MIGRATION_FAILED:
+    case user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_FAILED:
       RecordMigrationResultGeneralFailure(IsResumingIncompleteMigration(),
                                           IsArcKiosk());
       // Stop listening to the progress updates.
-      cryptohome_observer_.reset();
+      userdataauth_observer_.reset();
       // Shows error screen after removing user directory is completed.
       RemoveCryptohome();
       break;
@@ -644,8 +644,11 @@ void EncryptionMigrationScreen::DircryptoMigrationProgress(
   }
 }
 
-void EncryptionMigrationScreen::OnMigrationRequested(bool success) {
-  if (!success) {
+void EncryptionMigrationScreen::OnMigrationRequested(
+    base::Optional<user_data_auth::StartMigrateToDircryptoReply> reply) {
+  if (!reply.has_value() ||
+      reply->error() !=
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     LOG(ERROR) << "Requesting MigrateToDircrypto failed.";
     RecordMigrationResultRequestFailure(IsResumingIncompleteMigration(),
                                         IsArcKiosk());
