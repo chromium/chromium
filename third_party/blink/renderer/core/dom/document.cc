@@ -2558,6 +2558,7 @@ void Document::UpdateStyleAndLayoutForNode(const Node* node,
 }
 
 void Document::ApplyScrollRestorationLogic() {
+  DCHECK(View());
   // This function in not re-entrant. However, the places that invoke this are
   // re-entrant. Specifically, UpdateStyleAndLayout() calls this, which in turn
   // can do a find-in-page for the scroll-to-text feature, which can cause
@@ -2703,7 +2704,8 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   if (Lifecycle().GetState() < DocumentLifecycle::kLayoutClean)
     Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
 
-  ApplyScrollRestorationLogic();
+  if (frame_view)
+    ApplyScrollRestorationLogic();
 
   if (LocalFrameView* frame_view_anchored = View())
     frame_view_anchored->PerformScrollAnchoringAdjustments();
