@@ -5,9 +5,9 @@
 #include "chromeos/login/session/session_termination_manager.h"
 
 #include "base/macros.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -17,11 +17,11 @@ class SessionTerminationManagerTest : public testing::Test {
   SessionTerminationManagerTest() {
     PowerManagerClient::InitializeFake();
     power_client_ = FakePowerManagerClient::Get();
-    CryptohomeClient::InitializeFake();
+    CryptohomeMiscClient::InitializeFake();
     SessionManagerClient::InitializeFake();
   }
   ~SessionTerminationManagerTest() override {
-    CryptohomeClient::Shutdown();
+    CryptohomeMiscClient::Shutdown();
     PowerManagerClient::Shutdown();
     SessionManagerClient::Shutdown();
   }

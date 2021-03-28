@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace chromeos {
@@ -37,10 +37,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
  private:
   void DidWaitForServiceToBeAvailable(bool service_is_available);
   void ProcessCryptohomeLoginStatusReply(
-      const base::Optional<cryptohome::BaseReply>& reply);
+      const base::Optional<user_data_auth::GetLoginStatusReply>& reply);
   void Reboot();
   void RebootIfNecessaryProcessReply(
-      base::Optional<cryptohome::BaseReply> reply);
+      base::Optional<user_data_auth::GetLoginStatusReply> reply);
 
   bool is_locked_to_single_user_ = false;
   base::WeakPtrFactory<SessionTerminationManager> weak_factory_{this};

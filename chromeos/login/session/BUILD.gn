@@ -14,6 +14,8 @@ component("session") {
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/session_manager:session_manager",
+    "//chromeos/dbus/userdataauth:userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
   sources = [
@@ -29,6 +31,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/cryptohome:cryptohome",
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/session_manager:session_manager",
+    "//chromeos/dbus/userdataauth:userdataauth",
     "//chromeos/login/session:session",
     "//testing/gtest",
   ]
