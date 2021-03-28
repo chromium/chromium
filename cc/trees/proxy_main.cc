@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/completion_event.h"
@@ -26,6 +27,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/swap_promise.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace cc {
@@ -376,6 +378,10 @@ void ProxyMain::BeginMainFrame(
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    viz::RecordReplayOnCommitPaint();
+  }
 
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,

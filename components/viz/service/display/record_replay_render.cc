@@ -119,15 +119,49 @@ void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId re
   CHECK(pixels_installed);
 }
 
-void RecordReplayPaintFinished(const SkPixmap& pixmap) {
+extern "C" size_t V8RecordReplayPaintStart();
+extern "C" void V8RecordReplayPaintFinished(size_t bookmark);
+extern "C" void V8RecordReplaySetPaintCallback(char* (*callback)(const char*, int));
+
+const SkPixmap* gCurrentPixmap;
+
+static char* PaintCallback(const char* mime_type, int jpeg_quality) {
+  CHECK(gCurrentPixmap);
+
+  if (strcmp(mime_type, "image/jpeg")) {
+    // NYI
+    return nullptr;
+  }
+
   std::vector<unsigned char> data;
-  if (!gfx::JPEGCodec::Encode(pixmap, 50, SkJpegEncoder::Downsample::k444, &data)) {
-    recordreplay::Print("JPEG encoding failed, ignoring paint");
-    return;
+  if (!gfx::JPEGCodec::Encode(*gCurrentPixmap, jpeg_quality,
+                              SkJpegEncoder::Downsample::k444, &data)) {
+    recordreplay::Print("Error: JPEG encoding failed");
+    return nullptr;
   }
 
   std::string encoded = base::Base64Encode(data);
-  fprintf(stderr, "JPEG %s\n", encoded.c_str());
+  return strdup(encoded.c_str());
+}
+
+// Bookmark for the last point where a paint was committed on the main thread.
+static size_t gLastPaintBookmark;
+
+void RecordReplayOnCommitPaint() {
+  gLastPaintBookmark = V8RecordReplayPaintStart();
+}
+
+void RecordReplayPaintFinished(const SkPixmap& pixmap) {
+  static bool hasPaints = false;
+  if (!hasPaints) {
+    hasPaints = true;
+    V8RecordReplaySetPaintCallback(PaintCallback);
+  }
+
+  CHECK(gLastPaintBookmark);
+  gCurrentPixmap = &pixmap;
+  V8RecordReplayPaintFinished(gLastPaintBookmark);
+  gCurrentPixmap = nullptr;
 }
 
 } // namespace viz

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/record_replay.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/viz/service/display/record_replay_render.h"
 #include "skia/ext/legacy_display_globals.h"

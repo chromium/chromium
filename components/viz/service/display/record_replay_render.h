@@ -22,6 +22,10 @@ namespace viz {
 // can then be encoded to base64 images and reported to the record/replay
 // driver and sent to clients inspecting the recording.
 
+// Called on the main thread when changes have been committed to the layer tree
+// and a paint has been triggered.
+void RecordReplayOnCommitPaint();
+
 // Called when a shared memory buffer for rasterization has been created.
 void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
                                     void* memory, size_t size);
