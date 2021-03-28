@@ -14,8 +14,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -23,10 +23,9 @@
 using RebootOnSignOutPolicy =
     enterprise_management::DeviceRebootOnUserSignoutProto;
 using RebootOnSignOutRequest =
-    cryptohome::LockToSingleUserMountUntilRebootRequest;
-using RebootOnSignOutReply = cryptohome::LockToSingleUserMountUntilRebootReply;
-using RebootOnSignOutResult =
-    cryptohome::LockToSingleUserMountUntilRebootResult;
+    user_data_auth::LockToSingleUserMountUntilRebootRequest;
+using RebootOnSignOutReply =
+    user_data_auth::LockToSingleUserMountUntilRebootReply;
 
 namespace policy {
 
@@ -144,7 +143,7 @@ void LockToSingleUserManager::LockToSingleUser() {
           user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   RebootOnSignOutRequest request;
   request.mutable_account_id()->CopyFrom(account_id);
-  chromeos::CryptohomeClient::Get()->LockToSingleUserMountUntilReboot(
+  chromeos::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(
       request,
       base::BindOnce(
           &LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone,
@@ -152,8 +151,8 @@ void LockToSingleUserManager::LockToSingleUser() {
 }
 
 void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
-    base::Optional<cryptohome::BaseReply> reply) {
-  if (!reply || !reply->HasExtension(RebootOnSignOutReply::reply)) {
+    base::Optional<RebootOnSignOutReply> reply) {
+  if (!reply.has_value()) {
     LOG(ERROR) << "Signing out user: no reply from "
                   "LockToSingleUserMountUntilReboot D-Bus call.";
     chrome::AttemptUserExit();
@@ -161,17 +160,15 @@ void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
   }
 
   // Force user logout if failed to lock the device to single user mount.
-  const RebootOnSignOutReply extension =
-      reply->GetExtension(RebootOnSignOutReply::reply);
-
-  if (extension.result() == RebootOnSignOutResult::SUCCESS ||
-      extension.result() == RebootOnSignOutResult::PCR_ALREADY_EXTENDED) {
+  if (reply->error() ==
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET ||
+      reply->error() == user_data_auth::CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED) {
     // The device is locked to single user on TPM level. Update the cache in
     // SessionTerminationManager, so that it triggers reboot on sign out.
     chromeos::SessionTerminationManager::Get()->SetDeviceLockedToSingleUser();
   } else {
     LOG(ERROR) << "Signing out user: failed to lock device to single user: "
-               << extension.result();
+               << reply->error();
     chrome::AttemptUserExit();
   }
 }

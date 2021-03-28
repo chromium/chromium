@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/vm_starting_observer.h"
 #include "chromeos/dbus/concierge_client.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/user_manager/user_manager.h"
 
 namespace policy {
@@ -60,7 +60,8 @@ class LockToSingleUserManager final
 
   // Processes the response from D-Bus call.
   void OnLockToSingleUserMountUntilRebootDone(
-      base::Optional<cryptohome::BaseReply> reply);
+      base::Optional<user_data_auth::LockToSingleUserMountUntilRebootReply>
+          reply);
 
   // true if locking is required when DbusNotifyVmStarting() is called
   bool lock_to_single_user_on_dbus_call_ = false;

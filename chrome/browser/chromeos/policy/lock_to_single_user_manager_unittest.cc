@@ -14,9 +14,9 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -42,7 +42,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
-    chromeos::CryptohomeClient::InitializeFake();
+    chromeos::CryptohomeMiscClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
     BrowserWithTestWindowTest::SetUp();
@@ -71,7 +71,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_->set_browser_context(nullptr);
     arc_service_manager_.reset();
     BrowserWithTestWindowTest::TearDown();
-    chromeos::CryptohomeClient::Shutdown();
+    chromeos::CryptohomeMiscClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -127,7 +127,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   }
 
   bool is_device_locked() const {
-    return chromeos::FakeCryptohomeClient::Get()
+    return chromeos::FakeCryptohomeMiscClient::Get()
         ->is_device_locked_to_single_user();
   }
 
@@ -235,8 +235,8 @@ TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
 }
 
 TEST_F(LockToSingleUserManagerTest, DbusCallErrorTest) {
-  chromeos::FakeCryptohomeClient::Get()->set_cryptohome_error(
-      cryptohome::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+  chromeos::FakeCryptohomeMiscClient::Get()->set_cryptohome_error(
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
   LogInUser(false /* is_affiliated */);
   EXPECT_FALSE(is_device_locked());
