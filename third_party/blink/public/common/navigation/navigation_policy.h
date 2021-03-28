@@ -96,7 +96,7 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   // a download, the download should be dropped.
   NavigationDownloadTypes disallowed_types;
 
-  bool blocking_downloads_in_sandbox_enabled;
+  bool blocking_downloads_in_sandbox_enabled = false;
 };
 
 }  // namespace blink
