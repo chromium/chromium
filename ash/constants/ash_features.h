@@ -96,6 +96,8 @@ extern const base::Feature kCellularUseExternalEuicc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kChildSpecificSignin;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCroshSWA;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniDiskResizing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniUseBusterImage;

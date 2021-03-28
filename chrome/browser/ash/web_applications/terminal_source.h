@@ -18,6 +18,9 @@
 
 class Profile;
 
+// Provides the web (html / js / css) content for crostini Terminal and crosh.
+// This content is provided by chromiumos in the rootfs at
+// /usr/share/chromeos-assets/crosh_builtin.
 class TerminalSource : public content::URLDataSource {
  public:
   static std::unique_ptr<TerminalSource> ForCrosh(Profile* profile);
@@ -27,7 +30,9 @@ class TerminalSource : public content::URLDataSource {
   ~TerminalSource() override;
 
  private:
-  explicit TerminalSource(Profile* profile, std::string source);
+  TerminalSource(Profile* profile,
+                 std::string source,
+                 std::string default_file);
 
   // content::URLDataSource:
   std::string GetSource() override;
@@ -46,6 +51,7 @@ class TerminalSource : public content::URLDataSource {
 
   Profile* profile_;
   std::string source_;
+  std::string default_file_;
   ui::TemplateReplacements replacements_;
 
   DISALLOW_COPY_AND_ASSIGN(TerminalSource);

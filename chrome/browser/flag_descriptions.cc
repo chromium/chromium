@@ -3905,6 +3905,11 @@ const char kContextualNudgesDescription[] =
     "Enables contextual nudges, periodically showing the user a label "
     "explaining how to interact with a particular UI element using gestures.";
 
+const char kCroshSWAName[] = "Crosh System Web App";
+const char kCroshSWADescription[] =
+    "When enabled, crosh (Chrome OS Shell) will run as a tabbed System Web App "
+    "rather than a normal browser tab.";
+
 const char kCrosLanguageSettingsUpdateName[] = "Language Settings Update";
 const char kCrosLanguageSettingsUpdateDescription[] =
     "Enable this flag to see the new language settings update.";

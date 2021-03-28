@@ -776,6 +776,11 @@
     "expiry_milestone": 80
   },
   {
+    "name": "crosh-swa",
+    "owners": [ "joelhockey", "benwells" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "cross-origin-isolated",
     "owners": [ "ahemery", "arthursonzogni", "clamy", "pmeuleman" ],
     "expiry_milestone": 88

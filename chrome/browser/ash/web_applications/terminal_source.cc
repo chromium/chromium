@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/web_applications/terminal_source.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -49,6 +51,7 @@ void ReadFile(const std::string& relative_path,
   if (!result) {
     static const base::NoDestructor<base::flat_map<std::string, std::string>>
         kTestFiles({
+            {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},
@@ -70,18 +73,24 @@ void ReadFile(const std::string& relative_path,
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
-  return base::WrapUnique(
-      new TerminalSource(profile, chrome::kChromeUIUntrustedCroshURL));
+  std::string default_file = "html/crosh.html";
+  if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
+    default_file = "html/terminal.html";
+  }
+  return base::WrapUnique(new TerminalSource(
+      profile, chrome::kChromeUIUntrustedCroshURL, default_file));
 }
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
-  return base::WrapUnique(
-      new TerminalSource(profile, chrome::kChromeUIUntrustedTerminalURL));
+  return base::WrapUnique(new TerminalSource(
+      profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html"));
 }
 
-TerminalSource::TerminalSource(Profile* profile, std::string source)
-    : profile_(profile), source_(source) {
+TerminalSource::TerminalSource(Profile* profile,
+                               std::string source,
+                               std::string default_file)
+    : profile_(profile), source_(source), default_file_(default_file) {
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
@@ -112,7 +121,7 @@ void TerminalSource::StartDataRequest(
   // skip first '/' in path.
   std::string path = url.path().substr(1);
   if (path.empty())
-    path = "html/terminal.html";
+    path = default_file_;
 
   // Replace $i8n{themeColor} in *.html.
   if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {

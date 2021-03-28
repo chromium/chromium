@@ -6222,6 +6222,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"crosh-swa", flag_descriptions::kCroshSWAName,
+     flag_descriptions::kCroshSWADescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCroshSWA)},
     {"crostini-use-buster-image",
      flag_descriptions::kCrostiniUseBusterImageName,
      flag_descriptions::kCrostiniUseBusterImageDescription, kOsCrOS,

@@ -2246,6 +2246,9 @@ extern const char kCellularUseExternalEuiccDescription[];
 extern const char kContextualNudgesName[];
 extern const char kContextualNudgesDescription[];
 
+extern const char kCroshSWAName[];
+extern const char kCroshSWADescription[];
+
 extern const char kCrosLanguageSettingsUpdateName[];
 extern const char kCrosLanguageSettingsUpdateDescription[];
 

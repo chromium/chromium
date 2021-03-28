@@ -183,6 +183,10 @@ const base::Feature kChildSpecificSignin{"ChildSpecificSignin",
 const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Crosh System Web App. When enabled, crosh (Chrome OS
+// Shell) will run as a tabbed System Web App rather than a normal browser tab.
+const base::Feature kCroshSWA{"CroshSWA", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Crostini Disk Resizing.
 const base::Feature kCrostiniDiskResizing{"CrostiniDiskResizing",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

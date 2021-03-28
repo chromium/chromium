@@ -44539,6 +44539,7 @@ from previous Chrome versions.
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
   <int value="-1382671832" label="OmniboxUIExperimentVerticalMargin:enabled"/>
+  <int value="-1378071979" label="CroshSWA:enabled"/>
   <int value="-1377186702" label="DesktopIOSPromotion:disabled"/>
   <int value="-1376510363" label="ServiceWorkerScriptFullCodeCache:disabled"/>
   <int value="-1376006534" label="WinUseBrowserSpellChecker:disabled"/>
@@ -44658,6 +44659,7 @@ from previous Chrome versions.
       label="AutofillEnableCardNicknameManagement:enabled"/>
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
+  <int value="-1283164264" label="CroshSWA:disabled"/>
   <int value="-1282992935"
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
