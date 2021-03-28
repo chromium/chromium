@@ -4783,19 +4783,6 @@ TEST_F(DesksBentoTest, ReorderDesksByMouse) {
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
   VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 
-  // If the cursor is outside the desk bar, the second desk will be moved to the
-  // end.
-  gfx::Point desk_bar_bottom_center = desks_bar_view->bounds().bottom_center();
-  views::View::ConvertPointToScreen(desks_bar_view->parent(),
-                                    &desk_bar_bottom_center);
-  event_generator->MoveMouseTo(desk_bar_bottom_center + gfx::Vector2d(0, 10));
-
-  // Now, the desks order should be [0, 2, 1]:
-  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
-  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
-  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
-
   event_generator->ReleaseLeftButton();
 }
 
@@ -4866,19 +4853,6 @@ TEST_F(DesksBentoTest, ReorderDesksByGesture) {
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
   VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
-
-  // If the touch point is outside the desk bar, the second desk will be moved
-  // to the end.
-  gfx::Point desk_bar_bottom_center = desks_bar_view->bounds().bottom_center();
-  views::View::ConvertPointToScreen(desks_bar_view->parent(),
-                                    &desk_bar_bottom_center);
-  event_generator->MoveTouch(desk_bar_bottom_center + gfx::Vector2d(0, 10));
-
-  // Now, the desks order should be [0, 2, 1]:
-  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
-  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
-  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
-  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
 
   event_generator->ReleaseTouch();
 }

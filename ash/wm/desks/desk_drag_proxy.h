@@ -38,7 +38,7 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
 
   DeskDragProxy(DesksBarView* desks_bar_view,
                 DeskMiniView* drag_view,
-                const gfx::Vector2dF& init_offset);
+                float init_offset_x);
   DeskDragProxy(const DeskDragProxy&) = delete;
   DeskDragProxy& operator=(const DeskDragProxy&) = delete;
   ~DeskDragProxy() override;
@@ -48,12 +48,12 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
 
   gfx::Point GetPositionInScreen() const;
 
-  // Drag is started. Create a drag proxy widget, scale it up and move it to
-  // |location_in_screen|.
-  void InitAndScaleAndMoveTo(const gfx::PointF& location_in_screen);
+  // Drag is started. Create a drag proxy widget, scale it up and move its
+  // x-coordinate according to |location_screen_x|.
+  void InitAndScaleAndMoveToX(float location_screen_x);
 
-  // Move drag proxy to |location_in_screen|.
-  void DragTo(const gfx::PointF& location_in_screen);
+  // Move drag proxy's x-coordinate according to |location_screen_x|.
+  void DragToX(float location_screen_x);
 
   // Perform and animate snapping back to drag view.
   void SnapBackToDragView();
@@ -66,8 +66,10 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   DeskMiniView* drag_view_ = nullptr;
   // The size of dragged preview.
   const gfx::Size drag_preview_size_;
-  // The initial offset between cursor and drag view's origin.
-  gfx::Vector2dF init_offset_;
+  // The y of the dragged preview in screen coordinate.
+  const int preview_screen_y_;
+  // The x of initial offset between cursor and drag view's origin.
+  const float init_offset_x_;
   // The widget of drag proxy.
   views::UniqueWidgetPtr drag_widget_;
   // The state of the drag proxy.
