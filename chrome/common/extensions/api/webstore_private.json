@@ -239,7 +239,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               {
                 "name": "info",
@@ -259,7 +258,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "login", "type": "string" }
             ]
@@ -286,7 +284,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               {
                 "name": "webgl_status",
@@ -303,7 +300,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_enabled", "type": "boolean" }
             ]
@@ -317,7 +313,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_incognito", "type": "boolean" }
             ]
@@ -331,7 +326,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_enabled", "type": "boolean" }
             ]
@@ -373,7 +367,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_pending_approval", "type": "boolean" }
             ]

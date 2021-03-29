@@ -357,7 +357,7 @@ class Function(object):
     self.description = json.get('description')
     self.deprecated = json.get('deprecated')
     self.returns_async = None
-    self.optional = json.get('optional', False)
+    self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
     self.parent = parent
     self.nocompile = json.get('nocompile')
     options = json.get('options', {})
@@ -443,7 +443,7 @@ class ReturnsAsync(object):
     self.name = json.get('name')
     self.simple_name = _StripNamespace(self.name, namespace)
     self.description = json.get('description')
-    self.optional = json.get('optional', False)
+    self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
     self.nocompile = json.get('nocompile')
     self.parent = parent
     self.can_return_promise = can_return_promise
@@ -847,6 +847,13 @@ def _GetManifestKeysType(self, json):
   return Type(self, 'ManifestKeys', manifest_keys_type, self,
               Origin(from_manifest_keys=True))
 
+def _GetWithDefaultChecked(self, json, key, default):
+  if json.get(key) == default:
+    raise ParseException(
+        self, 'The attribute "%s" is specified as "%s", but this is the '
+        'default value if the attribute is not included. It should be removed.'
+        % (key, default))
+  return json.get(key, default)
 
 class _PlatformInfo(_Enum):
   def __init__(self, name):

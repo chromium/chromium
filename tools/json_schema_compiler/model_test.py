@@ -119,6 +119,19 @@ class ModelTest(unittest.TestCase):
     self.assertRaises(model.ParseException, self.model.AddNamespace,
         self.permissions_json[0], 'path/to/something.json')
 
+  def testDefaultSpecifiedRedundantly(self):
+    test_json = CachedLoad('test/redundant_default_attribute.json')
+    self.assertRaisesRegexp(
+        model.ParseException,
+        'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
+        '  in path/to/redundant_default_attribute.json\n'
+        'The attribute "optional" is specified as "False", but this is the '
+        'default value if the attribute is not included\. It should be '
+        'removed\.',
+        self.model.AddNamespace,
+        test_json[0],
+        'path/to/redundant_default_attribute.json')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)
