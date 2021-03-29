@@ -2921,7 +2921,6 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // a navigation yet.
   DCHECK(!has_committed_any_navigation_);
   DCHECK(GetLastCommittedOrigin().opaque());
-  DCHECK(isolation_info_.IsEmpty());
 
   // If the document has a non-secure parent, then it is non-secure. Otherwise
   // it depends if the creator has a potentially-trustworthy origin.

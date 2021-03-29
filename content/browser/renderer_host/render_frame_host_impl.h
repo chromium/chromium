@@ -3334,11 +3334,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Isolation information to be used for subresources from the currently
   // committed navigation. Stores both the SiteForCookies and the
-  // NetworkIsolationKey. This is specific to a document and should be reset on
-  // every cross-document commit. When a new frame is created, the new frame
-  // inherits the IsolationInfo from the creator frame, similarly to the last
-  // committed origin.
-  net::IsolationInfo isolation_info_;
+  // NetworkIsolationKey.
+  //
+  // This is specific to a document and should be reset on every cross-document
+  // commit.
+  //
+  // When a new frame is created:
+  // 1) If the origin of the creator frame is known, then the new frame inherits
+  //    the IsolationInfo from the creator frame, similarly to the last
+  //    committed origin (see the SetOriginDependentStateOfNewFrame method).
+  // 2) If the origin of the creator frame is not known (e.g. in no-opener case)
+  //    then the initial transient isolation info (i.e. the default value below)
+  //    will be used.  This will match the opaque origin of such a frame.
+  net::IsolationInfo isolation_info_ = net::IsolationInfo::CreateTransient();
 
   // The factory to load resources from the WebBundle source bound to
   // this file.

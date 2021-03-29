@@ -1058,6 +1058,25 @@ void FillNavigationParamsOriginPolicy(
   }
 }
 
+// Asks RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess in the
+// browser process for a URLLoaderFactory.
+//
+// AVOID: see the comment on CreateDefaultURLLoaderFactoryBundle below.
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreateDefaultURLLoaderFactory() {
+  // It is invalid to call this in an incomplete env where
+  // RenderThreadImpl::current() returns nullptr (e.g. in some tests).
+  RenderThreadImpl* render_thread = RenderThreadImpl::current();
+  DCHECK(render_thread);
+
+  // Ask `RenderProcessHostImpl::CreateURLLoaderFactoryForRendererProcess`
+  // to bind the `factory_remote` and then return the remote.
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  ChildThread::Get()->BindHostReceiver(
+      factory_remote.InitWithNewPipeAndPassReceiver());
+  return factory_remote;
+}
+
 // Returns a non-null pointer to a URLLoaderFactory bundle that is not
 // associated with any specific origin, frame or worker.
 //
@@ -1065,16 +1084,14 @@ void FillNavigationParamsOriginPolicy(
 // content::RenderFrameImpl::FrameURLLoaderFactory::CreateURLLoader).  See
 // also https://crbug.com/1114822.
 //
-// It is invalid to call this in an incomplete env where
-// RenderThreadImpl::current() returns nullptr (e.g. in some tests).
-//
-// TODO(https://crbug.com/1114822): Remove if the DwoC/NOTREACHED in
-// ChildURLLoaderFactoryBundle::GetFactory doesn't get hit in practice.
+// TODO(https://crbug.com/1114822): Remove once we can re-add the
+// DwoC/NOTREACHED in ChildURLLoaderFactoryBundle::GetFactory without hitting
+// them in practice.
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
 CreateDefaultURLLoaderFactoryBundle() {
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> result =
       base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
-          base::BindOnce(&network::NotImplementedURLLoaderFactory::Create));
+          base::BindOnce(&CreateDefaultURLLoaderFactory));
   result->MarkAsDeprecatedProcessWideFactory();
   return result;
 }

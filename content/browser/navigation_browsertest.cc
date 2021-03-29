@@ -4546,8 +4546,32 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
 namespace {
 
+void VerifyImageSubresourceLoad(
+    const ToRenderFrameHost& target,
+    const GURL& image_url,
+    const std::string& target_document = "document") {
+  const char kScriptTemplate[] = R"(
+      new Promise(resolve => {
+          let img = document.createElement('img');
+          img.src = $1;  // `$1` will be replaced with the value of `image_url`.
+          img.addEventListener('load', () => {
+              resolve('allowed');
+          });
+          img.addEventListener('error', () => {
+              resolve('blocked');
+          });
+
+          // `%%s` will be replaced with the value of `target_document`.
+          %s.body.appendChild(img);
+      }); )";
+  std::string script = base::StringPrintf(
+      JsReplace(kScriptTemplate, image_url).c_str(), target_document.c_str());
+  EXPECT_EQ("allowed", EvalJs(target, script));
+}
+
 void VerifyResultsOfAboutBlankNavigation(RenderFrameHostImpl* target_frame,
-                                         RenderFrameHostImpl* initiator_frame) {
+                                         RenderFrameHostImpl* initiator_frame,
+                                         const GURL& image_url) {
   // Verify that `target_frame` has been navigated to "about:blank".
   EXPECT_EQ(GURL(url::kAboutBlankURL), target_frame->GetLastCommittedURL());
 
@@ -4581,6 +4605,9 @@ void VerifyResultsOfAboutBlankNavigation(RenderFrameHostImpl* target_frame,
   if (!IsInProcessNetworkService())
     target_frame->FlushNetworkAndNavigationInterfacesForTesting();
   EXPECT_FALSE(did_network_service_crash);
+
+  // Verify that the "about:blank" frame is able to load an image.
+  VerifyImageSubresourceLoad(target_frame, image_url);
 }
 
 }  // namespace
@@ -4631,7 +4658,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame, image_url);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4681,7 +4709,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame, image_url);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4732,7 +4761,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame, image_url);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4820,7 +4850,107 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame1 = main_frame->child_at(0)->current_frame_host();
   child_frame2 = main_frame->child_at(1)->current_frame_host();
-  VerifyResultsOfAboutBlankNavigation(child_frame2, child_frame1);
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyResultsOfAboutBlankNavigation(child_frame2, child_frame1, image_url);
+}
+
+// The test below verifies that an initial empty document has a functional
+// URLLoaderFactory.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    URLLoaderFactoryInInitialEmptyDoc_LongNavigationInSubframe) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Add a subframe that will never commit a navigation (i.e. that will be stuck
+  // on the initial empty document).
+  const GURL hung_url = embedded_test_server()->GetURL("a.com", "/hung");
+  ASSERT_TRUE(
+      ExecJs(shell(), JsReplace(R"(ifr = document.createElement('iframe');
+                                   ifr.src = $1;
+                                   document.body.appendChild(ifr); )",
+                                hung_url)));
+
+  // Ask the parent to script the same-origin subframe and trigger some HTTP
+  // subresource loads within the subframe.
+  //
+  // This tests the functionality of the URLLoaderFactory that gets used by the
+  // initial empty document.  In this test, the `request_initiator` will be a
+  // non-opaque origin - it requires that the URLLoaderFactory will have a
+  // matching `request_initiator_origin_lock` (e.g. inherited from the parent).
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyImageSubresourceLoad(shell(), image_url, "ifr.contentDocument");
+}
+
+// The test below verifies that an initial empty document has a functional
+// URLLoaderFactory.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    URLLoaderFactoryInInitialEmptyDoc_LongNavigationInPopup) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Open a popup window that will never commit a navigation (i.e. that will be
+  // stuck on the initial empty document).
+  const GURL hung_url = embedded_test_server()->GetURL("a.com", "/hung");
+  ASSERT_TRUE(ExecJs(shell(), JsReplace("popup = window.open($1)", hung_url)));
+
+  // Ask the opener to script the (same-origin) popup window and trigger some
+  // HTTP subresource loads within the popup.
+  //
+  // This tests the functionality of the URLLoaderFactory that gets used by the
+  // initial empty document.  In this test, the `request_initiator` will be a
+  // non-opaque origin - it requires that the URLLoaderFactory will have a
+  // matching `request_initiator_origin_lock` (e.g. inherited from the opener).
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyImageSubresourceLoad(shell(), image_url, "popup.document");
+}
+
+// The test below verifies that an initial empty document has a functional
+// URLLoaderFactory.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       URLLoaderFactoryInInitialEmptyDoc_204NoOpenerPopup) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Open a new window by following a no-opener link to /nocontent (204).
+  const GURL no_content_url =
+      embedded_test_server()->GetURL("a.com", "/nocontent");
+  const char kScriptTemplate[] = R"(
+      let anchor = document.createElement('a');
+      anchor.href = $1;
+      anchor.rel = 'noopener';
+      anchor.target = '_blank';
+      anchor.innerText = 'test link';
+      document.body.appendChild(anchor);
+      anchor.click();
+  )";
+  content::WebContents* popup = nullptr;
+  {
+    WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, no_content_url)));
+    popup = popup_observer.GetWebContents();
+  }
+  WaitForLoadStop(popup);
+
+  // Double-check that the `popup` didn't commit any navigation and that it has
+  // an opaque origin.
+  EXPECT_EQ(GURL(), popup->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ("null", EvalJs(popup, "window.origin"));
+
+  // Inject Javascript that triggers some subresource loads over HTTP.
+  //
+  // To some extent, this simulates an ability of 1) Android WebView (see
+  // https://crbug.com/1189838) and 2) Chrome Extensions, to inject Javascript
+  // into an initial empty document (even when no web/renderer content has
+  // access to the document).
+  //
+  // This tests the functionality of the URLLoaderFactory that gets used by the
+  // initial empty document.  In this test, the `request_initiator` will be an
+  // opaque, unique origin (since nothing has committed yet) and will be
+  // compatible with `request_initiator_origin_lock` of the URLLoaderFactory.
+  GURL image_url = embedded_test_server()->GetURL("b.com", "/blank.jpg");
+  VerifyImageSubresourceLoad(popup, image_url);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug838348) {
