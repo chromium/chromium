@@ -67,6 +67,7 @@
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -838,7 +839,7 @@ class DeviceStatusCollectorTest : public testing::Test {
         base::WrapUnique<chromeos::UpdateEngineClient>(update_engine_client_));
 
     chromeos::CrasAudioHandler::InitializeForTesting();
-    chromeos::CryptohomeClient::InitializeFake();
+    chromeos::UserDataAuthClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::AttestationClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
@@ -850,7 +851,7 @@ class DeviceStatusCollectorTest : public testing::Test {
     chromeos::TpmManagerClient::Shutdown();
     chromeos::AttestationClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::CryptohomeClient::Shutdown();
+    chromeos::UserDataAuthClient::Shutdown();
     chromeos::CrasAudioHandler::Shutdown();
     ash::KioskAppManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
