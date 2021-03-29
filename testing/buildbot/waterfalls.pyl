@@ -2694,6 +2694,11 @@
           'chromium_builder_asan',
         ],
       },
+      'TSAN Release (runsc-exp) (reclient)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       'UBSan Release (reclient)': {
         'additional_compile_targets': [
           'chromium_builder_asan',
