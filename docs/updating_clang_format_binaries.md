@@ -65,8 +65,8 @@ MACOSX_DEPLOYMENT_TARGET=10.9 cmake -G Ninja \
     -DLLVM_ENABLE_PROJECTS=clang \
     -DLLVM_ENABLE_ASSERTIONS=NO \
     -DLLVM_ENABLE_TERMINFO=OFF \
-    -DLLVM_ENABLE_ZLIB=OFF \
     -DLLVM_ENABLE_THREADS=NO \
+    -DLLVM_ENABLE_ZLIB=OFF \
     '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' \
     ../llvm/
 
@@ -81,6 +81,7 @@ cmake -G Ninja \
     -DLLVM_ENABLE_ASSERTIONS=NO \
     -DLLVM_ENABLE_TERMINFO=OFF \
     -DLLVM_ENABLE_THREADS=NO \
+    -DLLVM_ENABLE_ZLIB=OFF \
     -DLLVM_ENABLE_Z3_SOLVER=NO \
     -DCMAKE_C_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
     -DCMAKE_CXX_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
