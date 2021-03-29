@@ -45,11 +45,9 @@
   (async function() {
     setup({ explicit_done: true });
 
-    popup1.show();
-    assert_true(popup1.open);
     popup2.show();
+    assert_false(popup1.open);
     assert_true(popup2.open);
-    assert_false(popup1.open,'Popups are not nested, so popup1 should close');
     await clickOn(button1);
     test(t => {
       // Button1 is the anchor for popup1, and an ancestor of popup2.

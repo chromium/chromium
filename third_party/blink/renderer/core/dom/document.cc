@@ -7342,17 +7342,17 @@ bool Document::PopupShowing() const {
   return !popup_element_stack_.IsEmpty();
 }
 void Document::HideTopmostPopupElement() const {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   if (popup_element_stack_.IsEmpty())
     return;
   popup_element_stack_.back()->hide();
 }
 void Document::HideAllPopupsUntil(const HTMLPopupElement* endpoint) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   while (!popup_element_stack_.IsEmpty() &&
          popup_element_stack_.back() != endpoint) {
     popup_element_stack_.back()->hide();
   }
-  DCHECK(!endpoint || popup_element_stack_.back() == endpoint)
-      << "popup element not found in element stack";
 }
 
 void Document::exitPointerLock() {

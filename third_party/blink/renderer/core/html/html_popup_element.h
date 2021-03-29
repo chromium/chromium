@@ -30,7 +30,12 @@ class HTMLPopupElement final : public HTMLElement {
 
   Element* AnchorElement() const;
 
+  void AddInvoker(Element* invoker);
+  void RemoveInvoker(Element* invoker);
+
   static void HandleLightDismiss(const Event&);
+
+  void Trace(Visitor*) const override;
 
  private:
   void ScheduleHideEvent();
@@ -40,7 +45,10 @@ class HTMLPopupElement final : public HTMLElement {
   void PopPopupElement(HTMLPopupElement*);
   HTMLPopupElement* TopmostPopupElement();
 
+  static const HTMLPopupElement* NearestOpenAncestralPopup(Node*);
+
   bool open_;
+  HeapHashSet<Member<Element>> invokers_;
 };
 
 }  // namespace blink
