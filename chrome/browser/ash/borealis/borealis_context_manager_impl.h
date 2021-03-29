@@ -90,6 +90,12 @@ class BorealisContextManagerImpl
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 
+  void SendShutdownRequest(
+      base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback,
+      const std::string& vm_name);
+
+  void ShutDownBorealisIfChromeCrashed();
+
   Profile* const profile_;
 
   std::unique_ptr<Startup> in_progress_startup_;
