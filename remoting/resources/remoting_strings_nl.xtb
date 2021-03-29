@@ -32,7 +32,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2509394361235492552">Verbonden met <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Wil je deze computer delen zodat een andere gebruiker deze kan bekijken en bedienen?</translation>
 <translation id="2579271889603567289">De host is gecrasht of kan niet worden gestart.</translation>
-<translation id="2599300881200251572">Met deze service worden inkomende verbindingen van Chrome Remote Desktop-clients ingeschakeld.</translation>
+<translation id="2599300881200251572">Met deze service zijn inkomende verbindingen van Chrome Remote Desktop-clients mogelijk.</translation>
 <translation id="2647232381348739934">Chromoting-service</translation>
 <translation id="2676780859508944670">Bezig…</translation>
 <translation id="2699970397166997657">Chromoting</translation>
@@ -51,7 +51,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="3385242214819933234">Ongeldige hosteigenaar.</translation>
 <translation id="3423542133075182604">Proces voor externe toegang tot beveiligingssleutel</translation>
 <translation id="3581045510967524389">Kan geen verbinding maken met het netwerk. Controleer of je apparaat online is.</translation>
-<translation id="3596628256176442606">Met deze service worden inkomende verbindingen van Chromoting-clients ingeschakeld.</translation>
+<translation id="3596628256176442606">Met deze service zijn inkomende verbindingen van Chromoting-clients mogelijk.</translation>
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Meer informatie</translation>
 <translation id="3776024066357219166">Je Chrome Remote Desktop-sessie is beëindigd.</translation>
@@ -88,7 +88,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4974476491460646149">Verbinding verbroken voor <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Je moet eerst je computer instellen voor externe toegang</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
-<translation id="507204348399810022">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitschakelen?</translation>
+<translation id="507204348399810022">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitzetten?</translation>
 <translation id="5170982930780719864">Ongeldige host-ID.</translation>
 <translation id="5204575267916639804">Veelgestelde vragen</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
@@ -115,7 +115,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6178645564515549384">Systeemeigen berichthost voor externe support</translation>
 <translation id="618120821413932081">Externe resolutie aanpassen aan venster</translation>
 <translation id="6223301979382383752">Voorkeuren voor Schermopname openen</translation>
-<translation id="6284412385303060032">De host die werd uitgevoerd op het console-inlogscherm, is uitgeschakeld om de gordijnmodus te ondersteunen door over te schakelen naar een host die in een gebruikersspecifieke sessie wordt uitgevoerd.</translation>
+<translation id="6284412385303060032">De actieve host op het console-inlogscherm is uitgezet om de gordijnmodus te ondersteunen door over te schakelen naar een host die in een gebruikersspecifieke sessie wordt uitgevoerd.</translation>
 <translation id="6542902059648396432">Een probleem melden…</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del verzenden</translation>
@@ -124,7 +124,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6939719207673461467">Toetsenbord tonen/verbergen.</translation>
 <translation id="6963936880795878952">Verbindingen met de externe computer zijn tijdelijk geblokkeerd omdat iemand heeft geprobeerd met een ongeldige pincode verbinding te maken met de computer. Probeer het later opnieuw.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6985691951107243942">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitschakelen? Als je van gedachten verandert, moet je naar die computer gaan om de verbindingen weer in te schakelen.</translation>
+<translation id="6985691951107243942">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitzetten? Als je van gedachten verandert, moet je naar die computer gaan om de verbindingen weer aan te zetten.</translation>
 <translation id="7019153418965365059">Onbekende hostfout: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Externe support</translation>
 <translation id="7026930240735156896">Volg de instructies om je computer in te stellen voor externe toegang</translation>

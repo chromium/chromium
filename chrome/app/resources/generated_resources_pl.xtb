@@ -2647,7 +2647,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3920909973552939961">Nie zezwolono na instalowanie modułów do obsługi płatności</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
 <translation id="3923676227229836009">Ta strona ma zezwolenie na przeglądanie plików</translation>
-<translation id="3923943745177274752">Witamy w aplikacji <ph name="DEVICE_TYPE" /></translation>
+<translation id="3923943745177274752">Oto <ph name="DEVICE_TYPE" /> dla Ciebie</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924487862883651986">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
 <translation id="3925573269917483990">Aparat:</translation>
@@ -2980,7 +2980,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4340515029017875942"><ph name="ORIGIN" /> chce nawiązać połączenie z aplikacją „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4341577178275615435">Aby włączyć lub wyłączyć przeglądanie przy użyciu kursora, użyj skrótu F7</translation>
-<translation id="434198521554309404">Bez zbędnych opóźnień. Bezpiecznie. Bez wysiłku.</translation>
+<translation id="434198521554309404">Szybko. Bezpiecznie. Bez wysiłku.</translation>
 <translation id="434404122609091467">Korzystając z obecnego dostawcy usługi</translation>
 <translation id="4345587454538109430">Konfiguruj</translation>
 <translation id="4345732373643853732">Serwer nie zna tej nazwy użytkownika</translation>
@@ -3869,7 +3869,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5372529912055771682">Ta wersja systemu operacyjnego nie obsługuje podanego trybu rejestrowania. Upewnij się, że używasz najnowszej wersji i spróbuj ponownie.</translation>
 <translation id="5372579129492968947">Odepnij rozszerzenie</translation>
 <translation id="5372632722660566343">Kontynuuj bez konta</translation>
-<translation id="5375318608039113175">Aby używać tych kontaktów przy Udostępnianiu w pobliżu, dodaj do nich adresy e-mail połączone z ich kontami Google.</translation>
+<translation id="5375318608039113175">Aby używać tych kontaktów w połączeniu z funkcją Udostępnianie w pobliżu, dodaj do nich adresy e-mail połączone z ich kontami Google.</translation>
 <translation id="5376169624176189338">Kliknij, aby przejść wstecz. Przytrzymaj, aby wyświetlić historię</translation>
 <translation id="5376931455988532197">Plik jest za duży</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wysłano na: <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> wysłano na: <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> wysłano na: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> wysłano na: <ph name="DEVICE_NAME" />}}</translation>

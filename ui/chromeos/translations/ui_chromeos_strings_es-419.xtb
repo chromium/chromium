@@ -450,7 +450,7 @@
 <translation id="5700087501958648444">Información de audio</translation>
 <translation id="5724172041621205163">Tailandés con teclado pattachote</translation>
 <translation id="5731409020711461763">1 foto nueva</translation>
-<translation id="5752453871435543420">Copia de seguridad en la nube del Sistema operativo Chrome</translation>
+<translation id="5752453871435543420">Copia de seguridad en la nube del Chrome OS</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
 <translation id="5763377084591234761">Alemán (Suiza)</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -562,7 +562,7 @@
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Carpetas</translation>
-<translation id="6978611942794658017">Este archivo está diseñado para computadoras que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta el Sistema operativo Chrome. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="6978611942794658017">Este archivo está diseñado para computadoras que utilizan software de Windows, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sueco</translation>
 <translation id="6990081529015358884">Te has quedado sin espacio.</translation>
@@ -763,7 +763,7 @@
 <translation id="9130775360844693113">Los miembros de "<ph name="DESTINATION_NAME" />" tendrán acceso a estos elementos.</translation>
 <translation id="9131598836763251128">Selecciona uno o más archivos.</translation>
 <translation id="9133055936679483811">Se produjo un error al comprimir. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta el Sistema operativo Chrome. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
+<translation id="9134524245363717059">Este archivo está diseñado para computadoras que utilizan software de Macintosh, por lo que no es compatible con tu dispositivo, el cual ejecuta Chrome OS. Busca una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="9144340019284012223">Catalán</translation>
 <translation id="9148058034647219655">Salir</translation>
 <translation id="9154418932169119429">Esta imagen no está disponible sin conexión.</translation>

@@ -4735,7 +4735,7 @@
 <translation id="6362853299801475928">&amp;Пријави проблем…</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Додај семејство и пријатели</translation>
-<translation id="6367985768157257101">Да се примат преку „Споделување во близина“?</translation>
+<translation id="6367985768157257101">Да се дозволи „Споделување во близина“?</translation>
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6370021412472292592">Не може да вчита манифест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
@@ -5683,7 +5683,7 @@
 <translation id="7457384018036134905">Управувајте со јазиците во поставките за Chrome OS</translation>
 <translation id="7458168200501453431">Ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google.</translation>
 <translation id="7460045493116006516">Темата што ви е инсталирана</translation>
-<translation id="7461924472993315131">Прикачи</translation>
+<translation id="7461924472993315131">Закачи</translation>
 <translation id="746216226901520237">Следниот пат, телефонот ќе го отклучи вашиот <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# отворена картичка, притиснете за да префрлите на лента за картички}one{# отворена картичка, притиснете за да префрлите на лента за картички}other{# отворени картички, притиснете за да префрлите на лента за картички}}</translation>
 <translation id="7465635034594602553">Нешто не е во ред. Почекајте неколку минути и повторно извршете го <ph name="APP_NAME" />.</translation>

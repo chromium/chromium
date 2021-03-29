@@ -8,7 +8,7 @@
 <translation id="1014370462248694370">Swipe met twee vingers naar rechts</translation>
 <translation id="1016393160682012902">Druk op een QWERTY-toets of een vernieuwbare brailletoets of maak een aanraakgebaar om de functie ervan te leren. Druk op Ctrl en W of Escape om af te sluiten.</translation>
 <translation id="1022586497894531524">Gebruik je de gesproken feedback van ChromeVox voor de eerste keer? In deze korte handleiding worden de basisprincipes uitgelegd, zodat je aan de slag kunt met ChromeVox.</translation>
-<translation id="1025074108959230262">Modus voor vastzetten uitgeschakeld</translation>
+<translation id="1025074108959230262">Sticky modus uitgezet</translation>
 <translation id="1031961866430398710">dan</translation>
 <translation id="1038643060055067718">Regels:</translation>
 <translation id="1038795173450935438">Als je vooruit door items op een pagina wilt bladeren, druk je op Zoeken + pijl-rechts. Je kunt op Zoeken + pijl-links drukken om naar het vorige item te gaan. Druk op Zoeken + pijl-omlaag om naar de volgende regel te gaan. Druk op Zoeken + pijl-omhoog om naar de vorige regel te gaan. Als je een item bereikt waarop je wilt klikken, druk je op Zoeken + spatiebalk.</translation>
@@ -79,7 +79,7 @@
 <translation id="1465097259579587977">Snelle oriëntatie opnieuw starten</translation>
 <translation id="1480046233931937785">Credits</translation>
 <translation id="1487494366197411587">De zoektoets op je Chromebook bevindt zich meteen boven de Shift-toets aan de linkerkant.</translation>
-<translation id="1498498210836053409">Sticky modus uitschakelen terwijl je tekst bewerkt (slimme sticky modus)</translation>
+<translation id="1498498210836053409">Sticky modus uitzetten tijdens tekstbewerking (Slimme sticky modus)</translation>
 <translation id="1499041187027566160">volume omhoog</translation>
 <translation id="1502086903961450562">Vorige afbeelding</translation>
 <translation id="1506187449813838456">Toonhoogte verhogen</translation>
@@ -115,7 +115,7 @@
 <translation id="1714116687360794776">Meter</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">footer</translation>
-<translation id="1730447754326314349">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, kun je op elk moment linksboven op het toetsenbord op de Escape-toets drukken. Als je ChromeVox wilt uitschakelen, houd je Ctrl en Alt ingedrukt en druk je op Z. Druk als je klaar bent op de spatiebalk om naar de volgende les te gaan.</translation>
+<translation id="1730447754326314349">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, kun je op elk moment linksboven op het toetsenbord op de Escape-toets drukken. Als je ChromeVox wilt uitzetten, houd je Ctrl en Alt ingedrukt en druk je op Z. Druk als je klaar bent op de spatiebalk om naar de volgende les te gaan.</translation>
 <translation id="174268867904053074">Volgende afbeelding</translation>
 <translation id="1756785467854861272">Donkermagenta</translation>
 <translation id="1765245556747822181">Swipe met één vinger omhoog</translation>
@@ -164,7 +164,7 @@
 <translation id="2152179395627233441">Oefengedeelte sluiten</translation>
 <translation id="2163782704988363449">Drukfouten</translation>
 <translation id="2169714232367507776">Klikken op huidig item</translation>
-<translation id="2179452035581866348">ChromeVox gebruikt geluiden om je essentiële en aanvullende informatie te geven. Als je weet wat elk geluid betekent, kun je de geluiden gebruiken om sneller te navigeren. Zodra je er een beetje vertrouwd mee bent, kun je uitgebreide gesproken beschrijvingen uitschakelen en aan de hand van geluiden essentiële informatie over de pagina krijgen. Hier volgt een volledig overzicht van de geluiden en wat ze betekenen.</translation>
+<translation id="2179452035581866348">ChromeVox gebruikt geluiden om je essentiële en aanvullende informatie te geven. Als je weet wat elk geluid betekent, kun je de geluiden gebruiken om sneller te navigeren. Zodra je er een beetje vertrouwd mee bent, kun je uitgebreide gesproken beschrijvingen uitzetten en aan de hand van geluiden essentiële informatie over de pagina krijgen. Hier volgt een volledig overzicht van de geluiden en wat ze betekenen.</translation>
 <translation id="2183409941723714159">Tabbladnavigatie</translation>
 <translation id="2188751878842439466">{COUNT,plural, =1{haakje sluiten}other{# haakjes sluiten}}</translation>
 <translation id="2197863150503783129">Zadelbruin</translation>
@@ -186,7 +186,7 @@
 <translation id="2329324941084714723">Deelvenster met tabblad</translation>
 <translation id="2347456970887948350">Een link</translation>
 <translation id="2365384324219615024">Je kunt ook op Enter drukken om items te activeren. Met Enter kun je bijvoorbeeld tekst in een formulier indienen. Druk op Enter om door te gaan.</translation>
-<translation id="2381733276052567791">Spraak in- of uitschakelen</translation>
+<translation id="2381733276052567791">Spraak aan- of uitzetten</translation>
 <translation id="2390264819538553347">Druk op Enter om door te gaan. Druk op Backspace om terug te gaan.</translation>
 <translation id="2398579267367951220">Typ om op de pagina te zoeken. Druk op Enter om naar het zoekresultaat te gaan of op de pijlen-omlaag om door resultaten te browsen, blijf typen om je zoekopdracht te wijzigen of druk op Escape om te annuleren.</translation>
 <translation id="240709722712693803">Violetblauw</translation>
@@ -299,7 +299,7 @@
 <translation id="3104705064753753826">waarschuwingsvenster</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="311015743332597320">Swipe met vier vingers naar rechts</translation>
-<translation id="3112457281078985179">Gebruik Ctrl + Alt + Z om ChromVox in of uit te schakelen.</translation>
+<translation id="3112457281078985179">Gebruik Ctrl+Alt+Z om ChromeVox aan of uit te zetten.</translation>
 <translation id="3131002934070407451">Nummers lezen als:</translation>
 <translation id="3134461040845705080">alleen-lezen</translation>
 <translation id="3137663468179739624">Olijf</translation>
@@ -354,7 +354,7 @@
 <translation id="3435494200763325275">Tabbladnavigatie (vervolg)</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Gedeeltelijk ingedrukt</translation>
-<translation id="3458865416877308321"><ph name="NAME" />, uitschakelen</translation>
+<translation id="3458865416877308321"><ph name="NAME" />, uitzetten</translation>
 <translation id="3466530247399808663">Een ongeldige toetsaanslag</translation>
 <translation id="3468959318854349468">Geen titel</translation>
 <translation id="3469413619751135069">Vaalgroen</translation>
@@ -441,7 +441,7 @@
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{seconde}other{seconden}}</translation>
 <translation id="4161663686871496107">Gesproken ChromeVox-feedback is klaar</translation>
-<translation id="4176463684765177261">Uitgeschakeld</translation>
+<translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4187322598335821254">Swipe omhoog of omlaag om per regel te navigeren</translation>
 <translation id="4188530942454211480">Vorige zin</translation>
 <translation id="4191918948604314587">Een knop</translation>
@@ -510,7 +510,7 @@
 <translation id="4710166929009737753">Swipe met één vinger naar rechts</translation>
 <translation id="4712898966495541134">Einde selectie</translation>
 <translation id="4740661827607246557">Help-opdrachten</translation>
-<translation id="4755857887974653209">ChromeVox uitschakelen</translation>
+<translation id="4755857887974653209">ChromeVox uitzetten</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">standaard</translation>
 <translation id="4772771694153161212">Niet onderstreept</translation>
@@ -576,7 +576,7 @@
 <translation id="5140016802771803559">Rebecca-paars</translation>
 <translation id="5142101052131610456">Alle lessen</translation>
 <translation id="5158275234811857234">Omslag</translation>
-<translation id="5170206230005240598">Braille-ondertiteling ingeschakeld</translation>
+<translation id="5170206230005240598">Braille-ondertiteling staat aan</translation>
 <translation id="5183440668879371625">Vorige brailleregel</translation>
 <translation id="5189244881767082992">Regel</translation>
 <translation id="5263034204789987535">Maïsgeel</translation>
@@ -587,7 +587,7 @@
 <translation id="5304943142864553931">tabblad <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5310788376443009632">verwijderd:</translation>
-<translation id="5320727453979144100">Modus voor vastzetten ingeschakeld</translation>
+<translation id="5320727453979144100">Sticky modus aangezet</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{komma}other{# komma's}}</translation>
 <translation id="532485153932049746">Tekstopmaak
     <ph name="FONT_SIZE_STRING" />
@@ -622,7 +622,7 @@
 <translation id="5522423213731659107">Snelle oriëntatie afgerond</translation>
 <translation id="5534303576632885660">header</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
-<translation id="5549179427201066174">Geluidsfeedback (earcons) in- of uitschakelen</translation>
+<translation id="5549179427201066174">Geluidsfeedback (earcons) aan- of uitzetten</translation>
 <translation id="556042886152191864">Knop</translation>
 <translation id="5561345396546889625">Volgende lijst</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
@@ -709,7 +709,7 @@
 <translation id="6150023170003443621">Geelgroen</translation>
 <translation id="6158882249329863701">rij <ph name="TABLECELLROWINDEX" /> kolom <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">meter</translation>
-<translation id="6166362019018438352">Braille-ondertiteling uitgeschakeld</translation>
+<translation id="6166362019018438352">Braille-ondertiteling staat uit</translation>
 <translation id="6186305613600865047">Naar de onderkant van de pagina</translation>
 <translation id="6187190722927752226">Aquamarijn</translation>
 <translation id="6197361807490522975">Donkerblauw</translation>
@@ -735,7 +735,7 @@
 <translation id="6378394210114975876">Distel</translation>
 <translation id="6385591741672306837">kol</translation>
 <translation id="6387719785439924554">terzijde</translation>
-<translation id="6393014464788431702">Alle gebeurtenisfilters uitschakelen</translation>
+<translation id="6393014464788431702">Alle gebeurtenisfilters uitzetten</translation>
 <translation id="6411569524720229058">Herfst</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dubbelepunt}other{# dubbelepunten}}</translation>
@@ -882,7 +882,7 @@
 <translation id="7604026522577407655">Naar het begin van de huidige kolom gaan</translation>
 <translation id="7604451927827590395">hdng</translation>
 <translation id="7609342235116740824">De URL van de huidige pagina melden</translation>
-<translation id="7609363189280667021">Brailleondertiteling in- en uitschakelen</translation>
+<translation id="7609363189280667021">Brailleondertiteling aan/uit</translation>
 <translation id="761303759119251275">Bronvermelding</translation>
 <translation id="762020119231868829">Hiermee worden alle actieve mediawidgets onderbroken</translation>
 <translation id="7625690649919402823">Volgende tabel</translation>
@@ -964,7 +964,7 @@
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rij</translation>
-<translation id="8186185314313222077">volledig scherm in- of uitschakelen</translation>
+<translation id="8186185314313222077">volledig scherm aan/uit</translation>
 <translation id="8199231515320852133">De koppen van de huidige cel melden</translation>
 <translation id="8202174735952881587">Hemelsblauw</translation>
 <translation id="820469951249669083">Naar volgende rij</translation>
@@ -983,7 +983,7 @@
 <translation id="8316881042119029234">Vergeeld kant</translation>
 <translation id="8324974933005349667">Tekst-naar-spraak-instellingen personaliseren</translation>
 <translation id="8326783648485765113">Grasgroen</translation>
-<translation id="8328063869313048659">Donker scherm schakelen</translation>
+<translation id="8328063869313048659">Donker scherm aan- of uitzetten</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{hekje}other{# hekjes}}</translation>
 <translation id="8378855320830505539">Regio</translation>
 <translation id="8382679411218029383">Automatisch inline en lijst aanvullen</translation>
@@ -1092,7 +1092,7 @@
 <translation id="958854023026327378">Swipe met één vinger omlaag</translation>
 <translation id="962913030769097253">Volgende kop voor niveau 1</translation>
 <translation id="966588271015727539">Een Bluetooth-brailleleesregel selecteren</translation>
-<translation id="973955474346881951">Modus voor vastzetten in-/uitschakelen</translation>
+<translation id="973955474346881951">Sticky modus aan-/uitzetten</translation>
 <translation id="985654871861528815">Eén regel omlaag gaan</translation>
 <translation id="992256792861109788">Roze</translation>
 </translationbundle>

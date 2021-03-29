@@ -246,7 +246,7 @@
 <translation id="3644896802912593514">Breedte</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items verplaatst.</translation>
 <translation id="3645531960514756307">Map losmaken</translation>
-<translation id="3685122418104378273">De synchronisatie van Google Drive is bij het gebruik van mobiele data standaard uitgeschakeld.</translation>
+<translation id="3685122418104378273">De synchronisatie van Google Drive is bij het gebruik van mobiele data standaard uitgezet.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> annuleren.</translation>
 <translation id="3691184985318546178">Singalees</translation>
 <translation id="3726463242007121105">Dit apparaat kan niet worden geopend omdat het bijbehorende bestandssysteem niet wordt ondersteund.</translation>
@@ -657,7 +657,7 @@
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7873831373602885875">Kan niet opslaan in <ph name="FOLDER_NAME" />. Alle bewerkingen worden opgeslagen in <ph name="DOWNLOADS_FOLDER" /> in de map Downloads.</translation>
 <translation id="7874321682039004450">Filipijns</translation>
-<translation id="7881969471599061635">Ondertiteling uitschakelen</translation>
+<translation id="7881969471599061635">Ondertiteling uitzetten</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
 <translation id="7908793776359722643">Tijdens het formatteren van een partitie worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="7925686952655276919">Geen mobiele data gebruiken voor synchronisatie</translation>

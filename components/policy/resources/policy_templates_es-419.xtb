@@ -2547,7 +2547,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4518251772179446575">Preguntar siempre si un sitio quiere rastrear la ubicación física de los usuarios.</translation>
 <translation id="4521193243799782295">Durante el acceso, <ph name="PRODUCT_OS_NAME" /> podrá realizar la autenticación a través de un servidor (en línea) o con una contraseña en caché (sin conexión).
 
-      Si se establece esta política con un valor de -1, no se aplicará la autenticación en línea y se permitirá que el usuario utilice la autenticación sin conexión hasta que un motivo distinto a esta política exija el acceso en línea. Si se establece la política con un valor de 0, siempre se requerirá el acceso en línea. Si se establece la política en cualquier otro valor, especificará el tiempo que debe transcurrir desde la autenticación en línea más reciente para que el usuario vuelva a estar obligado a usar la autenticación en línea la próxima vez que acceda.
+      Si se establece esta política con un valor de -1, no se aplicará la autenticación en línea y se permitirá que el usuario utilice la autenticación sin conexión hasta que un motivo distinto a esta política exija el acceso en línea. Si se establece la política con un valor de 0, siempre se requerirá el acceso en línea. Si se establece la política en cualquier otro valor, la política especificará el tiempo que debe transcurrir desde la autenticación en línea más reciente para que el usuario vuelva a estar obligado a usar la autenticación en línea la próxima vez que acceda.
 
       Si no se configura esta política, <ph name="PRODUCT_OS_NAME" /> deberá usar el acceso sin conexión.
 
