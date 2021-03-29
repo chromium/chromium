@@ -28,12 +28,6 @@
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 
-// Supported on Linux 64 bits only for now, partly to see the impact on
-// performance and memory usage on bots, as this increases memory footprint.
-#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-#define PA_THREAD_CACHE_LARGE_ALLOCATIONS
-#endif
-
 namespace base {
 
 namespace internal {
@@ -246,15 +240,10 @@ class BASE_EXPORT ThreadCache {
 
   // When trying to conserve memory, set the thread cache limit to this.
   static constexpr size_t kDefaultSizeThreshold = 512;
-#if defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
   // 32kiB is chosen here as from local experiments, "zone" allocation in
   // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
   // each individual allocation.
   static constexpr size_t kLargeSizeThreshold = 1 << 15;
-#else
-  static constexpr size_t kLargeSizeThreshold = kDefaultSizeThreshold;
-#endif  // defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
-  static_assert(kDefaultSizeThreshold <= kLargeSizeThreshold, "");
 
  private:
   struct Bucket {

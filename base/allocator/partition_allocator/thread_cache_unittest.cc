@@ -617,11 +617,6 @@ TEST_F(ThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
   PlatformThread::Join(thread_handle);
 }
 
-#if defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
-static_assert(ThreadCache::kLargeSizeThreshold >
-                  ThreadCache::kDefaultSizeThreshold,
-              "");
-
 TEST_F(ThreadCacheTest, DynamicSizeThreshold) {
   auto* tcache = g_root->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
@@ -683,8 +678,6 @@ TEST_F(ThreadCacheTest, DynamicSizeThresholdPurge) {
   tcache->Purge();
   EXPECT_EQ(0u, tcache->buckets_[index].count);
 }
-
-#endif  // defined(PA_THREAD_CACHE_LARGE_ALLOCATIONS)
 
 }  // namespace internal
 }  // namespace base

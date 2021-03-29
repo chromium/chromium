@@ -244,7 +244,9 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   // Renderer processes are more performance-sensitive, increase thread cache
   // limits.
-  if (process_type == switches::kRendererProcess) {
+  if (process_type == switches::kRendererProcess &&
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocLargeThreadCacheSize)) {
     base::internal::ThreadCache::SetLargestCachedSize(
         base::internal::ThreadCache::kLargeSizeThreshold);
   }

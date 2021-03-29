@@ -25,6 +25,10 @@ const Feature kPartitionAllocPCScanBrowserOnly{
 const Feature kPartitionAllocThreadCachePeriodicPurge{
     "PartitionAllocThreadCachePeriodicPurge", FEATURE_DISABLED_BY_DEFAULT};
 
+// Use a larger maximum thread cache cacheable bucket size.
+const Feature kPartitionAllocLargeThreadCacheSize{
+    "PartitionAllocLargeThreadCacheSize", FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
