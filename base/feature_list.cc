@@ -553,7 +553,7 @@ void FeatureList::RegisterOverridesFromCommandLine(
 #if !defined(OS_NACL)
       // If the below DCHECK fires, it means a non-existent trial name was
       // specified via the "Feature<Trial" command-line syntax.
-      DCHECK(trial) << "trial=" << value.substr(pos + 1);
+      DCHECK(trial) << "trial='" << value.substr(pos + 1) << "' does not exist";
 #endif  // !defined(OS_NACL)
     }
 
