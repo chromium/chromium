@@ -2449,7 +2449,7 @@
   {
     "name": "enable-tab-grid-layout",
     "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-tab-groups",
