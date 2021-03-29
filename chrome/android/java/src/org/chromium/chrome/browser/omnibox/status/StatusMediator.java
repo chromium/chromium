@@ -701,7 +701,9 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mPermissionTaskHandler.postDelayed(
-                this::resetPermissionIcon, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+                ()
+                        -> updateLocationBarIcon(IconTransitionType.ROTATE),
+                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
         mDiscoverabilityMetrics.recordDiscoverabilityAction(
                 DiscoverabilityAction.PERMISSION_ICON_SHOWN);
         if (mPageInfoIPHController != null) {
@@ -727,12 +729,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
             mDiscoverabilityMetrics.recordDiscoverabilityAction(
                     DiscoverabilityAction.PAGE_INFO_OPENED);
             mPermissionTaskHandler.removeCallbacksAndMessages(null);
-            resetPermissionIcon();
+            updateLocationBarIcon(IconTransitionType.CROSSFADE);
         }
-    }
-
-    private void resetPermissionIcon() {
-        updateLocationBarIcon(IconTransitionType.ROTATE);
     }
 
     public int getLastPermission() {
