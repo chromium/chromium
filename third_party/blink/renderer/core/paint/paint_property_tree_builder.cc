@@ -1828,15 +1828,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           state.SetClipRect(adjusted_clip_rect, adjusted_clip_rect);
         }
       } else if (object_.IsBox()) {
-        PhysicalRect clip_rect;
-        if (pre_paint_info_) {
-          const NGFragmentChildIterator& iterator = pre_paint_info_->iterator;
-          clip_rect = iterator->BoxFragment()->OverflowClipRect(
-              context_.current.paint_offset, iterator->BlockBreakToken());
-        } else {
-          clip_rect = To<LayoutBox>(object_).OverflowClipRect(
-              context_.current.paint_offset);
-        }
+        const auto& clip_rect = To<LayoutBox>(object_).OverflowClipRect(
+            context_.current.paint_offset);
         state.SetClipRect(FloatRoundedRect(FloatRect(clip_rect)),
                           ToSnappedClipRect(clip_rect));
 
