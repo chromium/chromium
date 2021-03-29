@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/user_context.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -45,8 +46,7 @@ class EasyUnlockCreateKeysOperation {
   void OnGetSystemSalt(size_t index, const std::string& system_salt);
   void OnKeyCreated(size_t index,
                     const Key& user_key,
-                    bool success,
-                    cryptohome::MountError return_code);
+                    base::Optional<::user_data_auth::AddKeyReply> reply);
 
   UserContext user_context_;
   std::string tpm_public_key_;

@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/cryptohome/homedir_methods.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/login/auth/user_context.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -41,7 +42,7 @@ class EasyUnlockGetKeysOperation {
 
   // Callback for GetKeyData(). Updates `devices_`, increments `key_index_`, and
   // calls GetKeyData() again.
-  void OnGetKeyData(base::Optional<cryptohome::BaseReply> reply);
+  void OnGetKeyData(base::Optional<user_data_auth::GetKeyDataReply> reply);
 
   UserContext user_context_;
   GetKeysCallback callback_;

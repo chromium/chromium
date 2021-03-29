@@ -12,9 +12,10 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -31,7 +32,7 @@ EasyUnlockGetKeysOperation::~EasyUnlockGetKeysOperation() {}
 
 void EasyUnlockGetKeysOperation::Start() {
   // Register for asynchronous notification of cryptohome being ready.
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&EasyUnlockGetKeysOperation::OnCryptohomeAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -50,23 +51,24 @@ void EasyUnlockGetKeysOperation::OnCryptohomeAvailable(bool available) {
 }
 
 void EasyUnlockGetKeysOperation::GetKeyData() {
-  cryptohome::GetKeyDataRequest request;
+  user_data_auth::GetKeyDataRequest request;
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          user_context_.GetAccountId());
+  request.mutable_authorization_request();
   request.mutable_key()->mutable_data()->set_label(
       EasyUnlockKeyManager::GetKeyLabel(key_index_));
-  CryptohomeClient::Get()->GetKeyDataEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          user_context_.GetAccountId()),
-      cryptohome::AuthorizationRequest(), request,
-      base::BindOnce(&EasyUnlockGetKeysOperation::OnGetKeyData,
-                     weak_ptr_factory_.GetWeakPtr()));
+
+  UserDataAuthClient::Get()->GetKeyData(
+      request, base::BindOnce(&EasyUnlockGetKeysOperation::OnGetKeyData,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EasyUnlockGetKeysOperation::OnGetKeyData(
-    base::Optional<cryptohome::BaseReply> reply) {
-  cryptohome::MountError return_code =
-      cryptohome::GetKeyDataReplyToMountError(reply);
+    base::Optional<user_data_auth::GetKeyDataReply> reply) {
+  cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
   std::vector<cryptohome::KeyDefinition> key_definitions =
-      cryptohome::GetKeyDataReplyToKeyDefinitions(reply);
+      user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
   if (return_code != cryptohome::MOUNT_ERROR_NONE || key_definitions.empty()) {
     // MOUNT_ERROR_KEY_FAILURE is considered as success.
     // Other error codes are treated as failures.
