@@ -939,7 +939,7 @@ WGPUExtent3D AsDawnType(
     // default values of 1 are used (which are set above).
     switch (webgpu_extent_sequence.size()) {
       default:
-        dawn_extent.depth = webgpu_extent_sequence[2];
+        dawn_extent.depthOrArrayLayers = webgpu_extent_sequence[2];
         FALLTHROUGH;
       case 2:
         dawn_extent.height = webgpu_extent_sequence[1];
@@ -960,9 +960,10 @@ WGPUExtent3D AsDawnType(
     if (webgpu_extent_3d_dict->hasDepth()) {
       device->AddConsoleWarning(
           "Specifying an extent depth is deprecated. Use depthOrArrayLayers.");
-      dawn_extent.depth = webgpu_extent_3d_dict->depth();
+      dawn_extent.depthOrArrayLayers = webgpu_extent_3d_dict->depth();
     } else {
-      dawn_extent.depth = webgpu_extent_3d_dict->depthOrArrayLayers();
+      dawn_extent.depthOrArrayLayers =
+          webgpu_extent_3d_dict->depthOrArrayLayers();
     }
 
   } else {

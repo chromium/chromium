@@ -395,7 +395,7 @@ void GPUQueue::copyImageBitmapToTexture(
       GPUOrigin2DToWGPUOrigin3D(&(source->origin()));
 
   // Validate copy depth
-  if (dawn_copy_size.depth > 1) {
+  if (dawn_copy_size.depthOrArrayLayers > 1) {
     GetProcs().deviceInjectError(device_->GetHandle(), WGPUErrorType_Validation,
                                  "Copy depth is out of bounds of imageBitmap.");
     return;
@@ -426,7 +426,7 @@ void GPUQueue::copyImageBitmapToTexture(
   }
 
   bool isNoopCopy = dawn_copy_size.width == 0 || dawn_copy_size.height == 0 ||
-                    dawn_copy_size.depth == 0;
+                    dawn_copy_size.depthOrArrayLayers == 0;
 
   // TODO(shaobo.yan@intel.com): Implement GPU copy path
   // Try GPU path first and delegate noop copy to CPU path.
@@ -460,7 +460,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
   WebGPUImageUploadSizeInfo info = ComputeImageBitmapWebGPUUploadSizeInfo(
       image_data_rect, dest_texture_format);
 
-  bool isNoopCopy = info.size_in_bytes == 0 || copy_size.depth == 0;
+  bool isNoopCopy =
+      info.size_in_bytes == 0 || copy_size.depthOrArrayLayers == 0;
 
   // Create a mapped buffer to receive image bitmap contents
   WGPUBufferDescriptor buffer_desc = {};
