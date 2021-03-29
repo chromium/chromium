@@ -44,6 +44,7 @@
 #endif
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -716,6 +717,14 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   if (!context) {
     gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
         ContextCreationAttribs(), use_passthrough_decoder);
+
+    // Disable robust resource initialization for raster decoder and compositor.
+    // TODO(crbug.com/1192632): disable robust_resource_initialization for
+    // SwANGLE.
+    if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
+        features::IsUsingSkiaRenderer()) {
+      attribs.robust_resource_initialization = false;
+    }
 
     // Only skip validation if the GLContext will be used exclusively by the
     // SharedContextState and dcheck is off.

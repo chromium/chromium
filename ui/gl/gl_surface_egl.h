@@ -104,6 +104,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static EGLDisplay GetHardwareDisplay();
   static EGLDisplay InitializeDisplay(EGLDisplayPlatform native_display);
   static EGLNativeDisplayType GetNativeDisplay();
+  static DisplayType GetDisplayType();
 
   // These aren't particularly tied to surfaces, but since we already
   // have the static InitializeOneOff here, it's easiest to reuse its

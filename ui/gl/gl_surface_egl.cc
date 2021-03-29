@@ -184,6 +184,8 @@ class EGLGpuSwitchingObserver;
 EGLDisplay g_egl_display = EGL_NO_DISPLAY;
 EGLDisplayPlatform g_native_display(EGL_DEFAULT_DISPLAY);
 
+DisplayType g_display_type = DisplayType::DEFAULT;
+
 const char* g_egl_client_extensions = nullptr;
 const char* g_egl_extensions = nullptr;
 bool g_egl_create_context_robustness_supported = false;
@@ -1150,6 +1152,11 @@ EGLNativeDisplayType GLSurfaceEGL::GetNativeDisplay() {
 }
 
 // static
+DisplayType GLSurfaceEGL::GetDisplayType() {
+  return g_display_type;
+}
+
+// static
 const char* GLSurfaceEGL::GetEGLClientExtensions() {
   return g_egl_client_extensions ? g_egl_client_extensions : "";
 }
@@ -1372,6 +1379,7 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
     UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
                               DISPLAY_TYPE_MAX);
     g_egl_display = display;
+    g_display_type = display_type;
     break;
   }
 
