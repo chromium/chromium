@@ -6,10 +6,11 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
@@ -30,15 +31,22 @@ void CryptohomeWebUIHandler::RegisterMessages() {
 }
 
 void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue* args) {
-  CryptohomeClient* cryptohome_client = CryptohomeClient::Get();
+  UserDataAuthClient* userdataauth_client = UserDataAuthClient::Get();
+  CryptohomePkcs11Client* cryptohome_pkcs11_client =
+      CryptohomePkcs11Client::Get();
 
-  cryptohome_client->IsMounted(GetCryptohomeBoolCallback("is-mounted"));
+  userdataauth_client->IsMounted(
+      user_data_auth::IsMountedRequest(),
+      base::BindOnce(&CryptohomeWebUIHandler::OnIsMounted,
+                     weak_ptr_factory_.GetWeakPtr()));
   TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(&CryptohomeWebUIHandler::OnGetTpmStatus,
                      weak_ptr_factory_.GetWeakPtr()));
-  cryptohome_client->Pkcs11IsTpmTokenReady(
-      GetCryptohomeBoolCallback("pkcs11-is-tpm-token-ready"));
+  cryptohome_pkcs11_client->Pkcs11IsTpmTokenReady(
+      user_data_auth::Pkcs11IsTpmTokenReadyRequest(),
+      base::BindOnce(&CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&crypto::IsTPMTokenReady, base::OnceClosure()),
@@ -52,12 +60,6 @@ void CryptohomeWebUIHandler::DidGetNSSUtilInfoOnUIThread(
 
   base::Value is_tpm_token_ready_value(is_tpm_token_ready);
   SetCryptohomeProperty("is-tpm-token-ready", is_tpm_token_ready_value);
-}
-
-DBusMethodCallback<bool> CryptohomeWebUIHandler::GetCryptohomeBoolCallback(
-    const std::string& destination_id) {
-  return base::BindOnce(&CryptohomeWebUIHandler::OnCryptohomeBoolProperty,
-                        weak_ptr_factory_.GetWeakPtr(), destination_id);
 }
 
 void CryptohomeWebUIHandler::OnGetTpmStatus(
@@ -74,10 +76,22 @@ void CryptohomeWebUIHandler::OnGetTpmStatus(
                         base::Value(reply.has_reset_lock_permissions()));
 }
 
-void CryptohomeWebUIHandler::OnCryptohomeBoolProperty(
-    const std::string& destination_id,
-    base::Optional<bool> result) {
-  SetCryptohomeProperty(destination_id, base::Value(result.value_or(false)));
+void CryptohomeWebUIHandler::OnIsMounted(
+    base::Optional<user_data_auth::IsMountedReply> reply) {
+  bool mounted = false;
+  if (reply.has_value()) {
+    mounted = reply->is_mounted();
+  }
+  SetCryptohomeProperty("is-mounted", base::Value(mounted));
+}
+
+void CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady(
+    base::Optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply) {
+  bool ready = false;
+  if (reply.has_value()) {
+    ready = reply->ready();
+  }
+  SetCryptohomeProperty("pkcs11-is-tpm-token-ready", base::Value(ready));
 }
 
 void CryptohomeWebUIHandler::SetCryptohomeProperty(
