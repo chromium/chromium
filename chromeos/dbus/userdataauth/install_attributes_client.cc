@@ -130,7 +130,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
       const ::user_data_auth::InstallAttributesGetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesGetReply>(
         ::user_data_auth::kInstallAttributesGet,
-        ::user_data_auth::kCryptohomeMiscInterface, request);
+        ::user_data_auth::kInstallAttributesInterface, request);
   }
 
   base::Optional<::user_data_auth::InstallAttributesSetReply>
@@ -138,7 +138,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
       const ::user_data_auth::InstallAttributesSetRequest& request) override {
     return BlockingCallProtoMethod<::user_data_auth::InstallAttributesSetReply>(
         ::user_data_auth::kInstallAttributesSet,
-        ::user_data_auth::kCryptohomeMiscInterface, request);
+        ::user_data_auth::kInstallAttributesInterface, request);
   }
 
   base::Optional<::user_data_auth::InstallAttributesFinalizeReply>
@@ -148,7 +148,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     return BlockingCallProtoMethod<
         ::user_data_auth::InstallAttributesFinalizeReply>(
         ::user_data_auth::kInstallAttributesFinalize,
-        ::user_data_auth::kCryptohomeMiscInterface, request);
+        ::user_data_auth::kInstallAttributesInterface, request);
   }
 
   base::Optional<::user_data_auth::InstallAttributesGetStatusReply>
@@ -158,7 +158,7 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
     return BlockingCallProtoMethod<
         ::user_data_auth::InstallAttributesGetStatusReply>(
         ::user_data_auth::kInstallAttributesGetStatus,
-        ::user_data_auth::kCryptohomeMiscInterface, request);
+        ::user_data_auth::kInstallAttributesInterface, request);
   }
 
  private:
