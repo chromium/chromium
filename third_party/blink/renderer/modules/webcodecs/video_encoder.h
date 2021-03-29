@@ -41,6 +41,7 @@ class MODULES_EXPORT VideoEncoderTraits {
 
     media::VideoEncoder::Options options;
     String codec_string;
+    base::Optional<gfx::Size> display_size;
 
     void Trace(Visitor*) const {}
   };

@@ -188,6 +188,11 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     return nullptr;
   }
 
+  if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
+    parsed->display_size.emplace(config->displayWidth(),
+                                 config->displayHeight());
+  }
+
   if (config->hasFramerate())
     parsed->options.framerate = config->framerate();
 
@@ -655,6 +660,13 @@ void VideoEncoder::CallOutputCallback(
     decoder_config->setCodec(active_config->codec_string);
     decoder_config->setCodedHeight(active_config->options.frame_size.height());
     decoder_config->setCodedWidth(active_config->options.frame_size.width());
+
+    if (active_config->display_size.has_value()) {
+      decoder_config->setDisplayHeight(
+          active_config->display_size.value().height());
+      decoder_config->setDisplayWidth(
+          active_config->display_size.value().width());
+    }
     if (codec_desc.has_value()) {
       auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
                                                     codec_desc.value().size());
