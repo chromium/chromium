@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_
-#define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_
+#ifndef CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
+#define CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_
 
 #include <string>
 #include <vector>
@@ -18,11 +18,10 @@ class WebContents;
 
 namespace apps {
 
-void MaybeShowIntentPickerChromeOs(
-    content::NavigationHandle* navigation_handle);
+void MaybeShowIntentPickerAsh(content::NavigationHandle* navigation_handle);
 
-void ShowIntentPickerBubbleChromeOs(content::WebContents* web_contents,
-                                    const GURL& url);
+void ShowIntentPickerBubbleAsh(content::WebContents* web_contents,
+                               const GURL& url);
 
 bool ContainsOnlyPwasAndMacApps(
     const std::vector<apps::IntentPickerAppInfo>& apps);
@@ -38,4 +37,4 @@ PickerEntryType GetPickerEntryType(mojom::AppType app_type);
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_APPS_INTENT_HELPER_CHROMEOS_INTENT_PICKER_HELPERS_H_
+#endif  // CHROME_BROWSER_ASH_APPS_INTENT_HELPER_ASH_INTENT_PICKER_HELPERS_H_

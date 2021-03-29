@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
 
 #include <algorithm>
 #include <utility>
@@ -214,8 +214,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 
 }  // namespace
 
-void MaybeShowIntentPickerChromeOs(
-    content::NavigationHandle* navigation_handle) {
+void MaybeShowIntentPickerAsh(content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -248,8 +247,8 @@ void MaybeShowIntentPickerChromeOs(
                      url));
 }
 
-void ShowIntentPickerBubbleChromeOs(content::WebContents* web_contents,
-                                    const GURL& url) {
+void ShowIntentPickerBubbleAsh(content::WebContents* web_contents,
+                               const GURL& url) {
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
   if (apps.empty())
     return;

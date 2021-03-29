@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
-#include "chrome/browser/ash/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/intent_helper/ash_intent_picker_helpers.h"
 #include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
