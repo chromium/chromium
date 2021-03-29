@@ -1697,9 +1697,10 @@ enum class TextBlobStrategy {
   kRecordFilter   // DrawRectOp where the paint has a RecordFilter with text
 };
 enum class MatrixStrategy {
-  kIdentity,  // Identity matrix (no extra scale factor for text then)
-  kScaled,    // Matrix is an axis-aligned scale factor
-  kComplex,   // Matrix is not axis-aligned and scale must be decomposed
+  kIdentity,     // Identity matrix (no extra scale factor for text then)
+  kScaled,       // Matrix is an axis-aligned scale factor
+  kComplex,      // Matrix is not axis-aligned and scale must be decomposed
+  kPerspective,  // Matrix has perspective and an approximate scale is needed
 };
 enum class LCDStrategy { kNo, kYes };
 
@@ -1754,6 +1755,12 @@ class OopTextBlobPixelTest
       max_abs_error = 2;
     }
 #endif
+    // Regardless of OS, perspective triggers path rendering for each glyph,
+    // which produces its own set of pixel differences.
+    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
+      error_pixels_percentage = 4.f;
+      max_abs_error = 36;
+    }
 
     FuzzyPixelComparator comparator(
         /*discard_alpha=*/false,
@@ -1770,12 +1777,18 @@ class OopTextBlobPixelTest
 
     SkM44 m;  // Default constructed to identity
     if (strategy != MatrixStrategy::kIdentity) {
+      // Scaled, Complex, and Perspective all have a 2x scale factor
       m.preScale(2.0f, 2.0f);
-      if (strategy != MatrixStrategy::kScaled) {
+      if (strategy == MatrixStrategy::kComplex) {
         SkM44 skew = SkM44();
         skew.setRC(0, 1, 2.f);
         skew.setRC(1, 0, 2.f);
         m.preConcat(skew);
+      } else if (strategy == MatrixStrategy::kPerspective) {
+        SkM44 persp = SkM44::Perspective(0.01f, 10.f, SK_ScalarPI / 3.f);
+        persp.preTranslate(0.f, 5.f, -0.1f);
+        persp.preConcat(SkM44::Rotate({0.f, 1.f, 0.f}, 0.008f /* radians */));
+        m.postConcat(persp);
       }
     }
 
@@ -1877,6 +1890,9 @@ class OopTextBlobPixelTest
       case MatrixStrategy::kComplex:
         ss << "ComplexCTM";
         break;
+      case MatrixStrategy::kPerspective:
+        ss << "PerspectiveCTM";
+        break;
     }
     ss << "_";
     switch (GetLCDStrategy(info.param)) {
@@ -1905,7 +1921,8 @@ INSTANTIATE_TEST_SUITE_P(
                                          TextBlobStrategy::kRecordFilter),
                        ::testing::Values(MatrixStrategy::kIdentity,
                                          MatrixStrategy::kScaled,
-                                         MatrixStrategy::kComplex),
+                                         MatrixStrategy::kComplex,
+                                         MatrixStrategy::kPerspective),
                        ::testing::Values(LCDStrategy::kNo, LCDStrategy::kYes)),
     OopTextBlobPixelTest::PrintTestName);
 
