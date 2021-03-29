@@ -64,8 +64,8 @@ void QuickAnswersBrowserClientImpl::RefreshAccessToken() {
       IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identity_manager);
 
-  CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   const signin::ScopeSet scopes{kCloudTranslationScope};
   DCHECK(!access_token_fetcher_);

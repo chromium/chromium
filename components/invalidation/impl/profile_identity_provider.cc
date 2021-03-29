@@ -63,8 +63,8 @@ ProfileIdentityProvider::ProfileIdentityProvider(
     : identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 
-  active_account_id_ = identity_manager_->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  active_account_id_ =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
 ProfileIdentityProvider::~ProfileIdentityProvider() {

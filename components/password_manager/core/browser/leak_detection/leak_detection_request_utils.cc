@@ -31,8 +31,8 @@ constexpr char kAPIScope[] =
 // Returns a Google account that can be used for getting a token.
 CoreAccountId GetAccountForRequest(
     const signin::IdentityManager* identity_manager) {
-  CoreAccountInfo result = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo result =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (result.IsEmpty()) {
     std::vector<CoreAccountInfo> all_accounts =
         identity_manager->GetAccountsWithRefreshTokens();

@@ -134,7 +134,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                     mIdentityManager::forceRefreshOfExtendedAccountInfo);
         }
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
 
         maybeRollbackMobileIdentityConsistency();
     }
@@ -158,7 +158,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private void maybeRollbackMobileIdentityConsistency() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) return;
         // Nothing to do if there's no primary account.
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) return;
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) return;
         // Nothing to do if sync is on - this state existed before MobileIdentityConsistency.
         if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) return;
 
@@ -409,7 +409,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         @ConsentLevel
         int consentLevel =
-                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.NOT_REQUIRED;
+                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
         if (!mIdentityMutator.setPrimaryAccount(
                     mSignInState.mCoreAccountInfo.getId(), consentLevel)) {
             Log.w(TAG, "Failed to set the PrimaryAccount in IdentityManager, aborting signin");
@@ -476,7 +476,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 // - Syncing account is signed out. User may choose to delete data from UI prompt
                 //   if account is not managed. In this case mSigninOutState is set.
                 // - RevokeSyncConsent() is called in native code. In this case the user may still
-                //   be signed in with Consentlevel::NOT_REQUIRED and just lose sync privileges.
+                //   be signed in with Consentlevel::SIGNIN and just lose sync privileges.
                 //   If the account is managed then the data should be wiped.
                 //
                 //   TODO(https://crbug.com/1173016): It might be too late to get management status
@@ -493,7 +493,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
                 break;
             case PrimaryAccountChangeEvent.Type.NONE:
-                if (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)
+                if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
                         == PrimaryAccountChangeEvent.Type.CLEARED) {
                     if (mSignOutState == null) {
                         // Don't wipe data as the user is not syncing.
@@ -626,7 +626,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
     @Override
     public void onAccountsCookieDeletedByUserAction() {
-        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) != null
+        if (mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null) {
             // Clearing account cookies should trigger sign-out only when user is signed in
             // without sync.

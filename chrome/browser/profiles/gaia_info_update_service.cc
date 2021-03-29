@@ -63,8 +63,7 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount() {
     return;
 
   auto unconsented_primary_account_info =
-      identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   if (!gaia_id_of_profile_attribute_entry_.empty() &&
       unconsented_primary_account_info.gaia !=
@@ -149,7 +148,7 @@ void GAIAInfoUpdateService::Shutdown() {
 
 void GAIAInfoUpdateService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       UpdatePrimaryAccount();
       break;
@@ -168,8 +167,8 @@ void GAIAInfoUpdateService::OnExtendedAccountInfoUpdated(
   if (!ShouldUpdatePrimaryAccount())
     return;
 
-  CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   if (info.account_id != account_info.account_id)
     return;
@@ -209,6 +208,5 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
 }
 
 bool GAIAInfoUpdateService::ShouldUpdatePrimaryAccount() {
-  return identity_manager_->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired);
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }

@@ -197,7 +197,7 @@ std::string GetAccountName(Profile* profile) {
     case mojom::ChromeAccountType::USER_ACCOUNT:
     case mojom::ChromeAccountType::CHILD_ACCOUNT:
       // IdentityManager::GetPrimaryAccountInfo(
-      //    signin::ConsentLevel::kNotRequired).email might be more appropriate
+      //    signin::ConsentLevel::kSignin).email might be more appropriate
       // here, but this is what we have done historically.
       return chromeos::ProfileHelper::Get()
           ->GetUserByProfile(profile)
@@ -484,11 +484,9 @@ void ArcAuthService::FetchPrimaryAccountInfo(
     // Optionally retrieve auth code in silent mode. Use the "unconsented"
     // primary account because this class doesn't care about browser sync
     // consent.
-    DCHECK(identity_manager_->HasPrimaryAccount(
-        signin::ConsentLevel::kNotRequired));
+    DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     auth_code_fetcher = CreateArcBackgroundAuthCodeFetcher(
-        identity_manager_->GetPrimaryAccountId(
-            signin::ConsentLevel::kNotRequired),
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         initial_signin);
   }
 

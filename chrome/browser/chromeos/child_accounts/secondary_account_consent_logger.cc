@@ -108,8 +108,8 @@ SecondaryAccountConsentLogger::SecondaryAccountConsentLogger(
     const std::string& parent_obfuscated_gaia_id,
     const std::string& re_auth_proof_token,
     base::OnceCallback<void(Result)> callback)
-    : primary_account_id_(identity_manager->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired)),
+    : primary_account_id_(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       pref_service_(pref_service),
@@ -132,7 +132,7 @@ void SecondaryAccountConsentLogger::StartLogging() {
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::
               kWaitUntilAvailable /*mode*/,
-          signin::ConsentLevel::kNotRequired /*consent*/);
+          signin::ConsentLevel::kSignin /*consent*/);
 }
 
 void SecondaryAccountConsentLogger::OnAccessTokenFetchComplete(

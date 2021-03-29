@@ -135,7 +135,7 @@ public class SignInPreference
         CoreAccountInfo accountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (accountInfo != null) {
             setupSignedIn(accountInfo.getEmail());
             return;

@@ -72,8 +72,7 @@ void AuthErrorObserver::OnErrorChanged() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   HandleAuthError(identity_manager->GetErrorStateOfRefreshTokenForAccount(
-      identity_manager->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired)));
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
 }
 
 void AuthErrorObserver::HandleAuthError(

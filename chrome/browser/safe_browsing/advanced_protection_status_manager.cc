@@ -55,8 +55,8 @@ void AdvancedProtectionStatusManager::Initialize() {
 
 void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
   // Retrieves advanced protection service status from primary account's info.
-  CoreAccountInfo core_info = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo core_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (core_info.account_id.empty())
     return;
 
@@ -125,7 +125,7 @@ void AdvancedProtectionStatusManager::OnExtendedAccountInfoRemoved(
 
 void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // TODO(crbug.com/926204): remove IdentityManager ensures that primary
       // account always has valid refresh token when it is set.
@@ -298,7 +298,7 @@ AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
 CoreAccountId AdvancedProtectionStatusManager::GetUnconsentedPrimaryAccountId()
     const {
   return identity_manager_ ? identity_manager_->GetPrimaryAccountId(
-                                 signin::ConsentLevel::kNotRequired)
+                                 signin::ConsentLevel::kSignin)
                            : CoreAccountId();
 }
 

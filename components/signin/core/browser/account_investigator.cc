@@ -40,7 +40,7 @@ bool AreSame(const CoreAccountInfo& info, const ListedAccount& account) {
 base::Optional<AccountInfo> GetExtendedAccountInfo(
     signin::IdentityManager* identity_manager) {
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (account_id.empty())
     return base::nullopt;
   return identity_manager
@@ -51,7 +51,7 @@ base::Optional<AccountInfo> GetExtendedAccountInfo(
 // Returns true if there is primary account (no consent required) but no
 // extended info, yet.
 bool WaitingForExtendedInfo(signin::IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired))
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
     return false;
   return !GetExtendedAccountInfo(identity_manager).has_value();
 }
@@ -241,8 +241,7 @@ void AccountInvestigator::DoPeriodicReport(
 
   // Report extra metrics only for signed-in accounts that are split by the
   // primary account type.
-  if (identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired)) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     const bool is_syncing =
         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
     base::Optional<AccountInfo> info =

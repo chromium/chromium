@@ -449,7 +449,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
 // whether or not sync consent is required.
 INSTANTIATE_TEST_SUITE_P(All,
                          PrimaryAccountAccessTokenFetcherTest,
-                         testing::Values(ConsentLevel::kNotRequired,
+                         testing::Values(ConsentLevel::kSignin,
                                          ConsentLevel::kSync));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -465,7 +465,7 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   // Perform an immediate fetch with consent not required.
   auto fetcher = CreateFetcher(
       callback.Get(), PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      ConsentLevel::kNotRequired);
+      ConsentLevel::kSignin);
 
   // We should get called back with the token.
   EXPECT_CALL(callback, Run(GoogleServiceAuthError::AuthErrorNone(),
@@ -499,7 +499,7 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
   auto fetcher =
       CreateFetcher(callback.Get(),
                     PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-                    ConsentLevel::kNotRequired);
+                    ConsentLevel::kSignin);
   EXPECT_FALSE(identity_test_env()->IsAccessTokenRequestPending());
 
   // Simulate login.

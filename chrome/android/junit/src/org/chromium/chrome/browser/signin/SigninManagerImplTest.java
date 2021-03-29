@@ -141,7 +141,7 @@ public class SigninManagerImplTest {
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
 
-        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.NOT_REQUIRED);
+        verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
 
         verify(mAndroidSyncSettings, never()).updateAccount(any());
         verify(mAndroidSyncSettings, never()).enableChromeSync();
@@ -319,7 +319,7 @@ public class SigninManagerImplTest {
     @Test
     public void clearingAccountCookieTriggersSignoutWhenUserIsSignedInWithoutSync() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.NOT_REQUIRED))
+                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
@@ -335,7 +335,7 @@ public class SigninManagerImplTest {
     @Test
     public void rollbackWhenMobileIdentityConsistencyIsDisabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.NOT_REQUIRED))
+                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
 
         mSigninManager = new SigninManagerImpl(NATIVE_SIGNIN_MANAGER, mAccountTrackerService,
@@ -357,7 +357,7 @@ public class SigninManagerImplTest {
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void noRollbackWhenMobileIdentityConsistencyIsEnabled() {
         when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
-                     NATIVE_IDENTITY_MANAGER, ConsentLevel.NOT_REQUIRED))
+                     NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
 
         mSigninManager = new SigninManagerImpl(NATIVE_SIGNIN_MANAGER, mAccountTrackerService,

@@ -491,7 +491,7 @@ base::Value PeopleHandler::GetStoredAccountsList() {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (primary_account_info.has_value())
     accounts.Append(GetAccountValue(primary_account_info.value()));
   return accounts;

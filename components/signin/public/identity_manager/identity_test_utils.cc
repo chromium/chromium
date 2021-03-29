@@ -135,7 +135,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
 
 CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
                                              const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  DCHECK(!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
@@ -145,13 +145,12 @@ CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
       identity_manager->GetPrimaryAccountManager();
   primary_account_manager->SetUnconsentedPrimaryAccountInfo(account_info);
 
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
-  DCHECK_EQ(account_info.gaia,
-            identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
-                .gaia);
-  return identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  DCHECK_EQ(
+      account_info.gaia,
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 }
 
 void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
@@ -223,7 +222,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
   DCHECK(identity_manager->GetPrimaryAccountMutator());
@@ -233,7 +232,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   TestIdentityManagerObserver signout_observer(identity_manager);
   signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
       [](base::RunLoop* run_loop, PrimaryAccountChangeEvent event) {
-        if (event.GetEventTypeFor(ConsentLevel::kNotRequired) ==
+        if (event.GetEventTypeFor(ConsentLevel::kSignin) ==
             PrimaryAccountChangeEvent::Type::kCleared) {
           run_loop->Quit();
         }

@@ -41,7 +41,7 @@ ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
-    return ConsentLevel::kNotRequired;
+    return ConsentLevel::kSignin;
   }
 #endif
   return ConsentLevel::kSync;

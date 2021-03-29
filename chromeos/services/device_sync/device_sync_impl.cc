@@ -786,7 +786,7 @@ void DeviceSyncImpl::Shutdown() {
 void DeviceSyncImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   PA_LOG(VERBOSE) << "DeviceSyncImpl: OnPrimaryAccountChanged";
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       identity_manager_->RemoveObserver(this);
       ProcessPrimaryAccountInfo(event.GetCurrentState().primary_account);
@@ -831,8 +831,8 @@ void DeviceSyncImpl::FetchAccountInfo() {
   status_ = InitializationStatus::kFetchingAccountInfo;
 
   // "Unconsented" because this feature is not tied to browser sync consent.
-  CoreAccountInfo primary_account = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account.account_id.empty()) {
     // Primary profile not loaded yet. This happens when adding a new account.
     PA_LOG(VERBOSE) << "DeviceSyncImpl: Waiting for primary account info";

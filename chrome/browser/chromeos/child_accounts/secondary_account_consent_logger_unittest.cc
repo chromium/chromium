@@ -109,7 +109,7 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
   void WaitForAccessTokenRequestAndIssueToken() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
-            signin::ConsentLevel::kNotRequired),
+            signin::ConsentLevel::kSignin),
         "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
   }
 
@@ -163,7 +163,7 @@ TEST_F(SecondaryAccountConsentLoggerTest, TokenError) {
                          SecondaryAccountConsentLogger::Result::kTokenError));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       identity_test_env_.identity_manager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired),
+          signin::ConsentLevel::kSignin),
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 }
 

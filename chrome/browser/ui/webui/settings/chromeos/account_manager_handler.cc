@@ -272,7 +272,7 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
       device_account.SetOrganization(
           chrome::enterprise_util::GetDomainFromEmail(
               identity_manager_
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .email));
     }
 

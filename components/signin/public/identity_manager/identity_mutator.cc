@@ -35,7 +35,7 @@ bool JniIdentityMutator::SetPrimaryAccount(
     case ConsentLevel::kSync:
       return primary_account_mutator->SetPrimaryAccount(
           ConvertFromJavaCoreAccountId(env, primary_account_id));
-    case ConsentLevel::kNotRequired:
+    case ConsentLevel::kSignin:
       primary_account_mutator->SetUnconsentedPrimaryAccount(
           ConvertFromJavaCoreAccountId(env, primary_account_id));
       return true;

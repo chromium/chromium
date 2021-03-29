@@ -896,8 +896,8 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
         DCHECK(account_mutator);
 
         // Note: On some platforms, revoking the sync consent will also clear
-        // the primary account as transitioning from ConsentLevel::kSync
-        // ConsentLevel::kNotRequired is not supported.
+        // the primary account as transitioning from ConsentLevel::kSync to
+        // ConsentLevel::kSignin is not supported.
         account_mutator->RevokeSyncConsent(
             signin_metrics::SERVER_FORCED_DISABLE,
             signin_metrics::SignoutDelete::IGNORE_METRIC);

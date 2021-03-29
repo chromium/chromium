@@ -32,8 +32,7 @@ bool HasPrimaryAccount(const Profile* profile) {
   if (!identity_manager)
     return false;
 
-  return identity_manager->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired);
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool IsGoogleDevice() {

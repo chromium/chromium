@@ -410,8 +410,8 @@ void Service::UpdateAssistantManagerState() {
 }
 
 CoreAccountInfo Service::RetrievePrimaryAccountInfo() const {
-  CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   CHECK(!account_info.account_id.empty());
   CHECK(!account_info.gaia.empty());
   return account_info;

@@ -662,8 +662,8 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
 
   EXPECT_NSEQ(identity(0),
               authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(authentication_service()->IsAuthenticated());
@@ -675,8 +675,8 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
 
   EXPECT_NSEQ(identity(0),
               authentication_service()->GetAuthenticatedIdentity());
-  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(authentication_service()->IsAuthenticated());

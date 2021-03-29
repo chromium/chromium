@@ -219,7 +219,7 @@ bool PrimaryAccountManager::HasPrimaryAccount(
     return false;
   }
   switch (consent_level) {
-    case signin::ConsentLevel::kNotRequired:
+    case signin::ConsentLevel::kSignin:
       return true;
     case signin::ConsentLevel::kSync:
       return consented_pref;
@@ -347,7 +347,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
               kPrimaryAccountManager_ClearAccount);
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
-      if (previous_state.consent_level == signin::ConsentLevel::kNotRequired) {
+      if (previous_state.consent_level == signin::ConsentLevel::kSignin) {
         // Nothing to update as the primary account is already at kNotRequired
         // consent level. Prefer returning to avoid firing useless
         // OnPrimaryAccountChanged() notifications.
@@ -365,7 +365,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
 PrimaryAccountChangeEvent::State PrimaryAccountManager::GetPrimaryAccountState()
     const {
   PrimaryAccountChangeEvent::State state(primary_account_info(),
-                                         signin::ConsentLevel::kNotRequired);
+                                         signin::ConsentLevel::kSignin);
   if (HasPrimaryAccount(signin::ConsentLevel::kSync))
     state.consent_level = signin::ConsentLevel::kSync;
   return state;
@@ -378,7 +378,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 
   DCHECK(event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
              PrimaryAccountChangeEvent::Type::kNone ||
-         event_details.GetEventTypeFor(signin::ConsentLevel::kNotRequired) !=
+         event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
              PrimaryAccountChangeEvent::Type::kNone)
       << "PrimaryAccountChangeEvent with no change: " << event_details;
 

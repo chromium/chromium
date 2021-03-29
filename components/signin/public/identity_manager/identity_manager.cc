@@ -630,9 +630,9 @@ void IdentityManager::OnRefreshTokenRevokedFromSource(
 }
 
 void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
-  if (HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
+  if (HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     const CoreAccountId primary_account_id =
-        GetPrimaryAccountId(ConsentLevel::kNotRequired);
+        GetPrimaryAccountId(ConsentLevel::kSignin);
     if (primary_account_id == info.account_id) {
       primary_account_manager_->UpdatePrimaryAccountInfo();
     }

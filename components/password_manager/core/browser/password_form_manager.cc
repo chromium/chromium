@@ -275,8 +275,7 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   DCHECK(identity_manager);
   const std::string gaia_id =
-      identity_manager
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   DCHECK(!gaia_id.empty()) << "Cannot move without signed in user";
 
@@ -440,7 +439,7 @@ void PasswordFormManager::BlockMovingCredentialsToAccountStore() {
     return;
   const std::string gaia_id =
       client_->GetIdentityManager()
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
   // The above call to IsMovableToAccountStore() guarantees there is a signed in
   // user.

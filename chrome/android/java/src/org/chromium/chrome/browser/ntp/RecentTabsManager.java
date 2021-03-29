@@ -376,7 +376,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
             }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                     && mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                               ConsentLevel.NOT_REQUIRED)
+                               ConsentLevel.SIGNIN)
                             != null) {
                 return PromoState.PROMO_SYNC_PERSONALIZED;
             }

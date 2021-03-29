@@ -175,8 +175,7 @@ AccountConsistencyService::AccountConsistencyHandler::ShouldAllowRequest(
   GURL url = net::GURLWithNSURL(request.URL);
   if (base::FeatureList::IsEnabled(signin::kRestoreGaiaCookiesOnUserAction) &&
       signin::IsUrlEligibleForMirrorCookie(url) &&
-      identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired)) {
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // CHROME_CONNECTED cookies are added asynchronously on google.com and
     // youtube.com domains when Chrome detects that the user is signed-in. By
     // continuing to fulfill the navigation once the cookie request is sent,
@@ -261,8 +260,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     case signin::GAIA_SERVICE_TYPE_ADDSESSION:
       // This situation is only possible if the all cookies have been deleted by
       // ITP restrictions and Chrome has not triggered a cookie refresh.
-      if (identity_manager_->HasPrimaryAccount(
-              signin::ConsentLevel::kNotRequired)) {
+      if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         LogIOSGaiaCookiesState(GaiaCookieStateOnSignedInNavigation::
                                    kGaiaCookieAbsentOnAddSessionNavigation);
         if (base::FeatureList::IsEnabled(
@@ -377,8 +375,7 @@ AccountConsistencyService::AccountConsistencyService(
       identity_manager_(identity_manager),
       active_cookie_manager_requests_for_testing_(0) {
   identity_manager_->AddObserver(this);
-  if (identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired)) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     AddChromeConnectedCookies();
   } else {
     RemoveAllChromeConnectedCookies(base::OnceClosure());
@@ -433,8 +430,7 @@ void AccountConsistencyService::SetGaiaCookiesIfDeleted(
   // |GetAllCookies| in the cookie manager.
   if (base::Time::Now() - last_gaia_cookie_verification_time_ <
           GetDelayThresholdToUpdateGaiaCookie() ||
-      !identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired)) {
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
   network::mojom::CookieManager* cookie_manager =
@@ -588,7 +584,7 @@ void AccountConsistencyService::OnBrowsingDataRemoved() {
 
 void AccountConsistencyService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       AddChromeConnectedCookies();

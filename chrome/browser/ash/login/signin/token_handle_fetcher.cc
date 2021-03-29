@@ -62,7 +62,7 @@ void TokenHandleFetcher::BackfillToken(Profile* profile,
   // This class doesn't care about browser sync consent.
   if (!identity_manager_->HasAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountId(
-              signin::ConsentLevel::kNotRequired))) {
+              signin::ConsentLevel::kSignin))) {
     profile_shutdown_subscription_ =
         TokenHandleFetcherShutdownNotifierFactory::GetInstance()
             ->Get(profile)
@@ -87,7 +87,7 @@ void TokenHandleFetcher::BackfillToken(Profile* profile,
           base::BindOnce(&TokenHandleFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void TokenHandleFetcher::OnAccessTokenFetchComplete(

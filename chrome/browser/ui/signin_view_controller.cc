@@ -205,7 +205,7 @@ SigninViewController::ShowReauthPrompt(
   // For now, Reauth is restricted to the primary account only.
   // TODO(crbug.com/1083429): add support for secondary accounts.
   CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (account_id != primary_account_id) {
     signin_ui_util::RecordTransactionalReauthResult(

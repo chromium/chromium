@@ -146,12 +146,12 @@ gfx::Image AvatarToolbarButtonDelegate::GetGaiaAccountImage() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     base::Optional<AccountInfo> account_info =
         identity_manager
             ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
                 identity_manager->GetPrimaryAccountId(
-                    signin::ConsentLevel::kNotRequired));
+                    signin::ConsentLevel::kSignin));
     if (account_info.has_value())
       return account_info->account_image;
   }
@@ -184,8 +184,7 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
       IdentityManagerFactory::GetForProfile(profile_);
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
   if (!entry ||  // This can happen if the user deletes the current profile.
-      (!identity_manager->HasPrimaryAccount(
-           signin::ConsentLevel::kNotRequired) &&
+      (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
        IsGenericProfile(*entry))) {
     return AvatarToolbarButton::State::kGenericProfile;
   }
@@ -250,7 +249,7 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation(
   // Check that the user is still signed in. See https://crbug.com/1025674
   CoreAccountInfo user_identity =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   if (user_identity.IsEmpty()) {
     identity_animation_state_ = IdentityAnimationState::kNotShowing;
     return;
@@ -326,7 +325,7 @@ void AvatarToolbarButtonDelegate::OnProfileNameChanged(
 
 void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired) !=
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     return;
   }
@@ -351,7 +350,7 @@ void AvatarToolbarButtonDelegate::OnRefreshTokensLoaded() {
   }
   CoreAccountInfo account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   if (account.IsEmpty())
     return;
   OnUserIdentityChanged();
@@ -390,7 +389,7 @@ void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout(
     CoreAccountId account_id) {
   CoreAccountInfo user_identity =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   // If another account is signed-in then the one that initiated this animation,
   // don't hide it. There's one more pending OnIdentityAnimationTimeout() that
   // will properly hide it after the proper delay.

@@ -68,7 +68,7 @@ public final class SigninTestUtil {
             Assert.assertEquals(coreAccountInfo,
                     IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         });
     }
 

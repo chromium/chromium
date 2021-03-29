@@ -173,7 +173,7 @@ public class GoogleServicesSettings
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             boolean shouldSignUserOut =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) != null
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
                     && !((boolean) newValue);
             if (!shouldSignUserOut) {
                 mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, (boolean) newValue);
@@ -290,7 +290,7 @@ public class GoogleServicesSettings
         // we do not hit a native crash.
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                 == null) {
             return;
         }

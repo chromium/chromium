@@ -91,8 +91,8 @@ void PrimaryAccountObserver::OnPrimaryAccountChanged(
 }
 
 void PrimaryAccountObserver::UpdatePrimaryAccountIfNeeded() {
-  CoreAccountInfo primary_account = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account == primary_account_) {
     return;
   }

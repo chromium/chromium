@@ -230,7 +230,7 @@ void KidsChromeManagementClient::StartFetching(
               base::Unretained(this), it),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
           // This class doesn't care about browser sync consent.
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void KidsChromeManagementClient::OnAccessTokenFetchComplete(
@@ -302,8 +302,7 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
       req->access_token_expired = true;
       signin::ScopeSet scopes{req->scope};
       identity_manager_->RemoveAccessTokenFromCache(
-          identity_manager_->GetPrimaryAccountId(
-              signin::ConsentLevel::kNotRequired),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           scopes, token_info.token);
       StartFetching(it);
       return;

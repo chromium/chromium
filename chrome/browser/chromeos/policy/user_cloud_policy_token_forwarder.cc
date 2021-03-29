@@ -114,7 +114,7 @@ void UserCloudPolicyTokenForwarder::StartRequest() {
               &UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(

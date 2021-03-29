@@ -532,8 +532,8 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAtStartup) {
   EXPECT_EQ(kTestEmail, primary_account_info.email);
 
   // Primary account is by definition also unconsented primary account.
-  EXPECT_EQ(primary_account_info, identity_manager()->GetPrimaryAccountInfo(
-                                      ConsentLevel::kNotRequired));
+  EXPECT_EQ(primary_account_info,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   // There is no guarantee that this will be notified via callback on startup.
 }
 
@@ -550,7 +550,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
             event.GetEventTypeFor(ConsentLevel::kSync));
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kSet,
-            event.GetEventTypeFor(ConsentLevel::kNotRequired));
+            event.GetEventTypeFor(ConsentLevel::kSignin));
 
   CoreAccountInfo primary_account_from_set_callback =
       event.GetCurrentState().primary_account;
@@ -563,8 +563,8 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   EXPECT_EQ(kTestEmail, primary_account_info.email);
 
   // Primary account is by definition also unconsented primary account.
-  EXPECT_EQ(primary_account_info, identity_manager()->GetPrimaryAccountInfo(
-                                      ConsentLevel::kNotRequired));
+  EXPECT_EQ(primary_account_info,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
@@ -572,7 +572,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSignin) {
   EXPECT_EQ(primary_account_id, primary_account_info.account_id);
 
   EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kNotRequired));
+                                    signin::ConsentLevel::kSignin));
 }
 
 // Test that the user signing out results in firing of the IdentityManager
@@ -590,7 +590,7 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
             event.GetEventTypeFor(ConsentLevel::kSync));
   EXPECT_EQ(PrimaryAccountChangeEvent::Type::kCleared,
-            event.GetEventTypeFor(ConsentLevel::kNotRequired));
+            event.GetEventTypeFor(ConsentLevel::kSignin));
 
   CoreAccountInfo primary_account_from_cleared_callback =
       event.GetPreviousState().primary_account;
@@ -599,22 +599,22 @@ TEST_F(IdentityManagerTest, PrimaryAccountInfoAfterSigninAndSignout) {
 
   // After the sign-out, there is no unconsented primary account.
   EXPECT_TRUE(identity_manager()
-                  ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
+                  ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
                   .IsEmpty());
 
   CoreAccountInfo primary_account_info =
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_EQ("", primary_account_info.gaia);
   EXPECT_EQ("", primary_account_info.email);
-  EXPECT_EQ(primary_account_info, identity_manager()->GetPrimaryAccountInfo(
-                                      ConsentLevel::kNotRequired));
+  EXPECT_EQ(primary_account_info,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   EXPECT_TRUE(primary_account_id.empty());
   EXPECT_EQ(primary_account_id, primary_account_info.account_id);
   EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kNotRequired));
+                                    signin::ConsentLevel::kSignin));
 }
 
 // Test that the primary account's core info remains tracked by the
@@ -639,22 +639,21 @@ TEST_F(IdentityManagerTest,
   EXPECT_EQ(kTestGaiaId, primary_account_info.gaia);
   EXPECT_EQ(kTestEmail, primary_account_info.email);
   EXPECT_EQ(CoreAccountId(kTestGaiaId), primary_account_info.account_id);
-  EXPECT_EQ(primary_account_info, identity_manager()->GetPrimaryAccountInfo(
-                                      ConsentLevel::kNotRequired));
+  EXPECT_EQ(primary_account_info,
+            identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   CoreAccountId primary_account_id =
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   EXPECT_EQ(primary_account_id, CoreAccountId(kTestGaiaId));
-  EXPECT_EQ(primary_account_id, identity_manager()->GetPrimaryAccountId(
-                                    ConsentLevel::kNotRequired));
+  EXPECT_EQ(primary_account_id,
+            identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
   // Removing the account from the AccountTrackerService should not cause
   // IdentityManager to think that there is no longer a primary account.
@@ -662,8 +661,7 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Signing out should cause IdentityManager to recognize that there is no
@@ -671,8 +669,7 @@ TEST_F(IdentityManagerTest, HasPrimaryAccount) {
   ClearPrimaryAccount(identity_manager());
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
   EXPECT_FALSE(identity_manager_observer()
                    ->GetPrimaryAccountChangedEvent()
                    .GetPreviousState()
@@ -928,10 +925,9 @@ TEST_F(IdentityManagerTest,
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                 .email,
             kTestEmail);
-  EXPECT_EQ(identity_manager()
-                ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
-                .email,
-            kTestEmail);
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).email,
+      kTestEmail);
 
   // Add a refresh token for the primary account and check that it
   // also shows up in GetAccountsWithRefreshTokens().
@@ -957,10 +953,9 @@ TEST_F(IdentityManagerTest,
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                 .email,
             kTestEmail);
-  EXPECT_EQ(identity_manager()
-                ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
-                .email,
-            kTestEmail);
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).email,
+      kTestEmail);
 
   // Remove the token for the primary account and check that account2 is still
   // present.
@@ -981,10 +976,9 @@ TEST_F(IdentityManagerTest,
                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                 .email,
             kTestEmail);
-  EXPECT_EQ(identity_manager()
-                ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
-                .email,
-            kTestEmail);
+  EXPECT_EQ(
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).email,
+      kTestEmail);
 }
 
 TEST_F(
@@ -992,8 +986,7 @@ TEST_F(
     HasPrimaryAccountWithRefreshTokenInteractionBetweenPrimaryAndSecondaryAccounts) {
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
   // Add a refresh token for a secondary account and check that it doesn't
   // impact the above state.
@@ -1004,8 +997,7 @@ TEST_F(
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
   // Add a refresh token for the primary account and check that it
   // *does* impact the stsate of
@@ -1014,8 +1006,7 @@ TEST_F(
 
   EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
   // Remove the token for the secondary account and check that this doesn't flip
   // the state.
@@ -1023,8 +1014,7 @@ TEST_F(
 
   EXPECT_TRUE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 
   // Remove the token for the primary account and check that this flips the
   // state.
@@ -1032,8 +1022,7 @@ TEST_F(
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
       signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 
 TEST_F(
@@ -1542,9 +1531,8 @@ TEST_F(IdentityManagerTest, IdentityManagerReflectsUpdatedEmailAddress) {
       identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_EQ(kTestGaiaId, primary_account_info.gaia);
   EXPECT_EQ(kTestEmailWithPeriod, primary_account_info.email);
-  EXPECT_EQ(
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kNotRequired),
-      primary_account_info);
+  EXPECT_EQ(identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin),
+            primary_account_info);
 }
 #endif
 

@@ -130,12 +130,11 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
       // setting up the state of identity_manager and enable the DCHECK instead
       // of the conditional below.
       // DCHECK(identity_manager->HasPrimaryAccount(
-      //            signin::ConsentLevel::kNotRequired));
-      if (identity_manager->HasPrimaryAccount(
-              signin::ConsentLevel::kNotRequired)) {
+      //            signin::ConsentLevel::kSignin));
+      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
         // This class doesn't care about browser sync consent.
         const CoreAccountId account_id = identity_manager->GetPrimaryAccountId(
-            signin::ConsentLevel::kNotRequired);
+            signin::ConsentLevel::kSignin);
 
         UserConsentTypes::ArcPlayTermsOfServiceConsent play_consent;
         play_consent.set_status(UserConsentTypes::NOT_GIVEN);

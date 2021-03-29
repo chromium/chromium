@@ -105,7 +105,7 @@ void ChildAccountService::Init() {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kNotRequired));
+              signin::ConsentLevel::kSignin));
 
   if (primary_account_info.has_value())
     OnExtendedAccountInfoUpdated(primary_account_info.value());
@@ -248,7 +248,7 @@ void ChildAccountService::SetIsChildAccount(bool is_child_account) {
 
 void ChildAccountService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kNotRequired) ==
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     auto account_info =
         identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
@@ -273,8 +273,8 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   }
 
   // This class doesn't care about browser sync consent.
-  CoreAccountId auth_account_id = identity_manager_->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountId auth_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (info.account_id != auth_account_id)
     return;
 
@@ -284,8 +284,8 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
 void ChildAccountService::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // This class doesn't care about browser sync consent.
-  if (info.account_id != identity_manager_->GetPrimaryAccountId(
-                             signin::ConsentLevel::kNotRequired))
+  if (info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin))
     return;
 
   SetIsChildAccount(false);

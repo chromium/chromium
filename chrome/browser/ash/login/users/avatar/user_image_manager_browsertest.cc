@@ -258,8 +258,8 @@ class UserImageManagerTestBase : public LoginManagerTest,
   void UpdatePrimaryAccountInfo(Profile* profile) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     // Sync consent level doesn't matter here.
-    CoreAccountInfo core_info = identity_manager->GetPrimaryAccountInfo(
-        signin::ConsentLevel::kNotRequired);
+    CoreAccountInfo core_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForAccount(identity_manager, core_info.account_id,
                                       kRandomTokenStrForTesting);
     AccountInfo account_info;

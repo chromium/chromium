@@ -1028,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
   ASSERT_TRUE(profile);
   EXPECT_FALSE(
       IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired));
+          signin::ConsentLevel::kSignin));
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, FullscreenAllowed) {

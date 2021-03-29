@@ -204,8 +204,8 @@ void TurnSyncOnHelper::FinishSyncSetup(
       }
       if (consent_service)
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-      CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired);
+      CoreAccountId account_id =
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
       DCHECK(!account_id.empty());
       // TODO(https://crbug.com/1046746): Switch to consent-aware API
       // PrimaryAccountMutator::GrantSyncConsent() when that exists.

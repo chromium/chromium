@@ -138,8 +138,8 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     // This class doesn't care about browser sync consent.
-    CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
-        signin::ConsentLevel::kNotRequired);
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     if (account_info.IsEmpty()) {
       // No primary account (can happen when it was removed from the device).
       return content::NavigationThrottle::DEFER;

@@ -25,8 +25,8 @@ namespace {
 bool IsPrimaryAccountSignIn(const signin::IdentityManager& identity_manager,
                             const std::u16string& username,
                             const std::string& signon_realm) {
-  CoreAccountInfo primary_account = identity_manager.GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo primary_account =
+      identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return sync_util::IsGaiaCredentialPage(signon_realm) &&
          !primary_account.IsEmpty() &&
          gaia::AreEmailsSame(base::UTF16ToUTF8(username),

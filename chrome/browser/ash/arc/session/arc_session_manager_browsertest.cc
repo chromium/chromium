@@ -236,8 +236,7 @@ class ArcSessionManagerTest : public MixinBasedInProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ConsumerAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      identity_manager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       kUnmanagedAuthToken, base::Time::Max());
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
@@ -263,8 +262,7 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedChromeAccount) {
 IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EnableArc();
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      identity_manager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired),
+      identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       kManagedAuthToken, base::Time::Max());
   ArcPlayStoreDisabledWaiter().Wait();
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));

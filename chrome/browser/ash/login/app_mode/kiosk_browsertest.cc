@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(app_profile);
   EXPECT_FALSE(IdentityManagerFactory::GetForProfile(app_profile)
-                   ->HasPrimaryAccount(signin::ConsentLevel::kNotRequired));
+                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, PRE_LaunchAppNetworkDown) {
@@ -2586,7 +2586,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(app_profile);
   EXPECT_FALSE(IdentityManagerFactory::GetForProfile(app_profile)
-                   ->HasPrimaryAccount(signin::ConsentLevel::kNotRequired));
+                   ->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Terminate the app.
   window->GetBaseWindow()->Close();

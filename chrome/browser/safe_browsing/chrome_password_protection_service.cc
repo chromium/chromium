@@ -735,7 +735,7 @@ void ChromePasswordProtectionService::
     if (identity_manager) {
       CoreAccountInfo unconsented_primary_account_info =
           identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kNotRequired);
+              signin::ConsentLevel::kSignin);
       // SecurityEventRecorder only supports unconsented primary accounts.
       if (gaia::AreEmailsSame(unconsented_primary_account_info.email,
                               username_for_last_shown_warning())) {

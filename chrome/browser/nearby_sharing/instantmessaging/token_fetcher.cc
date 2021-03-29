@@ -22,8 +22,7 @@ void TokenFetcher::GetAccessToken(
   // users.
 
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      identity_manager_->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired),
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       kOAuthConsumerName, {GaiaConstants::kTachyonOAuthScope},
       base::BindOnce(&TokenFetcher::OnOAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

@@ -108,7 +108,7 @@ void SyncConfirmationHandler::HandleAccountImageRequest(
   DCHECK(ProfileSyncServiceFactory::IsSyncAllowed(profile_));
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
 
   // Fire the "account-image-changed" listener from |SetUserImageURL()|.
   // Note: If the account info is not available yet in the
@@ -151,7 +151,7 @@ void SyncConfirmationHandler::RecordConsent(const base::ListValue* args) {
   consent_auditor::ConsentAuditor* consent_auditor =
       ConsentAuditorFactory::GetForProfile(profile_);
   consent_auditor->RecordSyncConsent(
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kNotRequired),
+      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin),
       sync_consent);
 }
 
@@ -183,7 +183,7 @@ void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
     return;
 
   if (info.account_id !=
-      identity_manager_->GetPrimaryAccountId(ConsentLevel::kNotRequired)) {
+      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin)) {
     return;
   }
 
@@ -221,7 +221,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
 
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kNotRequired));
+          identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (!primary_account_info) {
     // No account is signed in, so there is nothing to be displayed in the sync
     // confirmation dialog.

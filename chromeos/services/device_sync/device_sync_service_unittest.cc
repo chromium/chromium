@@ -596,10 +596,10 @@ class FakeRemoteDeviceProviderFactory
               device_manager);
     EXPECT_EQ(fake_cryptauth_v2_device_manager_factory_->instance(),
               v2_device_manager);
-    EXPECT_EQ(identity_manager_
-                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
-                  .email,
-              user_email);
+    EXPECT_EQ(
+        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email,
+        user_email);
     if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
       EXPECT_EQ(fake_cryptauth_v2_enrollment_manager_factory_->instance()
                     ->GetUserPrivateKey(),

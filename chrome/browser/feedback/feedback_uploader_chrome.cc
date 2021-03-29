@@ -128,7 +128,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   // Sync consent is not required to send feedback because the feedback dialog
   // has its own privacy notice.
   if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     signin::ScopeSet scopes;
     scopes.insert(kScope);
     primary_account_token_fetcher_ =
@@ -138,7 +138,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
                 &FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable,
                 base::Unretained(this)),
             signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            signin::ConsentLevel::kNotRequired);
+            signin::ConsentLevel::kSignin);
     return;
   }
 

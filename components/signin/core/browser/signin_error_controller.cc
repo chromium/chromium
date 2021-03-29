@@ -31,8 +31,7 @@ void SigninErrorController::Update() {
   bool error_changed = false;
 
   const CoreAccountId& primary_account_id =
-      identity_manager_->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id)) {

@@ -38,8 +38,8 @@ void SafeBrowsingPrimaryAccountTokenFetcher::Start(
       std::move(callback),
       base::BindOnce(&SafeBrowsingPrimaryAccountTokenFetcher::OnTokenTimeout,
                      base::Unretained(this)));
-  CoreAccountId account_id = identity_manager_->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountId account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   token_fetchers_[request_id] =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           account_id, "safe_browsing_service", {kAPIScope},

@@ -88,8 +88,7 @@ class UnconsentedPrimaryAccountChecker
   // StatusChangeChecker overrides:
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for unconsented primary account";
-    return identity_manager_->HasPrimaryAccount(
-        signin::ConsentLevel::kNotRequired);
+    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
 
   // signin::IdentityManager::Observer overrides:
@@ -789,8 +788,8 @@ PROFILE_MENU_CLICK_TEST(
   // Check that the setup was successful.
   ASSERT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   RunTest();
 }

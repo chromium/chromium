@@ -500,7 +500,7 @@ void ShowBrowserSignin(Browser* browser,
       case signin::ConsentLevel::kSync:
         bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN;
         break;
-      case signin::ConsentLevel::kNotRequired:
+      case signin::ConsentLevel::kSignin:
         bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT;
         break;
     }

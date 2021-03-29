@@ -74,7 +74,7 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
 
   std::string primary_account_email =
       IdentityManagerFactory::GetForProfile(profile)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
   // If provided email is for primary account - it's a reauthentication, use
   // normal add account flow.
@@ -336,8 +336,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   std::string primary_account_email =
-      identity_manager
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
 
   // Child user added a secondary account.

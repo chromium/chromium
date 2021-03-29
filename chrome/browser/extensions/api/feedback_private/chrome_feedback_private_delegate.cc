@@ -258,8 +258,7 @@ std::string ChromeFeedbackPrivateDelegate::GetSignedInUserEmail(
   if (!identity_manager)
     return std::string();
   // Browser sync consent is not required to use feedback.
-  return identity_manager
-      ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
 }
 

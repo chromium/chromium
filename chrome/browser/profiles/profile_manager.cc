@@ -1893,8 +1893,8 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile);
   bool is_consented_primary_account =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   std::u16string username = base::UTF8ToUTF16(account_info.email);
 

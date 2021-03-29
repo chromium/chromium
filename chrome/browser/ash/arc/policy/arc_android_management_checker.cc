@@ -41,8 +41,7 @@ CoreAccountId GetDeviceAccountId(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile);
 
   // The account is the same whether or not the user consented to browser sync.
-  return identity_manager->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 }
 
 }  // namespace

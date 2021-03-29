@@ -70,7 +70,7 @@ void DriveFsAuth::GetAccessToken(
           base::BindOnce(&DriveFsAuth::GotChromeAccessToken,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void DriveFsAuth::GotChromeAccessToken(

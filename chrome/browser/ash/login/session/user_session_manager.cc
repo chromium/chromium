@@ -642,8 +642,7 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(user_profile);
   const bool account_id_valid =
       identity_manager &&
-      !identity_manager->GetPrimaryAccountId(ConsentLevel::kNotRequired)
-           .empty();
+      !identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin).empty();
   if (!account_id_valid)
     LOG(ERROR) << "No account is associated with sign-in manager on restore.";
 
@@ -945,8 +944,7 @@ void UserSessionManager::OnSessionRestoreStateChanged(
       user_status =
           (identity_manager &&
            identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-               identity_manager
-                   ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
+               identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin)
                    .account_id))
               ? user_manager::User::OAUTH2_TOKEN_STATUS_INVALID
               : user_manager::User::OAUTH2_TOKEN_STATUS_VALID;
@@ -1333,16 +1331,15 @@ void UserSessionManager::InitProfilePreferences(
       // profile prefs failed to save or the prefs are corrupted by a crash then
       // the IdentityManager will start up without a primary account. See test
       // CrashRestoreComplexTest.RestoreSessionForThreeUsers.
-      if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired)) {
+      if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
         // Set the account without recording browser sync consent.
         identity_manager->GetPrimaryAccountMutator()
             ->SetUnconsentedPrimaryAccount(account_info->account_id);
       }
 
-      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
+      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
       CHECK_EQ(
-          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
-              .gaia,
+          identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,
           gaia_id);
     } else {
       // Set a primary account here because the profile might have been
@@ -1358,7 +1355,7 @@ void UserSessionManager::InitProfilePreferences(
     }
 
     CoreAccountId account_id =
-        identity_manager->GetPrimaryAccountId(ConsentLevel::kNotRequired);
+        identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
     VLOG(1) << "Seed IdentityManager with the authenticated account info, "
             << "success=" << !account_id.empty();
 

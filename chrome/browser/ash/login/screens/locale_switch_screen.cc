@@ -97,7 +97,7 @@ void LocaleSwitchScreen::ShowImpl() {
   }
 
   CoreAccountId primary_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (!identity_manager->HasAccountWithRefreshToken(primary_account_id)) {
     exit_callback_.Run(Result::LOCALE_FETCH_FAILED);

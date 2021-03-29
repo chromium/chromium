@@ -51,7 +51,7 @@ bool signin_metrics_utils::LogWebSignin(
     const std::vector<std::string>& gaia_ids) {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager->GetAccountsInCookieJar();
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Account is signed in to Chrome. The metrics recorded here are only for
     // web signin.
     return false;

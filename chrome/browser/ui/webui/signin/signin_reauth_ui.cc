@@ -43,7 +43,7 @@ std::string GetAccountImageURL(Profile* profile) {
   // TODO(crbug.com/1083429): generalize for arbitrary accounts by passing an
   // account id as a method parameter.
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   // Sync shouldn't be enabled. Otherwise, the primary account and the first
   // cookie account may diverge.
   DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));

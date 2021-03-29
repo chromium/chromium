@@ -36,7 +36,7 @@ class PrimaryAccountChangeEvent {
     State& operator=(const State& other);
 
     CoreAccountInfo primary_account;
-    ConsentLevel consent_level = ConsentLevel::kNotRequired;
+    ConsentLevel consent_level = ConsentLevel::kSignin;
   };
 
   PrimaryAccountChangeEvent();

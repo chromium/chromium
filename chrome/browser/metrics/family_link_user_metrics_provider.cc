@@ -84,7 +84,7 @@ void FamilyLinkUserMetricsProvider::OnUserSessionStarted(bool is_primary_user) {
               // primary_account_access_token_fetcher.h.
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 // static

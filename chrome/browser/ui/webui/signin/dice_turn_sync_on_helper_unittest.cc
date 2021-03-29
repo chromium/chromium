@@ -885,7 +885,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
       IdentityManagerFactory::GetForProfile(new_profile());
   DCHECK_NE(new_identity_manager, identity_manager());
   EXPECT_EQ(account_id(), new_identity_manager->GetPrimaryAccountId(
-                              signin::ConsentLevel::kNotRequired));
+                              signin::ConsentLevel::kSignin));
   CheckDelegateCalls();
 }
 

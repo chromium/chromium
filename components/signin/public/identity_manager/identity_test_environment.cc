@@ -396,7 +396,7 @@ AccountInfo IdentityTestEnvironment::MakePrimaryAccountAvailable(
 
 AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
     const std::string& email) {
-  DCHECK(!identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  DCHECK(!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS sets the unconsented primary account during login and does not
   // allow signout.
@@ -413,16 +413,16 @@ AccountInfo IdentityTestEnvironment::MakeUnconsentedPrimaryAccountAvailable(
   base::RunLoop().RunUntilIdle();
   // Tests that don't use the |SigninManager| needs the unconsented primary
   // account to be set manually.
-  if (!identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired)) {
+  if (!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin)) {
     identity_manager()
         ->GetPrimaryAccountMutator()
         ->SetUnconsentedPrimaryAccount(account_info.account_id);
   }
 #endif
-  DCHECK(identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
-  DCHECK_EQ(email, identity_manager()
-                       ->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
-                       .email);
+  DCHECK(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
+  DCHECK_EQ(
+      email,
+      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
   return account_info;
 }
 

@@ -269,8 +269,7 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountEmail() {
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
     return std::string();
-  return identity_manager
-      ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
 }
 
@@ -287,7 +286,7 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountAvatar(
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kNotRequired));
+              signin::ConsentLevel::kSignin));
   DCHECK(primary_account_info.has_value());
   gfx::Image account_icon = primary_account_info->account_image;
   if (account_icon.IsEmpty()) {

@@ -103,7 +103,7 @@ class ScopedLogIn {
       return;
 
     if (!identity_test_env_->identity_manager()->HasPrimaryAccount(
-            signin::ConsentLevel::kNotRequired)) {
+            signin::ConsentLevel::kSignin)) {
       identity_test_env_->MakeUnconsentedPrimaryAccountAvailable(
           account_id_.GetUserEmail());
     }

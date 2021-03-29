@@ -280,8 +280,8 @@ void PrivetNotificationService::Start() {
       Profile::FromBrowserContext(profile_));
 
   // Only show notifications for signed-in accounts. https://crbug.com/349098
-  if (!identity_manager || !identity_manager->HasPrimaryAccount(
-                               signin::ConsentLevel::kNotRequired)) {
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

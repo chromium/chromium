@@ -282,7 +282,7 @@ public class FeedStreamSurface
             CoreAccountInfo primaryAccount =
                     IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
             return (primaryAccount == null) ? "" : primaryAccount.getEmail();
         }
 

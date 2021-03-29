@@ -76,7 +76,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email);
 
 // Revokes sync consent from the primary account: the primary account is left
-// at ConsentLevel::kNotRequired.
+// at ConsentLevel::kSignin.
 // NOTE: See disclaimer at top of file re: direct usage.
 void RevokeSyncConsent(IdentityManager* identity_manager);
 

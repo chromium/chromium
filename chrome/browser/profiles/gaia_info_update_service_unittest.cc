@@ -216,7 +216,7 @@ TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
   // Revoke sync consent (stay signed in with the primary account).
   identity_test_env()->RevokeSyncConsent();
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+      signin::ConsentLevel::kSignin));
   // Verify that the GAIA name and picture, and picture URL are not cleared
   // as unconsented primary account still exists.
   EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
@@ -230,7 +230,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   AccountInfo info =
       identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(email);
   EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+      signin::ConsentLevel::kSignin));
   EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSync));
   info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
@@ -387,7 +387,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   // Simulate a state where the profile entry has GAIA related information
   // when there is not primary account set.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+      signin::ConsentLevel::kSignin));
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
   entry->SetGAIAName(u"foo");

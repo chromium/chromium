@@ -138,7 +138,7 @@ public abstract class SignInPromo extends OptionalLeaf {
         }
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) != null
+        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
                 && identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null;
     }
 

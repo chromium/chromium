@@ -73,7 +73,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   ConsentLevel consent_level = ConsentLevel::kSync;
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(kMobileIdentityConsistency))
-    consent_level = ConsentLevel::kNotRequired;
+    consent_level = ConsentLevel::kSignin;
 #endif
 
   IdentityManager* identity_manager =

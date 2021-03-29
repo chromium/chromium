@@ -167,7 +167,7 @@ void PasswordSyncTokenFetcher::StartAccessTokenFetch() {
           base::BindOnce(&PasswordSyncTokenFetcher::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void PasswordSyncTokenFetcher::OnAccessTokenFetchComplete(

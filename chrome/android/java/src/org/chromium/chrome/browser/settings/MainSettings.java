@@ -291,7 +291,7 @@ public class MainSettings extends PreferenceFragmentCompat
         String primaryAccountName = CoreAccountInfo.getEmailFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         boolean showManageSync =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                 && primaryAccountName != null;

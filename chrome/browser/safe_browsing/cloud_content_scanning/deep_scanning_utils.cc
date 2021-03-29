@@ -338,7 +338,7 @@ std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
   // empty account info.
   return identity_manager
              ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                    .email
              : std::string();
 }

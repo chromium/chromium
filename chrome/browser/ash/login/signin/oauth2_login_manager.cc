@@ -95,7 +95,7 @@ void OAuth2LoginManager::RestoreSessionFromSavedTokens() {
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         AccountId::FromUserEmail(
             identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                 .email),
         user_manager::User::OAUTH_TOKEN_STATUS_UNKNOWN);
   }
@@ -147,8 +147,7 @@ signin::IdentityManager* OAuth2LoginManager::GetIdentityManager() {
 CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
   // Use the primary ID whether or not the user has consented to browser sync.
   const CoreAccountId primary_account_id =
-      GetIdentityManager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired);
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   LOG_IF(ERROR, primary_account_id.empty()) << "Primary account id is empty.";
   return primary_account_id;
 }
@@ -158,11 +157,9 @@ void OAuth2LoginManager::StoreOAuth2Token() {
 
   signin::IdentityManager* identity_manager = GetIdentityManager();
   // The primary account must be already set at this point.
-  DCHECK(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kNotRequired));
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   const CoreAccountInfo primary_account_info =
-      identity_manager->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   // We already have the refresh token at this
   // point, and will not get any additional callbacks from Account Manager or

@@ -121,7 +121,7 @@ public final class SigninPromoUtil {
         String signedInAccount = CoreAccountInfo.getEmailFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         assert signedInAccount != null : "Sync promo should only be shown for a signed in account";
         signinPromoController.setupPromoView(
                 view, profileDataCache.getProfileDataOrDefault(signedInAccount), listener);

@@ -230,7 +230,7 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
   // Set a "sync-consented" primary account. See comment above.
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   DCHECK(!account_id.empty());
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(account_id);
 
@@ -345,7 +345,7 @@ void SyncConsentScreen::RecordConsent(
   // The user might not consent to browser sync, so use the "unconsented" ID.
   const CoreAccountId& google_account_id =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
   // TODO(alemate): Support unified_consent_enabled
   sync_pb::UserConsentTypes::SyncConsent sync_consent;
   sync_consent.set_confirmation_grd_id(consent_confirmation);

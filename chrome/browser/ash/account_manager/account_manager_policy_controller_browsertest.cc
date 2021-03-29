@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetAccountId()
                 .GetGaiaId(),
             identity_manager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                 .gaia);
   EXPECT_EQ(ProfileHelper::Get()
                 ->GetUserByProfile(profile())
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetAccountId()
                 .GetGaiaId(),
             identity_manager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                 .gaia);
   EXPECT_EQ(ProfileHelper::Get()
                 ->GetUserByProfile(profile())

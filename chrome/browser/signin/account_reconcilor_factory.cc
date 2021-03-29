@@ -86,7 +86,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
 
     if (!GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
             GetIdentityManager()->GetPrimaryAccountId(
-                signin::ConsentLevel::kNotRequired))) {
+                signin::ConsentLevel::kSignin))) {
       return;
     }
 

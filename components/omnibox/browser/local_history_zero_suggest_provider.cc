@@ -202,7 +202,7 @@ LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
 bool LocalHistoryZeroSuggestProvider::IsSignedIn() {
   const auto* identity_manager = client_->GetIdentityManager();
   return identity_manager ? identity_manager->HasPrimaryAccount(
-                                signin::ConsentLevel::kNotRequired)
+                                signin::ConsentLevel::kSignin)
                           : false;
 }
 

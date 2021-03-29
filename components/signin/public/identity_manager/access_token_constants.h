@@ -13,7 +13,7 @@
 namespace signin {
 
 // Set of Google OAuth2 API scopes that do not require user consent for their
-// usage - these scopes are accessible at ConsentLevel::kNotRequired.
+// usage - these scopes are accessible at ConsentLevel::kSignin.
 const std::set<std::string> GetUnconsentedOAuth2Scopes();
 
 // Set of Google OAuth2 API scopes that require privileged access - these scopes

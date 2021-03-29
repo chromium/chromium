@@ -226,8 +226,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
                 return PromoState.PROMO_NONE;
             }
             CoreAccountInfo primaryAccount =
-                    mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                            ConsentLevel.NOT_REQUIRED);
+                    mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
             return primaryAccount == null ? PromoState.PROMO_SIGNIN_PERSONALIZED
                                           : PromoState.PROMO_SYNC_PERSONALIZED;
         }

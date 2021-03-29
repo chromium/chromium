@@ -123,7 +123,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         identity_test_env_profile_adaptor_->identity_test_env()
             ->identity_manager();
     return identity_manager
-        ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+        ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
         .account_id;
   }
 

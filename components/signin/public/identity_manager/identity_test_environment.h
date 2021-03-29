@@ -159,7 +159,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
                                               const std::string& gaia_id);
 
   // Revokes sync consent from the primary account: the primary account is left
-  // at ConsentLevel::kNotRequired.
+  // at ConsentLevel::kSignin.
   void RevokeSyncConsent();
 
   // Clears the primary account, removes all accounts and revokes the sync

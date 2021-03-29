@@ -140,8 +140,8 @@ PluginVmDriveImageDownloadService::PluginVmDriveImageDownloadService(
       identity_manager, url_loader_factory, blocking_task_runner.get(),
       base_url, base_thumbnail_url, std::string{},
       kPluginVmNetworkTrafficAnnotation);
-  drive_service_->Initialize(identity_manager->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired));
+  drive_service_->Initialize(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 }
 
 void PluginVmDriveImageDownloadService::StartDownload(

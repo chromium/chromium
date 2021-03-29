@@ -64,7 +64,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         CoreAccountInfo primaryAccount =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return (primaryAccount == null) ? "" : primaryAccount.getEmail();
     }
 

@@ -305,7 +305,7 @@ void NearbyShareClientImpl::MakeApiCall(
               weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,
               request_as_query_parameters, std::move(response_callback)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 template <class ResponseProto>

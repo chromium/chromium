@@ -98,7 +98,7 @@ public class GoogleServicesSettingsTest {
                         -> Assert.assertNull("Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
+                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertFalse("SIGNIN_ALLOWED pref should be unset",

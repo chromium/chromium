@@ -261,7 +261,7 @@ void EduAccountLoginHandler::FetchAccessToken(
               base::Unretained(this), std::move(obfuscated_gaia_id),
               std::move(password)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void EduAccountLoginHandler::FetchReAuthProofTokenForParent(

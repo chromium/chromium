@@ -178,8 +178,7 @@ void SigninErrorNotifier::OnErrorChanged() {
 
   const CoreAccountId error_account_id = error_controller_->error_account_id();
   const CoreAccountId primary_account_id =
-      identity_manager_->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (error_account_id == primary_account_id) {
     RecordReauthReason(account_id, chromeos::ReauthReason::SYNC_FAILED);
     HandleDeviceAccountError();

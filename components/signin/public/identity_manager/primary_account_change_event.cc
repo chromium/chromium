@@ -52,7 +52,7 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
          !previous_state_.primary_account.IsEmpty());
 
   switch (consent_level) {
-    case ConsentLevel::kNotRequired:
+    case ConsentLevel::kSignin:
       if (previous_state_.primary_account != current_state_.primary_account) {
         return current_state_.primary_account.IsEmpty() ? Type::kCleared
                                                         : Type::kSet;
@@ -66,7 +66,7 @@ PrimaryAccountChangeEvent::Type PrimaryAccountChangeEvent::GetEventTypeFor(
       }
       // Cannot change the Sync account without clearing the primary account
       // first.
-      DCHECK_EQ(current_state_.consent_level, ConsentLevel::kNotRequired);
+      DCHECK_EQ(current_state_.consent_level, ConsentLevel::kSignin);
       return Type::kNone;
   }
 }
@@ -91,8 +91,7 @@ std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state) {
   os << "{ primary_account: " << state.primary_account.account_id << ", "
      << "consent_level:"
-     << (state.consent_level == ConsentLevel::kNotRequired ? "NotRequired"
-                                                           : "Sync")
+     << (state.consent_level == ConsentLevel::kSignin ? "NotRequired" : "Sync")
      << " }";
   return os;
 }
@@ -110,7 +109,7 @@ ConvertToJavaPrimaryAccountChangeEvent(
     JNIEnv* env,
     const PrimaryAccountChangeEvent& event_details) {
   PrimaryAccountChangeEvent::Type event_type_not_required =
-      event_details.GetEventTypeFor(ConsentLevel::kNotRequired);
+      event_details.GetEventTypeFor(ConsentLevel::kSignin);
   PrimaryAccountChangeEvent::Type event_type_sync =
       event_details.GetEventTypeFor(ConsentLevel::kSync);
   // Should not fire events if there is no change in primary accounts for any

@@ -66,7 +66,7 @@ void ProfileDownloader::StartForAccount(const CoreAccountId& account_id) {
   }
 
   account_id_ = account_id.empty() ? identity_manager_->GetPrimaryAccountId(
-                                         signin::ConsentLevel::kNotRequired)
+                                         signin::ConsentLevel::kSignin)
                                    : account_id;
   StartFetchingOAuth2AccessToken();
 }

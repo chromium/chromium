@@ -57,8 +57,7 @@ void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountChanged(
 
 void TrustedVaultAccessTokenFetcherFrontend::UpdatePrimaryAccountIfNeeded() {
   CoreAccountInfo primary_account_info =
-      identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account_info.account_id == primary_account_) {
     return;
   }
@@ -80,7 +79,7 @@ void TrustedVaultAccessTokenFetcherFrontend::StartAccessTokenFetch() {
           &TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted,
           base::Unretained(this)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-      signin::ConsentLevel::kNotRequired);
+      signin::ConsentLevel::kSignin);
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::OnAccessTokenFetchCompleted(

@@ -28,14 +28,14 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   DCHECK(!account || !account->IsEmpty());
   if (account) {
     if (identity_manager_->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kNotRequired) != account) {
+            signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
       identity_manager_->GetPrimaryAccountMutator()
           ->SetUnconsentedPrimaryAccount(account->account_id);
     }
   } else if (identity_manager_->HasPrimaryAccount(
-                 signin::ConsentLevel::kNotRequired)) {
+                 signin::ConsentLevel::kSignin)) {
     DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
     identity_manager_->GetPrimaryAccountMutator()->ClearPrimaryAccount(
         signin_metrics::USER_DELETED_ACCOUNT_COOKIES,
@@ -82,14 +82,14 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     return error_state ? base::nullopt : account_info;
   }
 
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kNotRequired))
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
     return base::nullopt;
 
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
   // primary account is no longer valid, it has to be removed.
-  CoreAccountId current_account = identity_manager_->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountId current_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (are_refresh_tokens_loaded &&
       !identity_manager_->HasAccountWithRefreshToken(current_account)) {
@@ -115,7 +115,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
 
   // No indication that the current UPA is invalid, return current UPA.
   return identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+      signin::ConsentLevel::kSignin);
 }
 
 // signin::IdentityManager::Observer implementation.
@@ -149,10 +149,9 @@ void SigninManager::OnRefreshTokenUpdatedForAccount(
 void SigninManager::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
   if (!identity_manager_->AreRefreshTokensLoaded() &&
-      identity_manager_->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired) &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
       account_id == identity_manager_->GetPrimaryAccountId(
-                        signin::ConsentLevel::kNotRequired)) {
+                        signin::ConsentLevel::kSignin)) {
     unconsented_primary_account_revoked_during_load_ = true;
   }
   UpdateUnconsentedPrimaryAccount();
@@ -175,8 +174,8 @@ void SigninManager::OnAccountsCookieDeletedByUserAction() {
 void SigninManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error) {
-  CoreAccountInfo current_account = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo current_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   bool should_update = false;
   if (error == GoogleServiceAuthError::AuthErrorNone()) {

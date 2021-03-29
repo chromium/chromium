@@ -253,8 +253,8 @@ void ProcessMirrorHeader(
     // (See the reason below.)
     signin::IdentityManager* const identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo(
-        signin::ConsentLevel::kNotRequired);
+    CoreAccountInfo primary_account =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     if (profile->IsChild() &&
         gaia::AreEmailsSame(primary_account.email,
                             manage_accounts_params.email)) {

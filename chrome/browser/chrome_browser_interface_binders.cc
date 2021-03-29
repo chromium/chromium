@@ -304,8 +304,7 @@ void BindCommerceHintObserver(
       frame_host->GetProcess()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!identity_manager->HasPrimaryAccount(
-          signin::ConsentLevel::kNotRequired) &&
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
       profile_manager->GetNumberOfProfiles() <= 1) {
     return;
   }

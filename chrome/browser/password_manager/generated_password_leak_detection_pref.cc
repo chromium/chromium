@@ -36,8 +36,7 @@ bool IsUserSignedInAndSyncing(Profile* profile) {
 
   // Password leak detection only requires a signed in account and a functioning
   // sync service, it does not require sync consent.
-  return identity_manager->HasPrimaryAccount(
-             signin::ConsentLevel::kNotRequired) &&
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
          !sync_error;
 }
 

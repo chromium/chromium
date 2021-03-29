@@ -63,7 +63,7 @@ void RecordSigninInterceptionHeuristicOutcome(
 // fields may be missing if they are not available.
 AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   CoreAccountInfo primary_core_account_info =
-      manager->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired);
+      manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_core_account_info.IsEmpty())
     return AccountInfo();
 
@@ -362,8 +362,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
   DCHECK(intercepted_account_info.IsValid());
   // Check if the intercepted account or the primary account is managed.
   CoreAccountInfo primary_core_account_info =
-      identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   if (primary_core_account_info.IsEmpty() ||
       primary_core_account_info.account_id ==

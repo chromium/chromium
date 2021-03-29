@@ -171,7 +171,7 @@ public class AccountManagementFragmentTest {
                         -> Assert.assertNull("Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
+                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
     }
 
     @Test

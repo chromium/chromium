@@ -265,7 +265,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        switch (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)) {
+        switch (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)) {
             case PrimaryAccountChangeEvent.Type.SET:
                 resetIdentityDiscCache();
                 notifyObservers(true);
@@ -325,7 +325,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         @ConsentLevel
         int consentLevel =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                ? ConsentLevel.NOT_REQUIRED
+                ? ConsentLevel.SIGNIN
                 : ConsentLevel.SYNC;
         return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo(consentLevel)
                                         : null;

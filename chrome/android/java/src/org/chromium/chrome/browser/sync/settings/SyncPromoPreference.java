@@ -148,7 +148,7 @@ public class SyncPromoPreference
                 && SigninPromoController.hasNotReachedImpressionLimit(SigninAccessPoint.SETTINGS)) {
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
-            if (identityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED) == null) {
+            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
                 setupPersonalizedPromo(State.PERSONALIZED_SIGNIN_PROMO);
                 return;
             } else if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null) {

@@ -26,7 +26,7 @@ class GuestSigninObserver : public KeyedService,
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    switch (event.GetEventTypeFor(signin::ConsentLevel::kNotRequired)) {
+    switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
       case signin::PrimaryAccountChangeEvent::Type::kSet:
         base::UmaHistogramBoolean("Profile.EphemeralGuest.Signin", true);
         break;

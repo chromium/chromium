@@ -47,8 +47,8 @@ bool IsGoogleInternalAccount(Profile* profile) {
   if (!identity_manager)  // Non-GAIA account, e.g. guest mode.
     return false;
   // Browser sync consent is not required to use feedback.
-  CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return gaia::IsGoogleInternalAccountEmail(account_info.email);
 }
 

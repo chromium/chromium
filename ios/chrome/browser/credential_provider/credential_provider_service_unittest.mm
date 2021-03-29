@@ -179,7 +179,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
   credential_provider_service_->OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent(
           signin::PrimaryAccountChangeEvent::State(
-              CoreAccountInfo(), signin::ConsentLevel::kNotRequired),
+              CoreAccountInfo(), signin::ConsentLevel::kSignin),
           signin::PrimaryAccountChangeEvent::State(
               account, signin::ConsentLevel::kSync)));
 
@@ -198,7 +198,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
           signin::PrimaryAccountChangeEvent::State(account,
                                                    signin::ConsentLevel::kSync),
           signin::PrimaryAccountChangeEvent::State(
-              CoreAccountInfo(), signin::ConsentLevel::kNotRequired)));
+              CoreAccountInfo(), signin::ConsentLevel::kSignin)));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
     base::RunLoop().RunUntilIdle();
