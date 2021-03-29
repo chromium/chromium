@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,9 @@ import org.chromium.ui.widget.ChromeImageButton;
  * credential.
  */
 public class FederatedCredentialFragmentView extends CredentialEntryFragmentViewBase {
+    private ChromeImageButton mCopyButton;
+    private TextView mUsernameTextView;
+
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         getActivity().setTitle(R.string.password_entry_viewer_title);
@@ -32,10 +36,35 @@ public class FederatedCredentialFragmentView extends CredentialEntryFragmentView
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        mUsernameTextView = getView().findViewById(R.id.username);
+        mCopyButton = getView().findViewById(R.id.copy_username_button);
+
+        View usernameLayout = getView().findViewById(R.id.username_layout);
+        TextView usernameLabel = getView().findViewById(R.id.username_label);
+
+        usernameLayout.addOnLayoutChangeListener((View v, int left, int top, int right, int bottom,
+                                                         int oldLeft, int oldTop, int oldRight,
+                                                         int oldBottom) -> {
+            MarginLayoutParams layoutParams = (MarginLayoutParams) usernameLayout.getLayoutParams();
+            int totalMargin = getResources().getDimensionPixelSize(
+                    R.dimen.federated_view_username_margin_bottom);
+            if (mCopyButton.getHeight() < usernameLayout.getHeight()) {
+                layoutParams.bottomMargin = totalMargin;
+            } else {
+                layoutParams.bottomMargin = totalMargin
+                        - (mCopyButton.getHeight() - mUsernameTextView.getHeight()
+                                - usernameLabel.getHeight());
+            }
+            usernameLayout.setLayoutParams(layoutParams);
+        });
+    }
+
+    @Override
     void setUiActionHandler(UiActionHandler uiActionHandler) {
         super.setUiActionHandler(uiActionHandler);
-        ChromeImageButton usernameCopyButton = getView().findViewById(R.id.copy_username_button);
-        usernameCopyButton.setOnClickListener(
+        ChromeImageButton mCopyButton = getView().findViewById(R.id.copy_username_button);
+        mCopyButton.setOnClickListener(
                 (unusedView)
                         -> uiActionHandler.onCopyUsername(getActivity().getApplicationContext()));
     }
@@ -46,8 +75,7 @@ public class FederatedCredentialFragmentView extends CredentialEntryFragmentView
     }
 
     void setUsername(String username) {
-        TextView usernameText = getView().findViewById(R.id.username);
-        usernameText.setText(username);
+        mUsernameTextView.setText(username);
     }
 
     void setIdentityProvider(String federatedOrigin) {

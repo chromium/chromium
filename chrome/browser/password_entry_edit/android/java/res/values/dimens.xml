@@ -11,4 +11,5 @@
     <dimen name="credential_edit_text_icon_margin_bottom">12dp</dimen>
     <dimen name="credential_edit_button_layout_padding">10dp</dimen>
     <dimen name="credential_edit_button_layout_stacked_margin">24dp</dimen>
+    <dimen name="federated_view_username_margin_bottom">16dp</dimen>
 </resources>
