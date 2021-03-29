@@ -43,6 +43,7 @@ NSString* const kSavedCredentialLabel = @"Eguser, Hidden, Password";
 
 namespace {
 
+using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForActionTimeout;
@@ -65,6 +66,15 @@ id<GREYMatcher> SuggestPasswordChip() {
   return grey_allOf(
       grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SUGGEST_PASSWORD)),
       nil);
+}
+
+BOOL WaitForKeyboardToAppear() {
+  GREYCondition* waitForKeyboard = [GREYCondition
+      conditionWithName:@"Wait for keyboard"
+                  block:^BOOL {
+                    return [EarlGrey isKeyboardShownWithError:nil];
+                  }];
+  return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
 }
 
 }  // namespace
@@ -188,8 +198,7 @@ id<GREYMatcher> SuggestPasswordChip() {
       performAction:TapWebElementWithId(kFormPassword)];
 
   // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
+  WaitForKeyboardToAppear();
 
   // Tap on a 'Suggest Password...' chip.
   [[EarlGrey selectElementWithMatcher:SuggestPasswordChip()]
