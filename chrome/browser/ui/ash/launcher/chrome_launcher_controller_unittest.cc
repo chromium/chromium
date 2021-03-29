@@ -5080,13 +5080,7 @@ class ChromeLauncherControllerWebAppTest : public ChromeLauncherControllerTest {
   ~ChromeLauncherControllerWebAppTest() override = default;
 
   void MaybeStartWebAppProvider() override {
-    auto system_web_app_manager =
-        std::make_unique<web_app::TestSystemWebAppManager>(profile());
-
-    auto* provider = web_app::TestWebAppProvider::Get(profile());
-    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
-    provider->SetRunSubsystemStartupTasks(true);
-    provider->Start();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 };
 
@@ -5097,8 +5091,8 @@ TEST_F(ChromeLauncherControllerWebAppTest, WebAppPinRunUnpinClose) {
 
   InitLauncherController();
 
-  const web_app::AppId app_id =
-      web_app::InstallDummyWebApp(profile(), kWebAppName, GURL(kWebAppUrl));
+  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      profile(), kWebAppName, GURL(kWebAppUrl));
   base::RunLoop().RunUntilIdle();
 
   // The model should only contain the browser shortcut item.
