@@ -209,7 +209,8 @@ suite('InternetSubpage', function() {
       ]);
       internetSubpage.deviceState = {
         type: mojom.NetworkType.kCellular,
-        deviceState: mojom.DeviceStateType.kEnabled
+        deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited
       };
       internetSubpage.globalPolicy = {
         allowOnlyPolicyNetworksToConnect: false,
@@ -225,6 +226,36 @@ suite('InternetSubpage', function() {
         await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
       });
     });
+
+    test(
+        'Device inhibited disables toggle and add cellular network',
+        async () => {
+          initSubpage(true);
+          const mojom = chromeos.networkConfig.mojom;
+          mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
+          setNetworksForTest(mojom.NetworkType.kCellular, [
+            OncMojo.getDefaultNetworkState(
+                mojom.NetworkType.kCellular, 'cellular1'),
+          ]);
+          internetSubpage.deviceState = {
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kInstallingProfile
+          };
+          internetSubpage.globalPolicy = {
+            allowOnlyPolicyNetworksToConnect: false,
+          };
+
+          await flushAsync();
+          const addCellularButton = internetSubpage.$$('#addCellularButton');
+          assertTrue(!!addCellularButton);
+          assertTrue(addCellularButton.disabled);
+
+          const deviceEnabledButton =
+              internetSubpage.$$('#deviceEnabledButton');
+          assertTrue(!!deviceEnabledButton);
+          assertTrue(deviceEnabledButton.disabled);
+        });
 
     test(
         'Tether plus Cellular with updatedCellularActivationUi false',

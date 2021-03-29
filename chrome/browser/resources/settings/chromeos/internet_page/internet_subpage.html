@@ -109,6 +109,8 @@
           <!-- The add button in this row is only shown for Mobile networks. -->
           <cr-icon-button class="icon-add-cellular add-button"
               aria-label="$i18n{internetAddCellular}" id="addCellularButton"
+              disabled="[[isDeviceInhibited_(deviceState,
+                deviceState.inhibitReason)]]"
               tabindex$="[[tabindex]]" on-click="onAddCellularButtonTap_"
               deep-link-focus-id$="[[Setting.kCellularAddNetwork]]">
           </cr-icon-button>
@@ -123,7 +125,8 @@
         <cr-toggle id="deviceEnabledButton"
             aria-label$="[[getToggleA11yString_(deviceState)]]"
             checked="[[deviceIsEnabled_(deviceState)]]"
-            disabled="[[!enableToggleIsEnabled_(deviceState)]]"
+            disabled="[[!enableToggleIsEnabled_(deviceState,
+              deviceState.inhibitReason)]]"
             on-change="onDeviceEnabledChange_"
             deep-link-focus-id$="[[Setting.kWifiOnOff]]
                 [[Setting.kMobileOnOff]]">

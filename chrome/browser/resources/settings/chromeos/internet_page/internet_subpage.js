@@ -546,10 +546,28 @@ Polymer({
    * @private
    */
   enableToggleIsEnabled_(deviceState) {
-    return !!deviceState &&
-        deviceState.deviceState !==
-        chromeos.networkConfig.mojom.DeviceStateType.kProhibited &&
-        !OncMojo.deviceStateIsIntermediate(deviceState.deviceState);
+    if (!deviceState) {
+      return false;
+    }
+    if (deviceState.deviceState ===
+        chromeos.networkConfig.mojom.DeviceStateType.kProhibited) {
+      return false;
+    }
+    if (OncMojo.deviceStateIsIntermediate(deviceState.deviceState)) {
+      return false;
+    }
+    return !this.isDeviceInhibited_();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isDeviceInhibited_() {
+    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return OncMojo.deviceIsInhibited(this.deviceState);
   },
 
   /**
