@@ -15,6 +15,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/test/test_oauth_token_getter.h"
@@ -24,41 +25,7 @@ namespace remoting {
 
 namespace {
 
-// Communication with CRD Host, messages sent to host:
-constexpr char kCRDMessageTypeKey[] = "type";
-
-constexpr char kCRDMessageHello[] = "hello";
-constexpr char kCRDMessageConnect[] = "connect";
-constexpr char kCRDMessageDisconnect[] = "disconnect";
-
-// Communication with CRD Host, messages received from host:
-constexpr char kCRDResponseHello[] = "helloResponse";
-constexpr char kCRDResponseConnect[] = "connectResponse";
-constexpr char kCRDStateChanged[] = "hostStateChanged";
-constexpr char kCRDResponseDisconnect[] = "disconnectResponse";
 constexpr char kCRDDebugLog[] = "_debug_log";
-
-// Connect message parameters:
-constexpr char kCRDConnectUserName[] = "userName";
-constexpr char kCRDConnectAuth[] = "authServiceWithToken";
-constexpr char kCRDConnectSuppressUserDialogs[] = "suppressUserDialogs";
-constexpr char kCRDConnectSuppressNotifications[] = "suppressNotifications";
-
-// CRD host states we care about:
-constexpr char kCRDStateKey[] = "state";
-constexpr char kCRDStateError[] = "ERROR";
-constexpr char kCRDStateStarting[] = "STARTING";
-constexpr char kCRDStateAccessCodeRequested[] = "REQUESTED_ACCESS_CODE";
-constexpr char kCRDStateDomainError[] = "INVALID_DOMAIN_ERROR";
-constexpr char kCRDStateAccessCode[] = "RECEIVED_ACCESS_CODE";
-constexpr char kCRDStateRemoteDisconnected[] = "DISCONNECTED";
-constexpr char kCRDStateRemoteConnected[] = "CONNECTED";
-
-constexpr char kCRDErrorCodeKey[] = "error_code";
-constexpr char kCRDAccessCodeKey[] = "accessCode";
-constexpr char kCRDAccessCodeLifetimeKey[] = "accessCodeLifetime";
-
-constexpr char kCRDConnectClientKey[] = "client";
 
 constexpr char kSwitchNameHelp[] = "help";
 constexpr char kSwitchNameUsername[] = "username";
@@ -128,40 +95,40 @@ void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
     return;
   }
 
-  auto* type_value = message_value->FindKeyOfType(kCRDMessageTypeKey,
-                                                  base::Value::Type::STRING);
+  auto* type_value =
+      message_value->FindKeyOfType(kMessageType, base::Value::Type::STRING);
   if (!type_value) {
     OnProtocolBroken("Message without type");
     return;
   }
   std::string type = type_value->GetString();
 
-  if (type == kCRDResponseHello) {
+  if (type == kHelloResponse) {
     OnHelloResponse();
-  } else if (type == kCRDResponseConnect) {
+  } else if (type == kConnectResponseConnect) {
     // Ok, just ignore.
-  } else if (type == kCRDResponseDisconnect) {
+  } else if (type == kDisconnectResponse) {
     OnDisconnectResponse();
-  } else if (type == kCRDStateChanged) {
+  } else if (type == kHostStateChangedMessage) {
     // Handle CRD host state changes
     auto* state_value =
-        message_value->FindKeyOfType(kCRDStateKey, base::Value::Type::STRING);
+        message_value->FindKeyOfType(kState, base::Value::Type::STRING);
     if (!state_value) {
       OnProtocolBroken("No state in message");
       return;
     }
     std::string state = state_value->GetString();
 
-    if (state == kCRDStateAccessCode) {
+    if (state == kHostStateReceivedAccessCode) {
       OnStateReceivedAccessCode(*message_value);
-    } else if (state == kCRDStateRemoteConnected) {
+    } else if (state == kHostStateConnected) {
       OnStateRemoteConnected(*message_value);
-    } else if (state == kCRDStateRemoteDisconnected) {
+    } else if (state == kHostStateDisconnected) {
       OnStateRemoteDisconnected();
-    } else if (state == kCRDStateError || state == kCRDStateDomainError) {
+    } else if (state == kHostStateError || state == kHostStateDomainError) {
       OnStateError(state, *message_value);
-    } else if (state == kCRDStateStarting ||
-               state == kCRDStateAccessCodeRequested) {
+    } else if (state == kHostStateStarting ||
+               state == kHostStateRequestedAccessCode) {
       // Just ignore these states.
     } else {
       LOG(WARNING) << "Unhandled state: " << state;
@@ -183,7 +150,7 @@ void It2MeCliHost::CloseChannel(const std::string& error_message) {
 void It2MeCliHost::SendMessageToHost(const std::string& type,
                                      base::Value params) {
   std::string message_json;
-  params.SetKey(kCRDMessageTypeKey, base::Value(type));
+  params.SetKey(kMessageType, base::Value(type));
   base::JSONWriter::Write(params, &message_json);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeCliHost::DoSendMessage,
@@ -211,10 +178,11 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   // Store all parameters for future connect call.
   base::Value connect_params(base::Value::Type::DICTIONARY);
 
-  connect_params.SetKey(kCRDConnectUserName, base::Value(user_email));
-  connect_params.SetKey(kCRDConnectAuth, base::Value("oauth2:" + access_token));
-  connect_params.SetKey(kCRDConnectSuppressUserDialogs, base::Value(true));
-  connect_params.SetKey(kCRDConnectSuppressNotifications, base::Value(true));
+  connect_params.SetKey(kUserName, base::Value(user_email));
+  connect_params.SetKey(kAuthServiceWithToken,
+                        base::Value("oauth2:" + access_token));
+  connect_params.SetKey(kSuppressUserDialogs, base::Value(true));
+  connect_params.SetKey(kSuppressNotifications, base::Value(true));
   connect_params_ = std::move(connect_params);
 
   remote_connected_ = false;
@@ -224,7 +192,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   host_->Start(this);
 
   base::Value params(base::Value::Type::DICTIONARY);
-  SendMessageToHost(kCRDMessageHello, std::move(params));
+  SendMessageToHost(kHelloMessage, std::move(params));
 }
 
 void It2MeCliHost::ShutdownHost() {
@@ -242,7 +210,7 @@ void It2MeCliHost::DoShutdownHost() {
 
 void It2MeCliHost::OnHelloResponse() {
   // Host is initialized, start connection.
-  SendMessageToHost(kCRDMessageConnect, std::move(connect_params_));
+  SendMessageToHost(kConnectMessage, std::move(connect_params_));
 }
 
 void It2MeCliHost::OnDisconnectResponse() {
@@ -257,11 +225,11 @@ void It2MeCliHost::OnDisconnectResponse() {
 void It2MeCliHost::OnStateError(const std::string& error_state,
                                 const base::Value& message) {
   std::string error_message;
-  if (error_state == kCRDStateDomainError) {
+  if (error_state == kHostStateDomainError) {
     error_message = "CRD Error : Invalid domain";
   } else {
     auto* error_code_value =
-        message.FindKeyOfType(kCRDErrorCodeKey, base::Value::Type::STRING);
+        message.FindKeyOfType(kErrorMessageCode, base::Value::Type::STRING);
     if (error_code_value)
       error_message = error_code_value->GetString();
     else
@@ -279,7 +247,7 @@ void It2MeCliHost::OnStateError(const std::string& error_state,
 void It2MeCliHost::OnStateRemoteConnected(const base::Value& message) {
   remote_connected_ = true;
   auto* client_value =
-      message.FindKeyOfType(kCRDConnectClientKey, base::Value::Type::STRING);
+      message.FindKeyOfType(kClient, base::Value::Type::STRING);
   if (client_value) {
     HOST_LOG << "Remote connection by " << client_value->GetString();
   }
@@ -294,7 +262,7 @@ void It2MeCliHost::OnStateRemoteDisconnected() {
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
   base::Value params(base::Value::Type::DICTIONARY);
-  SendMessageToHost(kCRDMessageDisconnect, std::move(params));
+  SendMessageToHost(kDisconnectMessage, std::move(params));
 }
 
 void It2MeCliHost::OnStateReceivedAccessCode(const base::Value& message) {
@@ -305,15 +273,15 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value& message) {
       // access code. Assuming that the old access code is no longer valid, we
       // can only terminate the current CRD session.
       base::Value params(base::Value::Type::DICTIONARY);
-      SendMessageToHost(kCRDMessageDisconnect, std::move(params));
+      SendMessageToHost(kDisconnectMessage, std::move(params));
     }
     return;
   }
 
   auto* code_value =
-      message.FindKeyOfType(kCRDAccessCodeKey, base::Value::Type::STRING);
-  auto* code_lifetime_value = message.FindKeyOfType(kCRDAccessCodeLifetimeKey,
-                                                    base::Value::Type::INTEGER);
+      message.FindKeyOfType(kAccessCode, base::Value::Type::STRING);
+  auto* code_lifetime_value =
+      message.FindKeyOfType(kAccessCodeLifetime, base::Value::Type::INTEGER);
   if (!code_value || !code_lifetime_value) {
     OnProtocolBroken("Can not obtain access code");
     return;

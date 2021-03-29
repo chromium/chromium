@@ -31,6 +31,7 @@
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
+#include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/remoting_register_support_host_request.h"
 #include "remoting/host/xmpp_register_support_host_request.h"
@@ -57,14 +58,14 @@ using protocol::ErrorCode;
 namespace {
 
 const NameMapElement<It2MeHostState> kIt2MeHostStates[] = {
-    {kDisconnected, "DISCONNECTED"},
-    {kStarting, "STARTING"},
-    {kRequestedAccessCode, "REQUESTED_ACCESS_CODE"},
-    {kReceivedAccessCode, "RECEIVED_ACCESS_CODE"},
-    {kConnecting, "CONNECTING"},
-    {kConnected, "CONNECTED"},
-    {kError, "ERROR"},
-    {kInvalidDomainError, "INVALID_DOMAIN_ERROR"},
+    {kDisconnected, kHostStateDisconnected},
+    {kStarting, kHostStateStarting},
+    {kRequestedAccessCode, kHostStateRequestedAccessCode},
+    {kReceivedAccessCode, kHostStateReceivedAccessCode},
+    {kConnecting, kHostStateConnecting},
+    {kConnected, kHostStateConnected},
+    {kError, kHostStateError},
+    {kInvalidDomainError, kHostStateDomainError},
 };
 
 #if defined(OS_WIN)
@@ -75,7 +76,6 @@ const base::FilePath::CharType kElevatedHostBinaryName[] =
 #endif  // defined(OS_WIN)
 
 constexpr char kAnonymousUserName[] = "anonymous_user";
-const char kRemotingBotJid[] = "remoting@bot.talk.google.com";
 
 // Helper functions to run |callback| asynchronously on the correct thread
 // using |task_runner|.
@@ -147,25 +147,25 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
   // If the client supplies an ID, it will expect it in the response. This
   // might be a string or a number, so cope with both.
   const base::Value* id;
-  if (message_dict->Get("id", &id))
-    response->SetKey("id", id->Clone());
+  if (message_dict->Get(kMessageId, &id))
+    response->SetKey(kMessageId, id->Clone());
 
   std::string type;
-  if (!message_dict->GetString("type", &type)) {
+  if (!message_dict->GetString(kMessageType, &type)) {
     LOG(ERROR) << "'type' not found in request.";
     SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
-  response->SetString("type", type + "Response");
+  response->SetString(kMessageType, type + "Response");
 
-  if (type == "hello") {
+  if (type == kHelloMessage) {
     ProcessHello(std::move(message_dict), std::move(response));
-  } else if (type == "connect") {
+  } else if (type == kConnectMessage) {
     ProcessConnect(std::move(message_dict), std::move(response));
-  } else if (type == "disconnect") {
+  } else if (type == kDisconnectMessage) {
     ProcessDisconnect(std::move(message_dict), std::move(response));
-  } else if (type == "incomingIq") {
+  } else if (type == kIncomingIqMessage) {
     ProcessIncomingIq(std::move(message_dict), std::move(response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
@@ -198,10 +198,10 @@ void It2MeNativeMessagingHost::ProcessHello(
 
   // No need to forward to the elevated process since no internal state is set.
 
-  response->SetString("version", STRINGIZE(VERSION));
+  response->SetString(kHostVersion, STRINGIZE(VERSION));
 
   // This list will be populated when new features are added.
-  response->Set("supportedFeatures", std::make_unique<base::ListValue>());
+  response->Set(kSupportedFeatures, std::make_unique<base::ListValue>());
 
   SendMessageToClient(std::move(response));
 }
@@ -224,7 +224,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
   // This value, in conjuction with the platform policy, is used to determine
   // if an elevated host should be used.
   bool use_elevated_host = false;
-  message->GetBoolean("useElevatedHost", &use_elevated_host);
+  message->GetBoolean(kUseElevatedHost, &use_elevated_host);
 
   if (!is_process_elevated_) {
     auto allow_elevation_policy = GetAllowElevatedHostPolicyValue();
@@ -258,19 +258,19 @@ void It2MeNativeMessagingHost::ProcessConnect(
   }
 
   bool use_signaling_proxy = false;
-  message->GetBoolean("useSignalingProxy", &use_signaling_proxy);
+  message->GetBoolean(kUseSignalingProxy, &use_signaling_proxy);
 
   std::string username;
-  message->GetString("userName", &username);
+  message->GetString(kUserName, &username);
 
   bool suppress_user_dialogs = false;
-  message->GetBoolean("suppressUserDialogs", &suppress_user_dialogs);
+  message->GetBoolean(kSuppressUserDialogs, &suppress_user_dialogs);
 
   bool suppress_notifications = false;
-  message->GetBoolean("suppressNotifications", &suppress_notifications);
+  message->GetBoolean(kSuppressNotifications, &suppress_notifications);
 
   bool terminate_upon_input = false;
-  message->GetBoolean("terminateUponInput", &terminate_upon_input);
+  message->GetBoolean(kTerminateUponInput, &terminate_upon_input);
 
   It2MeHost::CreateDeferredConnectContext create_connection_context;
   std::unique_ptr<RegisterSupportHostRequest> register_host_request;
@@ -289,11 +289,11 @@ void It2MeNativeMessagingHost::ProcessConnect(
                 std::make_unique<It2MeHost::DeferredConnectContext>();
             connection_context->register_request =
                 std::make_unique<XmppRegisterSupportHostRequest>(
-                    kRemotingBotJid);
+                    kDirectoryBotJidValue);
             connection_context->log_to_server =
                 std::make_unique<XmppLogToServer>(
                     ServerLogEntry::IT2ME, signal_strategy.get(),
-                    kRemotingBotJid, context->network_task_runner());
+                    kDirectoryBotJidValue, context->network_task_runner());
             connection_context->signal_strategy = std::move(signal_strategy);
             return connection_context;
           },
@@ -338,7 +338,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
 
   base::DictionaryValue* ice_config_dict;
   protocol::IceConfig ice_config;
-  if (message->GetDictionary("iceConfig", &ice_config_dict)) {
+  if (message->GetDictionary(kIceConfig, &ice_config_dict)) {
     ice_config = protocol::IceConfig::Parse(*ice_config_dict);
   }
 
@@ -412,7 +412,7 @@ void It2MeNativeMessagingHost::ProcessIncomingIq(
   }
 
   std::string iq;
-  if (!message->GetString("iq", &iq)) {
+  if (!message->GetString(kIq, &iq)) {
     LOG(ERROR) << "Invalid incomingIq() data.";
     return;
   }
@@ -428,8 +428,9 @@ void It2MeNativeMessagingHost::ProcessIncomingIq(
 
 void It2MeNativeMessagingHost::SendOutgoingIq(const std::string& iq) {
   std::unique_ptr<base::DictionaryValue> message(new base::DictionaryValue());
-  message->SetString("iq", iq);
-  message->SetString("type", "sendOutgoingIq");
+  message->SetString(kMessageType, kSendOutgoingIqMessage);
+  message->SetString(kIq, iq);
+
   SendMessageToClient(std::move(message));
 }
 
@@ -437,10 +438,10 @@ void It2MeNativeMessagingHost::SendErrorAndExit(
     std::unique_ptr<base::DictionaryValue> response,
     protocol::ErrorCode error_code) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  response->SetString("type", "error");
-  response->SetString("error_code", ErrorCodeToString(error_code));
+  response->SetString(kMessageType, kErrorMessage);
+  response->SetString(kErrorMessageCode, ErrorCodeToString(error_code));
   // TODO(kelvinp): Remove this after M61 Webapp is pushed to 100%.
-  response->SetString("description", ErrorCodeToString(error_code));
+  response->SetString(kErrorMessageDescription, ErrorCodeToString(error_code));
   SendMessageToClient(std::move(response));
 
   // Trigger a host shutdown by sending an empty message.
@@ -451,7 +452,7 @@ void It2MeNativeMessagingHost::SendPolicyErrorAndExit() const {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   auto message = std::make_unique<base::DictionaryValue>();
-  message->SetString("type", "policyError");
+  message->SetString(kMessageType, kPolicyErrorMessage);
   SendMessageToClient(std::move(message));
   client_->CloseChannel(std::string());
 }
@@ -464,18 +465,18 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
 
   std::unique_ptr<base::DictionaryValue> message(new base::DictionaryValue());
 
-  message->SetString("type", "hostStateChanged");
-  message->SetString("state", HostStateToString(state));
+  message->SetString(kMessageType, kHostStateChangedMessage);
+  message->SetString(kState, HostStateToString(state));
 
   switch (state_) {
     case kReceivedAccessCode:
-      message->SetString("accessCode", access_code_);
-      message->SetInteger("accessCodeLifetime",
+      message->SetString(kAccessCode, access_code_);
+      message->SetInteger(kAccessCodeLifetime,
                           access_code_lifetime_.InSeconds());
       break;
 
     case kConnected:
-      message->SetString("client", client_username_);
+      message->SetString(kClient, client_username_);
       break;
 
     case kDisconnected:
@@ -486,10 +487,11 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
       // kError is an internal-only state, sent to the web-app by a separate
       // "error" message so that errors that occur before the "connect" message
       // is sent can be communicated.
-      message->SetString("type", "error");
-      message->SetString("error_code", ErrorCodeToString(error_code));
+      message->SetString(kMessageType, kErrorMessage);
+      message->SetString(kErrorMessageCode, ErrorCodeToString(error_code));
       // TODO(kelvinp): Remove this after M61 Webapp is pushed to 100%.
-      message->SetString("description", ErrorCodeToString(error_code));
+      message->SetString(kErrorMessageDescription,
+                         ErrorCodeToString(error_code));
       break;
 
     default:
@@ -511,13 +513,14 @@ void It2MeNativeMessagingHost::OnNatPoliciesChanged(
 
   std::unique_ptr<base::DictionaryValue> message(new base::DictionaryValue());
 
-  message->SetString("type", "natPolicyChanged");
-  message->SetBoolean("natTraversalEnabled", nat_traversal_enabled);
-  message->SetBoolean("relayConnectionsAllowed", relay_connections_allowed);
+  message->SetString(kMessageType, kNatPolicyChangedMessage);
+  message->SetBoolean(kNatPolicyChangedMessageNatEnabled,
+                      nat_traversal_enabled);
+  message->SetBoolean(kNatPolicyChangedMessageRelayEnabled,
+                      relay_connections_allowed);
   SendMessageToClient(std::move(message));
 }
 
-// Stores the Access Code for the web-app to query.
 void It2MeNativeMessagingHost::OnStoreAccessCode(
     const std::string& access_code,
     base::TimeDelta access_code_lifetime) {
@@ -527,7 +530,6 @@ void It2MeNativeMessagingHost::OnStoreAccessCode(
   access_code_lifetime_ = access_code_lifetime;
 }
 
-// Stores the client user's name for the web-app to query.
 void It2MeNativeMessagingHost::OnClientAuthenticated(
     const std::string& client_username) {
   DCHECK(task_runner()->BelongsToCurrentThread());
@@ -608,7 +610,7 @@ std::unique_ptr<SignalStrategy>
 It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
     const base::DictionaryValue* message) {
   std::string local_jid;
-  if (!message->GetString("localJid", &local_jid)) {
+  if (!message->GetString(kLocalJid, &local_jid)) {
     LOG(ERROR) << "'localJid' not found in request.";
     return nullptr;
   }
@@ -625,7 +627,7 @@ It2MeNativeMessagingHost::CreateDelegatedSignalStrategy(
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
     const base::DictionaryValue* message) {
   std::string auth_service_with_token;
-  if (!message->GetString("authServiceWithToken", &auth_service_with_token)) {
+  if (!message->GetString(kAuthServiceWithToken, &auth_service_with_token)) {
     LOG(ERROR) << "'authServiceWithToken' not found in request.";
     return {};
   }

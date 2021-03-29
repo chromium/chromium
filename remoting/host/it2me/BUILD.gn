@@ -22,6 +22,8 @@ source_set("common") {
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",
     "it2me_confirmation_dialog_proxy.h",
+    "it2me_constants.cc",
+    "it2me_constants.h",
     "it2me_host.cc",
     "it2me_host.h",
     "it2me_native_messaging_host.cc",
