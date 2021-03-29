@@ -1488,6 +1488,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (self.isThumbStripEnabled) {
     [self ensureBrowserViewHiderCoordinatorStarted];
+  } else {
+    self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
 }
 
