@@ -768,7 +768,10 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       if (child_fragment.IsPaintedAtomically())
         continue;
 
-      if (child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
+      // Drawing in SelectionDragImage phase can result in an exponential
+      // paint time: crbug.com://1182106
+      if (paint_info.phase != PaintPhase::kSelectionDragImage &&
+          child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
           FragmentRequiresLegacyFallback(child_fragment)) {
         child_fragment.GetLayoutObject()->Paint(paint_info);
         continue;
