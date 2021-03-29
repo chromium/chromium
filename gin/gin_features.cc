@@ -62,6 +62,10 @@ const base::Feature kV8Turboprop{"V8Turboprop",
 const base::Feature kV8Sparkplug{"V8Sparkplug",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables short builtin calls feature.
+const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables fast API calls in TurboFan.
 const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

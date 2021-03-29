@@ -314,6 +314,17 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     v8::V8::SetFlagsFromString(sparkplug, sizeof(sparkplug) - 1);
   }
 
+  if (!base::FeatureList::IsEnabled(features::kV8ShortBuiltinCalls)) {
+    // The --short-builtin-calls flag is enabled by default on x64 and arm64
+    // desktop configurations, so we need to explicitly disable it if
+    // kV8ShortBuiltinCalls is disabled.
+    // On other configurations it's not supported, so we don't try to enable
+    // it if the feature flag is on.
+    static const char no_short_builtin_calls[] = "--no-short-builtin-calls";
+    v8::V8::SetFlagsFromString(no_short_builtin_calls,
+                               sizeof(no_short_builtin_calls) - 1);
+  }
+
   if (IsolateHolder::kStrictMode == mode) {
     static const char use_strict[] = "--use_strict";
     v8::V8::SetFlagsFromString(use_strict, sizeof(use_strict) - 1);
