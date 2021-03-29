@@ -22,7 +22,8 @@
     "ActionableContentSettings": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_weblayer"
             ],
             "experiments": [
                 {
@@ -4810,7 +4811,8 @@
     "PageInfoDiscoverability": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_weblayer"
             ],
             "experiments": [
                 {
@@ -4825,7 +4827,8 @@
     "PageInfoV2": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_weblayer"
             ],
             "experiments": [
                 {
