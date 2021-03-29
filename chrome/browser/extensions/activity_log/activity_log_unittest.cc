@@ -160,8 +160,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
-    SetActivityLogTaskRunnerForTesting(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   static void RetrieveActions_LogAndFetchActions0(

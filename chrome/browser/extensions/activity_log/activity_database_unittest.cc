@@ -110,8 +110,8 @@ class ActivityDatabaseTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    SetActivityLogTaskRunnerForTesting(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   // Creates a test database and initializes the table schema.
