@@ -612,27 +612,34 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
 
   LayoutObject* layout_object = node->GetLayoutObject();
 
-  // Some elements such as <area> are indexed by DOM node, not by layout object.
-  if (!layout_object ||
-      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
-    if (node->IsTextNode() &&
-        !IsNodeRelevantForAccessibility(node, /*parent known*/ false,
-                                        /*layout relevant*/ false)) {
-      // Layout object and node both irrelevant for accessibility.
-      // For example, text becomes irrelevant when it changes to whitespace, or
-      // if it already is whitespace and the text around it changes to makes it
-      // redundant whitespace. In this case, remove any existing AXObject.
-      Remove(const_cast<Node*>(node));
-      return nullptr;
-    }
-    layout_object = nullptr;
-  }
-
   AXID layout_id = layout_object ? layout_object_mapping_.at(layout_object) : 0;
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
 
   AXID node_id = node_object_mapping_.at(node);
   DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+
+  if (!layout_id && !node_id)
+    return nullptr;
+
+  // Some elements such as <area> are indexed by DOM node, not by layout object.
+  if (!layout_object ||
+      !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
+    // Only text nodes still are able to become suddenly irrelevant.
+    if (layout_id && node->IsTextNode() &&
+        !IsNodeRelevantForAccessibility(node, /*parent known*/ false,
+                                        /*layout relevant*/ false)) {
+      // Layout object and node are now both irrelevant for accessibility.
+      // For example, text becomes irrelevant when it changes to whitespace, or
+      // if it already is whitespace and the text around it changes to makes it
+      // redundant whitespace. In this case, Invalidate(), which will remove
+      // objects that are no longer relevant.
+      Invalidate(layout_id);
+    } else {
+      // Layout object is irrelevant, but node object is still relevant.
+      layout_object = nullptr;
+      layout_id = 0;
+    }
+  }
 
   if (layout_id &&
       DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
@@ -663,8 +670,8 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
 #endif
     return result;
   }
-  if (!node_id)
-    return nullptr;
+
+  DCHECK(node_id);
 
   AXObject* result = objects_.at(node_id);
 #if DCHECK_IS_ON()
