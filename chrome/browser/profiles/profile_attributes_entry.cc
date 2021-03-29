@@ -50,8 +50,6 @@ const char kGAIAGivenNameKey[] = "gaia_given_name";
 const char kGAIANameKey[] = "gaia_name";
 const char kShortcutNameKey[] = "shortcut_name";
 const char kActiveTimeKey[] = "active_time";
-const char kAuthCredentialsKey[] = "local_auth_credentials";
-const char kPasswordTokenKey[] = "gaia_password_token";
 const char kIsAuthErrorKey[] = "is_auth_error";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kSigninRequiredKey[] = "signin_required";
@@ -72,6 +70,10 @@ const char kNextMetricsBucketIndex[] = "profile.metrics.next_bucket_index";
 
 // Deprecated 2/2021.
 const char kIsOmittedFromProfileListKey[] = "is_omitted_from_profile_list";
+
+// Deprecated 3/2021.
+const char kAuthCredentialsKey[] = "local_auth_credentials";
+const char kPasswordTokenKey[] = "gaia_password_token";
 
 constexpr int kIntegerNotSet = -1;
 
@@ -163,7 +165,6 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
     // Profiles that require signin in the absence of an enterprise policy are
     // left-overs from legacy supervised users. Just unlock them, so users can
     // keep using them.
-    SetLocalAuthCredentials(std::string());
     SetAuthInfo(std::string(), std::u16string(), false);
     SetIsSigninRequired(false);
 #endif
@@ -322,14 +323,6 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
   int resource_id = profiles::GetDefaultAvatarIconResourceIDAtIndex(icon_index);
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
-}
-
-std::string ProfileAttributesEntry::GetLocalAuthCredentials() const {
-  return GetString(kAuthCredentialsKey);
-}
-
-std::string ProfileAttributesEntry::GetPasswordChangeDetectionToken() const {
-  return GetString(kPasswordTokenKey);
 }
 
 bool ProfileAttributesEntry::GetBackgroundStatus() const {
@@ -525,15 +518,6 @@ void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
 void ProfileAttributesEntry::SetSupervisedUserId(const std::string& id) {
   if (SetString(kSupervisedUserId, id))
     profile_info_cache_->NotifyProfileSupervisedUserIdChanged(GetPath());
-}
-
-void ProfileAttributesEntry::SetLocalAuthCredentials(const std::string& auth) {
-  SetString(kAuthCredentialsKey, auth);
-}
-
-void ProfileAttributesEntry::SetPasswordChangeDetectionToken(
-    const std::string& token) {
-  SetString(kPasswordTokenKey, token);
 }
 
 void ProfileAttributesEntry::SetBackgroundStatus(bool running_background_apps) {
@@ -959,4 +943,8 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
 void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 2/2021.
   ClearValue(kIsOmittedFromProfileListKey);
+
+  // Added 3/2021.
+  ClearValue(kAuthCredentialsKey);
+  ClearValue(kPasswordTokenKey);
 }

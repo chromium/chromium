@@ -75,15 +75,8 @@ void SwitchToGuestProfile(ProfileManager::CreateCallback callback);
 // one and the current window is a guest window.
 bool HasProfileSwitchTargets(Profile* profile);
 
-// Closes and locks all the browser windows for |profile| and opens the user
-// manager.
-void LockProfile(Profile* profile);
-
 // Close all the browser windows for |profile|.
 void CloseProfileWindows(Profile* profile);
-
-// Returns whether lock is available to this profile.
-bool IsLockAvailable(Profile* profile);
 
 // Converts from modes in the avatar menu to modes understood by
 // ProfileMenuView.

@@ -334,30 +334,6 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   profile->Wipe();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-bool AreAllNonChildNonSupervisedProfilesLocked() {
-  bool at_least_one_regular_profile_present = false;
-
-  std::vector<ProfileAttributesEntry*> entries =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetAllProfilesAttributes();
-  for (const ProfileAttributesEntry* entry : entries) {
-    if (entry->IsOmitted())
-      continue;
-
-    // Only consider non-child profiles.
-    if (!entry->IsChild()) {
-      at_least_one_regular_profile_present = true;
-
-      if (!entry->IsSigninRequired())
-        return false;
-    }
-  }
-  return at_least_one_regular_profile_present;
-}
-#endif
-
 bool IsPublicSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::LoginState::IsInitialized()) {

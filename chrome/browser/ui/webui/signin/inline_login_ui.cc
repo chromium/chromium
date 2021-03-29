@@ -251,7 +251,6 @@ bool IsValidChromeSigninReason(const GURL& url) {
 
   switch (reason) {
     case signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT:
-    case signin_metrics::Reason::REASON_UNLOCK:
       // Used by the user manager.
       return true;
     case signin_metrics::Reason::REASON_FETCH_LST_ONLY:
@@ -265,9 +264,6 @@ bool IsValidChromeSigninReason(const GURL& url) {
     case signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT:
     case signin_metrics::Reason::REASON_REAUTHENTICATION:
     case signin_metrics::Reason::REASON_UNKNOWN_REASON:
-      return false;
-    case signin_metrics::Reason::REASON_MAX:
-      NOTREACHED();
       return false;
   }
   NOTREACHED();

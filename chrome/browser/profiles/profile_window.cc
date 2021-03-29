@@ -73,12 +73,6 @@ using content::BrowserThread;
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-void BlockExtensions(Profile* profile) {
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  extension_service->BlockAllExtensions();
-}
-
 void UnblockExtensions(Profile* profile) {
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
@@ -246,69 +240,6 @@ bool HasProfileSwitchTargets(Profile* profile) {
   size_t number_of_profiles =
       g_browser_process->profile_manager()->GetNumberOfProfiles();
   return number_of_profiles >= min_profiles;
-}
-
-void LockBrowserCloseSuccess(const base::FilePath& profile_path) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesEntry* entry =
-      profile_manager->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
-  entry->SetIsSigninRequired(true);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Profile guaranteed to exist for it to have been locked.
-  BlockExtensions(profile_manager->GetProfileByPath(profile_path));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  chrome::HideTaskManager();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-void LockProfile(Profile* profile) {
-  DCHECK(profile);
-  if (profile) {
-    BrowserList::CloseAllBrowsersWithProfile(
-        profile, base::BindRepeating(&LockBrowserCloseSuccess),
-        BrowserList::CloseCallback(), false);
-  }
-}
-
-bool IsLockAvailable(Profile* profile) {
-  DCHECK(profile);
-  if (profile->IsGuestSession() || profile->IsSystemProfile() ||
-      profile->IsEphemeralGuestProfile()) {
-    return false;
-  }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
-    return false;
-  base::Optional<AccountInfo> primary_account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  std::string hosted_domain = primary_account_info.has_value()
-                                  ? primary_account_info.value().hosted_domain
-                                  : "";
-
-  // TODO(mlerman): Prohibit only users who authenticate using SAML. Until then,
-  // prohibited users who use hosted domains (aside from google.com).
-  if (hosted_domain != kNoHostedDomainFound && hosted_domain != "google.com") {
-    return false;
-  }
-
-  // Lock only when there is at least one supervised user on the machine.
-  std::vector<ProfileAttributesEntry*> entries =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetAllProfilesAttributes();
-  for (ProfileAttributesEntry* entry : entries) {
-    if (entry->IsSupervised())
-      return true;
-  }
-  return false;
 }
 
 void CloseProfileWindows(Profile* profile) {

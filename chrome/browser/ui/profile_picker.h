@@ -172,19 +172,6 @@ class ProfilePickerForceSigninDialog {
   static constexpr int kDialogHeight = 512;
   static constexpr int kDialogWidth = 448;
 
-  // Shows a dialog where the user can re-authenticate the profile with the
-  // given |email|. This is called from the profile picker when a profile is
-  // locked and the user's password is detected to have been changed.
-  static void ShowUnlockDialog(content::BrowserContext* browser_context,
-                               const std::string& email);
-
-  // Shows a reauth dialog with profile path so that the sign in error message
-  // can be displayed without browser window.
-  static void ShowUnlockDialogWithProfilePath(
-      content::BrowserContext* browser_context,
-      const std::string& email,
-      const base::FilePath& profile_path);
-
   // Shows a dialog where the user logs into their profile for the first time
   // via the profile picker, when force signin is enabled.
   static void ShowForceSigninDialog(content::BrowserContext* browser_context,

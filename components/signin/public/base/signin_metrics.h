@@ -288,21 +288,26 @@ enum class AccountConsistencyPromoAfterDismissal {
 #endif  // defined(OS_ANDROID)
 
 // Enum values which enumerates all reasons to start sign in process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Please keep in Sync with "SigninReason" in
+// src/tools/metrics/histograms/enums.xml.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninReason
 enum class Reason : int {
   REASON_SIGNIN_PRIMARY_ACCOUNT = 0,
-  REASON_ADD_SECONDARY_ACCOUNT,
-  REASON_REAUTHENTICATION,
-  REASON_UNLOCK,
-  REASON_UNKNOWN_REASON,  // This should never have been used to get signin URL.
-  REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT,
-  REASON_FETCH_LST_ONLY,  // Used to simply login and acquire a login scope
-                          // token without actually signing into any profiles on
-                          // Chrome. This allows the chrome signin page to work
-                          // in incognito mode.
-  REASON_MAX,             // This must be last.
+  REASON_ADD_SECONDARY_ACCOUNT = 1,
+  REASON_REAUTHENTICATION = 2,
+  // REASON_UNLOCK = 3,  // DEPRECATED, profile unlocking was removed.
+  // This should never have been used to get signin URL.
+  REASON_UNKNOWN_REASON = 4,
+  REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT = 5,
+  // Used to simply login and acquire a login scope token without actually
+  // signing into any profiles on Chrome. This allows the chrome signin page to
+  // work in incognito mode.
+  REASON_FETCH_LST_ONLY = 6,
+  kMaxValue = REASON_FETCH_LST_ONLY,
 };
 
 // Enum values used for use with the "Signin.Reauth" histogram.

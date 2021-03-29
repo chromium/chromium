@@ -391,30 +391,6 @@ void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
 // -------------------------------------------------------------
 
 // static
-void ProfilePickerForceSigninDialog::ShowUnlockDialog(
-    content::BrowserContext* browser_context,
-    const std::string& email) {
-  ShowUnlockDialogWithProfilePath(browser_context, email, base::FilePath());
-}
-
-// static
-void ProfilePickerForceSigninDialog::ShowUnlockDialogWithProfilePath(
-    content::BrowserContext* browser_context,
-    const std::string& email,
-    const base::FilePath& profile_path) {
-  // This method should only be called if the profile picker is already showing.
-  if (!ProfilePicker::IsActive())
-    return;
-  // Load the re-auth URL, prepopulated with the user's email address.
-  // Add the index of the profile to the URL so that the inline login page
-  // knows which profile to load and update the credentials.
-  GURL url = signin::GetEmbeddedReauthURLWithEmail(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::Reason::REASON_UNLOCK, email);
-  ProfilePicker::ShowDialog(browser_context, url, profile_path);
-}
-
-// static
 void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
     content::BrowserContext* browser_context,
     const base::FilePath& profile_path) {

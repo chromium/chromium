@@ -26,7 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 SigninUIError CanOfferSignin(Profile* profile,
-                             CanOfferSigninType can_offer,
                              const std::string& gaia_id,
                              const std::string& email) {
   if (!profile)
@@ -49,11 +48,8 @@ SigninUIError CanOfferSignin(Profile* profile,
       return SigninUIError::UsernameNotAllowedByPatternFromPrefs(email);
     }
 
-    if (can_offer == CAN_OFFER_SIGNIN_FOR_SECONDARY_ACCOUNT)
-      return SigninUIError::Ok();
-
     // If the identity manager already has a primary account, then this is a
-    // re-auth scenario.  Make sure the email just signed in corresponds to
+    // re-auth scenario. Make sure the email just signed in corresponds to
     // the one sign in manager expects.
     std::string current_email =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)

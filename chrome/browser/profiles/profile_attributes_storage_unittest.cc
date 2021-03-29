@@ -329,9 +329,6 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   VerifyAndResetCallExpectations();
 
   TEST_STRING16_ACCESSORS(ProfileAttributesEntry, entry, ShortcutName);
-  TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry, LocalAuthCredentials);
-  TEST_STRING_ACCESSORS(
-      ProfileAttributesEntry, entry, PasswordChangeDetectionToken);
   TEST_ACCESSORS(ProfileAttributesEntry, entry, BackgroundStatus, true, false);
 
   EXPECT_CALL(observer(), OnProfileNameChanged(path, _)).Times(4);

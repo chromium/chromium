@@ -16,8 +16,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 
@@ -31,11 +29,12 @@ class ForceSigninVerifier;
 class Profile;
 
 class ChromeSigninClient
-    : public SigninClient,
+    : public SigninClient
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
+    ,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver
 #endif
-      public gaia::GaiaOAuthClient::Delegate {
+{
  public:
   explicit ChromeSigninClient(Profile* profile);
   ~ChromeSigninClient() override;
@@ -64,12 +63,6 @@ class ChromeSigninClient
       gaia::GaiaSource source) override;
   bool IsNonEnterpriseUser(const std::string& username) override;
 
-  // gaia::GaiaOAuthClient::Delegate implementation.
-  void OnGetTokenInfoResponse(
-      std::unique_ptr<base::DictionaryValue> token_info) override;
-  void OnOAuthError() override;
-  void OnNetworkError(int response_code) override;
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation.
@@ -88,16 +81,11 @@ class ChromeSigninClient
   virtual void LockForceSigninProfile(const base::FilePath& profile_path);
 
  private:
-  void MaybeFetchSigninTokenHandle();
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
-
-  // signin::PrimaryAccountAccessTokenFetcher callback
-  void OnAccessTokenAvailable(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info);
 
   Profile* profile_;
 
@@ -112,10 +100,6 @@ class ChromeSigninClient
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
 #endif
-
-  std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      access_token_fetcher_;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;

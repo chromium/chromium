@@ -374,18 +374,6 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorCorruptProfileTest,
   ADD_FAILURE() << "Test body is not expected to run.";
 }
 
-// DoNotStartLockedProfile : Profiles that are locked should never be
-// initialized. Since there are no unlocked profiles, the browser should not
-// start.
-IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorCorruptProfileTest,
-                       PRE_DoNotStartLockedProfile) {
-  // Lock the default profile. The user manager is shown after the profile is
-  // locked.
-  signin_util::SetForceSigninForTesting(true);
-  profiles::LockProfile(browser()->profile());
-  ExpectUserManagerToShow();
-}
-
 bool StartupBrowserCreatorCorruptProfileTest::
     SetUpUserDataDirectoryForDoNotStartLockedProfile() {
   SetExpectTestBodyToRun(false);

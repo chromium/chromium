@@ -55,55 +55,6 @@ class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ProfileListDesktopBrowserTest);
 };
 
-#if defined(OS_WIN) || defined(OS_MAC)
-// SignOut is flaky on Windows (crbug.com/357329)
-// and Mac (crbug.com/674497, crbug.com/1110452).
-#define MAYBE_SignOut DISABLED_SignOut
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-// This test doesn't make sense for Chrome OS since it has a different
-// multi-profiles menu in the system tray instead.
-#define MAYBE_SignOut DISABLED_SignOut
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// Flaky on Linux debug builds with libc++ (https://crbug.com/734875)
-#define MAYBE_SignOut DISABLED_SignOut
-#else
-#define MAYBE_SignOut SignOut
-#endif
-IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SignOut) {
-  if (!profiles::IsMultipleProfilesEnabled())
-    return;
-
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* current_profile = browser()->profile();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(current_profile->GetPath());
-  ASSERT_NE(entry, nullptr);
-
-  std::unique_ptr<AvatarMenu> menu = CreateAvatarMenu(&storage);
-  menu->RebuildMenu();
-
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
-
-  ProfileWaiter profile_waiter;
-
-  EXPECT_FALSE(entry->IsSigninRequired());
-  profiles::LockProfile(current_profile);
-  // Rely on test time-out for failure indication.
-  ui_test_utils::WaitForBrowserToClose(browser());
-
-  EXPECT_TRUE(entry->IsSigninRequired());
-  EXPECT_EQ(0u, browser_list->size());
-
-  // Signing out brings up the User Manager which we should close before exit.
-  // But the User Manager is shown only when the system profile is created,
-  // which happens asynchronously.
-  profile_waiter.WaitForProfileAdded();
-  ProfilePicker::Hide();
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This test doesn't make sense for Chrome OS since it has a different
 // multi-profiles menu in the system tray instead.

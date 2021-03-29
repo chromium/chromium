@@ -281,8 +281,7 @@ DiceTurnSyncOnHelper::~DiceTurnSyncOnHelper() {
 
 bool DiceTurnSyncOnHelper::HasCanOfferSigninError() {
   SigninUIError can_offer_error =
-      CanOfferSignin(profile_, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
-                     account_info_.gaia, account_info_.email);
+      CanOfferSignin(profile_, account_info_.gaia, account_info_.email);
   if (can_offer_error.IsOk())
     return false;
 

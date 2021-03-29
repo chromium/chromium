@@ -305,16 +305,6 @@ bool IsGCPWUsedInOtherProfile(Profile* profile) {
   return false;
 }
 
-// Chrome doesn't allow signing into current profile if the same user is signed
-// in another profile.
-bool CanSignInToCurrentProfile(const std::string& gaia_id,
-                               const std::string& email,
-                               Profile* profile) {
-  return CanOfferSignin(profile, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, gaia_id,
-                        email)
-      .IsOk();
-}
-
 void SigninWithCredentialProviderIfPossible(Profile* profile) {
   bool import_only_on_first_run = true;
   bool import_when_primary_account_exists = false;
@@ -327,9 +317,11 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
   if (cred_provider_gaia_id.empty() || cred_provider_email.empty())
     return;
 
-  if (!CanSignInToCurrentProfile(base::WideToUTF8(cred_provider_gaia_id),
-                                 base::WideToUTF8(cred_provider_email),
-                                 profile) ||
+  // Chrome doesn't allow signing into current profile if the same user is
+  // signed in another profile.
+  if (!CanOfferSignin(profile, base::WideToUTF8(cred_provider_gaia_id),
+                      base::WideToUTF8(cred_provider_email))
+           .IsOk() ||
       IsGCPWUsedInOtherProfile(profile)) {
     return;
   }

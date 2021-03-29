@@ -112,12 +112,6 @@ bool SetActiveProfileToGuestIfLocked();
 // a BrowsingDataRemover to delete all the Profile's data.
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns true if there exists at least one non-supervised or non-child profile
-// and they are all locked.
-bool AreAllNonChildNonSupervisedProfilesLocked();
-#endif
-
 // Returns whether a public session is being run currently.
 bool IsPublicSession();
 

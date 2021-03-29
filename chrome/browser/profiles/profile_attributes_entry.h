@@ -84,8 +84,6 @@ class ProfileAttributesEntry {
   // profiles::GetSizedAvatarIcon().
   gfx::Image GetAvatarIcon(int size_for_placeholder_avatar = 74,
                            bool use_high_res_file = true) const;
-  std::string GetLocalAuthCredentials() const;
-  std::string GetPasswordChangeDetectionToken() const;
   // Returns true if the profile is currently running any background apps. Note
   // that a return value of false could mean an error in collection or that
   // there are currently no background apps running. However, the action which
@@ -165,8 +163,6 @@ class ProfileAttributesEntry {
   // Only ephemeral profiles can be set as omitted.
   void SetIsOmitted(bool is_omitted);
   void SetSupervisedUserId(const std::string& id);
-  void SetLocalAuthCredentials(const std::string& auth);
-  void SetPasswordChangeDetectionToken(const std::string& token);
   void SetBackgroundStatus(bool running_background_apps);
   void SetGAIAName(const std::u16string& name);
   void SetGAIAGivenName(const std::u16string& name);

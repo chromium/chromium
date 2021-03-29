@@ -36,7 +36,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/local_auth.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -94,7 +93,6 @@ namespace {
 // InlineLoginHandlerImpl.
 enum class HandlerSigninReason {
   FORCED_SIGNIN_PRIMARY_ACCOUNT,
-  UNLOCK,
   FETCH_LST_ONLY
 };
 
@@ -105,26 +103,11 @@ HandlerSigninReason GetHandlerSigninReason(const GURL& url) {
   switch (reason) {
     case signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT:
       return HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT;
-    case signin_metrics::Reason::REASON_UNLOCK:
-      return HandlerSigninReason::UNLOCK;
     case signin_metrics::Reason::REASON_FETCH_LST_ONLY:
       return HandlerSigninReason::FETCH_LST_ONLY;
     default:
       NOTREACHED() << "Unexpected signin reason: " << static_cast<int>(reason);
       return HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT;
-  }
-}
-
-// Converts from HandlerSigninReason to signin_metrics::Reason.
-signin_metrics::Reason GetSigninReasonFromHandlerSigninReason(
-    HandlerSigninReason r) {
-  switch (r) {
-    case HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT:
-      return signin_metrics::Reason::REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT;
-    case HandlerSigninReason::UNLOCK:
-      return signin_metrics::Reason::REASON_UNLOCK;
-    case HandlerSigninReason::FETCH_LST_ONLY:
-      return signin_metrics::Reason::REASON_FETCH_LST_ONLY;
   }
 }
 
@@ -282,9 +265,6 @@ void OnSyncSetupComplete(Profile* profile,
         /*is_primary_account_=*/true,
         password_manager::metrics_util::GaiaPasswordHashChange::
             SAVED_ON_CHROME_SIGNIN);
-
-    if (profiles::IsLockAvailable(profile))
-      LocalAuth::SetLocalAuthCredentials(profile, password);
   }
 
   if (has_primary_account && is_force_sign_in_with_usermanager &&
@@ -412,11 +392,6 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
   std::string primary_email =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
           .email;
-  if (gaia::AreEmailsSame(email_, primary_email) &&
-      reason == HandlerSigninReason::UNLOCK && !password_.empty() &&
-      profiles::IsLockAvailable(profile_)) {
-    LocalAuth::SetLocalAuthCredentials(profile_, password_);
-  }
 
   if (!password_.empty()) {
     scoped_refptr<password_manager::PasswordStore> password_store =
@@ -430,44 +405,19 @@ void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     }
   }
 
-  if (reason == HandlerSigninReason::UNLOCK) {
-    DCHECK(!identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                .IsEmpty());
-
-    identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-        gaia_id_, email_, result.refresh_token,
-        result.is_under_advanced_protection,
-        signin_metrics::SourceForRefreshTokenOperation::
-            kInlineLoginHandler_Signin);
-
-    if (signin::IsAutoCloseEnabledInEmbeddedURL(current_url_)) {
-      // Close the gaia sign in tab via a task to make sure we aren't in the
-      // middle of any webui handler code.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&InlineLoginHandlerImpl::CloseTab, handler_));
-    }
-
-    identity_manager->GetAccountsCookieMutator()->AddAccountToCookie(
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync),
-        gaia::GaiaSource::kPrimaryAccountManager, {});
-
-    signin_metrics::LogSigninReason(
-        GetSigninReasonFromHandlerSigninReason(reason));
-  } else {
-    if (confirm_untrusted_signin_) {
-      // Display a confirmation dialog to the user.
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Show_UntrustedSigninPrompt"));
-      Browser* browser = chrome::FindLastActiveWithProfile(profile_);
-      browser->window()->ShowOneClickSigninConfirmation(
-          base::UTF8ToUTF16(email_),
-          base::BindOnce(&InlineSigninHelper::UntrustedSigninConfirmed,
-                         base::Unretained(this), result.refresh_token));
-      return;
-    }
-    CreateSyncStarter(result.refresh_token);
+  if (confirm_untrusted_signin_) {
+    // Display a confirmation dialog to the user.
+    base::RecordAction(
+        base::UserMetricsAction("Signin_Show_UntrustedSigninPrompt"));
+    Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+    browser->window()->ShowOneClickSigninConfirmation(
+        base::UTF8ToUTF16(email_),
+        base::BindOnce(&InlineSigninHelper::UntrustedSigninConfirmed,
+                       base::Unretained(this), result.refresh_token));
+    return;
   }
+  CreateSyncStarter(result.refresh_token);
+
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 
@@ -603,9 +553,6 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
 
   std::string flow;
   switch (reason) {
-    case HandlerSigninReason::UNLOCK:
-      flow = "reauth";
-      break;
     case HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT:
       flow = "enterprisefsi";
       break;
@@ -678,8 +625,7 @@ void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
     return;
   }
 
-  DCHECK(reason == HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT ||
-         reason == HandlerSigninReason::UNLOCK);
+  DCHECK(reason == HandlerSigninReason::FORCED_SIGNIN_PRIMARY_ACCOUNT);
   DCHECK(signin_util::IsForceSigninEnabled());
 
   ProfileManager* manager = g_browser_process->profile_manager();
@@ -791,21 +737,10 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
                         ? signin_metrics::HISTOGRAM_WITH_ADVANCED
                         : signin_metrics::HISTOGRAM_WITH_DEFAULTS);
 
-  CanOfferSigninType can_offer_for = CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS;
-  if (reason == HandlerSigninReason::UNLOCK) {
-    std::string primary_username =
-        IdentityManagerFactory::GetForProfile(profile)
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
-    if (!gaia::AreEmailsSame(default_email, primary_username))
-      can_offer_for = CAN_OFFER_SIGNIN_FOR_SECONDARY_ACCOUNT;
-  }
-
   SigninUIError can_offer_error = SigninUIError::Ok();
-  if (reason != HandlerSigninReason::FETCH_LST_ONLY) {
-    can_offer_error =
-        CanOfferSignin(profile, can_offer_for, params.gaia_id, params.email);
-  }
+  if (reason != HandlerSigninReason::FETCH_LST_ONLY)
+    can_offer_error = CanOfferSignin(profile, params.gaia_id, params.email);
+
   if (!can_offer_error.IsOk()) {
     params.handler->HandleLoginError(can_offer_error);
     return;

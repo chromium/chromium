@@ -112,7 +112,6 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
       signin::GetSigninReasonForEmbeddedPromoURL(current_url);
 
   if (reason != signin_metrics::Reason::REASON_REAUTHENTICATION &&
-      reason != signin_metrics::Reason::REASON_UNLOCK &&
       reason != signin_metrics::Reason::REASON_ADD_SECONDARY_ACCOUNT) {
     signin_metrics::LogSigninAccessPointStarted(
         access_point,

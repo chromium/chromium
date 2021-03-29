@@ -338,17 +338,14 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoProfile) {
-  SigninUIError error = CanOfferSignin(
-      nullptr, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345", "user@gmail.com");
+  SigninUIError error = CanOfferSignin(nullptr, "12345", "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(),
-                             CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                             "user@gmail.com")
-                  .IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com").IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
@@ -357,16 +354,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
   signin::MakePrimaryAccountAvailable(identity_manager, "foo@gmail.com");
   EnableSigninAllowed(true);
 
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(),
-                             CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                             "foo@gmail.com")
-                  .IsOk());
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(),
-                             CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345", "foo")
-                  .IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com").IsOk());
+  EXPECT_TRUE(CanOfferSignin(browser()->profile(), "12345", "foo").IsOk());
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
-                     "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::WrongReauthAccount("user@gmail.com",
                                                      "foo@gmail.com"));
@@ -376,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferUsernameNotAllowed) {
   SetAllowedUsernamePattern("*.google.com");
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
-                     "12345", "foo@gmail.com");
+      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
                        "foo@gmail.com"));
@@ -389,14 +380,10 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferWithRejectedEmail) {
   AddEmailToOneClickRejectedList("foo@gmail.com");
   AddEmailToOneClickRejectedList("user@gmail.com");
 
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(),
-                             CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                             "foo@gmail.com")
-                  .IsOk());
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(),
-                             CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                             "user@gmail.com")
-                  .IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com").IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com").IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
@@ -404,8 +391,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
   EnableSigninAllowed(true);
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
-                     "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
@@ -673,32 +659,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
 
   SimulateOnClientOAuthSuccess(helper, "refresh_token");
-}
-
-// Test signin helper does not create sync starter when reauthenticating.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       ReauthCallsUpdateCredentials) {
-  ASSERT_EQ(0ul, identity_manager()->GetAccountsWithRefreshTokens().size());
-
-  std::string email = "foo@gmail.com";
-  signin::SetPrimaryAccount(identity_manager(), email);
-
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  GURL url("chrome://chrome-signin/?access_point=3&reason=3");
-  // InlineSigninHelper will delete itself when done using
-  // base::ThreadTaskRunnerHandle::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  InlineSigninHelper* helper = new InlineSigninHelper(
-      handler.GetWeakPtr(), test_shared_loader_factory(), profile(),
-      Profile::CreateStatus::CREATE_STATUS_INITIALIZED, url, email,
-      signin::GetTestGaiaIdForEmail(email), "password", "auth_code",
-      /*signin_scoped_device_id=*/std::string(),
-      /*confirm_untrusted_signin=*/false,
-      /*is_force_sign_in_with_usermanager=*/false);
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(1ul, identity_manager()->GetAccountsWithRefreshTokens().size());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,

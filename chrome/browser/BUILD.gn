@@ -1638,8 +1638,6 @@ static_library("browser") {
     "signin/identity_manager_factory.h",
     "signin/investigator_dependency_provider.cc",
     "signin/investigator_dependency_provider.h",
-    "signin/local_auth.cc",
-    "signin/local_auth.h",
     "signin/reauth_result.h",
     "signin/reauth_tab_helper.cc",
     "signin/reauth_tab_helper.h",

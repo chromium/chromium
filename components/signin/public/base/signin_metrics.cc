@@ -603,8 +603,7 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 }
 
 void LogSigninReason(Reason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", static_cast<int>(reason),
-                            static_cast<int>(Reason::REASON_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
 }
 
 void LogSigninAccountReconciliation(int total_number_accounts,

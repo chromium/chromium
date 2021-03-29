@@ -109,7 +109,6 @@ ChromeSigninClient::~ChromeSigninClient() {
 }
 
 void ChromeSigninClient::DoFinalInit() {
-  MaybeFetchSigninTokenHandle();
   VerifySyncToken();
 }
 
@@ -205,46 +204,6 @@ void ChromeSigninClient::PreSignOut(
   }
 }
 
-void ChromeSigninClient::OnGetTokenInfoResponse(
-    std::unique_ptr<base::DictionaryValue> token_info) {
-  if (!token_info->HasKey("error")) {
-    std::string handle;
-    if (token_info->GetString("token_handle", &handle)) {
-      ProfileAttributesEntry* entry =
-          g_browser_process->profile_manager()
-              ->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(profile_->GetPath());
-      DCHECK(entry);
-      entry->SetPasswordChangeDetectionToken(handle);
-    }
-  }
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnOAuthError() {
-  // Ignore the failure.  It's not essential and we'll try again next time.
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnNetworkError(int response_code) {
-  // Ignore the failure.  It's not essential and we'll try again next time.
-  access_token_fetcher_.reset();
-}
-
-void ChromeSigninClient::OnAccessTokenAvailable(
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  access_token_fetcher_.reset();
-
-  // Exchange the access token for a handle that can be used for later
-  // verification that the token is still valid (i.e. the password has not
-  // been changed).
-  if (!oauth_client_) {
-    oauth_client_.reset(new gaia::GaiaOAuthClient(GetURLLoaderFactory()));
-  }
-  oauth_client_->GetTokenInfo(access_token_info.token, 3 /* retries */, this);
-}
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeSigninClient::OnConnectionChanged(
     network::mojom::ConnectionType type) {
@@ -292,36 +251,6 @@ void ChromeSigninClient::VerifySyncToken() {
   if (signin_util::IsForceSigninEnabled() && !force_signin_verifier_)
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
         IdentityManagerFactory::GetForProfile(profile_));
-#endif
-}
-
-void ChromeSigninClient::MaybeFetchSigninTokenHandle() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // We get a "handle" that can be used to reference the signin token on the
-  // server.  We fetch this if we don't have one so that later we can check
-  // it to know if the signin token to which it is attached has been revoked
-  // and thus distinguish between a password mismatch due to the password
-  // being changed and the user simply mis-typing it.
-  if (profiles::IsLockAvailable(profile_)) {
-    ProfileAttributesStorage& storage =
-        g_browser_process->profile_manager()->GetProfileAttributesStorage();
-    ProfileAttributesEntry* entry =
-        storage.GetProfileAttributesWithPath(profile_->GetPath());
-    // If we don't have a token for detecting a password change, create one.
-    if (entry && entry->GetPasswordChangeDetectionToken().empty() &&
-        !access_token_fetcher_) {
-      auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-        const signin::ScopeSet scopes{GaiaConstants::kGoogleUserInfoEmail};
-        access_token_fetcher_ =
-            std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-                "chrome_signin_client", identity_manager, scopes,
-                base::BindOnce(&ChromeSigninClient::OnAccessTokenAvailable,
-                               base::Unretained(this)),
-                signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
-      }
-    }
-  }
 #endif
 }
 
