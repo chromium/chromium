@@ -44,9 +44,6 @@ extern const char kSigninLastAccounts[];
 extern const char kSigninLastAccountsMigrated[];
 extern const char kSigninShouldPromptForSigninAgain[];
 
-extern const char kOmniboxGeolocationAuthorizationState[];
-extern const char kOmniboxGeolocationLastAuthorizationAlertVersion[];
-
 extern const char kIosUserZoomMultipliers[];
 
 extern const char kIncognitoAuthenticationSetting[];

@@ -5,24 +5,27 @@
 source_set("geolocation") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "omnibox_geolocation_authorization_alert.h",
-    "omnibox_geolocation_authorization_alert.mm",
     "omnibox_geolocation_config.h",
     "omnibox_geolocation_config.mm",
-    "omnibox_geolocation_local_state.h",
-    "omnibox_geolocation_local_state.mm",
+    "omnibox_geolocation_controller.h",
+    "omnibox_geolocation_controller.mm",
     "omnibox_geolocation_tab_helper.h",
+    "omnibox_geolocation_tab_helper.mm",
   ]
   deps = [
     "//base",
+    "//components/google/core/common",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/web/public",
+    "//ios/web/public/navigation",
     "//ui/base",
     "//url",
   ]
@@ -32,46 +35,14 @@ source_set("geolocation") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "omnibox_geolocation_controller_unittest.mm",
-    "omnibox_geolocation_local_state_unittest.mm",
-  ]
+  sources = [ "omnibox_geolocation_controller_unittest.mm" ]
   deps = [
     ":geolocation",
-    ":geolocation_internal",
     "//base",
     "//components/prefs:test_support",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
     "//testing/gtest",
     "//third_party/ocmock",
-  ]
-}
-
-source_set("geolocation_internal") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "omnibox_geolocation_controller+Testing.h",
-    "omnibox_geolocation_controller.h",
-    "omnibox_geolocation_controller.mm",
-    "omnibox_geolocation_tab_helper.mm",
-  ]
-  deps = [
-    ":geolocation",
-    "//base",
-    "//components/google/core/common",
-    "//components/version_info",
-    "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/tabs",
-    "//ios/web",
-    "//ios/web/public/navigation",
-    "//ui/base",
-    "//url",
-  ]
-  frameworks = [
-    "CoreLocation.framework",
-    "UIKit.framework",
   ]
 }

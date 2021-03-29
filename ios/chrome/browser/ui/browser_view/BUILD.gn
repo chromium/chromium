@@ -49,7 +49,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/geolocation:geolocation_internal",
+    "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/link_to_text",

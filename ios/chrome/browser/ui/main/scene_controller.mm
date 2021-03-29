@@ -1145,8 +1145,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
               LocationPermissionsUI::kFirstRunPromptNotShown];
     // As soon as First Run has finished, give OmniboxGeolocationController an
     // opportunity to present the iOS system location alert.
-    [[OmniboxGeolocationController sharedInstance]
-        triggerSystemPromptForNewUser:YES];
+    [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
   } else if (location_permissions_field_trial::
                  IsInRemoveFirstRunPromptGroup()) {
     // If in RemoveFirstRunPrompt group, the system prompt will be delayed until

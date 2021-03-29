@@ -135,17 +135,6 @@ const char kSigninLastAccountsMigrated[] = "ios.signin.last_accounts_migrated";
 const char kSigninShouldPromptForSigninAgain[] =
     "ios.signin.should_prompt_for_signin_again";
 
-// Integer which indicates whether the user has authorized using geolocation
-// for Omnibox queries or the progress towards soliciting the user's
-// authorization.
-const char kOmniboxGeolocationAuthorizationState[] =
-    "ios.omnibox.geolocation_authorization_state";
-
-// String which contains the application version when we last showed the
-// authorization alert.
-const char kOmniboxGeolocationLastAuthorizationAlertVersion[] =
-    "ios.omnibox.geolocation_last_authorization_alert_version";
-
 // Dictionary which stores the zoom levels the user has changed. The zoom levels
 // are unique for a given (iOS Dynamic Type, website domain) pair. Thus, the
 // dictionary keys are the iOS Dynamic Type level, mapping to sub-dictionarys

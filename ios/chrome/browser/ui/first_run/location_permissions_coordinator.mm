@@ -79,8 +79,7 @@ enum class LocationPermissionsFirstRunModalIOSEnum {
   [self logModalInteractionForAction:LocationPermissionsFirstRunModalIOSEnum::
                                          kLocationPromptShown];
   [self.handler dismissLocationPermissionsExplanationModal];
-  [[OmniboxGeolocationController sharedInstance]
-      triggerSystemPromptForNewUser:YES];
+  [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
 }
 
 - (void)confirmationAlertSecondaryAction {

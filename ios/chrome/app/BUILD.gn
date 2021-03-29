@@ -253,7 +253,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",
-    "//ios/chrome/browser/geolocation:geolocation_internal",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
