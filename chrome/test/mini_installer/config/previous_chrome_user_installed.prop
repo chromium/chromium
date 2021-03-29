@@ -20,6 +20,10 @@
     "HKEY_CURRENT_USER\\$CHROME_CLIENT_STATE_KEY": {
       "exists": "required",
       "values": {
+        "CleanInstallRequiredForVersionBelow": {
+          "type": "SZ",
+          "data": "$LAST_INSTALLER_BREAKING_VERSION"
+        },
         "DowngradeCleanupCommand": {
           "type": "SZ",
           "data": "\"$LOCAL_APPDATA\\$CHROME_DIR\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe\" --cleanup-for-downgrade-version=$$1 --cleanup-for-downgrade-operation=$$2 --verbose-logging"
@@ -33,10 +37,6 @@
         "pv": {
           "type": "SZ",
           "data": "$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION"
-        },
-        "CleanInstallRequiredForVersionBelow": {
-          "type": "SZ",
-          "data": "$LAST_INSTALLER_BREAKING_VERSION"
         }
       },
       "wow_key": "KEY_WOW64_32KEY"
