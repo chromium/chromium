@@ -887,6 +887,8 @@ static_library("browser") {
     "net/system_network_context_manager.h",
     "net_benchmarking.cc",
     "net_benchmarking.h",
+    "nfc/chrome_nfc_permission_context_delegate.cc",
+    "nfc/chrome_nfc_permission_context_delegate.h",
     "nfc/nfc_permission_context.cc",
     "nfc/nfc_permission_context.h",
     "notifications/metrics/notification_metrics_logger.cc",

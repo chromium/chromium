@@ -14,8 +14,8 @@ class PermissionRequestID;
 
 class NfcPermissionContextAndroid : public NfcPermissionContext {
  public:
-  explicit NfcPermissionContextAndroid(
-      content::BrowserContext* browser_context);
+  NfcPermissionContextAndroid(content::BrowserContext* browser_context,
+                              std::unique_ptr<Delegate> delegate);
   ~NfcPermissionContextAndroid() override;
 
  private:

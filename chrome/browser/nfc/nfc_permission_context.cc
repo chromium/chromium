@@ -8,11 +8,12 @@
 #include "components/permissions/permission_request_id.h"
 
 NfcPermissionContext::NfcPermissionContext(
-    content::BrowserContext* browser_context)
+    content::BrowserContext* browser_context,
+    std::unique_ptr<Delegate> delegate)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::NFC,
-                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
-}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound),
+      delegate_(std::move(delegate)) {}
 
 NfcPermissionContext::~NfcPermissionContext() = default;
 

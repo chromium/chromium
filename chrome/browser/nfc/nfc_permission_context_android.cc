@@ -6,14 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
-#include "chrome/browser/android/tab_android.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting_impl.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/web_contents.h"
 
 NfcPermissionContextAndroid::NfcPermissionContextAndroid(
-    content::BrowserContext* browser_context)
-    : NfcPermissionContext(browser_context),
+    content::BrowserContext* browser_context,
+    std::unique_ptr<Delegate> delegate)
+    : NfcPermissionContext(browser_context, std::move(delegate)),
       nfc_system_level_setting_(
           std::make_unique<permissions::NfcSystemLevelSettingImpl>()) {}
 
@@ -49,8 +49,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   // Only show the NFC system level setting prompt if the tab for |web_contents|
   // is user-interactable (i.e. is the current tab, and Chrome is active and not
   // in tab-switching mode).
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  if (tab && !tab->IsUserInteractable()) {
+  if (!delegate_->IsInteractable(web_contents)) {
     permissions::PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback),
         false /* persist */, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);

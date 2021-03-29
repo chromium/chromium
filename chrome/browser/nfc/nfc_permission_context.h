@@ -5,16 +5,32 @@
 #ifndef CHROME_BROWSER_NFC_NFC_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_NFC_NFC_PERMISSION_CONTEXT_H_
 
+#include "build/build_config.h"
 #include "components/permissions/permission_context_base.h"
 
 class NfcPermissionContext : public permissions::PermissionContextBase {
  public:
-  explicit NfcPermissionContext(content::BrowserContext* browser_context);
+  // The delegate allows embedders to modify the permission context logic.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+#if defined(OS_ANDROID)
+    // Returns whether or not this |web_contents| is interactable.
+    virtual bool IsInteractable(content::WebContents* web_contents) = 0;
+#endif
+  };
+
+  NfcPermissionContext(content::BrowserContext* browser_context,
+                       std::unique_ptr<Delegate> delegate);
 
   NfcPermissionContext(const NfcPermissionContext&) = delete;
   NfcPermissionContext& operator=(const NfcPermissionContext&) = delete;
 
   ~NfcPermissionContext() override;
+
+ protected:
+  std::unique_ptr<Delegate> delegate_;
 
  private:
   // PermissionContextBase:
