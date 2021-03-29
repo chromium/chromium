@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
@@ -66,11 +65,7 @@ std::string GetDialogTypeAsString(
 }  // namespace
 
 GURL GetFileManagerMainPageUrl() {
-  if (base::FeatureList::IsEnabled(chromeos::features::kFilesJsModules)) {
-    return GetFileManagerUrl("/main_modules.html");
-  } else {
-    return GetFileManagerUrl("/main.html");
-  }
+  return GetFileManagerUrl("/main_modules.html");
 }
 
 GURL GetFileManagerMainPageUrlWithParams(
