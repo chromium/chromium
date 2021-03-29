@@ -1,32 +1,20 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE fil
+# found in the LICENSE file.
+
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/assistant/assistant.gni")
 
 source_set("proxy") {
-  sources = []
-  deps = []
+  sources = [
+    "assistant_proxy.cc",
+    "assistant_proxy.h",
+    "libassistant_service_host.h",
+  ]
 
-  if (enable_cros_libassistant) {
-    sources += [
-      "assistant_proxy.cc",
-      "assistant_proxy.h",
-      "libassistant_service_host.h",
-    ]
+  public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
 
-    public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
-
-    deps += [
-      "//ash/constants",
-      "//base",
-      "//chromeos/assistant/internal",
-      "//chromeos/assistant/internal/proto/google3",
-      "//chromeos/services/assistant/public/cpp",
-      "//chromeos/services/assistant/public/cpp/migration",
-      "//chromeos/services/libassistant",
-      "//services/network/public/cpp",
-    ]
-  }
+  deps = [
+    "//base",
+    "//chromeos/services/assistant/public/cpp",
+  ]
 }

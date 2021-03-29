@@ -6,10 +6,17 @@
 
 #include "base/check.h"
 #include "base/sequence_checker.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/buildflags.h"
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/libassistant_service.h"
+#endif
 
 namespace chromeos {
 namespace assistant {
+
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 LibassistantServiceHostImpl::LibassistantServiceHostImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -31,6 +38,19 @@ void LibassistantServiceHostImpl::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   libassistant_service_ = nullptr;
 }
+
+#else
+
+LibassistantServiceHostImpl::LibassistantServiceHostImpl() = default;
+LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
+
+void LibassistantServiceHostImpl::Launch(
+    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+        receiver) {}
+
+void LibassistantServiceHostImpl::Stop() {}
+
+#endif
 
 }  // namespace assistant
 }  // namespace chromeos

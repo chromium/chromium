@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/thread_annotations.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 
 namespace chromeos {
@@ -19,6 +21,8 @@ class LibassistantService;
 namespace chromeos {
 namespace assistant {
 
+// Host class controlling the lifetime of the Libassistant service.
+// The implementation will be stubbed out in the unbranded build.
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
   LibassistantServiceHostImpl();
@@ -33,9 +37,11 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void Stop() override;
 
  private:
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<chromeos::libassistant::LibassistantService>
       libassistant_service_ GUARDED_BY_CONTEXT(sequence_checker_);
+#endif
 };
 
 }  // namespace assistant

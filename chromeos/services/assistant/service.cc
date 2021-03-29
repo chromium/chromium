@@ -24,13 +24,11 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/assistant/assistant_interaction_logger.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
-#include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
+#include "chromeos/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -44,10 +42,6 @@
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/services/assistant/assistant_manager_service_impl.h"
-#endif
 
 namespace chromeos {
 namespace assistant {
@@ -82,7 +76,6 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   }
 }
 
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 base::Optional<std::string> GetS3ServerUriOverride() {
   if (g_s3_server_uri_override)
     return g_s3_server_uri_override;
@@ -94,7 +87,6 @@ base::Optional<std::string> GetDeviceIdOverride() {
     return g_device_id_override;
   return base::nullopt;
 }
-#endif
 
 // In the signed-out mode, we are going to run Assistant service without
 // using user's signed in account information.
@@ -503,17 +495,11 @@ Service::CreateAndReturnAssistantManagerService() {
   if (assistant_manager_service_for_testing_)
     return std::move(assistant_manager_service_for_testing_);
 
-    // TODO(jeroendh) Remove this '#if' and the FakeAssistantManagerServiceImpl
-    // when the Libassistant migration is complete.
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   // |assistant_manager_service_| is only created once.
   DCHECK(pending_url_loader_factory_);
   return std::make_unique<AssistantManagerServiceImpl>(
       context(), std::move(pending_url_loader_factory_),
       GetS3ServerUriOverride(), GetDeviceIdOverride());
-#else
-  return std::make_unique<FakeAssistantManagerServiceImpl>();
-#endif
 }
 
 void Service::FinalizeAssistantManagerService() {

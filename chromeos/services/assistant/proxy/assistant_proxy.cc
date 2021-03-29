@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
-#include "chromeos/services/libassistant/libassistant_service.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
 namespace assistant {

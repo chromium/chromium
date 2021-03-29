@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
+#define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -34,4 +34,4 @@ class FakeAssistantSettingsImpl : public AssistantSettings {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_SETTINGS_IMPL_H_
