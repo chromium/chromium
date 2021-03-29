@@ -182,6 +182,10 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     DCHECK(framebuffer_);
     DCHECK(blit_context_);
 
+    // Flush skia renderer rendering. This is working around what appears to be
+    // a driver bug that causes rendering to break.
+    glFlush();
+
     // Restore stencil state.
     glEnable(GL_STENCIL_TEST);
     glStencilFuncSeparate(GL_FRONT, stencil_state.stencil_front_func,
