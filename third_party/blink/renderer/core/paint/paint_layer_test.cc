@@ -2852,6 +2852,29 @@ TEST_P(PaintLayerOverlapTest, FixedUsesExpandedBoundingBoxForOverlap) {
   }
 }
 
+TEST_P(PaintLayerOverlapTest, IncludeIntermediateScrollerOffset) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="position: relative; width: 100px; height: 100px"></div>
+    </div>
+    <div style="height: 2000px"></div>
+    )HTML");
+  PaintLayer* position = GetPaintLayerByElementId("target");
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 1950),
+                                              mojom::blink::ScrollType::kUser);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(100, 100), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(position->UnclippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 100));
+  EXPECT_EQ(position->ClippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 50));
+}
+
 TEST_P(PaintLayerOverlapTest,
        FixedInScrollerUsesExpandedBoundingBoxForOverlap) {
   SetBodyInnerHTML(R"HTML(
