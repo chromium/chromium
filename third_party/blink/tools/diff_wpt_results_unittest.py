@@ -41,6 +41,15 @@ class JsonResultsCompressTest(unittest.TestCase):
 
 
 class CreateCsvTest(unittest.TestCase):
+    def test_name_with_comma_escaped_in_csv(self):
+        actual_mp = {'test, name.html': {'actual': 'PASS'}}
+        with io.BytesIO() as csv_out:
+            create_csv(actual_mp, actual_mp, csv_out)
+            csv_out.seek(0)
+            content = csv_out.read()
+            self.assertEquals(content, CSV_HEADING + '\n' +
+                              '"test, name.html",PASS,PASS,SAME RESULTS\n')
+
     def test_create_csv_with_same_result(self):
         actual_mp = {'test.html': {'actual': 'PASS'}}
         with io.BytesIO() as csv_out:

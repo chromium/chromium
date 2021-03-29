@@ -43,7 +43,11 @@ def create_csv(actual_results_map, baseline_results_map, csv_output):
     file_output = 'Test name, Test Result, Baseline Result, Result Comparison\n'
 
     for test in sorted(super_set):
-        line = [test]
+        if ',' in test:
+            line = ['"%s"' % test]
+        else:
+            line = [test]
+
         for result_mp in [actual_results_map, baseline_results_map]:
             line.append(result_mp.get(test, {'actual': 'MISSING'})
                                  .get('actual').split()[-1])
