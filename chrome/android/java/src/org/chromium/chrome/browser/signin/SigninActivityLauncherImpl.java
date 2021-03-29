@@ -90,7 +90,7 @@ public final class SigninActivityLauncherImpl implements SigninActivityLauncher 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSignInAllowed()) {
-            launchInternal(context, SigninFragmentBase.createArguments(accessPoint, null));
+            launchInternal(context, SyncConsentFragmentBase.createArguments(accessPoint, null));
             return true;
         }
         if (signinManager.isSigninDisabledByPolicy()) {

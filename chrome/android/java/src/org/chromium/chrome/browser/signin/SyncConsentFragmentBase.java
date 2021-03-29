@@ -74,7 +74,7 @@ import java.util.List;
  * Derived classes must implement {@link #onSigninAccepted}/{@link #onSigninRefused} to define
  * what happens after the signin flow.
  */
-public abstract class SigninFragmentBase
+public abstract class SyncConsentFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener {
     private static final String TAG = "SigninFragmentBase";
 
@@ -186,7 +186,7 @@ public abstract class SigninFragmentBase
         return result;
     }
 
-    protected SigninFragmentBase() {
+    protected SyncConsentFragmentBase() {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountsChangedObserver = this::triggerUpdateAccounts;
         mProfileDataCacheObserver = this::updateProfileData;
@@ -489,8 +489,7 @@ public abstract class SigninFragmentBase
                 mConsentTextTracker.recordConsent(new CoreAccountId(accountId),
                         ConsentAuditorFeature.CHROME_SYNC, confirmationView, mView);
             }
-        }
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void showAccountPicker() {

@@ -14,7 +14,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.signin.SigninFragmentBase;
+import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -22,9 +22,10 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.util.List;
 
 /**
- * Implementation of {@link SigninFragmentBase} for the first run experience.
+ * Implementation of {@link SyncConsentFragmentBase} for the first run experience.
  */
-public class SyncConsentFirstRunFragment extends SigninFragmentBase implements FirstRunFragment {
+public class SyncConsentFirstRunFragment
+        extends SyncConsentFragmentBase implements FirstRunFragment {
     // Per-page parameters:
     // TODO(crbug/1168516): Remove CHILD_ACCOUNT_STATUS
     public static final String CHILD_ACCOUNT_STATUS = "ChildAccountStatus";

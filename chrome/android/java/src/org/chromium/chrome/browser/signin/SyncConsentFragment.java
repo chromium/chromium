@@ -30,8 +30,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Implementation of {@link SigninFragmentBase} for {@link SigninActivity}. */
-public class SyncConsentFragment extends SigninFragmentBase {
+/** Implementation of {@link SyncConsentFragmentBase} for {@link SigninActivity}. */
+public class SyncConsentFragment extends SyncConsentFragmentBase {
     private static final String ARGUMENT_PERSONALIZED_PROMO_ACTION =
             "SigninFragment.PersonalizedPromoAction";
 
@@ -54,7 +54,7 @@ public class SyncConsentFragment extends SigninFragmentBase {
      */
     public static Bundle createArgumentsForPromoDefaultFlow(
             @SigninAccessPoint int accessPoint, String accountName) {
-        Bundle result = SigninFragmentBase.createArguments(accessPoint, accountName);
+        Bundle result = SyncConsentFragmentBase.createArguments(accessPoint, accountName);
         result.putInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.WITH_DEFAULT);
         return result;
     }
@@ -67,8 +67,8 @@ public class SyncConsentFragment extends SigninFragmentBase {
      */
     public static Bundle createArgumentsForPromoChooseAccountFlow(
             @SigninAccessPoint int accessPoint, String accountName) {
-        Bundle result =
-                SigninFragmentBase.createArgumentsForChooseAccountFlow(accessPoint, accountName);
+        Bundle result = SyncConsentFragmentBase.createArgumentsForChooseAccountFlow(
+                accessPoint, accountName);
         result.putInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NOT_DEFAULT);
         return result;
     }
@@ -79,7 +79,7 @@ public class SyncConsentFragment extends SigninFragmentBase {
      * @param accessPoint The access point for starting sign-in flow.
      */
     public static Bundle createArgumentsForPromoAddAccountFlow(@SigninAccessPoint int accessPoint) {
-        Bundle result = SigninFragmentBase.createArgumentsForAddAccountFlow(accessPoint);
+        Bundle result = SyncConsentFragmentBase.createArgumentsForAddAccountFlow(accessPoint);
         result.putInt(ARGUMENT_PERSONALIZED_PROMO_ACTION, PromoAction.NEW_ACCOUNT);
         return result;
     }
