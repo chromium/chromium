@@ -67,7 +67,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
-  std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;

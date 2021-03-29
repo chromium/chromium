@@ -29,7 +29,6 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/content_restriction.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -996,19 +995,6 @@ void OutOfProcessInstance::SubmitForm(const std::string& url,
 void OutOfProcessInstance::FormDidOpen(int32_t result) {
   // TODO(crbug.com/719344): Process response.
   LOG_IF(ERROR, result != PP_OK) << "FormDidOpen failed: " << result;
-}
-
-std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
-  if (full_frame()) {
-    DidStartLoading();
-
-    // Disable save and print until the document is fully loaded, since they
-    // would generate an incomplete document.  Need to do this each time we
-    // call DidStartLoading since that resets the content restrictions.
-    SetContentRestrictions(kContentRestrictionSave | kContentRestrictionPrint);
-  }
-
-  return CreateUrlLoaderInternal();
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>

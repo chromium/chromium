@@ -264,10 +264,6 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                   const void* data,
                                   int length) {}
 
-std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
-  return nullptr;
-}
-
 std::vector<PDFEngine::Client::SearchStringResult>
 PdfViewWebPlugin::SearchString(const char16_t* string,
                                const char16_t* term,
