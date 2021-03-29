@@ -94,19 +94,10 @@ void WakeLockSentinel::DoRelease() {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  // 6. Queue a task to run the following steps:
-  GetExecutionContext()
-      ->GetTaskRunner(TaskType::kWakeLock)
-      ->PostTask(FROM_HERE, WTF::Bind(&WakeLockSentinel::DispatchReleaseEvent,
-                                      WrapWeakPersistent(this)));
-}
-
-void WakeLockSentinel::DispatchReleaseEvent() {
-  // https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
-  // 6.1. Set lock.released to true.
+  // 6. Set lock's [[Released]] to true.
+  // 7. Fire an event named "release" at lock.
   DCHECK(!released_);
   released_ = true;
-  // 6.2. Fire an event named "release" at lock.
   DispatchEvent(*Event::Create(event_type_names::kRelease));
 }
 

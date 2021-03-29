@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Basic WakeLockSentinel.released functionality assert_true: Not expecting event, but got release event expected true got false
+PASS The release attribute inside an event handler
+Harness: the test ran to completion.
+
