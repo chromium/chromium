@@ -69,7 +69,8 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
           WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
           base::BindOnce(&SmsFetcherImpl::OnRemote,
                          weak_ptr_factory_.GetWeakPtr()));
-  remote_cancel_callbacks_[subscriber] = std::move(cancel_callback);
+  if (cancel_callback)
+    remote_cancel_callbacks_[subscriber] = std::move(cancel_callback);
 
   // Fetches a local SMS.
   if (provider_)

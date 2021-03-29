@@ -56,7 +56,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return base::DoNothing();
+    return base::NullCallback();
   }
   SendMessageDelegate* delegate = delegate_iter->second.get();
   DCHECK(delegate);
@@ -70,7 +70,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
     InvokeSendMessageCallback(message_guid,
                               SharingSendMessageResult::kInternalError,
                               /*response=*/nullptr);
-    return base::DoNothing();
+    return base::NullCallback();
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})

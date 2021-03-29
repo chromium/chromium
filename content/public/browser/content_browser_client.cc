@@ -1102,7 +1102,7 @@ base::OnceClosure ContentBrowserClient::FetchRemoteSms(
                             base::Optional<std::string>,
                             base::Optional<content::SmsFetchFailureType>)>
         callback) {
-  return base::DoNothing();
+  return base::NullCallback();
 }
 
 bool ContentBrowserClient::IsClipboardPasteAllowed(

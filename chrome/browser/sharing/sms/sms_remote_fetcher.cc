@@ -23,7 +23,9 @@ base::OnceClosure FetchRemoteSms(
   // is disabled or no device is available.
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
-    return base::DoNothing();
+    // kWebOTPCrossDevice will be disabled for a large number of users. There's
+    // no need to call any cancel callback in such case.
+    return base::NullCallback();
   }
 
 // The current distinction of local fetcher being non-Android and remote fetcher
@@ -36,6 +38,6 @@ base::OnceClosure FetchRemoteSms(
   return ui_controller->FetchRemoteSms(origin, std::move(callback));
 #else
   std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
-  return base::DoNothing();
+  return base::NullCallback();
 #endif
 }

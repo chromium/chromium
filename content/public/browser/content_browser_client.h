@@ -1894,7 +1894,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // with the origins and one-time-code from the SMS upon success or a failure
   // type on error. The returned callback cancels receiving of the response.
   // Calling it will run |callback| if it hasn't been executed yet, otherwise it
-  // will be a no-op.
+  // will be a no-op. Returns a null callback if fetching from a remote device
+  // is disabled.
   virtual base::OnceClosure FetchRemoteSms(
       content::WebContents* web_contents,
       const url::Origin& origin,

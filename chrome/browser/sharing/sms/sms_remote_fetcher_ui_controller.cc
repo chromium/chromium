@@ -115,7 +115,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
     // TODO(crbug.com/1015645): We should have a new category for remote
     // failures.
     std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
-    return base::DoNothing();
+    return base::NullCallback();
   }
 
   // Sends to the first device that has the capability enabled. User cannot

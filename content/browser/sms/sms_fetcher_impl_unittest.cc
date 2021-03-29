@@ -118,7 +118,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
                 base::nullopt);
-            return base::DoNothing();
+            return base::NullCallback();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, "123", _));
@@ -139,7 +139,7 @@ TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
                                       base::Optional<FailureType>)> callback) {
             std::move(callback).Run(base::nullopt, base::nullopt,
                                     base::nullopt);
-            return base::DoNothing();
+            return base::NullCallback();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
@@ -161,7 +161,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("b.com"))}, "123",
                 base::nullopt);
-            return base::DoNothing();
+            return base::NullCallback();
           }));
 
   EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
@@ -186,7 +186,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
             std::move(callback).Run(
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
                 base::nullopt);
-            return base::DoNothing();
+            return base::NullCallback();
           }));
 
   EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
@@ -268,7 +268,7 @@ TEST_F(SmsFetcherImplTest, FetchRemoteSmsFailed) {
             std::move(callback).Run(
                 base::nullopt, base::nullopt,
                 static_cast<FailureType>(FailureType::kPromptCancelled));
-            return base::DoNothing();
+            return base::NullCallback();
           }));
 
   EXPECT_CALL(subscriber, OnFailure(_));
