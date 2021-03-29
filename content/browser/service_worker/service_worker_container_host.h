@@ -719,6 +719,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // The ServiceWorkerHost that owns |this|.
   ServiceWorkerHost* service_worker_host_ = nullptr;
 
+  // For all instances --------------------------------------------------------
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<ServiceWorkerContainerHost> weak_factory_{this};
 };
 
