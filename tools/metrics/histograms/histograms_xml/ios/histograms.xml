@@ -499,7 +499,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The durations of time in which the app is too busy to handle user
     interaction responsively. Logged when a MXMetricPayload is received (one per
-    day).
+    day). Each sample correspond to one hang. Minimum observed hang time is
+    250ms (but this value may change in future device/OS version). This metric
+    can be normalized by comparing the total number of hangs or the total time
+    spent hung against the number of clients emitting to
+    IOS.MetricKit.ForegroundTimePerDay (hangs per users) or against the total
+    time reported by IOS.MetricKit.ForegroundTimePerDay (hangs per usage).
+    ApplicationHangTime and ForegroundTimePerDay have the same restrictions
+    about when they're emitted (iOS 13+, opted-in to share diagnostic data,
+    etc.). Further, as hangs can only happen during foreground use,
+    ForegroundTimePerDay makes a good comparison point. Only freezes in browser
+    process are reported.
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -508,8 +521,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The amount of time taken to resume the app from the background. Logged when
-    a MXMetricPayload is received (one per day).
+    The amount of time taken to resume the app from the background (not
+    aggregated). Logged when a MXMetricPayload is received (one per day).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -518,8 +534,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The average amount of memory in use by the app when it's suspended. Logged
-    when a MXMetricPayload is received (one per day).
+    The average amount of memory in use by the app when it's suspended. Averaged
+    on a 24 hours period. Logged when a MXMetricPayload is received (one per
+    day).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -528,8 +548,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The reason for the application termination in background. Logged when a
-    MXMetricPayload is received (one per day).
+    The reason for the application termination in background. Recorded when a
+    MXMetricPayload is received from the OS (at most once per day) at
+    unspecified time. Records cumulative data collected and agregated since the
+    previous recording. All buckets from MetricKitExitData are available on iOS
+    14 and higher (unless MetricKitExitData bucket comments specify otherwise).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -539,8 +565,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The total time the app is in the background. Logged when a MXMetricPayload
-    is received (one per day). Note: The date the data is reported is later than
-    the day it account for.
+    is received (one per day). This correspond as Chrome running but not having
+    active scene (i.e. the application just has been backgrounded or is doing
+    background activity like background music or picture in picture).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -554,9 +584,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     unspecified time. Records cumulative data collected and agregated since the
     previous recording. All buckets from MetricKitExitData are available on iOS
     14 and higher (unless MetricKitExitData bucket comments specify otherwise).
-    Recorded only if user opted in for sharing diagnostic data on iOS device.
     All buckets except &quot;App exited normally&quot; are likely user-visible
     terminations (this is a guess rather that verified fact).
+
+    Application is in foreground is at least one scene is active in foreground.
+    Picture in picture and background music playing are not considered as
+    foreground.
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -565,19 +601,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The total time the app is in the foreground. Logged when a MXMetricPayload
-    is received (one per day). Note: The date the data is reported is later than
-    the day it account for.
+    The total time the app is in the foreground, aggregated over all foreground
+    interactions since the last time this metric was reported. This is at most a
+    24 hour period. Logged when a MXMetricPayload is received (one per day).
+
+    Application is in foreground is at least one scene is active in foreground.
+    Picture in picture and background music playing are not considered as
+    foreground
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
     expires_after="2021-09-19">
-  <owner>justinchhen@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The largest amount of memory used by the app. Logged when a MXMetricPayload
-    is received (one per day).
+    The largest amount of memory used by the app since the last time this metric
+    was reported. This is at most a 24 hour period. Logged when a
+    MXMetricPayload is received (one per day).
+
+    Because this implemented by Apple, we do not know how peak memory usage is
+    identified (by polling?). We also do not know if this covers background
+    usage. We also do not know if the period only includes background usage
+    whether this is going to be reported.
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
@@ -588,6 +640,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The amount of time taken to launch the app. Logged when a MXMetricPayload is
     received (one per day).
+
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    Note: The date the data is reported is later than the day it account for.
   </summary>
 </histogram>
 
