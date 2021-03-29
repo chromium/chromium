@@ -1579,7 +1579,7 @@ void AppListView::OnKeyEvent(ui::KeyEvent* event) {
 void AppListView::OnTabletModeChanged(bool started) {
   search_box_view_->OnTabletModeChanged(started);
   search_model_->SetTabletMode(started);
-  GetAppsContainerView()->OnTabletModeChanged(started);
+  app_list_main_view_->contents_view()->OnTabletModeChanged(started);
 
   if (is_in_drag_) {
     SetIsInDrag(false);

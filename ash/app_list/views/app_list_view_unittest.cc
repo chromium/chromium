@@ -2611,7 +2611,8 @@ TEST_F(AppListViewTest, ExpandArrowNotVisibleInEmbeddedAssistantUI) {
 
   contents_view()->ShowEmbeddedAssistantUI(true);
   EXPECT_TRUE(contents_view()->IsShowingEmbeddedAssistantUI());
-  EXPECT_FALSE(contents_view()->expand_arrow_view()->GetVisible());
+  EXPECT_EQ(0.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 }
 
 // Tests the expand arrow view opacity updtes correctly when transitioning
@@ -2630,7 +2631,7 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityTest) {
   // Expand arrow view should not be visible for half launcher when showing
   // embedded assistant.
   contents_view()->ShowEmbeddedAssistantUI(true);
-  EXPECT_FALSE(contents_view()->expand_arrow_view()->GetVisible());
+  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
   // Expand arrow should become visible when hiding the assistant view.
   contents_view()->ShowEmbeddedAssistantUI(false);
   EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
@@ -2655,29 +2656,30 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Expand arrow view should be visible for peeking launcher.
-  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
-            1.0f);
+  EXPECT_EQ(1.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   // Expand arrow view should not be visible for half launcher when showing
   // embedded assistant.
   contents_view()->ShowEmbeddedAssistantUI(true);
-  EXPECT_FALSE(contents_view()->expand_arrow_view()->GetVisible());
+  EXPECT_EQ(0.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   // Expand arrow should become visible when hiding the assistant view.
   contents_view()->ShowEmbeddedAssistantUI(false);
   EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
-  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
-            1.0f);
+  EXPECT_EQ(1.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   // Typing text in the search box should hide the expand arrow view.
   SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
-  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
-            0.0f);
+  EXPECT_EQ(0.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   // Pressing escape should show the expand arrow view again.
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
-            1.0f);
+  EXPECT_EQ(1.0f,
+            contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 
   AppListView::SetShortAnimationForTesting(true);
 }

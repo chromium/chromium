@@ -524,8 +524,6 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // The time the AppListView was requested to be shown. Used for metrics.
   base::Optional<base::Time> time_shown_;
 
-  // Whether tablet mode is active.
-  bool is_tablet_mode_ = false;
   // Whether the shelf is oriented on the side.
   bool is_side_shelf_ = false;
 

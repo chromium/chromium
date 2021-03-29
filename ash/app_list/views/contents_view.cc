@@ -191,6 +191,13 @@ void ContentsView::OnAppListViewTargetStateChanged(
   UpdateExpandArrowBehavior(target_state);
 }
 
+void ContentsView::OnTabletModeChanged(bool started) {
+  apps_container_view_->OnTabletModeChanged(started);
+
+  UpdateExpandArrowOpacity(GetActiveState(), target_view_state(),
+                           GetAppListConfig().page_transition_duration());
+}
+
 void ContentsView::SetActiveState(AppListState state) {
   SetActiveState(state, true /*animate*/);
 }
@@ -283,6 +290,10 @@ void ContentsView::SetActiveStateInternal(int page_index, bool animate) {
   }
   pagination_model_.SelectPage(page_index, should_animate);
   ActivePageChanged();
+  UpdateExpandArrowOpacity(GetActiveState(), target_view_state(),
+                           should_animate
+                               ? GetAppListConfig().page_transition_duration()
+                               : base::TimeDelta());
 
   if (!should_animate)
     Layout();
@@ -319,8 +330,6 @@ bool ContentsView::IsShowingSearchResults() const {
 }
 
 void ContentsView::ShowEmbeddedAssistantUI(bool show) {
-  SetExpandArrowViewVisibility(!show);
-
   const int assistant_page =
       GetPageIndexForState(AppListState::kStateEmbeddedAssistant);
   DCHECK_GE(assistant_page, 0);
@@ -427,6 +436,44 @@ void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
       ax::mojom::Event::kTreeChanged);
 
   expand_arrow_view_->MaybeEnableHintingAnimation(expand_arrow_enabled);
+}
+
+void ContentsView::UpdateExpandArrowOpacity(
+    AppListState target_state,
+    AppListViewState target_app_list_view_state,
+    base::TimeDelta transition_duration) {
+  const bool target_visibility =
+      target_state == AppListState::kStateApps &&
+      target_app_list_view_state != AppListViewState::kClosed &&
+      !app_list_view_->is_side_shelf() && !app_list_view_->is_tablet_mode();
+
+  float target_opacity = target_visibility ? 1.0f : 0.0f;
+  // Update the target opacity for when the app list view is in drag.
+  if (target_opacity && app_list_view_->is_in_drag()) {
+    // NOTE: The expand arrow is only shown for apps page, so it's OK to use the
+    // app list drag progress for apps page.
+    const float progress = app_list_view_->GetAppListTransitionProgress(
+        AppListView::kProgressFlagNone);
+    target_opacity =
+        GetOpacityForProgress(progress, kExpandArrowOpacityStartProgress,
+                              kExpandArrowOpacityEndProgress);
+  }
+
+  ui::Layer* const layer = expand_arrow_view_->layer();
+  if (transition_duration.is_zero()) {
+    layer->SetOpacity(target_opacity);
+    return;
+  }
+
+  if (target_opacity == layer->GetTargetOpacity())
+    return;
+
+  ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
+  animation.SetTransitionDuration(transition_duration);
+  animation.SetTweenType(gfx::Tween::EASE_IN);
+  animation.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  layer->SetOpacity(target_opacity);
 }
 
 void ContentsView::UpdateSearchBoxVisibility(AppListState current_state) {
@@ -658,6 +705,17 @@ void ContentsView::UpdateYPositionAndOpacity() {
                                ? pagination_model_.transition().target_page
                                : pagination_model_.selected_page();
   const AppListState current_state = GetStateForPageIndex(current_page);
+  UpdateExpandArrowOpacity(current_state, target_view_state(),
+                           base::TimeDelta());
+  expand_arrow_view_->SchedulePaint();
+
+  SearchBoxView* search_box = GetSearchBoxView();
+  const gfx::Rect search_box_bounds = GetSearchBoxBounds(current_state);
+  const gfx::Rect search_rect =
+      search_box->GetViewBoundsForSearchBoxContentsBounds(
+          ConvertRectToWidgetWithoutTransform(search_box_bounds));
+  search_box->GetWidget()->SetBounds(search_rect);
+
   float progress = 0.0f;
   if (app_list_view_->is_in_drag()) {
     progress = app_list_view_->GetAppListTransitionProgress(
@@ -669,27 +727,6 @@ void ContentsView::UpdateYPositionAndOpacity() {
   }
   const bool restore_opacity = !app_list_view_->is_in_drag() &&
                                target_view_state() != AppListViewState::kClosed;
-  if (!(current_state == AppListState::kStateApps ||
-        current_state == AppListState::kStateEmbeddedAssistant) ||
-      app_list_view_->is_side_shelf()) {
-    expand_arrow_view_->layer()->SetOpacity(0.0f);
-  } else if (restore_opacity) {
-    expand_arrow_view_->layer()->SetOpacity(1.0f);
-  } else {
-    expand_arrow_view_->layer()->SetOpacity(
-        GetOpacityForProgress(progress, kExpandArrowOpacityStartProgress,
-                              kExpandArrowOpacityEndProgress));
-  }
-
-  expand_arrow_view_->SchedulePaint();
-
-  SearchBoxView* search_box = GetSearchBoxView();
-  const gfx::Rect search_box_bounds = GetSearchBoxBounds(current_state);
-  const gfx::Rect search_rect =
-      search_box->GetViewBoundsForSearchBoxContentsBounds(
-          ConvertRectToWidgetWithoutTransform(search_box_bounds));
-  search_box->GetWidget()->SetBounds(search_rect);
-
   const float search_box_opacity =
       restore_opacity
           ? 1.0f
@@ -722,16 +759,16 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
                                : pagination_model_.selected_page());
 
   // Animates layer's opacity.
-  // |layer| - The layer to animate.
-  // |target_opacity| - The target layer opacity.
-  // |half_duration| - Whether the animation duration should be half of the
-  //     overall view state transition. Used during transition to closed state
-  //     to speed up the search box and contenst view animation so the don't
-  //     show under the shelf.
+  // |duration| - The default transition duration. The actual transition gets
+  //     halved when animating to hidden state.
+  // |view| - The view to animate.
+  // |target_visibility| - The target layer visibility.
   auto animate_opacity = [](base::TimeDelta duration, views::View* view,
                             bool target_visibility) {
     ui::Layer* const layer = view->layer();
     ui::ScopedLayerAnimationSettings animation(layer->GetAnimator());
+    // Speed up the search box and contents view animation when closing the app
+    // list, so they are not visible when the app list moves under the shelf.
     animation.SetTransitionDuration(duration / (target_visibility ? 1 : 2));
     animation.SetTweenType(gfx::Tween::EASE_IN);
     animation.SetPreemptionStrategy(
@@ -743,13 +780,11 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
   const bool closing = target_view_state == AppListViewState::kClosed;
   animate_opacity(duration, GetSearchBoxView(), !closing /*target_visibility*/);
 
-  // Fade in or out the expand arrow. Embedded Assistant hides the expand arrow
-  // and should not set its opacity to 0.
-  const bool expand_arrow_target_opacity =
-      (target_page == AppListState::kStateEmbeddedAssistant ||
-       target_page == AppListState::kStateApps) &&
-      !closing && !app_list_view_->is_side_shelf();
-  animate_opacity(duration, expand_arrow_view_, expand_arrow_target_opacity);
+  // Fade in or out the expand arrow. Speed up the animation when closing the
+  // app list to match the animation duration used for search box - see
+  // `animate_opacity()`.
+  UpdateExpandArrowOpacity(target_page, target_view_state,
+                           duration / (closing ? 2 : 1));
 
   // Animates layer's vertical position (using transform animation).
   // |layer| - The layer to transform.
@@ -848,18 +883,12 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
 
   // Schedule expand arrow repaint to ensure the view picks up the new target
   // state.
-  expand_arrow_view()->SchedulePaint();
+  if (target_view_state != AppListViewState::kClosed)
+    expand_arrow_view()->SchedulePaint();
   animate_transform(
       duration,
       expand_arrow_view()->CalculateOffsetFromCurrentAppListProgress(progress),
       expand_arrow_view()->layer());
-}
-
-void ContentsView::SetExpandArrowViewVisibility(bool show) {
-  if (expand_arrow_view_->GetVisible() == show)
-    return;
-
-  expand_arrow_view_->SetVisible(show);
 }
 
 std::unique_ptr<ui::ScopedLayerAnimationSettings>

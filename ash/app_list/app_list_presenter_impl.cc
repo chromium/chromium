@@ -340,13 +340,6 @@ bool AppListPresenterImpl::IsShowingEmbeddedAssistantUI() const {
   return false;
 }
 
-void AppListPresenterImpl::SetExpandArrowViewVisibility(bool show) {
-  if (view_) {
-    view_->app_list_main_view()->contents_view()->SetExpandArrowViewVisibility(
-        show);
-  }
-}
-
 void AppListPresenterImpl::OnTabletModeChanged(bool started) {
   if (started) {
     if (GetTargetVisibility())

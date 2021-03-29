@@ -92,6 +92,9 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   // Called when the target state of AppListView changes.
   void OnAppListViewTargetStateChanged(AppListViewState target_state);
 
+  // Called from AppListView when the tablet mode state changes.
+  void OnTabletModeChanged(bool started);
+
   // Shows/hides the search results. Hiding the search results will cause the
   // app list to return to the page that was displayed before
   // ShowSearchResults(true) was invoked.
@@ -191,10 +194,6 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   void AnimateToViewState(AppListViewState target_view_state,
                           const base::TimeDelta& animation_duration);
 
-  // Show/hide the expand arrow view button when contents view is in fullscreen
-  // and tablet mode is enabled.
-  void SetExpandArrowViewVisibility(bool show);
-
   std::unique_ptr<ui::ScopedLayerAnimationSettings>
   CreateTransitionAnimationSettings(ui::Layer* layer) const;
 
@@ -221,6 +220,16 @@ class APP_LIST_EXPORT ContentsView : public views::View,
 
   // Updates the expand arrow's behavior based on AppListViewState.
   void UpdateExpandArrowBehavior(AppListViewState target_state);
+
+  // Updates the expand arrow visibility depending on the selected app list page
+  // and the app list view state.
+  // `target_state` - the target selected app list page.
+  // `target_app_list_view_state` - the target app list view state.
+  // `transition_duration` - the opacity transition duration. Should be set to
+  //     zero if the opacity transition should not be animated.
+  void UpdateExpandArrowOpacity(AppListState target_state,
+                                AppListViewState target_app_list_state,
+                                base::TimeDelta transition_duration);
 
   // Updates search box visibility based on the current state.
   void UpdateSearchBoxVisibility(AppListState current_state);

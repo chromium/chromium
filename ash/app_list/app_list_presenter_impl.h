@@ -125,9 +125,6 @@ class APP_LIST_EXPORT AppListPresenterImpl
   // Returns current visibility of the Assistant page.
   bool IsShowingEmbeddedAssistantUI() const;
 
-  // Show/hide the expand arrow view button.
-  void SetExpandArrowViewVisibility(bool show);
-
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 

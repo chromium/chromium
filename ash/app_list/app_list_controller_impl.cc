@@ -257,7 +257,6 @@ AppListControllerImpl::AppListControllerImpl()
   keyboard::KeyboardUIController::Get()->AddObserver(this);
   AssistantState::Get()->AddObserver(this);
   shell->window_tree_host_manager()->AddObserver(this);
-  shell->mru_window_tracker()->AddObserver(this);
   AssistantController::Get()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
@@ -676,10 +675,6 @@ void AppListControllerImpl::Show(int64_t display_id,
     LogAppListShowSource(show_source.value());
 
   presenter_.Show(AppListViewState::kPeeking, display_id, event_time_stamp);
-
-  // AppListControllerImpl::Show is called in ash at the first time of showing
-  // app list view. So check whether the expand arrow view should be visible.
-  UpdateExpandArrowVisibility();
 }
 
 void AppListControllerImpl::UpdateYPositionAndOpacity(
@@ -728,7 +723,6 @@ ShelfAction AppListControllerImpl::ToggleAppList(
                                    display_id != last_visible_display_id_);
   ShelfAction action =
       presenter_.ToggleAppList(display_id, show_source, event_time_stamp);
-  UpdateExpandArrowVisibility();
   if (action == SHELF_ACTION_APP_LIST_SHOWN)
     LogAppListShowSource(show_source);
   return action;
@@ -1074,10 +1068,6 @@ void AppListControllerImpl::OnDisplayConfigurationChanged() {
   ShowHomeScreen();
 }
 
-void AppListControllerImpl::OnWindowUntracked(aura::Window* untracked_window) {
-  UpdateExpandArrowVisibility();
-}
-
 void AppListControllerImpl::OnAssistantReady() {
   UpdateAssistantVisibility();
 }
@@ -1232,10 +1222,6 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 
 bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
   return presenter_.IsShowingEmbeddedAssistantUI();
-}
-
-void AppListControllerImpl::UpdateExpandArrowVisibility() {
-  presenter_.SetExpandArrowViewVisibility(!IsTabletMode());
 }
 
 AppListViewState AppListControllerImpl::CalculateStateAfterShelfDrag(
@@ -1717,13 +1703,6 @@ void AppListControllerImpl::OnVisibilityWillChange(bool visible,
     last_target_visible_ = real_target_visibility;
     last_target_visible_display_id_ = display_id;
 
-    if (real_target_visibility && IsTabletMode()) {
-      // Update the arrow visibility when starting to show the home screen
-      // (presumably, the visibility has already been updated if home is being
-      // hidden).
-      UpdateExpandArrowVisibility();
-    }
-
     if (real_target_visibility && presenter_.GetView())
       presenter_.SetViewVisibility(true);
 
@@ -1935,7 +1914,6 @@ void AppListControllerImpl::Shutdown() {
   Shell* shell = Shell::Get();
   AssistantController::Get()->RemoveObserver(this);
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-  shell->mru_window_tracker()->RemoveObserver(this);
   shell->window_tree_host_manager()->RemoveObserver(this);
   AssistantState::Get()->RemoveObserver(this);
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);

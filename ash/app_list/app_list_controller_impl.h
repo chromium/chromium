@@ -31,7 +31,6 @@
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell_observer.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/splitview/split_view_observer.h"
@@ -73,7 +72,6 @@ class ASH_EXPORT AppListControllerImpl
       public AssistantStateObserver,
       public WindowTreeHostManager::Observer,
       public aura::WindowObserver,
-      public MruWindowTracker::Observer,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
       public apps::AppRegistryCache::Observer {
@@ -280,9 +278,6 @@ class ASH_EXPORT AppListControllerImpl
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
-  // MruWindowTracker::Observer:
-  void OnWindowUntracked(aura::Window* untracked_window) override;
-
   // AssistantControllerObserver:
   void OnAssistantReady() override;
 
@@ -404,9 +399,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // Update the visibility of Assistant functionality.
   void UpdateAssistantVisibility();
-
-  // Updates the visibility of expand arrow view.
-  void UpdateExpandArrowVisibility();
 
   int64_t GetDisplayIdToShowAppListOn();
 
