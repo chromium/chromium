@@ -22,6 +22,16 @@ if (enable_java_templates) {
       min_sdk_version = default_min_sdk_version
     }
   }
+
+  generate_build_config_srcjar("build_config_gen") {
+    use_final_fields = false
+  }
+
+  java_library("build_config_java") {
+    supports_android = true
+    srcjar_deps = [ ":build_config_gen" ]
+    jar_excluded_patterns = [ "*/build/BuildConfig.class" ]
+  }
 }
 
 python_library("devil_chromium_py") {

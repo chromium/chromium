@@ -15,8 +15,8 @@ import android.os.Handler;
 import android.os.Process;
 import android.os.UserHandle;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;

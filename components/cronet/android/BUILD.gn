@@ -360,6 +360,7 @@ cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
   "//base:base_java",
   "//base:jni_java",
+  "//build/android:build_config_java",
   "//net/android:net_java",
   "//url:url_java",
 ]
@@ -404,6 +405,7 @@ android_library("cronet_impl_native_base_java") {
     ":cronet_api_java",
     ":cronet_impl_common_base_java",
     "//base:jni_java",
+    "//build/android:build_config_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

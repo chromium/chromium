@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
+
 /**
  * Exposes native library loading status.
  */

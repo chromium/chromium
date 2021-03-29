@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;

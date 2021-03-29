@@ -13,8 +13,8 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.build.BuildConfig;
 
 /**
  * Test that ensures Preconditions are working.

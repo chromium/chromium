@@ -6,8 +6,8 @@ package org.chromium.content.browser;
 
 import android.os.Handler;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.process_launcher.ChildProcessConnection;
+import org.chromium.build.BuildConfig;
 import org.chromium.content_public.browser.ChildProcessImportance;
 
 import java.util.ArrayList;

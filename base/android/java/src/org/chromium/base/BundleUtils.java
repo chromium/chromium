@@ -20,6 +20,7 @@ import dalvik.system.PathClassLoader;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.BuildConfig;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

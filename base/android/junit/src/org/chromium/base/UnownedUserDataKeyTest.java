@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;

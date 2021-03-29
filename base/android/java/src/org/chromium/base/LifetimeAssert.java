@@ -7,6 +7,7 @@ package org.chromium.base;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.BuildConfig;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;

@@ -3739,8 +3739,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/NativeLibraryLoadedStatus.java",
       "android/java/src/org/chromium/base/annotations/NativeMethods.java",
     ]
-    srcjar_deps = [ ":base_build_config_gen" ]
-    jar_excluded_patterns = [ "*/BuildConfig.class" ]
+    deps = [ "//build/android:build_config_java" ]
   }
 
   java_cpp_strings("java_switches_srcjar") {
@@ -3753,7 +3752,6 @@ if (is_android) {
   android_library("base_java") {
     srcjar_deps = [
       ":base_android_java_enums_srcjar",
-      ":base_build_config_gen",
       ":base_java_aidl",
       ":base_native_libraries_gen",
       ":java_switches_srcjar",
@@ -3767,13 +3765,17 @@ if (is_android) {
       "//third_party/androidx:androidx_multidex_multidex_java",
     ]
 
-    public_deps = [ ":jni_java" ]
+    public_deps = [
+      ":jni_java",
+      "//build/android:build_config_java",
+    ]
 
     sources = [
       "android/java/src/org/chromium/base/ActivityState.java",
       "android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/ApplicationStatus.java",
+      "android/java/src/org/chromium/base/BuildConfig.java",
       "android/java/src/org/chromium/base/BuildInfo.java",
       "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/ByteArrayGenerator.java",
@@ -3927,7 +3929,6 @@ if (is_android) {
     # New versions of BuildConfig.java and NativeLibraries.java
     # (with the actual correct values) will be created when creating an apk.
     jar_excluded_patterns = [
-      "*/BuildConfig.class",
       "*/NativeLibraries.class",
       "*/NativeLibraries##*.class",
     ]
@@ -4126,10 +4127,7 @@ if (is_android) {
 
     # Make sure robolectric tests have classes filtered out of base_java by
     # jar_excluded_patterns.
-    srcjar_deps = [
-      ":base_build_config_gen",
-      ":base_native_libraries_gen",
-    ]
+    srcjar_deps = [ ":base_native_libraries_gen" ]
     deps = [
       ":base_java",
       "//testing/android/junit:junit_test_support",
@@ -4224,10 +4222,6 @@ if (is_android) {
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     deps = [ "//base:base_java" ]
-  }
-
-  generate_build_config_srcjar("base_build_config_gen") {
-    use_final_fields = false
   }
 
   write_native_libraries_java("base_native_libraries_gen") {

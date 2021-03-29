@@ -22,6 +22,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.build.BuildConfig;
 
 /**
  * Tests for {@link IntentUtils}.
