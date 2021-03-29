@@ -749,22 +749,33 @@ async function maybeGetFileFromFileHandle(handle) {
 }
 
 /**
- * Returns whether `filename` has an extension indicating a possible RAW image.
- * @param {string} filename
+ * Returns whether `fileName` has an extension indicating a possible RAW image.
+ * @param {string} fileName
  * @return {boolean}
  */
-function isRawImageFile(filename) {
-  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(filename.toLowerCase());
+function isRawImageFile(fileName) {
+  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(fileName.toLowerCase());
 }
 
 /**
- * Returns whether fileName is the filename for a video or image.
+ * Returns whether `fileName` is a file potentially containing subtitles.
+ * @param {string} fileName
+ * @return {boolean}
+ */
+function isSubtitleFile(fileName) {
+  return /\.vtt$/.test(fileName.toLowerCase());
+}
+
+/**
+ * Returns whether fileName is the filename for a video or image, or a related
+ * file type (e.g. video subtitles).
  * @param {string} fileName
  * @return {boolean}
  */
 function isVideoOrImage(fileName) {
   const fileType = getMimeTypeFromFilename(fileName);
-  return /^(image)|(video)\//.test(fileType) || isRawImageFile(fileName);
+  return /^(image)|(video)\//.test(fileType) || isRawImageFile(fileName) ||
+      isSubtitleFile(fileName);
 }
 
 /**

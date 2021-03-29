@@ -1094,24 +1094,25 @@ TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
     {name: 'matryoshka.MKV'},
     {name: 'noext', type: ''},
     {name: 'other.txt', type: 'text/plain'},
+    {name: 'subtitles.vtt'},
     {name: 'text.txt', type: 'text/plain'},
     {name: 'world.webm', type: 'video/webm'},
   ];
   const directory = await createMockTestDirectory(testFiles);
-  const [html, jpg, gif, emkv, mkv, MKV, ext, other, txt, webm] =
+  const [html, jpg, gif, emkv, mkv, MKV, ext, other, vtt, txt, webm] =
       directory.getFilesSync();
 
   await loadFilesWithoutSendingToGuest(directory, mkv);
-  assertFilesToBe([mkv, MKV, webm, jpg, gif], 'mkv');
+  assertFilesToBe([mkv, MKV, vtt, webm, jpg, gif], 'mkv');
 
   await loadFilesWithoutSendingToGuest(directory, jpg);
-  assertFilesToBe([jpg, gif, mkv, MKV, webm], 'jpg');
+  assertFilesToBe([jpg, gif, mkv, MKV, vtt, webm], 'jpg');
 
   await loadFilesWithoutSendingToGuest(directory, gif);
-  assertFilesToBe([gif, mkv, MKV, webm, jpg], 'gif');
+  assertFilesToBe([gif, mkv, MKV, vtt, webm, jpg], 'gif');
 
   await loadFilesWithoutSendingToGuest(directory, webm);
-  assertFilesToBe([webm, jpg, gif, mkv, MKV], 'webm');
+  assertFilesToBe([webm, jpg, gif, mkv, MKV, vtt], 'webm');
 
   await loadFilesWithoutSendingToGuest(directory, txt);
   assertFilesToBe([txt, other], 'txt');
