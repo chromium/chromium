@@ -219,7 +219,6 @@ void OverlayPresentationContextImpl::CancelOverlayUI(
     return;
   }
 
-  DCHECK(CanShowUIForRequest(request));
   DismissPresentedUI(OverlayDismissalReason::kCancellation);
 }
 
