@@ -136,7 +136,3 @@ void FeedbackDialog::OnCloseContents(WebContents* source,
 bool FeedbackDialog::ShouldShowDialogTitle() const {
   return true;
 }
-
-ui::WebDialogDelegate::FrameKind FeedbackDialog::GetWebDialogFrameKind() const {
-  return ui::WebDialogDelegate::FrameKind::kDialog;
-}

@@ -44,7 +44,6 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
-  ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
