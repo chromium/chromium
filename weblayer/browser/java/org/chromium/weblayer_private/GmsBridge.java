@@ -5,6 +5,7 @@
 package org.chromium.weblayer_private;
 
 import android.app.Service;
+import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -95,4 +96,13 @@ public abstract class GmsBridge {
     }
 
     public void logMetrics(byte[] data) {}
+
+    /**
+     * Performs checks to make sure the client app context can load WebLayer. Throws an
+     * AndroidRuntimeException on failure.
+     *
+     * TODO(crbug.com/1192294): Consider moving this somewhere else since it doesn't use anything
+     * from GMS.
+     */
+    public void checkClientAppContext(Context context) {}
 }

@@ -229,6 +229,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         Context appContext = minimalInitForContext(
                 ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
+        GmsBridge.getInstance().checkClientAppContext(appContext);
 
         // Load library in the background since it may be expensive.
         // TODO(crbug.com/1146438): Look into enabling relro sharing in browser process. It seems to
