@@ -20,7 +20,9 @@ namespace ash {
 
 PointScanController::PointScanController() = default;
 
-PointScanController::~PointScanController() = default;
+PointScanController::~PointScanController() {
+  HideAll();
+}
 
 void PointScanController::Start() {
   HideAll();
