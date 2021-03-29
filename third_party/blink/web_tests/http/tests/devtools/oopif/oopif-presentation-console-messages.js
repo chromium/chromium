@@ -9,11 +9,19 @@
   await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
-  function dumpMessage(prefix, message) {
-    TestRunner.addResult(`Line Message was ${prefix}: ${message.uiSourceCode().url()} ${message.level()} '${message.text()}':${message.lineNumber()}:${message.columnNumber()}`);
+  function dumpMessage(prefix, message, url) {
+    TestRunner.addResult(`Line Message was ${prefix}: ${url} ${
+        message.level()} '${message.text()}':${message.lineNumber()}:${
+        message.columnNumber()}`);
   }
-  TestRunner.addSniffer(Workspace.UISourceCode.prototype, 'addLineMessage', (level, text, lineNumber, columnNumber, message) => dumpMessage('added', message), true);
-  TestRunner.addSniffer(Workspace.UISourceCode.prototype, 'removeMessage', message => dumpMessage('removed', message), true);
+  TestRunner.addSniffer(
+      Workspace.UISourceCode.prototype, 'addMessage', function(message) {
+        dumpMessage('added', message, this.url());
+      }, true);
+  TestRunner.addSniffer(
+      Workspace.UISourceCode.prototype, 'removeMessage', function(message) {
+        dumpMessage('removed', message, this.url());
+      }, true);
 
   TestRunner.addResult('\nNavigating main frame');
   await TestRunner.navigatePromise('resources/error.html');
