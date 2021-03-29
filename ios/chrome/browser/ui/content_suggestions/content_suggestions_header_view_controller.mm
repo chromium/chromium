@@ -86,8 +86,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxWidthConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
-@property(nonatomic, strong) NSArray* identityDiscLogoLandscapeConstraints;
-@property(nonatomic, strong) NSArray* identityDiscLogoPortraitConstraints;
 @property(nonatomic, assign) BOOL logoFetched;
 
 @end
@@ -125,9 +123,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (self.traitCollection.horizontalSizeClass !=
       previousTraitCollection.horizontalSizeClass) {
     [self updateFakeboxDisplay];
-  }
-  if ([self shouldUseShrunkLogoLayout]) {
-    [self updateIdentityDiscLogoConstraints];
+    [self updateIdentityDiscInsets];
   }
 }
 
@@ -369,21 +365,13 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   AddSameConstraints(self.fakeTapButton, toolbar);
 }
 
-- (BOOL)shouldUseShrunkLogoLayout {
-  return ShouldShrinkLogoForStartSurface() && !IsIPadIdiom();
-}
-
 - (void)addIdentityDisc {
   // Set up a button. Details for the button will be set through delegate
   // implementation of UserAccountImageUpdateDelegate.
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
-  if (![self shouldUseShrunkLogoLayout]) {
-    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
-  }
+  [self updateIdentityDiscInsets];
   [self.identityDiscButton addTarget:self
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -406,53 +394,22 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       };
   }
 
-  if (![self shouldUseShrunkLogoLayout]) {
     // TODO(crbug.com/965958): Set action on button to launch into Settings.
     [self.headerView setIdentityDiscView:self.identityDiscButton];
-  } else {
-    // Add identity disc as a subview of the logo container view.
-    [self.logoVendor.view addSubview:self.identityDiscButton];
-    self.identityDiscButton.translatesAutoresizingMaskIntoConstraints = NO;
-    CGFloat dimension = ntp_home::kIdentityAvatarDimension;
-    self.identityDiscLogoLandscapeConstraints = @[
-      [self.identityDiscButton.heightAnchor
-          constraintEqualToConstant:dimension],
-      [self.identityDiscButton.widthAnchor constraintEqualToConstant:dimension],
-      [self.identityDiscButton.trailingAnchor
-          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                         constant:-ntp_home::kIdentityAvatarMargin],
-      [self.identityDiscButton.topAnchor
-          constraintEqualToAnchor:self.logoVendor.view.topAnchor],
-    ];
-    self.identityDiscLogoPortraitConstraints = @[
-      [self.identityDiscButton.heightAnchor
-          constraintEqualToConstant:dimension],
-      [self.identityDiscButton.widthAnchor constraintEqualToConstant:dimension],
-      [self.identityDiscButton.trailingAnchor
-          constraintEqualToAnchor:self.fakeOmnibox.trailingAnchor],
-      [self.identityDiscButton.topAnchor
-          constraintEqualToAnchor:self.logoVendor.view.topAnchor],
-    ];
-    [self updateIdentityDiscLogoConstraints];
-  }
 
   // Register to receive the avatar of the currently signed in user.
   [self.delegate registerImageUpdater:self];
 }
 
-- (void)updateIdentityDiscLogoConstraints {
-  if (IsCompactWidth(self.traitCollection)) {
-    [NSLayoutConstraint
-        activateConstraints:self.identityDiscLogoPortraitConstraints];
-    [NSLayoutConstraint
-        deactivateConstraints:self.identityDiscLogoLandscapeConstraints];
-    ;
+- (void)updateIdentityDiscInsets {
+  if (ShouldShrinkLogoForStartSurface() &&
+      self.traitCollection.verticalSizeClass ==
+          UIUserInterfaceSizeClassCompact) {
+    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsZero;
   } else {
-    [NSLayoutConstraint
-        activateConstraints:self.identityDiscLogoLandscapeConstraints];
-    [NSLayoutConstraint
-        deactivateConstraints:self.identityDiscLogoPortraitConstraints];
-    ;
+    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
+        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
+        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
   }
 }
 
