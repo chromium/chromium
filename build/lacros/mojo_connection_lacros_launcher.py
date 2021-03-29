@@ -36,6 +36,9 @@ import sys
 import subprocess
 
 
+_NUM_FDS_MAX = 3
+
+
 # contextlib.nullcontext is introduced in 3.7, while Python version on
 # CrOS is still 3.6. This is for backward compatibility.
 class NullContext:
@@ -63,7 +66,8 @@ def _ReceiveFDs(sock):
   fds = array.array("i")  # Array of ints
   # Along with the file descriptor, ash-chrome also sends the version in the
   # regular data.
-  version, ancdata, _, _ = sock.recvmsg(1, socket.CMSG_LEN(fds.itemsize))
+  version, ancdata, _, _ = sock.recvmsg(
+      1, socket.CMSG_LEN(fds.itemsize * _NUM_FDS_MAX))
   for cmsg_level, cmsg_type, cmsg_data in ancdata:
     if cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SCM_RIGHTS:
       # There are three versions currently this script supports.
@@ -78,8 +82,10 @@ def _ReceiveFDs(sock):
       # oldest one after M91.
       # TODO(crbug.com/1180712): Clean up the mojo procedure support of the
       # the middle one after M92.
-      assert len(cmsg_data) in (fds.itemsize, fds.itemsize * 2, fds.itemsize *
-                                3), ('Expecting exactly 1, 2, or 3 FDs')
+      cmsg_len_candidates = [(i + 1) * fds.itemsize
+                             for i in range(_NUM_FDS_MAX)]
+      assert len(cmsg_data) in cmsg_len_candidates, (
+          'CMSG_LEN is unexpected: %d' % (len(cmsg_data), ))
       fds.frombytes(cmsg_data[:])
 
   assert version == b'\x00', 'Expecting version code to be 0'
