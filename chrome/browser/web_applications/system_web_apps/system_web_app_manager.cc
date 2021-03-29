@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -411,6 +412,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
       on_apps_synchronized_(new base::OneShotEvent()),
+      on_tasks_started_(new base::OneShotEvent()),
       install_result_per_profile_histogram_name_(
           std::string(kInstallResultHistogramName) + ".Profiles." +
           GetProfileCategoryForLogging(profile)),
@@ -513,6 +515,7 @@ void SystemWebAppManager::Start() {
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
   on_apps_synchronized_.reset(new base::OneShotEvent());
+  on_tasks_started_.reset(new base::OneShotEvent());
   system_app_infos_ = CreateSystemWebApps(profile_);
   Start();
 
@@ -910,6 +913,11 @@ void SystemWebAppManager::OnAppsSynchronized(
 void SystemWebAppManager::StartBackgroundTasks() const {
   for (const auto& task : tasks_) {
     task->StartTask();
+  }
+  // This happens as part of synchronize, and can also be called multiple times
+  // in testing.
+  if (!on_tasks_started_->is_signaled()) {
+    on_tasks_started_->Signal();
   }
 }
 

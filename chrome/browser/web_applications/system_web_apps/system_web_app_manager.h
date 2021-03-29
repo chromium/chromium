@@ -237,6 +237,12 @@ class SystemWebAppManager {
     return *on_apps_synchronized_;
   }
 
+  // Return the OneShotEvent that is fired after all of the background tasks
+  // have started and their timers become active.
+  const base::OneShotEvent& on_tasks_started() const {
+    return *on_tasks_started_;
+  }
+
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
   void SetSystemAppsForTesting(
@@ -292,6 +298,7 @@ class SystemWebAppManager {
   Profile* profile_;
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
+  std::unique_ptr<base::OneShotEvent> on_tasks_started_;
 
   bool shutting_down_ = false;
 
