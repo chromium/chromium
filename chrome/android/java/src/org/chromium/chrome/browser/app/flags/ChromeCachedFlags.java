@@ -36,6 +36,16 @@ public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
 
     /**
+     * A list of field trial parameters that will be cached when starting minimal browser mode. See
+     * {@link #cacheMinimalBrowserFlags()}.
+     */
+    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
+            Arrays.asList(
+                    // This is used by CustomTabsConnection implementation, which does not
+                    // necessarily start chrome.
+                    CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS);
+
+    /**
      * @return The {@link ChromeCachedFlags} singleton.
      */
     public static ChromeCachedFlags getInstance() {
@@ -146,6 +156,7 @@ public class ChromeCachedFlags {
         List<String> omissions = new ArrayList<>();
         for (CachedFieldTrialParameter trial : CachedFieldTrialParameter.getAllInstances()) {
             if (listed.contains(trial)) continue;
+            if (MINIMAL_BROWSER_FIELD_TRIALS.contains(trial)) continue;
             omissions.add(trial.getFeatureName() + ":" + trial.getParameterName());
         }
         assert omissions.isEmpty()
@@ -167,9 +178,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.SERVICE_MANAGER_FOR_DOWNLOAD,
                 ChromeFeatureList.SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH));
 
-        // This is used by CustomTabsConnection implementation, which does not necessarily start
-        // chrome.
-        CachedFeatureFlags.cacheFieldTrialParameters(
-                Arrays.asList(CustomTabActivity.EXPERIMENTS_FOR_AGSA_PARAMS));
+        CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 }
