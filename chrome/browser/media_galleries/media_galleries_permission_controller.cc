@@ -76,10 +76,9 @@ MediaGalleriesPermissionController::MediaGalleriesPermissionController(
       base::Unretained(this)));
 
   // Unretained is safe because |this| owns |context_menu_|.
-  context_menu_.reset(
-      new MediaGalleryContextMenu(
-          base::Bind(&MediaGalleriesPermissionController::DidForgetEntry,
-                     base::Unretained(this))));
+  context_menu_ = std::make_unique<MediaGalleryContextMenu>(
+      base::BindRepeating(&MediaGalleriesPermissionController::DidForgetEntry,
+                          base::Unretained(this)));
 }
 
 void MediaGalleriesPermissionController::OnPreferencesInitialized() {
