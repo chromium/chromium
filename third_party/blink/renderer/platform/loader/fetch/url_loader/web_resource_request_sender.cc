@@ -255,6 +255,8 @@ int WebResourceRequestSender::SendAsync(
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
+  auto weak_this = weak_factory_.GetWeakPtr();
+
   CheckSchemeForReferrerPolicy(*request);
 
 #if defined(OS_ANDROID)
@@ -294,6 +296,11 @@ int WebResourceRequestSender::SendAsync(
           loader_options, request.get(), client.get(), traffic_annotation,
           std::move(loading_task_runner),
           base::make_optional(std_cors_exempt_header_list));
+  // TODO(https://crbug.com/1175286): Remove this mitigation when we understand
+  // why `this` or `request_info_` is being destroyed.
+  if (!weak_this || !request_info_)
+    return request_id;
+
   request_info_->url_loader = std::move(url_loader);
   request_info_->url_loader_client = std::move(client);
 
