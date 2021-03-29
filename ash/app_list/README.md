@@ -203,3 +203,7 @@ generally part of [apps_grid_view_unittest.cc][1] or
 
 [1]: /ash/app_list/views/apps_grid_view_unittest.cc
 [2]: /ash/app_list/app_list_presenter_delegate_unittest.cc
+
+## Historical notes
+
+The old demo binary in //ash/app_list/demo was removed in 2021.

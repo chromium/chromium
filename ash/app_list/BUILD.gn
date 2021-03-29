@@ -186,29 +186,6 @@ static_library("test_support") {
   ]
 }
 
-executable("app_list_demo") {
-  testonly = true
-
-  sources = [ "demo/app_list_demo_views.cc" ]
-
-  deps = [
-    ":app_list",
-    ":test_support",
-    "//base",
-    "//build/win:default_exe_manifest",
-    "//content",
-    "//content/public/browser",
-    "//skia",
-    "//ui/base",
-    "//ui/events",
-    "//ui/resources",
-    "//ui/resources:ui_test_pak",
-    "//ui/views",
-    "//ui/views_content_client",
-    "//url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 

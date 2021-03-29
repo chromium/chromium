@@ -438,7 +438,6 @@ group("gn_all") {
   if (is_chromeos_ash) {
     deps += [
       "//ash:ash_unittests",
-      "//ash/app_list:app_list_demo",
       "//ash/app_list:app_list_unittests",
       "//ash/keyboard/ui:keyboard_unittests",
       "//chrome/browser/metrics/perf:profile_provider_unittest",
