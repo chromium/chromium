@@ -25,6 +25,7 @@
 #include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
+
 namespace {
 
 struct FakeSkiaGraphicsClient : public SkiaGraphics::Client {
@@ -51,54 +52,61 @@ SkBitmap GenerateExpectedBitmap(const SkISize& graphics_size,
   return bitmap;
 }
 
-void TestPaintImageResult(const SkISize& graphics_size,
-                          const SkISize& src_size,
-                          const gfx::Rect& paint_rect,
-                          const SkIRect& overlapped_rect) {
-  base::test::TaskEnvironment task_environment;
-  FakeSkiaGraphicsClient client;
-  auto graphics =
-      SkiaGraphics::Create(&client, gfx::SkISizeToSize(graphics_size));
-  ASSERT_TRUE(graphics);
+}  // namespace
 
-  // Create snapshots as SkImage and SkBitmap after painting.
-  graphics->PaintImage(CreateSourceImage(src_size), paint_rect);
-  graphics->Flush(base::DoNothing());
-  SkBitmap snapshot_bitmap;
-  ASSERT_TRUE(client.snapshot->asLegacyBitmap(&snapshot_bitmap));
+class SkiaGraphicsTest : public testing::Test {
+ protected:
+  void TestPaintImageResult(const SkISize& graphics_size,
+                            const SkISize& src_size,
+                            const gfx::Rect& paint_rect,
+                            const SkIRect& overlapped_rect) {
+    graphics_ =
+        SkiaGraphics::Create(&client_, gfx::SkISizeToSize(graphics_size));
+    ASSERT_TRUE(graphics_);
 
-  // Verify snapshot dimensions.
-  EXPECT_EQ(client.snapshot->dimensions(), graphics_size)
-      << client.snapshot->width() << " x " << client.snapshot->height()
-      << " != " << graphics_size.width() << " x " << graphics_size.height();
+    // Create snapshots as SkImage and SkBitmap after painting.
+    graphics_->PaintImage(CreateSourceImage(src_size), paint_rect);
+    graphics_->Flush(base::DoNothing());
+    SkBitmap snapshot_bitmap;
+    ASSERT_TRUE(client_.snapshot->asLegacyBitmap(&snapshot_bitmap));
 
-  // Verify the snapshot matches the expected result.
-  const SkBitmap expected_bitmap =
-      GenerateExpectedBitmap(graphics_size, overlapped_rect);
-  EXPECT_TRUE(
-      cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
-                        cc::ExactPixelComparator(/*discard_alpha=*/false)))
-      << "SkBitmap comparison failed for graphics size of "
-      << graphics_size.width() << " x " << graphics_size.height();
-}
+    // Verify snapshot dimensions.
+    EXPECT_EQ(client_.snapshot->dimensions(), graphics_size)
+        << client_.snapshot->width() << " x " << client_.snapshot->height()
+        << " != " << graphics_size.width() << " x " << graphics_size.height();
 
-TEST(SkiaGraphicsTest, Flush) {
-  base::test::TaskEnvironment task_environment;
+    // Verify the snapshot matches the expected result.
+    const SkBitmap expected_bitmap =
+        GenerateExpectedBitmap(graphics_size, overlapped_rect);
+    EXPECT_TRUE(
+        cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
+                          cc::ExactPixelComparator(/*discard_alpha=*/false)))
+        << "SkBitmap comparison failed for graphics size of "
+        << graphics_size.width() << " x " << graphics_size.height();
+  }
 
-  FakeSkiaGraphicsClient client;
-  auto graphics = SkiaGraphics::Create(&client, gfx::Size(20, 20));
-  ASSERT_TRUE(graphics);
+  FakeSkiaGraphicsClient client_;
+
+  std::unique_ptr<Graphics> graphics_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(SkiaGraphicsTest, Flush) {
+  graphics_ = SkiaGraphics::Create(&client_, gfx::Size(20, 20));
+  ASSERT_TRUE(graphics_);
 
   // The client's snapshot is nullptr before flushing.
-  EXPECT_FALSE(client.snapshot);
+  EXPECT_FALSE(client_.snapshot);
 
-  EXPECT_TRUE(graphics->Flush(base::DoNothing()));
+  EXPECT_TRUE(graphics_->Flush(base::DoNothing()));
 
   // The client's snapshot has changed after flushing.
-  EXPECT_TRUE(client.snapshot);
+  EXPECT_TRUE(client_.snapshot);
 }
 
-TEST(SkiaGraphicsTest, PaintImage) {
+TEST_F(SkiaGraphicsTest, PaintImage) {
   struct PaintImageParams {
     // Size of the graphics to be painted on.
     SkISize graphics_size;
@@ -130,5 +138,4 @@ TEST(SkiaGraphicsTest, PaintImage) {
                          params.paint_rect, params.overlapped_rect);
 }
 
-}  // namespace
 }  // namespace chrome_pdf
