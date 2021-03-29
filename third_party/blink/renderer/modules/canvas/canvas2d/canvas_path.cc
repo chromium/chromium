@@ -506,33 +506,66 @@ void CanvasPath::roundRect(
     }
   }
 
+  if (UNLIKELY(width == 0) || UNLIKELY(height == 0)) {
+    // AddRoundRect does not handle flat rects, correctly.  But since there are
+    // no rounded corners on a flat rect, we can just use AddRect.
+    path_.AddRect(FloatRect(x, y, width, height));
+    return;
+  }
+
+  FloatSize corner_radii[4];  // row-wise ordering
+  switch (num_radii) {
+    case 1:
+      corner_radii[0] = corner_radii[1] = corner_radii[2] = corner_radii[3] =
+          r[0];
+      break;
+    case 2:
+      corner_radii[0] = corner_radii[3] = r[0];
+      corner_radii[1] = corner_radii[2] = r[1];
+      break;
+    case 3:
+      corner_radii[0] = r[0];
+      corner_radii[1] = corner_radii[2] = r[1];
+      corner_radii[3] = r[2];
+      break;
+    case 4:
+      corner_radii[0] = r[0];
+      corner_radii[1] = r[1];
+      corner_radii[2] = r[3];
+      corner_radii[3] = r[2];
+  }
+
+  bool clockwise = true;
   if (UNLIKELY(width < 0)) {
+    // Horizontal flip
+    clockwise = false;
     x += width;
     width = -width;
+    FloatSize tmp = corner_radii[1];
+    corner_radii[1] = corner_radii[0];
+    corner_radii[0] = tmp;
+    tmp = corner_radii[3];
+    corner_radii[3] = corner_radii[2];
+    corner_radii[2] = tmp;
   }
 
   if (UNLIKELY(height < 0)) {
+    // Vertical flip
+    clockwise = !clockwise;
     y += height;
     height = -height;
+    FloatSize tmp = corner_radii[2];
+    corner_radii[2] = corner_radii[0];
+    corner_radii[0] = tmp;
+    tmp = corner_radii[3];
+    corner_radii[3] = corner_radii[1];
+    corner_radii[1] = tmp;
   }
 
-  FloatRect rect = FloatRect(x, y, width, height);
-
-  // Order of arguments here is so that this function behaves the same as the
-  // CSS border-radius property
-  switch (num_radii) {
-    case 1:
-      path_.AddRoundedRect(rect, r[0]);
-      break;
-    case 2:
-      path_.AddRoundedRect(rect, r[0], r[1], r[1], r[0]);
-      break;
-    case 3:
-      path_.AddRoundedRect(rect, r[0], r[1], r[1], r[2]);
-      break;
-    case 4:
-      path_.AddRoundedRect(rect, r[0], r[1], r[3], r[2]);
-  }
+  FloatRect rect(x, y, width, height);
+  path_.AddPathForRoundedRect(rect, corner_radii[0], corner_radii[1],
+                              corner_radii[2], corner_radii[3], clockwise);
   path_.MoveTo(FloatPoint(x, y));
 }
+
 }  // namespace blink
