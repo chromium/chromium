@@ -16,6 +16,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/overview/overview_animation_state_waiter.h"
@@ -112,6 +113,12 @@ ShellTestApi::~ShellTestApi() = default;
 void ShellTestApi::SetTabletControllerUseScreenshotForTest(
     bool use_screenshot) {
   TabletModeController::SetUseScreenshotForTest(use_screenshot);
+}
+
+// static
+void ShellTestApi::SetUseLoginNotificationDelayForTest(bool use_delay) {
+  SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(
+      use_delay);
 }
 
 MessageCenterController* ShellTestApi::message_center_controller() {

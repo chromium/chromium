@@ -8,12 +8,21 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 using session_manager::SessionState;
 
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kLoginNotificationDelay =
+    base::TimeDelta::FromSeconds(6);
+
+// Set to false for tests so notifications can be generated without a delay.
+bool g_use_login_delay_for_test = true;
 
 bool CalculateShouldShowNotification() {
   SessionControllerImpl* const session_controller =
@@ -57,8 +66,26 @@ SessionStateNotificationBlocker::~SessionStateNotificationBlocker() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
+// static
+void SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(
+    bool use_delay) {
+  g_use_login_delay_for_test = use_delay;
+}
+
+void SessionStateNotificationBlocker::OnLoginTimerEnded() {
+  NotifyBlockingStateChanged();
+}
+
 bool SessionStateNotificationBlocker::ShouldShowNotification(
     const message_center::Notification& notification) const {
+  // Do not show non system notifications for `kLoginNotificationsDelay`
+  // duration.
+  if (notification.notifier_id().type !=
+          message_center::NotifierType::SYSTEM_COMPONENT &&
+      login_delay_timer_.IsRunning()) {
+    return false;
+  }
+
   return should_show_notification_;
 }
 
@@ -77,6 +104,13 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
   }
 
   return should_show_popup_;
+}
+
+void SessionStateNotificationBlocker::OnFirstSessionStarted() {
+  if (!g_use_login_delay_for_test)
+    return;
+  login_delay_timer_.Start(FROM_HERE, kLoginNotificationDelay, this,
+                           &SessionStateNotificationBlocker::OnLoginTimerEnded);
 }
 
 void SessionStateNotificationBlocker::OnSessionStateChanged(

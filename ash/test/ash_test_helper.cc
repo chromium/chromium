@@ -23,6 +23,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
+#include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/test/ash_test_views_delegate.h"
@@ -248,6 +249,12 @@ void AshTestHelper::SetUp(InitParams init_params) {
       std::make_unique<TestKeyboardUIFactory>();
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
+
+  // Disable the notification delay timer used to prevent non system
+  // notifications from showing up right after login. This needs to be done
+  // before any user sessions are added since the delay timer starts right
+  // after that.
+  SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(false);
 
   // Cursor is visible by default in tests.
   shell->cursor_manager()->ShowCursor();

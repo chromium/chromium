@@ -43,6 +43,14 @@ class ASH_EXPORT ShellTestApi {
   // operation that we want to disable for most tests.
   static void SetTabletControllerUseScreenshotForTest(bool use_screenshot);
 
+  // `SessionStateNotificationBlocker` adds a 6 second delays for showing all
+  // non system component notifications after login. This behavior can cause
+  // tests that expect to generate a notification to fail so should be disabled
+  // for most tests. If a test deals specifically with this delay and needs to
+  // set this to enabled, the test is responsible for setting it back to
+  // disabled to prevent failing subsequent tests.
+  static void SetUseLoginNotificationDelayForTest(bool use_delay);
+
   MessageCenterController* message_center_controller();
   WorkspaceController* workspace_controller();
   ScreenPositionController* screen_position_controller();
