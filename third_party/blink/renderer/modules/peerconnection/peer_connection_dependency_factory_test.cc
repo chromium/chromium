@@ -13,12 +13,12 @@ namespace blink {
 class PeerConnectionDependencyFactoryTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_ =
-        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
+    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
   }
 
  protected:
-  Persistent<MockPeerConnectionDependencyFactory> dependency_factory_;
+  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
+      dependency_factory_;
 };
 
 TEST_F(PeerConnectionDependencyFactoryTest, CreateRTCPeerConnectionHandler) {

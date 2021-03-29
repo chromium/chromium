@@ -464,7 +464,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   webrtc::PeerConnectionInterface::SignalingState previous_signaling_state_ =
       webrtc::PeerConnectionInterface::kStable;
 
-  const Persistent<PeerConnectionDependencyFactory> dependency_factory_;
+  // |dependency_factory_| is a raw pointer, and is valid for the lifetime of
+  // RenderThreadImpl.
+  blink::PeerConnectionDependencyFactory* const dependency_factory_ = nullptr;
 
   blink::WebLocalFrame* frame_ = nullptr;
 
