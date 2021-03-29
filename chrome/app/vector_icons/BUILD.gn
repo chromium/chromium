@@ -170,8 +170,15 @@ aggregate_vector_icons("chrome_vector_icons") {
       "navigate_stop_windows.icon",
       "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
+      "payments/secure_payment_confirmation_face.icon",
+      "payments/secure_payment_confirmation_face_dark.icon",
       "reload_windows.icon",
       "reload_windows_touch.icon",
+    ]
+  } else {
+    sources += [
+      "payments/secure_payment_confirmation_fingerprint.icon",
+      "payments/secure_payment_confirmation_fingerprint_dark.icon",
     ]
   }
 

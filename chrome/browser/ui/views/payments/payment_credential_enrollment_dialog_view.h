@@ -13,10 +13,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class ProgressBar;
-}
-
 namespace payments {
 
 // Draws the user interface in the payment credential enrollment flow.
@@ -86,8 +82,6 @@ class PaymentCredentialEnrollmentDialogView
 
   AcceptCallback accept_callback_;
   CancelCallback cancel_callback_;
-
-  views::ProgressBar* progress_bar_ = nullptr;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().

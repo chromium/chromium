@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_views_util.h"
 
+#include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -12,24 +13,38 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
 namespace payments {
+namespace {
+
+const gfx::VectorIcon& GetPlatformVectorIcon(bool dark_mode) {
+#if defined(OS_WIN)
+  return dark_mode ? kSecurePaymentConfirmationFaceDarkIcon
+                   : kSecurePaymentConfirmationFaceIcon;
+#else
+  return dark_mode ? kSecurePaymentConfirmationFingerprintDarkIcon
+                   : kSecurePaymentConfirmationFingerprintIcon;
+#endif
+}
+
+}  // namespace
 
 int GetSecurePaymentConfirmationHeaderWidth() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
 }
 
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationIconView(
     bool dark_mode) {
   const int header_width = GetSecurePaymentConfirmationHeaderWidth();
   const gfx::Size header_size(header_width, kHeaderIconHeight);
 
   auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(
-      dark_mode ? kWebauthnFingerprintDarkIcon : kWebauthnFingerprintIcon));
+  image_view->SetImage(gfx::CreateVectorIcon(GetPlatformVectorIcon(dark_mode)));
   image_view->SetSize(header_size);
+  image_view->SetPreferredSize(header_size);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
   return image_view;
@@ -46,6 +61,36 @@ CreateSecurePaymentConfirmationProgressBarView() {
   progress_bar->SizeToPreferredSize();
 
   return progress_bar;
+}
+
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
+    bool dark_mode,
+    int progress_bar_id,
+    int header_icon_id) {
+  auto header = std::make_unique<views::View>();
+
+  views::GridLayout* layout =
+      header->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* columns = layout->AddColumnSet(0);
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  // Progress bar
+  layout->StartRow(views::GridLayout::kFixedSize, 0, kProgressBarHeight);
+  auto progress_bar = CreateSecurePaymentConfirmationProgressBarView();
+  progress_bar->SetID(progress_bar_id);
+  progress_bar->SetVisible(false);
+  layout->AddView(std::move(progress_bar));
+
+  layout->AddPaddingRow(views::GridLayout::kFixedSize, kHeaderIconTopPadding);
+
+  // Header icon
+  layout->StartRow(views::GridLayout::kFixedSize, 0, kHeaderIconHeight);
+  auto image_view = CreateSecurePaymentConfirmationIconView(dark_mode);
+  image_view->SetID(header_icon_id);
+  layout->AddView(std::move(image_view));
+
+  return header;
 }
 
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(

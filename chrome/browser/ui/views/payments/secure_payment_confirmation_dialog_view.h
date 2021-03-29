@@ -11,10 +11,6 @@
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class ProgressBar;
-}
-
 namespace payments {
 
 class PaymentUIObserver;
@@ -96,8 +92,6 @@ class SecurePaymentConfirmationDialogView
 
   VerifyCallback verify_callback_;
   CancelCallback cancel_callback_;
-
-  views::ProgressBar* progress_bar_ = nullptr;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
   // OnModelUpdated().

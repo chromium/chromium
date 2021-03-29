@@ -106,10 +106,10 @@ void PaymentCredentialEnrollmentDialogView::OnDialogClosed() {
 }
 
 void PaymentCredentialEnrollmentDialogView::OnModelUpdated() {
-  // Changing the progress bar visibility does not invalidate layout as it is
-  // absolutely positioned.
-  if (progress_bar_)
-    progress_bar_->SetVisible(model_->progress_bar_visible());
+  views::View* progress_bar =
+      GetViewByID(static_cast<int>(DialogViewID::PROGRESS_BAR));
+  if (progress_bar)
+    progress_bar->SetVisible(model_->progress_bar_visible());
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK, model_->accept_button_label());
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, model_->accept_button_enabled());
@@ -179,47 +179,14 @@ void PaymentCredentialEnrollmentDialogView::InitChildViews() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  AddChildView(CreateHeaderView());
+  AddChildView(CreateSecurePaymentConfirmationHeaderView(
+      GetNativeTheme()->ShouldUseDarkColors(),
+      static_cast<int>(DialogViewID::PROGRESS_BAR),
+      static_cast<int>(DialogViewID::HEADER_ICON)));
 
   AddChildView(CreateBodyView());
 
   InvalidateLayout();
-}
-
-// Creates the header view, which is the fingerprint icon and a progress bar.
-// The fingerprint icon covers the whole header view and the progress bar is
-// overlaid on the top of the header.
-// +------------------------------------------+
-// |===============progress bar===============|
-// |                                          |
-// |             fingerprint icon             |
-// +------------------------------------------+
-std::unique_ptr<views::View>
-PaymentCredentialEnrollmentDialogView::CreateHeaderView() {
-  const int header_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  const gfx::Size header_size(header_width, kHeaderIconHeight);
-
-  // The container view has no layout, so its preferred size is hardcoded to
-  // match the size of the image, and the progress bar overlay is absolutely
-  // positioned.
-  auto header_view = std::make_unique<views::View>();
-  header_view->SetPreferredSize(header_size);
-
-  // Fingerprint header icon
-  auto image_view = CreateSecurePaymentConfirmationHeaderView(
-      GetNativeTheme()->ShouldUseDarkColors());
-  image_view->SetID(static_cast<int>(DialogViewID::HEADER_ICON));
-  header_view->AddChildView(image_view.release());
-
-  // Progress bar
-  auto progress_bar = CreateSecurePaymentConfirmationProgressBarView();
-  progress_bar->SetID(static_cast<int>(DialogViewID::PROGRESS_BAR));
-  progress_bar->SetVisible(model_->progress_bar_visible());
-  progress_bar_ = progress_bar.get();
-  header_view->AddChildView(progress_bar.release());
-
-  return header_view;
 }
 
 // Creates the body.
@@ -234,7 +201,7 @@ std::unique_ptr<views::View>
 PaymentCredentialEnrollmentDialogView::CreateBodyView() {
   auto body = std::make_unique<views::View>();
   body->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kBodyInsets, kBodyInsets, kBodyInsets, kBodyInsets)));
+      gfx::Insets(kBodyInsets, kBodyExtraInset, kBodyInsets, kBodyExtraInset)));
 
   views::GridLayout* layout =
       body->SetLayoutManager(std::make_unique<views::GridLayout>());

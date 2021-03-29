@@ -23,6 +23,9 @@ namespace payments {
 // Height of the header icon.
 constexpr int kHeaderIconHeight = 148;
 
+// Padding above the header icon.
+constexpr int kHeaderIconTopPadding = 12;
+
 // Height of the progress bar at the top of the dialog.
 constexpr int kProgressBarHeight = 4;
 
@@ -33,10 +36,10 @@ constexpr int kTitleLineHeight = 24;
 constexpr int kDescriptionLineHeight = 20;
 
 // Insets of the body content.
-constexpr int kBodyInsets = 16;
+constexpr int kBodyInsets = 8;
 
 // Extra inset between the body content and the dialog buttons.
-constexpr int kBodyExtraInset = 24;
+constexpr int kBodyExtraInset = 16;
 
 // Size of the instrument icon.
 constexpr int kInstrumentIconWidth = 32;
@@ -48,12 +51,24 @@ constexpr int kPaymentInfoRowHeight = 48;
 int GetSecurePaymentConfirmationHeaderWidth();
 
 // Creates the view for the SPC fingerprint header icon.
-std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationIconView(
     bool dark_mode);
 
 // Creates the view for the SPC progress bar.
 std::unique_ptr<views::ProgressBar>
 CreateSecurePaymentConfirmationProgressBarView();
+
+// Creates the header view, which contains the icon and a progress bar. The icon
+// covers the whole header view with the progress bar at the top of the header.
+// +------------------------------------------+
+// |===============progress bar===============|
+// |                                          |
+// |                   icon                   |
+// +------------------------------------------+
+std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
+    bool dark_mode,
+    int progress_bar_id,
+    int header_icon_id);
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
