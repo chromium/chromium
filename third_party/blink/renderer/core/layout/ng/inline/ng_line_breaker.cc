@@ -657,7 +657,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
          (item.Type() == NGInlineItem::kControl &&
           Text()[item.StartOffset()] == kTabulationCharacter));
   DCHECK(&shape_result);
-  DCHECK_EQ(auto_wrap_, item.Style()->AutoWrap());
+  DCHECK_EQ(auto_wrap_, !is_svg_text_ && item.Style()->AutoWrap());
 
   // If we're trailing, only trailing spaces can be included in this line.
   if (UNLIKELY(state_ == LineBreakState::kTrailing)) {
@@ -2365,7 +2365,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   if (&style == current_style_.get()) {
 #if DCHECK_IS_ON()
     // Check that cache fields are already setup correctly.
-    DCHECK_EQ(auto_wrap_, style.AutoWrap());
+    DCHECK_EQ(auto_wrap_, !is_svg_text_ && style.AutoWrap());
     if (auto_wrap_) {
       DCHECK_EQ(enable_soft_hyphen_, style.GetHyphens() != Hyphens::kNone);
       DCHECK_EQ(break_iterator_.Locale(), style.LocaleForLineBreakIterator());
