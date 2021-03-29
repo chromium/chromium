@@ -140,6 +140,7 @@
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/tray_action/tray_action.h"
+#include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/utility/screenshot_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
@@ -1297,6 +1298,8 @@ void Shell::Init(
     observer.OnShellInitialized();
 
   user_metrics_recorder_->OnShellInitialized();
+
+  occlusion_tracker_pauser_ = std::make_unique<OcclusionTrackerPauser>();
 
   // Initialize the D-Bus bus and services for ash.
   dbus_bus_ = dbus_bus;

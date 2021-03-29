@@ -149,6 +149,7 @@ class MultiDeviceNotificationPresenter;
 class NearbyShareControllerImpl;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
+class OcclusionTrackerPauser;
 class OverlayEventFilter;
 class OverviewController;
 class ParentAccessController;
@@ -569,6 +570,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return pcie_peripheral_notification_controller_.get();
   }
 
+  OcclusionTrackerPauser* occlusion_tracker_pauser() {
+    return occlusion_tracker_pauser_.get();
+  }
+
   // Force the shelf to query for it's current visibility state.
   // TODO(jamescook): Move to Shelf.
   void UpdateShelfVisibility();
@@ -874,6 +879,8 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   std::unique_ptr<LoginUnlockThroughputRecorder>
       login_unlock_throughput_recorder_;
+
+  std::unique_ptr<OcclusionTrackerPauser> occlusion_tracker_pauser_;
 
   base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
