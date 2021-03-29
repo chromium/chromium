@@ -501,7 +501,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // The frame that opened this frame, if any.  Will be set to null if the
   // opener is closed, or if this frame disowns its opener by setting its
   // window.opener to null.
-  FrameTreeNode* opener_;
+  FrameTreeNode* opener_ = nullptr;
 
   // An observer that clears this node's |opener_| if the opener is destroyed.
   // This observer is added to the |opener_|'s observer list when the |opener_|
@@ -512,7 +512,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // The frame that opened this frame, if any. Contrary to opener_, this
   // cannot be changed unless the original opener is destroyed.
-  FrameTreeNode* original_opener_;
+  FrameTreeNode* original_opener_ = nullptr;
 
   // The devtools frame token of the frame which opened this frame. This is
   // not cleared even if the opener is destroyed or disowns the frame.
@@ -532,10 +532,10 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Whether this frame has committed any real load, replacing its initial
   // about:blank page.
-  bool has_committed_real_load_;
+  bool has_committed_real_load_ = false;
 
   // Whether the frame's owner element in the parent document is collapsed.
-  bool is_collapsed_;
+  bool is_collapsed_ = false;
 
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.
@@ -552,7 +552,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // history entries when the frame is removed (because frames created by
   // scripts are never recreated with the same unique name - see
   // https://crbug.com/500260).
-  bool is_created_by_script_;
+  const bool is_created_by_script_;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/
@@ -561,7 +561,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // |devtools_frame_token_| is only defined by the browser process and is never
   // sent back from the renderer in the control calls. It should be never used
   // to look up the FrameTreeNode instance.
-  base::UnguessableToken devtools_frame_token_;
+  const base::UnguessableToken devtools_frame_token_;
 
   // Tracks the scrolling and margin properties for this frame.  These
   // properties affect the child renderer but are stored on its parent's
@@ -583,7 +583,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   base::TimeTicks last_focus_time_;
 
-  bool was_discarded_;
+  bool was_discarded_ = false;
 
   // The user activation state of the current frame.  See |UserActivationState|
   // for details on how this state is maintained.

@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 
 #include <math.h>
-
 #include <queue>
 #include <unordered_map>
 #include <utility>
@@ -122,10 +121,6 @@ FrameTreeNode::FrameTreeNode(
       frame_tree_node_id_(next_frame_tree_node_id_++),
       parent_(parent),
       depth_(parent ? parent->frame_tree_node()->depth_ + 1 : 0u),
-      opener_(nullptr),
-      original_opener_(nullptr),
-      has_committed_real_load_(false),
-      is_collapsed_(false),
       replication_state_(blink::mojom::FrameReplicationState::New(
           url::Origin(),
           name,
@@ -148,7 +143,6 @@ FrameTreeNode::FrameTreeNode(
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
-      was_discarded_(false),
       blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)),
       render_manager_(this, frame_tree->manager_delegate()) {
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
@@ -719,8 +713,8 @@ bool FrameTreeNode::UpdateUserActivationState(
             blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
       } else {
-        // TODO(crbug.com/848778): We need to decide what to do when user
-        // activation verification failed. NOTREACHED here will make all
+        // TODO(https://crbug.com/848778): We need to decide what to do when
+        // user activation verification failed. NOTREACHED here will make all
         // unrelated tests that inject event to renderer fail.
         return false;
       }
