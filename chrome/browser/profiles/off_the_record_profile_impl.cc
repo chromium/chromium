@@ -319,10 +319,11 @@ const Profile::OTRProfileID& OffTheRecordProfileImpl::GetOTRProfileID() const {
 }
 
 Profile* OffTheRecordProfileImpl::GetOffTheRecordProfile(
-    const OTRProfileID& otr_profile_id) {
+    const OTRProfileID& otr_profile_id,
+    bool create_if_needed) {
   if (otr_profile_id_ == otr_profile_id)
     return this;
-  return profile_->GetOffTheRecordProfile(otr_profile_id);
+  return profile_->GetOffTheRecordProfile(otr_profile_id, create_if_needed);
 }
 
 std::vector<Profile*> OffTheRecordProfileImpl::GetAllOffTheRecordProfiles() {

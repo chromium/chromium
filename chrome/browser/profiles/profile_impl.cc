@@ -938,10 +938,13 @@ const Profile::OTRProfileID& ProfileImpl::GetOTRProfileID() const {
   return *otr_profile_id;
 }
 
-Profile* ProfileImpl::GetOffTheRecordProfile(
-    const OTRProfileID& otr_profile_id) {
+Profile* ProfileImpl::GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
+                                             bool create_if_needed) {
   if (HasOffTheRecordProfile(otr_profile_id))
     return otr_profiles_[otr_profile_id].get();
+
+  if (!create_if_needed)
+    return nullptr;
 
   // Create a new OffTheRecordProfile
   std::unique_ptr<Profile> otr_profile =

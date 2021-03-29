@@ -245,18 +245,19 @@ class Profile : public content::BrowserContext {
 
   // Return an OffTheRecord version of this profile with the given
   // |otr_profile_id|. The returned pointer is owned by the receiving profile.
+  // If an OffTheRecord with |otr_profile_id| profile id does not exist, a new
+  // profile is created and returned if |create_if_needed| is true or a nullptr
+  // is returned if it is false.
   // If the receiving profile is OffTheRecord, the owner would be its original
   // profile.
   //
-  // WARNING I: This will create the OffTheRecord profile if it doesn't already
-  // exist. If this isn't what you want, you need to check
-  // HasOffTheRecordProfile() first.
-  //
-  // WARNING II: Once a profile is no longer used, use
+  // WARNING: Once a profile is no longer used, use
   // ProfileDestroyer::DestroyProfileWhenAppropriate or
   // ProfileDestroyer::DestroyOffTheRecordProfileNow to destroy it.
-  virtual Profile* GetOffTheRecordProfile(
-      const OTRProfileID& otr_profile_id) = 0;
+  // TODO(https://crbug.com/1191315): Remove default value after auditing and
+  // updating use cases.
+  virtual Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
+                                          bool create_if_needed = true) = 0;
 
   // Returns all OffTheRecord profiles.
   virtual std::vector<Profile*> GetAllOffTheRecordProfiles() = 0;

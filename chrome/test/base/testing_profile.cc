@@ -621,15 +621,20 @@ void TestingProfile::SetOffTheRecordProfile(
 }
 
 Profile* TestingProfile::GetOffTheRecordProfile(
-    const OTRProfileID& otr_profile_id) {
+    const OTRProfileID& otr_profile_id,
+    bool create_if_needed) {
   if (IsOffTheRecord())
-    return original_profile_->GetOffTheRecordProfile(otr_profile_id);
+    return original_profile_->GetOffTheRecordProfile(otr_profile_id,
+                                                     create_if_needed);
 
   // Ephemeral Guest profiles do not support Incognito.
   if (IsEphemeralGuestProfile() && otr_profile_id == OTRProfileID::PrimaryID())
     return nullptr;
 
   if (!HasOffTheRecordProfile(otr_profile_id)) {
+    if (!create_if_needed)
+      return nullptr;
+
     TestingProfile::Builder builder;
     if (IsGuestSession() && otr_profile_id == OTRProfileID::PrimaryID())
       builder.SetGuestSession();

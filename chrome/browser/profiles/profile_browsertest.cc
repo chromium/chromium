@@ -740,14 +740,17 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNonPrimaryOTR) {
   Profile* regular_profile = browser()->profile();
   EXPECT_FALSE(regular_profile->HasAnyOffTheRecordProfile());
 
-  Profile* otr_profile =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id);
+  EXPECT_FALSE(regular_profile->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/false));
+  Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/true);
   EXPECT_TRUE(regular_profile->HasAnyOffTheRecordProfile());
   EXPECT_TRUE(otr_profile->IsOffTheRecord());
   EXPECT_EQ(otr_profile_id, otr_profile->GetOTRProfileID());
   EXPECT_TRUE(regular_profile->HasOffTheRecordProfile(otr_profile_id));
-  EXPECT_NE(otr_profile, regular_profile->GetOffTheRecordProfile(
-                             Profile::OTRProfileID::PrimaryID()));
+  EXPECT_NE(otr_profile,
+            regular_profile->GetOffTheRecordProfile(
+                Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true));
 
   regular_profile->DestroyOffTheRecordProfile(otr_profile);
   EXPECT_FALSE(regular_profile->HasOffTheRecordProfile(otr_profile_id));
@@ -763,10 +766,14 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateTwoNonPrimaryOTRs) {
 
   Profile* regular_profile = browser()->profile();
 
-  Profile* otr_profile1 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id1);
-  Profile* otr_profile2 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id2);
+  Profile* otr_profile1 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id1, /*create_if_needed=*/true);
+
+  EXPECT_FALSE(regular_profile->GetOffTheRecordProfile(
+      otr_profile_id2, /*create_if_needed=*/false));
+
+  Profile* otr_profile2 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id2, /*create_if_needed=*/true);
 
   EXPECT_NE(otr_profile1, otr_profile2);
   EXPECT_TRUE(regular_profile->HasOffTheRecordProfile(otr_profile_id1));
@@ -808,10 +815,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
   // ensure this task runs to prevent a crash.
   FlushIoTaskRunnerAndSpinThreads();
 
-  Profile* otr_profile1 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id1);
-  Profile* otr_profile2 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id2);
+  Profile* otr_profile1 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id1, /*create_if_needed=*/true);
+  Profile* otr_profile2 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id2, /*create_if_needed=*/true);
 
   ProfileDestructionWatcher watcher1;
   ProfileDestructionWatcher watcher2;
@@ -846,8 +853,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
       regular_profile, ProfileKeepAliveOrigin::kOffTheRecordProfile));
 
   Profile::OTRProfileID otr_profile_id("profile::otr");
-  Profile* otr_profile =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id);
+  Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/true);
 
   ProfileDestructionWatcher regular_watcher;
   ProfileDestructionWatcher otr_watcher;
@@ -884,12 +891,12 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestGetAllOffTheRecordProfiles) {
 
   Profile* regular_profile = browser()->profile();
 
-  Profile* otr_profile1 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id1);
-  Profile* otr_profile2 =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id2);
+  Profile* otr_profile1 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id1, /*create_if_needed=*/true);
+  Profile* otr_profile2 = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id2, /*create_if_needed=*/true);
   Profile* incognito_profile = regular_profile->GetOffTheRecordProfile(
-      Profile::OTRProfileID::PrimaryID());
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
 
   std::vector<Profile*> all_otrs =
       regular_profile->GetAllOffTheRecordProfiles();
@@ -905,8 +912,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestIsSameOrParent) {
   Profile::OTRProfileID otr_profile_id("profile::otr");
 
   Profile* regular_profile = browser()->profile();
-  Profile* otr_profile =
-      regular_profile->GetOffTheRecordProfile(otr_profile_id);
+  Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/true);
   Profile* incognito_profile = regular_profile->GetPrimaryOTRProfile();
 
   EXPECT_TRUE(regular_profile->IsSameOrParent(otr_profile));
@@ -923,8 +930,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestIsSameOrParent) {
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                        TestCreatingBrowserUsingNonPrimaryOffTheRecordProfile) {
   Profile::OTRProfileID otr_profile_id("profile::otr");
-  Profile* otr_profile =
-      browser()->profile()->GetOffTheRecordProfile(otr_profile_id);
+  Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
+      otr_profile_id, /*create_if_needed=*/true);
 
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(otr_profile));
