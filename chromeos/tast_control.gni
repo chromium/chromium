@@ -38,6 +38,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1156006
   "filemanager.DragDrop",
 
+  # crbug.com/1183238
+  "filemanager.DrivefsUI",
+
   # crbug.com/1171146
   "session.LogoutCleanup",
 
