@@ -60,3 +60,8 @@
 -WidgetInputMethodInteractiveTest.Activation
 -WidgetInputMethodInteractiveTest.OneWindow
 -WidgetInputMethodInteractiveTest.TwoWindows
+
+# Extremely flaky.
+-MenuItemViewTestInsert20.InsertItem20
+-MenuItemViewTestInsert00.InsertItem00
+-BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
