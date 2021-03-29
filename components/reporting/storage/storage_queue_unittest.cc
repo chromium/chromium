@@ -880,95 +880,158 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of that we set expectations for the
   // data after the current one as |Possible|.
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, kData[0])
-            .Possible(1, kData[1])
-            .Possible(2, kData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, kData[0])
-            .Required(1, kData[1])
-            .Possible(2, kData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(0, kData[0])
-            .Required(1, kData[1])
-            .Required(2, kData[2]);
-      }));
-  WriteStringOrDie(kData[0]);
-  WriteStringOrDie(kData[1]);
-  WriteStringOrDie(kData[2]);
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Possible(1, kData[1])
+              .Possible(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[0]);
+    waiter.Wait();
+  }
+
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Required(1, kData[1])
+              .Possible(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[1]);
+    waiter.Wait();
+  }
+
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Required(1, kData[1])
+              .Required(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[2]);
+    waiter.Wait();
+  }
 }
 
-// Disabled because of flakiness. See crbug.com/1193080.
-TEST_P(StorageQueueTest,
-       DISABLED_WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
 
   // Upload is initiated asynchronously, so it may happen after the next
   // record is also written. Because of the Confirmation below, we set
   // expectations for the data that may be eliminated by Confirmation as
   // |Possible|.
-  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, kData[0])
-            .Possible(1, kData[1])
-            .Possible(2, kData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, kData[0])
-            .Possible(1, kData[1])
-            .Possible(2, kData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Possible(0, kData[0])
-            .Possible(1, kData[1])
-            .Required(2, kData[2]);  // Not confirmed - hence |Required|
-      }))
-      // After adding more data verify that #2 and new data are returned.
-      // Upload is initiated asynchronously, so it may happen after the next
-      // record is also written. Because of that we set expectations for the
-      // data after the current one as |Possible|.
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, kData[2])
-            .Required(3, kMoreData[0])
-            .Possible(4, kMoreData[1])
-            .Possible(5, kMoreData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, kData[2])
-            .Required(3, kMoreData[0])
-            .Required(4, kMoreData[1])
-            .Possible(5, kMoreData[2]);
-      }))
-      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
-        MockUploadClient::SetUp(mock_upload_client)
-            .Required(2, kData[2])
-            .Required(3, kMoreData[0])
-            .Required(4, kMoreData[1])
-            .Required(5, kMoreData[2]);
-      }));
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Possible(1, kData[1])
+              .Possible(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[0]);
+    waiter.Wait();
+  }
 
-  WriteStringOrDie(kData[0]);
-  WriteStringOrDie(kData[1]);
-  WriteStringOrDie(kData[2]);
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Required(1, kData[1])
+              .Possible(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[1]);
+    waiter.Wait();
+  }
+
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(0, kData[0])
+              .Required(1, kData[1])
+              .Required(2, kData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kData[2]);
+    waiter.Wait();
+  }
 
   // Confirm #1, removing data #0 and #1
   ConfirmOrDie(/*sequencing_id=*/1);
 
   // Add more data to verify that #2 and new data are returned.
-  WriteStringOrDie(kMoreData[0]);
-  WriteStringOrDie(kMoreData[1]);
-  WriteStringOrDie(kMoreData[2]);
+  // Upload is initiated asynchronously, so it may happen after the next
+  // record is also written. Because of that we set expectations for the
+  // data after the current one as |Possible|.
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(2, kData[2])
+              .Required(3, kMoreData[0])
+              .Possible(4, kMoreData[1])
+              .Possible(5, kMoreData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kMoreData[0]);
+    waiter.Wait();
+  }
+
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(2, kData[2])
+              .Required(3, kMoreData[0])
+              .Required(4, kMoreData[1])
+              .Possible(5, kMoreData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kMoreData[1]);
+    waiter.Wait();
+  }
+
+  {
+    test::TestCallbackWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+        .WillOnce(Invoke([&waiter](MockUploadClient* mock_upload_client) {
+          MockUploadClient::SetUp(mock_upload_client)
+              .Required(2, kData[2])
+              .Required(3, kMoreData[0])
+              .Required(4, kMoreData[1])
+              .Required(5, kMoreData[2]);
+          waiter.Signal();
+        }));
+    waiter.Attach();
+    WriteStringOrDie(kMoreData[2]);
+    waiter.Wait();
+  }
 }
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
