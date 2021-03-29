@@ -62,7 +62,7 @@ def _Walk(operations, continue_on_error, property_dict, variable_expander):
           continue
       try:
         operation(expectation_name, expectation_dict, variable_expander)
-      except:
+      except:  # pylint: disable=bare-except
         if not continue_on_error:
           raise
         logging.error('Error while processing expectation %s: %s' %

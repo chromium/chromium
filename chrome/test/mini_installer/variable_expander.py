@@ -326,7 +326,7 @@ class VariableExpander:
         '"--log-file=%s"' % log_file if log_file else '')
 
 
-  def Expand(self, str):
+  def Expand(self, a_string):
     """Expands variables in the given string.
 
     This method resolves only variables defined in the constructor. It does not
@@ -335,9 +335,9 @@ class VariableExpander:
     be raised.
 
     Args:
-      str: A string.
+      a_string: A string.
 
     Returns:
       A new string created by replacing variables with their values.
     """
-    return string.Template(str).substitute(self._variable_mapping)
+    return string.Template(a_string).substitute(self._variable_mapping)

@@ -291,7 +291,7 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
                (product_name, product_switch, interactive_option))
     try:
       RunCommand(command, variable_expander)
-    except:
+    except:  # pylint: disable=bare-except
       message = traceback.format_exception(*sys.exc_info())
       message.insert(0, 'Error cleaning up an old install with:\n')
       logging.info(''.join(message))
