@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -33,7 +33,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::CryptohomeClient;
+using ::chromeos::UserDataAuthClient;
 using ::content::BrowserThread;
 
 KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
@@ -71,7 +71,7 @@ class KioskProfileLoader::CryptohomedChecker
   ~CryptohomedChecker() {}
 
   void StartCheck() {
-    CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+    UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
         &CryptohomedChecker::OnServiceAvailibityChecked, AsWeakPtr()));
   }
 
@@ -97,18 +97,21 @@ class KioskProfileLoader::CryptohomedChecker
       return;
     }
 
-    CryptohomeClient::Get()->IsMounted(base::BindOnce(
-        &CryptohomedChecker::OnCryptohomeIsMounted, AsWeakPtr()));
+    UserDataAuthClient::Get()->IsMounted(
+        user_data_auth::IsMountedRequest(),
+        base::BindOnce(&CryptohomedChecker::OnCryptohomeIsMounted,
+                       AsWeakPtr()));
   }
 
-  void OnCryptohomeIsMounted(base::Optional<bool> is_mounted) {
-    if (!is_mounted.has_value()) {
+  void OnCryptohomeIsMounted(
+      base::Optional<user_data_auth::IsMountedReply> reply) {
+    if (!reply.has_value()) {
       Retry();
       return;
     }
 
-    // Proceed only when cryptohome is not mounded or running on dev box.
-    if (!is_mounted.value() || !base::SysInfo::IsRunningOnChromeOS()) {
+    // Proceed only when cryptohome is not mounted or running on dev box.
+    if (!reply->is_mounted() || !base::SysInfo::IsRunningOnChromeOS()) {
       ReportCheckResult(KioskAppLaunchError::Error::kNone);
     } else {
       SYSLOG(ERROR) << "Cryptohome is mounted before launching kiosk app.";
