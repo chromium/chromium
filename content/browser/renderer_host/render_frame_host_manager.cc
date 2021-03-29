@@ -3364,7 +3364,10 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // - kPrerendering: starts unloading.
 
   // The lifecycle state of the new RenderFrameHost is either:
-  // - kSpeculative: for regular navigation.
+  // - kSpeculative: for early-commit navigations (see
+  //   https://crbug.com/1072817) and when attaching an inner delegate (when
+  //   embedding one WebContents inside another).
+  // - kPendingCommit: for regular cross-RenderFrameHost navigations.
   // - kBackForwardCache: for BackForwardCache restore navigation.
   // - kPrerendering: for a prerender activation navigation.
   // It should become kActive in the primary frame tree and kPrerendering for
@@ -3380,7 +3383,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   if (render_frame_host_) {
     if (frame_tree->is_prerendering()) {
       if (render_frame_host_->lifecycle_state() ==
-          LifecycleStateImpl::kSpeculative)
+          LifecycleStateImpl::kPendingCommit)
         render_frame_host_->SetLifecycleStateToPrerendering();
     } else {
       if (render_frame_host_->lifecycle_state() != LifecycleStateImpl::kActive)

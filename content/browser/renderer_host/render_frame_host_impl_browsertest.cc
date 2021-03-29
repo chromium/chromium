@@ -4375,6 +4375,64 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleStateImpl::kActive, rfh_d->lifecycle_state());
 }
 
+// Test that LifecycleStateImpl is updated correctly during
+// cross-RenderFrameHost navigation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       CheckLifecycleStateTransitionWithPendingCommit) {
+  class CheckLifecycleStateImpl : public WebContentsObserver {
+   public:
+    explicit CheckLifecycleStateImpl(WebContents* web_contents)
+        : WebContentsObserver(web_contents) {}
+
+    // WebContentsObserver overrides:
+    void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+      RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+          navigation_handle->GetRenderFrameHost());
+      EXPECT_EQ(rfh->lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+    }
+  };
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = root_frame_host();
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
+
+  // 2) Start navigation to B, but don't commit yet.
+  TestNavigationManager manager(web_contents(), url_b);
+  shell()->LoadURL(url_b);
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  RenderFrameHostImpl* speculative_rfh =
+      root->render_manager()->speculative_frame_host();
+  NavigationRequest* navigation_request = root->navigation_request();
+  EXPECT_EQ(navigation_request->associated_site_instance_type(),
+            NavigationRequest::AssociatedSiteInstanceType::SPECULATIVE);
+  EXPECT_TRUE(speculative_rfh);
+
+  // 3) Check the LifecycleStateImpl of both rfh_a and speculative_rfh before
+  // commit.
+  EXPECT_EQ(LifecycleStateImpl::kSpeculative,
+            speculative_rfh->lifecycle_state());
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_a->lifecycle_state());
+  EXPECT_EQ(root_frame_host(), rfh_a);
+
+  // 4) Check that LifecycleStateImpl of speculative_rfh transitions to
+  // kPendingCommit in ReadyToCommitNavigation.
+  CheckLifecycleStateImpl check_pending_commit(web_contents());
+
+  // 5) Let the navigation finish and make sure it is succeeded.
+  manager.WaitForNavigationFinished();
+  EXPECT_EQ(url_b, web_contents()->GetMainFrame()->GetLastCommittedURL());
+  RenderFrameHostImpl* rfh_b = root_frame_host();
+  EXPECT_EQ(rfh_b, speculative_rfh);
+  EXPECT_EQ(LifecycleStateImpl::kActive, rfh_b->lifecycle_state());
+}
+
 // Verify that a new RFH gets marked as having committed a navigation after
 // both normal navigations and error page navigations.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

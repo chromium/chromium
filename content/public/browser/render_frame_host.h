@@ -510,8 +510,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // deletion.
   // For Prerendering: it cancels prerendering and triggers deletion.
 
-  // This should not be called for speculative RenderFrameHosts as disallowing
-  // activation is not supported. In that case
+  // This should not be called for speculative and pending commit
+  // RenderFrameHosts as disallowing activation is not supported. In that case
   // |IsInactiveAndDisallowActivation()| returns false along with terminating
   // the renderer process.
 

@@ -3,7 +3,8 @@
 //
 // See tools/state_transitions/README.md
 digraph createflow {
-  kSpeculative -> {kActive, kPrerendering, kReadyToBeDeleted};
+  kSpeculative -> {kActive, kPendingCommit, kReadyToBeDeleted};
+  kPendingCommit -> {kPrerendering, kActive, kReadyToBeDeleted};
   kPrerendering -> {kActive, kRunningUnloadHandlers, kReadyToBeDeleted};
   kActive -> {kInBackForwardCache, kRunningUnloadHandlers, kReadyToBeDeleted};
   kInBackForwardCache -> {kActive, kReadyToBeDeleted};
