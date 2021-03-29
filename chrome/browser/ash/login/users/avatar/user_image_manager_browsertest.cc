@@ -50,9 +50,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -572,7 +572,7 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
     ASSERT_TRUE(base::PathService::Get(
         chromeos::dbus_paths::DIR_USER_POLICY_KEYS, &user_keys_dir));
     const std::string sanitized_username =
-        chromeos::CryptohomeClient::GetStubSanitizedUsername(cryptohome_id_);
+        chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id_);
     const base::FilePath user_key_file =
         user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");
     std::vector<uint8_t> user_key_bits;
