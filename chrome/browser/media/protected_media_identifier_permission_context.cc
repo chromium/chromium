@@ -80,8 +80,7 @@ void ProtectedMediaIdentifierPermissionContext::DecidePermission(
   }
 
   // ShowDialog doesn't use the callback if it returns null.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   // On ChromeOS, we don't use PermissionContextBase::RequestPermission() which
   // uses the standard permission infobar/bubble UI. See http://crbug.com/454847
@@ -93,12 +92,12 @@ void ProtectedMediaIdentifierPermissionContext::DecidePermission(
                          OnPlatformVerificationConsentResponse,
                      weak_factory_.GetWeakPtr(), web_contents, id,
                      requesting_origin, embedding_origin, user_gesture,
-                     base::Time::Now(), repeating_callback));
+                     base::Time::Now(), std::move(split_callback.first)));
 
   // This could happen when the permission is requested from an extension. See
   // http://crbug.com/728534
   if (!widget) {
-    std::move(repeating_callback).Run(CONTENT_SETTING_ASK);
+    std::move(split_callback.second).Run(CONTENT_SETTING_ASK);
     return;
   }
 

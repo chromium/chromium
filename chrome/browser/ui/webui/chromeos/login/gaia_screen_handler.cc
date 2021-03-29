@@ -1053,9 +1053,8 @@ void GaiaScreenHandler::StartClearingCookies(
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
              profile_helper->GetSigninProfile());
   profile_helper->ClearSigninProfile(
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &GaiaScreenHandler::OnCookiesCleared, weak_factory_.GetWeakPtr(),
-          std::move(on_clear_callback))));
+      base::BindOnce(&GaiaScreenHandler::OnCookiesCleared,
+                     weak_factory_.GetWeakPtr(), std::move(on_clear_callback)));
 }
 
 void GaiaScreenHandler::OnCookiesCleared(base::OnceClosure on_clear_callback) {

@@ -28,7 +28,7 @@ class MediaAuthorizationWrapperTest
   // MediaAuthorizationWrapper:
   NSInteger AuthorizationStatusForMediaType(NSString* media_type) override;
   void RequestAccessForMediaType(NSString* media_type,
-                                 base::RepeatingClosure callback,
+                                 base::OnceClosure callback,
                                  const base::TaskTraits& traits) final {}
 
  private:

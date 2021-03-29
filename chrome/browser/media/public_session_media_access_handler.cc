@@ -54,10 +54,10 @@ void PublicSessionMediaAccessHandler::HandleRequest(
 
   // This Unretained is safe because the lifetime of this object is until
   // process exit (living inside a base::Singleton object).
-  auto prompt_resolved_callback = base::AdaptCallbackForRepeating(
+  auto prompt_resolved_callback =
       base::BindOnce(&PublicSessionMediaAccessHandler::ChainHandleRequest,
                      base::Unretained(this), web_contents, request,
-                     std::move(callback), base::RetainedRef(extension)));
+                     std::move(callback), base::RetainedRef(extension));
 
   extensions::PermissionIDSet requested_permissions;
   if (request.audio_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
@@ -66,7 +66,8 @@ void PublicSessionMediaAccessHandler::HandleRequest(
     requested_permissions.insert(extensions::APIPermission::kVideoCapture);
 
   extensions::permission_helper::HandlePermissionRequest(
-      *extension, requested_permissions, web_contents, prompt_resolved_callback,
+      *extension, requested_permissions, web_contents,
+      std::move(prompt_resolved_callback),
       extensions::permission_helper::PromptFactory());
 }
 

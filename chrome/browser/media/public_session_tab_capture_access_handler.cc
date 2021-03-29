@@ -56,14 +56,15 @@ void PublicSessionTabCaptureAccessHandler::HandleRequest(
 
   // This Unretained is safe because the lifetime of this object is until
   // process exit (living inside a base::Singleton object).
-  auto prompt_resolved_callback = base::AdaptCallbackForRepeating(
+  auto prompt_resolved_callback =
       base::BindOnce(&PublicSessionTabCaptureAccessHandler::ChainHandleRequest,
                      base::Unretained(this), web_contents, request,
-                     std::move(callback), base::RetainedRef(extension)));
+                     std::move(callback), base::RetainedRef(extension));
 
   extensions::permission_helper::HandlePermissionRequest(
       *extension, {extensions::APIPermission::kTabCapture}, web_contents,
-      prompt_resolved_callback, extensions::permission_helper::PromptFactory());
+      std::move(prompt_resolved_callback),
+      extensions::permission_helper::PromptFactory());
 }
 
 void PublicSessionTabCaptureAccessHandler::ChainHandleRequest(

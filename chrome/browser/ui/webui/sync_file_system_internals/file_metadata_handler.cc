@@ -61,9 +61,8 @@ void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
   if (!sync_service)
     return;
   sync_service->DumpFiles(
-      origin, base::AdaptCallbackForRepeating(
-                  base::BindOnce(&FileMetadataHandler::DidGetFileMetadata,
-                                 weak_factory_.GetWeakPtr(), callback_id)));
+      origin, base::BindOnce(&FileMetadataHandler::DidGetFileMetadata,
+                             weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
