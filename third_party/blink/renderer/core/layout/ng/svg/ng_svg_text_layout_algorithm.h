@@ -20,10 +20,32 @@ class NGSVGTextLayoutAlgorithm {
   void Layout(NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
  private:
+  // Returns false if we should skip the following steps.
+  bool Setup();
+
   NGInlineNode inline_node_;
+
+  // "count" defined in the specification.
+  wtf_size_t count_;
 
   // "horizontal" flag defined in the specification.
   bool horizontal_;
+
+  // "result" defined in the specification
+  struct NGSVGPerCharacterInfo {
+    base::Optional<float> x;
+    base::Optional<float> y;
+    base::Optional<float> rotate;
+    bool hidden = false;
+    bool addressable = true;
+    bool middle = false;
+    bool anchor_chunk = false;
+    wtf_size_t item_index = WTF::kNotFound;
+  };
+  Vector<NGSVGPerCharacterInfo> result_;
+
+  // "CSS_positions" defined in the specification.
+  Vector<FloatPoint> css_positions_;
 };
 
 }  // namespace blink

@@ -19,7 +19,31 @@ NGSVGTextLayoutAlgorithm::NGSVGTextLayoutAlgorithm(NGInlineNode node,
 
 void NGSVGTextLayoutAlgorithm::Layout(
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
-  // TODO(crbug.com/1179585): Implement this!
+  // https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
+  // 1. Setup
+  if (!Setup())
+    return;
+
+  // TODO(crbug.com/1179585): Implement the following steps.
+}
+
+bool NGSVGTextLayoutAlgorithm::Setup() {
+  // 1.2. Let count be the number of DOM characters within the ‘text’ element's
+  // subtree.
+  count_ = inline_node_.GetDOMNode()->textContent().length();
+
+  // 1.3. Let result be an array of length count whose entries contain the
+  // per-character information described above.
+  // ... If result is empty, then return result.
+  if (count_ == 0)
+    return false;
+  result_.resize(count_);
+
+  // 1.4. Let CSS_positions be an array of length count whose entries will be
+  // filled with the x and y positions of the corresponding typographic
+  // character in root. The array entries are initialized to (0, 0).
+  css_positions_.resize(count_);
+  return true;
 }
 
 }  // namespace blink
