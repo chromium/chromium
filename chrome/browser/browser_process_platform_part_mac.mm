@@ -76,8 +76,10 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  location_permission_manager_ =
-      device::GeolocationSystemPermissionManager::Create();
+  if (!location_permission_manager_) {
+    location_permission_manager_ =
+        device::GeolocationSystemPermissionManager::Create();
+  }
 }
 
 apps::AppShimManager* BrowserProcessPlatformPart::app_shim_manager() {
@@ -91,4 +93,10 @@ AppShimListener* BrowserProcessPlatformPart::app_shim_listener() {
 device::GeolocationSystemPermissionManager*
 BrowserProcessPlatformPart::location_permission_manager() {
   return location_permission_manager_.get();
+}
+
+void BrowserProcessPlatformPart::SetGeolocationManagerForTesting(
+    std::unique_ptr<device::GeolocationSystemPermissionManager>
+        fake_location_manager) {
+  location_permission_manager_ = std::move(fake_location_manager);
 }

@@ -215,6 +215,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
+#if defined(OS_MAC)
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
+#endif
 
   // Ensures that no devtools are open, and then opens the devtools.
   void OpenDevToolsWindow(content::WebContents* web_contents);
