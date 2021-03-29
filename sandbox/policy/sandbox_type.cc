@@ -199,6 +199,11 @@ SandboxType SandboxTypeFromCommandLine(const base::CommandLine& command_line) {
     return SandboxType::kZygoteIntermediateSandbox;
 #endif
 
+#if defined(OS_MAC)
+  if (process_type == switches::kRelauncherProcessType)
+    return SandboxType::kNoSandbox;
+#endif
+
   if (process_type == switches::kCloudPrintServiceProcess)
     return SandboxType::kNoSandbox;
 

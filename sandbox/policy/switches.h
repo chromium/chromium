@@ -79,6 +79,7 @@ SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kCloudPrintServiceProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
+SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
 
 }  // namespace switches
 }  // namespace policy

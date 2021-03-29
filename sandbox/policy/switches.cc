@@ -124,6 +124,7 @@ const char kRendererProcess[] = "renderer";
 const char kUtilityProcess[] = "utility";
 const char kCloudPrintServiceProcess[] = "service";
 const char kZygoteProcessType[] = "zygote";
+const char kRelauncherProcessType[] = "relauncher";
 
 }  // namespace switches
 }  // namespace policy
