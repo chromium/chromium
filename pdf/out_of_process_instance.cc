@@ -1188,19 +1188,6 @@ void OutOfProcessInstance::PreviewDocumentLoadComplete() {
   LoadNextPreviewPage();
 }
 
-void OutOfProcessInstance::DocumentLoadFailed() {
-  DCHECK_EQ(DocumentLoadState::kLoading, document_load_state());
-  UserMetricsRecordAction("PDF.LoadFailure");
-
-  DidStopLoading();
-
-  set_document_load_state(DocumentLoadState::kFailed);
-  paint_manager().InvalidateRect(gfx::Rect(plugin_size()));
-
-  // Send a progress value of -1 to indicate a failure.
-  SendLoadingProgress(-1);
-}
-
 void OutOfProcessInstance::PreviewDocumentLoadFailed() {
   UserMetricsRecordAction("PDF.PreviewDocumentLoadFailure");
   if (preview_document_load_state_ != DocumentLoadState::kLoading ||
