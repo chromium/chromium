@@ -46,13 +46,6 @@ class FakeWebClient : public web::WebClient {
       BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForAllFrames(
       BrowserState* browser_state) const override;
-  void AllowCertificateError(WebState*,
-                             int cert_error,
-                             const net::SSLInfo&,
-                             const GURL&,
-                             bool overridable,
-                             int64_t navigation_id,
-                             base::OnceCallback<void(bool)>) override;
   void PrepareErrorPage(WebState* web_state,
                         const GURL& url,
                         NSError* error,
@@ -74,31 +67,12 @@ class FakeWebClient : public web::WebClient {
   // Changes Java Script Features for testing.
   void SetJavaScriptFeatures(std::vector<JavaScriptFeature*> features);
 
-  // Overrides AllowCertificateError response.
-  void SetAllowCertificateErrors(bool flag);
-
-  // Accessors for last arguments passed to AllowCertificateError.
-  int last_cert_error_code() const { return last_cert_error_code_; }
-  const net::SSLInfo& last_cert_error_ssl_info() const {
-    return last_cert_error_ssl_info_;
-  }
-  const GURL& last_cert_error_request_url() const {
-    return last_cert_error_request_url_;
-  }
-  bool last_cert_error_overridable() { return last_cert_error_overridable_; }
-
   void SetDefaultUserAgent(UserAgentType type) { default_user_agent_ = type; }
 
  private:
   std::u16string plugin_not_supported_text_;
   std::vector<JavaScriptFeature*> java_script_features_;
   NSString* early_page_script_ = nil;
-  // Last arguments passed to AllowCertificateError.
-  int last_cert_error_code_ = 0;
-  net::SSLInfo last_cert_error_ssl_info_;
-  GURL last_cert_error_request_url_;
-  bool last_cert_error_overridable_ = true;
-  bool allow_certificate_errors_ = false;
   UserAgentType default_user_agent_ = UserAgentType::MOBILE;
 };
 

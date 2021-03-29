@@ -85,16 +85,6 @@ NSString* WebClient::GetDocumentStartScriptForMainFrame(
   return @"";
 }
 
-void WebClient::AllowCertificateError(WebState* web_state,
-                                      int cert_error,
-                                      const net::SSLInfo& ssl_info,
-                                      const GURL& request_url,
-                                      bool overridable,
-                                      int64_t navigation_id,
-                                      base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
-}
-
 bool WebClient::IsLegacyTLSAllowedForHost(WebState* web_state,
                                           const std::string& hostname) {
   return false;

@@ -115,58 +115,6 @@ std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 
-void WebViewWebClient::AllowCertificateError(
-    web::WebState* web_state,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    bool overridable,
-    int64_t navigation_id,
-    base::OnceCallback<void(bool)> callback) {
-  CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
-
-  SEL selector = @selector
-      (webView:didFailNavigationWithSSLError:overridable:decisionHandler:);
-  if ([web_view.navigationDelegate respondsToSelector:selector]) {
-    CWVCertStatus cert_status =
-        CWVCertStatusFromNetCertStatus(ssl_info.cert_status);
-    ssl_errors::ErrorInfo error_info = ssl_errors::ErrorInfo::CreateError(
-        ssl_errors::ErrorInfo::NetErrorToErrorType(net_error),
-        ssl_info.cert.get(), request_url);
-    NSString* error_description =
-        base::SysUTF16ToNSString(error_info.short_description());
-    NSError* error =
-        [NSError errorWithDomain:NSURLErrorDomain
-                            code:NSURLErrorSecureConnectionFailed
-                        userInfo:@{
-                          NSLocalizedDescriptionKey : error_description,
-                          CWVCertStatusKey : @(cert_status),
-                        }];
-
-    __block base::OnceCallback<void(bool)> local_callback = std::move(callback);
-    void (^decisionHandler)(CWVSSLErrorDecision) =
-        ^(CWVSSLErrorDecision decision) {
-          switch (decision) {
-            case CWVSSLErrorDecisionOverrideErrorAndReload: {
-              std::move(local_callback).Run(true);
-              break;
-            }
-            case CWVSSLErrorDecisionDoNothing: {
-              std::move(local_callback).Run(false);
-              break;
-            }
-          }
-        };
-
-    [web_view.navigationDelegate webView:web_view
-           didFailNavigationWithSSLError:error
-                             overridable:overridable
-                         decisionHandler:decisionHandler];
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
 bool WebViewWebClient::EnableLongPressAndForceTouchHandling() const {
   return CWVWebView.chromeLongPressAndForceTouchHandlingEnabled;
 }

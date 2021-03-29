@@ -86,29 +86,6 @@ void FakeWebClient::SetEarlyPageScript(NSString* page_script) {
   early_page_script_ = [page_script copy];
 }
 
-void FakeWebClient::AllowCertificateError(
-    WebState* web_state,
-    int cert_error,
-    const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    bool overridable,
-    int64_t navigation_id,
-    base::OnceCallback<void(bool)> callback) {
-  last_cert_error_code_ = cert_error;
-  last_cert_error_ssl_info_ = ssl_info;
-  last_cert_error_request_url_ = request_url;
-  last_cert_error_overridable_ = overridable;
-
-  // Embedder should consult the user, so reply is asynchronous.
-  base::PostTask(
-      FROM_HERE, {WebThread::UI},
-      base::BindOnce(std::move(callback), allow_certificate_errors_));
-}
-
-void FakeWebClient::SetAllowCertificateErrors(bool flag) {
-  allow_certificate_errors_ = flag;
-}
-
 void FakeWebClient::PrepareErrorPage(
     WebState* web_state,
     const GURL& url,
