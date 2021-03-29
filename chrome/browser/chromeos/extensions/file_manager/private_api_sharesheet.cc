@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"

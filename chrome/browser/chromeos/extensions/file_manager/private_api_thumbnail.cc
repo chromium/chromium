@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"

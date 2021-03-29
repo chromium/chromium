@@ -19,7 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "components/drive/file_errors.h"

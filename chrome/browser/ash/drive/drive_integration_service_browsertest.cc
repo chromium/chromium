@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"

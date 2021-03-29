@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/fileapi/drivefs_async_file_util.h"
+#include "chrome/browser/ash/drive/fileapi/drivefs_async_file_util.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

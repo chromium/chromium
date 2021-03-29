@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"

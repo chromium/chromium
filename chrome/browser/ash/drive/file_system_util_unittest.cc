@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 
 #include "base/files/file_path.h"
 #include "chrome/test/base/testing_profile.h"

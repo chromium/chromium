@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 
 #include <string>
 #include <utility>

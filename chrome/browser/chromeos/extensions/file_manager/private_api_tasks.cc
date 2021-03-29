@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"

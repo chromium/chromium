@@ -10,7 +10,7 @@
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 
 #include <memory>
 #include <set>
@@ -26,10 +26,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"

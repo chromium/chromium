@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"

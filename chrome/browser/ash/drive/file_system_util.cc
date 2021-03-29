@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 
 #include <stddef.h>
 
@@ -16,8 +16,8 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/login/login_state/login_state.h"

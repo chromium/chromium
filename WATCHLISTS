@@ -1023,7 +1023,7 @@
                   'filebrowse'
     },
     'filesapp': {
-      'filepath': 'chrome/browser/chromeos/drive|' \
+      'filepath': 'chrome/browser/ash/drive|' \
                   'chrome/browser/chromeos/extensions/file_manager|' \
                   'chrome/browser/chromeos/extensions/file_system_provider|' \
                   'chrome/browser/chromeos/file_manager|' \

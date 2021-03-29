@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"

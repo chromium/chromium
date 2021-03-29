@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"

@@ -16,7 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/chromeos/file_manager/file_watcher.h"

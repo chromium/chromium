@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
+#define CHROME_BROWSER_ASH_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
 }  // namespace internal
 }  // namespace drive
 
-#endif  // CHROME_BROWSER_CHROMEOS_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_DRIVE_FILEAPI_DRIVEFS_ASYNC_FILE_UTIL_H_

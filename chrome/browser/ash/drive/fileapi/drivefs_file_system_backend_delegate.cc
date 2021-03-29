@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/drive/fileapi/drivefs_file_system_backend_delegate.h"
+#include "chrome/browser/ash/drive/fileapi/drivefs_file_system_backend_delegate.h"
 
-#include "chrome/browser/chromeos/drive/fileapi/drivefs_async_file_util.h"
+#include "chrome/browser/ash/drive/fileapi/drivefs_async_file_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"

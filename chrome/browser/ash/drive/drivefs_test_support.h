@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DRIVE_DRIVEFS_TEST_SUPPORT_H_
-#define CHROME_BROWSER_CHROMEOS_DRIVE_DRIVEFS_TEST_SUPPORT_H_
+#ifndef CHROME_BROWSER_ASH_DRIVE_DRIVEFS_TEST_SUPPORT_H_
+#define CHROME_BROWSER_ASH_DRIVE_DRIVEFS_TEST_SUPPORT_H_
 
 #include <memory>
 
@@ -40,4 +40,4 @@ class FakeDriveFsHelper {
 
 }  // namespace drive
 
-#endif  // CHROME_BROWSER_CHROMEOS_DRIVE_DRIVEFS_TEST_SUPPORT_H_
+#endif  // CHROME_BROWSER_ASH_DRIVE_DRIVEFS_TEST_SUPPORT_H_
