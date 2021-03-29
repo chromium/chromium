@@ -1169,6 +1169,8 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
     return promise;
   }
 
+  // Temporary debugging for UpdatingPSLMatchedCredentialCreatesSecondEntry test
+  VLOG(0) << "CredentialsContainer::store";
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->Store(
