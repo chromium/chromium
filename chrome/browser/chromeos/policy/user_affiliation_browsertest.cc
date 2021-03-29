@@ -21,9 +21,9 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -134,7 +134,8 @@ class UserAffiliationBrowserTest
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
           chromeos::switches::kLoginProfile,
-          chromeos::CryptohomeClient::GetStubSanitizedUsername(cryptohome_id));
+          chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+              cryptohome_id));
     }
   }
 
