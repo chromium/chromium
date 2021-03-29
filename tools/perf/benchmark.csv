@@ -81,5 +81,5 @@ v8.browsing_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,h
 v8.browsing_mobile-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2018,2019,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.runtime_stats.top_25,"mythria@chromium.org, ulan@chromium.org",Blink>JavaScript,,"cold,hot,warm"
 views_perftests,tapted@chromium.org,Internals>Views,,
-wasmpspdfkit,ahaas@chromium.org,Blink>V8>WebAssembly,,
+wasmpspdfkit,ahaas@chromium.org,Blink>JavaScript>WebAssembly,,
 webrtc,"qiangchen@chromium.org, mbonadei@chromium.org",Blink>WebRTC,http://bit.ly/webrtc-benchmark,"datachannel,getusermedia,insertableStreams,pauseplay,sdp,smoothness,stress,videoConstraints"
