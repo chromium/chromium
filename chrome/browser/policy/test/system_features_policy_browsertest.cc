@@ -112,7 +112,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
         apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->FlushMojoCallsForTesting();
 
-    proxy->AppRegistryCache().ForOneApp(
+    bool exist = proxy->AppRegistryCache().ForOneApp(
         app_id, [&expected_readiness, &blocked_icon,
                  &expected_visibility](const apps::AppUpdate& update) {
           EXPECT_EQ(expected_readiness, update.Readiness());
@@ -128,6 +128,13 @@ class SystemFeaturesPolicyTest : public PolicyTest {
           EXPECT_EQ(expected_visibility.show_in_search, update.ShowInSearch());
           EXPECT_EQ(expected_visibility.show_in_shelf, update.ShowInShelf());
         });
+    EXPECT_TRUE(exist);
+  }
+
+  void InstallSWAs() {
+    web_app::WebAppProvider::Get(browser()->profile())
+        ->system_web_app_manager()
+        .InstallSystemAppsForTesting();
   }
 
   void InstallPWA(const GURL& app_url, const char* app_id) {
@@ -188,20 +195,20 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                               const char* url,
                               const char* app_title) {
     const GURL& app_url = GURL(url);
-    PolicyMap policies;
+
+    // The URL navigation is still allowed because the app is not installed,
+    // though it is disabled by policy.
     base::Value system_features(base::Value::Type::LIST);
     system_features.Append(feature);
-    // Disable Google News app and allow navigation because the app is not
-    // installed.
     UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
 
-    // Install Google News app.
+    // Install the app.
     InstallPWA(app_url, app_id);
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
               GetWebUITitle(app_url, true));
 
-    // Enable Google News app.
+    // Enable the app by removing it from the policy of disabled apps.
     UpdateSystemFeaturesDisableList(base::Value(), nullptr);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
   }
@@ -274,17 +281,22 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraWithModes) {
+  InstallSWAs();
   VerifyAppDisableMode(web_app::kCameraAppId, kCameraFeature);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
-                       DisableMultipleAppsWithHiddenMode) {
+                       DisableMultipleAppsWithHiddenModeAfterInstall) {
+  InstallSWAs();
+  InstallPWA(GURL(kCanvasAppURL), web_app::kCanvasAppId);
+
+  // Disable app with hidden mode.
   base::Value system_features(base::Value::Type::LIST);
-  EnableExtensions(false);
   system_features.Append(kCameraFeature);
   system_features.Append(kScanningFeature);
   system_features.Append(kWebStoreFeature);
   system_features.Append(kCanvasFeature);
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
   VisibilityFlags camera_expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
   VisibilityFlags scanning_expected_visibility =
@@ -293,8 +305,6 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
       GetVisibilityFlags(true /* is_hidden */);
   VisibilityFlags canvas_expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
-  // Disable app with hidden mode.
-  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
   VerifyAppState(web_app::kCameraAppId,
                  apps::mojom::Readiness::kDisabledByPolicy, true,
                  camera_expected_visibility);
@@ -358,14 +368,14 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisablePWAs) {
   // Disable Canvas app.
-  VerifyAppDisableMode(web_app::kCanvasAppId, kCanvasFeature);
   VerifyIsAppURLDisabled(web_app::kCanvasAppId, kCanvasFeature, kCanvasAppURL,
                          kCanvasAppTitle);
+  VerifyAppDisableMode(web_app::kCanvasAppId, kCanvasFeature);
 
   // Disable Google News app.
-  VerifyAppDisableMode(web_app::kGoogleNewsAppId, kGoogleNewsFeature);
   VerifyIsAppURLDisabled(web_app::kGoogleNewsAppId, kGoogleNewsFeature,
                          kGoogleNewsAppURL, kGoogleNewsAppTitle);
+  VerifyAppDisableMode(web_app::kGoogleNewsAppId, kGoogleNewsFeature);
 }
 
 }  // namespace policy
