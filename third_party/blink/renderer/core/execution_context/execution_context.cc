@@ -506,7 +506,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(timers_);
   visitor->Trace(origin_trial_context_);
   visitor->Trace(content_security_policy_);
-  ContextLifecycleNotifier::Trace(visitor);
+  MojoBindingContext::Trace(visitor);
   ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);
 }

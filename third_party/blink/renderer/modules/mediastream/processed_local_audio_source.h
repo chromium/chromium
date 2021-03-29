@@ -43,7 +43,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // audio session ID are derived from |device_info|. |factory| must outlive
   // this instance.
   ProcessedLocalAudioSource(
-      LocalFrame* frame,
+      LocalFrame& frame,
       const MediaStreamDevice& device,
       bool disable_local_echo,
       const AudioProcessingProperties& audio_processing_properties,

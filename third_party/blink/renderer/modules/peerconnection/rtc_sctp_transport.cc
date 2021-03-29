@@ -64,8 +64,8 @@ RTCSctpTransport::RTCSctpTransport(
     : RTCSctpTransport(context,
                        native_transport,
                        context->GetTaskRunner(TaskType::kNetworking),
-                       PeerConnectionDependencyFactory::GetInstance()
-                           ->GetWebRtcNetworkTaskRunner()) {}
+                       PeerConnectionDependencyFactory::From(*context)
+                           .GetWebRtcNetworkTaskRunner()) {}
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,

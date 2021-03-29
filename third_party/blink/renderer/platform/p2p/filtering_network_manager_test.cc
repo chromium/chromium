@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/test/test_simple_task_runner.h"
@@ -97,10 +98,15 @@ class MockNetworkManager : public rtc::NetworkManagerBase {
     network_->AddIP(network_->GetBestIP());
   }
 
+  base::WeakPtr<MockNetworkManager> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   bool sent_first_update_ = false;
   std::unique_ptr<rtc::Network> network_;
   std::unique_ptr<EmptyMdnsResponder> mdns_responder_;
+  base::WeakPtrFactory<MockNetworkManager> weak_factory_{this};
 };
 
 class MockMediaPermission : public media::MediaPermission {
@@ -171,13 +177,13 @@ class FilteringNetworkManagerTest : public testing::Test,
     base_network_manager_ = std::make_unique<MockNetworkManager>();
     SetNewNetworkForBaseNetworkManager();
     if (multiple_routes_requested) {
-      network_manager_ = std::make_unique<FilteringNetworkManager>(
-          base_network_manager_.get(), media_permission_.get(),
-          allow_mdns_obfuscation_);
+      network_manager_.reset(new FilteringNetworkManager(
+          base_network_manager_->AsWeakPtr(), media_permission_.get(),
+          allow_mdns_obfuscation_));
       network_manager_->Initialize();
     } else {
-      network_manager_ = std::make_unique<blink::EmptyNetworkManager>(
-          base_network_manager_.get());
+      network_manager_.reset(new EmptyNetworkManager(
+          base_network_manager_.get(), base_network_manager_->AsWeakPtr()));
     }
     network_manager_->SignalNetworksChanged.connect(
         this, &FilteringNetworkManagerTest::OnNetworksChanged);
