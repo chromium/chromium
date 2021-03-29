@@ -147,7 +147,7 @@ declaration.
 When possible, avoid bare `new` by using
 [`std::make_unique<T>(...)`](http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique)
 and
-[`base::MakeRefCounted<T>(...)`](https://cs.chromium.org/chromium/src/base/memory/scoped_refptr.h?q=MakeRefCounted):
+[`base::MakeRefCounted<T>(...)`](https://source.chromium.org/chromium/chromium/src/+/master:base/memory/scoped_refptr.h;l=98;drc=f8c5bd9d40969f02ddeb3e6c7bdb83029a99ca63):
 
 ```cpp
 // BAD: bare call to new; for refcounted types, not compatible with one-based
@@ -157,13 +157,13 @@ return base::WrapRefCounted(new T(1, 2, 3));
 
 // BAD: same as the above, plus mentions type names twice.
 std::unique_ptr<T> t(new T(1, 2, 3));
-base::scoped_refptr<T> t(new T(1, 2, 3));
+scoped_refptr<T> t(new T(1, 2, 3));
 return std::unique_ptr<T>(new T(1, 2, 3));
-return base::scoped_refptr<T>(new T(1, 2, 3));
+return scoped_refptr<T>(new T(1, 2, 3));
 
 // OK, but verbose: type name still mentioned twice.
 std::unique_ptr<T> t = std::make_unique<T>(1, 2, 3);
-base::scoped_refptr<T> t = base::MakeRefCounted<T>(1, 2, 3);
+scoped_refptr<T> t = base::MakeRefCounted<T>(1, 2, 3);
 
 // GOOD; make_unique<>/MakeRefCounted<> are clear enough indicators of the
 // returned type.
