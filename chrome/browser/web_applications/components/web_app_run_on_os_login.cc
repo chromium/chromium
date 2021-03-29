@@ -8,8 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,29 +26,8 @@ void RegisterRunOnOsLoginAndPostCallback(RegisterRunOnOsLoginCallback callback,
       FROM_HERE,
       base::BindOnce(std::move(callback), run_on_os_login_registered));
 }
+
 }  // namespace
-
-namespace internals {
-
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if !(defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
-// This boilerplate function is used for platforms that don't support Run On OS
-// Login. Currently the feature is supported on Windows, Linux and MacOS.
-bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
-  return false;
-}
-
-// This boilerplate function is used for platforms that don't support Run On OS
-// Login. Currently the feature is supported on Windows, Linux and MacOS.
-bool UnregisterRunOnOsLogin(const std::string& app_id,
-                            const base::FilePath& profile_path,
-                            const std::u16string& shortcut_title) {
-  return true;
-}
-#endif
-
-}  // namespace internals
 
 void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
                                   RegisterRunOnOsLoginCallback callback) {
