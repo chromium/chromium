@@ -8,6 +8,7 @@
     of the TextInputLayout elements -->
     <dimen name="credential_edit_text_view_margin">4dp</dimen>
     <dimen name="credential_edit_text_view_label_margin_bottom">2dp</dimen>
+    <dimen name="credential_edit_text_icon_margin_bottom">12dp</dimen>
     <dimen name="credential_edit_button_layout_padding">10dp</dimen>
     <dimen name="credential_edit_button_layout_stacked_margin">24dp</dimen>
 </resources>

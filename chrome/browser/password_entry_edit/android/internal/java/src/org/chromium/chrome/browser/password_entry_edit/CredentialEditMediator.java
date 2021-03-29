@@ -168,8 +168,8 @@ public class CredentialEditMediator implements UiActionHandler {
         mOriginalPassword = password;
 
         mModel.set(USERNAME, username);
-        mModel.set(PASSWORD, password);
         mModel.set(PASSWORD_VISIBLE, false);
+        mModel.set(PASSWORD, password);
     }
 
     void setExistingUsernames(String[] existingUsernames) {
