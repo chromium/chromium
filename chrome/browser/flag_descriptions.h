@@ -2792,6 +2792,9 @@ extern const char kVirtualKeyboardMultipasteDescription[];
 extern const char kVmCameraMicIndicatorsAndNotificationsName[];
 extern const char kVmCameraMicIndicatorsAndNotificationsDescription[];
 
+extern const char kWakeOnWifiAllowedName[];
+extern const char kWakeOnWifiAllowedDescription[];
+
 extern const char kWebuiDarkModeName[];
 extern const char kWebuiDarkModeDescription[];
 

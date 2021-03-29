@@ -317,6 +317,8 @@ extern const base::Feature kVirtualKeyboardMultipaste;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVmCameraMicIndicatorsAndNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kWakeOnWifiAllowed;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperWebUI;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncAndroid;

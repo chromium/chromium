@@ -370,6 +370,7 @@ void NetworkDeviceHandlerImpl::DeviceListChanged() {
   ApplyMACAddressRandomizationToShill();
   ApplyUsbEthernetMacAddressSourceToShill();
   ApplyUseAttachApnToShill();
+  ApplyWakeOnWifiAllowedToShill();
 }
 
 void NetworkDeviceHandlerImpl::DevicePropertiesUpdated(
@@ -414,33 +415,81 @@ void NetworkDeviceHandlerImpl::ApplyCellularAllowRoamingToShill() {
   }
 }
 
-void NetworkDeviceHandlerImpl::ApplyMACAddressRandomizationToShill() {
+void NetworkDeviceHandlerImpl::ApplyWifiFeatureToShillIfSupported(
+    std::string enable_property_name,
+    bool enabled,
+    std::string support_property_name,
+    WifiFeatureSupport* supported) {
   const DeviceState* device_state = GetWifiDeviceState();
   if (!device_state) {
-    // We'll need to ask if this is supported when we find a Wi-Fi
-    // device.
-    mac_addr_randomization_supported_ =
-        MACAddressRandomizationSupport::NOT_REQUESTED;
+    *supported = WifiFeatureSupport::NOT_REQUESTED;
     return;
   }
-
-  switch (mac_addr_randomization_supported_) {
-    case MACAddressRandomizationSupport::NOT_REQUESTED:
+  switch (*supported) {
+    case WifiFeatureSupport::NOT_REQUESTED:
       GetDeviceProperties(
           device_state->path(),
           base::BindOnce(
-              &NetworkDeviceHandlerImpl::HandleMACAddressRandomization,
-              weak_ptr_factory_.GetWeakPtr()));
+              &NetworkDeviceHandlerImpl::HandleWifiFeatureSupportedProperty,
+              weak_ptr_factory_.GetWeakPtr(), std::move(enable_property_name),
+              enabled, std::move(support_property_name), supported));
       return;
-    case MACAddressRandomizationSupport::SUPPORTED:
-      SetDevicePropertyInternal(
-          device_state->path(), shill::kMacAddressRandomizationEnabledProperty,
-          base::Value(mac_addr_randomization_enabled_), base::DoNothing(),
-          network_handler::ErrorCallback());
+    case WifiFeatureSupport::SUPPORTED:
+      SetDevicePropertyInternal(device_state->path(), enable_property_name,
+                                base::Value(enabled), base::DoNothing(),
+                                network_handler::ErrorCallback());
       return;
-    case MACAddressRandomizationSupport::UNSUPPORTED:
+    case WifiFeatureSupport::UNSUPPORTED:
       return;
   }
+}
+
+void NetworkDeviceHandlerImpl::HandleWifiFeatureSupportedProperty(
+    std::string enable_property_name,
+    bool enabled,
+    std::string support_property_name,
+    WifiFeatureSupport* feature_support_to_set,
+    const std::string& device_path,
+    base::Optional<base::Value> properties) {
+  if (!properties) {
+    return;
+  }
+  base::Optional<bool> supported_val =
+      properties->FindBoolKey(support_property_name);
+  if (!supported_val.has_value()) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
+      NET_LOG(ERROR) << "Failed to get support property "
+                     << support_property_name << " from device " << device_path;
+    }
+    return;
+  }
+
+  // Try to set MAC address randomization if it's supported.
+  if (*supported_val) {
+    *feature_support_to_set = WifiFeatureSupport::SUPPORTED;
+    ApplyWifiFeatureToShillIfSupported(std::move(enable_property_name), enabled,
+                                       std::move(support_property_name),
+                                       feature_support_to_set);
+  } else {
+    *feature_support_to_set = WifiFeatureSupport::UNSUPPORTED;
+  }
+}
+
+void NetworkDeviceHandlerImpl::ApplyMACAddressRandomizationToShill() {
+  ApplyWifiFeatureToShillIfSupported(
+      shill::kMacAddressRandomizationEnabledProperty,
+      mac_addr_randomization_enabled_,
+      shill::kMacAddressRandomizationSupportedProperty,
+      &mac_addr_randomization_supported_);
+}
+
+void NetworkDeviceHandlerImpl::ApplyWakeOnWifiAllowedToShill() {
+  // Get the setting from feature flags.
+  wake_on_wifi_allowed_ =
+      base::FeatureList::IsEnabled(chromeos::features::kWakeOnWifiAllowed);
+  ApplyWifiFeatureToShillIfSupported(
+      shill::kWakeOnWiFiAllowedProperty, wake_on_wifi_allowed_,
+      shill::kWakeOnWiFiSupportedProperty, &wake_on_wifi_supported_);
 }
 
 void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {
@@ -593,32 +642,6 @@ void NetworkDeviceHandlerImpl::
         shill::kUsbEthernetMacAddressSourceUsbAdapterMac, base::DoNothing(),
         base::BindOnce(&HandleShillCallFailure, device_state->path(),
                        network_handler::ErrorCallback()));
-  }
-}
-
-void NetworkDeviceHandlerImpl::HandleMACAddressRandomization(
-    const std::string& device_path,
-    base::Optional<base::Value> properties) {
-  if (!properties)
-    return;
-  base::Optional<bool> supported =
-      properties->FindBoolKey(shill::kMacAddressRandomizationSupportedProperty);
-  if (!supported.has_value()) {
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      NET_LOG(ERROR) << "Failed to determine if device " << device_path
-                     << " supports MAC address randomization";
-    }
-    return;
-  }
-
-  // Try to set MAC address randomization if it's supported.
-  if (*supported) {
-    mac_addr_randomization_supported_ =
-        MACAddressRandomizationSupport::SUPPORTED;
-    ApplyMACAddressRandomizationToShill();
-  } else {
-    mac_addr_randomization_supported_ =
-        MACAddressRandomizationSupport::UNSUPPORTED;
   }
 }
 

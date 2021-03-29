@@ -3089,6 +3089,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"stylus-battery-status", flag_descriptions::kStylusBatteryStatusName,
      flag_descriptions::kStylusBatteryStatusDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kStylusBatteryStatus)},
+    {"wake-on-wifi-allowed", flag_descriptions::kWakeOnWifiAllowedName,
+     flag_descriptions::kWakeOnWifiAllowedDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kWakeOnWifiAllowed)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)

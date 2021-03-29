@@ -708,6 +708,10 @@ const base::Feature kVirtualKeyboardMultipaste{
 const base::Feature kVmCameraMicIndicatorsAndNotifications{
     "VmCameraMicIndicatorsAndNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to allow enabling wake on WiFi features in shill.
+const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable new wallpaper experience in WebUI inside system settings.
 const base::Feature kWallpaperWebUI{"WallpaperWebUI",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

@@ -44430,6 +44430,7 @@ from previous Chrome versions.
   <int value="-1466990325" label="CrosCompUpdates:enabled"/>
   <int value="-1466862366" label="TouchToFillAndroid:enabled"/>
   <int value="-1466759286" label="TabModalJsDialog:disabled"/>
+  <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
@@ -48182,6 +48183,7 @@ from previous Chrome versions.
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>
   <int value="1924192543" label="ProactiveTabFreezeAndDiscard:enabled"/>
+  <int value="1924773264" label="WakeOnWifiAllowed:disabled"/>
   <int value="1925213304" label="FillingAcrossAffiliatedWebsites:enabled"/>
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
