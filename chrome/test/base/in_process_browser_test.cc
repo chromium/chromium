@@ -336,8 +336,6 @@ void InProcessBrowserTest::SetUp() {
   CHECK(base::PathService::Override(chrome::DIR_DEFAULT_DOWNLOADS,
                                     default_download_dir_.GetPath()));
 
-  AfterStartupTaskUtils::DisableScheduleTaskDelayForTesting();
-
 #if defined(TOOLKIT_VIEWS)
   // Prevent hover cards from appearing when the mouse is over the tab. Tests
   // don't typically account for this possibly, so it can cause unrelated tests

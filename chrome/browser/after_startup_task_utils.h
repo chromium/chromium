@@ -43,11 +43,6 @@ class AfterStartupTaskUtils {
 
   static void UnsafeResetForTesting();
 
-  // Normally on startup, some tasks are scheduled with a random delay. This is
-  // not desirable during testing where it adds non-determinism and slows down
-  // test execution.
-  static void DisableScheduleTaskDelayForTesting();
-
  private:
   // TODO(wkorman): Look into why Android calls
   // SetBrowserStartupIsComplete() directly. Ideally it would use

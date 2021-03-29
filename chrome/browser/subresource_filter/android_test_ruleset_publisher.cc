@@ -36,9 +36,6 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& publisher_param,
     const base::android::JavaParamRef<jstring>& suffix) {
-  // Remove the random delay in posting after startup tasks to reduce test time.
-  AfterStartupTaskUtils::DisableScheduleTaskDelayForTesting();
-
   subresource_filter::testing::TestRulesetPair test_ruleset_pair;
   auto creator =
       std::make_unique<subresource_filter::testing::TestRulesetCreator>();
