@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -76,8 +75,6 @@ class NewTabUI : public content::WebUIController {
   void OnShowBookmarkBarChanged();
 
   Profile* GetProfile() const;
-
-  PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(NewTabUI);
 };

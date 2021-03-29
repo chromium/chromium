@@ -23,7 +23,6 @@
 #include "chrome/grit/new_tab_page_third_party_resources.h"
 #include "chrome/grit/new_tab_page_third_party_resources_map.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,15 +60,10 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
 
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile);
-  bool bookmarkBarAttached =
-      profile->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
-  source->AddString(
-      "backgroundPosition",
-      GetNewTabBackgroundCSS(theme_provider, bookmarkBarAttached));
+  source->AddString("backgroundPosition",
+                    GetNewTabBackgroundPositionCSS(theme_provider));
   source->AddString("backgroundTiling",
                     GetNewTabBackgroundTilingCSS(theme_provider));
-  source->AddString("bookmarkbarattached",
-                    bookmarkBarAttached ? "bookmark-bar-attached" : "");
   source->AddString("colorBackground",
                     color_utils::SkColorToRgbaString(GetThemeColor(
                         webui::GetNativeTheme(web_contents), theme_provider,

@@ -37,7 +37,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/common/policy_service.h"
@@ -109,10 +108,9 @@ SkColor GetThemeColor(const ui::NativeTheme* native_theme,
              : color;
 }
 
-// Get the CSS string for the background position on the new tab page for the
-// states when the bar is attached or detached.
-std::string GetNewTabBackgroundCSS(const ui::ThemeProvider& theme_provider,
-                                   bool bar_attached) {
+// Get the CSS string for the background position on the new tab page.
+std::string GetNewTabBackgroundPositionCSS(
+    const ui::ThemeProvider& theme_provider) {
   // TODO(glen): This is a quick workaround to hide the notused.png image when
   // no image is provided - we don't have time right now to figure out why
   // this is painting as white.
@@ -121,25 +119,8 @@ std::string GetNewTabBackgroundCSS(const ui::ThemeProvider& theme_provider,
     return "-64px";
   }
 
-  int alignment = theme_provider.GetDisplayProperty(
-      ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
-
-  if (bar_attached)
-    return ThemeProperties::AlignmentToString(alignment);
-
-  if (alignment & ThemeProperties::ALIGN_TOP) {
-    // The bar is detached, so we must offset the background by the bar size
-    // if it's a top-aligned bar.
-    int offset = GetLayoutConstant(BOOKMARK_BAR_NTP_HEIGHT);
-
-    if (alignment & ThemeProperties::ALIGN_LEFT)
-      return "left " + base::NumberToString(-offset) + "px";
-    else if (alignment & ThemeProperties::ALIGN_RIGHT)
-      return "right " + base::NumberToString(-offset) + "px";
-    return "center " + base::NumberToString(-offset) + "px";
-  }
-
-  return ThemeProperties::AlignmentToString(alignment);
+  return ThemeProperties::AlignmentToString(theme_provider.GetDisplayProperty(
+      ThemeProperties::NTP_BACKGROUND_ALIGNMENT));
 }
 
 // How the background image on the new tab page should be tiled (see tiling
@@ -160,8 +141,6 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 
   // Watch for pref changes that cause us to need to invalidate the HTML cache.
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
-  profile_pref_change_registrar_.Add(bookmarks::prefs::kShowBookmarkBar,
-                                     callback);
   profile_pref_change_registrar_.Add(prefs::kNtpShownPage, callback);
   profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
 
@@ -292,12 +271,6 @@ void NTPResourceCache::Invalidate() {
 
 void NTPResourceCache::CreateNewTabIncognitoHTML() {
   ui::TemplateReplacements replacements;
-  // Note: there's specific rules in CSS that look for this attribute's content
-  // being equal to "true" as a string.
-  replacements["bookmarkbarattached"] =
-      profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar)
-          ? "true"
-          : "false";
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
@@ -492,8 +465,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   // Colors.
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
       GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND));
-  substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
-  substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
 
   // Get our template.
@@ -552,8 +524,7 @@ void NTPResourceCache::CreateNewTabCSS(
       color_utils::SkColorToRgbaString(color_background);
   substitutions["colorLink"] = color_utils::SkColorToRgbString(
       GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_LINK));
-  substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
-  substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
   substitutions["colorTextRgba"] = color_utils::SkColorToRgbaString(color_text);
   substitutions["colorTextLight"] =

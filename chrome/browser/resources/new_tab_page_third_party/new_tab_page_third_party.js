@@ -10,7 +10,6 @@ const {callbackRouter, handler} = BrowserProxy.getInstance();
 
 callbackRouter.setTheme.addListener(theme => {
   const html = document.documentElement;
-  html.toggleAttribute('bookmark-bar-attached', theme.bookmarkBarAttached);
   html.toggleAttribute('has-custom-background', theme.hasCustomBackground);
   html.toggleAttribute('dark', theme.isDark);
   const style = html.style;

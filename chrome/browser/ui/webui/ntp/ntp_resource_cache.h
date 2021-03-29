@@ -42,8 +42,8 @@ class ThemeProvider;
 SkColor GetThemeColor(const ui::NativeTheme* native_theme,
                       const ui::ThemeProvider& tp,
                       int id);
-std::string GetNewTabBackgroundCSS(const ui::ThemeProvider& theme_provider,
-                                   bool bar_attached);
+std::string GetNewTabBackgroundPositionCSS(
+    const ui::ThemeProvider& theme_provider);
 std::string GetNewTabBackgroundTilingCSS(
     const ui::ThemeProvider& theme_provider);
 

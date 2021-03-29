@@ -5,7 +5,7 @@
 html {
   background-attachment: fixed;
   background-color: $i18n{colorBackground};
-  background-position: $i18n{backgroundBarDetached};
+  background-position: $i18n{backgroundPosition};
   background-repeat: $i18n{backgroundTiling};
   height: 100%;
   overflow: auto;
@@ -13,10 +13,6 @@ html {
 
 html[hascustombackground='true'] {
   background-image: url(chrome://theme/IDR_THEME_NTP_BACKGROUND?$i18n{themeId});
-}
-
-html[bookmarkbarattached='true'] {
-  background-position: $i18n{backgroundBarAttached};
 }
 
 #attribution-img {

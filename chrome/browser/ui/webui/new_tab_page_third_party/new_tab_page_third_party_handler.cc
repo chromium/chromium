@@ -18,7 +18,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -199,10 +198,7 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
                     ThemeProperties::COLOR_NTP_BACKGROUND));
   if (theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     theme->background_tiling = GetNewTabBackgroundTilingCSS(theme_provider);
-    theme->bookmark_bar_attached =
-        profile_->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
-    theme->background_position =
-        GetNewTabBackgroundCSS(theme_provider, theme->bookmark_bar_attached);
+    theme->background_position = GetNewTabBackgroundPositionCSS(theme_provider);
     theme->has_custom_background =
         theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);

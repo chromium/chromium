@@ -45,8 +45,6 @@ struct Theme {
   string background_position;
   // True if custom background is set.
   bool has_custom_background;
-  // True if bookmark bar is attached.
-  bool bookmark_bar_attached;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

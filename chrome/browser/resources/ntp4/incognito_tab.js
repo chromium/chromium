@@ -37,13 +37,3 @@ window.addEventListener('load', function() {
   };
   chrome.send('observeCookieControlsSettingsChanges');
 });
-
-// Handle the bookmark bar, theme, and font size change requests
-// from the C++ side.
-const ntp = {
-  /** @param {string} attached */
-  setBookmarkBarAttached(attached) {
-    document.documentElement.setAttribute('bookmarkbarattached', attached);
-  },
-};
-window.ntp = ntp;

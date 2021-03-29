@@ -219,10 +219,6 @@ function layoutFooter() {
   }
 }
 
-function setBookmarkBarAttached(attached) {
-  document.documentElement.setAttribute('bookmarkbarattached', attached);
-}
-
 /**
  * Set the dominant color for a node. This will be called in response to
  * getFaviconDominantColor. The node represented by |id| better have a setter
@@ -389,7 +385,6 @@ const exports = {
   appsPrefChangeCallback,
   getAppsCallback,
   setAppToBeHighlighted,
-  setBookmarkBarAttached,
   setFaviconDominantColor,
   updateLogin,
 };
