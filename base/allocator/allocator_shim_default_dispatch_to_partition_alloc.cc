@@ -324,8 +324,18 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
+  if (!(base::IsManagedByPartitionAllocNonBRPPool(address) ||
+        base::IsManagedByPartitionAllocBRPPool(address))) {
+    // The object pointed to by `address` is not allocated by the
+    // PartitionAlloc.  The return value `0` means that the pointer does not
+    // belong to this malloc zone.
+    return 0;
+  }
+
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  return base::ThreadSafePartitionRoot::GetUsableSize(address);
+  const size_t size = base::ThreadSafePartitionRoot::GetUsableSize(address);
+  PA_CHECK(size);
+  return size;
 }
 
 // static
@@ -523,3 +533,21 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 }  // extern "C"
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if defined(OS_APPLE)
+
+namespace base {
+namespace allocator {
+
+void InitializeDefaultAllocatorPartitionRoot() {
+  // On OS_APPLE, the initialization of PartitionRoot uses memory allocations
+  // internally, e.g. __builtin_available, and it's not easy to avoid it.
+  // Thus, we initialize the PartitionRoot with using the system default
+  // allocator before we intercept the system default allocator.
+  ignore_result(Allocator());
+}
+
+}  // namespace allocator
+}  // namespace base
+
+#endif  // defined(OS_APPLE)
