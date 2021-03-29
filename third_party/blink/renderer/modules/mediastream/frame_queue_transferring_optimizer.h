@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/modules/mediastream/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/impl/persistent.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
