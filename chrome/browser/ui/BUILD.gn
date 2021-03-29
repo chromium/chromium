@@ -2740,6 +2740,8 @@ static_library("ui") {
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/upstart",
+      "//chromeos/dbus/userdataauth",
+      "//chromeos/dbus/userdataauth:userdataauth_proto",
       "//chromeos/disks",
       "//chromeos/login/auth",
       "//chromeos/login/login_state",

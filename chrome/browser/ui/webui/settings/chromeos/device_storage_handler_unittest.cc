@@ -463,12 +463,9 @@ TEST_F(StorageHandlerTest, SystemSize) {
       std::vector<int64_t>{200 * GB, 50 * GB, 50 * GB};
   other_users_size_test_api_->InitializeOtherUserSize(other_user_sizes.size());
   for (std::size_t i = 0; i < other_user_sizes.size(); i++) {
-    cryptohome::BaseReply result;
-    result.set_error(cryptohome::CRYPTOHOME_ERROR_NOT_SET);
-    cryptohome::GetAccountDiskUsageReply* usage_reply =
-        result.MutableExtension(cryptohome::GetAccountDiskUsageReply::reply);
-    usage_reply->set_size(other_user_sizes[i]);
-    base::Optional<cryptohome::BaseReply> reply = std::move(result);
+    base::Optional<::user_data_auth::GetAccountDiskUsageReply> reply =
+        ::user_data_auth::GetAccountDiskUsageReply();
+    reply->set_size(other_user_sizes[i]);
     other_users_size_test_api_->SimulateOnGetOtherUserSize(reply);
     if (i < other_user_sizes.size() - 1) {
       ASSERT_FALSE(GetWebUICallbackMessage("storage-other-users-size-changed"));

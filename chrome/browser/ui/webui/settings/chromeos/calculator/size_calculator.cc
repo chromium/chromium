@@ -16,7 +16,9 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/storage_manager/arc_storage_manager.h"
@@ -364,10 +366,12 @@ void OtherUsersSizeCalculator::PerformCalculation() {
     if (user->is_active())
       continue;
     other_users_.push_back(user);
-    CryptohomeClient::Get()->GetAccountDiskUsage(
-        cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId()),
-        base::BindOnce(&OtherUsersSizeCalculator::OnGetOtherUserSize,
-                       weak_ptr_factory_.GetWeakPtr()));
+    user_data_auth::GetAccountDiskUsageRequest request;
+    *request.mutable_identifier() =
+        cryptohome::CreateAccountIdentifierFromAccountId(user->GetAccountId());
+    UserDataAuthClient::Get()->GetAccountDiskUsage(
+        request, base::BindOnce(&OtherUsersSizeCalculator::OnGetOtherUserSize,
+                                weak_ptr_factory_.GetWeakPtr()));
   }
   // We should show "0 B" if there is no other user.
   if (other_users_.empty()) {
@@ -376,8 +380,9 @@ void OtherUsersSizeCalculator::PerformCalculation() {
 }
 
 void OtherUsersSizeCalculator::OnGetOtherUserSize(
-    base::Optional<cryptohome::BaseReply> reply) {
-  user_sizes_.push_back(cryptohome::AccountDiskUsageReplyToUsageSize(reply));
+    base::Optional<user_data_auth::GetAccountDiskUsageReply> reply) {
+  user_sizes_.push_back(
+      user_data_auth::AccountDiskUsageReplyToUsageSize(reply));
   if (user_sizes_.size() != other_users_.size())
     return;
   int64_t other_users_total_bytes;
