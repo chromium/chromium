@@ -9,7 +9,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,9 +33,9 @@ public class PriceMessageCardViewModel {
             MessageCardView.DismissActionProvider uiDismissActionProvider,
             PriceMessageService.PriceMessageData data) {
         boolean isIconVisible = data.getType() == PriceMessageType.PRICE_WELCOME ? false : true;
-        String titleText = context.getString(R.string.price_drop_spotted_title);
-        String descriptionText = context.getString(R.string.price_drop_spotted_content);
-        String actionText = context.getString(R.string.price_drop_spotted_show_me);
+        String titleText = getTitle(context, data.getType());
+        String descriptionText = getDescription(context, data.getType());
+        String actionText = getActionText(context, data.getType());
         String dismissButtonContextDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
 
@@ -53,8 +57,52 @@ public class PriceMessageCardViewModel {
                 .with(MessageCardViewProperties.IS_INCOGNITO, false)
                 .with(MessageCardViewProperties.TITLE_TEXT, titleText)
                 .with(MessageCardViewProperties.PRICE_DROP, data.getPriceDrop())
+                .with(MessageCardViewProperties.ICON_PROVIDER,
+                        () -> getIconDrawable(context, data.getType()))
                 .with(CARD_TYPE, MESSAGE)
                 .with(CARD_ALPHA, 1f)
                 .build();
+    }
+
+    private static String getTitle(Context context, @PriceMessageType int type) {
+        if (type == PriceMessageType.PRICE_WELCOME) {
+            return context.getString(R.string.price_drop_spotted_title);
+        } else if (type == PriceMessageType.PRICE_ALERTS) {
+            return context.getString(R.string.price_drop_alerts_card_title);
+        }
+        return null;
+    }
+
+    private static String getDescription(Context context, @PriceMessageType int type) {
+        if (type == PriceMessageType.PRICE_WELCOME) {
+            return context.getString(R.string.price_drop_spotted_content);
+        } else if (type == PriceMessageType.PRICE_ALERTS) {
+            if ((new PriceDropNotificationManager()).areAppNotificationsEnabled()) {
+                return context.getString(R.string.price_drop_alerts_card_get_notified_content);
+            } else {
+                return context.getString(R.string.price_drop_alerts_card_go_to_settings_content);
+            }
+        }
+        return null;
+    }
+
+    private static String getActionText(Context context, @PriceMessageType int type) {
+        if (type == PriceMessageType.PRICE_WELCOME) {
+            return context.getString(R.string.price_drop_spotted_show_me);
+        } else if (type == PriceMessageType.PRICE_ALERTS) {
+            if ((new PriceDropNotificationManager()).areAppNotificationsEnabled()) {
+                return context.getString(R.string.price_drop_alerts_card_get_notified);
+            } else {
+                return context.getString(R.string.price_drop_alerts_card_go_to_settings);
+            }
+        }
+        return null;
+    }
+
+    private static Drawable getIconDrawable(Context context, @PriceMessageType int type) {
+        if (type == PriceMessageType.PRICE_ALERTS) {
+            return AppCompatResources.getDrawable(context, R.drawable.ic_add_alert_blue);
+        }
+        return null;
     }
 }

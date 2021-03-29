@@ -55,6 +55,7 @@ public class PriceDropNotificationManagerTest {
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
+        PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = new PriceDropNotificationManager();
     }
 
@@ -63,12 +64,13 @@ public class PriceDropNotificationManagerTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
+        PriceDropNotificationManager.setNotificationManagerForTesting(null);
     }
 
     @Test
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
-        assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
+        mMockNotificationManager.setNotificationsEnabled(true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
         assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
@@ -79,7 +81,6 @@ public class PriceDropNotificationManagerTest {
     public void testCanPostNotification_NotificationDisabled() {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager.setNotificationsEnabled(false);
-        mPriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
     }
@@ -89,6 +90,7 @@ public class PriceDropNotificationManagerTest {
     public void testCanPostNotificaton() {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         assertTrue(PriceTrackingUtilities.isPriceTrackingEligible());
+        mMockNotificationManager.setNotificationsEnabled(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -110,7 +112,6 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationDisabled() {
         mMockNotificationManager.setNotificationsEnabled(false);
-        mPriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
@@ -130,7 +131,6 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationEnabled() {
         mMockNotificationManager.setNotificationsEnabled(true);
-        mPriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
