@@ -911,6 +911,10 @@ AXObject* AXObject::ComputeParentImpl() const {
       return nullptr;
   }
 
+  DCHECK(current_node->isConnected())
+      << "Should not call ComputeParent() with disconnected node: "
+      << current_node;
+
   while (true) {
     current_node = GetParentNodeForComputeParent(current_node);
     if (!current_node)
