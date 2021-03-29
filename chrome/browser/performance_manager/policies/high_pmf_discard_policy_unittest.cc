@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/policies/high_pmf_discard_policy.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -51,7 +50,7 @@ class HighPMFDiscardPolicyTest
   }
 
  private:
-  CheckedPtr<HighPMFDiscardPolicy> policy_;
+  HighPMFDiscardPolicy* policy_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   util::test::FakeMemoryPressureMonitor memory_pressure_monitor_;
 };

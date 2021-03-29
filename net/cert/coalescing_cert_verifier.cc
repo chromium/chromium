@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/containers/linked_list.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -174,9 +173,9 @@ class CoalescingCertVerifier::Request
   void OnJobAbort();
 
  private:
-  CheckedPtr<CoalescingCertVerifier::Job> job_;
+  CoalescingCertVerifier::Job* job_;
 
-  CheckedPtr<CertVerifyResult> verify_result_;
+  CertVerifyResult* verify_result_;
   CompletionOnceCallback callback_;
   const NetLogWithSource net_log_;
 };

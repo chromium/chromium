@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_UNSUBSCRIBE_FROM_WEB_FEED_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_UNSUBSCRIBE_FROM_WEB_FEED_TASK_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/feed/core/proto/v2/wire/web_feed.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
@@ -40,7 +39,7 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
       FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse> result);
   void Done(WebFeedSubscriptionRequestStatus status);
 
-  CheckedPtr<FeedStream> stream_;
+  FeedStream* stream_;
   Result result_;
   WebFeedId web_feed_id_;
   base::OnceCallback<void(Result)> callback_;

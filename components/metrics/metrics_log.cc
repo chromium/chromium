@@ -12,7 +12,6 @@
 #include "base/build_time.h"
 #include "base/cpu.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
@@ -66,7 +65,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  const CheckedPtr<MetricsLog> log_;
+  MetricsLog* const log_;
 
   DISALLOW_COPY_AND_ASSIGN(IndependentFlattener);
 };

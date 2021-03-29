@@ -27,7 +27,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_buffer_queue.h"
@@ -199,7 +198,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // Called by |resampler_| to get more audio data.
   void OnResamplerRead(int frame_delay, AudioBus* audio_bus);
 
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   // Parameters.
   AudioRendererAlgorithmParameters audio_renderer_algorithm_params_;

@@ -5,7 +5,6 @@
 #ifndef GIN_HANDLE_H_
 #define GIN_HANDLE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "gin/converter.h"
 
 namespace gin {
@@ -37,7 +36,7 @@ class Handle {
 
  private:
   v8::Local<v8::Value> wrapper_;
-  CheckedPtr<T> object_;
+  T* object_;
 };
 
 template<typename T>

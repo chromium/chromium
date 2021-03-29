@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -64,7 +63,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   bool error_reporting_enabled_ = false;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-  CheckedPtr<WebUIImpl> web_ui_;
+  WebUIImpl* web_ui_;
 };
 
 }  // namespace content

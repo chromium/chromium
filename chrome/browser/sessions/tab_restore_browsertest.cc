@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
@@ -212,7 +211,7 @@ class TabRestoreTest : public InProcessBrowserTest {
   GURL url1_;
   GURL url2_;
 
-  CheckedPtr<const BrowserList> active_browser_list_;
+  const BrowserList* active_browser_list_;
 
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>

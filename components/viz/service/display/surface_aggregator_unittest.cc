@@ -15,7 +15,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -597,7 +596,7 @@ class SurfaceAggregatorValidSurfaceTest : public SurfaceAggregatorTest {
 
  protected:
   LocalSurfaceId root_local_surface_id_;
-  CheckedPtr<Surface> root_surface_;
+  Surface* root_surface_;
   ParentLocalSurfaceIdAllocator root_allocator_;
   std::unique_ptr<CompositorFrameSinkSupport> child_sink_;
 };
@@ -937,8 +936,8 @@ class TestVizClient {
   }
 
  private:
-  const CheckedPtr<SurfaceAggregatorValidSurfaceTest> test_;
-  const CheckedPtr<FrameSinkManagerImpl> manager_;
+  SurfaceAggregatorValidSurfaceTest* const test_;
+  FrameSinkManagerImpl* const manager_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;
   const FrameSinkId frame_sink_id_;
   const gfx::Rect bounds_;

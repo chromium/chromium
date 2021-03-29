@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -75,8 +74,8 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // |source_| and |encoder_| are owned by the |pump_|.
-  CheckedPtr<FakeAudioSource> source_;
-  CheckedPtr<FakeAudioEncoder> encoder_;
+  FakeAudioSource* source_;
+  FakeAudioEncoder* encoder_;
 
   std::unique_ptr<AudioPump> pump_;
 
@@ -91,8 +90,8 @@ void AudioPumpTest::SetUp() {
   source_ = new FakeAudioSource();
   encoder_ = new FakeAudioEncoder();
   pump_.reset(new AudioPump(task_environment_.GetMainThreadTaskRunner(),
-                            base::WrapUnique(source_.get()),
-                            base::WrapUnique(encoder_.get()), this));
+                            base::WrapUnique(source_),
+                            base::WrapUnique(encoder_), this));
 }
 
 void AudioPumpTest::TearDown() {

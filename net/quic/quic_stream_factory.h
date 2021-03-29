@@ -18,7 +18,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -182,12 +181,12 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   const NetLogWithSource& net_log() const { return net_log_; }
 
  private:
-  CheckedPtr<QuicStreamFactory> factory_;
+  QuicStreamFactory* factory_;
   QuicSessionKey session_key_;
   NetLogWithSource net_log_;
   CompletionOnceCallback callback_;
   CompletionOnceCallback failed_on_default_network_callback_;
-  CheckedPtr<NetErrorDetails> net_error_details_;  // Unowned.
+  NetErrorDetails* net_error_details_;  // Unowned.
   std::unique_ptr<QuicChromiumClientSession::Handle> session_;
 
   // Set in Request(). If true, then OnHostResolutionComplete() is expected to
@@ -518,26 +517,25 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // the broken alternative service map in HttpServerProperties.
   bool is_quic_known_to_work_on_current_network_;
 
-  CheckedPtr<NetLog> net_log_;
-  CheckedPtr<HostResolver> host_resolver_;
-  CheckedPtr<ClientSocketFactory> client_socket_factory_;
-  CheckedPtr<HttpServerProperties> http_server_properties_;
-  CheckedPtr<ServerPushDelegate> push_delegate_;
-  const CheckedPtr<CertVerifier> cert_verifier_;
-  const CheckedPtr<CTPolicyEnforcer> ct_policy_enforcer_;
-  const CheckedPtr<TransportSecurityState> transport_security_state_;
-  const CheckedPtr<SCTAuditingDelegate> sct_auditing_delegate_;
-  CheckedPtr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory_;
-  CheckedPtr<quic::QuicRandom> random_generator_;  // Unowned.
-  CheckedPtr<const quic::QuicClock> clock_;        // Unowned.
+  NetLog* net_log_;
+  HostResolver* host_resolver_;
+  ClientSocketFactory* client_socket_factory_;
+  HttpServerProperties* http_server_properties_;
+  ServerPushDelegate* push_delegate_;
+  CertVerifier* const cert_verifier_;
+  CTPolicyEnforcer* const ct_policy_enforcer_;
+  TransportSecurityState* const transport_security_state_;
+  SCTAuditingDelegate* const sct_auditing_delegate_;
+  QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory_;
+  quic::QuicRandom* random_generator_;  // Unowned.
+  const quic::QuicClock* clock_;        // Unowned.
   QuicParams params_;
   QuicClockSkewDetector clock_skew_detector_;
 
   // Factory which is used to create socket performance watcher. A new watcher
   // is created for every QUIC connection.
   // |socket_performance_watcher_factory_| may be null.
-  CheckedPtr<SocketPerformanceWatcherFactory>
-      socket_performance_watcher_factory_;
+  SocketPerformanceWatcherFactory* socket_performance_watcher_factory_;
 
   // The helper used for all connections.
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
@@ -610,11 +608,11 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   QuicConnectivityMonitor connectivity_monitor_;
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
-  CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  base::SequencedTaskRunner* task_runner_;
 
-  const CheckedPtr<SSLConfigService> ssl_config_service_;
+  SSLConfigService* const ssl_config_service_;
 
   // Whether NetworkIsolationKeys should be used for
   // |active_crypto_config_map_|. If false, there will just be one config with

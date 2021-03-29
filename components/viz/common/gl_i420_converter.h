@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gl_scaler.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -159,7 +158,7 @@ class VIZ_COMMON_EXPORT GLI420Converter final : public ContextLostObserver {
 
   // The provider of the GL context. This is non-null while the GL context is
   // valid and GLI420Converter is observing for context loss.
-  CheckedPtr<ContextProvider> context_provider_;
+  ContextProvider* context_provider_;
 
   // Scales the source content and produces either:
   //   * MRT path: NV61-format output in two textures.

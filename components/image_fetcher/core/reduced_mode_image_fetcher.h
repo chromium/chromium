@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "url/gurl.h"
@@ -35,7 +34,7 @@ class ReducedModeImageFetcher : public ImageFetcher {
 
  private:
   // Owned by ImageFetcherService.
-  CheckedPtr<ImageFetcher> image_fetcher_;
+  ImageFetcher* image_fetcher_;
 
   // Used to ensure that operations are performed on the sequence that this
   // object was created on.

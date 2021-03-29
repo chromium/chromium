@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -36,9 +35,9 @@ class BrowserListRouterHelper : public BrowserListObserver,
       const TabStripSelectionChange& selection) override;
 
   // |router_| owns |this|.
-  CheckedPtr<SyncSessionsWebContentsRouter> router_;
+  SyncSessionsWebContentsRouter* router_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   std::set<Browser*> attached_browsers_;
 

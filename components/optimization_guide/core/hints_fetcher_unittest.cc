@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -172,7 +171,7 @@ class HintsFetcherTest : public testing::Test,
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  CheckedPtr<network::TestNetworkConnectionTracker> network_tracker_;
+  network::TestNetworkConnectionTracker* network_tracker_;
 
   std::string last_request_body_;
 

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -96,10 +95,10 @@ class ContentSettingsPref {
   ContentSettingsType content_type_;
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Owned by the PrefProvider.
-  CheckedPtr<PrefChangeRegistrar> registrar_;
+  PrefChangeRegistrar* registrar_;
 
   // Name of the dictionary preference managed by this class.
   const std::string& pref_name_;

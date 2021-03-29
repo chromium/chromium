@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 
@@ -52,7 +51,7 @@ class IdentityDialogController
 
  private:
   WebIdDialog& GetOrCreateView(content::WebContents* rp_web_contents);
-  CheckedPtr<WebIdDialog> view_{nullptr};
+  WebIdDialog* view_{nullptr};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_

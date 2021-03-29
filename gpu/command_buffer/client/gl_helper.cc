@@ -16,7 +16,6 @@
 #include "base/containers/queue.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -43,7 +42,7 @@ class ScopedFlush {
   ~ScopedFlush() { gl_->Flush(); }
 
  private:
-  CheckedPtr<gles2::GLES2Interface> gl_;
+  gles2::GLES2Interface* gl_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFlush);
 };
@@ -107,7 +106,7 @@ class I420ConverterImpl : public I420Converter {
                               GLuint u_plane_texture,
                               GLuint v_plane_texture);
 
-  const CheckedPtr<GLES2Interface> gl_;
+  GLES2Interface* const gl_;
 
  private:
   // These generate the Y/U/V planes. If MRT is being used, |y_planerizer_|
@@ -202,7 +201,7 @@ class GLHelper::CopyTextureToImpl
     gfx::Size size;
     size_t bytes_per_row;
     size_t row_stride_bytes;
-    CheckedPtr<unsigned char> pixels;
+    unsigned char* pixels;
     base::OnceCallback<void(bool)> callback;
     GLuint buffer;
     GLuint query;
@@ -263,8 +262,8 @@ class GLHelper::CopyTextureToImpl
                      base::OnceCallback<void(bool)> callback) override;
 
    private:
-    CheckedPtr<GLES2Interface> gl_;
-    CheckedPtr<CopyTextureToImpl> copy_impl_;
+    GLES2Interface* gl_;
+    CopyTextureToImpl* copy_impl_;
     ReadbackSwizzle swizzle_;
 
     // May be null if no scaling is required. This can be changed between

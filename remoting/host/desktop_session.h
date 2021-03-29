@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace remoting {
 
@@ -34,7 +33,7 @@ class DesktopSession {
 
  private:
   // The owner of |this|.
-  const CheckedPtr<DaemonProcess> daemon_process_;
+  DaemonProcess* const daemon_process_;
 
   // A unique identifier of the terminal.
   const int id_;

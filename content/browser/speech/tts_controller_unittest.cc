@@ -6,7 +6,6 @@
 
 #include "content/browser/speech/tts_controller_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -95,7 +94,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   }
 
  private:
-  const CheckedPtr<TtsController> controller_;
+  TtsController* const controller_;
   bool platform_supported_ = true;
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;

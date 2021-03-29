@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/notifications/notification_blocker.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -96,7 +95,7 @@ class NotificationDisplayQueue : public NotificationBlocker::Observer {
   };
 
   // The |notification_display_service_| owns |this|.
-  CheckedPtr<NotificationDisplayService> notification_display_service_;
+  NotificationDisplayService* notification_display_service_;
 
   // A list of notification blockers that indicate when notifications should be
   // blocked and notify when their state changes.

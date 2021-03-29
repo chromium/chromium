@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -113,14 +112,14 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   // Command line options to be passed to browser. Initialized in constructor.
   int argc;
-  CheckedPtr<const char*> argv;
+  const char** argv;
 
 #if defined(OS_WIN)
   // Set hardware instance if available, otherwise it defaults to 0.
   HINSTANCE instance = 0;
 
   // Set with sandbox information. This has to be already initialized.
-  CheckedPtr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
+  sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
 #endif
 
   // Address at which DevTools should listen for connections. Disabled by
@@ -134,7 +133,7 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   bool DevtoolsServerEnabled();
 
   // Optional message pump that overrides the default. Must outlive the browser.
-  CheckedPtr<base::MessagePump> message_pump = nullptr;
+  base::MessagePump* message_pump = nullptr;
 
   // Run the browser in single process mode instead of using separate renderer
   // processes as per default. Note that this also disables any sandboxing of

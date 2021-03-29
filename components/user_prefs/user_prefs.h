@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_PREFS_USER_PREFS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/user_prefs/user_prefs_export.h"
 
@@ -34,7 +33,7 @@ class USER_PREFS_EXPORT UserPrefs : public base::SupportsUserData::Data {
   explicit UserPrefs(PrefService* prefs);
 
   // Non-owning; owned by embedder.
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(UserPrefs);
 };

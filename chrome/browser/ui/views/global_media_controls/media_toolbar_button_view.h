@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -41,12 +40,12 @@ class MediaToolbarButtonView : public ToolbarButton,
  private:
   void ButtonPressed();
 
-  const CheckedPtr<const Browser> browser_;
+  const Browser* const browser_;
 
-  const CheckedPtr<MediaNotificationService> service_;
+  MediaNotificationService* const service_;
 
   // The window's IPH promo controller.
-  const CheckedPtr<FeaturePromoControllerViews> feature_promo_controller_;
+  FeaturePromoControllerViews* const feature_promo_controller_;
 
   std::unique_ptr<MediaToolbarButtonController> controller_;
 

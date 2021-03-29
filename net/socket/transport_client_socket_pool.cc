@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -106,7 +105,7 @@ class TransportClientSocketPool::ConnectJobFactoryImpl
  private:
   const ProxyServer proxy_server_;
   const bool is_for_websockets_;
-  CheckedPtr<const CommonConnectJobParams> common_connect_job_params_;
+  const CommonConnectJobParams* common_connect_job_params_;
 
   DISALLOW_COPY_AND_ASSIGN(ConnectJobFactoryImpl);
 };

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -283,7 +282,7 @@ class ForwardingDelegate : public BrowserActionsContainer::Delegate {
   base::Optional<int> GetMaxBrowserActionsWidth() const override;
 
  private:
-  const CheckedPtr<BrowserActionsContainer::Delegate> forward_to_;
+  BrowserActionsContainer::Delegate* const forward_to_;
   base::Optional<int> max_browser_actions_width_;
 };
 
@@ -522,7 +521,7 @@ class BrowserActionsContainerOverflowTest
   void TearDownOnMainThread() override;
 
   // The main BrowserActionsContainer (owned by the browser view).
-  CheckedPtr<BrowserActionsContainer> main_bar_;
+  BrowserActionsContainer* main_bar_;
 
   // A parent view for the overflow menu.
   std::unique_ptr<views::View> overflow_parent_;
@@ -530,7 +529,7 @@ class BrowserActionsContainerOverflowTest
   // The overflow BrowserActionsContainer. We manufacture this so that we don't
   // have to open the app menu.
   // Owned by the |overflow_parent_|.
-  CheckedPtr<BrowserActionsContainer> overflow_bar_;
+  BrowserActionsContainer* overflow_bar_;
 };
 
 void BrowserActionsContainerOverflowTest::SetUpOnMainThread() {

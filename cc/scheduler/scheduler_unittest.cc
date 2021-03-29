@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -287,7 +286,7 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
   std::vector<const char*> actions_;
-  CheckedPtr<TestScheduler> scheduler_ = nullptr;
+  TestScheduler* scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   base::Optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
@@ -587,7 +586,7 @@ class SchedulerTest : public testing::Test {
   SchedulerSettings scheduler_settings_;
   std::unique_ptr<FakeSchedulerClient> client_;
   std::unique_ptr<TestScheduler> scheduler_;
-  CheckedPtr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
+  FakeCompositorTimingHistory* fake_compositor_timing_history_;
 };
 
 TEST_F(SchedulerTest, InitializeLayerTreeFrameSinkDoesNotBeginImplFrame) {

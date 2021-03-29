@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "components/query_tiles/internal/log_source.h"
@@ -72,15 +71,15 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   void PingLogSink();
 
   // Native Background Scheduler instance.
-  CheckedPtr<background_task::BackgroundTaskScheduler> scheduler_;
+  background_task::BackgroundTaskScheduler* scheduler_;
 
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Clock object to get current time.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // TickClock used for building backoff entry.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Backoff policy used for reschdule.
   std::unique_ptr<net::BackoffEntry::Policy> backoff_policy_;
@@ -90,7 +89,7 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   bool is_suspend_;
 
   // Delegate instance.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Internal fetcher status.
   TileInfoRequestStatus fetcher_status_;
@@ -99,7 +98,7 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   TileGroupStatus group_status_;
 
   // LogSink instance.
-  CheckedPtr<LogSink> log_sink_;
+  LogSink* log_sink_;
 };
 
 }  // namespace query_tiles

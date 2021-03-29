@@ -6,7 +6,6 @@
 #include "base/check_op.h"
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
@@ -105,7 +104,7 @@ class TestNetworkQualityObserver
   size_t num_notifications_;
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  CheckedPtr<NetworkQualityTracker> tracker_;
+  NetworkQualityTracker* tracker_;
   net::EffectiveConnectionType effective_connection_type_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityObserver);

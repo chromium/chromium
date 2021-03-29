@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/feed_stream.h"
@@ -139,11 +138,11 @@ class WebFeedSubscriptionModel {
  private:
   // Each of these are non-null and guaranteed to remain valid for the lifetime
   // of WebFeedSubscriptionModel.
-  CheckedPtr<FeedStore> store_;
-  CheckedPtr<WebFeedIndex> index_;
+  FeedStore* store_;
+  WebFeedIndex* index_;
   // Owned by WebFeedSubscriptionCoordinator so that memory of recent
   // subscriptions is retained when the model is deleted.
-  CheckedPtr<std::vector<feedstore::WebFeedInfo>> recent_unsubscribed_;
+  std::vector<feedstore::WebFeedInfo>* recent_unsubscribed_;
 
   // The current known state of subscriptions.
   std::vector<feedstore::WebFeedInfo> subscriptions_;

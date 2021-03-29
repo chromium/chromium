@@ -20,7 +20,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process.h"
@@ -1385,11 +1384,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     void OnFrameTreeNodeDestroyed(FrameTreeNode* node) final;
 
     // The WebContents that owns this WebContentsTreeNode.
-    const CheckedPtr<WebContentsImpl> current_web_contents_;
+    WebContentsImpl* const current_web_contents_;
 
     // The outer WebContents of |current_web_contents_|, or nullptr if
     // |current_web_contents_| is the outermost WebContents.
-    CheckedPtr<WebContentsImpl> outer_web_contents_;
+    WebContentsImpl* outer_web_contents_;
 
     // The ID of the FrameTreeNode in the |outer_web_contents_| that hosts
     // |current_web_contents_| as an inner WebContents.
@@ -1402,7 +1401,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // Only the root node should have this set. This indicates the WebContents
     // whose frame tree has the focused frame. The WebContents tree could be
     // arbitrarily deep.
-    CheckedPtr<WebContentsImpl> focused_web_contents_;
+    WebContentsImpl* focused_web_contents_;
   };
 
   // Container for WebContentsObservers, which knows when we are iterating over

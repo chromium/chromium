@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
@@ -56,11 +55,11 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
-  CheckedPtr<DesktopMediaListController> controller_;
+  DesktopMediaListController* controller_;
 
   DesktopMediaSourceViewStyle single_style_;
   DesktopMediaSourceViewStyle generic_style_;
-  CheckedPtr<DesktopMediaSourceViewStyle> active_style_;
+  DesktopMediaSourceViewStyle* active_style_;
 
   const std::u16string accessible_name_;
 

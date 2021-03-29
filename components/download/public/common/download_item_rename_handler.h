@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_ITEM_RENAME_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 
 namespace base {
@@ -45,7 +44,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
   virtual void ShowDownloadInContext();
 
  private:
-  CheckedPtr<DownloadItem> download_item_;
+  DownloadItem* download_item_;
 };
 
 }  // namespace download

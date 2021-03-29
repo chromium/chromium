@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -87,7 +86,7 @@ class SessionServiceLogTest : public InProcessBrowserTest {
 
  protected:
   // Cached as browser() may be destroyed.
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

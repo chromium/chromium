@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/callback_helpers.h"
 #include "base/one_shot_event.h"
@@ -88,7 +87,7 @@ class BrowserRemovedWaiter final : public BrowserListObserver {
   }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   base::RunLoop run_loop_;
 };
 

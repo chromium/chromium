@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 
 class PrefService;
@@ -100,10 +99,10 @@ class TriggerThrottler {
 
   // Pref service for accessing local state prefs (ie: unsynced, tied to the
   // browser not to a profile). Used to persist quota.
-  CheckedPtr<PrefService> local_state_prefs_;
+  PrefService* local_state_prefs_;
 
   // Can be set for testing.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Stores each trigger type that fired along with the timestamps of when it
   // fired.

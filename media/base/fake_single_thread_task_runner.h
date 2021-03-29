@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 
@@ -40,7 +39,7 @@ class FakeSingleThreadTaskRunner final : public base::SingleThreadTaskRunner {
   ~FakeSingleThreadTaskRunner() final;
 
  private:
-  const CheckedPtr<base::SimpleTestTickClock> clock_;
+  base::SimpleTestTickClock* const clock_;
 
   // A compound key is used to ensure FIFO execution of delayed tasks scheduled
   // for the same point-in-time.  The second part of the key is simply a FIFO

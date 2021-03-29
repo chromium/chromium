@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_GAIA_REMOTE_CONSENT_FLOW_H_
 
 #include "base/callback_list.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
@@ -87,8 +86,8 @@ class GaiaRemoteConsentFlow
 
   void GaiaRemoteConsentFlowFailed(Failure failure);
 
-  CheckedPtr<Delegate> delegate_;
-  CheckedPtr<Profile> profile_;
+  Delegate* delegate_;
+  Profile* profile_;
   CoreAccountId account_id_;
   RemoteConsentResolutionData resolution_data_;
 

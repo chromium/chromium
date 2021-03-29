@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -148,9 +147,9 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     }
   }
 
-  CheckedPtr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
-  CheckedPtr<FeaturePromoControllerViews> promo_controller_;
-  CheckedPtr<FeaturePromoSnoozeService> snooze_service_;
+  NiceMock<feature_engagement::test::MockTracker>* mock_tracker_;
+  FeaturePromoControllerViews* promo_controller_;
+  FeaturePromoSnoozeService* snooze_service_;
 
  private:
   static void RegisterMockTracker(content::BrowserContext* context) {

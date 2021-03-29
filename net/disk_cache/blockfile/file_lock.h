@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format_base.h"
 
@@ -40,7 +39,7 @@ class NET_EXPORT_PRIVATE FileLock {
   virtual void Unlock();
  private:
   bool acquired_;
-  CheckedPtr<volatile int32_t> updating_;
+  volatile int32_t* updating_;
 };
 
 }  // namespace disk_cache

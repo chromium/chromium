@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/strings/string_number_conversions.h"
@@ -130,7 +129,7 @@ class TCPClientSocketTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 
-  CheckedPtr<TestPowerMonitorSource> power_monitor_source_;
+  TestPowerMonitorSource* power_monitor_source_;
 };
 
 // Try binding a socket to loopback interface and verify that we can

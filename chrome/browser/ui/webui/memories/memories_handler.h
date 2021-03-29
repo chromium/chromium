@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/memories/core/memories.mojom.h"
 #include "components/memories/core/memories_remote_model_helper.h"
@@ -64,8 +63,8 @@ class MemoriesHandler : public memories::mojom::PageHandler {
                              history::QueryResults results);
 #endif
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<content::WebContents> web_contents_;
+  Profile* profile_;
+  content::WebContents* web_contents_;
 
   mojo::Remote<memories::mojom::Page> page_;
   mojo::Receiver<memories::mojom::PageHandler> page_handler_;

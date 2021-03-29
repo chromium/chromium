@@ -35,7 +35,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -592,7 +591,7 @@ class CONTENT_EXPORT MediaStreamManager
                                  int page_request_id,
                                  blink::mojom::PermissionStatus status);
 
-  const CheckedPtr<media::AudioSystem> audio_system_;  // not owned
+  media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
 

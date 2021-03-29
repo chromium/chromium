@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
@@ -45,13 +44,13 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   gfx::Size CalculatePreferredSize() const override;
 
   // Sub view that displays the actual generated password.
-  CheckedPtr<GeneratedPasswordBox> password_view_ = nullptr;
+  GeneratedPasswordBox* password_view_ = nullptr;
 
   // The footer label.
-  CheckedPtr<views::Label> help_label_ = nullptr;
+  views::Label* help_label_ = nullptr;
 
   // Controller for this view. Weak reference.
-  CheckedPtr<PasswordGenerationPopupController> controller_;
+  PasswordGenerationPopupController* controller_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordGenerationPopupViewViews);
 };

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
@@ -75,13 +74,13 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
   // size.
   void MaybeSizeToContents();
 
-  CheckedPtr<SendTabToSelfBubbleController> controller_;  // Weak reference.
+  SendTabToSelfBubbleController* controller_;  // Weak reference.
 
   // Title shown at the top of the bubble.
   std::u16string bubble_title_;
 
   // ScrollView containing the list of device buttons.
-  CheckedPtr<views::ScrollView> scroll_view_ = nullptr;
+  views::ScrollView* scroll_view_ = nullptr;
 
   // The device that the user has selected to share tab to.
   base::Optional<size_t> selected_device_index_;

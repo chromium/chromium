@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
@@ -228,8 +227,8 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   GURL report_uri_;
   base::Time expiration_;
   uint32_t num_failures_;
-  CheckedPtr<const X509Certificate> served_certificate_chain_;
-  CheckedPtr<const X509Certificate> validated_certificate_chain_;
+  const X509Certificate* served_certificate_chain_;
+  const X509Certificate* validated_certificate_chain_;
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;
   NetworkIsolationKey network_isolation_key_;
 };

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -127,13 +126,13 @@ class WebAuthFlow : public content::WebContentsObserver,
   void BeforeUrlLoaded(const GURL& url);
   void AfterUrlLoaded();
 
-  CheckedPtr<Delegate> delegate_;
-  CheckedPtr<Profile> profile_;
+  Delegate* delegate_;
+  Profile* profile_;
   GURL provider_url_;
   Mode mode_;
   Partition partition_;
 
-  CheckedPtr<AppWindow> app_window_;
+  AppWindow* app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
 

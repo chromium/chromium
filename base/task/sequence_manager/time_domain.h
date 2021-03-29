@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/common/intrusive_heap.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -143,7 +142,7 @@ class BASE_EXPORT TimeDomain {
     HeapHandle GetHeapHandle() const { return queue->heap_handle(); }
   };
 
-  CheckedPtr<internal::SequenceManagerImpl> sequence_manager_;  // Not owned.
+  internal::SequenceManagerImpl* sequence_manager_;  // Not owned.
   base::internal::IntrusiveHeap<ScheduledDelayedWakeUp> delayed_wake_up_queue_;
   int pending_high_res_wake_up_count_ = 0;
 

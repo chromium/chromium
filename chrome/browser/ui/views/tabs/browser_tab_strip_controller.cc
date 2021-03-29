@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -189,12 +188,12 @@ class BrowserTabStripController::TabContextMenuContents
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The tab we're showing a menu for.
-  CheckedPtr<Tab> tab_;
+  Tab* tab_;
 
   // A pointer back to our hosting controller, for command state information.
-  CheckedPtr<BrowserTabStripController> controller_;
+  BrowserTabStripController* controller_;
 
-  const CheckedPtr<FeaturePromoController> feature_promo_controller_;
+  FeaturePromoController* const feature_promo_controller_;
 
   // Handle we keep if showing menu IPH for tab groups.
   base::Optional<FeaturePromoController::PromoHandle> tab_groups_promo_handle_;
@@ -353,7 +352,7 @@ bool BrowserTabStripController::BeforeCloseTab(int model_index,
             if (result == Browser::WarnBeforeClosingResult::kOkToClose)
               tab_strip->CloseTab(tab_strip->tab_at(model_index), source);
           },
-          base::Unretained(tabstrip_.get()), model_index, source));
+          base::Unretained(tabstrip_), model_index, source));
 
   return result == Browser::WarnBeforeClosingResult::kOkToClose;
 }

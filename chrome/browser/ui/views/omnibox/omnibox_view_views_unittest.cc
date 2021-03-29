@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -165,7 +164,7 @@ class TestingOmniboxView : public OmniboxViewViews {
   // order.
   std::vector<std::pair<SkColor, gfx::Range>> range_colors_;
 
-  CheckedPtr<TestLocationBarModel> location_bar_model_;
+  TestLocationBarModel* location_bar_model_;
 
   // SetEmphasis() logs whether the base color of the text is emphasized.
   bool base_text_emphasis_;
@@ -465,8 +464,8 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
       omnibox_view_->Update();
   }
 
-  CheckedPtr<LocationBarModel> location_bar_model_;
-  CheckedPtr<OmniboxViewViews> omnibox_view_ = nullptr;
+  LocationBarModel* location_bar_model_;
+  OmniboxViewViews* omnibox_view_ = nullptr;
 };
 
 }  // namespace
@@ -581,7 +580,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  CheckedPtr<TestingOmniboxView> omnibox_view_;
+  TestingOmniboxView* omnibox_view_;
 
   std::unique_ptr<views::TextfieldTestApi> test_api_;
 };

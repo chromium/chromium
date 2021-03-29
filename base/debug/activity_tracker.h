@@ -27,7 +27,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/process_handle.h"
@@ -224,7 +223,7 @@ class BASE_EXPORT ActivityTrackerMemoryAllocator {
   size_t cache_used() const { return cache_used_; }
 
  private:
-  const CheckedPtr<PersistentMemoryAllocator> allocator_;
+  PersistentMemoryAllocator* const allocator_;
   const uint32_t object_type_;
   const uint32_t object_free_type_;
   const size_t object_size_;
@@ -534,9 +533,8 @@ class BASE_EXPORT ActivityUserData {
 
     StringPiece name;                 // The "key" of the record.
     ValueType type;                   // The type of the value.
-    CheckedPtr<void> memory;          // Where the "value" is held.
-    CheckedPtr<std::atomic<uint16_t>>
-        size_ptr;                     // Address of the actual size of value.
+    void* memory;                     // Where the "value" is held.
+    std::atomic<uint16_t>* size_ptr;  // Address of the actual size of value.
     size_t extent;                    // The total storage of the value,
   };                                  // typically rounded up for alignment.
 
@@ -560,11 +558,11 @@ class BASE_EXPORT ActivityUserData {
   // Information about the memory block in which new data can be stored. These
   // are "mutable" because they change even on "const" objects that are just
   // skipping already set values.
-  mutable CheckedPtr<char> memory_;
+  mutable char* memory_;
   mutable size_t available_;
 
   // A pointer to the memory header for this instance.
-  const CheckedPtr<MemoryHeader> header_;
+  MemoryHeader* const header_;
 
   // These hold values used when initially creating the object. They are
   // compared against current header values to check for outside changes.
@@ -652,7 +650,7 @@ class BASE_EXPORT ThreadActivityTracker {
    protected:
     // The thread tracker to which this object reports. It can be null if
     // activity tracking is not (yet) enabled.
-    const CheckedPtr<ThreadActivityTracker> tracker_;
+    ThreadActivityTracker* const tracker_;
 
     // An identifier that indicates a specific activity on the stack.
     ActivityId activity_id_;
@@ -762,8 +760,8 @@ class BASE_EXPORT ThreadActivityTracker {
       Activity* activity,
       ActivityTrackerMemoryAllocator* allocator);
 
-  const CheckedPtr<Header> header_;   // Pointer to the Header structure.
-  const CheckedPtr<Activity> stack_;  // The stack of activities.
+  Header* const header_;        // Pointer to the Header structure.
+  Activity* const stack_;       // The stack of activities.
 
 #if DCHECK_IS_ON()
   // The ActivityTracker is thread bound, and will be invoked across all the
@@ -1157,7 +1155,7 @@ class BASE_EXPORT GlobalActivityTracker {
     const PersistentMemoryAllocator::Reference mem_reference_;
 
     // The physical address used for the thread-tracker's memory.
-    const CheckedPtr<void> mem_base_;
+    void* const mem_base_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ManagedActivityTracker);

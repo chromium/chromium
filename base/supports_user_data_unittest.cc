@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,8 +27,8 @@ struct UsesItself : public SupportsUserData::Data {
     EXPECT_EQ(nullptr, supports_user_data_->GetUserData(key_));
   }
 
-  CheckedPtr<SupportsUserData> supports_user_data_;
-  CheckedPtr<const void> key_;
+  SupportsUserData* supports_user_data_;
+  const void* key_;
 };
 
 TEST(SupportsUserDataTest, ClearWorksRecursively) {

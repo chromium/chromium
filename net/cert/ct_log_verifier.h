@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
@@ -94,7 +93,7 @@ class NET_EXPORT CTLogVerifier
   ct::DigitallySigned::HashAlgorithm hash_algorithm_;
   ct::DigitallySigned::SignatureAlgorithm signature_algorithm_;
 
-  CheckedPtr<EVP_PKEY> public_key_;
+  EVP_PKEY* public_key_;
 };
 
 }  // namespace net

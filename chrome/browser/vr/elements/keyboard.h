@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_KEYBOARD_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/keyboard_delegate.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
@@ -61,7 +60,7 @@ class VR_UI_EXPORT Keyboard : public UiElement {
 
   void UpdateDelegateVisibility();
 
-  CheckedPtr<KeyboardDelegate> delegate_ = nullptr;
+  KeyboardDelegate* delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };

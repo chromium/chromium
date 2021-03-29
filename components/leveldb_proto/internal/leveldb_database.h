@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_split.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -113,7 +112,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   std::unique_ptr<leveldb::DB> db_;
   base::FilePath database_dir_;
   leveldb_env::Options open_options_;
-  CheckedPtr<base::HistogramBase> approx_memtable_mem_histogram_;
+  base::HistogramBase* approx_memtable_mem_histogram_;
 
   DISALLOW_COPY_AND_ASSIGN(LevelDB);
 };

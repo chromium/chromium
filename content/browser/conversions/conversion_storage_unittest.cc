@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
@@ -95,7 +94,7 @@ class ConversionStorageTest : public testing::Test {
   base::ScopedTempDir dir_;
 
  private:
-  CheckedPtr<ConfigurableStorageDelegate> delegate_;
+  ConfigurableStorageDelegate* delegate_;
   base::SimpleTestClock clock_;
   std::unique_ptr<ConversionStorage> storage_;
 };

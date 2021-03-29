@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
@@ -60,7 +59,7 @@ class ProcessedStudy {
 
  private:
   // Corresponding Study object. Weak reference.
-  CheckedPtr<const Study> study_ = nullptr;
+  const Study* study_ = nullptr;
 
   // Computed total group probability for the study.
   base::FieldTrial::Probability total_probability_ = 0;

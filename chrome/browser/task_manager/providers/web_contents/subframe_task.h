@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_SUBFRAME_TASK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace content {
@@ -37,10 +36,10 @@ class SubframeTask : public RendererTask {
  private:
   std::u16string GetTitle();
 
-  CheckedPtr<content::SiteInstance> site_instance_;
+  content::SiteInstance* site_instance_;
 
   // The task for the main frame of this WebContents.
-  CheckedPtr<RendererTask> main_task_;
+  RendererTask* main_task_;
 
   DISALLOW_COPY_AND_ASSIGN(SubframeTask);
 };
