@@ -439,6 +439,7 @@ class ChannelMac : public Channel,
   }
 
   bool MachMessageSendLocked(mach_msg_header_t* header) {
+    recordreplay::Assert("MachMessageSendLocked %lu", header->msgh_size);
     kern_return_t kr = mach_msg(header, MACH_SEND_MSG | MACH_SEND_TIMEOUT,
                                 header->msgh_size, 0, MACH_PORT_NULL,
                                 /*timeout=*/0, MACH_PORT_NULL);
