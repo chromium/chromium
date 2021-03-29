@@ -998,28 +998,27 @@ TEST_F(ScreenOrientationControllerTest,
   EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
 }
 
-class ForceInPhysicalTabletStateTest : public ScreenOrientationControllerTest {
+class SupportsClamshellAutoRotation : public ScreenOrientationControllerTest {
  public:
-  ForceInPhysicalTabletStateTest() = default;
-  ForceInPhysicalTabletStateTest(const ForceInPhysicalTabletStateTest&) =
-      delete;
-  ForceInPhysicalTabletStateTest& operator=(
-      const ForceInPhysicalTabletStateTest&) = delete;
-  ~ForceInPhysicalTabletStateTest() override = default;
+  SupportsClamshellAutoRotation() = default;
+  SupportsClamshellAutoRotation(const SupportsClamshellAutoRotation&) = delete;
+  SupportsClamshellAutoRotation& operator=(
+      const SupportsClamshellAutoRotation&) = delete;
+  ~SupportsClamshellAutoRotation() override = default;
 
   // ScreenOrientationControllerTest:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kForceInTabletPhysicalState);
+        switches::kSupportsClamshellAutoRotation);
     ScreenOrientationControllerTest::SetUp();
   }
 };
 
-// Tests that screen rotation is supported while the device is forced to stay
-// in physical tablet state.
-TEST_F(ForceInPhysicalTabletStateTest, ScreenRotation) {
+// Tests that auto rotation is supported even in clamshell when
+// kSupportsClamshellAutoRotation is set.
+TEST_F(SupportsClamshellAutoRotation, ScreenRotation) {
   TabletModeControllerTestApi tablet_mode_controller_test_api;
-  ASSERT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  ASSERT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
 
   // Test rotating in all directions are supported.
   TriggerLidUpdate(gfx::Vector3dF(kMeanGravityFloat, 0.0f, 0.0f));

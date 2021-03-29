@@ -129,9 +129,15 @@ bool IsAngleBetweenAccelerometerReadingsStable(
          kNoisyMagnitudeDeviation;
 }
 
-// Returns the UiMode given by the force-table-mode command line.
+// Returns the UiMode given by the force-table-mode or
+// supports-clamshell-auto-rotation command line.
 TabletModeController::UiMode GetUiMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // TODO(minch): Remove this once crbug.com/1189420 is fixed. Since Dooly will
+  // stay in clamshell without |touchview| USE flag.
+  if (command_line->HasSwitch(switches::kSupportsClamshellAutoRotation))
+    return TabletModeController::UiMode::kClamshell;
+
   if (command_line->HasSwitch(switches::kAshUiMode)) {
     std::string switch_value =
         command_line->GetSwitchValueASCII(switches::kAshUiMode);
@@ -259,17 +265,6 @@ constexpr TabletModeController::TabletModeBehavior kOnForDev{
     /*observe_pointer_device_events=*/true,
     /*block_internal_input_device=*/false,
     /*always_show_overview_button=*/true,
-    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
-};
-
-// Defines the behavior that sticks to physical tablet state. Used to implement
-// the --force-in-tablet-physical-state switch.
-constexpr TabletModeController::TabletModeBehavior kForceOnBySwitch{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/true,
-    /*block_internal_input_device=*/true,
-    /*always_show_overview_button=*/false,
     TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
@@ -586,12 +581,6 @@ void TabletModeController::OnShellInitialized() {
 
     case UiMode::kNone:
       break;
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceInTabletPhysicalState)) {
-    tablet_mode_behavior_ = kForceOnBySwitch;
-    SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
   }
 }
 

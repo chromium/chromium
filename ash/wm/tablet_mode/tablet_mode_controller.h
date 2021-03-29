@@ -394,9 +394,8 @@ class ASH_EXPORT TabletModeController
   UiMode forced_ui_mode_ = UiMode::kNone;
 
   // True if the device is physically in a tablet state regardless of the UI
-  // tablet mode state. The physical tablet state usually changes based on
-  // device events such as lid angle changes, or device getting detached from
-  // its base. A device also can be forced to stay in physical tablet state.
+  // tablet mode state. The physical tablet state only changes based on device
+  // events such as lid angle changes, or device getting detached from its base.
   bool is_in_tablet_physical_state_ = false;
 
   // Set when tablet mode switch is on. This is used to force tablet mode.
