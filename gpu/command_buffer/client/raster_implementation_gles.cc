@@ -39,6 +39,8 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type) {
       return GL_RGBA;
     case kBGRA_8888_SkColorType:
       return GL_BGRA_EXT;
+    case kR8G8_unorm_SkColorType:
+      return GL_RG_EXT;
     case kGray_8_SkColorType:
       return GL_LUMINANCE;
     default:
@@ -52,6 +54,7 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
   switch (color_type) {
     case kRGBA_8888_SkColorType:
     case kBGRA_8888_SkColorType:
+    case kR8G8_unorm_SkColorType:
     case kGray_8_SkColorType:
       return GL_UNSIGNED_BYTE;
     default:
