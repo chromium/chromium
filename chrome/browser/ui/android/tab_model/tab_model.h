@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -164,7 +165,7 @@ class TabModel {
   LocationBarModel* GetLocationBarModel();
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   chrome::android::ActivityType activity_type_;
 

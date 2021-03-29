@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SCREENSHOT_AREA_H_
 #define CHROME_BROWSER_UI_ASH_SCREENSHOT_AREA_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,7 +32,7 @@ struct ScreenshotArea {
   ScreenshotArea(const ScreenshotArea& area);
 
   const ScreenshotType type;
-  const aura::Window* window = nullptr;
+  CheckedPtr<const aura::Window> window = nullptr;
   const base::Optional<const gfx::Rect> rect;
 
  private:

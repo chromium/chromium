@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -247,7 +248,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   std::unique_ptr<content::MockRenderProcessHost> renderer_;
 
   // Not owned preferences service.
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   // Binding to receive the SpellChecker request flow.
   mojo::Receiver<spellcheck::mojom::SpellChecker> receiver_{this};

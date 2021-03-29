@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -73,7 +74,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
 
 #if BUILDFLAG(ENABLE_VULKAN)
   sk_sp<GrDirectContext> gr_context_;
-  gpu::VulkanImplementation* vulkan_implementation_;
+  CheckedPtr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
   const uint32_t heap_memory_limit_;
   const uint32_t sync_cpu_memory_limit_;

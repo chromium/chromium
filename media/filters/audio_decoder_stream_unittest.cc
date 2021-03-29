@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -119,7 +120,7 @@ class AudioDecoderStreamTest : public testing::Test {
   testing::NiceMock<MockDemuxerStream> demuxer_stream_{DemuxerStream::AUDIO};
   AudioDecoderStream audio_decoder_stream_;
 
-  MockAudioDecoder* decoder_ = nullptr;
+  CheckedPtr<MockAudioDecoder> decoder_ = nullptr;
   AudioDecoder::OutputCB decoder_output_cb_;
   base::TimeDelta last_timestamp_;
 

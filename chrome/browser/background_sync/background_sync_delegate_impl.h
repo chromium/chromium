@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
@@ -85,11 +86,11 @@ class BackgroundSyncDelegateImpl
       site_engagement::EngagementType engagement_type) override;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   bool off_the_record_;
-  ukm::UkmBackgroundRecorderService* ukm_background_service_;
+  CheckedPtr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
   // Same lifetime as |profile_|.
-  site_engagement::SiteEngagementService* site_engagement_service_;
+  CheckedPtr<site_engagement::SiteEngagementService> site_engagement_service_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
 };
 

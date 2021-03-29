@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -294,7 +295,7 @@ class CdmWrapperImpl : public CdmWrapper {
  private:
   CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
 
-  CdmInterface* cdm_;
+  CheckedPtr<CdmInterface> cdm_;
 
   DISALLOW_COPY_AND_ASSIGN(CdmWrapperImpl);
 };

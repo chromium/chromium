@@ -163,11 +163,11 @@ SaveAddressProfileView::SaveAddressProfileView(
       features::kAutofillAddressProfileSavePrompt));
   SetAcceptCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   views::FlexLayout* flex_layout =
@@ -191,7 +191,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(
               &SaveAddressProfileBubbleController::OnEditButtonClicked,
-              base::Unretained(controller_)),
+              base::Unretained(controller_.get())),
           vector_icons::kEditIcon, gfx::kFaviconSize);
   edit_button->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kEnd);

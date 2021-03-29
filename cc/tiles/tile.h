@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/draw_image.h"
 #include "cc/raster/tile_task.h"
@@ -139,8 +140,8 @@ class CC_EXPORT Tile {
        int source_frame_number,
        int flags);
 
-  TileManager* const tile_manager_;
-  const PictureLayerTiling* tiling_;
+  const CheckedPtr<TileManager> tile_manager_;
+  CheckedPtr<const PictureLayerTiling> tiling_;
   const gfx::Rect content_rect_;
   const gfx::Rect enclosing_layer_rect_;
   const gfx::AxisTransform2d raster_transform_;

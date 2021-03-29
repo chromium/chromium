@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/common/signatures.h"
 #include "url/gurl.h"
 
@@ -73,11 +74,11 @@ class PasswordGenerationFrameHelper {
 
   // The PasswordManagerClient instance associated with this instance. Must
   // outlive this instance.
-  PasswordManagerClient* client_;
+  CheckedPtr<PasswordManagerClient> client_;
 
   // The PasswordManagerDriver instance associated with this instance. Must
   // outlive this instance.
-  PasswordManagerDriver* driver_;
+  CheckedPtr<PasswordManagerDriver> driver_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordGenerationFrameHelper);
 };

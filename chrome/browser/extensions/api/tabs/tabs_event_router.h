@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -190,7 +191,7 @@ class TabsEventRouter : public TabStripModelObserver,
     GURL url_;
 
     // Event router that the WebContents's noficiations are forwarded to.
-    TabsEventRouter* router_;
+    CheckedPtr<TabsEventRouter> router_;
 
     DISALLOW_COPY_AND_ASSIGN(TabEntry);
   };
@@ -203,7 +204,7 @@ class TabsEventRouter : public TabStripModelObserver,
   TabEntryMap tab_entries_;
 
   // The main profile that owns this event router.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "base/values.h"
 
@@ -364,7 +365,7 @@ class APIPermission {
   virtual void Log(std::string* log) const = 0;
 
  private:
-  const APIPermissionInfo* const info_;
+  const CheckedPtr<const APIPermissionInfo> info_;
 };
 
 

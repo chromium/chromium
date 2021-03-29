@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_ELEMENTS_RENDER_TEXT_WRAPPER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/render_text.h"
 
@@ -32,7 +33,7 @@ class VR_UI_EXPORT RenderTextWrapper {
   virtual void SetDirectionalityMode(gfx::DirectionalityMode mode);
 
  private:
-  gfx::RenderText* render_text_ = nullptr;
+  CheckedPtr<gfx::RenderText> render_text_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RenderTextWrapper);
 };

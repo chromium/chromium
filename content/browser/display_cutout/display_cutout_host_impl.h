@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DISPLAY_CUTOUT_DISPLAY_CUTOUT_HOST_IMPL_H_
 #define CONTENT_BROWSER_DISPLAY_CUTOUT_DISPLAY_CUTOUT_HOST_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
@@ -75,7 +76,7 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
 
   // Stores the current |RenderFrameHost| that has the applied safe area insets
   // and is controlling the viewport fit value.
-  RenderFrameHost* current_rfh_ = nullptr;
+  CheckedPtr<RenderFrameHost> current_rfh_ = nullptr;
 
   // Stores a map of RenderFrameHosts and their current viewport fit values.
   std::map<RenderFrameHost*, blink::mojom::ViewportFit> values_;
@@ -84,7 +85,7 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   WebContentsFrameReceiverSet<blink::mojom::DisplayCutoutHost> receivers_;
 
   // Weak pointer to the owning |WebContentsImpl| instance.
-  WebContentsImpl* web_contents_impl_;
+  CheckedPtr<WebContentsImpl> web_contents_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayCutoutHostImpl);
 };

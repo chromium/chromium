@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -203,7 +204,7 @@ void HatsService::DelayedSurveyTask::WebContentsDestroyed() {
 }
 
 struct SurveyIdentifiers {
-  const base::Feature* feature;
+  CheckedPtr<const base::Feature> feature;
   const char* trigger;
   const char* trigger_id;
   std::vector<std::string> product_specific_data_fields;

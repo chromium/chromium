@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drop_target_win.h"
 
@@ -65,14 +66,14 @@ class DesktopDropTargetWin : public ui::DropTargetWin,
   void NotifyDragLeave();
 
   // The root window associated with this drop target.
-  aura::Window* root_window_;
+  CheckedPtr<aura::Window> root_window_;
 
   // The Aura window that is currently under the cursor. We need to manually
   // keep track of this because Windows will only call our drag enter method
   // once when the user enters the associated HWND. But inside that HWND there
   // could be multiple aura windows, so we need to generate drag enter events
   // for them.
-  aura::Window* target_window_;
+  CheckedPtr<aura::Window> target_window_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopDropTargetWin);
 };

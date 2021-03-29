@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -31,7 +32,7 @@ class HomeButton : public ToolbarButton {
       const ui::DropTargetEvent& event) override;
 
  private:
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, HomeButton, ToolbarButton)

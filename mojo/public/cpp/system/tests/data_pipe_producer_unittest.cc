@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -166,7 +167,7 @@ class TestObserver : public FilteredDataSource::Filter {
   }
 
  private:
-  DataPipeObserverData* observer_data_;
+  CheckedPtr<DataPipeObserverData> observer_data_;
   // Observer may be called on any sequence.
   base::Lock lock_;
 

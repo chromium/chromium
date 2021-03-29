@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -54,9 +55,10 @@ class BrowsingDataHistoryObserverService
   void OverrideStoragePartitionForTesting(content::StoragePartition* partition);
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
-  content::StoragePartition* storage_partition_for_testing_ = nullptr;
+  CheckedPtr<content::StoragePartition> storage_partition_for_testing_ =
+      nullptr;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_observer_{this};

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -66,7 +67,7 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) QuotaClientCallbackWrapper
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  mojom::QuotaClient* const wrapped_client_
+  const CheckedPtr<mojom::QuotaClient> wrapped_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

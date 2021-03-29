@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -93,12 +94,13 @@ class VizMainImpl : public mojom::VizMain,
     // We use a |PowerMonitorSource| here instead of a boolean flag so that
     // tests can use mocks and fakes for testing.
     mutable std::unique_ptr<base::PowerMonitorSource> power_monitor_source;
-    gpu::SyncPointManager* sync_point_manager = nullptr;
-    gpu::SharedImageManager* shared_image_manager = nullptr;
-    base::WaitableEvent* shutdown_event = nullptr;
+    CheckedPtr<gpu::SyncPointManager> sync_point_manager = nullptr;
+    CheckedPtr<gpu::SharedImageManager> shared_image_manager = nullptr;
+    CheckedPtr<base::WaitableEvent> shutdown_event = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
-    VizCompositorThreadRunner* viz_compositor_thread_runner = nullptr;
+    CheckedPtr<VizCompositorThreadRunner> viz_compositor_thread_runner =
+        nullptr;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ExternalDependencies);
@@ -157,7 +159,7 @@ class VizMainImpl : public mojom::VizMain,
                       : dependencies_.io_thread_task_runner;
   }
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   const ExternalDependencies dependencies_;
 
@@ -188,7 +190,7 @@ class VizMainImpl : public mojom::VizMain,
   // and owned by this, Viz does not interact with other objects in this class,
   // such as GpuServiceImpl or CommandBufferTaskExecutor. Code should take care
   // to avoid introducing such assumptions.
-  VizCompositorThreadRunner* viz_compositor_thread_runner_ = nullptr;
+  CheckedPtr<VizCompositorThreadRunner> viz_compositor_thread_runner_ = nullptr;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner_;
 

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -114,7 +115,7 @@ class AutocompleteClientTabAndroidUserData
   }
   friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
 
-  TabAndroid* tab_;
+  CheckedPtr<TabAndroid> tab_;
   bool initialized_ = false;
   GURL stripped_url_;
 

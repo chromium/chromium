@@ -113,9 +113,9 @@ void EditSearchEngineController::AcceptAddOrEdit(
     // Confiming an entry we got from JS. We have a template_url_, but it
     // hasn't yet been added to the model.
     DCHECK(template_url_);
-    template_url_service->AddWithOverrides(base::WrapUnique(template_url_),
-                                           title_input, keyword_input,
-                                           url_string);
+    template_url_service->AddWithOverrides(
+        base::WrapUnique(template_url_.get()), title_input, keyword_input,
+        url_string);
     base::RecordAction(UserMetricsAction("KeywordEditor_AddKeywordJS"));
   } else {
     // Adding or modifying an entry via the Delegate.

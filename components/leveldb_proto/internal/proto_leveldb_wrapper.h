@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
@@ -140,7 +141,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
   // Used to run blocking tasks in-order, must be the TaskRunner that |db_|
   // relies on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  LevelDB* db_ = nullptr;
+  CheckedPtr<LevelDB> db_ = nullptr;
 
   // The identifier used when recording metrics to determine the source of the
   // LevelDB calls, likely the database client name.

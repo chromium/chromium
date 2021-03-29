@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -104,7 +105,7 @@ class ClipboardHostImplTest : public ::testing::Test {
 
  private:
   const BrowserTaskEnvironment task_environment_;
-  ui::Clipboard* const clipboard_;
+  const CheckedPtr<ui::Clipboard> clipboard_;
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
 };
 
@@ -228,7 +229,7 @@ class ClipboardHostImplScanTest : public ::testing::Test {
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
-  ui::Clipboard* const clipboard_;
+  const CheckedPtr<ui::Clipboard> clipboard_;
   ClipboardHostImplNoRFH fake_clipboard_host_impl_;
 };
 

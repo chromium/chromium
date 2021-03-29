@@ -11,6 +11,7 @@
 #include <memory>
 #include <unordered_set>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -156,7 +157,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     ~PendingCheck();
 
     // The SafeBrowsing client that's waiting for the safe/unsafe verdict.
-    Client* client;
+    CheckedPtr<Client> client;
 
     // Determines which funtion from the |client| needs to be called once we
     // know whether the URL in |url| is safe or unsafe.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_
 #define CHROME_BROWSER_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -80,9 +81,7 @@ class PermissionActionsHistory : public KeyedService {
   std::vector<Entry> GetHistoryInternal(const base::Time& begin,
                                         const std::string& key);
 
-
-
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_

@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace content {
 class WebContents;
@@ -49,7 +50,7 @@ class SiteEngagementObserver {
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, Observers);
   friend class SiteEngagementService;
 
-  SiteEngagementService* service_;
+  CheckedPtr<SiteEngagementService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementObserver);
 };

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_FUNCTION_DETAILS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -62,7 +63,7 @@ class ChromeExtensionFunctionDetails {
  private:
   // The function for which these details have been created. Must outlive the
   // ChromeExtensionFunctionDetails instance.
-  ExtensionFunction* function_;
+  CheckedPtr<ExtensionFunction> function_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionFunctionDetails);
 };

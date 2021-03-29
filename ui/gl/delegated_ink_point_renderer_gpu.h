@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 
@@ -181,8 +182,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   // Remember the dcomp device and swap chain used to create
   // |delegated_ink_trail_| and |ink_visual_| so that we can avoid recreating
   // them when it isn't necessary.
-  IDCompositionDevice2* dcomp_device_ = nullptr;
-  IDXGISwapChain1* swap_chain_ = nullptr;
+  CheckedPtr<IDCompositionDevice2> dcomp_device_ = nullptr;
+  CheckedPtr<IDXGISwapChain1> swap_chain_ = nullptr;
 };
 
 }  // namespace gl

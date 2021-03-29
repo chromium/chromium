@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -39,9 +40,9 @@ class ProfileThemeUpdateService : public KeyedService,
   // |profile_|.
   void UpdateProfileThemeColors();
 
-  Profile* const profile_;
-  ProfileAttributesStorage* const profile_attributes_storage_;
-  ThemeService* const theme_service_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<ProfileAttributesStorage> profile_attributes_storage_;
+  const CheckedPtr<ThemeService> theme_service_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_THEME_UPDATE_SERVICE_H_

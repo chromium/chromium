@@ -193,7 +193,7 @@ void ErrorConsole::Enable() {
   // also create an ExtensionPrefs object.
   prefs_ = ExtensionPrefs::Get(profile_);
 
-  profile_observations_.AddObservation(profile_);
+  profile_observations_.AddObservation(profile_.get());
   if (profile_->HasPrimaryOTRProfile())
     profile_observations_.AddObservation(profile_->GetPrimaryOTRProfile());
 

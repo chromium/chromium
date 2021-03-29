@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -50,7 +51,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // without text.
   bool fully_collapsed_ = false;
 
-  const gfx::VectorIcon* icon_ = nullptr;
+  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
 };

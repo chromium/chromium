@@ -10,6 +10,7 @@
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/run_loop.h"
@@ -132,7 +133,7 @@ class TestNetworkQualityObserver
  private:
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  network::NetworkQualityTracker* tracker_;
+  CheckedPtr<network::NetworkQualityTracker> tracker_;
   net::EffectiveConnectionType effective_connection_type_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityObserver);

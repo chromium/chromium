@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -44,7 +45,7 @@ class ExtensionRequestObserverFactory : public ProfileManagerObserver,
   int GetNumberOfObserversForTesting();
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::map<Profile*, std::unique_ptr<ExtensionRequestObserver>, ProfileCompare>
       observers_;
 };

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/browser/appcache/appcache_backend_impl.h"
@@ -85,7 +86,7 @@ class CONTENT_EXPORT ChromeAppCacheService
 
   void DeleteOnCorrectThread() const;
 
-  BrowserContext* browser_context_ = nullptr;
+  CheckedPtr<BrowserContext> browser_context_ = nullptr;
   base::FilePath cache_path_;
   mojo::UniqueReceiverSet<blink::mojom::AppCacheBackend> receivers_;
 

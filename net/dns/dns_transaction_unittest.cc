@@ -13,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -233,7 +234,7 @@ class TestUDPClientSocket : public MockUDPClientSocket {
   int Connect(const IPEndPoint& endpoint) override;
 
  private:
-  TestSocketFactory* factory_;
+  CheckedPtr<TestSocketFactory> factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUDPClientSocket);
 };
@@ -390,7 +391,7 @@ class TransactionHelper {
  private:
   uint16_t qtype_ = 0;
   std::unique_ptr<DnsTransaction> transaction_;
-  const DnsResponse* response_ = nullptr;
+  CheckedPtr<const DnsResponse> response_ = nullptr;
   int expected_answer_count_;
   bool cancel_in_callback_ = false;
   base::RunLoop transaction_complete_run_loop_;
@@ -850,7 +851,7 @@ class DnsTransactionTestBase : public testing::Test {
     }
 
    private:
-    DnsTransactionTestBase* test_;
+    CheckedPtr<DnsTransactionTestBase> test_;
 
     DISALLOW_COPY_AND_ASSIGN(DohJobInterceptor);
   };

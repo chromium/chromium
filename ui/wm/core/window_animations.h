@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -83,7 +84,7 @@ class WM_CORE_EXPORT ScopedHidingAnimationSettings {
 
  private:
   ui::ScopedLayerAnimationSettings layer_animation_settings_;
-  ImplicitHidingWindowAnimationObserver* observer_;
+  CheckedPtr<ImplicitHidingWindowAnimationObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedHidingAnimationSettings);
 };

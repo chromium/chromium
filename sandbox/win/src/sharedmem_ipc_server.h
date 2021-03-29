@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -119,7 +120,7 @@ class SharedMemIPCServer {
 
   // The thread pool provides the threads that call back into this object
   // when the IPC events fire.
-  ThreadPool* thread_pool_;
+  CheckedPtr<ThreadPool> thread_pool_;
 
   // The IPC object is associated with a target process.
   HANDLE target_process_;

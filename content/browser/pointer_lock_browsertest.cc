@@ -6,6 +6,7 @@
 
 #include "content/browser/pointer_lock_browsertest.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -101,7 +102,7 @@ class MockPointerLockRenderWidgetHostView : public RenderWidgetHostViewAura {
 
   bool HasFocus() override { return has_focus_; }
 
-  RenderWidgetHostImpl* host_;
+  CheckedPtr<RenderWidgetHostImpl> host_;
   bool has_focus_ = true;
 };
 

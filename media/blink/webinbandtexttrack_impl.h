@@ -6,6 +6,7 @@
 #define MEDIA_BLINK_WEBINBANDTEXTTRACK_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/platform/web_inband_text_track.h"
 #include "third_party/blink/public/platform/web_string.h"
 
@@ -29,7 +30,7 @@ class WebInbandTextTrackImpl : public blink::WebInbandTextTrack {
   blink::WebString Id() const override;
 
  private:
-  blink::WebInbandTextTrackClient* client_;
+  CheckedPtr<blink::WebInbandTextTrackClient> client_;
   Kind kind_;
   blink::WebString label_;
   blink::WebString language_;

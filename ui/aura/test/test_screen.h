@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
@@ -66,7 +67,7 @@ class TestScreen : public display::ScreenBase, public WindowObserver {
  private:
   explicit TestScreen(const gfx::Rect& screen_bounds);
 
-  aura::WindowTreeHost* host_ = nullptr;
+  CheckedPtr<aura::WindowTreeHost> host_ = nullptr;
 
   float ui_scale_ = 1.0f;
 

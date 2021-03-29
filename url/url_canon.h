@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/export_template.h"
+#include "base/memory/checked_ptr.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace url {
@@ -139,7 +140,7 @@ class CanonOutputT {
     return true;
   }
 
-  T* buffer_;
+  CheckedPtr<T> buffer_;
   int buffer_len_;
 
   // Used characters in the buffer.

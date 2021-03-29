@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_READER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_READER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/password_manager/core/browser/insecure_credentials_consumer.h"
@@ -60,8 +61,8 @@ class InsecureCredentialsReader
 
   // The password stores containing the insecure credentials.
   // |profile_store_| must not be null and must outlive this class.
-  PasswordStore* profile_store_;
-  PasswordStore* account_store_;
+  CheckedPtr<PasswordStore> profile_store_;
+  CheckedPtr<PasswordStore> account_store_;
 
   // Cache of the most recently obtained insecure credentials.
   std::vector<InsecureCredential> insecure_credentials_;

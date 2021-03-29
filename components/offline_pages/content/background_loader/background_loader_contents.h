@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 
@@ -94,8 +95,8 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   BackgroundLoaderContents();
 
   std::unique_ptr<content::WebContents> web_contents_;
-  content::BrowserContext* browser_context_;
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<content::BrowserContext> browser_context_;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderContents);
 };

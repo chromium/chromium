@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_PERMISSION_HELPER_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
@@ -66,7 +67,7 @@ class WebViewPermissionHelperDelegate : public content::WebContentsObserver {
   }
 
  private:
-  WebViewPermissionHelper* const web_view_permission_helper_;
+  const CheckedPtr<WebViewPermissionHelper> web_view_permission_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(WebViewPermissionHelperDelegate);
 };
