@@ -402,11 +402,17 @@ void PageLoadTracker::PageShown() {
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnShown);
 }
 
-void PageLoadTracker::FrameDeleted(content::RenderFrameHost* rfh) {
-  metrics_update_dispatcher_.OnFrameDeleted(rfh);
-  largest_contentful_paint_handler_.OnFrameDeleted(rfh);
+void PageLoadTracker::FrameDeleted(int frame_tree_node_id) {
+  metrics_update_dispatcher_.OnFrameDeleted(frame_tree_node_id);
+  largest_contentful_paint_handler_.OnFrameDeleted(frame_tree_node_id);
   for (const auto& observer : observers_) {
-    observer->OnFrameDeleted(rfh);
+    observer->OnFrameDeleted(frame_tree_node_id);
+  }
+}
+
+void PageLoadTracker::RenderFrameDeleted(content::RenderFrameHost* rfh) {
+  for (const auto& observer : observers_) {
+    observer->OnRenderFrameDeleted(rfh);
   }
 }
 

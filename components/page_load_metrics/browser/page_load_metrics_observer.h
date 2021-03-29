@@ -528,7 +528,9 @@ class PageLoadMetricsObserver {
   virtual void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
 
-  virtual void OnFrameDeleted(content::RenderFrameHost* render_frame_host) {}
+  virtual void OnRenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) {}
+  virtual void OnFrameDeleted(int frame_tree_node_id) {}
 
   // Called when a cookie is read for a resource request or by document.cookie.
   virtual void OnCookiesRead(const GURL& url,

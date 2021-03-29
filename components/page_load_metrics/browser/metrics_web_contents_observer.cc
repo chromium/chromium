@@ -138,15 +138,16 @@ void MetricsWebContentsObserver::RenderViewHostChanged(
 }
 
 void MetricsWebContentsObserver::FrameDeleted(content::RenderFrameHost* rfh) {
-  if (auto* memory_tracker = GetMemoryTracker())
-    memory_tracker->OnFrameDeleted(rfh, this);
-
   if (committed_load_)
-    committed_load_->FrameDeleted(rfh);
+    committed_load_->FrameDeleted(rfh->GetFrameTreeNodeId());
 }
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
+  if (auto* memory_tracker = GetMemoryTracker())
+    memory_tracker->OnRenderFrameDeleted(rfh, this);
+  if (committed_load_)
+    committed_load_->RenderFrameDeleted(rfh);
   // PageLoadTracker can be associated only with a main frame.
   if (rfh->GetParent())
     return;

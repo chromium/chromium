@@ -58,7 +58,8 @@ class ThirdPartyMetricsObserver
                          page_load_metrics::StorageType storage_type) override;
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnRenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override;
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

@@ -55,7 +55,7 @@ class AMPPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle) override;
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnFrameDeleted(content::RenderFrameHost* rfh) override;
+  void OnRenderFrameDeleted(content::RenderFrameHost* rfh) override;
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

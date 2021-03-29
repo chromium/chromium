@@ -129,7 +129,7 @@ void PageLoadMetricsMemoryTracker::OnV8MemoryMeasurementAvailable(
   }
 }
 
-void PageLoadMetricsMemoryTracker::OnFrameDeleted(
+void PageLoadMetricsMemoryTracker::OnRenderFrameDeleted(
     content::RenderFrameHost* render_frame_host,
     MetricsWebContentsObserver* observer) {
   DCHECK(render_frame_host);

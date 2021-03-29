@@ -131,7 +131,7 @@ class AdsPageLoadMetricsObserver
       content::RenderFrameHost* render_frame_host,
       const page_load_metrics::mojom::FrameIntersectionUpdate&
           intersection_update) override;
-  void OnFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void OnFrameDeleted(int frame_tree_node_id) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {

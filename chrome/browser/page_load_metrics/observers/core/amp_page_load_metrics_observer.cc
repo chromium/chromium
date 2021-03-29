@@ -161,7 +161,8 @@ void AMPPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   subframe_info.navigation_start = navigation_handle->NavigationStart();
 }
 
-void AMPPageLoadMetricsObserver::OnFrameDeleted(content::RenderFrameHost* rfh) {
+void AMPPageLoadMetricsObserver::OnRenderFrameDeleted(
+    content::RenderFrameHost* rfh) {
   if (current_main_frame_nav_info_ &&
       current_main_frame_nav_info_->subframe_rfh == rfh) {
     MaybeRecordAmpDocumentMetrics();

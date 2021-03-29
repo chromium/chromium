@@ -46,8 +46,8 @@ class PageLoadMetricsMemoryTracker
           FrameDataMap& frame_data) override;
 
   // Removes the entry for a deleted frame from `per_frame_memory_usage_map_`.
-  void OnFrameDeleted(content::RenderFrameHost* render_frame_host,
-                      MetricsWebContentsObserver* observer);
+  void OnRenderFrameDeleted(content::RenderFrameHost* render_frame_host,
+                            MetricsWebContentsObserver* observer);
 
  private:
   int64_t UpdateMemoryUsageAndGetDelta(

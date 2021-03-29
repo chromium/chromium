@@ -654,13 +654,8 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #endif
 }
 
-void AdsPageLoadMetricsObserver::OnFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host)
-    return;
-
-  const auto& id_and_data =
-      ad_frames_data_.find(render_frame_host->GetFrameTreeNodeId());
+void AdsPageLoadMetricsObserver::OnFrameDeleted(int frame_tree_node_id) {
+  const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())
     return;
 
