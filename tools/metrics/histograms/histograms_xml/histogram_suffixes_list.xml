@@ -8091,6 +8091,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_ContextualSearchTappedButShouldLongpress"
       label="In product help for contextual search to help users that try to
              trigger the feature with a tap to long-press instead."/>
+  <suffix name="IPH_ContextualSearchTranslationEnable"
+      label="In product help for contextual search to help users enable our
+             privacy policy in order to get better translations."/>
   <suffix name="IPH_ContextualSearchWebSearch"
       label="In product help for contextual search for users who use web
              search."/>
