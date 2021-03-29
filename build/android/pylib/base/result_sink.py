@@ -15,7 +15,7 @@ MAX_REPORT_LEN = 4 * 1024
 # Maps base_test_results to the luci test-result.proto.
 # https://godoc.org/go.chromium.org/luci/resultdb/proto/v1#TestStatus
 RESULT_MAP = {
-    base_test_result.ResultType.UNKNOWN: 'STATUS_UNSPECIFIED',
+    base_test_result.ResultType.UNKNOWN: 'ABORT',
     base_test_result.ResultType.PASS: 'PASS',
     base_test_result.ResultType.FAIL: 'FAIL',
     base_test_result.ResultType.CRASH: 'CRASH',
@@ -79,7 +79,7 @@ class ResultSinkClient(object):
     assert status in RESULT_MAP
     expected = status in (base_test_result.ResultType.PASS,
                           base_test_result.ResultType.SKIP)
-    status = RESULT_MAP[status]
+    result_db_status = RESULT_MAP[status]
 
     # Slightly smaller to allow addition of <pre> tags and message.
     report_check_size = MAX_REPORT_LEN - 45
@@ -93,15 +93,27 @@ class ResultSinkClient(object):
     tr = {
         # Duration must be formatted to avoid scientific notation in case
         # number is too small or too large. Result_db takes seconds, not ms.
-        'duration': '%.9fs' % (duration / 1000.0),
-        'expected': expected,
-        'status': status,
-        'summaryHtml': test_log_formatted,
-        'tags': [{
-            'key': 'test_name',
-            'value': test_id,
-        }],
-        'testId': test_id,
+        'duration':
+        '%.9fs' % (duration / 1000.0),
+        'expected':
+        expected,
+        'status':
+        result_db_status,
+        'summaryHtml':
+        test_log_formatted,
+        'tags': [
+            {
+                'key': 'test_name',
+                'value': test_id,
+            },
+            {
+                # Status before getting mapped to result_db statuses.
+                'key': 'android_test_runner_status',
+                'value': status,
+            }
+        ],
+        'testId':
+        test_id,
     }
     artifacts = artifacts or {}
     if len(test_log_escaped) > report_check_size:
