@@ -18,6 +18,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -32,10 +33,13 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private final Context mContext;
 
     private GURL mUrl;
+    private String mTitle;
     private AppMenuHandler mAppMenuHandler;
     private ImageView mIcon;
     private LargeIconBridge mLargeIconBridge;
     private WebFeedBridge mWebFeedBridge;
+    private WebFeedBridge.FollowedIds mFollowedIds;
+    private WebFeedSnackbarController mWebFeedSnackbarController;
 
     /**
      * Constructs a new {@link WebFeedMainMenuItem} with the appropriate context.
@@ -57,15 +61,20 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param url {@link GURL} of the page.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
      * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
-     * @param webFeedBridge {@link WebFeedHelper} to display the menu item and follow/unfollow.
+     * @param snackbarManager {@link SnackbarManager} to display snackbars.
+     * @param webFeedBridge {@link WebFeedBridge} to display the menu item and follow/unfollow.
      */
     public void initialize(GURL url, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
-            WebFeedBridge webFeedBridge) {
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         mUrl = url;
         mAppMenuHandler = appMenuHandler;
         mLargeIconBridge = largeIconBridge;
         mWebFeedBridge = webFeedBridge;
+        mWebFeedSnackbarController =
+                new WebFeedSnackbarController(mContext, snackbarManager, webFeedBridge);
 
+        // TODO(crbug/1152592): Migrate away from getFollowedIds to getWebFeedMetadata.
+        mFollowedIds = mWebFeedBridge.getFollowedIds(mUrl);
         initializeFavicon();
         initializeText();
         initializeChipView();
@@ -79,10 +88,17 @@ public class WebFeedMainMenuItem extends FrameLayout {
     }
 
     private void initializeText() {
-        // TODO(crbug/1152592): Get metadata from WebFeedBridge.
         TextView itemText = findViewById(R.id.menu_item_text);
-        String title = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
-        itemText.setText(title);
+        mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
+        itemText.setText(mTitle);
+        if (mFollowedIds != null) {
+            mWebFeedBridge.getWebFeedMetadata(mFollowedIds.webFeedId, result -> {
+                if (result != null) {
+                    mTitle = result.title;
+                    itemText.setText(mTitle);
+                }
+            });
+        }
     }
 
     private void initializeChipView() {
@@ -91,16 +107,16 @@ public class WebFeedMainMenuItem extends FrameLayout {
         @DrawableRes
         int chipIconRes;
         OnClickListener onClickListener;
-        // TODO(crbug/1152592): Migrate away from getFollowedIds to getWebFeedMetadata.
-        // TODO(crbug/1152592): Account for different loading/unknown cases and add
-        // success/failure snackbars.
-        WebFeedBridge.FollowedIds followedIds = mWebFeedBridge.getFollowedIds(mUrl);
-        if (followedIds != null) {
+        // TODO(crbug/1152592): Account for different loading/unknown cases.
+        if (mFollowedIds != null) {
             chipView = findViewById(R.id.following_chip_view);
             chipText = mContext.getText(R.string.menu_following);
             chipIconRes = R.drawable.ic_check_googblue_24dp;
             onClickListener = (view) -> {
-                mWebFeedBridge.unfollow(followedIds.followId, (result) -> {});
+                mWebFeedBridge.unfollow(mFollowedIds.followId, (result) -> {
+                    mWebFeedSnackbarController.showSnackbarForUnfollow(
+                            result, mFollowedIds.followId, mUrl, mTitle);
+                });
                 mAppMenuHandler.hideAppMenu();
             };
         } else {
@@ -108,7 +124,9 @@ public class WebFeedMainMenuItem extends FrameLayout {
             chipText = mContext.getText(R.string.menu_follow);
             chipIconRes = R.drawable.ic_add;
             onClickListener = (view) -> {
-                mWebFeedBridge.followFromUrl(mUrl, (result) -> {});
+                mWebFeedBridge.followFromUrl(mUrl, (result) -> {
+                    mWebFeedSnackbarController.showSnackbarForFollow(result, mUrl, mTitle);
+                });
                 mAppMenuHandler.hideAppMenu();
             };
         }

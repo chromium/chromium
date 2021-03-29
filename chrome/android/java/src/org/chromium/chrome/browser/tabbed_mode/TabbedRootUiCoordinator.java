@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -420,8 +421,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
 
         if (FeedFeatures.isWebFeedUIEnabled()) {
-            mWebFeedFollowIntroController = new WebFeedFollowIntroController(
-                    mActivity, mTabSupplier, mToolbarManager.getMenuButtonView());
+            mWebFeedFollowIntroController = new WebFeedFollowIntroController(mActivity,
+                    mTabSupplier, mToolbarManager.getMenuButtonView(),
+                    mActivity.getSnackbarManager(), new WebFeedBridge());
         }
     }
 

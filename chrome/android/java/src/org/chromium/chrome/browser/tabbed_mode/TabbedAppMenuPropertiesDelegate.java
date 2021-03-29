@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 
@@ -38,6 +39,7 @@ import org.chromium.components.favicon.LargeIconBridge;
  */
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     AppMenuDelegate mAppMenuDelegate;
+    SnackbarManager mSnackbarManager;
     WebFeedBridge mWebFeedBridge;
 
     public TabbedAppMenuPropertiesDelegate(Context context, ActivityTabProvider activityTabProvider,
@@ -46,10 +48,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            WebFeedBridge webFeedBridge) {
+            SnackbarManager snackbarManager, WebFeedBridge webFeedBridge) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier);
         mAppMenuDelegate = appMenuDelegate;
+        mSnackbarManager = snackbarManager;
         mWebFeedBridge = webFeedBridge;
     }
 
@@ -87,7 +90,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             ((WebFeedMainMenuItem) view)
                     .initialize(mActivityTabProvider.get().getOriginalUrl(), appMenuHandler,
                             new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                            mWebFeedBridge);
+                            mSnackbarManager, mWebFeedBridge);
         }
     }
 

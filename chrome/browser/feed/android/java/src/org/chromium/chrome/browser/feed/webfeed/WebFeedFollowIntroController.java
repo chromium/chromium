@@ -13,6 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -22,6 +23,7 @@ import org.chromium.url.GURL;
 public class WebFeedFollowIntroController {
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
+    private final WebFeedSnackbarController mWebFeedSnackbarController;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
 
     private boolean mAcceleratorPressed;
@@ -32,10 +34,15 @@ public class WebFeedFollowIntroController {
      * @param activity The current {@link Activity}.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
+     * @param snackbarManager The {@link SnackbarManager} to show snackbars.
+     * @param webFeedBridge The {@link WebFeedBridge} to connect to the Web Feed backend.
      */
-    public WebFeedFollowIntroController(
-            Activity activity, ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
+    public WebFeedFollowIntroController(Activity activity, ObservableSupplier<Tab> tabSupplier,
+            View menuButtonAnchorView, SnackbarManager snackbarManager,
+            WebFeedBridge webFeedBridge) {
         mActivity = activity;
+        mWebFeedSnackbarController =
+                new WebFeedSnackbarController(activity, snackbarManager, webFeedBridge);
         mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
 
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
@@ -43,7 +50,12 @@ public class WebFeedFollowIntroController {
             public void onPageLoadFinished(Tab tab, GURL url) {
                 // TODO(sophey): Add proper heuristics for showing the accelerator.
                 mAcceleratorPressed = false;
-                maybeShowFollowIntro(url);
+                webFeedBridge.getWebFeedMetadataForPage(url, result -> {
+                    // Shouldn't be recommended if there's no metadata.
+                    if (result != null) {
+                        maybeShowFollowIntro(url, result.title);
+                    }
+                });
             }
 
             @Override
@@ -57,22 +69,22 @@ public class WebFeedFollowIntroController {
         mCurrentTabObserver.destroy();
     }
 
-    private void maybeShowFollowIntro(GURL url) {
+    private void maybeShowFollowIntro(GURL url, String title) {
         if (!shouldShowFollowIntro()) {
             return;
         }
         // TODO(crbug/1152592): Add IPH variation.
-        showFollowAccelerator(url);
+        showFollowAccelerator(url, title);
     }
 
-    private void showFollowAccelerator(GURL url) {
+    private void showFollowAccelerator(GURL url, String title) {
         GestureDetector gestureDetector = new GestureDetector(
                 mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onSingleTapUp(MotionEvent motionEvent) {
                         if (!mAcceleratorPressed) {
                             mAcceleratorPressed = true;
-                            performFollowWithAccelerator(url);
+                            performFollowWithAccelerator(url, title);
                         }
                         return true;
                     }
@@ -85,7 +97,7 @@ public class WebFeedFollowIntroController {
         mWebFeedFollowIntroView.showAccelerator(onTouchListener);
     }
 
-    private void performFollowWithAccelerator(GURL url) {
+    private void performFollowWithAccelerator(GURL url, String title) {
         mWebFeedFollowIntroView.showLoadingUI();
         WebFeedBridge bridge = new WebFeedBridge();
         bridge.followFromUrl(
@@ -99,7 +111,7 @@ public class WebFeedFollowIntroController {
                         if (results.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
                             mWebFeedFollowIntroView.showFollowingBubble();
                         }
-                        // TODO(crbug/1152592): Add snackbar for failure.
+                        mWebFeedSnackbarController.showSnackbarForFollow(results, url, title);
                     }
                 }));
     }

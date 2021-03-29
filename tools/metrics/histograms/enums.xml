@@ -72294,6 +72294,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="35" label="UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO"/>
   <int value="37" label="UMA_READING_LIST_BOOKMARK_ADDED"/>
   <int value="38" label="UMA_PRIVACY_SANDBOX_PAGE_OPEN"/>
+  <int value="39" label="UMA_WEB_FEED_FOLLOW_SUCCESS"/>
+  <int value="40" label="UMA_WEB_FEED_FOLLOW_FAILURE"/>
+  <int value="41" label="UMA_WEB_FEED_UNFOLLOW_SUCCESS"/>
+  <int value="42" label="UMA_WEB_FEED_UNFOLLOW_FAILURE"/>
 </enum>
 
 <enum name="SnapshotItemId">

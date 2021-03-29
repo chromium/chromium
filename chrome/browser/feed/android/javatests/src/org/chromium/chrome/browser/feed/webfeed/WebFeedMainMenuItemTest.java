@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.favicon.IconType;
@@ -57,6 +58,7 @@ public final class WebFeedMainMenuItemTest {
 
     private Activity mActivity;
     private AppMenuHandler mAppMenuHandler;
+    private SnackbarManager mSnackBarManager;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
 
     @Before
@@ -65,6 +67,7 @@ public final class WebFeedMainMenuItemTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mAppMenuHandler = mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler();
+        mSnackBarManager = mActivityTestRule.getActivity().getSnackbarManager();
         when(mWebFeedBridge.getFollowedIds(any(GURL.class))).thenReturn(null);
 
         mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
@@ -96,8 +99,8 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @MediumTest
     public void initialize_emptyUrl_removesIcon() {
-        mWebFeedMainMenuItem.initialize(
-                GURL.emptyGURL(), mAppMenuHandler, new MockLargeIconBridge(null), mWebFeedBridge);
+        mWebFeedMainMenuItem.initialize(GURL.emptyGURL(), mAppMenuHandler,
+                new MockLargeIconBridge(null), mSnackBarManager, mWebFeedBridge);
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
         assertEquals("Icon should be gone.", View.GONE, imageView.getVisibility());
@@ -156,8 +159,8 @@ public final class WebFeedMainMenuItemTest {
      * @param bitmap Bitmap returned by the {@link MockLargeIconBridge}.
      */
     private void initializeWebFeedMainMenuItem(Bitmap bitmap) {
-        mWebFeedMainMenuItem.initialize(
-                sTestUrl, mAppMenuHandler, new MockLargeIconBridge(bitmap), mWebFeedBridge);
+        mWebFeedMainMenuItem.initialize(sTestUrl, mAppMenuHandler, new MockLargeIconBridge(bitmap),
+                mSnackBarManager, mWebFeedBridge);
     }
 
     private static class MockLargeIconBridge extends LargeIconBridge {
