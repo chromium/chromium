@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
@@ -29,6 +30,10 @@ class SampleCommand final : public CompositeEditCommand {
 
   void MoveParagraphContentsToNewBlockIfNecessary(const Position&,
                                                   EditingState*);
+  void MoveParagraphs(const VisiblePosition& start_of_paragraph_to_move,
+                      const VisiblePosition& end_of_paragraph_to_move,
+                      const VisiblePosition& destination,
+                      EditingState* editing_state);
 
   // CompositeEditCommand member implementations
   void DoApply(EditingState*) final {}
@@ -62,6 +67,16 @@ void SampleCommand::MoveParagraphContentsToNewBlockIfNecessary(
     EditingState* editing_state) {
   CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
       position, editing_state);
+}
+
+void SampleCommand::MoveParagraphs(
+    const VisiblePosition& start_of_paragraph_to_move,
+    const VisiblePosition& end_of_paragraph_to_move,
+    const VisiblePosition& destination,
+    EditingState* editing_state) {
+  CompositeEditCommand::MoveParagraphs(start_of_paragraph_to_move,
+                                       end_of_paragraph_to_move, destination,
+                                       editing_state);
 }
 
 }  // namespace
@@ -210,6 +225,36 @@ TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
   // editing state should abort here.
   sample.InsertNodeAfter(insert_child, ref_child, &editing_state_after);
   EXPECT_TRUE(editing_state_after.IsAborted());
+}
+
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
+  SetBodyContent("<ol><li><span><br></span></li></ol><br>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* li = GetDocument().QuerySelector("li");
+  Element* br1 = GetDocument().QuerySelector("ol br");
+  Element* br2 = GetDocument().QuerySelector("ol + br");
+  br1->setTextContent("x");
+  UpdateAllLifecyclePhasesForTest();
+
+  // The start precedes the end, but when using MostFor/BackwardCaretPosition
+  // to constrain the range, the resulting end would precede the start.
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*li);
+  const VisiblePosition& end = VisiblePosition::LastPositionInNode(*li);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br2);
+  EXPECT_EQ(start.DeepEquivalent(), Position::BeforeNode(*br1));
+  EXPECT_EQ(end.DeepEquivalent(), Position(br1, 0));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br2));
+  EXPECT_LT(start.DeepEquivalent(), end.DeepEquivalent());
+  EXPECT_GT(MostForwardCaretPosition(start.DeepEquivalent()),
+            MostBackwardCaretPosition(end.DeepEquivalent()));
+
+  // Should not crash
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<ol><li><span><br></span></li></ol><br>",
+            GetDocument().body()->innerHTML());
 }
 
 }  // namespace blink

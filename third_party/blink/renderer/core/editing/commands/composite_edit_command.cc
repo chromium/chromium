@@ -1513,12 +1513,10 @@ void CompositeEditCommand::MoveParagraphs(
   // We upstream() the end and downstream() the start so that we don't include
   // collapsed whitespace in the move. When we paste a fragment, spaces after
   // the end and before the start are treated as though they were rendered.
-  bool equal = start_candidate == end_candidate;
-  Position start =
-      equal ? start_candidate : MostForwardCaretPosition(start_candidate);
-  Position end =
-      equal ? end_candidate : MostBackwardCaretPosition(end_candidate);
-  DCHECK_LE(start, end);
+  Position start = MostForwardCaretPosition(start_candidate);
+  Position end = MostBackwardCaretPosition(end_candidate);
+  if (end < start)
+    end = start;
 
   // FIXME: This is an inefficient way to preserve style on nodes in the
   // paragraph to move. It shouldn't matter though, since moved paragraphs will
