@@ -109,6 +109,15 @@ CaretPositionResolution TryResolveCaretPositionInTextFragment(
   if (offset < start_offset &&
       !mapping.HasBidiControlCharactersOnly(offset, start_offset))
     return CaretPositionResolution();
+  if (affinity == TextAffinity::kUpstream && offset == current_offset.end + 1 &&
+      cursor.Current().Style().NeedsTrailingSpace() &&
+      cursor.Current().Style().IsCollapsibleWhiteSpace(
+          mapping.GetText()[offset - 1])) {
+    // |offset| is after soft line wrap, e.g. "abc |xyz".
+    // See http://crbug.com/1183269 and |AdjustForSoftLineWrap()|
+    return {ResolutionType::kResolved,
+            {cursor, NGCaretPositionType::kAtTextOffset, offset - 1}};
+  }
   if (offset > current_offset.end &&
       !mapping.HasBidiControlCharactersOnly(end_offset, offset))
     return CaretPositionResolution();
