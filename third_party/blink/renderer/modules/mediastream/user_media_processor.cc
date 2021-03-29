@@ -1413,7 +1413,7 @@ UserMediaProcessor::CreateAudioSource(
   // The audio device is not associated with screen capture and also requires
   // processing.
   return std::make_unique<blink::ProcessedLocalAudioSource>(
-      *frame_, device, stream_controls->disable_local_echo,
+      frame_, device, stream_controls->disable_local_echo,
       audio_processing_properties, std::move(source_ready), task_runner_);
 }
 

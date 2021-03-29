@@ -33,13 +33,11 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/p2p/empty_network_manager.h"
 #include "third_party/blink/renderer/platform/p2p/filtering_network_manager.h"
 #include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
@@ -68,8 +66,6 @@
 namespace blink {
 
 namespace {
-
-using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
 
 enum WebRTCIPHandlingPolicy {
   DEFAULT,
@@ -112,176 +108,32 @@ class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
   IpcPacketSocketFactory* ipc_psf_;
 };
 
-// Encapsulates process-wide static dependencies used by
-// `PeerConnectionDependencyFactory`, namely the threads used by WebRTC. This
-// avoids allocating multiple threads per factory instance, as they are
-// "heavy-weight" and we don't want to create them per frame.
-class PeerConnectionStaticDeps {
- public:
-  PeerConnectionStaticDeps()
-      : chrome_signaling_thread_("WebRTC_Signaling"),
-        chrome_network_thread_("WebRTC_Network") {
-    if (base::FeatureList::IsEnabled(features::kWebRtcDistinctWorkerThread)) {
-      chrome_worker_thread_.emplace("WebRTC_Worker");
-    }
-  }
-
-  void EnsureChromeThreadsStarted() {
-    if (!chrome_signaling_thread_.IsRunning())
-      chrome_signaling_thread_.Start();
-    if (!chrome_network_thread_.IsRunning())
-      chrome_network_thread_.Start();
-
-    if (chrome_worker_thread_ && !chrome_worker_thread_->IsRunning())
-      chrome_worker_thread_->Start();
-
-    // To allow sending to the signaling/worker threads.
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-    jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
-  }
-
-  base::WaitableEvent& InitializeWorkerThread() {
-    // If there is no worker thread, the event was already created SIGNALED.
-    if (!chrome_worker_thread_)
-      return init_worker_event;
-
-    if (!worker_thread_) {
-      PostCrossThreadTask(
-          *chrome_worker_thread_->task_runner(), FROM_HERE,
-          CrossThreadBindOnce(&PeerConnectionStaticDeps::InitializeOnThread,
-                              CrossThreadUnretained(this),
-                              CrossThreadUnretained(&worker_thread_),
-                              CrossThreadUnretained(&init_worker_event)));
-    }
-    return init_worker_event;
-  }
-
-  base::WaitableEvent& InitializeNetworkThread() {
-    if (!network_thread_) {
-      PostCrossThreadTask(
-          *chrome_network_thread_.task_runner(), FROM_HERE,
-          CrossThreadBindOnce(&PeerConnectionStaticDeps::InitializeOnThread,
-                              CrossThreadUnretained(this),
-                              CrossThreadUnretained(&network_thread_),
-                              CrossThreadUnretained(&init_network_event)));
-    }
-    return init_network_event;
-  }
-
-  base::WaitableEvent& InitializeSignalingThread() {
-    if (!signaling_thread_) {
-      PostCrossThreadTask(
-          *chrome_signaling_thread_.task_runner(), FROM_HERE,
-          CrossThreadBindOnce(&PeerConnectionStaticDeps::InitializeOnThread,
-                              CrossThreadUnretained(this),
-                              CrossThreadUnretained(&signaling_thread_),
-                              CrossThreadUnretained(&init_signaling_event)));
-    }
-    return init_signaling_event;
-  }
-
-  rtc::Thread* GetSignalingThread() { return signaling_thread_; }
-  rtc::Thread* GetWorkerThread() { return worker_thread_; }
-  rtc::Thread* GetNetworkThread() { return network_thread_; }
-  base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
-  base::Thread* GetChromeWorkerThread() {
-    return chrome_worker_thread_.has_value() ? &*chrome_worker_thread_
-                                             : nullptr;
-  }
-  base::Thread& GetChromeNetworkThread() { return chrome_network_thread_; }
-
- private:
-  void InitializeOnThread(rtc::Thread** thread, base::WaitableEvent* event) {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-    jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
-    if (!*thread) {
-      *thread = jingle_glue::JingleThreadWrapper::current();
-      event->Signal();
-    }
-  }
-
-  // PeerConnection threads. signaling_thread_ is created from the "current"
-  // (main) chrome thread.
-  rtc::Thread* signaling_thread_ = nullptr;
-  rtc::Thread* worker_thread_ = nullptr;
-  rtc::Thread* network_thread_ = nullptr;
-  base::Thread chrome_signaling_thread_;
-  base::Optional<base::Thread> chrome_worker_thread_;
-  base::Thread chrome_network_thread_;
-
-  // WaitableEvents for observing thread initialization.
-  base::WaitableEvent init_signaling_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED};
-  base::WaitableEvent init_worker_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      // If we don't create a separate worker thread, start the event as already
-      // signaled so it doesn't block anything.
-      base::FeatureList::IsEnabled(features::kWebRtcDistinctWorkerThread)
-          ? base::WaitableEvent::InitialState::NOT_SIGNALED
-          : base::WaitableEvent::InitialState::SIGNALED};
-  base::WaitableEvent init_network_event{
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED};
-
-  THREAD_CHECKER(thread_checker_);
-};
-
-PeerConnectionStaticDeps& StaticDeps() {
-  DEFINE_STATIC_LOCAL(PeerConnectionStaticDeps, instance, ());
-  return instance;
-}
-
-rtc::Thread* GetSignalingThread() {
-  return StaticDeps().GetSignalingThread();
-}
-rtc::Thread* GetWorkerThread() {
-  return StaticDeps().GetWorkerThread();
-}
-rtc::Thread* GetNetworkThread() {
-  return StaticDeps().GetNetworkThread();
-}
-base::Thread& GetChromeSignalingThread() {
-  return StaticDeps().GetChromeSignalingThread();
-}
-base::Thread* GetChromeWorkerThread() {
-  return StaticDeps().GetChromeWorkerThread();
-}
-base::Thread& GetChromeNetworkThread() {
-  return StaticDeps().GetChromeNetworkThread();
-}
-
 }  // namespace
 
-// static
-const char PeerConnectionDependencyFactory::kSupplementName[] =
-    "PeerConnectionDependencyFactory";
-
-PeerConnectionDependencyFactory& PeerConnectionDependencyFactory::From(
-    ExecutionContext& context) {
-  auto* supplement =
-      Supplement<ExecutionContext>::From<PeerConnectionDependencyFactory>(
-          context);
-  if (!supplement) {
-    supplement = MakeGarbageCollected<PeerConnectionDependencyFactory>(
-        context, PassKey());
-    ProvideTo(context, supplement);
+PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
+    bool create_p2p_socket_dispatcher)
+    : network_manager_(nullptr),
+      p2p_socket_dispatcher_(
+          create_p2p_socket_dispatcher ? new P2PSocketDispatcher() : nullptr),
+      chrome_signaling_thread_("WebRTC_Signaling"),
+      chrome_network_thread_("WebRTC_Network") {
+  if (base::FeatureList::IsEnabled(features::kWebRtcDistinctWorkerThread)) {
+    chrome_worker_thread_.emplace("WebRTC_Worker");
   }
-  return *supplement;
 }
 
-PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
-    ExecutionContext& context,
-    PassKey)
-    : Supplement(context),
-      ExecutionContextLifecycleObserver(&context),
-      network_manager_(nullptr),
-      p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)) {}
+PeerConnectionDependencyFactory::~PeerConnectionDependencyFactory() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << "~PeerConnectionDependencyFactory()";
+  DCHECK(!pc_factory_);
+}
 
-PeerConnectionDependencyFactory::PeerConnectionDependencyFactory()
-    : Supplement(nullptr), ExecutionContextLifecycleObserver(nullptr) {}
-
-PeerConnectionDependencyFactory::~PeerConnectionDependencyFactory() = default;
+PeerConnectionDependencyFactory*
+PeerConnectionDependencyFactory::GetInstance() {
+  DEFINE_STATIC_LOCAL(PeerConnectionDependencyFactory, instance,
+                      (/*create_p2p_socket_dispatcher= */ true));
+  return &instance;
+}
 
 std::unique_ptr<RTCPeerConnectionHandler>
 PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
@@ -307,19 +159,22 @@ PeerConnectionDependencyFactory::GetPcFactory() {
   return pc_factory_;
 }
 
+void PeerConnectionDependencyFactory::WillDestroyCurrentMessageLoop() {
+  CleanupPeerConnectionFactory();
+}
+
 void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!pc_factory_.get());
+  DCHECK(!signaling_thread_);
+  DCHECK(!worker_thread_);
+  DCHECK(!network_thread_);
   DCHECK(!network_manager_);
   DCHECK(!socket_factory_);
+  DCHECK(!chrome_signaling_thread_.IsRunning());
+  DCHECK(!chrome_worker_thread_ || !chrome_worker_thread_->IsRunning());
+  DCHECK(!chrome_network_thread_.IsRunning());
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
-
-  StaticDeps().EnsureChromeThreadsStarted();
-  base::WaitableEvent& worker_thread_started_event =
-      StaticDeps().InitializeWorkerThread();
-  StaticDeps().InitializeNetworkThread();
-  StaticDeps().InitializeSignalingThread();
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   // Building /w |rtc_use_h264|, is the corresponding run-time feature enabled?
@@ -332,6 +187,11 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   webrtc::DisableRtcUseH264();
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
+  base::CurrentThread::Get()->AddDestructionObserver(this);
+  // To allow sending to the signaling/worker threads.
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+
   EnsureWebRtcAudioDeviceImpl();
 
   // Init SSL, which will be needed by PeerConnection.
@@ -340,6 +200,22 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
     NOTREACHED();
     return;
   }
+
+  base::WaitableEvent start_worker_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  if (chrome_worker_thread_) {
+    CHECK(chrome_worker_thread_->Start());
+    PostCrossThreadTask(
+        *chrome_worker_thread_->task_runner().get(), FROM_HERE,
+        CrossThreadBindOnce(
+            &PeerConnectionDependencyFactory::InitializeWorkerThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(&worker_thread_),
+            CrossThreadUnretained(&start_worker_event)));
+  }
+
+  CHECK(chrome_signaling_thread_.Start());
+  CHECK(chrome_network_thread_.Start());
 
   base::WaitableEvent create_network_manager_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -350,34 +226,36 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           blink::features::kWebRtcHideLocalIpsWithMdns)) {
     // Note that MdnsResponderAdapter is created on the main thread to have
     // access to the connector to the service manager.
-    // TODO(crbug.com/1178670): Pass MojoBindingContext and use its BIB to bind.
     mdns_responder = std::make_unique<MdnsResponderAdapter>();
   }
 #endif  // BUILDFLAG(ENABLE_MDNS)
   PostCrossThreadTask(
-      *GetWebRtcNetworkTaskRunner(), FROM_HERE,
+      *chrome_network_thread_.task_runner().get(), FROM_HERE,
       CrossThreadBindOnce(&PeerConnectionDependencyFactory::
                               CreateIpcNetworkManagerOnNetworkThread,
-                          WrapCrossThreadPersistent(this),
+                          CrossThreadUnretained(this),
                           CrossThreadUnretained(&create_network_manager_event),
-                          std::move(mdns_responder)));
+                          std::move(mdns_responder),
+                          CrossThreadUnretained(&network_thread_)));
 
   create_network_manager_event.Wait();
-  CHECK(GetNetworkThread());
+  CHECK(network_thread_);
 
   // Wait for the worker thread, since `InitializeSignalingThread` needs to
   // refer to `worker_thread_`.
-  worker_thread_started_event.Wait();
-  CHECK(!GetChromeWorkerThread() || GetWorkerThread());
+  if (chrome_worker_thread_) {
+    start_worker_event.Wait();
+    CHECK(worker_thread_);
+  }
 
   base::WaitableEvent start_signaling_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   PostCrossThreadTask(
-      *GetChromeSignalingThread().task_runner(), FROM_HERE,
+      *chrome_signaling_thread_.task_runner().get(), FROM_HERE,
       CrossThreadBindOnce(
           &PeerConnectionDependencyFactory::InitializeSignalingThread,
-          WrapCrossThreadPersistent(this),
+          CrossThreadUnretained(this),
           Platform::Current()->GetRenderingColorSpace(),
           Platform::Current()->MediaThreadTaskRunner(),
           CrossThreadUnretained(Platform::Current()->GetGpuFactories()),
@@ -385,7 +263,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
           CrossThreadUnretained(&start_signaling_event)));
 
   start_signaling_event.Wait();
-  CHECK(GetSignalingThread());
+  CHECK(signaling_thread_);
 }
 
 void PeerConnectionDependencyFactory::InitializeSignalingThread(
@@ -394,12 +272,13 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     media::DecoderFactory* media_decoder_factory,
     base::WaitableEvent* event) {
-  DCHECK(GetChromeSignalingThread().task_runner()->BelongsToCurrentThread());
-  DCHECK(GetNetworkThread());
-  // The task to initialize `signaling_thread_` was posted to the same thread,
-  // so there is no need to wait on its event.
-  DCHECK(GetSignalingThread());
-  DCHECK(p2p_socket_dispatcher_);
+  DCHECK(chrome_signaling_thread_.task_runner()->BelongsToCurrentThread());
+  DCHECK(network_thread_);
+  DCHECK(p2p_socket_dispatcher_.get());
+
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  signaling_thread_ = jingle_glue::JingleThreadWrapper::current();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("webrtc_peer_connection", R"(
@@ -437,8 +316,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
             "block it."
         }
     )");
-  socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
-      p2p_socket_dispatcher_.Get(), traffic_annotation);
+  socket_factory_.reset(new IpcPacketSocketFactory(p2p_socket_dispatcher_.get(),
+                                                   traffic_annotation));
 
   gpu_factories_ = gpu_factories;
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
@@ -464,10 +343,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   }
 
   webrtc::PeerConnectionFactoryDependencies pcf_deps;
-  pcf_deps.worker_thread =
-      GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
-  pcf_deps.signaling_thread = GetSignalingThread();
-  pcf_deps.network_thread = GetNetworkThread();
+  pcf_deps.worker_thread = worker_thread_ ? worker_thread_ : signaling_thread_;
+  pcf_deps.signaling_thread = signaling_thread_;
+  pcf_deps.network_thread = network_thread_;
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
@@ -625,8 +503,8 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
         std::make_unique<blink::EmptyNetworkManager>(network_manager_.get());
   }
   auto port_allocator = std::make_unique<P2PPortAllocator>(
-      std::move(network_manager), socket_factory_.get(), port_config,
-      requesting_origin);
+      p2p_socket_dispatcher_, std::move(network_manager), socket_factory_.get(),
+      port_config, requesting_origin);
   if (IsValidPortRange(min_port, max_port))
     port_allocator->SetPortRange(min_port, max_port);
 
@@ -652,8 +530,8 @@ PeerConnectionDependencyFactory::CreateVideoTrackSourceProxy(
   if (!PeerConnectionFactoryCreated())
     CreatePeerConnectionFactory();
 
-  return webrtc::VideoTrackSourceProxy::Create(GetSignalingThread(),
-                                               GetNetworkThread(), source)
+  return webrtc::VideoTrackSourceProxy::Create(signaling_thread_,
+                                               network_thread_, source)
       .get();
 }
 
@@ -679,47 +557,56 @@ PeerConnectionDependencyFactory::GetWebRtcAudioDevice() {
   return audio_device_.get();
 }
 
+void PeerConnectionDependencyFactory::InitializeWorkerThread(
+    rtc::Thread** thread,
+    base::WaitableEvent* event) {
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  *thread = jingle_glue::JingleThreadWrapper::current();
+  event->Signal();
+}
+
 void PeerConnectionDependencyFactory::CreateIpcNetworkManagerOnNetworkThread(
     base::WaitableEvent* event,
-    std::unique_ptr<MdnsResponderAdapter> mdns_responder) {
-  DCHECK(GetChromeNetworkThread().task_runner()->BelongsToCurrentThread());
-  // The task to initialize `network_thread_` was posted to the same thread, so
-  // there is no need to wait on its event.
-  DCHECK(GetNetworkThread());
+    std::unique_ptr<MdnsResponderAdapter> mdns_responder,
+    rtc::Thread** thread) {
+  DCHECK(chrome_network_thread_.task_runner()->BelongsToCurrentThread());
+
+  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  *thread = jingle_glue::JingleThreadWrapper::current();
 
   network_manager_ = std::make_unique<blink::IpcNetworkManager>(
-      p2p_socket_dispatcher_.Get(), std::move(mdns_responder));
+      p2p_socket_dispatcher_.get(), std::move(mdns_responder));
 
   event->Signal();
 }
 
-void PeerConnectionDependencyFactory::DeleteIpcNetworkManager(
-    base::WaitableEvent* event) {
-  DCHECK(GetChromeNetworkThread().task_runner()->BelongsToCurrentThread());
+void PeerConnectionDependencyFactory::DeleteIpcNetworkManager() {
+  DCHECK(chrome_network_thread_.task_runner()->BelongsToCurrentThread());
   network_manager_.reset();
-  event->Signal();
-}
-
-void PeerConnectionDependencyFactory::ContextDestroyed() {
-  CleanupPeerConnectionFactory();
 }
 
 void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
   DVLOG(1) << "PeerConnectionDependencyFactory::CleanupPeerConnectionFactory()";
   pc_factory_ = nullptr;
   if (network_manager_) {
-    base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     // The network manager needs to free its resources on the thread they were
-    // created, which is the network thread.
-    PostCrossThreadTask(
-        *GetWebRtcNetworkTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(
-            &PeerConnectionDependencyFactory::DeleteIpcNetworkManager,
-            WrapCrossThreadPersistent(this), CrossThreadUnretained(&event)));
-
-    event.Wait();
-    DCHECK(!network_manager_);
+    // created, which is the worked thread.
+    if (chrome_network_thread_.IsRunning()) {
+      PostCrossThreadTask(
+          *chrome_network_thread_.task_runner().get(), FROM_HERE,
+          CrossThreadBindOnce(
+              &PeerConnectionDependencyFactory::DeleteIpcNetworkManager,
+              CrossThreadUnretained(this)));
+      // Stopping the thread will wait until all tasks have been
+      // processed before returning. We wait for the above task to finish before
+      // letting the the function continue to avoid any potential race issues.
+      chrome_network_thread_.Stop();
+      DCHECK(!network_manager_);
+    } else {
+      NOTREACHED() << "Worker thread not running.";
+    }
   }
 }
 
@@ -731,8 +618,8 @@ void PeerConnectionDependencyFactory::EnsureInitialized() {
 scoped_refptr<base::SingleThreadTaskRunner>
 PeerConnectionDependencyFactory::GetWebRtcNetworkTaskRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GetChromeNetworkThread().IsRunning()
-             ? GetChromeNetworkThread().task_runner()
+  return chrome_network_thread_.IsRunning()
+             ? chrome_network_thread_.task_runner()
              : nullptr;
 }
 
@@ -740,8 +627,8 @@ scoped_refptr<base::SingleThreadTaskRunner>
 PeerConnectionDependencyFactory::GetWebRtcSignalingTaskRunner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   EnsureInitialized();
-  return GetChromeSignalingThread().IsRunning()
-             ? GetChromeSignalingThread().task_runner()
+  return chrome_signaling_thread_.IsRunning()
+             ? chrome_signaling_thread_.task_runner()
              : nullptr;
 }
 
@@ -780,11 +667,5 @@ PeerConnectionDependencyFactory::GetReceiverCapabilities(const String& kind) {
 media::GpuVideoAcceleratorFactories*
 PeerConnectionDependencyFactory::GetGpuFactories() {
   return gpu_factories_;
-}
-
-void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
-  Supplement<ExecutionContext>::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-  visitor->Trace(p2p_socket_dispatcher_);
 }
 }  // namespace blink
