@@ -56,6 +56,8 @@ void ManifestUmaUtil::ParseSucceeded(
                         !manifest->screenshots.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.share_target",
                         manifest->share_target.get());
+  UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.protocol_handlers",
+                        !manifest->protocol_handlers.IsEmpty());
   UMA_HISTOGRAM_BOOLEAN("Manifest.HasProperty.gcm_sender_id",
                         !manifest->gcm_sender_id.IsEmpty());
 }
