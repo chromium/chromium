@@ -281,6 +281,7 @@ class SafeBrowsingNavigationObserverManager
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
+  friend class ClientSideDetectionDelegateTest;
 
   struct GurlHash {
     std::size_t operator()(const GURL& url) const {

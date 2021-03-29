@@ -39,6 +39,9 @@ const base::Feature kClientSideDetectionForAndroid{
 extern const base::Feature kClientSideDetectionModelVersion{
     "ClientSideDetectionModel", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kClientSideDetectionReferrerChain{
+    "ClientSideDetectionReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -24,6 +24,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -301,8 +302,8 @@ ClientSideDetectionHost::ClientSideDetectionHost(
   // Note: csd_service_ and sb_service will be nullptr here in testing.
   csd_service_ = delegate_->GetClientSideDetectionService();
 
-  // ui_manager_ and database_manager_ can be null if safe browsing
-  // service is not available in the embedder.
+  // |ui_manager_| and |database_manager_| can
+  // be null if safe browsing service is not available in the embedder.
   ui_manager_ = delegate_->GetSafeBrowsingUIManager();
   database_manager_ = delegate_->GetSafeBrowsingDBManager();
 }
@@ -440,6 +441,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       verdict->clear_screenshot_digest();
       verdict->clear_screenshot_phash();
       verdict->clear_phash_dimension_size();
+    }
+
+    if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+        base::FeatureList::IsEnabled(kClientSideDetectionReferrerChain)) {
+      delegate_->AddReferrerChain(verdict.get(), current_url_);
     }
 
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",

@@ -51,4 +51,8 @@ ClientSideDetectionHostDelegate::GetClientSideDetectionService() {
       web_contents_->GetBrowserContext());
 }
 
+void ClientSideDetectionHostDelegate::AddReferrerChain(
+    safe_browsing::ClientPhishingRequest* verdict,
+    GURL current_url) {}
+
 }  // namespace weblayer

@@ -151,7 +151,16 @@ message ClientPhishingRequest {
   // Indicates whether the request is due to a match on the DOM features.
   optional bool is_dom_match = 21;
 
-  // next available tag number: 22.
+  // If we can find the complete referrer chain, this field will contains URLs
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  // For Enhanced Protection users, if the referrer
+  // chain is empty or partially missing, we will add/append recent navigation
+  // events to this list. The type of these entries will be RECENT_NAVIGATION.
+  repeated ReferrerChainEntry referrer_chain = 22;
+
+  // next available tag number: 23.
 }
 
 // Vision match result for one target image.
@@ -213,7 +222,7 @@ message LoginReputationClientRequest {
     // transitions from landing referrer to event in reverse chronological
     // order, i.e. event url comes first in this list, and landing referrer
     // comes last.
-    // For Safe Browsing Extended Reporting or Scout users, if the referrer
+    // For Safe Browsing Extended Reporting, if the referrer
     // chain is empty or partially missing, we will add/append recent navigation
     // events to this list. The type of these entries will be RECENT_NAVIGATION.
     repeated ReferrerChainEntry referrer_chain = 5;
@@ -765,7 +774,7 @@ message ClientDownloadRequest {
   // transitions from landing referrer to event in reverse chronological
   // order, i.e. event url comes first in this list, and landing referrer
   // comes last.
-  // For Safe Browsing Extended Reporting or Scout users, if the referrer chain
+  // For Safe Browsing Extended Reporting, if the referrer chain
   // is empty or partially missing, we will add/append recent navigation events
   // to this list. The type of these entries will be RECENT_NAVIGATION.
   repeated ReferrerChainEntry referrer_chain = 36;
@@ -836,7 +845,7 @@ message ReferrerChainEntry {
 
     DEPRECATED_SERVER_REDIRECT = 5;  // Deprecated
 
-    // For Safe Browsing Extended Reporting or Scout users, if the referrer
+    // For Safe Browsing Extended Reporting, if the referrer
     // chain is empty or partially missing, we will add/append recent navigation
     // events to this list. RECENT_NAVIGATION type is set for these cases.
     RECENT_NAVIGATION = 6;
@@ -1432,7 +1441,7 @@ message ExtensionWebStoreInstallRequest {
   // transitions from landing referrer to event in reverse chronological
   // order, i.e. event url comes first in this list, and landing referrer
   // comes last.
-  // For Safe Browsing Extended Reporting or Scout users, if the referrer
+  // For Safe Browsing Extended Reporting, if the referrer
   // chain is empty or partially missing, we will add/append recent navigation
   // events to this list. The type of these entries will be RECENT_NAVIGATION.
   repeated ReferrerChainEntry referrer_chain = 1;

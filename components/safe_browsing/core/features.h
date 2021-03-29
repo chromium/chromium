@@ -41,6 +41,9 @@ extern const base::Feature kClientSideDetectionForAndroid;
 // Desktop.
 extern const base::Feature kClientSideDetectionModelVersion;
 
+// Enables client side detection referrer chain.
+extern const base::Feature kClientSideDetectionReferrerChain;
+
 // Enable the addition of access tokens to download pings for enhanced
 // protection users.
 extern const base::Feature kDownloadRequestWithToken;

@@ -15607,6 +15607,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ReferrerAttribution" separator=".">
   <suffix name="ApkDownloadTelemetry"
       label="APK downloads referrer attribution."/>
+  <suffix name="CSDAttribution"
+      label="Client side detection referrer attribution."/>
   <suffix name="DownloadAttribution" label="Download referrer attribution."/>
   <suffix name="MalwareInterstitialAttribution"
       label="Malware interstitial referrer attribution."/>
