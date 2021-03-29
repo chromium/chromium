@@ -41,7 +41,8 @@ AnimationWorkletProxyClient::AnimationWorkletProxyClient(
     base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
         main_thread_mutator_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_mutator_runner)
-    : worklet_id_(worklet_id),
+    : Supplement(nullptr),
+      worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
       next_global_scope_switch_countdown_(0),
       current_global_scope_index_(0) {

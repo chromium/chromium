@@ -28,7 +28,8 @@ NavigatorBadge& NavigatorBadge::From(ScriptState* script_state) {
   return *supplement;
 }
 
-NavigatorBadge::NavigatorBadge(ExecutionContext* context) : context_(context) {}
+NavigatorBadge::NavigatorBadge(ExecutionContext* context)
+    : Supplement(*context) {}
 
 // static
 ScriptPromise NavigatorBadge::setAppBadge(ScriptState* script_state,
@@ -72,8 +73,6 @@ ScriptPromise NavigatorBadge::clearAppBadge(ScriptState* script_state,
 
 void NavigatorBadge::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
-
-  visitor->Trace(context_);
 }
 
 // static
@@ -99,7 +98,7 @@ ScriptPromise NavigatorBadge::ClearAppBadgeHelper(ScriptState* script_state) {
 
 mojo::Remote<mojom::blink::BadgeService> NavigatorBadge::badge_service() {
   mojo::Remote<mojom::blink::BadgeService> badge_service;
-  context_->GetBrowserInterfaceBroker().GetInterface(
+  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
       badge_service.BindNewPipeAndPassReceiver());
   DCHECK(badge_service);
 

@@ -224,6 +224,8 @@ ImageBitmapFactories& ImageBitmapFactories::From(ExecutionContext& context) {
   return *supplement;
 }
 
+ImageBitmapFactories::ImageBitmapFactories() : Supplement(nullptr) {}
+
 void ImageBitmapFactories::AddLoader(ImageBitmapLoader* loader) {
   pending_loaders_.insert(loader);
 }

@@ -66,7 +66,6 @@ class ServiceWorkerRegistrationNotifications final
                         ScriptPromiseResolver* resolver,
                         NotificationResourcesLoader* loader);
 
-  Member<ServiceWorkerRegistration> registration_;
   HeapHashSet<Member<NotificationResourcesLoader>> loaders_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationNotifications);

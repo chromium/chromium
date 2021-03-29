@@ -36,7 +36,7 @@ void NavigatorWebId::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
-NavigatorWebId::NavigatorWebId(Navigator& navigator) {
+NavigatorWebId::NavigatorWebId(Navigator& navigator) : Supplement(navigator) {
   if (navigator.DomWindow()) {
     web_id_ = MakeGarbageCollected<WebId>(*navigator.DomWindow());
   }

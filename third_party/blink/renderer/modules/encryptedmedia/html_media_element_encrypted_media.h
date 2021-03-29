@@ -65,8 +65,6 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
                                  EventListener*);
   EventListener* GetAttributeEventListener(const AtomicString& event_type);
 
-  Member<HTMLMediaElement> media_element_;
-
   // Internal values specified by the EME spec:
   // http://w3c.github.io/encrypted-media/#idl-def-HTMLMediaElement
   // The following internal values are added to the HTMLMediaElement:

@@ -33,7 +33,6 @@ class ServiceWorkerRegistrationPush final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<PushManager> push_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationPush);

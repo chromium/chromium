@@ -67,6 +67,8 @@ class MODULES_EXPORT ImageBitmapFactories final
  public:
   static const char kSupplementName[];
 
+  ImageBitmapFactories();
+
   static ScriptPromise CreateImageBitmap(ScriptState*,
                                          const ImageBitmapSourceUnion&,
                                          const ImageBitmapOptions*,

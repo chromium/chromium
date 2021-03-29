@@ -52,7 +52,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
   }
 
   explicit GlobalFetchImpl(ExecutionContext* execution_context)
-      : fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
+      : Supplement<T>(nullptr),
+        fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
                       const RequestInfo& input,

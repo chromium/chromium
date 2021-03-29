@@ -53,7 +53,8 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
     PaintWorklet* paint_worklet,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
-    : paint_dispatcher_(std::move(paint_dispatcher)),
+    : Supplement(nullptr),
+      paint_dispatcher_(std::move(paint_dispatcher)),
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),

@@ -25,13 +25,14 @@ class GlobalIndexedDBImpl final
     GlobalIndexedDBImpl* supplement =
         Supplement<T>::template From<GlobalIndexedDBImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>();
+      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>(supplementable);
       Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalIndexedDBImpl() = default;
+  explicit GlobalIndexedDBImpl(T& supplementable)
+      : Supplement<T>(supplementable) {}
 
   IDBFactory* IdbFactory(T& fetching_scope) {
     if (!idb_factory_)

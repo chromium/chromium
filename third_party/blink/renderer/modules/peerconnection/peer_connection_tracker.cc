@@ -738,7 +738,8 @@ PeerConnectionTracker::PeerConnectionTracker(
 PeerConnectionTracker::PeerConnectionTracker(
     mojo::Remote<blink::mojom::blink::PeerConnectionTrackerHost> host,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : peer_connection_tracker_host_(std::move(host)),
+    : Supplement(nullptr),
+      peer_connection_tracker_host_(std::move(host)),
       main_thread_task_runner_(std::move(main_thread_task_runner)) {}
 
 PeerConnectionTracker::~PeerConnectionTracker() {}

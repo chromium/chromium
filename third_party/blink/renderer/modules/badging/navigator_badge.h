@@ -45,8 +45,6 @@ class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
   static ScriptPromise ClearAppBadgeHelper(ScriptState* script_state);
 
   mojo::Remote<mojom::blink::BadgeService> badge_service();
-
-  Member<ExecutionContext> context_;
 };
 
 }  // namespace blink

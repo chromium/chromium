@@ -45,7 +45,7 @@ constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
 const char NavigatorSocket::kSupplementName[] = "NavigatorSocket";
 
 NavigatorSocket::NavigatorSocket(ExecutionContext* context)
-    : ExecutionContextLifecycleStateObserver(context) {}
+    : Supplement(*context), ExecutionContextLifecycleStateObserver(context) {}
 
 // static
 NavigatorSocket& NavigatorSocket::From(ScriptState* script_state) {

@@ -44,6 +44,8 @@ void OnCreateDigitalGoodsResponse(
 
 const char DOMWindowDigitalGoods::kSupplementName[] = "DOMWindowDigitalGoods";
 
+DOMWindowDigitalGoods::DOMWindowDigitalGoods() : Supplement(nullptr) {}
+
 ScriptPromise DOMWindowDigitalGoods::getDigitalGoodsService(
     ScriptState* script_state,
     LocalDOMWindow& window,

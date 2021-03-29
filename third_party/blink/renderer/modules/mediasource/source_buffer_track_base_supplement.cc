@@ -38,6 +38,9 @@ SourceBuffer* SourceBufferTrackBaseSupplement::sourceBuffer(TrackBase& track) {
   return nullptr;
 }
 
+SourceBufferTrackBaseSupplement::SourceBufferTrackBaseSupplement()
+    : Supplement(nullptr) {}
+
 void SourceBufferTrackBaseSupplement::SetSourceBuffer(
     TrackBase& track,
     SourceBuffer* source_buffer) {

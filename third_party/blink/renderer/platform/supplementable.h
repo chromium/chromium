@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SUPPLEMENTABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SUPPLEMENTABLE_H_
 
+#include <cstddef>
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -120,7 +121,7 @@ class Supplement : public GarbageCollectedMixin {
  public:
   // TODO(haraken): Remove the default constructor.
   // All Supplement objects should be instantiated with |supplementable_|.
-  Supplement() {}
+  explicit Supplement(std::nullptr_t) {}
 
   explicit Supplement(T& supplementable) : supplementable_(&supplementable) {}
 

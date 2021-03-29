@@ -73,7 +73,8 @@ SharedWorkerClientHolder* SharedWorkerClientHolder::From(
 }
 
 SharedWorkerClientHolder::SharedWorkerClientHolder(LocalDOMWindow& window)
-    : connector_(&window),
+    : Supplement(window),
+      connector_(&window),
       client_receivers_(&window),
       task_runner_(window.GetTaskRunner(blink::TaskType::kDOMManipulation)) {
   DCHECK(IsMainThread());

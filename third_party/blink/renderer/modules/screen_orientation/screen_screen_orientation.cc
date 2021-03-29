@@ -38,6 +38,8 @@ ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
 const char ScreenScreenOrientation::kSupplementName[] =
     "ScreenScreenOrientation";
 
+ScreenScreenOrientation::ScreenScreenOrientation() : Supplement(nullptr) {}
+
 void ScreenScreenOrientation::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_);
   Supplement<Screen>::Trace(visitor);
