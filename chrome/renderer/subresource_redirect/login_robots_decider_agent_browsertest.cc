@@ -33,18 +33,21 @@ class RedirectResultReceiver {
         weak_ptr_factory_.GetWeakPtr());
   }
 
-  RedirectResult redirect_result() const { return redirect_result_; }
+  SubresourceRedirectResult subresource_redirect_result() const {
+    return redirect_result_;
+  }
 
   bool did_receive_result() const { return did_receive_result_; }
 
  private:
-  void OnShouldRedirectDecisionCallback(RedirectResult redirect_result) {
+  void OnShouldRedirectDecisionCallback(
+      SubresourceRedirectResult redirect_result) {
     EXPECT_FALSE(did_receive_result_);
     did_receive_result_ = true;
     redirect_result_ = redirect_result;
   }
 
-  RedirectResult redirect_result_;
+  SubresourceRedirectResult redirect_result_;
   bool did_receive_result_ = false;
   base::WeakPtrFactory<RedirectResultReceiver> weak_ptr_factory_{this};
 };
@@ -66,11 +69,12 @@ class SubresourceRedirectLoginRobotsDeciderAgentTest
     if (immediate_result) {
       // When the reult was sent immediately, callback should not be invoked.
       EXPECT_FALSE(result_receiver.did_receive_result());
-      return *immediate_result == RedirectResult::kRedirectable;
+      return *immediate_result == SubresourceRedirectResult::kRedirectable;
     }
     task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
     return result_receiver.did_receive_result() &&
-           result_receiver.redirect_result() == RedirectResult::kRedirectable;
+           result_receiver.subresource_redirect_result() ==
+               SubresourceRedirectResult::kRedirectable;
   }
 
   void SetLoggedInState(bool is_logged_in) {

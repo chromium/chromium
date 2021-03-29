@@ -85,7 +85,7 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   friend class SubresourceRedirectPublicImageHintsDeciderAgentTest;
 
   // Callback to notify the decision of decider subclasses.
-  void NotifyRedirectDeciderDecision(RedirectResult);
+  void NotifyRedirectDeciderDecision(SubresourceRedirectResult);
 
   // Start the timer for redirect fetch timeout.
   void StartRedirectTimeoutTimer();
@@ -104,7 +104,8 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   // Whether the subresource can be redirected or not and what was the reason if
   // its not eligible.
-  RedirectResult redirect_result_ = RedirectResult::kUnknown;
+  SubresourceRedirectResult redirect_result_ =
+      SubresourceRedirectResult::kUnknown;
 
   // Used to record the image load and compression metrics.
   base::Optional<LoginRobotsCompressionMetrics>

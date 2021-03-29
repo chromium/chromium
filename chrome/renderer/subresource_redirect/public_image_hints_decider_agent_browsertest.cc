@@ -59,7 +59,7 @@ class SubresourceRedirectPublicImageHintsDeciderAgentTest
   }
 
   void VerifyRedirectResult(SubresourceRedirectURLLoaderThrottle* throttle,
-                            RedirectResult redirect_result) {
+                            SubresourceRedirectResult redirect_result) {
     EXPECT_EQ(throttle->redirect_result_, redirect_result);
   }
 
@@ -138,7 +138,8 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
         request, kRenderFrameID);
     EXPECT_EQ(test_case.expected_is_throttle_created, throttle != nullptr);
     if (throttle)
-      VerifyRedirectResult(throttle.get(), RedirectResult::kRedirectable);
+      VerifyRedirectResult(throttle.get(),
+                           SubresourceRedirectResult::kRedirectable);
   }
 }
 
@@ -148,7 +149,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
     int previews_state;
     GURL original_url;
     GURL redirected_subresource_url;  // Empty URL indicates no redirect.
-    RedirectResult expected_redirect_result;
+    SubresourceRedirectResult expected_redirect_result;
     SubresourceRedirectURLLoaderThrottle::RedirectState expected_redirect_state;
   };
 
@@ -157,7 +158,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
           GURL("https://www.test.com/public_img.jpg"),
           GetSubresourceURLForURL(GURL("https://www.test.com/public_img.jpg")),
-          RedirectResult::kRedirectable,
+          SubresourceRedirectResult::kRedirectable,
           SubresourceRedirectURLLoaderThrottle::RedirectState::
               kRedirectAttempted,
       },
@@ -166,7 +167,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           GURL("https://www.test.com/public_img.jpg#anchor"),
           GetSubresourceURLForURL(
               GURL("https://www.test.com/public_img.jpg#anchor")),
-          RedirectResult::kRedirectable,
+          SubresourceRedirectResult::kRedirectable,
           SubresourceRedirectURLLoaderThrottle::RedirectState::
               kRedirectAttempted,
       },
@@ -177,7 +178,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           GetSubresourceURLForURL(
               GURL("https://www.test.com/"
                    "public_img.jpg?public_arg1=bar&public_arg2")),
-          RedirectResult::kRedirectable,
+          SubresourceRedirectResult::kRedirectable,
           SubresourceRedirectURLLoaderThrottle::RedirectState::
               kRedirectAttempted,
       },
@@ -186,7 +187,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
           GURL("https://www.test.com/private_img.jpg"),
           GURL(),
-          RedirectResult::kIneligibleMissingInImageHints,
+          SubresourceRedirectResult::kIneligibleMissingInImageHints,
           SubresourceRedirectURLLoaderThrottle::RedirectState::
               kRedirectNotAllowedByDecider,
       },
@@ -194,7 +195,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
           GURL("https://www.test.com/public_img.jpg&private_arg1=foo"),
           GURL(),
-          RedirectResult::kIneligibleMissingInImageHints,
+          SubresourceRedirectResult::kIneligibleMissingInImageHints,
           SubresourceRedirectURLLoaderThrottle::RedirectState::
               kRedirectNotAllowedByDecider,
       },
@@ -203,7 +204,7 @@ TEST_F(SubresourceRedirectPublicImageHintsDeciderAgentTest,
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED,
           GURL("https://www.test.com/public_img.jpg"),
           GURL(),
-          RedirectResult::kIneligibleBlinkDisallowed,
+          SubresourceRedirectResult::kIneligibleBlinkDisallowed,
           SubresourceRedirectURLLoaderThrottle::RedirectState::kNone,
       },
   };

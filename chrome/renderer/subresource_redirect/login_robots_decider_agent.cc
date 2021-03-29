@@ -8,11 +8,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "chrome/renderer/subresource_redirect/redirect_result.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser.h"
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "components/subresource_redirect/common/subresource_redirect_features.h"
+#include "components/subresource_redirect/common/subresource_redirect_result.h"
 #include "content/public/renderer/render_frame.h"
 
 namespace subresource_redirect {
@@ -26,22 +26,23 @@ RobotsRulesParserCache& GetRobotsRulesParserCache() {
   return *instance;
 }
 
-// Converts the RobotsRulesParser::CheckResult enum to RedirectResult enum.
-RedirectResult ConvertToRedirectResult(
+// Converts the RobotsRulesParser::CheckResult enum to SubresourceRedirectResult
+// enum.
+SubresourceRedirectResult ConvertToRedirectResult(
     RobotsRulesParser::CheckResult check_result) {
   switch (check_result) {
     case RobotsRulesParser::CheckResult::kAllowed:
-      return RedirectResult::kRedirectable;
+      return SubresourceRedirectResult::kRedirectable;
     case RobotsRulesParser::CheckResult::kDisallowed:
     case RobotsRulesParser::CheckResult::kInvalidated:
-      return RedirectResult::kIneligibleRobotsDisallowed;
+      return SubresourceRedirectResult::kIneligibleRobotsDisallowed;
     case RobotsRulesParser::CheckResult::kTimedout:
     case RobotsRulesParser::CheckResult::kDisallowedAfterTimeout:
-      return RedirectResult::kIneligibleRobotsTimeout;
+      return SubresourceRedirectResult::kIneligibleRobotsTimeout;
   }
 }
 
-void RecordRedirectResultMetric(RedirectResult redirect_result) {
+void RecordRedirectResultMetric(SubresourceRedirectResult redirect_result) {
   base::UmaHistogramEnumeration(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
       redirect_result);
@@ -59,7 +60,7 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
 
 LoginRobotsDeciderAgent::~LoginRobotsDeciderAgent() = default;
 
-base::Optional<RedirectResult>
+base::Optional<SubresourceRedirectResult>
 LoginRobotsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {
@@ -67,8 +68,10 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
   DCHECK(url.is_valid());
   num_should_redirect_checks_++;
 
-  if (redirect_result_ != RedirectResult::kRedirectable)
+  if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
+    RecordRedirectResultMetric(redirect_result_);
     return redirect_result_;
+  }
 
   // Trigger the robots rules fetch if needed.
   const auto origin = url::Origin::Create(url);
@@ -94,7 +97,8 @@ LoginRobotsDeciderAgent::ShouldRedirectSubresource(
               &LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   if (result) {
-    RedirectResult redirect_result = ConvertToRedirectResult(*result);
+    SubresourceRedirectResult redirect_result =
+        ConvertToRedirectResult(*result);
     RecordRedirectResultMetric(redirect_result);
     return redirect_result;
   }
@@ -106,12 +110,13 @@ void LoginRobotsDeciderAgent::OnShouldRedirectSubresourceResult(
     LoginRobotsDeciderAgent::ShouldRedirectDecisionCallback callback,
     RobotsRulesParser::CheckResult check_result) {
   // Verify if the navigation is still allowed to redirect.
-  if (redirect_result_ != RedirectResult::kRedirectable) {
+  if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
     RecordRedirectResultMetric(redirect_result_);
     std::move(callback).Run(redirect_result_);
     return;
   }
-  RedirectResult redirect_result = ConvertToRedirectResult(check_result);
+  SubresourceRedirectResult redirect_result =
+      ConvertToRedirectResult(check_result);
   RecordRedirectResultMetric(redirect_result);
   std::move(callback).Run(redirect_result);
 }
@@ -120,21 +125,22 @@ void LoginRobotsDeciderAgent::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   PublicResourceDeciderAgent::ReadyToCommitNavigation(document_loader);
-  redirect_result_ = RedirectResult::kUnknown;
+  redirect_result_ = SubresourceRedirectResult::kUnknown;
   num_should_redirect_checks_ = 0;
   GetRobotsRulesParserCache().InvalidatePendingRequests(routing_id());
 }
 
 void LoginRobotsDeciderAgent::SetLoggedInState(bool is_logged_in) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  redirect_result_ = is_logged_in ? RedirectResult::kIneligibleLoginDetected
-                                  : RedirectResult::kRedirectable;
+  redirect_result_ = is_logged_in
+                         ? SubresourceRedirectResult::kIneligibleLoginDetected
+                         : SubresourceRedirectResult::kRedirectable;
 }
 
 void LoginRobotsDeciderAgent::RecordMetricsOnLoadFinished(
     const GURL& url,
     int64_t content_length,
-    RedirectResult redirect_result) {
+    SubresourceRedirectResult redirect_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // TODO(crbug.com/1148980): Record coverage metrics
 }

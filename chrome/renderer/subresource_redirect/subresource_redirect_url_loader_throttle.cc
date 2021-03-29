@@ -11,11 +11,11 @@
 #include "base/time/time.h"
 #include "chrome/renderer/previews/resource_loading_hints_agent.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/redirect_result.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/subresource_redirect/common/subresource_redirect_features.h"
+#include "components/subresource_redirect/common/subresource_redirect_result.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
@@ -51,7 +51,7 @@ PublicResourceDeciderAgent* GetPublicResourceDeciderAgent(int render_frame_id) {
 // Records the per image load metrics.
 void RecordMetricsOnLoadFinished(
     LoginRobotsCompressionMetrics* login_robots_compression_metrics,
-    RedirectResult redirect_result,
+    SubresourceRedirectResult redirect_result,
     uint64_t content_length,
     base::Optional<float> ofcl) {
   if (login_robots_compression_metrics) {
@@ -91,9 +91,10 @@ SubresourceRedirectURLLoaderThrottle::SubresourceRedirectURLLoaderThrottle(
     : render_frame_id_(render_frame_id) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
          ShouldEnableLoginRobotsCheckedCompression());
-  redirect_result_ = allowed_to_redirect
-                         ? RedirectResult::kRedirectable
-                         : RedirectResult::kIneligibleBlinkDisallowed;
+  redirect_result_ =
+      allowed_to_redirect
+          ? SubresourceRedirectResult::kRedirectable
+          : SubresourceRedirectResult::kIneligibleBlinkDisallowed;
   if (!ShouldRecordLoginRobotsUkmMetrics())
     return;
   if (!ShouldEnableLoginRobotsCheckedCompression())
@@ -120,7 +121,7 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(request->destination, network::mojom::RequestDestination::kImage);
   DCHECK(request->url.SchemeIs(url::kHttpsScheme));
 
-  if (redirect_result_ != RedirectResult::kRedirectable)
+  if (redirect_result_ != SubresourceRedirectResult::kRedirectable)
     return;
 
   // Do not redirect if its already a litepage subresource.
@@ -159,7 +160,7 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
     login_robots_compression_metrics_->NotifyRequestSent();
   *defer = false;
   redirect_result_ = *redirect_result;
-  if (redirect_result_ != RedirectResult::kRedirectable) {
+  if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
     redirect_state_ = RedirectState::kRedirectNotAllowedByDecider;
     return;
   }
@@ -176,13 +177,13 @@ SubresourceRedirectURLLoaderThrottle::NameForLoggingWillStartRequest() {
 }
 
 void SubresourceRedirectURLLoaderThrottle::NotifyRedirectDeciderDecision(
-    RedirectResult redirect_result) {
+    SubresourceRedirectResult redirect_result) {
   DCHECK_EQ(RedirectState::kRedirectDecisionPending, redirect_state_);
   redirect_result_ = redirect_result;
   if (login_robots_compression_metrics_)
     login_robots_compression_metrics_->NotifyRequestSent();
 
-  if (redirect_result_ != RedirectResult::kRedirectable) {
+  if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
     // Restart the fetch to the original URL.
     redirect_state_ = RedirectState::kRedirectNotAllowedByDecider;
     delegate_->RestartWithURLResetAndFlags(net::LOAD_NORMAL);
@@ -251,7 +252,7 @@ void SubresourceRedirectURLLoaderThrottle::BeforeWillProcessResponse(
       response_head.headers->response_code() == 304) {
     return;
   }
-  redirect_result_ = RedirectResult::kIneligibleRedirectFailed;
+  redirect_result_ = SubresourceRedirectResult::kIneligibleRedirectFailed;
 
   // 503 response code indicates loadshed from the compression server. Notify
   // the browser process which will bypass subresource redirect for subsequent
@@ -353,7 +354,7 @@ void SubresourceRedirectURLLoaderThrottle::WillOnCompleteWithError(
   if (redirect_state_ != RedirectState::kRedirectAttempted)
     return;
   DCHECK(ShouldCompressRedirectSubresource());
-  redirect_result_ = RedirectResult::kIneligibleRedirectFailed;
+  redirect_result_ = SubresourceRedirectResult::kIneligibleRedirectFailed;
 
   // If the server fails, restart the request to the original resource, and
   // record it.

@@ -325,10 +325,10 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kRedirectable, 1);
+      SubresourceRedirectResult::kRedirectable, 1);
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsDisallowed, 1);
+      SubresourceRedirectResult::kIneligibleRobotsDisallowed, 1);
 }
 
 // Tests the cases when robots rules are sent, after throttles are
@@ -370,10 +370,10 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kRedirectable, 1);
+      SubresourceRedirectResult::kRedirectable, 1);
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsDisallowed, 1);
+      SubresourceRedirectResult::kIneligibleRobotsDisallowed, 1);
 }
 
 // Tests the cases when robots rules retrieval timesout.
@@ -411,7 +411,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
   histogram_tester_.ExpectBucketCount(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsTimeout, 2);
+      SubresourceRedirectResult::kIneligibleRobotsTimeout, 2);
 }
 
 }  // namespace subresource_redirect

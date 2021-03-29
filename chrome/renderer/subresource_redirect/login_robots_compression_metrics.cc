@@ -26,7 +26,7 @@ void LoginRobotsCompressionMetrics::NotifyRequestSent() {
 }
 
 void LoginRobotsCompressionMetrics::RecordMetricsOnLoadFinished(
-    RedirectResult redirect_result,
+    SubresourceRedirectResult redirect_result,
     size_t content_length,
     base::Optional<size_t> ofcl) {
   base::TimeTicks response_received_time = base::TimeTicks::Now();

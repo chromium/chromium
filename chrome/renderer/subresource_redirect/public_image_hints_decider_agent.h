@@ -10,7 +10,7 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/redirect_result.h"
+#include "components/subresource_redirect/common/subresource_redirect_result.h"
 #include "url/gurl.h"
 
 namespace subresource_redirect {
@@ -45,12 +45,13 @@ class PublicImageHintsDeciderAgent : public PublicResourceDeciderAgent {
   void SetLoggedInState(bool is_logged_in) override;
 
   // PublicResourceDeciderAgent:
-  base::Optional<RedirectResult> ShouldRedirectSubresource(
+  base::Optional<SubresourceRedirectResult> ShouldRedirectSubresource(
       const GURL& url,
       ShouldRedirectDecisionCallback callback) override;
-  void RecordMetricsOnLoadFinished(const GURL& url,
-                                   int64_t content_length,
-                                   RedirectResult redirect_result) override;
+  void RecordMetricsOnLoadFinished(
+      const GURL& url,
+      int64_t content_length,
+      SubresourceRedirectResult redirect_result) override;
   void NotifyCompressedResourceFetchFailed(
       base::TimeDelta retry_after) override;
 
@@ -66,7 +67,7 @@ class PublicImageHintsDeciderAgent : public PublicResourceDeciderAgent {
 
   // Records the breakdown of bytes to UKM metrics.
   void RecordMetrics(int64_t content_length,
-                     RedirectResult redirect_result) const;
+                     SubresourceRedirectResult redirect_result) const;
 
   // Record the breakdown of bytes for unavailable image hints, whether the
   // hints fetch timed out, the image was not in the delayed hints, or the

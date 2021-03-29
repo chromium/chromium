@@ -106,7 +106,6 @@ static_library("renderer") {
     "subresource_redirect/public_resource_decider.h",
     "subresource_redirect/public_resource_decider_agent.cc",
     "subresource_redirect/public_resource_decider_agent.h",
-    "subresource_redirect/redirect_result.h",
     "subresource_redirect/robots_rules_parser.cc",
     "subresource_redirect/robots_rules_parser.h",
     "subresource_redirect/robots_rules_parser_cache.cc",

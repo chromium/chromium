@@ -9,7 +9,7 @@
 #include "base/optional.h"
 #include "chrome/common/subresource_redirect_service.mojom.h"
 #include "chrome/renderer/subresource_redirect/public_resource_decider.h"
-#include "chrome/renderer/subresource_redirect/redirect_result.h"
+#include "components/subresource_redirect/common/subresource_redirect_result.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

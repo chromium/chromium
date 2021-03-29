@@ -47,12 +47,13 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
   void SetLoggedInState(bool is_logged_in) override;
 
   // PublicResourceDeciderAgent:
-  base::Optional<RedirectResult> ShouldRedirectSubresource(
+  base::Optional<SubresourceRedirectResult> ShouldRedirectSubresource(
       const GURL& url,
       ShouldRedirectDecisionCallback callback) override;
-  void RecordMetricsOnLoadFinished(const GURL& url,
-                                   int64_t content_length,
-                                   RedirectResult redirect_result) override;
+  void RecordMetricsOnLoadFinished(
+      const GURL& url,
+      int64_t content_length,
+      SubresourceRedirectResult redirect_result) override;
 
   // Callback invoked when should redirect check result is available.
   void OnShouldRedirectSubresourceResult(
@@ -63,7 +64,8 @@ class LoginRobotsDeciderAgent : public PublicResourceDeciderAgent {
 
   // Current state of the redirect compression that should be used for the
   // current navigation.
-  RedirectResult redirect_result_ = RedirectResult::kUnknown;
+  SubresourceRedirectResult redirect_result_ =
+      SubresourceRedirectResult::kUnknown;
 
   // Tracks the count of subresource redirect allowed checks that happened for
   // the current navigation. This is used in having a different robots rules

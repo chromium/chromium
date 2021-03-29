@@ -13,9 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/renderer/subresource_redirect/redirect_result.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/subresource_redirect/common/subresource_redirect_result.h"
 #include "components/subresource_redirect/subresource_redirect_browser_test_util.h"
 #include "components/subresource_redirect/subresource_redirect_test_util.h"
 #include "content/public/test/browser_test.h"
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 1);
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsTimeout, 1);
+      SubresourceRedirectResult::kIneligibleRobotsTimeout, 1);
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.CompressionAttempt.ResponseCode",
       net::HTTP_TEMPORARY_REDIRECT, 1);
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoggedInSitesBrowserTest,
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 1);
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-      RedirectResult::kIneligibleRobotsTimeout, 1);
+      SubresourceRedirectResult::kIneligibleRobotsTimeout, 1);
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.CompressionAttempt.ResponseCode",
       net::HTTP_TEMPORARY_REDIRECT, 1);

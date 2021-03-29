@@ -6,6 +6,7 @@ source_set("common") {
   sources = [
     "subresource_redirect_features.cc",
     "subresource_redirect_features.h",
+    "subresource_redirect_result.h",
   ]
 
   deps = [ "//third_party/blink/public/common" ]

@@ -82,28 +82,29 @@ void PublicImageHintsDeciderAgent::SetCompressPublicImagesHints(
   RecordImageHintsUnavailableMetrics();
 }
 
-base::Optional<RedirectResult>
+base::Optional<SubresourceRedirectResult>
 PublicImageHintsDeciderAgent::ShouldRedirectSubresource(
     const GURL& url,
     ShouldRedirectDecisionCallback callback) {
   if (!IsMainFrame())
-    return RedirectResult::kIneligibleSubframeResource;
+    return SubresourceRedirectResult::kIneligibleSubframeResource;
   if (!public_image_urls_)
-    return RedirectResult::kIneligibleImageHintsUnavailable;
+    return SubresourceRedirectResult::kIneligibleImageHintsUnavailable;
 
   if (public_image_urls_->find(GetURLForPublicDecision(url)) !=
       public_image_urls_->end()) {
-    return RedirectResult::kRedirectable;
+    return SubresourceRedirectResult::kRedirectable;
   }
 
-  return RedirectResult::kIneligibleMissingInImageHints;
+  return SubresourceRedirectResult::kIneligibleMissingInImageHints;
 }
 
 void PublicImageHintsDeciderAgent::RecordMetricsOnLoadFinished(
     const GURL& url,
     int64_t content_length,
-    RedirectResult redirect_result) {
-  if (redirect_result == RedirectResult::kIneligibleImageHintsUnavailable) {
+    SubresourceRedirectResult redirect_result) {
+  if (redirect_result ==
+      SubresourceRedirectResult::kIneligibleImageHintsUnavailable) {
     unavailable_image_hints_urls_.insert(
         std::make_pair(GetURLForPublicDecision(url), content_length));
     return;
@@ -118,10 +119,10 @@ void PublicImageHintsDeciderAgent::ClearImageHints() {
 
 void PublicImageHintsDeciderAgent::RecordMetrics(
     int64_t content_length,
-    RedirectResult redirect_result) const {
+    SubresourceRedirectResult redirect_result) const {
   // TODO(1156757): Reduce the number of ukm records, by aggregating the
-  // image bytes per RedirectResult and then recording once every k seconds, or
-  // k images.
+  // image bytes per SubresourceRedirectResult and then recording once every k
+  // seconds, or k images.
   if (!render_frame() || !render_frame()->GetWebFrame())
     return;
 
@@ -131,38 +132,40 @@ void PublicImageHintsDeciderAgent::RecordMetrics(
   content_length = ukm::GetExponentialBucketMin(content_length, 1.3);
 
   switch (redirect_result) {
-    case RedirectResult::kRedirectable:
+    case SubresourceRedirectResult::kRedirectable:
       public_image_compression_data_use.SetCompressibleImageBytes(
           content_length);
       break;
-    case RedirectResult::kIneligibleImageHintsUnavailable:
+    case SubresourceRedirectResult::kIneligibleImageHintsUnavailable:
       public_image_compression_data_use.SetIneligibleImageHintsUnavailableBytes(
           content_length);
       break;
-    case RedirectResult::kIneligibleImageHintsUnavailableButRedirectable:
+    case SubresourceRedirectResult::
+        kIneligibleImageHintsUnavailableButRedirectable:
       public_image_compression_data_use
           .SetIneligibleImageHintsUnavailableButCompressibleBytes(
               content_length);
       break;
-    case RedirectResult::kIneligibleImageHintsUnavailableAndMissingInHints:
+    case SubresourceRedirectResult::
+        kIneligibleImageHintsUnavailableAndMissingInHints:
       public_image_compression_data_use
           .SetIneligibleImageHintsUnavailableAndMissingInHintsBytes(
               content_length);
       break;
-    case RedirectResult::kIneligibleMissingInImageHints:
+    case SubresourceRedirectResult::kIneligibleMissingInImageHints:
       public_image_compression_data_use.SetIneligibleMissingInImageHintsBytes(
           content_length);
       break;
-    case RedirectResult::kUnknown:
-    case RedirectResult::kIneligibleRedirectFailed:
-    case RedirectResult::kIneligibleBlinkDisallowed:
-    case RedirectResult::kIneligibleSubframeResource:
+    case SubresourceRedirectResult::kUnknown:
+    case SubresourceRedirectResult::kIneligibleRedirectFailed:
+    case SubresourceRedirectResult::kIneligibleBlinkDisallowed:
+    case SubresourceRedirectResult::kIneligibleSubframeResource:
       public_image_compression_data_use.SetIneligibleOtherImageBytes(
           content_length);
       break;
-    case RedirectResult::kIneligibleRobotsDisallowed:
-    case RedirectResult::kIneligibleRobotsTimeout:
-    case RedirectResult::kIneligibleLoginDetected:
+    case SubresourceRedirectResult::kIneligibleRobotsDisallowed:
+    case SubresourceRedirectResult::kIneligibleRobotsTimeout:
+    case SubresourceRedirectResult::kIneligibleLoginDetected:
       NOTREACHED();
   }
   mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> recorder;
@@ -179,15 +182,16 @@ void PublicImageHintsDeciderAgent::OnHintsReceiveTimeout() {
 
 void PublicImageHintsDeciderAgent::RecordImageHintsUnavailableMetrics() {
   for (const auto& resource : unavailable_image_hints_urls_) {
-    auto redirect_result = RedirectResult::kIneligibleImageHintsUnavailable;
+    auto redirect_result =
+        SubresourceRedirectResult::kIneligibleImageHintsUnavailable;
     if (public_image_urls_) {
       if (public_image_urls_->find(resource.first) !=
           public_image_urls_->end()) {
-        redirect_result =
-            RedirectResult::kIneligibleImageHintsUnavailableButRedirectable;
+        redirect_result = SubresourceRedirectResult::
+            kIneligibleImageHintsUnavailableButRedirectable;
       } else {
-        redirect_result =
-            RedirectResult::kIneligibleImageHintsUnavailableAndMissingInHints;
+        redirect_result = SubresourceRedirectResult::
+            kIneligibleImageHintsUnavailableAndMissingInHints;
       }
     }
     RecordMetrics(resource.second, redirect_result);
