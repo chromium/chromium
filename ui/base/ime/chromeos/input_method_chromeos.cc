@@ -648,16 +648,10 @@ bool InputMethodChromeOS::HasInputMethodResult() const {
 void InputMethodChromeOS::CommitText(
     const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
-  if (text.empty())
-    return;
-
   // We need to receive input method result even if the text input type is
   // TEXT_INPUT_TYPE_NONE, to make sure we can always send correct
   // character for each key event to the focused text input client.
   if (!GetTextInputClient())
-    return;
-
-  if (text.empty())
     return;
 
   if (!CanComposeInline()) {

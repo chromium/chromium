@@ -6080,6 +6080,21 @@ TEST_F(InputMethodResultAuraTest, CommitText) {
   }
 }
 
+TEST_F(InputMethodResultAuraTest, CommitTextWithEmptyText) {
+  base::RepeatingClosure ime_call = base::BindRepeating(
+      &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
+      u"", ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+    ime_call.Run();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ("CommitText",
+              GetMessageNames(widget_hosts_[index]
+                                  ->input_handler()
+                                  ->GetAndResetDispatchedMessages()));
+  }
+}
+
 TEST_F(InputMethodResultAuraTest, CommitTextBeforeCursor) {
   base::RepeatingClosure ime_call = base::BindRepeating(
       &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),

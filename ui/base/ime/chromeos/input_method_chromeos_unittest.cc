@@ -1276,4 +1276,16 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(3, 3));
 }
 
+TEST_F(InputMethodChromeOSTest, CommitTextReplacesSelection) {
+  FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetTextAndSelection(u"hello", gfx::Range(0, 5));
+  InputMethodChromeOS ime(this);
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  ime.CommitText(
+      u"", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  EXPECT_EQ(fake_text_input_client.text(), u"");
+}
+
 }  // namespace ui

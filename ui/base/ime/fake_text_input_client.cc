@@ -39,7 +39,7 @@ void FakeTextInputClient::ClearCompositionText() {}
 void FakeTextInputClient::InsertText(
     const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
-  text_.insert(selection_.start(), text);
+  text_.replace(selection_.start(), selection_.length(), text);
 
   if (cursor_behavior ==
       TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText) {

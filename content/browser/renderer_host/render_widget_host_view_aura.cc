@@ -1160,7 +1160,7 @@ void RenderWidgetHostViewAura::InsertText(
   DCHECK_NE(GetTextInputType(), ui::TEXT_INPUT_TYPE_NONE);
 
   if (text_input_manager_ && text_input_manager_->GetActiveWidget()) {
-    if (text.length()) {
+    if (text.length() > 0 || !has_composition_text_) {
       const int relative_cursor_position =
           cursor_behavior == InsertTextCursorBehavior::kMoveCursorBeforeText
               ? -text.length()
@@ -1168,7 +1168,8 @@ void RenderWidgetHostViewAura::InsertText(
       text_input_manager_->GetActiveWidget()->ImeCommitText(
           text, std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(),
           relative_cursor_position);
-    } else if (has_composition_text_) {
+    } else {
+      DCHECK(has_composition_text_);
       text_input_manager_->GetActiveWidget()->ImeFinishComposingText(false);
     }
   }
