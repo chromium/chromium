@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -704,6 +705,32 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   // This test passes if no CHECK failures.
 }
 
-#undef MAYBE_OverflowAtomicInline
+TEST_F(NGLineBreakerTest, SplitTextByGlyphs) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
+  NGInlineNode node = CreateInlineNode(
+      uR"HTML(
+      <!DOCTYPE html>
+      <svg viewBox="0 0 800 600">
+      <text id="container" style="font-family:Times">AV)HTML"
+      u"\U0001F197\u05E2\u05B4\u05D1\u05E8\u05B4\u05D9\u05EA</text></svg>)");
+  BreakLines(
+      node, LayoutUnit::Max(),
+      [](const NGLineBreaker& line_breaker, const NGLineInfo& line_info) {
+        EXPECT_EQ(8u, line_info.Results().size());
+        // "A" and "V" with Times font are typically overlapped. They should
+        // be split.
+        EXPECT_EQ(1u, line_info.Results()[0].Length());  // A
+        EXPECT_EQ(1u, line_info.Results()[1].Length());  // V
+        // Non-BMP characters should not be split.
+        EXPECT_EQ(2u, line_info.Results()[2].Length());  // U+1F197
+        // Connected characters should not be split.
+        EXPECT_EQ(2u, line_info.Results()[3].Length());  // U+05E2 U+05B4
+        EXPECT_EQ(1u, line_info.Results()[4].Length());  // U+05D1
+        EXPECT_EQ(2u, line_info.Results()[5].Length());  // U+05E8 U+05B4
+        EXPECT_EQ(1u, line_info.Results()[6].Length());  // U+05D9
+        EXPECT_EQ(1u, line_info.Results()[7].Length());  // U+05EA
+      });
+}
+
 }  // namespace
 }  // namespace blink

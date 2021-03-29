@@ -140,6 +140,22 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(const NGConstraintSpace& space,
   return inline_end_size;
 }
 
+// See NGLineBreaker::SplitTextByGlyphs().
+void CollectCharIndex(void* context,
+                      unsigned char_index,
+                      Glyph,
+                      FloatSize,
+                      float,
+                      bool,
+                      CanvasRotationInVertical,
+                      const SimpleFontData*) {
+  auto* index_list = static_cast<Vector<unsigned>*>(context);
+  wtf_size_t size = index_list->size();
+  if (size > 0 && index_list->at(size - 1) == char_index)
+    return;
+  index_list->push_back(char_index);
+}
+
 }  // namespace
 
 inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
@@ -816,11 +832,15 @@ void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
   DCHECK_EQ(offset_, item.StartOffset());
 
   const ShapeResult& shape = *item.TextShapeResult();
-  shape.EnsurePositionData();
-  do {
-    unsigned glyph_end = (offset_ + 1 == shape.EndIndex())
-                             ? shape.EndIndex()
-                             : shape.CachedNextSafeToBreakOffset(offset_ + 1);
+  Vector<unsigned> index_list;
+  index_list.ReserveCapacity(shape.NumGlyphs());
+  shape.ForEachGlyph(0, CollectCharIndex, &index_list);
+  if (shape.IsRtl())
+    index_list.Reverse();
+  wtf_size_t size = index_list.size();
+  for (wtf_size_t i = 0; i < size; ++i) {
+    DCHECK_EQ(offset_, index_list[i]);
+    unsigned glyph_end = i + 1 < size ? index_list[i + 1] : shape.EndIndex();
     NGInlineItemResult* result = AddItem(item, glyph_end, line_info);
     result->should_create_line_box = true;
     auto shape_result_view =
@@ -830,7 +850,7 @@ void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
     result->shape_result = std::move(shape_result_view);
     offset_ = glyph_end;
     position_ += result->inline_size;
-  } while (offset_ < shape.EndIndex());
+  }
   trailing_whitespace_ = WhitespaceState::kUnknown;
   MoveToNextOf(item);
 }
