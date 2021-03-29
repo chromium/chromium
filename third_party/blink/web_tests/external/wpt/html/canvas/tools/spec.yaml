@@ -456,6 +456,13 @@ assertions:
   - id: 2d.path.rect.newsubpath
     text: "The rect(x, y, w, h) method <...> *must* then create a new subpath with the point (x, y) as the only point in the subpath."
 
+  - id: 2d.path.roundrect.radii
+    text: "The elements of the radii argument to roundRect must map to the right corners."
+  - id: 2d.path.roundrect.subpath
+    text: "The roundRect(x, y, w, h, radii) method *must* create a new subpath containing just the rounded rectangle"
+  - id: 2d.path.roundrect.newsubpath
+    text: "The roundRect(x, y, w, h, radii) method <...> *must* then create a new subpath with the point (x, y) as the only point in the subpath."
+
   - id: 2d.path.fill.basic
     text: "The fill() method *must* fill all the subpaths of the current path, using fillStyle, and using the non-zero winding number rule."
   - id: 2d.path.fill.closed
