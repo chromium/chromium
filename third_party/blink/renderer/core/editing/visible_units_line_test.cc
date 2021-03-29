@@ -1030,6 +1030,22 @@ TEST_P(ParameterizedVisibleUnitsLineTest,
   EXPECT_FALSE(InSameLine(after_zws_up, after_zws_down));
 }
 
+// http://crbug.com/1183269
+TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithSoftLineWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 10px/1 Ahem; }"
+      "p { width: 3ch; }");
+  // Note: "contenteditable" adds
+  //    line-break: after-white-space;
+  //    overflow-wrap: break-word;
+  const SelectionInDOMTree& selection =
+      SetSelectionTextToBody("<p contenteditable id=t>abc |xyz</p>");
+  EXPECT_FALSE(InSameLine(
+      PositionWithAffinity(selection.Base(), TextAffinity::kUpstream),
+      PositionWithAffinity(selection.Base(), TextAffinity::kDownstream)));
+}
+
 TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
   LoadAhem();
   InsertStyleElement(

@@ -614,9 +614,7 @@ inline bool InlineBidiResolver::NeedsTrailingSpace(BidiRunList<BidiRun>& runs) {
     return true;
   const ComputedStyle& style =
       runs.LogicallyLastRun()->line_layout_item_.StyleRef();
-  if (style.BreakOnlyAfterWhiteSpace() && style.AutoWrap())
-    return true;
-  return false;
+  return style.NeedsTrailingSpace();
 }
 
 static inline bool IsIsolatedInline(LineLayoutItem object) {
