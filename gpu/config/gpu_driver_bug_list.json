@@ -3716,6 +3716,18 @@
       "features": [
         "exit_on_context_lost"
       ]
+    },
+    {
+      "id": 371,
+      "cr_bugs": [1192748],
+      "description": "Disable software overlays for Intel GPUs. All Skylake+ devices support hw overlays, older devices peform poorly.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_direct_composition_sw_video_overlays"
+      ]
     }
   ]
 }
