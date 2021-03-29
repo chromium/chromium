@@ -72,10 +72,17 @@ message AutofillOfferSpecifics {
     // apply to the value prop text. Generally, "Terms apply."
     optional string see_details_text_desktop = 3;
 
-    // A message translated in the user's GPay app locale, instructing them on
-    // how to redeem the offer. For example, a promo code offer might display
-    // "Tap the promo code field at checkout to autofill it."
-    optional string usage_instructions_text = 4;
+    // A message translated in the user's GPay app locale and shown on mobile,
+    // instructing them on how to redeem the offer. For example, a promo code
+    // offer might display "Tap the promo code field at checkout to autofill
+    // it."
+    optional string usage_instructions_text_mobile = 4;
+
+    // A message translated in the user's GPay app locale and shown on desktop,
+    // instructing them on how to redeem the offer. For example, a promo code
+    // offer might display "Click the promo code field at checkout to autofill
+    // it."
+    optional string usage_instructions_text_desktop = 5;
   }
   optional DisplayStrings display_strings = 10;
 

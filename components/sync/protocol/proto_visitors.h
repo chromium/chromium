@@ -158,7 +158,8 @@ VISIT_PROTO_FIELDS(
   VISIT(value_prop_text);
   VISIT(see_details_text_mobile);
   VISIT(see_details_text_desktop);
-  VISIT(usage_instructions_text);
+  VISIT(usage_instructions_text_mobile);
+  VISIT(usage_instructions_text_desktop);
 }
 
 VISIT_PROTO_FIELDS(
