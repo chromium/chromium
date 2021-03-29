@@ -157,7 +157,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name without sync consent.
      *
      * This method does not enable sync.
      */
@@ -170,7 +170,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name and enables sync.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
@@ -180,7 +180,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name and enables sync.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      *
