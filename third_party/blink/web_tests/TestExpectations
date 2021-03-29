@@ -779,6 +779,12 @@ crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-align-self-vert-rtl-005.x
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-wmvert-001.xhtml [ Failure ]
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-001.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-002.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-001.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-start-rtl.html [ Failure ]
+crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-start.html [ Failure ]
 
 # We don't support requesting flex line breaks and it is not clear that we should.
 # See https://lists.w3.org/Archives/Public/www-style/2015May/0065.html
@@ -2518,12 +2524,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-left-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-left-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start-rtl.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flexbox_justifycontent-start.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/html/syntax/xmldecl/xmldecl.html [ Failure Crash Timeout ]
 crbug.com/1191547 external/wpt/html/semantics/forms/the-label-element/proxy-modifier-click-to-associated-element.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/websockets/extended-payload-length.html?wpt_flags=h2 [ Timeout ]
