@@ -119,9 +119,8 @@ TEST_P(PrerenderHostTest, Activate) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      std::move(attributes), *web_contents,
-      initiator_rfh->GetLastCommittedOrigin(),
-      initiator_rfh->GetProcess()->GetID(), initiator_rfh->GetFrameToken());
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
+      *initiator_rfh);
   PrerenderHost* prerender_host =
       registry->FindHostById(prerender_frame_tree_node_id);
 
@@ -166,9 +165,8 @@ TEST_P(PrerenderHostTest, DontActivate) {
 
   // Start the prerendering navigation, but don't activate it.
   const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
-      std::move(attributes), *web_contents,
-      initiator_rfh->GetLastCommittedOrigin(),
-      initiator_rfh->GetProcess()->GetID(), initiator_rfh->GetFrameToken());
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
+      *initiator_rfh);
   registry->AbandonHost(prerender_frame_tree_node_id);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }

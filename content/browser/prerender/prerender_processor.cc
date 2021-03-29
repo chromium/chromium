@@ -72,9 +72,7 @@ void PrerenderProcessor::Start(
     return;
 
   prerender_frame_tree_node_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
-      std::move(attributes), *web_contents, initiator_origin_,
-      initiator_render_frame_host_.GetProcess()->GetID(),
-      initiator_render_frame_host_.GetFrameToken());
+      std::move(attributes), initiator_origin_, initiator_render_frame_host_);
 }
 
 void PrerenderProcessor::Cancel() {

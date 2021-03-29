@@ -333,18 +333,18 @@ class PrerenderHost::WebContentsPageHolder
   std::unique_ptr<WebContents> web_contents_;
 };
 
-PrerenderHost::PrerenderHost(
-    blink::mojom::PrerenderAttributesPtr attributes,
-    const url::Origin& initiator_origin,
-    int initiator_process_id,
-    const blink::LocalFrameToken& initiator_frame_token,
-    WebContentsImpl& web_contents)
+PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
+                             const url::Origin& initiator_origin,
+                             RenderFrameHostImpl& initiator_render_frame_host)
     : attributes_(std::move(attributes)),
       initiator_origin_(initiator_origin),
-      initiator_process_id_(initiator_process_id),
-      initiator_frame_token_(initiator_frame_token) {
+      initiator_process_id_(initiator_render_frame_host.GetProcess()->GetID()),
+      initiator_frame_token_(initiator_render_frame_host.GetFrameToken()) {
   DCHECK(blink::features::IsPrerender2Enabled());
-  CreatePageHolder(web_contents);
+  auto* web_contents =
+      WebContents::FromRenderFrameHost(&initiator_render_frame_host);
+  DCHECK(web_contents);
+  CreatePageHolder(*static_cast<WebContentsImpl*>(web_contents));
 }
 
 // TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the

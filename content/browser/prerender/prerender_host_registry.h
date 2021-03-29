@@ -70,10 +70,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
-                         WebContentsImpl& web_contents,
                          const url::Origin& initiator_origin,
-                         int initiator_process_id,
-                         const blink::LocalFrameToken& initiator_frame_token);
+                         RenderFrameHostImpl& initiator_render_frame_host);
 
   // For triggers.
   // Destroys the host registered for `frame_tree_node_id`.

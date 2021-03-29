@@ -66,13 +66,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMaxValue = kInProgressNavigation
   };
 
-  // TODO(toyoshim): Pass RFH instead of `initiator_process_id`,
-  // `initiator_frame_token`, and `web_contents`.
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
                 const url::Origin& initiator_origin,
-                int initiator_process_id,
-                const blink::LocalFrameToken& initiator_frame_token,
-                WebContentsImpl& web_contents);
+                RenderFrameHostImpl& initiator_render_frame_host);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;

@@ -37,10 +37,8 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
-    WebContentsImpl& web_contents,
     const url::Origin& initiator_origin,
-    int initiator_process_id,
-    const blink::LocalFrameToken& initiator_frame_token) {
+    RenderFrameHostImpl& initiator_render_frame_host) {
   DCHECK(attributes);
 
   // Ensure observers are notified that a trigger occurred.
@@ -69,8 +67,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     return found->second;
 
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_origin, initiator_process_id,
-      initiator_frame_token, web_contents);
+      std::move(attributes), initiator_origin, initiator_render_frame_host);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
   CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
