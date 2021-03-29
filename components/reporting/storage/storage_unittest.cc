@@ -733,7 +733,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
+// TODO(crbug.com/1193084): crashes on all platforms.
+TEST_P(StorageTest, DISABLED_WriteIntoNewStorageAndUploadWithKeyUpdate) {
   // Run the test only when encryption is enabled.
   if (!is_encryption_enabled()) {
     return;
@@ -1006,7 +1007,9 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
                    kData[2]);  // Immediately uploads and verifies.
 }
 
-TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+// Disabled because of flakiness. See crbug.com/1193079.
+TEST_P(StorageTest,
+       DISABLED_WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
   // Upload is initiated asynchronously, so it may happen after the next

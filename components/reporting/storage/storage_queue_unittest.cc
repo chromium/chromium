@@ -904,7 +904,9 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUpload) {
   WriteStringOrDie(kData[2]);
 }
 
-TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
+// Disabled because of flakiness. See crbug.com/1193080.
+TEST_P(StorageQueueTest,
+       DISABLED_WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsImmediate());
 
   // Upload is initiated asynchronously, so it may happen after the next
