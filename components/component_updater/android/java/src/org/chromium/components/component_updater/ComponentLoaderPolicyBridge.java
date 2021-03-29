@@ -49,7 +49,7 @@ public class ComponentLoaderPolicyBridge {
         int i = 0;
         for (Map.Entry<String, ParcelFileDescriptor> file : fileMap.entrySet()) {
             fileNames[i] = file.getKey();
-            fds[i] = file.getValue().getFd();
+            fds[i] = file.getValue().detachFd();
             ++i;
         }
         ComponentLoaderPolicyBridgeJni.get().componentLoaded(
