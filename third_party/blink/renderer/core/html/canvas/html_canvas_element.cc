@@ -1340,6 +1340,10 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(SourceImageStatus* status) {
   }
 
   if (OffscreenCanvasFrame()) {
+    // This may be false even if this HTMLCanvasElement has been transferred
+    // control to an offscreenCanvas. As offscreencanvas with the
+    // TransferControlToOffscreen is asynchronous, this will need to finish the
+    // first Frame in order to have a first OffscreenCanvasFrame.
     *status = kNormalSourceImageStatus;
     return OffscreenCanvasFrame()->Bitmap();
   }
