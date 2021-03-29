@@ -497,6 +497,10 @@ return score;
                           "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
                           "SlidingWindow.Duration1000ms",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SessionWindowByInputs.Gap1000ms.Max5000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
