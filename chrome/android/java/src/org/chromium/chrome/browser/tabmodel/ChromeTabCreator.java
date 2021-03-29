@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
@@ -56,11 +57,11 @@ public class ChromeTabCreator extends TabCreator {
         boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab);
 
         /**
-         * Called before the Tab is loading its URL.
+         * Called before the Tab's initialization.
          * @param tab The newly created Tab.
          * @param url The URL to load.
          */
-        void onTabWillLoadUrl(Tab tab, String url);
+        void preTabInitialization(Tab tab, String url);
     }
 
     private static final String TAG = "ChromeTabCreator";
@@ -216,6 +217,13 @@ public class ChromeTabCreator extends TabCreator {
 
                 if (tab == null) {
                     TraceEvent.begin("ChromeTabCreator.loadUrl");
+                    Callback<Tab> action = null;
+                    if (mOverviewNTPCreator != null) {
+                        action = (newTab) -> {
+                            mOverviewNTPCreator.preTabInitialization(
+                                    newTab, loadUrlParams.getUrl());
+                        };
+                    }
                     tab = TabBuilder.createLiveTab(!openInForeground)
                                   .setParent(parent)
                                   .setIncognito(mIncognito)
@@ -223,10 +231,8 @@ public class ChromeTabCreator extends TabCreator {
                                   .setLaunchType(type)
                                   .setDelegateFactory(delegateFactory)
                                   .setInitiallyHidden(!openInForeground)
+                                  .setPreInitializeAction(action)
                                   .build();
-                    if (mOverviewNTPCreator != null) {
-                        mOverviewNTPCreator.onTabWillLoadUrl(tab, loadUrlParams.getUrl());
-                    }
                     tab.loadUrl(loadUrlParams);
                     TraceEvent.end("ChromeTabCreator.loadUrl");
                 }

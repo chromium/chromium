@@ -1740,7 +1740,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
 
                 @Override
-                public void onTabWillLoadUrl(Tab tab, String url) {
+                public void preTabInitialization(Tab tab, String url) {
                     StartSurfaceConfiguration.maySetUserDataForEmptyTab(tab, url);
                 }
             };
