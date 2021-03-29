@@ -149,14 +149,18 @@ void FrameHeader::FrameAnimatorView::OnViewBoundsChanged(
 }
 
 void FrameHeader::FrameAnimatorView::OnImplicitAnimationsCompleted() {
-  RemoveLayerBeneathView(layer_owner_->root());
-  layer_owner_ = nullptr;
+  // TODO(crbug.com/1172694): Remove this DCHECK if this is indeed the cause.
+  DCHECK(layer_owner_);
+  if (layer_owner_) {
+    RemoveLayerBeneathView(layer_owner_->root());
+    layer_owner_.reset();
+  }
 }
 
 void FrameHeader::FrameAnimatorView::StopAnimation() {
   if (layer_owner_) {
     layer_owner_->root()->GetAnimator()->StopAnimating();
-    layer_owner_ = nullptr;
+    layer_owner_.reset();
   }
 }
 
