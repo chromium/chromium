@@ -32,7 +32,6 @@ struct JobDetails;
 // Implementation of BackgroundFetchDelegate using the DownloadService. This
 // base class is shared by multiple embedders, with specializations providing
 // their own UI.
-// TODO(estade): use in Chrome.
 class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
  public:
   explicit BackgroundFetchDelegateBase(content::BrowserContext* context);
@@ -99,8 +98,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Called by BackgroundFetchDownload. The implementation should be shared with
-  // Chrome.
+  // Called in response to UI interactions.
   void PauseDownload(const std::string& job_id);
   void ResumeDownload(const std::string& job_id);
   void CancelDownload(const std::string& job_id);
@@ -119,8 +117,12 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
   // Return the download service for `context_`.
   virtual download::DownloadService* GetDownloadService() = 0;
 
-  // Called when a download started for the given background fetch job.
-  virtual void OnDownloadStartedForJob(const std::string& job_id) = 0;
+  // Called when a new JobDetails object has been created and inserted in
+  // |job_details_map_|.
+  virtual void OnJobDetailsCreated(const std::string& job_id) = 0;
+
+  // Called when the UI should first be shown for a Background Fetch job.
+  virtual void DoShowUi(const std::string& job_id) = 0;
 
   // Called when a change to the given job warrants updating the UI.
   virtual void DoUpdateUi(const std::string& job_id) = 0;

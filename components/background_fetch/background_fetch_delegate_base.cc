@@ -90,7 +90,7 @@ void BackgroundFetchDelegateBase::CreateDownloadJob(
     base::WeakPtr<Client> client,
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string job_id = fetch_description->job_unique_id;
+  const std::string job_id = fetch_description->job_unique_id;
 
   auto inserted = job_details_map_.emplace(std::piecewise_construct,
                                            std::forward_as_tuple(job_id),
@@ -105,6 +105,8 @@ void BackgroundFetchDelegateBase::CreateDownloadJob(
           : JobDetails::State::kPendingWillStartDownloading;
 
   job_details->fetch_description = std::move(fetch_description);
+
+  OnJobDetailsCreated(job_id);
 }
 
 void BackgroundFetchDelegateBase::DownloadUrl(
@@ -136,6 +138,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   if (job_details->job_state == JobDetails::State::kPendingWillStartPaused ||
       job_details->job_state ==
           JobDetails::State::kPendingWillStartDownloading) {
+    DoShowUi(job_id);
     job_details->MarkJobAsStarted();
   }
 
@@ -146,6 +149,8 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   } else {
     StartDownload(job_id, params, has_request_body);
   }
+
+  DoUpdateUi(job_id);
 }
 
 void BackgroundFetchDelegateBase::PauseDownload(const std::string& job_id) {
@@ -263,17 +268,6 @@ void BackgroundFetchDelegateBase::MarkJobComplete(const std::string& job_id) {
 
   // Clear the |job_details| internals that are no longer needed.
   job_details->current_fetch_guids.clear();
-
-  // The UI should have already been updated to the Completed state, however,
-  // sometimes Android drops notification updates if there have been too many
-  // requested in a short span of time, so make sure the completed state is
-  // reflected in the UI after a brief delay. See
-  // https://developer.android.com/training/notify-user/build-notification#Updating
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BackgroundFetchDelegateBase::DoUpdateUi,
-                     weak_ptr_factory_.GetWeakPtr(), job_id),
-      base::TimeDelta::FromMilliseconds(1500));
 }
 
 void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id) {
@@ -310,8 +304,6 @@ void BackgroundFetchDelegateBase::OnDownloadStarted(
   auto it = job_details->current_fetch_guids.find(download_guid);
   DCHECK(it != job_details->current_fetch_guids.end());
   job_details->fetch_description->uploaded_bytes += it->second.body_size_bytes;
-
-  OnDownloadStartedForJob(job_id);
 }
 
 void BackgroundFetchDelegateBase::OnDownloadUpdated(
@@ -325,7 +317,7 @@ void BackgroundFetchDelegateBase::OnDownloadUpdated(
   if (download_job_id_iter == download_job_id_map_.end())
     return;
 
-  const std::string& job_id = download_job_id_iter->second;
+  const std::string job_id = download_job_id_iter->second;
 
   JobDetails* job_details = GetJobDetails(job_id);
   job_details->UpdateInProgressBytes(download_guid, bytes_uploaded,

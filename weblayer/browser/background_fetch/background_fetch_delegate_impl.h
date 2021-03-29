@@ -36,6 +36,7 @@ class BackgroundFetchDelegateImpl
   ~BackgroundFetchDelegateImpl() override;
 
   // BackgroundFetchDelegate:
+  void MarkJobComplete(const std::string& job_id) override;
   void UpdateUI(const std::string& job_id,
                 const base::Optional<std::string>& title,
                 const base::Optional<SkBitmap>& icon) override;
@@ -46,13 +47,16 @@ class BackgroundFetchDelegateImpl
       const url::Origin& origin,
       GetPermissionForOriginCallback callback) override;
   download::DownloadService* GetDownloadService() override;
-  void OnDownloadStartedForJob(const std::string& job_id) override;
+  void OnJobDetailsCreated(const std::string& job_id) override;
+  void DoShowUi(const std::string& job_id) override;
   void DoUpdateUi(const std::string& job_id) override;
   void DoCleanUpUi(const std::string& job_id) override;
 
  private:
   // Map from job unique ids to the UI item for the job.
   std::map<std::string, BackgroundFetchDownload> ui_item_map_;
+
+  base::WeakPtrFactory<BackgroundFetchDelegateImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace weblayer

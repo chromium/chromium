@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/background_fetch/job_details.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/download/public/background_service/download_service.h"
@@ -766,19 +767,27 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, ClickEventIsDispatched) {
 
   base::RunLoop().RunUntilIdle();  // Give updates a chance to propagate.
 
-  ASSERT_EQ(delegate_->job_details_map_.size(), 1u);
-  auto& job_details = delegate_->job_details_map_.begin()->second;
-  EXPECT_EQ(job_details.job_state,
-            BackgroundFetchDelegateImpl::JobDetails::State::kJobComplete);
+  ASSERT_EQ(delegate_->ui_state_map_.size(), 1u);
+  auto entry = delegate_->ui_state_map_.begin();
+  std::string job_id = entry->first;
+  auto& offline_item = entry->second.offline_item;
+  EXPECT_EQ(offline_items_collection::OfflineItemState::COMPLETE,
+            offline_item.state);
+  background_fetch::JobDetails* job_details =
+      delegate_->GetJobDetails(job_id, /*allow_null=*/true);
+  ASSERT_TRUE(!!job_details);
+  EXPECT_EQ(job_details->job_state,
+            background_fetch::JobDetails::State::kJobComplete);
 
   // Simulate notification click.
   delegate_->OpenItem(
       offline_items_collection::OpenParams(
           offline_items_collection::LaunchLocation::NOTIFICATION),
-      job_details.offline_item.id);
+      offline_item.id);
 
-  // Job Details should be deleted at this point.
-  EXPECT_TRUE(delegate_->job_details_map_.empty());
+  // The offline item and JobDetails should both be deleted at this point.
+  EXPECT_TRUE(delegate_->ui_state_map_.empty());
+  EXPECT_FALSE(delegate_->GetJobDetails(job_id, /*allow_null=*/true));
 
   // Wait for click event.
   {

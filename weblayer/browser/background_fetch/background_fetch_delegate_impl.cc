@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "build/build_config.h"
 #include "components/background_fetch/download_client.h"
 #include "components/background_fetch/job_details.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -27,6 +28,27 @@ BackgroundFetchDelegateImpl::BackgroundFetchDelegateImpl(
     : background_fetch::BackgroundFetchDelegateBase(context) {}
 
 BackgroundFetchDelegateImpl::~BackgroundFetchDelegateImpl() = default;
+
+void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
+  BackgroundFetchDelegateBase::MarkJobComplete(job_id);
+
+#if defined(OS_ANDROID)
+  if (GetJobDetails(job_id)->job_state ==
+      background_fetch::JobDetails::State::kJobComplete) {
+    // The UI should have already been updated to the Completed state, however,
+    // sometimes Android drops notification updates if there have been too many
+    // requested in a short span of time, so make sure the completed state is
+    // reflected in the UI after a brief delay. See
+    // https://developer.android.com/training/notify-user/build-notification#Updating
+    static constexpr auto kDelay = base::TimeDelta::FromMilliseconds(1500);
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&BackgroundFetchDelegateImpl::DoUpdateUi,
+                       weak_ptr_factory_.GetWeakPtr(), job_id),
+        kDelay);
+  }
+#endif
+}
 
 void BackgroundFetchDelegateImpl::UpdateUI(
     const std::string& job_id,
@@ -64,21 +86,22 @@ download::DownloadService* BackgroundFetchDelegateImpl::GetDownloadService() {
   return DownloadServiceFactory::GetForBrowserContext(context());
 }
 
-void BackgroundFetchDelegateImpl::OnDownloadStartedForJob(
+void BackgroundFetchDelegateImpl::OnJobDetailsCreated(
     const std::string& job_id) {
+  // WebLayer doesn't create the UI until a download actually starts.
+}
+
+void BackgroundFetchDelegateImpl::DoShowUi(const std::string& job_id) {
   // Create the UI the first time a download starts. (There may be multiple
   // downloads for a single background fetch job.)
   background_fetch::JobDetails* job = GetJobDetails(job_id);
   auto inserted = ui_item_map_.emplace(
       std::piecewise_construct, std::forward_as_tuple(job_id),
       std::forward_as_tuple(this, job_id, job));
-  if (inserted.second) {
-    ProfileImpl::FromBrowserContext(context())
-        ->download_delegate()
-        ->DownloadStarted(&inserted.first->second);
-  } else {
-    DoUpdateUi(job_id);
-  }
+  DCHECK(inserted.second);
+  ProfileImpl::FromBrowserContext(context())
+      ->download_delegate()
+      ->DownloadStarted(&inserted.first->second);
 }
 
 void BackgroundFetchDelegateImpl::DoUpdateUi(const std::string& job_id) {

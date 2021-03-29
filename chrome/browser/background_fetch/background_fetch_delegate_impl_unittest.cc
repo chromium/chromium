@@ -69,8 +69,8 @@ TEST_F(BackgroundFetchDelegateImplTest, RecordUkmEvent) {
   recorder_->SetOnAddEntryCallback(
       ukm::builders::BackgroundFetchDeletingRegistration::kEntryName,
       run_loop.QuitClosure());
-  delegate_->embedder_->OnJobCompleted(origin,
-                                       /* user_initiated_abort= */ true);
+  delegate_->RecordBackgroundFetchDeletingRegistrationUkmEvent(
+      origin, /* user_initiated_abort= */ true);
   run_loop.Run();
 
   {

@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
-#include "chrome/browser/background_fetch/background_fetch_download_client.h"
 #include "chrome/browser/download/deferred_client_wrapper.h"
 #include "chrome/browser/download/download_manager_utils.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/background_fetch/download_client.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/public/background_service/basic_task_scheduler.h"
@@ -58,7 +58,7 @@ namespace {
 
 std::unique_ptr<download::Client> CreateBackgroundFetchDownloadClient(
     Profile* profile) {
-  return std::make_unique<BackgroundFetchDownloadClient>(profile);
+  return std::make_unique<background_fetch::DownloadClient>(profile);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
