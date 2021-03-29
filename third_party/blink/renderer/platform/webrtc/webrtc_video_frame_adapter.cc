@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 
 #include <cmath>
+#include <vector>
 
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/waitable_event.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -257,8 +259,29 @@ WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
 
 WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
   if (shared_resources_) {
+    // Report mapped sizes to the media::VideoFrameFeedback of the shared
+    // resources. This information can be carried to the source of the frames,
+    // allowing optimized mapping and scaling of future frames for these sizes.
+    std::vector<gfx::Size> mapped_sizes;
+    for (const auto& adapted_frame : adapted_frames_) {
+      const auto& coded_size = adapted_frame.video_frame->coded_size();
+      const auto& visible_rect = adapted_frame.video_frame->visible_rect();
+      // The portion of the coded size that is visible.
+      double kVisiblePortionX =
+          static_cast<double>(visible_rect.width()) / coded_size.width();
+      double kVisiblePortionY =
+          static_cast<double>(visible_rect.height()) / coded_size.height();
+      // The mapped size is the natural size of the entire image, not just the
+      // visible portion.
+      const auto& natural_size = adapted_frame.video_frame->natural_size();
+      mapped_sizes.emplace_back(
+          std::round(natural_size.width() / kVisiblePortionX),
+          std::round(natural_size.height() / kVisiblePortionY));
+    }
     shared_resources_->SetFeedback(
-        media::VideoFrameFeedback().RequireMapped(!adapted_frames_.empty()));
+        media::VideoFrameFeedback()
+            .RequireMapped(!adapted_frames_.empty())
+            .WithMappedSizes(std::move(mapped_sizes)));
   }
 }
 

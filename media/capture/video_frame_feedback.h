@@ -6,9 +6,11 @@
 #define MEDIA_CAPTURE_VIDEO_FRAME_FEEDBACK_H_
 
 #include <limits>
+#include <vector>
 
 #include "base/callback.h"
 #include "media/capture/capture_export.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -23,6 +25,7 @@ using VideoCaptureFeedbackCB =
 struct CAPTURE_EXPORT VideoFrameFeedback {
   VideoFrameFeedback();
   VideoFrameFeedback(const VideoFrameFeedback& other);
+  ~VideoFrameFeedback();
 
   explicit VideoFrameFeedback(
       double resource_utilization,
@@ -32,7 +35,9 @@ struct CAPTURE_EXPORT VideoFrameFeedback {
   bool operator==(const VideoFrameFeedback& other) const {
     return resource_utilization == other.resource_utilization &&
            max_pixels == other.max_pixels &&
-           max_framerate_fps == other.max_framerate_fps;
+           max_framerate_fps == other.max_framerate_fps &&
+           require_mapped_frame == other.require_mapped_frame &&
+           mapped_sizes == other.mapped_sizes;
   }
 
   bool operator!=(const VideoFrameFeedback& other) const {
@@ -43,6 +48,7 @@ struct CAPTURE_EXPORT VideoFrameFeedback {
   VideoFrameFeedback& WithMaxFramerate(float max_framerate_fps);
   VideoFrameFeedback& WithMaxPixels(int max_pixels);
   VideoFrameFeedback& RequireMapped(bool require);
+  VideoFrameFeedback& WithMappedSizes(std::vector<gfx::Size> mapped_sizes);
 
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.
@@ -84,7 +90,14 @@ struct CAPTURE_EXPORT VideoFrameFeedback {
   int max_pixels = std::numeric_limits<int>::max();
 
   // Indicates that a consumer wants a cpu readable frame.
+  // TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
+  // shipped to 100%, |require_mapped_frame| can be removed in favor of checking
+  // if |mapped_sizes| is non-empty.
   bool require_mapped_frame = false;
+
+  // Indicates that consumer(s) wants these sizes to be mappable for CPU access.
+  // Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
+  std::vector<gfx::Size> mapped_sizes;
 };
 
 }  // namespace media

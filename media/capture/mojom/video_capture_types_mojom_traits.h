@@ -259,6 +259,11 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return feedback.require_mapped_frame;
   }
 
+  static const std::vector<gfx::Size>& mapped_sizes(
+      const media::VideoFrameFeedback& feedback) {
+    return feedback.mapped_sizes;
+  }
+
   static bool Read(media::mojom::VideoFrameFeedbackDataView data,
                    media::VideoFrameFeedback* output);
 };

@@ -6,7 +6,16 @@
 
 #include <cmath>
 
+#include "base/logging.h"
+
 namespace media {
+
+namespace {
+
+// Arbitrary limit above what is considered a reasonable request.
+constexpr size_t kCombinedMappedSizesCountLimit = 6;
+
+}  // namespace
 
 VideoFrameFeedback::VideoFrameFeedback() = default;
 VideoFrameFeedback::VideoFrameFeedback(const VideoFrameFeedback& other) =
@@ -18,6 +27,8 @@ VideoFrameFeedback::VideoFrameFeedback(double resource_utilization,
     : resource_utilization(resource_utilization),
       max_framerate_fps(max_framerate_fps),
       max_pixels(max_pixels) {}
+
+VideoFrameFeedback::~VideoFrameFeedback() = default;
 
 void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
   // Take maximum of non-negative and finite |resource_utilization| values.
@@ -42,12 +53,29 @@ void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
 
   // If any consumer wants mapped frames, all of them should get it.
   require_mapped_frame |= other.require_mapped_frame;
+
+  // Merge mapped sizes for all consumers.
+  for (const gfx::Size& mapped_size : other.mapped_sizes) {
+    // Skip duplicates.
+    if (std::find(mapped_sizes.begin(), mapped_sizes.end(), mapped_size) !=
+        mapped_sizes.end()) {
+      continue;
+    }
+    // As a safety measure, limit the number of sizes that can be asked for.
+    if (mapped_sizes.size() >= kCombinedMappedSizesCountLimit) {
+      LOG(WARNING) << "Consumer mapped sizes count exceeds "
+                   << kCombinedMappedSizesCountLimit;
+      break;
+    }
+    mapped_sizes.push_back(mapped_size);
+  }
 }
 
 bool VideoFrameFeedback::Empty() const {
   return !std::isfinite(max_framerate_fps) &&
          max_pixels == std::numeric_limits<int>::max() &&
-         (resource_utilization < 0.0) && !require_mapped_frame;
+         (resource_utilization < 0.0) && !require_mapped_frame &&
+         mapped_sizes.empty();
 }
 
 VideoFrameFeedback& VideoFrameFeedback::WithUtilization(float utilization) {
@@ -67,6 +95,12 @@ VideoFrameFeedback& VideoFrameFeedback::WithMaxPixels(int pixels) {
 
 VideoFrameFeedback& VideoFrameFeedback::RequireMapped(bool require) {
   require_mapped_frame = require;
+  return *this;
+}
+
+VideoFrameFeedback& VideoFrameFeedback::WithMappedSizes(
+    std::vector<gfx::Size> mapped_sizes) {
+  this->mapped_sizes = std::move(mapped_sizes);
   return *this;
 }
 

@@ -1763,6 +1763,8 @@ bool StructTraits<media::mojom::VideoFrameFeedbackDataView,
   output->max_pixels = data.max_pixels();
   output->resource_utilization = data.resource_utilization();
   output->require_mapped_frame = data.require_mapped_frame();
+  if (!data.ReadMappedSizes(&(output->mapped_sizes)))
+    return false;
   return true;
 }
 

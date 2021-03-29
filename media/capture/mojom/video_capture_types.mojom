@@ -301,6 +301,12 @@ struct VideoCaptureParams {
 // int::max used to signal no limit.
 //
 // |require_mapped_frame| reports that the consumer needs a cpu readable frame.
+// TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
+// shipped to 100%, |require_mapped_frame| can be removed in favor of checking
+// if |mapped_sizes| is non-empty.
+//
+// |mapped_sizes| reports which sizes the video frame got mapped by the consumer
+// for CPU access. Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
 [Stable]
 struct VideoFrameFeedback {
   double resource_utilization;
@@ -310,6 +316,8 @@ struct VideoFrameFeedback {
   int32 max_pixels;
 
   bool require_mapped_frame;
+
+  [MinVersion=1] array<gfx.mojom.Size>? mapped_sizes;
 };
 
 // Contains one stride value per image plane. Stride means the number of bytes

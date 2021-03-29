@@ -9,6 +9,7 @@
 #import <CoreVideo/CoreVideo.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sstream>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
@@ -345,8 +346,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   if (resolutions.size() != _scaledFrameTransformers.size()) {
     reconfigureScaledFrameTransformers = true;
   } else {
-    for (size_t i = 0; i < resolutions.size(); ++i) {
-      if (resolutions[i] != _scaledFrameTransformers[i]->destination_size()) {
+    for (const auto& resolution : resolutions) {
+      bool resolutionHasTransformer = false;
+      for (const auto& scaledFrameTransformer : _scaledFrameTransformers) {
+        if (resolution == scaledFrameTransformer->destination_size()) {
+          resolutionHasTransformer = true;
+          break;
+        }
+      }
+      if (!resolutionHasTransformer) {
         reconfigureScaledFrameTransformers = true;
         break;
       }
@@ -354,6 +362,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
   if (!reconfigureScaledFrameTransformers)
     return;
+  std::stringstream str;
+  str << "[";
+  for (size_t i = 0; i < resolutions.size(); ++i) {
+    if (i != 0)
+      str << ", ";
+    str << resolutions[i].ToString();
+  }
+  str << "]";
+  VLOG(1) << "Configuring scaled resolutions: " << str.str();
   _scaledFrameTransformers.clear();
   for (const auto& resolution : resolutions) {
     // Configure the transformer to and from NV12 pixel buffers - we only want
