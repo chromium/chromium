@@ -841,6 +841,7 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
     container_builder_.SetBaseline(block_offset + *baseline);
 }
 
+// Distribute as many implicit breaks into the content runs as we need.
 LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     const LogicalSize& column_size,
     const NGBlockBreakToken* child_break_token) {
@@ -886,28 +887,47 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
     int implicit_breaks_assumed_count = 0;
   };
 
-  class ContentRuns : public Vector<ContentRun, 1> {
+  class ContentRuns final {
    public:
-    wtf_size_t IndexWithTallestColumns() const {
-      DCHECK_GT(size(), 0u);
-      wtf_size_t index = 0;
-      LayoutUnit largest_block_size = LayoutUnit::Min();
-      for (size_t i = 0; i < size(); i++) {
-        const ContentRun& run = at(i);
-        LayoutUnit block_size = run.ColumnBlockSize();
-        if (largest_block_size < block_size) {
-          largest_block_size = block_size;
-          index = i;
-        }
-      }
-      return index;
-    }
-
     // When we have "inserted" (assumed) enough implicit column breaks, this
     // method returns the block-size of the tallest column.
     LayoutUnit TallestColumnBlockSize() const {
-      return at(IndexWithTallestColumns()).ColumnBlockSize();
+      return TallestRun()->ColumnBlockSize();
     }
+
+    LayoutUnit TallestContentBlockSize() const {
+      return tallest_content_block_size_;
+    }
+
+    void AddRun(LayoutUnit content_block_size) {
+      runs_.emplace_back(content_block_size);
+      tallest_content_block_size_ =
+          std::max(tallest_content_block_size_, content_block_size);
+    }
+
+    void DistributeImplicitBreaks(int used_column_count) {
+      for (int columns_found = runs_.size(); columns_found < used_column_count;
+           ++columns_found) {
+        // The tallest content run (with all assumed implicit breaks added so
+        // far taken into account) is where we assume the next implicit break.
+        ++TallestRun()->implicit_breaks_assumed_count;
+      }
+    }
+
+   private:
+    ContentRun* TallestRun() const {
+      DCHECK(!runs_.IsEmpty());
+      auto* const it = std::max_element(
+          runs_.begin(), runs_.end(),
+          [](const ContentRun& run1, const ContentRun& run2) {
+            return run1.ColumnBlockSize() < run2.ColumnBlockSize();
+          });
+      DCHECK(it != runs_.end());
+      return const_cast<ContentRun*>(it);
+    }
+
+    Vector<ContentRun, 1> runs_;
+    LayoutUnit tallest_content_block_size_;
   };
 
   // First split into content runs at explicit (forced) breaks.
@@ -947,7 +967,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
                                 fragment);
     column_block_size =
         std::max(column_block_size, logical_fragment.BlockSize());
-    content_runs.emplace_back(column_block_size);
+    content_runs.AddRun(column_block_size);
 
     tallest_unbreakable_block_size_ = std::max(
         tallest_unbreakable_block_size_, result->TallestUnbreakableBlockSize());
@@ -958,17 +978,6 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
 
     break_token = To<NGBlockBreakToken>(fragment.BreakToken());
   } while (break_token);
-
-  // Then distribute as many implicit breaks into the content runs as we need.
-  int used_column_count =
-      ResolveUsedColumnCount(ChildAvailableSize().inline_size, Style());
-  for (int columns_found = content_runs.size();
-       columns_found < used_column_count; columns_found++) {
-    // The tallest content run (with all assumed implicit breaks added so far
-    // taken into account) is where we assume the next implicit break.
-    wtf_size_t index = content_runs.IndexWithTallestColumns();
-    content_runs[index].implicit_breaks_assumed_count++;
-  }
 
   if (ConstraintSpace().IsInitialColumnBalancingPass()) {
     // Nested column balancing. Our outer fragmentation context is in its
@@ -987,6 +996,11 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   // stretch and retry if not). Also honor {,min-,max-}block-size properties
   // before returning, and also try to not become shorter than the tallest piece
   // of unbreakable content.
+  if (tallest_unbreakable_block_size_ >= content_runs.TallestContentBlockSize())
+    return ConstrainColumnBlockSize(tallest_unbreakable_block_size_);
+
+  content_runs.DistributeImplicitBreaks(
+      ResolveUsedColumnCount(ChildAvailableSize().inline_size, Style()));
   return ConstrainColumnBlockSize(content_runs.TallestColumnBlockSize());
 }
 
