@@ -6704,6 +6704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="FeedNetworkRequestType" separator=".">
   <suffix name="FeedQuery" label="Requests to fetch new feed content"/>
+  <suffix name="FollowWebFeed" label="Requests to follow a web feed"/>
   <suffix name="ListFollowedWebFeeds"
       label="Requests to list followed web feeds"/>
   <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>

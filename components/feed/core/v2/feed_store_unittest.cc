@@ -778,15 +778,15 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
   ASSERT_TRUE(*foo_callback.GetResult());
   EXPECT_STRINGS_EQUAL(R"({
   web_feed_id: "id_foo"
-  uri_matchers {
-    domain_match: "foo.com"
-  }
   title: "Title foo"
+  visit_uri: "https://foo.com"
   favicon {
     url: "http://favicon/foo"
   }
   follower_count: 123
-  visit_url: "https://foo.com"
+  uri_matchers {
+    domain_match: "foo.com"
+  }
 }
 )",
                        ToTextProto(**foo_callback.GetResult()));
@@ -798,15 +798,15 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
   ASSERT_TRUE(*bar_callback.GetResult());
   EXPECT_STRINGS_EQUAL(R"({
   web_feed_id: "id_bar"
-  uri_matchers {
-    domain_match: "bar.com"
-  }
   title: "Title bar"
+  visit_uri: "https://bar.com"
   favicon {
     url: "http://favicon/bar"
   }
   follower_count: 123
-  visit_url: "https://bar.com"
+  uri_matchers {
+    domain_match: "bar.com"
+  }
 }
 )",
                        ToTextProto(**bar_callback.GetResult()));
@@ -835,27 +835,27 @@ TEST_F(FeedStoreTest, WriteSubscribedFeeds) {
   std::string want = R"({
   feeds {
     web_feed_id: "id_foo"
-    uri_matchers {
-      domain_match: "foo.com"
-    }
     title: "Title foo"
+    visit_uri: "https://foo.com"
     favicon {
       url: "http://favicon/foo"
     }
     follower_count: 123
-    visit_url: "https://foo.com"
+    uri_matchers {
+      domain_match: "foo.com"
+    }
   }
   feeds {
     web_feed_id: "id_bar"
-    uri_matchers {
-      domain_match: "bar.com"
-    }
     title: "Title bar"
+    visit_uri: "https://bar.com"
     favicon {
       url: "http://favicon/bar"
     }
     follower_count: 123
-    visit_url: "https://bar.com"
+    uri_matchers {
+      domain_match: "bar.com"
+    }
   }
 }
 )";

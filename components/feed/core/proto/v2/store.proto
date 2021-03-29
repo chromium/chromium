@@ -225,19 +225,19 @@ message Image {
 
 // See http://go/chrome-web-feed-api.
 message WebFeedInfo {
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    INACTIVE = 1;
+    ACTIVE = 2;
+  }
   string web_feed_id = 1;
-  repeated UriMatcher uri_matchers = 2;
-  string title = 3;
-  Image favicon = 4;
-  int64 follower_count = 5;
-  string visit_url = 6;
-  // If the user is following this web feed, this is a unique identifier of the
-  // subscription.
-  string subscription_id = 7;
-  // Is this web feed known to generate content.
-  bool is_active = 8;
-  // For subscribed feeds, this is the URL the user originally requested
-  // subscription. Used as a fallback for re-subscription. This may be unset if
-  // web_feed_id is set.
-  string request_url = 9;
+  string title = 2;
+  string subtitle = 3;
+  string detail_text = 4;
+  string visit_uri = 5;
+  string rss_uri = 6;
+  Image favicon = 7;
+  int64 follower_count = 8;
+  State state = 9;
+  repeated UriMatcher uri_matchers = 10;
 }

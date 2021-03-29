@@ -6,11 +6,10 @@
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_SUBSCRIBE_TO_WEB_FEED_TASK_H_
 
 #include "components/feed/core/proto/v2/store.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_id.h"
 #include "components/offline_pages/task/task.h"
 #include "url/gurl.h"
 
@@ -27,11 +26,11 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
     std::string web_feed_id;
   };
   struct Result {
-    // If the subscription succeeds, or the web feed was already followed, this
-    // is its ID.
     WebFeedSubscriptionRequestStatus request_status =
         WebFeedSubscriptionRequestStatus::kUnknown;
-    WebFeedId followed_web_feed_id;
+    // If the subscription succeeds, or the web feed was already followed, this
+    // is its ID.
+    std::string followed_web_feed_id;
     feedstore::WebFeedInfo web_feed_info;
   };
   SubscribeToWebFeedTask(FeedStream* stream,
@@ -45,7 +44,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
 
  private:
   void RequestComplete(
-      FeedNetwork::ApiResult<feedwire::webfeed::FollowUriResponse> result);
+      FeedNetwork::ApiResult<feedwire::webfeed::FollowWebFeedResponse> result);
   void ReadFeedDataComplete(FeedStore::WebFeedStartupData startup_data);
   void Done(WebFeedSubscriptionRequestStatus status);
 

@@ -20,7 +20,7 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -535,15 +535,15 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
 
 TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
   CallbackReceiver<
-      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse>>
+      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>>
       receiver;
   feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>({},
                                                              receiver.Bind());
   RespondToDiscoverRequest("", net::HTTP_OK);
 
   ASSERT_TRUE(receiver.GetResult());
-  const FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse>& result =
-      *receiver.GetResult();
+  const FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>&
+      result = *receiver.GetResult();
   EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
   EXPECT_TRUE(result.response_body);
   histogram().ExpectBucketCount(

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 
 #include "components/feed/core/v2/feed_stream.h"
@@ -12,6 +13,7 @@
 namespace feed {
 namespace test {
 namespace {
+constexpr int64_t kFollowerCount = 123;
 
 WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
   WebFeedPageInformation info;
@@ -19,18 +21,27 @@ WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
   return info;
 }
 
-feedwire::webfeed::FollowUriResponse SuccessfulFollowResponse(
+feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {
+  feedwire::webfeed::WebFeed result;
+  result.set_name("id_" + name);
+  result.set_title("Title " + name);
+  result.set_subtitle("Subtitle " + name);
+  result.set_detail_text("details...");
+  result.set_visit_uri("https://" + name + ".com");
+  result.set_follower_count(kFollowerCount);
+  result.add_uri_matchers()->set_domain_match(name + ".com");
+  return result;
+}
+
+feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
     const std::string& follow_name) {
-  feedwire::webfeed::FollowUriResponse response;
-  response.mutable_consistency_token()->set_token("ctoken_follow");
-  *response.mutable_web_feed_info() = MakeWebFeedInfo(follow_name);
+  feedwire::webfeed::FollowWebFeedResponse response;
+  *response.mutable_web_feed() = MakeWireWebFeed(follow_name);
   return response;
 }
 
-feedwire::webfeed::UnfollowUriResponse SuccessfulUnfollowResponse() {
-  feedwire::webfeed::UnfollowUriResponse response;
-  response.mutable_consistency_token()->set_token("ctoken_unfollow");
-  return response;
+feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse() {
+  return {};
 }
 
 FeedNetwork::RawResponse MakeFailedResponse() {
@@ -88,7 +99,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
   EXPECT_EQ(
-      "WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }",
       testing::PrintToString(callback.RunAndGetResult().web_feed_metadata));
 }
@@ -98,9 +109,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
   CreateStream();
   network_.InjectFollowResponse(SuccessfulFollowResponse("catfood"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  subscriptions().FollowWebFeed("wfi:id_catfood", callback.Bind());
+  subscriptions().FollowWebFeed("id_catfood", callback.Bind());
   EXPECT_EQ(
-      "WebFeedMetadata{ id=wfi:id_catfood is_recommended title=Title catfood "
+      "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribed }",
       testing::PrintToString(callback.RunAndGetResult().web_feed_metadata));
 }
@@ -124,7 +135,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceAtOnce) {
             callback2.RunAndGetResult().request_status);
   EXPECT_EQ(1, network_.GetFollowRequestCount());
   EXPECT_EQ(
-      "{ WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       testing::PrintToString(CheckAllSubscriptions()));
 }
@@ -147,7 +158,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceFromDifferentUrls) {
             callback2.RunAndGetResult().request_status);
   EXPECT_EQ(2, network_.GetFollowRequestCount());
   EXPECT_EQ(
-      "{ WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       testing::PrintToString(CheckAllSubscriptions()));
 }
@@ -168,9 +179,9 @@ TEST_F(FeedApiSubscriptionsTest, FollowTwoWebFeedsAtOnce) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback2.RunAndGetResult().request_status);
   EXPECT_EQ(
-      "{ WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }, "
-      "WebFeedMetadata{ id=wfi:id_dogs title=Title dogs "
+      "WebFeedMetadata{ id=id_dogs title=Title dogs "
       "publisher_url=https://dogs.com/ status=kSubscribed } }",
       testing::PrintToString(CheckAllSubscriptions()));
 }
@@ -271,7 +282,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
             unfollow_callback.GetResult()->request_status);
   EXPECT_EQ(
-      "{ WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       testing::PrintToString(CheckAllSubscriptions()));
 }
@@ -304,9 +315,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAnUnfollowedWebFeed) {
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
   network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
-  subscriptions().UnfollowWebFeed(
-      WebFeedId::FromFollowId("notfollowed").ToString(),
-      unfollow_callback.Bind());
+  subscriptions().UnfollowWebFeed("notfollowed", unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(0, network_.GetUnfollowRequestCount());
@@ -338,7 +347,7 @@ TEST_F(FeedApiSubscriptionsTest,
   CallbackReceiver<WebFeedMetadata> metadata;
   subscriptions().FindWebFeedInfoForWebFeedId("id_cats", metadata.Bind());
   EXPECT_EQ(
-      "WebFeedMetadata{ id=wfi:id_cats is_recommended title=Title cats "
+      "WebFeedMetadata{ id=id_cats is_recommended title=Title cats "
       "publisher_url=https://cats.com/ status=kNotSubscribed }",
       testing::PrintToString(metadata.RunAndGetResult()));
 }
@@ -373,7 +382,7 @@ TEST_F(FeedApiSubscriptionsTest,
   WebFeedMetadata result = metadata.RunAndGetResult();
 
   EXPECT_EQ(
-      "WebFeedMetadata{ id=wfi:id_catfood is_recommended title=Title catfood "
+      "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kNotSubscribed }",
       testing::PrintToString(metadata.RunAndGetResult()));
 }
@@ -394,7 +403,7 @@ TEST_F(FeedApiSubscriptionsTest,
   subscriptions().FindWebFeedInfoForPage(page_info, metadata.Bind());
 
   EXPECT_EQ(
-      "WebFeedMetadata{ id=wfi:id_catfood is_recommended title=Title catfood "
+      "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribeInProgress }",
       testing::PrintToString(metadata.RunAndGetResult()));
 }
@@ -428,16 +437,16 @@ TEST_F(FeedApiSubscriptionsTest,
     CallbackReceiver<WebFeedMetadata> metadata;
     subscriptions().FindWebFeedInfoForPage(page_info, metadata.Bind());
     EXPECT_EQ(
-        "WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+        "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kSubscribed }",
         testing::PrintToString(metadata.RunAndGetResult()));
   }
   // Check status with WebFeedId.
   {
     CallbackReceiver<WebFeedMetadata> metadata;
-    subscriptions().FindWebFeedInfoForWebFeedId("wfi:id_cats", metadata.Bind());
+    subscriptions().FindWebFeedInfoForWebFeedId("id_cats", metadata.Bind());
     EXPECT_EQ(
-        "WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+        "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kSubscribed }",
         testing::PrintToString(metadata.RunAndGetResult()));
   }
@@ -463,10 +472,10 @@ TEST_F(FeedApiSubscriptionsTest,
 
   {
     CallbackReceiver<WebFeedMetadata> metadata;
-    subscriptions().FindWebFeedInfoForWebFeedId("wfi:id_cats", metadata.Bind());
+    subscriptions().FindWebFeedInfoForWebFeedId("id_cats", metadata.Bind());
 
     EXPECT_EQ(
-        "WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+        "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kUnsubscribeInProgress }",
         testing::PrintToString(metadata.RunAndGetResult()));
   }
@@ -478,9 +487,9 @@ TEST_F(FeedApiSubscriptionsTest,
   unfollow_callback.RunUntilCalled();
   {
     CallbackReceiver<WebFeedMetadata> metadata;
-    subscriptions().FindWebFeedInfoForWebFeedId("wfi:id_cats", metadata.Bind());
+    subscriptions().FindWebFeedInfoForWebFeedId("id_cats", metadata.Bind());
     EXPECT_EQ(
-        "WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+        "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kNotSubscribed }",
         testing::PrintToString(metadata.RunAndGetResult()));
   }
@@ -510,7 +519,7 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
   network_.SendResponsesOnCommand(true);
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
-  subscriptions().UnfollowWebFeed("wfi:id_dogs", unfollow_callback.Bind());
+  subscriptions().UnfollowWebFeed("id_dogs", unfollow_callback.Bind());
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://mice.com"),
                                 follow_callback.Bind());
 
@@ -518,9 +527,9 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
   subscriptions().GetAllSubscriptions(all_subscriptions.Bind());
 
   EXPECT_EQ(
-      "{ WebFeedMetadata{ id=wfi:id_cats title=Title cats "
+      "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }, "
-      "WebFeedMetadata{ id=wfi:id_dogs title=Title dogs "
+      "WebFeedMetadata{ id=id_dogs title=Title dogs "
       "publisher_url=https://dogs.com/ status=kUnsubscribeInProgress } }",
       testing::PrintToString(all_subscriptions.RunAndGetResult()));
 }

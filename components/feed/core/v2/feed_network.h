@@ -12,7 +12,7 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -36,33 +36,33 @@ struct UploadActionsDiscoverApi {
 };
 
 struct ListFollowedWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::ListFollowedWebFeedRequest;
-  using Response = feedwire::webfeed::ListFollowedWebFeedResponse;
+  using Request = feedwire::webfeed::ListWebFeedsRequest;
+  using Response = feedwire::webfeed::ListWebFeedsResponse;
   static const NetworkRequestType kRequestType =
-      NetworkRequestType::kListFollowedWebFeeds;
+      NetworkRequestType::kListWebFeeds;
   static base::StringPiece Method() { return "GET"; }
   // TODO(harringtond): Path TDB.
-  static base::StringPiece RequestPath() { return "v1/follow:listFollowed"; }
+  static base::StringPiece RequestPath() { return "v1/webFeeds"; }
 };
 
 struct FollowWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::FollowUriRequest;
-  using Response = feedwire::webfeed::FollowUriResponse;
+  using Request = feedwire::webfeed::FollowWebFeedRequest;
+  using Response = feedwire::webfeed::FollowWebFeedResponse;
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kFollowWebFeed;
   static base::StringPiece Method() { return "POST"; }
   // TODO(harringtond): Path TDB.
-  static base::StringPiece RequestPath() { return "v1/follow:followWebFeed"; }
+  static base::StringPiece RequestPath() { return "v1:followWebFeed"; }
 };
 
 struct UnfollowWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::UnfollowUriRequest;
-  using Response = feedwire::webfeed::UnfollowUriResponse;
+  using Request = feedwire::webfeed::UnfollowWebFeedRequest;
+  using Response = feedwire::webfeed::UnfollowWebFeedResponse;
   static const NetworkRequestType kRequestType =
       NetworkRequestType::kUnfollowWebFeed;
   static base::StringPiece Method() { return "POST"; }
   // TODO(harringtond): Path TDB.
-  static base::StringPiece RequestPath() { return "v1/follow:unfollowWebFeed"; }
+  static base::StringPiece RequestPath() { return "v1:unfollowWebFeed"; }
 };
 
 class FeedNetwork {

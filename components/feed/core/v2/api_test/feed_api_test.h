@@ -17,7 +17,7 @@
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
@@ -179,14 +179,14 @@ class TestFeedNetwork : public FeedNetwork {
   }
 
   void InjectFollowResponse(
-      const feedwire::webfeed::FollowUriResponse& response) {
+      const feedwire::webfeed::FollowWebFeedResponse& response) {
     InjectApiResponse<FollowWebFeedDiscoverApi>(response);
   }
   void InjectFollowResponse(const FeedNetwork::RawResponse& response) {
     InjectApiRawResponse<FollowWebFeedDiscoverApi>(response);
   }
   void InjectUnfollowResponse(
-      const feedwire::webfeed::UnfollowUriResponse& response) {
+      const feedwire::webfeed::UnfollowWebFeedResponse& response) {
     InjectApiResponse<UnfollowWebFeedDiscoverApi>(response);
   }
   void InjectUnfollowResponse(const FeedNetwork::RawResponse& response) {

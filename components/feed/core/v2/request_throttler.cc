@@ -23,9 +23,10 @@ int GetMaxRequestsPerDay(NetworkRequestType request_type) {
       return GetFeedConfig().max_action_upload_requests_per_day;
     case NetworkRequestType::kNextPage:
       return GetFeedConfig().max_next_page_requests_per_day;
-    case NetworkRequestType::kListFollowedWebFeeds:
+    case NetworkRequestType::kListWebFeeds:
       return -1;
     case NetworkRequestType::kUnfollowWebFeed:
+    case NetworkRequestType::kFollowWebFeed:
       return -1;
   }
 }

@@ -11,7 +11,6 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/proto_util.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_id.h"
 
 class GURL;
 namespace feedstore {
@@ -29,12 +28,12 @@ class WebFeedIndex {
   // TODO(harringtond): Make this a class.
   struct Entry {
     // Unique ID of the web feed.
-    WebFeedId id;
+    std::string web_feed_id;
     // True if the Web Feed is recommended, false if the Web Feed is followed.
     bool is_recommended = false;
-    explicit operator bool() const { return !!id; }
-    bool followed() const { return id && !is_recommended; }
-    bool recommended() const { return id && is_recommended; }
+    explicit operator bool() const { return !web_feed_id.empty(); }
+    bool followed() const { return !web_feed_id.empty() && !is_recommended; }
+    bool recommended() const { return !web_feed_id.empty() && is_recommended; }
   };
 
   // Populate the subscribed feed index.
@@ -47,8 +46,8 @@ class WebFeedIndex {
   // returned preferentially.
   Entry FindWebFeedForUrl(const GURL& url);
 
-  Entry FindWebFeed(WebFeedId id);
-  bool IsRecommended(const WebFeedId& id) const;
+  Entry FindWebFeed(const std::string& id);
+  bool IsRecommended(const std::string& web_feed_id) const;
 
  private:
   struct EntrySet {

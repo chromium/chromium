@@ -50,7 +50,7 @@ proto_library("proto_v2") {
     "v2/wire/upload_actions_request.proto",
     "v2/wire/upload_actions_response.proto",
     "v2/wire/version.proto",
-    "v2/wire/web_feed.proto",
+    "v2/wire/web_feeds.proto",
     "v2/wire/wrappers.proto",
     "v2/wire/xsurface_container.proto",
     "v2/wire/xsurface_content.proto",

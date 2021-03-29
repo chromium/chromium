@@ -211,12 +211,15 @@ class TextProtoPrinter {
   TextProtoPrinter& operator<<(const feedstore::WebFeedInfo& v) {
     BeginMessage();
     PRINT_FIELD(web_feed_id);
-    PRINT_FIELD(uri_matchers);
     PRINT_FIELD(title);
+    PRINT_FIELD(subtitle);
+    PRINT_FIELD(detail_text);
+    PRINT_FIELD(visit_uri);
+    PRINT_FIELD(rss_uri);
     PRINT_FIELD(favicon);
     PRINT_FIELD(follower_count);
-    PRINT_FIELD(visit_url);
-    PRINT_FIELD(subscription_id);
+    PRINT_FIELD(state);
+    PRINT_FIELD(uri_matchers);
     EndMessage();
     return *this;
   }

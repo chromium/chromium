@@ -14,9 +14,9 @@ enum class NetworkRequestType : int {
   kFeedQuery = 0,
   kUploadActions = 1,
   kNextPage = 2,
-  kListFollowedWebFeeds = 3,
+  kListWebFeeds = 3,
   kUnfollowWebFeed = 4,
-  kFollowWebFeed = 4,
+  kFollowWebFeed = 5,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.

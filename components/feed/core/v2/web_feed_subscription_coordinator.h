@@ -68,7 +68,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   SubscriptionInfo FindSubscriptionInfo(
       const WebFeedPageInformation& page_info);
-  SubscriptionInfo FindSubscriptionInfoById(const WebFeedId& id);
+  SubscriptionInfo FindSubscriptionInfoById(const std::string& web_feed_id);
 
   WebFeedIndex& index() { return index_; }
 
@@ -86,7 +86,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       base::OnceCallback<void(FollowWebFeedResult)> callback);
 
   void LookupWebFeedDataAndRespond(
-      const WebFeedId& web_feed_id,
+      const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info,
       base::OnceCallback<void(WebFeedMetadata)> callback);
 
@@ -101,7 +101,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void LoadSubscriptionModel();
   void ModelDataLoaded(FeedStore::WebFeedStartupData startup_data);
   void FindWebFeedInfoNonRecommended(
-      WebFeedId id,
+      const std::string& web_feed_id,
       base::OnceCallback<void(WebFeedMetadata)> callback);
 
   void FollowWebFeedComplete(
@@ -119,10 +119,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       bool subscribing,
       base::Optional<WebFeedPageInformation> page_information,
       base::Optional<feedstore::WebFeedInfo> info);
-  // const InFlightChange* FindInflightChange(
-  //     const WebFeedPageInformation& page_info);
   const InFlightChange* FindInflightChange(
-      const WebFeedId& id,
+      const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info);
   void DequeueInflightChange();
 

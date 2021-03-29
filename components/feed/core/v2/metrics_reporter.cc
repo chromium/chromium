@@ -470,7 +470,7 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
           "ContentSuggestions.Feed.Network.ResponseStatus.NextPage",
           http_status_code);
       return;
-    case NetworkRequestType::kListFollowedWebFeeds:
+    case NetworkRequestType::kListWebFeeds:
       base::UmaHistogramSparse(
           "ContentSuggestions.Feed.Network.ResponseStatus.ListFollowedWebFeeds",
           http_status_code);
@@ -478,6 +478,11 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
     case NetworkRequestType::kUnfollowWebFeed:
       base::UmaHistogramSparse(
           "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed",
+          http_status_code);
+      return;
+    case NetworkRequestType::kFollowWebFeed:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.FollowWebFeed",
           http_status_code);
       return;
   }

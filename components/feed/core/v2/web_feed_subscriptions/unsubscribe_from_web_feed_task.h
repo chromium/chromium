@@ -5,10 +5,9 @@
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_UNSUBSCRIBE_FROM_WEB_FEED_TASK_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_UNSUBSCRIBE_FROM_WEB_FEED_TASK_H_
 
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_id.h"
 #include "components/offline_pages/task/task.h"
 
 namespace feed {
@@ -21,12 +20,12 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
   struct Result {
     WebFeedSubscriptionRequestStatus request_status =
         WebFeedSubscriptionRequestStatus::kUnknown;
-    WebFeedId unsubscribed_feed_id;
+    std::string unsubscribed_feed_name;
   };
 
   explicit UnsubscribeFromWebFeedTask(
       FeedStream* stream,
-      WebFeedId web_feed_id,
+      const std::string& web_feed_id,
       base::OnceCallback<void(Result)> callback);
   ~UnsubscribeFromWebFeedTask() override;
   UnsubscribeFromWebFeedTask(const UnsubscribeFromWebFeedTask&) = delete;
@@ -36,12 +35,13 @@ class UnsubscribeFromWebFeedTask : public offline_pages::Task {
  private:
   void Run() override;
   void RequestComplete(
-      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse> result);
+      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>
+          result);
   void Done(WebFeedSubscriptionRequestStatus status);
 
   FeedStream* stream_;
   Result result_;
-  WebFeedId web_feed_id_;
+  std::string web_feed_name_;
   base::OnceCallback<void(Result)> callback_;
 };
 }  // namespace feed

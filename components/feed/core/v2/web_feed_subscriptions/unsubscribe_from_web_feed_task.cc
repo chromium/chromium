@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
@@ -17,17 +18,17 @@ namespace feed {
 
 UnsubscribeFromWebFeedTask::UnsubscribeFromWebFeedTask(
     FeedStream* stream,
-    WebFeedId web_feed_id,
+    const std::string& web_feed_id,
     base::OnceCallback<void(Result)> callback)
     : stream_(stream),
-      web_feed_id_(web_feed_id),
+      web_feed_name_(web_feed_id),
       callback_(std::move(callback)) {}
 
 UnsubscribeFromWebFeedTask::~UnsubscribeFromWebFeedTask() = default;
 
 void UnsubscribeFromWebFeedTask::Run() {
   WebFeedSubscriptionCoordinator::SubscriptionInfo info =
-      stream_->subscriptions().FindSubscriptionInfoById(web_feed_id_);
+      stream_->subscriptions().FindSubscriptionInfoById(web_feed_name_);
   if (info.status != WebFeedSubscriptionStatus::kSubscribed) {
     Done(WebFeedSubscriptionRequestStatus::kSuccess);
     return;
@@ -38,25 +39,21 @@ void UnsubscribeFromWebFeedTask::Run() {
     return;
   }
 
-  feedwire::webfeed::UnfollowUriRequest request;
-  if (web_feed_id_.is_subscription_id()) {
-    request.set_subscription_id(web_feed_id_.GetValue());
-  } else if (web_feed_id_.is_web_feed_id()) {
-    request.set_web_feed_id(web_feed_id_.GetValue());
-  }
+  feedwire::webfeed::UnfollowWebFeedRequest request;
+  request.set_name(web_feed_name_);
   stream_->GetNetwork()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
       request, base::BindOnce(&UnsubscribeFromWebFeedTask::RequestComplete,
                               base::Unretained(this)));
 }
 
 void UnsubscribeFromWebFeedTask::RequestComplete(
-    FeedNetwork::ApiResult<feedwire::webfeed::UnfollowUriResponse> result) {
+    FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse> result) {
   if (!result.response_body) {
     Done(WebFeedSubscriptionRequestStatus::kFailedUnknownError);
     return;
   }
 
-  result_.unsubscribed_feed_id = web_feed_id_;
+  result_.unsubscribed_feed_name = web_feed_name_;
   Done(WebFeedSubscriptionRequestStatus::kSuccess);
 }
 

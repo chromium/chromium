@@ -16,11 +16,11 @@ void AddEntries(
     std::vector<std::pair<std::string, int>>& domain_list,
     const ::google::protobuf::RepeatedPtrField<feedstore::UriMatcher>& matchers,
     bool is_recommended,
-    const WebFeedId& id) {
+    const std::string& web_feed_id) {
   int index = static_cast<int>(entries.size());
-  entries.push_back({id, is_recommended});
+  entries.push_back({web_feed_id, is_recommended});
   for (const feedstore::UriMatcher& matcher : matchers) {
-    if (id && !matcher.domain_match().empty())
+    if (!web_feed_id.empty() && !matcher.domain_match().empty())
       domain_list.emplace_back(matcher.domain_match(), index);
   }
 }
@@ -42,8 +42,7 @@ void WebFeedIndex::Populate(
   for (const feedstore::RecommendedWebFeedIndex::Entry& entry :
        recommended_feed_index.entries()) {
     AddEntries(recommended_.entries, domain_list, entry.matchers(),
-               /*is_recommended=*/true,
-               WebFeedId::FromWebFeedId(entry.web_feed_id()));
+               /*is_recommended=*/true, entry.web_feed_id());
   }
 
   recommended_.domains =
@@ -58,7 +57,7 @@ void WebFeedIndex::Populate(
   // Note that flat_map will keep only the first entry with a given key.
   for (const auto& info : subscribed_feeds.feeds()) {
     AddEntries(subscribed_.entries, domain_list, info.uri_matchers(),
-               /*is_recommended=*/false, WebFeedId::FromInfo(info));
+               /*is_recommended=*/false, info.web_feed_id());
   }
 
   subscribed_.domains =
@@ -77,20 +76,20 @@ WebFeedIndex::Entry WebFeedIndex::FindWebFeedForUrl(const GURL& url) {
     host = host.substr(0, host.size() - 1);
 
   const Entry* result = &FindWebFeedForDomain(host);
-  for (size_t i = 0; i < host.size() && !result->id; ++i) {
+  for (size_t i = 0; i < host.size() && result->web_feed_id.empty(); ++i) {
     if (host[i] == '.')
       result = &FindWebFeedForDomain(host.substr(i + 1));
   }
   return *result;
 }
 
-WebFeedIndex::Entry WebFeedIndex::FindWebFeed(WebFeedId id) {
+WebFeedIndex::Entry WebFeedIndex::FindWebFeed(const std::string& web_feed_id) {
   for (const Entry& e : subscribed_.entries) {
-    if (e.id == id)
+    if (e.web_feed_id == web_feed_id)
       return e;
   }
   for (const Entry& e : recommended_.entries) {
-    if (e.id == id)
+    if (e.web_feed_id == web_feed_id)
       return e;
   }
   return {};
@@ -99,7 +98,7 @@ WebFeedIndex::Entry WebFeedIndex::FindWebFeed(WebFeedId id) {
 const WebFeedIndex::Entry& WebFeedIndex::FindWebFeedForDomain(
     base::StringPiece domain) {
   const Entry& result = FindWebFeedForDomain(subscribed_, domain);
-  if (result.id)
+  if (!result.web_feed_id.empty())
     return result;
   return FindWebFeedForDomain(recommended_, domain);
 }
@@ -112,11 +111,11 @@ const WebFeedIndex::Entry& WebFeedIndex::FindWebFeedForDomain(
                                            : empty_entry_;
 }
 
-bool WebFeedIndex::IsRecommended(const WebFeedId& id) const {
-  if (!id)
+bool WebFeedIndex::IsRecommended(const std::string& web_feed_id) const {
+  if (web_feed_id.empty())
     return false;
   for (const Entry& e : recommended_.entries) {
-    if (e.id == id)
+    if (e.web_feed_id == web_feed_id)
       return true;
   }
   return false;

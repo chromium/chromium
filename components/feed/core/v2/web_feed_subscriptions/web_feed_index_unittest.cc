@@ -11,7 +11,7 @@ namespace {
 
 TEST(WebFeedIndex, FindWebFeedForUrlBeforePopulate) {
   WebFeedIndex index;
-  EXPECT_EQ(WebFeedId(), index.FindWebFeedForUrl(GURL("http://foo")).id);
+  EXPECT_EQ("", index.FindWebFeedForUrl(GURL("http://foo")).web_feed_id);
 }
 
 TEST(WebFeedIndex, FindWebFeedForUrlResolvesDomainsCorrectly) {
@@ -25,26 +25,30 @@ TEST(WebFeedIndex, FindWebFeedForUrlResolvesDomainsCorrectly) {
   index.Populate(startup_data.subscribed_web_feeds);
 
   // Matching URLs.
-  const auto kId = WebFeedId::FromWebFeedId("id");
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://foo.com")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("http://foo.com")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("http://foo.com:1234")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://foo.com/bar")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://foo.com")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://baz.foo.com")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://baz.foo.com.")).id);
-  EXPECT_EQ(kId, index.FindWebFeedForUrl(GURL("https://a.b.c.d.e.foo.com")).id);
+  EXPECT_EQ("id", index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
+  EXPECT_EQ("id", index.FindWebFeedForUrl(GURL("http://foo.com")).web_feed_id);
+  EXPECT_EQ("id",
+            index.FindWebFeedForUrl(GURL("http://foo.com:1234")).web_feed_id);
+  EXPECT_EQ("id",
+            index.FindWebFeedForUrl(GURL("https://foo.com/bar")).web_feed_id);
+  EXPECT_EQ("id", index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
+  EXPECT_EQ("id",
+            index.FindWebFeedForUrl(GURL("https://baz.foo.com")).web_feed_id);
+  EXPECT_EQ("id",
+            index.FindWebFeedForUrl(GURL("https://baz.foo.com.")).web_feed_id);
+  EXPECT_EQ(
+      "id",
+      index.FindWebFeedForUrl(GURL("https://a.b.c.d.e.foo.com")).web_feed_id);
 
   // Non-matching URLs.
-  EXPECT_EQ(WebFeedId(),
-            index.FindWebFeedForUrl(GURL("https://foo.com.br")).id);
-  EXPECT_EQ(WebFeedId(),
-            index.FindWebFeedForUrl(GURL("https://xyz.foo.com.z")).id);
-  EXPECT_EQ(WebFeedId(),
-            index
-                .FindWebFeedForUrl(
-                    GURL("https://1000:1000:1000:0000:0000:0000:0000:0000"))
-                .id);
+  EXPECT_EQ("",
+            index.FindWebFeedForUrl(GURL("https://foo.com.br")).web_feed_id);
+  EXPECT_EQ("",
+            index.FindWebFeedForUrl(GURL("https://xyz.foo.com.z")).web_feed_id);
+  EXPECT_EQ("", index
+                    .FindWebFeedForUrl(
+                        GURL("https://1000:1000:1000:0000:0000:0000:0000:0000"))
+                    .web_feed_id);
 }
 
 TEST(WebFeedIndex, PopulateOverwritesContent) {
@@ -58,9 +62,9 @@ TEST(WebFeedIndex, PopulateOverwritesContent) {
   feed->set_web_feed_id("aid");
   index.Populate(startup_data.subscribed_web_feeds);
 
-  EXPECT_EQ(WebFeedId::FromWebFeedId("aid"),
-            index.FindWebFeedForUrl(GURL("https://boo.com")).id);
-  EXPECT_FALSE(index.FindWebFeedForUrl(GURL("https://foo.com")).id);
+  EXPECT_EQ("aid",
+            index.FindWebFeedForUrl(GURL("https://boo.com")).web_feed_id);
+  EXPECT_EQ("", index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
 }
 
 TEST(WebFeedIndex, FindWebFeedForUrlFindsRecommendedUrl) {
@@ -71,8 +75,7 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindsRecommendedUrl) {
   feed->add_matchers()->set_domain_match("foo.com");
   index.Populate(startup_data.recommended_feed_index);
 
-  EXPECT_EQ(WebFeedId::FromWebFeedId("id"),
-            index.FindWebFeedForUrl(GURL("https://foo.com")).id);
+  EXPECT_EQ("id", index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
 }
 
 TEST(WebFeedIndex, FindWebFeedForUrlFindMoreSpecificFirst) {
@@ -91,14 +94,14 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindMoreSpecificFirst) {
 
   index.Populate(startup_data.recommended_feed_index);
 
-  EXPECT_EQ(WebFeedId::FromWebFeedId("barfoo"),
-            index.FindWebFeedForUrl(GURL("https://bar.foo.com")).id);
-  EXPECT_EQ(WebFeedId::FromWebFeedId("barfoo"),
-            index.FindWebFeedForUrl(GURL("https://a.bar.foo.com")).id);
-  EXPECT_EQ(WebFeedId::FromWebFeedId("foo"),
-            index.FindWebFeedForUrl(GURL("https://foo.com")).id);
-  EXPECT_EQ(WebFeedId::FromWebFeedId("foo"),
-            index.FindWebFeedForUrl(GURL("https://baz.foo.com")).id);
+  EXPECT_EQ("barfoo",
+            index.FindWebFeedForUrl(GURL("https://bar.foo.com")).web_feed_id);
+  EXPECT_EQ("barfoo",
+            index.FindWebFeedForUrl(GURL("https://a.bar.foo.com")).web_feed_id);
+  EXPECT_EQ("foo",
+            index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
+  EXPECT_EQ("foo",
+            index.FindWebFeedForUrl(GURL("https://baz.foo.com")).web_feed_id);
 }
 
 TEST(WebFeedIndex, FindWebFeedForUrlFindsSubscribedFeedsPreferentially) {
@@ -117,22 +120,8 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindsSubscribedFeedsPreferentially) {
   index.Populate(startup_data.recommended_feed_index);
   index.Populate(startup_data.subscribed_web_feeds);
 
-  EXPECT_EQ(WebFeedId::FromWebFeedId("sub-id"),
-            index.FindWebFeedForUrl(GURL("https://foo.com")).id);
-}
-
-TEST(WebFeedIndex, FindWebFeedForUrlFindsFeedWithNoWebFeedId) {
-  WebFeedIndex index;
-  FeedStore::WebFeedStartupData startup_data;
-  {
-    auto* feed = startup_data.subscribed_web_feeds.add_feeds();
-    feed->set_subscription_id("sub-id");
-    feed->add_uri_matchers()->set_domain_match("foo.com");
-  }
-  index.Populate(startup_data.subscribed_web_feeds);
-
-  EXPECT_EQ(WebFeedId::FromFollowId("sub-id"),
-            index.FindWebFeedForUrl(GURL("https://foo.com")).id);
+  EXPECT_EQ("sub-id",
+            index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
 }
 
 }  // namespace

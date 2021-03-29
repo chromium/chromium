@@ -11,7 +11,6 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_id.h"
 #include "components/offline_pages/task/closure_task.h"
 
 namespace feed {
@@ -23,9 +22,10 @@ WebFeedMetadata MakeWebFeedMetadata(
     WebFeedSubscriptionStatus subscribe_status,
     const feedstore::WebFeedInfo& web_feed_info) {
   WebFeedMetadata result;
-  result.web_feed_id = WebFeedId::FromInfo(web_feed_info).ToString();
-  result.is_active = web_feed_info.is_active();
-  result.publisher_url = GURL(web_feed_info.visit_url());
+  result.web_feed_id = web_feed_info.web_feed_id();
+  result.is_active = web_feed_info.state() ==
+                     feedstore::WebFeedInfo::State::WebFeedInfo_State_ACTIVE;
+  result.publisher_url = GURL(web_feed_info.visit_uri());
   result.title = web_feed_info.title();
   result.subscription_status = subscribe_status;
   return result;
@@ -40,11 +40,11 @@ WebFeedMetadata MakeWebFeedMetadata(WebFeedSubscriptionStatus subscribe_status,
 }
 
 feedstore::WebFeedInfo Remove(
-    WebFeedId id,
+    const std::string& web_feed_id,
     std::vector<feedstore::WebFeedInfo>& feed_info_list) {
   feedstore::WebFeedInfo result;
   for (size_t i = 0; i < feed_info_list.size(); ++i) {
-    if (WebFeedId::FromInfo(feed_info_list[i]) == id) {
+    if (feed_info_list[i].web_feed_id() == web_feed_id) {
       result = std::move(feed_info_list[i]);
       feed_info_list.erase(feed_info_list.begin() + i);
       break;
@@ -84,10 +84,10 @@ class WebFeedSubscriptionModel {
     update_time_millis_ = feeds.update_time_millis();
   }
 
-  SubscriptionInfo GetSubscriptionInfo(WebFeedId id) {
+  SubscriptionInfo GetSubscriptionInfo(const std::string& web_feed_id) {
     SubscriptionInfo result;
     for (const feedstore::WebFeedInfo& info : *recent_unsubscribed_) {
-      if (WebFeedId::FromInfo(info) == id) {
+      if (info.web_feed_id() == web_feed_id) {
         result.status = WebFeedSubscriptionStatus::kNotSubscribed;
         result.web_feed_info = info;
         break;
@@ -95,7 +95,7 @@ class WebFeedSubscriptionModel {
     }
 
     for (const feedstore::WebFeedInfo& info : subscriptions_) {
-      if (WebFeedId::FromInfo(info) == id) {
+      if (info.web_feed_id() == web_feed_id) {
         result.status = WebFeedSubscriptionStatus::kSubscribed;
         result.web_feed_info = info;
         break;
@@ -106,15 +106,14 @@ class WebFeedSubscriptionModel {
   }
 
   void OnSubscribed(const feedstore::WebFeedInfo& info) {
-    auto id = WebFeedId::FromInfo(info);
-    Remove(id, *recent_unsubscribed_);
-    Remove(id, subscriptions_);
+    Remove(info.web_feed_id(), *recent_unsubscribed_);
+    Remove(info.web_feed_id(), subscriptions_);
     subscriptions_.emplace_back(info);
     UpdateIndexAndStore();
   }
 
-  void OnUnsubscribed(WebFeedId id) {
-    feedstore::WebFeedInfo info = Remove(id, subscriptions_);
+  void OnUnsubscribed(const std::string& web_feed_id) {
+    feedstore::WebFeedInfo info = Remove(web_feed_id, subscriptions_);
     if (!info.web_feed_id().empty()) {
       recent_unsubscribed_->push_back(std::move(info));
     }
@@ -203,8 +202,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromIdStart(
     const std::string& web_feed_id,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   DCHECK(model_);
-  SubscriptionInfo info =
-      model_->GetSubscriptionInfo(WebFeedId::FromWebFeedId(web_feed_id));
+  SubscriptionInfo info = model_->GetSubscriptionInfo(web_feed_id);
   SubscribeToWebFeedTask::Request request;
   request.web_feed_id = web_feed_id;
 
@@ -245,8 +243,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeed(
 void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
     const std::string& web_feed_id,
     base::OnceCallback<void(UnfollowWebFeedResult)> callback) {
-  SubscriptionInfo info =
-      model_->GetSubscriptionInfo(WebFeedId::FromString(web_feed_id));
+  SubscriptionInfo info = model_->GetSubscriptionInfo(web_feed_id);
 
   EnqueueInFlightChange(/*subscribing=*/false,
                         /*page_information=*/base::nullopt,
@@ -256,7 +253,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
 
   feed_stream_->GetTaskQueue().AddTask(
       std::make_unique<UnsubscribeFromWebFeedTask>(
-          feed_stream_, WebFeedId::FromString(web_feed_id),
+          feed_stream_, web_feed_id,
           base::BindOnce(
               &WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete,
               base::Unretained(this), std::move(callback))));
@@ -265,8 +262,8 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedStart(
 void WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete(
     base::OnceCallback<void(UnfollowWebFeedResult)> callback,
     UnsubscribeFromWebFeedTask::Result result) {
-  if (result.unsubscribed_feed_id) {
-    model_->OnUnsubscribed(result.unsubscribed_feed_id);
+  if (!result.unsubscribed_feed_name.empty()) {
+    model_->OnUnsubscribed(result.unsubscribed_feed_name);
   }
   DequeueInflightChange();
   UnfollowWebFeedResult callback_result;
@@ -282,8 +279,8 @@ void WebFeedSubscriptionCoordinator::FindWebFeedInfoForPage(
     // No model loaded, try to answer the request without it.
     WebFeedIndex::Entry entry = index_.FindWebFeedForUrl(page_info.url);
     if (!entry.followed()) {
-      LookupWebFeedDataAndRespond(entry.id, /*maybe_page_info=*/nullptr,
-                                  std::move(callback));
+      LookupWebFeedDataAndRespond(
+          entry.web_feed_id, /*maybe_page_info=*/nullptr, std::move(callback));
       return;
     }
   }
@@ -297,7 +294,7 @@ void WebFeedSubscriptionCoordinator::FindWebFeedInfoForPageStart(
     const WebFeedPageInformation& page_info,
     base::OnceCallback<void(WebFeedMetadata)> callback) {
   DCHECK(model_);
-  LookupWebFeedDataAndRespond(WebFeedId(), &page_info, std::move(callback));
+  LookupWebFeedDataAndRespond(std::string(), &page_info, std::move(callback));
 }
 
 void WebFeedSubscriptionCoordinator::FindWebFeedInfoForWebFeedId(
@@ -305,10 +302,9 @@ void WebFeedSubscriptionCoordinator::FindWebFeedInfoForWebFeedId(
     base::OnceCallback<void(WebFeedMetadata)> callback) {
   if (!model_ && !loading_model_) {
     // No model loaded, try to answer the request without it.
-    WebFeedIndex::Entry entry =
-        index_.FindWebFeed(WebFeedId::FromWebFeedId(web_feed_id));
+    WebFeedIndex::Entry entry = index_.FindWebFeed(web_feed_id);
     if (!entry.followed()) {
-      LookupWebFeedDataAndRespond(WebFeedId::FromWebFeedId(web_feed_id),
+      LookupWebFeedDataAndRespond(web_feed_id,
                                   /*maybe_page_info=*/nullptr,
                                   std::move(callback));
       return;
@@ -323,20 +319,20 @@ void WebFeedSubscriptionCoordinator::FindWebFeedInfoForWebFeedIdStart(
     const std::string& web_feed_id,
     base::OnceCallback<void(WebFeedMetadata)> callback) {
   DCHECK(model_);
-  LookupWebFeedDataAndRespond(WebFeedId::FromString(web_feed_id),
+  LookupWebFeedDataAndRespond(web_feed_id,
                               /*maybe_page_info=*/nullptr, std::move(callback));
 }
 
 void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
-    const WebFeedId& web_feed_id,
+    const std::string& web_feed_id,
     const WebFeedPageInformation* maybe_page_info,
     base::OnceCallback<void(WebFeedMetadata)> callback) {
   WebFeedSubscriptionStatus subscription_status =
       WebFeedSubscriptionStatus::kUnknown;
   // Override status and `web_feed_info` if there's an in-flight operation.
-  WebFeedId id = web_feed_id;
+  std::string id = web_feed_id;
   const InFlightChange* in_flight_change =
-      FindInflightChange(web_feed_id, maybe_page_info);
+      FindInflightChange(id, maybe_page_info);
 
   const feedstore::WebFeedInfo* web_feed_info = nullptr;
 
@@ -347,23 +343,23 @@ void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
             : WebFeedSubscriptionStatus::kUnsubscribeInProgress;
     if (in_flight_change->web_feed_info) {
       web_feed_info = &*in_flight_change->web_feed_info;
-      if (!id)
-        id = WebFeedId::FromWebFeedId(web_feed_info->web_feed_id());
+      if (id.empty())
+        id = web_feed_info->web_feed_id();
     }
   }
 
   WebFeedIndex::Entry entry;
-  if (id) {
+  if (!id.empty()) {
     entry = index_.FindWebFeed(id);
   } else if (maybe_page_info) {
     entry = index_.FindWebFeedForUrl(maybe_page_info->url);
     if (entry)
-      id = entry.id;
+      id = entry.web_feed_id;
   }
 
   // Try using `model_` if it's loaded.
   SubscriptionInfo subscription_info;
-  if (!web_feed_info && model_ && id) {
+  if (!web_feed_info && model_ && !id.empty()) {
     subscription_info = model_->GetSubscriptionInfo(id);
     if (subscription_info.status != WebFeedSubscriptionStatus::kUnknown &&
         !subscription_info.web_feed_info.web_feed_id().empty()) {
@@ -389,10 +385,9 @@ void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
     return;
   }
 
-  // Reply with just status and id if it's not a recommended Web Feed.
+  // Reply with just status and name if it's not a recommended Web Feed.
   if (!entry.recommended()) {
-    std::move(callback).Run(
-        MakeWebFeedMetadata(subscription_status, id.GetValue()));
+    std::move(callback).Run(MakeWebFeedMetadata(subscription_status, id));
     return;
   }
 
@@ -416,8 +411,8 @@ void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
       };
 
   feed_stream_->GetStore()->ReadRecommendedWebFeedInfo(
-      entry.id.GetValue(),
-      base::BindOnce(adapt_callback, entry.id.GetValue(), subscription_status,
+      entry.web_feed_id,
+      base::BindOnce(adapt_callback, entry.web_feed_id, subscription_status,
                      std::move(callback)));
 }
 
@@ -473,15 +468,15 @@ void WebFeedSubscriptionCoordinator::DequeueInflightChange() {
 // Return the last in-flight change which matches either `id` or
 // `maybe_page_info`.
 const InFlightChange* WebFeedSubscriptionCoordinator::FindInflightChange(
-    const WebFeedId& id,
+    const std::string& web_feed_id,
     const WebFeedPageInformation* maybe_page_info) {
   const InFlightChange* result = nullptr;
   for (const InFlightChange& change : in_flight_changes_) {
     if ((maybe_page_info && change.page_information &&
          // TODO(crbug/1152592): Decide how much we cna relax URL matching.
          change.page_information->url == maybe_page_info->url) ||
-        (id && change.web_feed_info &&
-         WebFeedId::FromInfo(*change.web_feed_info) == id)) {
+        (!web_feed_id.empty() && change.web_feed_info &&
+         change.web_feed_info->web_feed_id() == web_feed_id)) {
       result = &change;
     }
   }
@@ -500,10 +495,9 @@ void WebFeedSubscriptionCoordinator::GetAllSubscriptionsStart(
   DCHECK(model_);
   std::vector<WebFeedMetadata> result;
   for (const feedstore::WebFeedInfo& info : model_->subscriptions()) {
-    auto id = WebFeedId::FromInfo(info);
     WebFeedSubscriptionStatus status = WebFeedSubscriptionStatus::kSubscribed;
     const InFlightChange* change =
-        FindInflightChange(id, /*maybe_page_info=*/nullptr);
+        FindInflightChange(info.web_feed_id(), /*maybe_page_info=*/nullptr);
     if (change && !change->subscribing) {
       status = WebFeedSubscriptionStatus::kUnsubscribeInProgress;
     }
@@ -516,12 +510,12 @@ SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfo(
     const WebFeedPageInformation& page_info) {
   DCHECK(model_);
   return model_->GetSubscriptionInfo(
-      index_.FindWebFeedForUrl(page_info.url).id);
+      index_.FindWebFeedForUrl(page_info.url).web_feed_id);
 }
 SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfoById(
-    const WebFeedId& id) {
+    const std::string& web_feed_id) {
   DCHECK(model_);
-  return model_->GetSubscriptionInfo(id);
+  return model_->GetSubscriptionInfo(web_feed_id);
 }
 
 }  // namespace feed

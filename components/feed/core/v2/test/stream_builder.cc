@@ -8,7 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/feed/core/proto/v2/wire/web_feed.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -258,7 +258,7 @@ feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
   result.set_title("Title " + name);
   result.mutable_favicon()->set_url("http://favicon/" + name);
   result.set_follower_count(123);
-  result.set_visit_url("https://" + name + ".com");
+  result.set_visit_uri("https://" + name + ".com");
   feedstore::UriMatcher* matcher = result.add_uri_matchers();
   matcher->set_domain_match(name + ".com");
   return result;
