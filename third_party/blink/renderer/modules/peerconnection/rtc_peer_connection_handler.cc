@@ -1980,6 +1980,7 @@ RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
 
 bool RTCPeerConnectionHandler::RemoveTrackPlanB(
     blink::RTCRtpSenderPlatform* web_sender) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(configuration_.sdp_semantics, webrtc::SdpSemantics::kPlanB);
   auto* track = web_sender->Track();
   auto it = FindSender(web_sender->Id());
@@ -2324,6 +2325,7 @@ void RTCPeerConnectionHandler::OnIceConnectionChange(
 void RTCPeerConnectionHandler::TrackIceConnectionStateChange(
     RTCPeerConnectionHandler::IceConnectionStateVersion version,
     webrtc::PeerConnectionInterface::IceConnectionState state) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (!peer_connection_tracker_)
     return;
   switch (version) {
@@ -2483,6 +2485,7 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
     webrtc::PeerConnectionInterface::SignalingState signaling_state,
     std::vector<blink::RtpTransceiverState> transceiver_states,
     bool is_remote_description) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(configuration_.sdp_semantics, webrtc::SdpSemantics::kUnifiedPlan);
   Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers(
       SafeCast<WTF::wtf_size_t>(transceiver_states.size()));

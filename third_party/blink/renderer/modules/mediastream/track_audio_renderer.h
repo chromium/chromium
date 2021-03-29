@@ -62,7 +62,7 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
   //
   // Called on the main thread.
   TrackAudioRenderer(MediaStreamComponent* audio_component,
-                     LocalFrame* playout_web_frame,
+                     LocalFrame& playout_web_frame,
                      const base::UnguessableToken& session_id,
                      const String& device_id,
                      base::RepeatingCallback<void()> on_render_error_callback);

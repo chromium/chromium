@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_manager.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -22,6 +23,12 @@ namespace blink {
 
 // IpcNetworkManager is a NetworkManager for libjingle that gets a
 // list of network interfaces from the browser.
+//
+// Threading note:
+// The IpcNetworkManager is constructed on the network thread, and after that
+// may only be accessed from the signaling thread. The one exception to that is
+// access to slots (e.g., `NetworkManager::SignalNetworksChanged`) that are safe
+// to access from any thread.
 class IpcNetworkManager : public rtc::NetworkManagerBase,
                           public blink::NetworkListObserver {
  public:
@@ -30,6 +37,8 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
       blink::NetworkListManager* network_list_manager,
       std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder);
   ~IpcNetworkManager() override;
+
+  base::WeakPtr<IpcNetworkManager> PLATFORM_EXPORT AsWeakPtr();
 
   // rtc:::NetworkManager:
   void StartUpdating() override;
@@ -45,13 +54,19 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
  private:
   void SendNetworksChangedSignal();
 
-  // TODO(crbug.com/787254): Consider moving NetworkListManager to Oilpan and
-  // avoid using a raw pointer.
-  blink::NetworkListManager* network_list_manager_;
+  // 'this' is created on the network thread, whereas the `NetworkListManager`
+  // is owned by the main thread, so it needs to be accessed in a thread-safe
+  // manner (i.e., `CrossThreadPersistent`).
+  CrossThreadPersistent<NetworkListManager> network_list_manager_;
   std::unique_ptr<webrtc::MdnsResponderInterface> mdns_responder_;
   int start_count_ = 0;
   bool network_list_received_ = false;
 
+  THREAD_CHECKER(thread_checker_);
+
+  // Cache the weak pointer to avoid racy calls to `weak_factory_.GetWeakPtr()`.
+  // TODO(crbug.com/1191907): Figure out whether this is still necessary.
+  base::WeakPtr<IpcNetworkManager> weak_this_;
   base::WeakPtrFactory<IpcNetworkManager> weak_factory_{this};
 };
 
