@@ -78,8 +78,12 @@ class DefaultObserver : public SettingsObserver {
         settings_namespace::ToString(settings_namespace);
     EventRouter* event_router = EventRouter::Get(browser_context_);
 
+    // We only dispatch the events if there's a valid listener (even though
+    // EventRouter would handle the no-listener case) since copying `changes`
+    // can be expensive.
     // Event for each storage(sync, local, managed).
-    {
+    if (event_router->ExtensionHasEventListener(
+            extension_id, api::storage::OnChanged::kEventName)) {
       std::unique_ptr<base::ListValue> args(new base::ListValue());
       args->Append(changes.Clone());
       args->AppendString(namespace_string);
@@ -90,13 +94,15 @@ class DefaultObserver : public SettingsObserver {
     }
 
     // Event for StorageArea.
-    {
+    auto area_event_name =
+        base::StringPrintf("storage.%s.onChanged", namespace_string.c_str());
+    if (event_router->ExtensionHasEventListener(extension_id,
+                                                area_event_name)) {
       auto args = std::make_unique<base::ListValue>();
       args->Append(changes.Clone());
-      auto event = std::make_unique<Event>(
-          NamespaceToEventHistogram(settings_namespace),
-          base::StringPrintf("storage.%s.onChanged", namespace_string.c_str()),
-          std::move(args));
+      auto event =
+          std::make_unique<Event>(NamespaceToEventHistogram(settings_namespace),
+                                  area_event_name, std::move(args));
       event_router->DispatchEventToExtension(extension_id, std::move(event));
     }
   }

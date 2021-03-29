@@ -5,12 +5,16 @@
 #include "extensions/browser/api/storage/storage_api.h"
 
 #include <memory>
+#include <set>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
@@ -137,6 +141,13 @@ TEST_F(StorageApiUnittest, RestoreCorruptedStorage) {
 TEST_F(StorageApiUnittest, StorageAreaOnChanged) {
   TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
 
+  EventRouter* event_router = EventRouter::Get(browser_context());
+  content::RenderProcessHost* process = nullptr;
+  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
+                                 extension()->id());
+  event_router->AddEventListener("storage.local.onChanged", process,
+                                 extension()->id());
+
   RunSetFunction("key", "value");
   EXPECT_EQ(2u, event_observer.events().size());
 
@@ -144,6 +155,47 @@ TEST_F(StorageApiUnittest, StorageAreaOnChanged) {
                              api::storage::OnChanged::kEventName));
   EXPECT_TRUE(
       base::Contains(event_observer.events(), "storage.local.onChanged"));
+}
+
+// Test that no event is dispatched if no listener is added.
+TEST_F(StorageApiUnittest, StorageAreaOnChangedNoListener) {
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  RunSetFunction("key", "value");
+  EXPECT_EQ(0u, event_observer.events().size());
+}
+
+// Test that no event is dispatched if a listener for a different extension is
+// added.
+TEST_F(StorageApiUnittest, StorageAreaOnChangedOtherListener) {
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  EventRouter* event_router = EventRouter::Get(browser_context());
+  content::RenderProcessHost* process = nullptr;
+  std::string other_listener_id =
+      crx_file::id_util::GenerateId("other-listener");
+  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
+                                 other_listener_id);
+  event_router->AddEventListener("storage.local.onChanged", process,
+                                 other_listener_id);
+
+  RunSetFunction("key", "value");
+  EXPECT_EQ(0u, event_observer.events().size());
+}
+
+TEST_F(StorageApiUnittest, StorageAreaOnChangedOnlyOneListener) {
+  TestEventRouterObserver event_observer(EventRouter::Get(browser_context()));
+
+  EventRouter* event_router = EventRouter::Get(browser_context());
+  content::RenderProcessHost* process = nullptr;
+  event_router->AddEventListener(api::storage::OnChanged::kEventName, process,
+                                 extension()->id());
+
+  RunSetFunction("key", "value");
+  EXPECT_EQ(1u, event_observer.events().size());
+
+  EXPECT_TRUE(base::Contains(event_observer.events(),
+                             api::storage::OnChanged::kEventName));
 }
 
 }  // namespace extensions
