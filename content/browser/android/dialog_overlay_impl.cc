@@ -82,6 +82,9 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
   JNIEnv* env = AttachCurrentThread();
   obj_ = JavaObjectWeakGlobalRef(env, obj);
 
+  // Make sure RenderFrameDeleted will be called on RFH and thus we will clean
+  // up.
+  DCHECK(rfhi_->IsRenderFrameCreated());
   web_contents->GetNativeView()->AddObserver(this);
 
   // Note that we're not allowed to call back into |obj| before it calls
@@ -183,12 +186,6 @@ void DialogOverlayImpl::RenderFrameHostChanged(RenderFrameHost* old_host,
                                                RenderFrameHost* new_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (old_host == rfhi_)
-    Stop();
-}
-
-void DialogOverlayImpl::FrameDeleted(RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (render_frame_host == rfhi_)
     Stop();
 }
 
