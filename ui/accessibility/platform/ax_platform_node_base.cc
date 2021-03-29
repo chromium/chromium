@@ -1352,7 +1352,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (child_iter->IsText()) {
-      hypertext_.hypertext += base::UTF8ToUTF16(child_iter->GetName());
+      hypertext_.hypertext += child_iter->GetInnerText();
     } else {
       int32_t char_offset = static_cast<int32_t>(hypertext_.hypertext.size());
       int32_t child_unique_id = child_iter->GetUniqueId();
