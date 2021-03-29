@@ -162,7 +162,8 @@ class CORE_EXPORT HTMLSelectElement final
   void ProvisionalSelectionChanged(unsigned);
   void PopupDidHide();
   bool PopupIsVisible() const;
-  HTMLOptionElement* OptionToBeShownForTesting() const;
+  // Returns the active option. Only available in menulist mode.
+  HTMLOptionElement* OptionToBeShown() const;
   // Style of the selected OPTION. This is nullable, and only for
   // the menulist mode.
   const ComputedStyle* OptionStyle() const;

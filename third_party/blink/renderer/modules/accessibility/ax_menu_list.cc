@@ -159,8 +159,8 @@ void AXMenuList::DidUpdateActiveOption() {
       DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
       HTMLSelectElement* select = To<HTMLSelectElement>(GetNode());
       DCHECK(select);
-      int option_index = select->selectedIndex();
-
+      HTMLOptionElement* active_option = select->OptionToBeShown();
+      int option_index = active_option ? active_option->index() : -1;
       if (auto* popup = DynamicTo<AXMenuListPopup>(child_objects[0].Get()))
         popup->DidUpdateActiveOption(option_index, !suppress_notifications);
     }

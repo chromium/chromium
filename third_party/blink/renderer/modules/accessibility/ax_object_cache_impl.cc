@@ -3002,7 +3002,7 @@ void AXObjectCacheImpl::HandleUpdateActiveMenuOption(Node* menu_list) {
 
 void AXObjectCacheImpl::HandleUpdateActiveMenuOptionWithCleanLayout(
     Node* menu_list) {
-  if (AXMenuList* ax_menu_list = DynamicTo<AXMenuList>(Get(menu_list)))
+  if (AXMenuList* ax_menu_list = DynamicTo<AXMenuList>(GetOrCreate(menu_list)))
     ax_menu_list->DidUpdateActiveOption();
 }
 

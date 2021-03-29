@@ -1274,7 +1274,8 @@ void HTMLSelectElement::SetIndexToSelectOnCancel(int list_index) {
   select_type_->UpdateTextStyleAndContent();
 }
 
-HTMLOptionElement* HTMLSelectElement::OptionToBeShownForTesting() const {
+HTMLOptionElement* HTMLSelectElement::OptionToBeShown() const {
+  DCHECK(!IsMultiple());
   return select_type_->OptionToBeShown();
 }
 
