@@ -45,6 +45,16 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   static BrowserAccessibilityStateImpl* GetInstance();
 
+  // This needs to be called explicitly by content::BrowserMainLoop during
+  // initialization, in order to schedule tasks that need to be done, but
+  // don't need to block the main thread.
+  //
+  // This is called explicitly and not automatically just by
+  // instantiating this class so that tests can use
+  // BrowserAccessibilityState without worrying about threading.
+  virtual void InitBackgroundTasks();
+
+  // BrowserAccessibilityState implementation.
   void EnableAccessibility() override;
   void DisableAccessibility() override;
   bool IsRendererAccessibilityEnabled() override;
@@ -85,6 +95,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
     return disable_hot_tracking_;
   }
 
+  // Calls InitBackgroundTasks with short delays for scheduled tasks,
+  // and then calls the given completion callback when done.
+  void CallInitBackgroundTasksForTesting(base::RepeatingClosure done_callback);
+
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
@@ -100,10 +114,18 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Resets accessibility_mode_ to the default value.
   void ResetAccessibilityModeValue();
 
+  void OnOtherThreadDone();
+
   ui::AXMode accessibility_mode_;
+
+  base::TimeDelta histogram_delay_;
 
   std::vector<base::OnceClosure> ui_thread_histogram_callbacks_;
   std::vector<base::OnceClosure> other_thread_histogram_callbacks_;
+
+  bool ui_thread_done_ = false;
+  bool other_thread_done_ = false;
+  base::RepeatingClosure background_thread_done_callback_;
 
   bool disable_hot_tracking_;
 

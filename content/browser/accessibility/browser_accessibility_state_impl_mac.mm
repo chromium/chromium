@@ -54,16 +54,19 @@ void SetupAccessibilityDisplayOptionsNotifier() {
 
 class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
  public:
-  BrowserAccessibilityStateImplMac();
+  BrowserAccessibilityStateImplMac() = default;
   ~BrowserAccessibilityStateImplMac() override {}
 
  protected:
+  void InitBackgroundTasks() override;
   void UpdateHistogramsOnUIThread() override;
   void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
 };
 
-BrowserAccessibilityStateImplMac::BrowserAccessibilityStateImplMac() {
+void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
+  BrowserAccessibilityStateImpl::InitBackgroundTasks();
+
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetupAccessibilityDisplayOptionsNotifier));
 }

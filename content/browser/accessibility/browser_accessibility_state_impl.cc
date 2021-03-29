@@ -64,12 +64,17 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
 #endif
 
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
-    : BrowserAccessibilityState(), disable_hot_tracking_(false) {
+    : BrowserAccessibilityState(),
+      histogram_delay_(
+          base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)),
+      disable_hot_tracking_(false) {
   ResetAccessibilityModeValue();
 
   // Hook ourselves up to observe ax mode changes.
   ui::AXPlatformNode::AddAXModeObserver(this);
+}
 
+void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
   // Schedule calls to update histograms after a delay.
   //
   // The delay is necessary because assistive technology sometimes isn't
@@ -82,14 +87,14 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
       base::BindOnce(
           &BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread,
           base::Unretained(this)),
-      base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS));
+      histogram_delay_);
 
   // Other things must be done on the UI thread (e.g. to access PrefService).
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS));
+      histogram_delay_);
 }
 
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
@@ -177,12 +182,27 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
           ->GetPlatformHighContrastColorScheme(),
       ui::NativeTheme::PlatformHighContrastColorScheme::kMaxValue);
 #endif
+
+  ui_thread_done_ = true;
+  if (other_thread_done_ && background_thread_done_callback_)
+    std::move(background_thread_done_callback_).Run();
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
   for (auto& callback : other_thread_histogram_callbacks_)
     std::move(callback).Run();
   other_thread_histogram_callbacks_.clear();
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserAccessibilityStateImpl::OnOtherThreadDone,
+                     base::Unretained(this)));
+}
+
+void BrowserAccessibilityStateImpl::OnOtherThreadDone() {
+  other_thread_done_ = true;
+  if (ui_thread_done_ && background_thread_done_callback_)
+    std::move(background_thread_done_callback_).Run();
 }
 
 void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
@@ -266,6 +286,15 @@ base::CallbackListSubscription
 BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
     FocusChangedCallback callback) {
   return focus_changed_callbacks_.Add(std::move(callback));
+}
+
+void BrowserAccessibilityStateImpl::CallInitBackgroundTasksForTesting(
+    base::RepeatingClosure done_callback) {
+  // Set the delay to 1 second, that ensures that we actually test having
+  // a nonzero delay but the test still runs quickly.
+  histogram_delay_ = base::TimeDelta::FromSeconds(1);
+  background_thread_done_callback_ = done_callback;
+  InitBackgroundTasks();
 }
 
 void BrowserAccessibilityStateImpl::OnFocusChangedInPage(
