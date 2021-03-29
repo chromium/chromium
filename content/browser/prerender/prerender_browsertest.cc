@@ -1401,7 +1401,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 }
 
 // Tests that prerendering is gated behind CSP:prefetch-src
-// TODO(https://crbug.com/1185679) This is currently not the case. Fix this.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
   GURL initial_url = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
@@ -1410,38 +1409,41 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
   EXPECT_TRUE(ExecJs(current_frame_host(), R"(
     const meta = document.createElement('meta');
     meta.httpEquiv = "Content-Security-Policy";
-    meta.content = "prefetch-src */empty.html";
+    meta.content = "prefetch-src https://a.test:*/empty.html";
     document.getElementsByTagName('head')[0].appendChild(meta);
   )"));
 
   const char* kConsolePattern =
       "Refused to prefetch content from "
-      "'https://a.test:*/prerender/add_prerender.html' because it violates the "
+      "'https://a.test:*/*.html' because it violates the "
       "following Content Security Policy directive: \"prefetch-src "
-      "*/empty.html\"*";
+      "https://a.test:*/empty.html\"*";
 
   // Check what happens when a prerendering is blocked:
   {
     GURL disallowed_url = GetUrl("/title1.html");
     WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsolePattern);
-    PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
-    EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                       JsReplace("add_prerender($1)", disallowed_url)));
-    observer.WaitForTrigger(disallowed_url);
-    // TODO(https://crbug.com/1185679): This should be false:
+    // Prerender will fail, but PrerenderHost is not abandoned for navigation
+    // failures. PrerenderHost can be found in the registry, but the request
+    // should not reach the server.
+    AddPrerender(disallowed_url);
+    // TODO(https://crbug.com/1189602): Call AbandonHost even for CSP failure
+    // cases. Then FindHostByUrlForTesting() should return null.
     EXPECT_TRUE(
         GetPrerenderHostRegistry().FindHostByUrlForTesting(disallowed_url));
-    // TODO(https://crbug.com/1185679): This should be 1.
-    EXPECT_EQ(0u, console_observer.messages().size());
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(GetRequestCount(disallowed_url), 0);
   }
 
   // Check what happens when prerendering isn't blocked.
   {
     WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsolePattern);
-    AddPrerender(GetUrl("/empty.html"));
+    GURL kAllowedUrl = GetUrl("/empty.html");
+    AddPrerender(kAllowedUrl);
     EXPECT_EQ(0u, console_observer.messages().size());
+    EXPECT_EQ(GetRequestCount(kAllowedUrl), 1);
   }
 }
 

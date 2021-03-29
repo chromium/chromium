@@ -145,6 +145,9 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::NavigateTo:
       return "Refused to navigate to '$1' because it violates the "
              "following Content Security Policy directive: \"$2\".";
+    case CSPDirectiveName::PrefetchSrc:
+      return "Refused to prefetch content from '$1' because it violates the "
+             "following Content Security Policy directive: \"$2\".";
 
     case CSPDirectiveName::BaseURI:
     case CSPDirectiveName::BlockAllMixedContent:
@@ -156,7 +159,6 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:

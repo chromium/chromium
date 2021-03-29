@@ -4175,38 +4175,52 @@ net::Error NavigationRequest::CheckCSPDirectives(
     bool url_upgraded_after_redirect,
     bool is_response_check,
     network::CSPContext::CheckCSPDisposition disposition) {
-  bool navigate_to_allowed = true;
+  // Following directive checks' order is important as the `error` code takes
+  // only the result last set.
+  net::Error error = net::OK;
+
   if (base::FeatureList::IsEnabled(
           features::kExperimentalContentSecurityPolicyFeatures) &&
       initiator_policies) {
     RenderFrameHostCSPContext initiator_csp_context(
         RenderFrameHostImpl::FromFrameToken(GetInitiatorProcessID(),
                                             GetInitiatorFrameToken().value()));
+    // [navigate-to]
+    if (!IsAllowedByCSPDirective(
+            initiator_policies->content_security_policies, &initiator_context,
+            network::mojom::CSPDirectiveName::NavigateTo, has_followed_redirect,
+            url_upgraded_after_redirect, is_response_check, disposition)) {
+      // net::ERR_ABORTED is used instead of net::ERR_BLOCKED_BY_CSP. This is a
+      // better user experience as the user is not presented with an error page.
+      // However if other CSP directives life frame-src are violated, it may be
+      // appropriate for them to use ERR_BLOCKED_BY_CSP so this can be overriden
+      // by the checks below.
+      error = net::ERR_ABORTED;
+    }
 
-    navigate_to_allowed = IsAllowedByCSPDirective(
-        initiator_policies->content_security_policies, &initiator_context,
-        network::mojom::CSPDirectiveName::NavigateTo, has_followed_redirect,
-        url_upgraded_after_redirect, is_response_check, disposition);
+    // [prefetch-src]
+    if (blink::features::IsPrerender2Enabled() &&
+        frame_tree_node_->frame_tree()->is_prerendering()) {
+      if (!IsAllowedByCSPDirective(
+              initiator_policies->content_security_policies, &initiator_context,
+              network::mojom::CSPDirectiveName::PrefetchSrc,
+              has_followed_redirect, url_upgraded_after_redirect,
+              is_response_check, disposition)) {
+        error = net::ERR_BLOCKED_BY_CSP;
+      }
+    }
   }
 
-  bool frame_src_allowed = true;
-  if (parent_policies) {
-    frame_src_allowed = IsAllowedByCSPDirective(
-        parent_policies->content_security_policies, &parent_context,
-        network::mojom::CSPDirectiveName::FrameSrc, has_followed_redirect,
-        url_upgraded_after_redirect, is_response_check, disposition);
+  // [frame-src]
+  if (parent_policies &&
+      !IsAllowedByCSPDirective(
+          parent_policies->content_security_policies, &parent_context,
+          network::mojom::CSPDirectiveName::FrameSrc, has_followed_redirect,
+          url_upgraded_after_redirect, is_response_check, disposition)) {
+    error = net::ERR_BLOCKED_BY_CSP;
   }
 
-  if (navigate_to_allowed && frame_src_allowed)
-    return net::OK;
-
-  if (!frame_src_allowed)
-    return net::ERR_BLOCKED_BY_CSP;
-
-  // net::ERR_ABORTED is used to ensure that the navigation is cancelled
-  // when the 'navigate-to' directive check is failed. This is a better user
-  // experience as the user is not presented with an error page.
-  return net::ERR_ABORTED;
+  return error;
 }
 
 net::Error NavigationRequest::CheckContentSecurityPolicy(
@@ -4264,8 +4278,8 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   // now. Then this RenderFrameHostCSPContext will do nothing and we won't
   // report violations for this check.
   //
-  // TODO(antoniosartori): Check that the initiator RenderFrameHost has not
-  // committed a new document in between, see failing WPT
+  // TODO(https://crbug.com/1189966): Check that the initiator RenderFrameHost
+  // has not committed a new document in between, see failing WPT
   // content-security-policy/navigate-to/spv-only-sent-to-initiator.sub.html
   RenderFrameHostCSPContext initiator_context(
       GetInitiatorFrameToken().has_value()

@@ -73,7 +73,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -106,7 +108,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   const int frame_tree_node_id1 =
       registry->CreateAndStartHost(std::move(attributes1), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
@@ -114,7 +118,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   // ignored, and the first host should still be findable.
   const int frame_tree_node_id2 =
       registry->CreateAndStartHost(std::move(attributes2), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   EXPECT_EQ(frame_tree_node_id1, frame_tree_node_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
@@ -147,10 +153,14 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   const int frame_tree_node_id1 =
       registry->CreateAndStartHost(std::move(attributes1), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   const int frame_tree_node_id2 =
       registry->CreateAndStartHost(std::move(attributes2), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   EXPECT_NE(frame_tree_node_id1, frame_tree_node_id2);
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl1);
@@ -195,7 +205,9 @@ TEST_F(PrerenderHostRegistryTest,
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   ASSERT_NE(prerender_frame_tree_node_id, kNoFrameTreeNodeId);
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
@@ -222,7 +234,9 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   const int prerender_frame_tree_node_id =
       registry->CreateAndStartHost(std::move(attributes), *web_contents,
-                                   render_frame_host->GetLastCommittedOrigin());
+                                   render_frame_host->GetLastCommittedOrigin(),
+                                   render_frame_host->GetProcess()->GetID(),
+                                   render_frame_host->GetFrameToken());
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   registry->AbandonHost(prerender_frame_tree_node_id);

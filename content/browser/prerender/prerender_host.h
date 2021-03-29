@@ -15,6 +15,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 
@@ -65,8 +66,12 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMaxValue = kInProgressNavigation
   };
 
+  // TODO(toyoshim): Pass RFH instead of `initiator_process_id`,
+  // `initiator_frame_token`, and `web_contents`.
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
                 const url::Origin& initiator_origin,
+                int initiator_process_id,
+                const blink::LocalFrameToken& initiator_frame_token,
                 WebContentsImpl& web_contents);
   ~PrerenderHost() override;
 
@@ -142,8 +147,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   NavigationController& GetNavigationController();
 
   const blink::mojom::PrerenderAttributesPtr attributes_;
-  const GlobalFrameRoutingId initiator_render_frame_host_id_;
   const url::Origin initiator_origin_;
+  const int initiator_process_id_;
+  const blink::LocalFrameToken initiator_frame_token_;
 
   // Indicates if `page_holder_` is ready for activation.
   bool is_ready_for_activation_ = false;
