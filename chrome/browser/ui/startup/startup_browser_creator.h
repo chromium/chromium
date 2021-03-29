@@ -93,9 +93,14 @@ class StartupBrowserCreator {
                      chrome::startup::IsFirstRun is_first_run,
                      std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
-  // When called the first time, reads the value of the preference kWasRestarted
-  // and resets it to false. Subsequent calls return the value which was read
-  // the first time.
+  // If Incognito or Guest mode are requested by policy or command line returns
+  // the appropriate private browsing profile. Otherwise returns |profile|.
+  Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
+                                        Profile* profile);
+
+  // When called the first time, reads the value of the preference
+  // kWasRestarted and resets it to false. Subsequent calls return the value
+  // which was read the first time.
   static bool WasRestarted();
 
   static SessionStartupPref GetSessionStartupPref(
