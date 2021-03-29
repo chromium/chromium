@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -226,6 +227,8 @@ void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,
 void ExecutionContext::DispatchErrorEvent(
     ErrorEvent* error_event,
     SanitizeScriptErrors sanitize_script_errors) {
+  RecordReplayOnErrorEvent(error_event);
+
   if (in_dispatch_error_event_) {
     pending_exceptions_.push_back(error_event);
     return;

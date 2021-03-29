@@ -891,4 +891,8 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
   script->Run(context).ToLocalChecked();
 }
 
+void RecordReplayOnErrorEvent(ErrorEvent* error_event) {
+  recordreplay::Print("ON_ERROR_EVENT %d", error_event->record_replay_bookmark());
+}
+
 } // namespace blink
