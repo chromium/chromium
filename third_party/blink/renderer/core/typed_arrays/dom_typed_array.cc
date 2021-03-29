@@ -35,12 +35,15 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
   DCHECK_EQ(IsShared(), v8_buffer->IsSharedArrayBuffer());
 
   v8::Local<v8::Object> wrapper;
-  if (IsShared()) {
-    wrapper = V8TypedArray::New(v8_buffer.As<v8::SharedArrayBuffer>(),
-                                byteOffset(), length());
-  } else {
-    wrapper = V8TypedArray::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
-                                length());
+  {
+    v8::Context::Scope context_scope(creation_context->CreationContext());
+    if (IsShared()) {
+      wrapper = V8TypedArray::New(v8_buffer.As<v8::SharedArrayBuffer>(),
+                                  byteOffset(), length());
+    } else {
+      wrapper = V8TypedArray::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffset(),
+                                  length());
+    }
   }
 
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
