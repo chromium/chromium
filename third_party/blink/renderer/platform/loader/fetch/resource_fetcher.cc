@@ -758,7 +758,7 @@ void ResourceFetcher::UpdateMemoryCacheStats(
 
   // Aims to count Resource only referenced from MemoryCache (i.e. what would be
   // dead if MemoryCache holds weak references to Resource). Currently we check
-  // references to Resource from ResourceClient and |m_preloads| only, because
+  // references to Resource from ResourceClient and `preloads_` only, because
   // they are major sources of references.
   if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
     DEFINE_RESOURCE_HISTOGRAM("Dead.");
