@@ -131,6 +131,19 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
   }
   ~SharesheetParentWidgetObserver() override = default;
 
+  // WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override {
+    DCHECK(observer_.IsObservingSource(widget));
+    observer_.Reset();
+    // |this| may be destroyed here!
+
+    // TODO(crbug.com/1188938) Code clean up.
+    // There should be something here telling SharesheetBubbleView
+    // that its parent widget is closing and therefore it should
+    // also close. Or we should try to inherit the widget changes from
+    // BubbleDialogDelegate and not have this class here at all.
+  }
+
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override {
     owner_->UpdateAnchorPosition();
