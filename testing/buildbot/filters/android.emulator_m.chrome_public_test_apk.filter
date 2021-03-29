@@ -101,3 +101,6 @@
 
 # crbug.com/1179792
 -org.chromium.chrome.browser.customtabs.content.TabObserverRegistrarTest.testObserveActiveTab
+
+# crbug.com/1180466
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElement
