@@ -1586,7 +1586,9 @@ INSTANTIATE_TEST_SUITE_P(
         GetCardNetworkTestCase{"2202", kMirCard, false},
         GetCardNetworkTestCase{"2203", kMirCard, false},
         GetCardNetworkTestCase{"2204", kMirCard, false},
-        GetCardNetworkTestCase{"2205", kTroyCard, false},
+        GetCardNetworkTestCase{"22050", kTroyCard, false},
+        GetCardNetworkTestCase{"22051", kTroyCard, false},
+        GetCardNetworkTestCase{"22052", kTroyCard, false},
         GetCardNetworkTestCase{"2221", kMasterCard, false},
         GetCardNetworkTestCase{"2720", kMasterCard, false},
         GetCardNetworkTestCase{"300", kDinersCard, false},
@@ -1657,6 +1659,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Unknown IINs.
         GetCardNetworkTestCase{"0", kGenericCard, false},
         GetCardNetworkTestCase{"1", kGenericCard, false},
+        GetCardNetworkTestCase{"22053", kGenericCard, false},
         GetCardNetworkTestCase{"306", kGenericCard, false},
         GetCardNetworkTestCase{"307", kGenericCard, false},
         GetCardNetworkTestCase{"308", kGenericCard, false},

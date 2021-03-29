@@ -193,7 +193,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // https://developer.ean.com/general-info/valid-card-types,
   // http://www.bincodes.com/, and
   // http://www.fraudpractice.com/FL-binCC.html.
-  // (Last updated: February 2020; added Troy)
+  // (Last updated: March 2021; change Troy bin range)
   //
   // Card Type              Prefix(es)                                  Length
   // --------------------------------------------------------------------------
@@ -205,7 +205,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // JCB                    3528-3589                                  16
   // Mastercard             2221-2720, 51-55                           16
   // MIR                    2200-2204                                  16
-  // Troy                   2205, 9792                                 16
+  // Troy                   22050-22052, 9792                          16
   // UnionPay               62                                         16-19
 
   // Determine the network for the given |number| by going from the longest
@@ -223,6 +223,18 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
       return kEloCard;
   }
 
+  // Check for prefixes of length 5.
+  if (stripped_number.size() >= 5) {
+    int first_five_digits = 0;
+    if (!base::StringToInt(stripped_number.substr(0, 5), &first_five_digits))
+      return kGenericCard;
+
+    if (first_five_digits == 22050 || first_five_digits == 22051 ||
+        first_five_digits == 22052) {
+      return kTroyCard;
+    }
+  }
+
   // Check for prefixes of length 4.
   if (stripped_number.size() >= 4) {
     int first_four_digits = 0;
@@ -232,7 +244,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
     if (first_four_digits >= 2200 && first_four_digits <= 2204)
       return kMirCard;
 
-    if (first_four_digits == 2205 || first_four_digits == 9792)
+    if (first_four_digits == 9792)
       return kTroyCard;
 
     if (first_four_digits >= 2221 && first_four_digits <= 2720)
