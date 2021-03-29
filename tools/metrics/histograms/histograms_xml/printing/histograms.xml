@@ -187,7 +187,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.JobResult" enum="PrintJobResult"
-    expires_after="2021-12-01">
+    expires_after="never">
+<!-- expires-never: Monitors printing health for Chrome OS. -->
+
   <owner>skau@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -261,7 +263,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult" enum="PrinterSetupResult"
-    expires_after="2021-10-01">
+    expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
   <owner>skau@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
   <summary>
@@ -376,7 +380,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult"
-    enum="PrinterSetupResult" expires_after="2021-08-28">
+    enum="PrinterSetupResult" expires_after="never">
+<!-- expires-never: Monitors printer setup health for Chrome OS. -->
+
   <owner>kdlee@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
