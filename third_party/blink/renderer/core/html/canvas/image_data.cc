@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 
 #include "base/sys_byteorder.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_uint8_clamped_array.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -366,39 +365,6 @@ void ImageData::Trace(Visitor* visitor) const {
   visitor->Trace(data_u16_);
   visitor->Trace(data_f32_);
   ScriptWrappable::Trace(visitor);
-}
-
-v8::Local<v8::Object> ImageData::AssociateWithWrapper(
-    v8::Isolate* isolate,
-    const WrapperTypeInfo* wrapper_type_info,
-    v8::Local<v8::Object> wrapper) {
-  wrapper = ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type_info,
-                                                  wrapper);
-
-  if (data_.IsUint8ClampedArray()) {
-    // Create a V8 object with |data_| and set the "data" property
-    // of the ImageData object to the created v8 object, eliminating the
-    // C++ callback when accessing the "data" property.
-    //
-    // This is a perf hack breaking the web interop.
-
-    v8::Local<v8::Value> v8_data;
-    ScriptState* script_state = ScriptState::From(wrapper->CreationContext());
-    if (!ToV8Traits<IDLUnionNotINT<ImageDataArray>>::ToV8(script_state, data_)
-             .ToLocal(&v8_data)) {
-      return wrapper;
-    }
-    bool defined_property;
-    if (!wrapper
-             ->DefineOwnProperty(isolate->GetCurrentContext(),
-                                 V8AtomicString(isolate, "data"), v8_data,
-                                 v8::ReadOnly)
-             .To(&defined_property)) {
-      return wrapper;
-    }
-  }
-
-  return wrapper;
 }
 
 ImageData::ImageData(const IntSize& size,
