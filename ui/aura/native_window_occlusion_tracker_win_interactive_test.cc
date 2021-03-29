@@ -400,4 +400,36 @@ TEST_F(NativeWindowOcclusionTrackerTest, LockScreenDifferentSession) {
   host()->RemoveObserver(&observer);
 }
 
+// Test that display off & on power state notification causes visible windows to
+// become occluded, then visible.
+TEST_F(NativeWindowOcclusionTrackerTest, DisplayOnOffHandling) {
+  base::RunLoop run_loop;
+
+  MockWindowTreeHostObserver observer(run_loop.QuitClosure());
+  CreateTrackedAuraWindowWithBounds(&observer, gfx::Rect(0, 0, 100, 100));
+  observer.set_expectation(Window::OcclusionState::VISIBLE);
+  run_loop.Run();
+  EXPECT_FALSE(observer.is_expecting_call());
+
+  NativeWindowOcclusionTrackerWin* occlusion_tracker =
+      NativeWindowOcclusionTrackerWin::GetOrCreateInstance();
+
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  base::RunLoop run_loop2;
+  observer.set_quit_closure(run_loop2.QuitClosure());
+
+  // Turning display off and on isn't feasible, so send a notification.
+  occlusion_tracker->OnDisplayStateChanged(/*display_on=*/false);
+  run_loop2.Run();
+  EXPECT_FALSE(observer.is_expecting_call());
+
+  observer.set_expectation(Window::OcclusionState::VISIBLE);
+  base::RunLoop run_loop3;
+  observer.set_quit_closure(run_loop3.QuitClosure());
+  occlusion_tracker->OnDisplayStateChanged(/*display_on=*/true);
+  run_loop3.Run();
+  EXPECT_FALSE(observer.is_expecting_call());
+  host()->RemoveObserver(&observer);
+}
+
 }  // namespace aura

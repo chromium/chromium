@@ -63,7 +63,8 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
 
  private:
   friend class NativeWindowOcclusionTrackerTest;
-
+  FRIEND_TEST_ALL_PREFIXES(NativeWindowOcclusionTrackerTest,
+                           DisplayOnOffHandling);
   // This class computes the occlusion state of the tracked windows.
   // It runs on a separate thread, and notifies the main thread of
   // the occlusion state of the tracked windows.

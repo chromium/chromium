@@ -299,8 +299,14 @@ void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
   display_on_ = display_on;
   if (display_on_) {
     // Notify the window occlusion calculator of the display turning on
-    // which will schedule an occlusion calculation.
-    WindowOcclusionCalculator::GetInstance()->HandleVisibilityChanged(true);
+    // which will schedule an occlusion calculation. This must be run
+    // on the WindowOcclusionCalculator thread.
+    update_occlusion_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WindowOcclusionCalculator::HandleVisibilityChanged,
+            base::Unretained(WindowOcclusionCalculator::GetInstance()),
+            /*visible=*/true));
   } else {
     MarkNonIconicWindowsOccluded();
   }
