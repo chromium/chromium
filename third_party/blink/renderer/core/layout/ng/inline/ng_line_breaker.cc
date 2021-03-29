@@ -173,6 +173,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
     : line_opportunity_(line_opportunity),
       node_(node),
       mode_(mode),
+      is_svg_text_(node.IsSVGText()),
       is_first_formatted_line_((!break_token || (!break_token->ItemIndex() &&
                                                  !break_token->TextOffset())) &&
                                node.CanContainFirstFormattedLine()),
@@ -410,7 +411,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   const NGInlineItemResults& item_results = line_info->Results();
   DCHECK(item_results.IsEmpty());
 
-  if (node_.IsSVGText())
+  if (is_svg_text_)
     line_info->MutableResults()->ReserveCapacity(text_content_.length());
 
   if (item_index_) {
@@ -690,7 +691,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     position_ -= RemoveHyphen(line_info->MutableResults());
 
   NGInlineItemResult* item_result = nullptr;
-  if (!node_.IsSVGText()) {
+  if (!is_svg_text_) {
     item_result = AddItem(item, line_info);
     item_result->should_create_line_box = true;
   }
@@ -771,7 +772,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     return;
   }
 
-  if (node_.IsSVGText()) {
+  if (is_svg_text_) {
     SplitTextByGlyphs(item, line_info);
     return;
   }
@@ -811,7 +812,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
                                       NGLineInfo* line_info) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
-  DCHECK(node_.IsSVGText());
+  DCHECK(is_svg_text_);
   DCHECK_EQ(offset_, item.StartOffset());
 
   const ShapeResult& shape = *item.TextShapeResult();
@@ -2359,7 +2360,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
   current_style_ = &style;
 
   //  TODO(crbug.com/366553): SVG <text> should not be auto_wrap_ for now.
-  auto_wrap_ = !node_.IsSVGText() && style.AutoWrap();
+  auto_wrap_ = !is_svg_text_ && style.AutoWrap();
 
   if (auto_wrap_) {
     LineBreakType line_break_type;
