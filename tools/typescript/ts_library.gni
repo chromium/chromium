@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/node/node.gni")
+
 template("ts_library") {
-  action(target_name) {
+  node(target_name) {
     script = "//tools/typescript/ts_library.py"
 
     forward_variables_from(invoker,
