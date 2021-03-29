@@ -22,6 +22,28 @@ constexpr int kMicrosecondsDataToBuffer =
 
 }  // namespace
 
+MediaPipelineBufferExtension::PendingCommand::PendingCommand(
+    scoped_refptr<DecoderBufferBase> buf)
+    : buffer(std::move(buf)) {}
+
+MediaPipelineBufferExtension::PendingCommand::PendingCommand(
+    const AudioConfig& cfg)
+    : config(cfg) {}
+
+MediaPipelineBufferExtension::PendingCommand::PendingCommand(
+    const PendingCommand& other) = default;
+MediaPipelineBufferExtension::PendingCommand::PendingCommand(
+    PendingCommand&& other) = default;
+
+MediaPipelineBufferExtension::PendingCommand::~PendingCommand() = default;
+
+MediaPipelineBufferExtension::PendingCommand&
+MediaPipelineBufferExtension::PendingCommand::operator=(
+    const PendingCommand& other) = default;
+MediaPipelineBufferExtension::PendingCommand&
+MediaPipelineBufferExtension::PendingCommand::operator=(
+    PendingCommand&& other) = default;
+
 MediaPipelineBufferExtension::MediaPipelineBufferExtension(
     TaskRunner* task_runner,
     CmaBackend::AudioDecoder* delegated_decoder)
@@ -54,7 +76,7 @@ bool MediaPipelineBufferExtension::IsBufferFull() const {
 
 bool MediaPipelineBufferExtension::IsBufferEmpty() const {
   CheckCalledOnCorrectThread();
-  return buffer_queue_.empty();
+  return command_queue_.empty();
 }
 
 int64_t MediaPipelineBufferExtension::GetBufferDuration() const {
@@ -63,24 +85,26 @@ int64_t MediaPipelineBufferExtension::GetBufferDuration() const {
   }
 
   DCHECK_GE(last_buffer_pts_, 0);
-  return buffer_queue_.back()->timestamp() - last_buffer_pts_;
+  DCHECK_GE(most_recent_buffer_pts_, last_buffer_pts_);
+
+  return most_recent_buffer_pts_ - last_buffer_pts_;
+}
+
+bool MediaPipelineBufferExtension::IsDelegatedDecoderHealthy() const {
+  return delegated_decoder_buffer_status_ != BufferStatus::kBufferFailed &&
+         delegated_decoder_set_config_status_;
 }
 
 void MediaPipelineBufferExtension::OnPushBufferComplete(BufferStatus status) {
   CheckCalledOnCorrectThread();
+
+  delegated_decoder_buffer_status_ = status;
 
   // If the buffer was full and the call failed, inform the caller via callback
   // per method contract.
   if (status == BufferStatus::kBufferFailed && IsBufferFull()) {
     DCHECK(!IsBufferEmpty());
     AudioDecoderPipelineNode::OnPushBufferComplete(status);
-    delegated_decoder_buffer_status_ = status;
-    return;
-  }
-
-  // Else if there is no more work to do, return.
-  if (status == BufferStatus::kBufferFailed || IsBufferEmpty()) {
-    delegated_decoder_buffer_status_ = status;
     return;
   }
 
@@ -88,65 +112,107 @@ void MediaPipelineBufferExtension::OnPushBufferComplete(BufferStatus status) {
   // Failure signal is returned. Rather than doing this in a loop, it is done
   // by posting sequential tasks to the task runner, to ensure that the current
   // thread is not blocked for the duration of this process.
-  auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(base::BindOnce(
-      &MediaPipelineBufferExtension::PushToDecoderAfterPushBufferComplete,
-      weak_factory_.GetWeakPtr()));
-
-  // |task_runner_| takes ownership of |task|.
-  task_runner_->PostTask(task, 0);
+  SchedulePushToDecoder();
 }
 
-void MediaPipelineBufferExtension::PushToDecoderAfterPushBufferComplete() {
+bool MediaPipelineBufferExtension::TryPushToDecoder() {
   CheckCalledOnCorrectThread();
+
+  if (IsBufferEmpty()) {
+    return true;
+  }
 
   // Pull the front element off this instance's queue and process it.
   const bool is_buffer_full_before_push = IsBufferFull();
-  const BufferStatus new_status =
-      PushBufferToDelegatedDecoder(std::move(buffer_queue_.front()));
-  buffer_queue_.pop();
+  PendingCommand& next_command = command_queue_.front();
 
-  // If this queue is no longer blocked, inform the caller per method contract.
-  if (is_buffer_full_before_push && !IsBufferFull()) {
-    AudioDecoderPipelineNode::OnPushBufferComplete(
-        new_status != BufferStatus::kBufferFailed
-            ? BufferStatus::kBufferSuccess
-            : BufferStatus::kBufferFailed);
-  }
+  // Only one of the config or buffer may be set.
+  DCHECK_NE(next_command.buffer.has_value(), next_command.config.has_value());
 
-  // If the delegated decoder can't handle more data or there is no more data to
-  // push, exit. Else, recurse.
-  if (IsBufferEmpty() || new_status != BufferStatus::kBufferSuccess) {
-    delegated_decoder_buffer_status_ = new_status;
+  // If the next command in the queue can be processed, do. Else, return true.
+  if (next_command.buffer.has_value() &&
+      delegated_decoder_buffer_status_ == BufferStatus::kBufferSuccess) {
+    delegated_decoder_buffer_status_ =
+        PushBufferToDelegatedDecoder(std::move(next_command.buffer.value()));
+
+    // If this queue is no longer blocked, inform the caller per method
+    // contract.
+    if (is_buffer_full_before_push && !IsBufferFull()) {
+      AudioDecoderPipelineNode::OnPushBufferComplete(
+          delegated_decoder_buffer_status_ != BufferStatus::kBufferFailed
+              ? BufferStatus::kBufferSuccess
+              : BufferStatus::kBufferFailed);
+    }
+
+    if (delegated_decoder_buffer_status_ == BufferStatus::kBufferFailed) {
+      return false;
+    }
+  } else if (next_command.config.has_value() &&
+             delegated_decoder_set_config_status_) {
+    delegated_decoder_set_config_status_ =
+        AudioDecoderPipelineNode::SetConfig(next_command.config.value());
+    if (!delegated_decoder_set_config_status_) {
+      return false;
+    }
   } else {
-    auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(base::BindOnce(
-        &MediaPipelineBufferExtension::PushToDecoderAfterPushBufferComplete,
-        weak_factory_.GetWeakPtr()));
-    task_runner_->PostTask(task, 0);
+    return true;
   }
+
+  // Pop the processed item from the queue and iterate as needed.
+  command_queue_.pop();
+  if (!IsBufferEmpty()) {
+    SchedulePushToDecoder();
+  }
+
+  return true;
+}
+
+void MediaPipelineBufferExtension::SchedulePushToDecoder() {
+  auto* task = new TaskRunner::CallbackTask<base::OnceClosure>(base::BindOnce(
+      base::IgnoreResult(&MediaPipelineBufferExtension::TryPushToDecoder),
+      weak_factory_.GetWeakPtr()));
+  task_runner_->PostTask(task, 0);
+}
+
+bool MediaPipelineBufferExtension::TryProcessCommand(PendingCommand command) {
+  // If the most recent call was a failure, inform the user.
+  if (!IsDelegatedDecoderHealthy()) {
+    return false;
+  }
+
+  // Queue up the item to be processed in the queue. Then, try to push the top
+  // item of the queue to the underlying decoder. This may or may not be the
+  // item that was just pushed, leading to two cases:
+  // - If so, clearly the result of this call provides enough information to
+  //   determine the correct response to the user's call.
+  // - If not, then this result is true by assumption. But if the push failed,
+  //   then the buffer is now in an unhealthy state and false should be
+  //   returned.
+  command_queue_.push(std::move(command));
+  return TryPushToDecoder();
 }
 
 CmaBackend::BufferStatus MediaPipelineBufferExtension::PushBuffer(
     scoped_refptr<DecoderBufferBase> buffer) {
   CheckCalledOnCorrectThread();
 
-  // If the most recent call was a failure, inform the user.
-  if (delegated_decoder_buffer_status_ == BufferStatus::kBufferFailed) {
+  if (IsBufferFull()) {
     return BufferStatus::kBufferFailed;
   }
 
-  // If the underlying decoder does not have pending data, push there directly.
-  if (delegated_decoder_buffer_status_ == BufferStatus::kBufferSuccess) {
-    delegated_decoder_buffer_status_ =
-        PushBufferToDelegatedDecoder(std::move(buffer));
-    return delegated_decoder_buffer_status_ == BufferStatus::kBufferFailed
-               ? BufferStatus::kBufferFailed
-               : BufferStatus::kBufferSuccess;
+  most_recent_buffer_pts_ = buffer->timestamp();
+
+  if (!TryProcessCommand(PendingCommand(std::move(buffer)))) {
+    return BufferStatus::kBufferFailed;
   }
 
-  // Else, queue up the data for later processing.
-  buffer_queue_.push(std::move(buffer));
   return IsBufferFull() ? BufferStatus::kBufferPending
                         : BufferStatus::kBufferSuccess;
+}
+
+bool MediaPipelineBufferExtension::SetConfig(const AudioConfig& config) {
+  CheckCalledOnCorrectThread();
+  return TryProcessCommand(PendingCommand(config));
 }
 
 CmaBackend::AudioDecoder::RenderingDelay

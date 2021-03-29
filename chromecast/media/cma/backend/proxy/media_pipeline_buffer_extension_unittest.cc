@@ -74,6 +74,14 @@ class MediaPipelineBufferExtensionTests : public testing::Test {
     return buffer;
   }
 
+  AudioConfig CreateConfig() {
+    AudioConfig config;
+    config.bytes_per_channel = 17;
+    config.channel_number = 3;
+    config.samples_per_second = 42;
+    return config;
+  }
+
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   TaskRunnerImpl chromecast_task_runner_;
   std::unique_ptr<MockCmaBackend::AudioDecoder> decoder_;
@@ -257,6 +265,54 @@ TEST_F(MediaPipelineBufferExtensionTests, QueueEmptiesUntilPendingReceived) {
       .WillRepeatedly(Return(BufferStatus::kBufferSuccess));
   OnDecoderPushBufferComplete(BufferStatus::kBufferSuccess);
   EXPECT_TRUE(buffer_->IsBufferEmpty());
+}
+
+TEST_F(MediaPipelineBufferExtensionTests, TestSetConfigOnSuccess) {
+  EXPECT_CALL(*decoder_, SetConfig(_)).Times(4).WillRepeatedly(Return(true));
+
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+}
+
+TEST_F(MediaPipelineBufferExtensionTests, SetConfigCalledAfterPushBufferStops) {
+  EXPECT_CALL(*decoder_, PushBuffer(_))
+      .WillOnce(Return(BufferStatus::kBufferPending));
+  EXPECT_CALL(*decoder_, SetConfig(_)).Times(2).WillRepeatedly(Return(true));
+
+  EXPECT_EQ(buffer_->PushBuffer(CreateBuffer()), BufferStatus::kBufferSuccess);
+  EXPECT_TRUE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_TRUE(IsBufferEmpty());
+
+  EXPECT_EQ(buffer_->PushBuffer(CreateBuffer()), BufferStatus::kBufferSuccess);
+  EXPECT_FALSE(IsBufferEmpty());
+  EXPECT_TRUE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_FALSE(IsBufferEmpty());
+}
+
+TEST_F(MediaPipelineBufferExtensionTests, FailedPushBufferBlocksCommands) {
+  EXPECT_CALL(*decoder_, PushBuffer(_))
+      .WillOnce(Return(BufferStatus::kBufferFailed));
+
+  EXPECT_EQ(buffer_->PushBuffer(CreateBuffer()), BufferStatus::kBufferFailed);
+  EXPECT_FALSE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_EQ(buffer_->PushBuffer(CreateBuffer()), BufferStatus::kBufferFailed);
+}
+
+TEST_F(MediaPipelineBufferExtensionTests, FailedSetConfigBlocksCommands) {
+  EXPECT_CALL(*decoder_, SetConfig(_)).WillOnce(Return(false));
+
+  EXPECT_FALSE(buffer_->SetConfig(CreateConfig()));
+  EXPECT_EQ(buffer_->PushBuffer(CreateBuffer()), BufferStatus::kBufferFailed);
+  EXPECT_FALSE(buffer_->SetConfig(CreateConfig()));
 }
 
 }  // namespace media

@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/cma_backend.h"
@@ -43,10 +44,27 @@ class MediaPipelineBufferExtension : public AudioDecoderPipelineNode {
   bool IsBufferEmpty() const;
 
   // AudioDecoderPipelineNode overrides.
-  BufferStatus PushBuffer(scoped_refptr<DecoderBufferBase> buffer) override;
   RenderingDelay GetRenderingDelay() override;
+  BufferStatus PushBuffer(scoped_refptr<DecoderBufferBase> buffer) override;
+  bool SetConfig(const AudioConfig& config) override;
 
  private:
+  struct PendingCommand {
+    // NOTE: Ctors needed to support emplace calls.
+    explicit PendingCommand(scoped_refptr<DecoderBufferBase> buf);
+    explicit PendingCommand(const AudioConfig& cfg);
+    PendingCommand(const PendingCommand& other);
+    PendingCommand(PendingCommand&& other);
+
+    ~PendingCommand();
+
+    PendingCommand& operator=(const PendingCommand& other);
+    PendingCommand& operator=(PendingCommand&& other);
+
+    base::Optional<scoped_refptr<DecoderBufferBase>> buffer;
+    base::Optional<AudioConfig> config;
+  };
+
   // AudioDecoderPipelineNode overrides.
   void OnPushBufferComplete(BufferStatus status) override;
 
@@ -57,22 +75,45 @@ class MediaPipelineBufferExtension : public AudioDecoderPipelineNode {
   // Returns the total amount of playback time stored in this instance.
   int64_t GetBufferDuration() const;
 
-  // Helper method to be posted to the task runner as part of an
-  // OnPushBufferComplete call.
-  void PushToDecoderAfterPushBufferComplete();
+  // Returns whether the last call to either PushBuffer() or SetConfig() on the
+  // delegated decoder returned an unhealthy response code.
+  bool IsDelegatedDecoderHealthy() const;
 
-  // PushBuffer data which has been queued locally but has not yet been
-  // processed by the delegated decoder.
-  std::queue<scoped_refptr<DecoderBufferBase>> buffer_queue_;
+  // Helper method to try to push the top item in the |command_queue_| to
+  // |delegated_decoder_|. Returns false if the underlying decoder's operation
+  // both was called and that call failed, and true in all other cases.
+  //
+  // If either there is no data to process or no work that can be done at this
+  // time, this operation is a no op which returns true.
+  bool TryPushToDecoder();
+
+  // Pushes the |command| to |command_queue_| and tries to process it, returning
+  // whether or not the delegated decoder is in a healthy state following this
+  // process.
+  bool TryProcessCommand(PendingCommand command);
+
+  // Schedules the TryPushToDecoder() method to run at a later time on
+  // |task_runner_|.
+  void SchedulePushToDecoder();
+
+  // PushBuffer and SetConfig data which has been queued locally but has not yet
+  // been processed by the delegated decoder.
+  std::queue<PendingCommand> command_queue_;
 
   // The playback timestamp (PTS) of the last buffer pushed to the underlying
-  // decoder. Defaults to invalid state -1.
-  int64_t last_buffer_pts_ = -1;
+  // decoder.
+  int64_t last_buffer_pts_ = 0;
+
+  // The playback timestamp (PTS) of the most recently supplied by the caller.
+  int64_t most_recent_buffer_pts_ = 0;
 
   // Holds the result of the last call to delegated decoder's PushBuffer
   // queue for which additional calls are not queued up (as is done by
   // PushToDecoderAfterPushBufferComplete()).
   BufferStatus delegated_decoder_buffer_status_ = BufferStatus::kBufferSuccess;
+
+  // Holds the result of the last call to  delegated decoder's SetConfig method.
+  bool delegated_decoder_set_config_status_ = true;
 
   TaskRunner* const task_runner_;
 
