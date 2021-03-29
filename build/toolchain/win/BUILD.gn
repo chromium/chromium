@@ -347,9 +347,8 @@ template("msvc_toolchain") {
     }
 
     tool("solink_module") {
-      dllname =
-          "{{output_dir}}/{{target_output_name}}{{output_extension}}"  # e.g.
-                                                                       # foo.dll
+      # E.g. "foo.dll":
+      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
       pdbname = "${dllname}.pdb"
       rspfile = "${dllname}.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
