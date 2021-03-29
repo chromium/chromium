@@ -72,6 +72,7 @@ void DisplayController::SetArcPlayStoreEnabled(bool enabled) {
 }
 
 void DisplayController::SetDeviceAppsEnabled(bool enabled) {
+  DCHECK(action_module_);
   display_connection_->SetDeviceAppsEnabled(enabled);
 
   DCHECK(action_module_);

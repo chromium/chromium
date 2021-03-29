@@ -29,8 +29,6 @@
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
-#include "libassistant/shared/public/conversation_state_listener.h"
-#include "libassistant/shared/public/device_state_listener.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -44,11 +42,6 @@ namespace ash {
 class AssistantNotificationController;
 class AssistantStateBase;
 }  // namespace ash
-
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
 
 namespace chromeos {
 namespace assistant {
@@ -97,7 +90,6 @@ enum class AssistantQueryResponseType {
 // enabled/disabled in settings or switches to a non-primary profile.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
-      public assistant_client::ConversationStateListener,
       public AppListEventSubscriber,
       private chromeos::libassistant::mojom::StateObserver,
       public ConversationObserver {
@@ -194,9 +186,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   bool IsServiceStarted() const;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
-
-  assistant_client::AssistantManager* assistant_manager();
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
   void OnModifySettingsAction(const std::string& modify_setting_args_proto);
 

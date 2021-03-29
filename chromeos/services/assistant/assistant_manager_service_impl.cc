@@ -28,7 +28,6 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/device_settings_host.h"
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
@@ -40,34 +39,18 @@
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/timer_host.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "libassistant/shared/internal_api/assistant_manager_delegate.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/assistant_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-// A macro which ensures we are running on the main thread.
-#define ENSURE_MAIN_THREAD(method, ...)                                     \
-  if (!main_task_runner()->RunsTasksInCurrentSequence()) {                  \
-    main_task_runner()->PostTask(                                           \
-        FROM_HERE,                                                          \
-        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
-    return;                                                                 \
-  }
-
 using media_session::mojom::MediaSessionAction;
-using Resolution = assistant_client::ConversationStateListener::Resolution;
-
-namespace api = ::assistant::api;
 
 namespace chromeos {
 namespace assistant {
@@ -349,7 +332,6 @@ void AssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
 }
 
 void AssistantManagerServiceImpl::StartVoiceInteraction() {
-  DCHECK(assistant_manager());
   DVLOG(1) << __func__;
 
   audio_input_host_->SetMicState(true);
@@ -372,27 +354,8 @@ void AssistantManagerServiceImpl::StartEditReminderInteraction(
 void AssistantManagerServiceImpl::StartScreenContextInteraction(
     ax::mojom::AssistantStructurePtr assistant_structure,
     const std::vector<uint8_t>& assistant_screenshot) {
-  std::vector<std::string> context_protos;
-
-  // Screen context can have the |assistant_structure|, or |assistant_extra| and
-  // |assistant_tree| set to nullptr. This happens in the case where the screen
-  // context is coming from the metalayer or there is no active window. For this
-  // scenario, we don't create a context proto for the AssistantBundle that
-  // consists of the |assistant_extra| and |assistant_tree|.
-  if (assistant_structure && assistant_structure->assistant_extra &&
-      assistant_structure->assistant_tree) {
-    // Note: the value of |is_first_query| for screen context query is a no-op
-    // because it is not used for metalayer and "What's on my screen" queries.
-    context_protos.emplace_back(CreateContextProto(
-        AssistantBundle{assistant_structure->assistant_extra.get(),
-                        assistant_structure->assistant_tree.get()},
-        /*is_first_query=*/true));
-  }
-
-  // Note: the value of |is_first_query| for screen context query is a no-op.
-  context_protos.emplace_back(CreateContextProto(assistant_screenshot,
-                                                 /*is_first_query=*/true));
-  assistant_manager_internal()->SendScreenContextRequest(context_protos);
+  conversation_controller().StartScreenContextInteraction(
+      std::move(assistant_structure), assistant_screenshot);
 }
 
 void AssistantManagerServiceImpl::StartTextInteraction(
@@ -535,10 +498,8 @@ AssistantManagerServiceImpl::BindURLLoaderFactory() {
 }
 
 void AssistantManagerServiceImpl::OnServiceRunning() {
-  // It is possible the |assistant_manager()| was destructed before the
-  // rescheduled main thread task got a chance to run. We check this and also
-  // try to avoid double run by checking |GetState()|.
-  if (!assistant_manager() || (GetState() == State::RUNNING))
+  // Try to avoid double run by checking |GetState()|.
+  if (GetState() == State::RUNNING)
     return;
 
   SetStateAndInformObservers(State::RUNNING);
@@ -625,18 +586,6 @@ AssistantManagerServiceImpl::GetPendingNotificationDelegate() {
   return assistant_proxy_->ExtractNotificationDelegate();
 }
 
-void AssistantManagerServiceImpl::SendVoicelessInteraction(
-    const std::string& interaction,
-    const std::string& description,
-    bool is_user_initiated) {
-  assistant_client::VoicelessOptions voiceless_options;
-
-  voiceless_options.is_user_initiated = is_user_initiated;
-
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction, description, voiceless_options, [](auto) {});
-}
-
 void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {
   AssistantQueryResponseType response_type = GetQueryResponseType();
 
@@ -706,18 +655,6 @@ AssistantManagerServiceImpl::display_controller() {
 chromeos::libassistant::mojom::ServiceController&
 AssistantManagerServiceImpl::service_controller() {
   return assistant_proxy_->service_controller();
-}
-
-assistant_client::AssistantManager*
-AssistantManagerServiceImpl::assistant_manager() {
-  auto* api = LibassistantV1Api::Get();
-  return api ? api->assistant_manager() : nullptr;
-}
-
-assistant_client::AssistantManagerInternal*
-AssistantManagerServiceImpl::assistant_manager_internal() {
-  auto* api = LibassistantV1Api::Get();
-  return api ? api->assistant_manager_internal() : nullptr;
 }
 
 void AssistantManagerServiceImpl::SetMicState(bool mic_open) {

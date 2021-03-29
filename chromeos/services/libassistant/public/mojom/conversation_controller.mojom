@@ -7,6 +7,7 @@ module chromeos.libassistant.mojom;
 import "chromeos/services/libassistant/public/mojom/conversation_observer.mojom";
 import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
 import "chromeos/services/libassistant/public/mojom/assistant_notification.mojom";
+import "ui/accessibility/mojom/ax_assistant_structure.mojom";
 
 // Interface for controller supporting conversation related functionalities.
 interface ConversationController {
@@ -21,6 +22,12 @@ interface ConversationController {
   // a user facing interaction with the context pre-populated with details
   // to edit the specified reminder.
   StartEditReminderInteraction(string client_id);
+
+  // Starts a screen context interaction.
+  // |screenshot| contains JPEG data.
+  StartScreenContextInteraction(
+      ax.mojom.AssistantStructure assistant_structure,
+      array<uint8> screenshot);
 
   // Stops the ongoing interaction with a delay to give buffer time to
   // Libassistant when being forcefully stopped.

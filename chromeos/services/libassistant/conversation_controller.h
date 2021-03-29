@@ -34,7 +34,7 @@ namespace libassistant {
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
       public AssistantManagerObserver,
-      public ::chromeos::assistant::action::AssistantActionObserver,
+      public chromeos::assistant::action::AssistantActionObserver,
       public chromeos::assistant::ConversationObserver {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                      bool allow_tts) override;
   void StartVoiceInteraction() override;
   void StartEditReminderInteraction(const std::string& client_id) override;
+  void StartScreenContextInteraction(
+      ax::mojom::AssistantStructurePtr assistant_structure,
+      const std::vector<uint8_t>& screenshot) override;
   void StopActiveInteraction(bool cancel_conversation) override;
   void RetrieveNotification(AssistantNotification notification,
                             int32_t action_index) override;
@@ -140,6 +143,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
 
   std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
+  base::TimeDelta stop_interaction_delay_ =
+      base::TimeDelta::FromMilliseconds(500);
 
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<ConversationController> weak_factory_{this};

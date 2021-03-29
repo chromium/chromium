@@ -325,6 +325,38 @@ void ConversationController::StartEditReminderInteraction(
                            /*is_user_initiated=*/true);
 }
 
+void ConversationController::StartScreenContextInteraction(
+    ax::mojom::AssistantStructurePtr assistant_structure,
+    const std::vector<uint8_t>& screenshot) {
+  DCHECK(requests_are_allowed_)
+      << "Should not receive requests before Libassistant is running";
+  if (!assistant_manager_internal_)
+    return;
+
+  std::vector<std::string> context_protos;
+  // Screen context can have the |assistant_structure|, or |assistant_extra| and
+  // |assistant_tree| set to nullptr. This happens in the case where the screen
+  // context is coming from the metalayer or there is no active window. For this
+  // scenario, we don't create a context proto for the AssistantBundle that
+  // consists of the |assistant_extra| and |assistant_tree|.
+  if (assistant_structure && assistant_structure->assistant_extra &&
+      assistant_structure->assistant_tree) {
+    // Note: the value of |is_first_query| for screen context query is a no-op
+    // because it is not used for metalayer and "What's on my screen" queries.
+    context_protos.emplace_back(chromeos::assistant::CreateContextProto(
+        chromeos::assistant::AssistantBundle{
+            assistant_structure->assistant_extra.get(),
+            assistant_structure->assistant_tree.get()},
+        /*is_first_query=*/true));
+  }
+
+  // Note: the value of |is_first_query| for screen context query is a no-op.
+  context_protos.emplace_back(
+      chromeos::assistant::CreateContextProto(screenshot,
+                                              /*is_first_query=*/true));
+  assistant_manager_internal_->SendScreenContextRequest(context_protos);
+}
+
 void ConversationController::StopActiveInteraction(bool cancel_conversation) {
   if (!assistant_manager_internal_) {
     VLOG(1) << "Stopping interaction without assistant manager.";

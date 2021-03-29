@@ -36,6 +36,7 @@ mojom("mojom") {
     "//services/device/public/mojom",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
+    "//ui/accessibility/mojom",
   ]
 
   cpp_typemaps = [

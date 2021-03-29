@@ -16,15 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/test_support/fake_libassistant_service.h"
 #include "chromeos/services/assistant/test_support/fake_service_context.h"
@@ -35,8 +32,6 @@
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/assistant_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
@@ -114,13 +109,6 @@ class StateObserverMock : public AssistantManagerService::StateObserver {
   DISALLOW_COPY_AND_ASSIGN(StateObserverMock);
 };
 
-class FakeLibassistantV1Api : public LibassistantV1Api {
- public:
-  explicit FakeLibassistantV1Api(FakeAssistantManager* assistant_manager)
-      : LibassistantV1Api(assistant_manager,
-                          &assistant_manager->assistant_manager_internal()) {}
-};
-
 class AssistantManagerServiceImplTest : public testing::Test {
  public:
   AssistantManagerServiceImplTest() = default;
@@ -195,14 +183,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   FullyInitializedAssistantState& assistant_state() { return assistant_state_; }
 
-  FakeAssistantManager* fake_assistant_manager() {
-    return assistant_manager_.get();
-  }
-
-  FakeAssistantManagerInternal* fake_assistant_manager_internal() {
-    return &fake_assistant_manager()->assistant_manager_internal();
-  }
-
   FakeServiceContext* fake_service_context() { return service_context_.get(); }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -243,23 +223,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
         "AssistantManagerStateImpl");
   }
 
-  void SetAssistantManagerInternal(std::unique_ptr<FakeAssistantManagerInternal>
-                                       assistant_manager_internal) {
-    assistant_manager_->set_assistant_manager_internal(
-        std::move(assistant_manager_internal));
-    libassistant_v1_api_.reset();
-    libassistant_v1_api_ =
-        std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get());
-  }
-
-  void SetAssistantManager(
-      std::unique_ptr<FakeAssistantManager> assistant_manager) {
-    assistant_manager_ = std::move(assistant_manager);
-    libassistant_v1_api_.reset();
-    libassistant_v1_api_ =
-        std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get());
-  }
-
  private:
   base::Thread& background_thread() {
     return assistant_manager_service()->GetBackgroundThreadForTesting();
@@ -274,11 +237,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
 
   // Fake implementation of the Libassistant Mojom service.
   FakeLibassistantService libassistant_service_;
-
-  std::unique_ptr<FakeAssistantManager> assistant_manager_{
-      std::make_unique<FakeAssistantManager>()};
-  std::unique_ptr<FakeLibassistantV1Api> libassistant_v1_api_{
-      std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get())};
 
   std::unique_ptr<AssistantAlarmTimerControllerMock> alarm_timer_controller_;
   std::unique_ptr<FakeServiceContext> service_context_;
@@ -576,14 +534,14 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarting) {
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
 
-  fake_assistant_manager()->BlockStartCalls();
+  mojom_service_controller().BlockStartCalls();
 
   EXPECT_CALL(observer,
               OnStateChanged(AssistantManagerService::State::STARTING));
   Start();
 
   assistant_manager_service()->RemoveStateObserver(&observer);
-  fake_assistant_manager()->UnblockStartCalls();
+  mojom_service_controller().UnblockStartCalls();
 }
 
 TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
@@ -640,22 +598,6 @@ TEST_F(AssistantManagerServiceImplTest,
 
   Start();
 }
-
-class AssistantManagerMock : public FakeAssistantManager {
- public:
-  AssistantManagerMock() = default;
-  ~AssistantManagerMock() override = default;
-
-  MOCK_METHOD(void, StartAssistantInteraction, (), (override));
-};
-
-class AssistantManagerInternalMock : public FakeAssistantManagerInternal {
- public:
-  AssistantManagerInternalMock() = default;
-  ~AssistantManagerInternalMock() override = default;
-
-  MOCK_METHOD(void, StopAssistantInteractionInternal, (bool), (override));
-};
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldStartSpeakerIdEnrollmentWhenRequested) {
@@ -761,6 +703,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
   StrictMock<SpeakerIdEnrollmentClientMock> client_mock;
   StrictMock<SpeakerIdEnrollmentControllerMock> mojom_mock;
+
   mojom_mock.Bind(mojom_libassistant_service());
 
   EXPECT_CALL(mojom_mock, GetSpeakerIdEnrollmentStatus)
