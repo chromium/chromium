@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 
+#include <utility>
+
 #include "base/callback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -18,7 +20,7 @@ AccessibilityExtensionLoader::AccessibilityExtensionLoader(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_filename,
     const base::FilePath::CharType* guest_manifest_filename,
-    const base::Closure& unload_callback)
+    base::RepeatingClosure unload_callback)
     : profile_(nullptr),
       extension_id_(extension_id),
       extension_path_(extension_path),
@@ -29,9 +31,8 @@ AccessibilityExtensionLoader::AccessibilityExtensionLoader(
 
 AccessibilityExtensionLoader::~AccessibilityExtensionLoader() = default;
 
-void AccessibilityExtensionLoader::SetProfile(
-    Profile* profile,
-    const base::Closure& done_callback) {
+void AccessibilityExtensionLoader::SetProfile(Profile* profile,
+                                              base::OnceClosure done_callback) {
   Profile* prev_profile = profile_;
   profile_ = profile;
 
@@ -49,18 +50,18 @@ void AccessibilityExtensionLoader::SetProfile(
       extensions::ExtensionSystem::Get(profile_)->extension_service();
   auto* component_loader = extension_service->component_loader();
   if (!component_loader->Exists(extension_id_))
-    LoadExtension(profile_, done_callback);
+    LoadExtension(profile_, std::move(done_callback));
 }
 
 void AccessibilityExtensionLoader::Load(Profile* profile,
-                                        const base::Closure& done_cb) {
+                                        base::OnceClosure done_cb) {
   profile_ = profile;
 
   if (loaded_)
     return;
 
   loaded_ = true;
-  LoadExtension(profile_, done_cb);
+  LoadExtension(profile_, std::move(done_cb));
 }
 
 void AccessibilityExtensionLoader::Unload() {
@@ -88,28 +89,31 @@ void AccessibilityExtensionLoader::UnloadExtensionFromProfile(
 }
 
 void AccessibilityExtensionLoader::LoadExtension(Profile* profile,
-                                                 base::Closure done_cb) {
+                                                 base::OnceClosure done_cb) {
   // In Kiosk mode, we should reinstall the extension upon first load. This way,
   // no state from the previous session is preserved.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
 
-  base::Closure closure = done_cb;
+  base::OnceClosure closure;
   if (user && user->IsKioskType() && !was_reset_for_kiosk_) {
     was_reset_for_kiosk_ = true;
     extensions::ExtensionService* extension_service =
         extensions::ExtensionSystem::Get(profile)->extension_service();
     extension_service->DisableExtension(
         extension_id_, extensions::disable_reason::DISABLE_REINSTALL);
-    closure = base::BindRepeating(
+    closure = base::BindOnce(
         &AccessibilityExtensionLoader::ReinstallExtensionForKiosk,
-        weak_ptr_factory_.GetWeakPtr(), profile, done_cb);
+        weak_ptr_factory_.GetWeakPtr(), profile, std::move(done_cb));
+  } else {
+    closure = std::move(done_cb);
   }
 
-  LoadExtensionImpl(profile, closure);
+  LoadExtensionImpl(profile, std::move(closure));
 }
 
-void AccessibilityExtensionLoader::LoadExtensionImpl(Profile* profile,
-                                                     base::Closure done_cb) {
+void AccessibilityExtensionLoader::LoadExtensionImpl(
+    Profile* profile,
+    base::OnceClosure done_cb) {
   DCHECK(manifest_filename_);
   DCHECK(guest_manifest_filename_);
 
@@ -119,12 +123,12 @@ void AccessibilityExtensionLoader::LoadExtensionImpl(Profile* profile,
   extension_service->component_loader()
       ->AddComponentFromDirWithManifestFilename(
           extension_path_, extension_id_.c_str(), manifest_filename_,
-          guest_manifest_filename_, done_cb);
+          guest_manifest_filename_, std::move(done_cb));
 }
 
 void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
     Profile* profile,
-    base::Closure done_cb) {
+    base::OnceClosure done_cb) {
   DCHECK(was_reset_for_kiosk_);
 
   auto* extension_service =
@@ -136,7 +140,7 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
   extension_service->component_loader()->Reload(extension_id_);
 
   if (done_cb)
-    done_cb.Run();
+    std::move(done_cb).Run();
 }
 
 }  // namespace ash

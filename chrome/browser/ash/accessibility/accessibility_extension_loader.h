@@ -20,11 +20,11 @@ class AccessibilityExtensionLoader {
       const base::FilePath& extension_path,
       const base::FilePath::CharType* manifest_filename,
       const base::FilePath::CharType* guest_manifest_filename,
-      const base::Closure& unload_callback);
+      base::RepeatingClosure unload_callback);
   ~AccessibilityExtensionLoader();
 
-  void SetProfile(Profile* profile, const base::Closure& done_callback);
-  void Load(Profile* profile, const base::Closure& done_cb);
+  void SetProfile(Profile* profile, base::OnceClosure done_callback);
+  void Load(Profile* profile, base::OnceClosure done_cb);
   void Unload();
 
   bool loaded() { return loaded_; }
@@ -32,9 +32,9 @@ class AccessibilityExtensionLoader {
   Profile* profile() { return profile_; }
 
  private:
-  void LoadExtension(Profile* profile, base::Closure done_cb);
-  void LoadExtensionImpl(Profile* profile, base::Closure done_cb);
-  void ReinstallExtensionForKiosk(Profile* profile, base::Closure done_cb);
+  void LoadExtension(Profile* profile, base::OnceClosure done_cb);
+  void LoadExtensionImpl(Profile* profile, base::OnceClosure done_cb);
+  void ReinstallExtensionForKiosk(Profile* profile, base::OnceClosure done_cb);
   void UnloadExtensionFromProfile(Profile* profile);
 
   Profile* profile_;
@@ -50,7 +50,7 @@ class AccessibilityExtensionLoader {
   // Whether this extension was reset for kiosk mode.
   bool was_reset_for_kiosk_ = false;
 
-  base::Closure unload_callback_;
+  base::RepeatingClosure unload_callback_;
 
   base::WeakPtrFactory<AccessibilityExtensionLoader> weak_ptr_factory_{this};
 

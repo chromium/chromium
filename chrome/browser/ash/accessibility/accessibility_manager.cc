@@ -662,7 +662,7 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   const bool enabled = profile_->GetPrefs()->GetBoolean(pref_name);
   if (enabled) {
     accessibility_common_extension_loader_->SetProfile(
-        profile_, base::Closure() /* done_callback */);
+        profile_, base::OnceClosure() /* done_callback */);
   }
 
   size_t pref_count = accessibility_common_enabled_features_.count(pref_name);
@@ -923,7 +923,7 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySelectToSpeakEnabled);
   if (enabled)
-    select_to_speak_loader_->SetProfile(profile_, base::Closure());
+    select_to_speak_loader_->SetProfile(profile_, base::OnceClosure());
 
   if (select_to_speak_enabled_ == enabled)
     return;
@@ -978,7 +978,7 @@ void AccessibilityManager::OnSwitchAccessChanged() {
               keyboard::KeyboardEnableFlag::kExtensionEnabled);
     }
 
-    switch_access_loader_->SetProfile(profile_, base::Closure());
+    switch_access_loader_->SetProfile(profile_, base::OnceClosure());
 
     // Make sure we always update the VK state, on every profile transition.
     ChromeKeyboardControllerClient::Get()->SetEnableFlag(
