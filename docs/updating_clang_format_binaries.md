@@ -72,16 +72,21 @@ MACOSX_DEPLOYMENT_TARGET=10.9 cmake -G Ninja \
 
 # On Linux, do the following:
 # Note the relative paths that point to your local Chromium checkout.
+# TODO(thakis): Remove DLLVM_ENABLE_Z3_SOLVER in the next roll. At the pinned
+# revision, Z3 detection does not work with a sysroot, but at LLVM trunk it's
+# already fixed.
 cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_ENABLE_PROJECTS=clang \
     -DLLVM_ENABLE_ASSERTIONS=NO \
     -DLLVM_ENABLE_TERMINFO=OFF \
     -DLLVM_ENABLE_THREADS=NO \
-    -DCMAKE_C_COMPILER=$PWD/../../chromium/src/third_party/llvm-build/Release+Asserts/bin/clang \
-    -DCMAKE_CXX_COMPILER=$PWD/../../chromium/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
-    -DCMAKE_ASM_COMPILER=$PWD/../../chromium/src/third_party/llvm-build/Release+Asserts/bin/clang \
+    -DLLVM_ENABLE_Z3_SOLVER=NO \
+    -DCMAKE_C_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
+    -DCMAKE_CXX_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang++ \
+    -DCMAKE_ASM_COMPILER=$HOME/src/chrome/src/third_party/llvm-build/Release+Asserts/bin/clang \
     -DCMAKE_CXX_STANDARD_LIBRARIES="-static-libgcc -static-libstdc++" \
+    -DCMAKE_SYSROOT=$HOME/src/chrome/src/build/linux/debian_sid_amd64-sysroot \
     ../llvm/
 
 # Finally, build the actual clang-format binary with Ninja
