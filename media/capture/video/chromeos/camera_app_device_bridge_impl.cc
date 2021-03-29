@@ -147,8 +147,8 @@ void CameraAppDeviceBridgeImpl::RemoveCameraAppDevice(
 
 void CameraAppDeviceBridgeImpl::RemoveIpcTaskRunner(
     const std::string& device_id) {
-  base::AutoLock lock(device_map_lock_);
-  camera_app_devices_.erase(device_id);
+  base::AutoLock lock(task_runner_map_lock_);
+  ipc_task_runners_.erase(device_id);
 }
 
 void CameraAppDeviceBridgeImpl::GetCameraAppDevice(
