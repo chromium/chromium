@@ -253,6 +253,53 @@ TEST(WebRtcVideoFrameAdapterTest, MapScaledFrameUsesPreScaling) {
   EXPECT_EQ(adapted_frame, frame_360p);
 }
 
+TEST(WebRtcVideoFrameAdapterTest,
+     MapPreScaledFrameEvenIfOriginalFrameHasSoftAppliedScaling) {
+  std::vector<webrtc::VideoFrameBuffer::Type> kNv12 = {
+      webrtc::VideoFrameBuffer::Type::kNV12};
+  const gfx::Size kSize720p(1280, 720);
+  const gfx::Rect kRect720p(0, 0, 1280, 720);
+  const gfx::Size kSize360p(640, 360);
+  const gfx::Rect kRect360p(0, 0, 640, 360);
+
+  // The strictness of the mock ensures no additional scaling.
+  scoped_refptr<MockSharedResources> resources =
+      new testing::StrictMock<MockSharedResources>();
+
+  auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
+                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                    media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  auto frame_360p = CreateTestFrame(kSize360p, kRect360p, kSize360p,
+                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
+                                    media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+
+  // Soft-apply scaling of |frame_720p| so that its natural size is 360p.
+  // Because the soft-applied frame is still backed by a 720p coded size frame,
+  // we should still prefer to map |frame_360p| when mapping at 360p size.
+  scoped_refptr<media::VideoFrame> soft_scaled_frame =
+      media::VideoFrame::WrapVideoFrame(frame_720p, frame_720p->format(),
+                                        kRect720p, kSize360p);
+
+  rtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          soft_scaled_frame,
+          std::vector<scoped_refptr<media::VideoFrame>>({frame_360p}),
+          resources));
+
+  // The adapter should reflect the natural size, not the coded size.
+  EXPECT_EQ(multi_buffer->width(), kSize360p.width());
+  EXPECT_EQ(multi_buffer->height(), kSize360p.height());
+
+  // Mapping produces a frame of the correct size.
+  auto mapped_frame = multi_buffer->GetMappedFrameBuffer(kNv12);
+  EXPECT_EQ(mapped_frame->width(), kSize360p.width());
+  EXPECT_EQ(mapped_frame->height(), kSize360p.height());
+  // The mapping above should be backed by |frame_360p|.
+  auto adapted_frame = multi_buffer->GetAdaptedVideoBufferForTesting(
+      WebRtcVideoFrameAdapter::ScaledBufferSize(kRect720p, kSize360p));
+  EXPECT_EQ(adapted_frame, frame_360p);
+}
+
 TEST(WebRtcVideoFrameAdapterTest, MapScaledFrameScalesFromClosestFrame) {
   std::vector<webrtc::VideoFrameBuffer::Type> kNv12 = {
       webrtc::VideoFrameBuffer::Type::kNV12};

@@ -306,8 +306,6 @@ WebRtcVideoFrameAdapter::GetOrCreateFrameBufferForSize(
 
 scoped_refptr<media::VideoFrame> WebRtcVideoFrameAdapter::GetOrWrapFrameForSize(
     const ScaledBufferSize& size) const {
-  if (size == full_size_)
-    return frame_;
   double requested_scale_factor =
       static_cast<double>(size.natural_size.width()) /
       size.visible_rect.width();
