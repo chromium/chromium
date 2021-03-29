@@ -24,6 +24,10 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  * This receiver is notified when accounts are added, accounts are removed, or
  * an account's credentials (saved password, etc) are changed.
  * All public methods must be called from the UI thread.
+ *
+ * TODO(crbug/1193412): We can trigger the signed-in account validation directly
+ * after the seeding to avoid listening to the same LOGIN_ACCOUNTS_CHANGED_ACTION
+ * event in two different places.
  */
 public class AccountsChangedReceiver extends BroadcastReceiver {
     @Override
@@ -44,14 +48,9 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
                     AccountTrackerService trackerService =
                             IdentityServicesProvider.get().getAccountTrackerService(
                                     Profile.getLastUsedRegularProfile());
-                    // TODO(bsazonov): Check whether invalidateAccountSeedStatus is needed here.
-                    trackerService.invalidateAccountSeedStatus(false /* don't refresh right now */);
+                    trackerService.seedAccounts();
                     SigninHelperProvider.get().validateAccountSettings();
                 });
-            }
-
-            @Override
-            public void onStartupFailure(Exception failureCause) {
             }
         };
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);

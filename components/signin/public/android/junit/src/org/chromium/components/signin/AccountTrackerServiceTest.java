@@ -137,6 +137,18 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
+    public void testAddingNewAccountTriggersSeedingAccounts() {
+        mService.seedAccountsIfNeeded(() -> {});
+        final Account newAccount = AccountUtils.createAccountFromName("test2@gmail.com");
+        verify(mNativeMock).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
+
+        mFakeAccountManagerFacade.addAccount(newAccount);
+
+        verify(mNativeMock, times(2))
+                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
+    }
+
+    @Test
     public void testInvalidateAccountsAndReSeed() {
         mService.seedAccountsIfNeeded(() -> {});
 

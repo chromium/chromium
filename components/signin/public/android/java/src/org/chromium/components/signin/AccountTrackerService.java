@@ -124,7 +124,7 @@ public class AccountTrackerService {
         mSystemAccountsSeedingObservers.addObserver(observer);
     }
 
-    private void seedAccounts() {
+    public void seedAccounts() {
         ThreadUtils.assertOnUiThread();
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
@@ -135,8 +135,7 @@ public class AccountTrackerService {
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
         if (mAccountsChangeObserver == null) {
-            mAccountsChangeObserver =
-                    () -> invalidateAccountSeedStatus(false /* don't reseed right now */);
+            mAccountsChangeObserver = this::seedAccounts;
             accountManagerFacade.addObserver(mAccountsChangeObserver);
         }
 
@@ -195,7 +194,11 @@ public class AccountTrackerService {
     /**
      * Notifies the AccountTrackerService about changed system accounts. without actually triggering
      * @param reSeedAccounts Whether to also start seeding the new account information immediately.
+     *
+     * TODO(crbug/1185712): Replace the only caller of this method SigninManagerImpl to call
+     * seedAccounts() directly.
      */
+    @Deprecated
     public void invalidateAccountSeedStatus(boolean reSeedAccounts) {
         ThreadUtils.assertOnUiThread();
         mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
