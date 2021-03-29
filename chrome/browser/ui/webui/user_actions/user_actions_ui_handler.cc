@@ -40,6 +40,6 @@ void UserActionsUIHandler::OnUserAction(const std::string& action,
   if (!IsJavascriptAllowed())
     return;
   base::Value user_action_name(action);
-  web_ui()->CallJavascriptFunctionUnsafe("userActions.observeUserAction",
-                                         user_action_name);
+
+  FireWebUIListener("user-action", user_action_name);
 }
