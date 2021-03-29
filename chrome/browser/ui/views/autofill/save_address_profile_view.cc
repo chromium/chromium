@@ -170,9 +170,34 @@ SaveAddressProfileView::SaveAddressProfileView(
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
-  views::FlexLayout* flex_layout =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetCollapseMargins(true);
+
+  views::View* address_components_view =
+      AddChildView(std::make_unique<views::View>());
+  address_components_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(
+          views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
+          views::MaximumFlexSizeRule::kUnbounded));
+
+  // TODO(crbug.com/1167060): Update icons upon having final mocks
+  std::unique_ptr<views::ImageButton> edit_button =
+      views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(
+              &SaveAddressProfileBubbleController::OnEditButtonClicked,
+              base::Unretained(controller_)),
+          vector_icons::kEditIcon, gfx::kFaviconSize);
+  // TODO(crbug.com/1167060): User internationlized string.
+  edit_button->SetAccessibleName(u"Edit Address");
+  AddChildView(std::move(edit_button));
+
+  address_components_view
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true)
@@ -186,33 +211,22 @@ SaveAddressProfileView::SaveAddressProfileView(
   const std::string locale = g_browser_process->GetApplicationLocale();
   const AutofillProfile& profile = controller_->GetProfileToSave();
 
-  // TODO(crbug.com/1167060): Update icons upon having final mocks
-  std::unique_ptr<views::ImageButton> edit_button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(
-              &SaveAddressProfileBubbleController::OnEditButtonClicked,
-              base::Unretained(controller_)),
-          vector_icons::kEditIcon, gfx::kFaviconSize);
-  edit_button->SetProperty(views::kCrossAxisAlignmentKey,
-                           views::LayoutAlignment::kEnd);
-  // TODO(crbug.com/1167060): User internationlized string.
-  edit_button->SetAccessibleName(u"Edit Address");
-  AddChildView(std::move(edit_button));
-
   std::unique_ptr<views::View> street_address_view =
       CreateStreetAddressView(profile, locale);
   if (street_address_view) {
-    AddAddressSection(/*parent_view=*/this, vector_icons::kLocationOnIcon,
+    AddAddressSection(/*parent_view=*/address_components_view,
+                      vector_icons::kLocationOnIcon,
                       std::move(street_address_view));
   }
 
   std::u16string phone = profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale);
   if (!phone.empty())
-    AddAddressSection(/*parent_view=*/this, vector_icons::kCallIcon, phone);
+    AddAddressSection(/*parent_view=*/address_components_view,
+                      vector_icons::kCallIcon, phone);
 
   std::u16string email = profile.GetInfo(EMAIL_ADDRESS, locale);
   if (!email.empty())
-    AddAddressSection(/*parent_view=*/this, kWebIcon, email);
+    AddAddressSection(/*parent_view=*/address_components_view, kWebIcon, email);
 }
 
 bool SaveAddressProfileView::ShouldShowCloseButton() const {
