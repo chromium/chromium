@@ -1142,8 +1142,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
 // If device was successfully registered with constant key, it should silently
 // follow key rotation and transit to trusted vault passphrase without going
 // through key retrieval flow.
+// TODO(crbug.com/1193177): fix threading issues with FakeSecurityDomainsServer
+// and re-enable the test.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
-                       ShouldFollowInitialKeyRotation) {
+                       DISABLED_ShouldFollowInitialKeyRotation) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       FakeSecurityDomainsServerMemberStatusChecker(
