@@ -7,12 +7,12 @@
 
 #include <string>
 
-namespace heavy_ads {
+namespace heavy_ad_intervention {
 
 // Returns a string containing HTML of an error page for the heavy ad
 // intervention.
 std::string PrepareHeavyAdPage(const std::string& application_locale);
 
-}  // namespace heavy_ads
+}  // namespace heavy_ad_intervention
 
 #endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_

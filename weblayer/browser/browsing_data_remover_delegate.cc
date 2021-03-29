@@ -81,7 +81,7 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   if (remove_mask & DATA_TYPE_AD_INTERVENTIONS) {
-    HeavyAdService* heavy_ad_service =
+    heavy_ad_intervention::HeavyAdService* heavy_ad_service =
         HeavyAdServiceFactory::GetForBrowserContext(browser_context_);
     if (heavy_ad_service->heavy_ad_blocklist()) {
       heavy_ad_service->heavy_ad_blocklist()->ClearBlockList(delete_begin,

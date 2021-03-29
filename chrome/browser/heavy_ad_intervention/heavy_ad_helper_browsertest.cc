@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   content::TestNavigationObserver error_observer(web_contents);
   controller.LoadPostCommitErrorPage(
       child, url,
-      heavy_ads::PrepareHeavyAdPage(g_browser_process->GetApplicationLocale()),
+      heavy_ad_intervention::PrepareHeavyAdPage(
+          g_browser_process->GetApplicationLocale()),
       net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 
@@ -94,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(HeavyAdHelperBrowserTest,
   content::TestNavigationObserver error_observer(web_contents);
   controller.LoadPostCommitErrorPage(
       child, url,
-      heavy_ads::PrepareHeavyAdPage(g_browser_process->GetApplicationLocale()),
+      heavy_ad_intervention::PrepareHeavyAdPage(
+          g_browser_process->GetApplicationLocale()),
       net::ERR_BLOCKED_BY_CLIENT);
   error_observer.Wait();
 

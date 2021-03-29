@@ -18,6 +18,8 @@
 #include "components/variations/variations_associated_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace heavy_ad_intervention {
+
 namespace {
 
 // Empty mock class to test the HeavyAdBlocklist.
@@ -138,3 +140,5 @@ TEST_F(HeavyAdBlocklistTest, TypeVersionParam) {
 }
 
 }  // namespace
+
+}  // namespace heavy_ad_intervention

@@ -11,9 +11,9 @@
 namespace weblayer {
 
 // static
-HeavyAdService* HeavyAdServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return static_cast<HeavyAdService*>(
+heavy_ad_intervention::HeavyAdService*
+HeavyAdServiceFactory::GetForBrowserContext(content::BrowserContext* context) {
+  return static_cast<heavy_ad_intervention::HeavyAdService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -32,7 +32,7 @@ HeavyAdServiceFactory::~HeavyAdServiceFactory() = default;
 
 KeyedService* HeavyAdServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new HeavyAdService();
+  return new heavy_ad_intervention::HeavyAdService();
 }
 
 content::BrowserContext* HeavyAdServiceFactory::GetBrowserContextToUse(

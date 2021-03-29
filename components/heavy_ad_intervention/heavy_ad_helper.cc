@@ -15,7 +15,7 @@
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace heavy_ads {
+namespace heavy_ad_intervention {
 
 // NOTE: If adding usage of more strings/resources here, make sure that they
 // are allowlisted in //weblayer/grit_{resources, strings}_allowlist.txt;
@@ -62,4 +62,4 @@ std::string PrepareHeavyAdPage(const std::string& application_locale) {
   return heavy_ad_html;
 }
 
-}  // namespace heavy_ads
+}  // namespace heavy_ad_intervention

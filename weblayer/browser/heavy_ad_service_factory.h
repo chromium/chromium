@@ -12,7 +12,9 @@ namespace content {
 class BrowserContext;
 }
 
+namespace heavy_ad_intervention {
 class HeavyAdService;
+}
 
 namespace weblayer {
 
@@ -22,7 +24,8 @@ class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
   HeavyAdServiceFactory& operator=(const HeavyAdServiceFactory&) = delete;
 
   // Gets the HeavyAdService instance for |context|.
-  static HeavyAdService* GetForBrowserContext(content::BrowserContext* context);
+  static heavy_ad_intervention::HeavyAdService* GetForBrowserContext(
+      content::BrowserContext* context);
 
   static HeavyAdServiceFactory* GetInstance();
 

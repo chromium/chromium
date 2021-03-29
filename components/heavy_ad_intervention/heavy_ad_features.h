@@ -7,6 +7,8 @@
 
 #include "base/feature_list.h"
 
+namespace heavy_ad_intervention {
+
 namespace features {
 
 // Param that enabled heavy ad intervention with reporting only, does not
@@ -22,5 +24,7 @@ extern const base::Feature kHeavyAdInterventionWarning;
 extern const base::Feature kHeavyAdPrivacyMitigations;
 
 }  // namespace features
+
+}  // namespace heavy_ad_intervention
 
 #endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_

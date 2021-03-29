@@ -168,7 +168,7 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(ad_metrics::HeavyAdStatus status) {
 std::unique_ptr<AdsPageLoadMetricsObserver>
 AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
-    HeavyAdService* heavy_ad_service,
+    heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     const ApplicationLocaleGetter& application_locale_getter) {
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
       !subresource_filter::ContentSubresourceFilterThrottleManager::
@@ -229,10 +229,10 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 }
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
-    HeavyAdService* heavy_ad_service,
+    heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     const ApplicationLocaleGetter& application_locale_getter,
     base::TickClock* clock,
-    HeavyAdBlocklist* blocklist)
+    heavy_ad_intervention::HeavyAdBlocklist* blocklist)
     : subresource_observer_(this),
       clock_(clock ? clock : base::DefaultTickClock::GetInstance()),
       restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
@@ -240,8 +240,8 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
       heavy_ad_service_(heavy_ad_service),
       application_locale_getter_(application_locale_getter),
       heavy_ad_blocklist_(blocklist),
-      heavy_ad_privacy_mitigations_enabled_(
-          base::FeatureList::IsEnabled(features::kHeavyAdPrivacyMitigations)),
+      heavy_ad_privacy_mitigations_enabled_(base::FeatureList::IsEnabled(
+          heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)),
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
               heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {
@@ -1279,7 +1279,8 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
     blocklist->AddEntry(
         GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
         true /* opt_out */,
-        static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType));
+        static_cast<int>(
+            heavy_ad_intervention::HeavyAdBlocklistType::kHeavyAdOnlyType));
     // Once we report, we need to check and see if we are now blocklisted.
     // If we are, then we might trigger stricter interventions.
     // TODO(ericrobinson): This does a couple fetches of the blocklist.  It
@@ -1316,7 +1317,8 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
 
   GetDelegate().GetWebContents()->GetController().LoadPostCommitErrorPage(
       render_frame_host, render_frame_host->GetLastCommittedURL(),
-      heavy_ads::PrepareHeavyAdPage(application_locale_getter_.Run()),
+      heavy_ad_intervention::PrepareHeavyAdPage(
+          application_locale_getter_.Run()),
       net::ERR_BLOCKED_BY_CLIENT);
 }
 
@@ -1340,7 +1342,8 @@ bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {
     std::vector<blocklist::BlocklistReason> passed_reasons;
     heavy_ads_blocklist_reason_ = blocklist->IsLoadedAndAllowed(
         GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
-        static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType),
+        static_cast<int>(
+            heavy_ad_intervention::HeavyAdBlocklistType::kHeavyAdOnlyType),
         false /* opt_out */, &passed_reasons);
   }
 
@@ -1353,7 +1356,8 @@ bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {
   return heavy_ads_blocklist_reason_ != blocklist::BlocklistReason::kAllowed;
 }
 
-HeavyAdBlocklist* AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {
+heavy_ad_intervention::HeavyAdBlocklist*
+AdsPageLoadMetricsObserver::GetHeavyAdBlocklist() {
   if (heavy_ad_blocklist_)
     return heavy_ad_blocklist_;
   if (!heavy_ad_service_)

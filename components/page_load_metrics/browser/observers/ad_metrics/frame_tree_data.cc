@@ -29,7 +29,7 @@ const int kMinimumVisibleFrameArea = 25;
 
 // Controls what types of heavy ads will be unloaded by the intervention.
 const base::FeatureParam<int> kHeavyAdUnloadPolicyParam = {
-    &features::kHeavyAdIntervention, "kUnloadPolicy",
+    &heavy_ad_intervention::features::kHeavyAdIntervention, "kUnloadPolicy",
     static_cast<int>(ad_metrics::HeavyAdUnloadPolicy::kAll)};
 
 }  // namespace
@@ -300,10 +300,12 @@ HeavyAdAction FrameTreeData::MaybeTriggerHeavyAdIntervention() {
   // Only check if the feature is enabled once we have a heavy ad. This is done
   // to ensure that any experiment for this feature will only be comparing
   // groups who have seen a heavy ad.
-  if (!base::FeatureList::IsEnabled(features::kHeavyAdIntervention)) {
+  if (!base::FeatureList::IsEnabled(
+          heavy_ad_intervention::features::kHeavyAdIntervention)) {
     // If the intervention is not enabled, we return whether reporting is
     // enabled.
-    return base::FeatureList::IsEnabled(features::kHeavyAdInterventionWarning)
+    return base::FeatureList::IsEnabled(
+               heavy_ad_intervention::features::kHeavyAdInterventionWarning)
                ? HeavyAdAction::kReport
                : HeavyAdAction::kNone;
   }

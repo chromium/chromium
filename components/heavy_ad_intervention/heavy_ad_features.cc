@@ -4,6 +4,8 @@
 
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 
+namespace heavy_ad_intervention {
+
 namespace features {
 
 const char kHeavyAdReportingOnlyParamName[] = "reporting-only";
@@ -29,3 +31,5 @@ const base::Feature kHeavyAdPrivacyMitigations{
     "HeavyAdPrivacyMitigations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
+
+}  // namespace heavy_ad_intervention

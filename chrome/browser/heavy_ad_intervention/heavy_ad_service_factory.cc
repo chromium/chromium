@@ -18,9 +18,9 @@ base::LazyInstance<HeavyAdServiceFactory>::DestructorAtExit g_heavy_ad_factory =
 }  // namespace
 
 // static
-HeavyAdService* HeavyAdServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return static_cast<HeavyAdService*>(
+heavy_ad_intervention::HeavyAdService*
+HeavyAdServiceFactory::GetForBrowserContext(content::BrowserContext* context) {
+  return static_cast<heavy_ad_intervention::HeavyAdService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -38,7 +38,7 @@ HeavyAdServiceFactory::~HeavyAdServiceFactory() {}
 
 KeyedService* HeavyAdServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new HeavyAdService();
+  return new heavy_ad_intervention::HeavyAdService();
 }
 
 content::BrowserContext* HeavyAdServiceFactory::GetBrowserContextToUse(

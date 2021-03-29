@@ -34,8 +34,10 @@ namespace features {
 extern const base::Feature kRestrictedNavigationAdTagging;
 }
 
+namespace heavy_ad_intervention {
 class HeavyAdBlocklist;
 class HeavyAdService;
+}  // namespace heavy_ad_intervention
 
 // This observer labels each sub-frame as an ad or not, and keeps track of
 // relevant per-frame and whole-page byte statistics.
@@ -76,7 +78,7 @@ class AdsPageLoadMetricsObserver
   // returns nullptr.
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
       content::WebContents* web_contents,
-      HeavyAdService* heavy_ad_service,
+      heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       const ApplicationLocaleGetter& application_local_getter);
 
   // For a given subframe, returns whether or not the subframe's url would be
@@ -87,10 +89,10 @@ class AdsPageLoadMetricsObserver
   // |clock| and |blocklist| should be set only by tests. In particular,
   // |blocklist| should be set only if |heavy_ad_service| is null.
   explicit AdsPageLoadMetricsObserver(
-      HeavyAdService* heavy_ad_service,
+      heavy_ad_intervention::HeavyAdService* heavy_ad_service,
       const ApplicationLocaleGetter& application_local_getter,
       base::TickClock* clock = nullptr,
-      HeavyAdBlocklist* blocklist = nullptr);
+      heavy_ad_intervention::HeavyAdBlocklist* blocklist = nullptr);
   ~AdsPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver
@@ -252,7 +254,7 @@ class AdsPageLoadMetricsObserver
       FrameTreeData* frame_data);
 
   bool IsBlocklisted(bool report);
-  HeavyAdBlocklist* GetHeavyAdBlocklist();
+  heavy_ad_intervention::HeavyAdBlocklist* GetHeavyAdBlocklist();
 
   // Maps a frame (by id) to the corresponding FrameInstance. Multiple frame ids
   // can point to the same underlying FrameTreeData. The responsible frame is
@@ -305,13 +307,13 @@ class AdsPageLoadMetricsObserver
 
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.
-  HeavyAdService* heavy_ad_service_;
+  heavy_ad_intervention::HeavyAdService* heavy_ad_service_;
 
   ApplicationLocaleGetter application_locale_getter_;
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.
-  HeavyAdBlocklist* heavy_ad_blocklist_;
+  heavy_ad_intervention::HeavyAdBlocklist* heavy_ad_blocklist_;
 
   // Whether the heavy ad privacy mitigations feature is enabled.
   const bool heavy_ad_privacy_mitigations_enabled_;

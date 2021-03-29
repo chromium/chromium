@@ -20,6 +20,8 @@ class OptOutBlocklistDelegate;
 class OptOutStore;
 }  // namespace blocklist
 
+namespace heavy_ad_intervention {
+
 // The heavy ad intervention only supports one type for the blocklist.
 enum class HeavyAdBlocklistType {
   kHeavyAdOnlyType = 0,
@@ -57,5 +59,7 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
  private:
   DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklist);
 };
+
+}  // namespace heavy_ad_intervention
 
 #endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_

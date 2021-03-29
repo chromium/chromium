@@ -17,6 +17,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+namespace heavy_ad_intervention {
+
 namespace {
 
 const base::FilePath::CharType kHeavyAdInterventionOptOutDBFilename[] =
@@ -98,3 +100,5 @@ void HeavyAdService::OnBlocklistCleared(base::Time time) {
   if (!on_blocklist_cleared_callback_.is_null())
     std::move(on_blocklist_cleared_callback_).Run();
 }
+
+}  // namespace heavy_ad_intervention

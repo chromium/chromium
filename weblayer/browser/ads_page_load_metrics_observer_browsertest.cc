@@ -189,8 +189,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kAdsInterventionsEnforced, {}},
          {subresource_filter::kAdTagging, {}},
-         {features::kHeavyAdIntervention, {}},
-         {features::kHeavyAdPrivacyMitigations, {{"host-threshold", "3"}}}},
+         {heavy_ad_intervention::features::kHeavyAdIntervention, {}},
+         {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
+          {{"host-threshold", "3"}}}},
         {});
   }
 

@@ -17,6 +17,8 @@ namespace base {
 class FilePath;
 }
 
+namespace heavy_ad_intervention {
+
 class HeavyAdBlocklist;
 
 // Keyed service that owns the heavy ad intervention blocklist.
@@ -60,5 +62,7 @@ class HeavyAdService : public KeyedService,
 
   DISALLOW_COPY_AND_ASSIGN(HeavyAdService);
 };
+
+}  // namespace heavy_ad_intervention
 
 #endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_SERVICE_H_

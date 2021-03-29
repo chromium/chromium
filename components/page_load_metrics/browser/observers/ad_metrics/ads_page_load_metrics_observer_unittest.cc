@@ -446,10 +446,11 @@ class AdsPageLoadMetricsObserverTest
       public blocklist::OptOutBlocklistDelegate {
  public:
   AdsPageLoadMetricsObserverTest()
-      : test_blocklist_(std::make_unique<HeavyAdBlocklist>(
-            nullptr,
-            base::DefaultClock::GetInstance(),
-            this)) {}
+      : test_blocklist_(
+            std::make_unique<heavy_ad_intervention::HeavyAdBlocklist>(
+                nullptr,
+                base::DefaultClock::GetInstance(),
+                this)) {}
 
   void SetUp() override {
     SubresourceFilterTestHarness::SetUp();
@@ -739,7 +740,9 @@ class AdsPageLoadMetricsObserverTest
     return test_ukm_recorder_;
   }
 
-  HeavyAdBlocklist* blocklist() { return test_blocklist_.get(); }
+  heavy_ad_intervention::HeavyAdBlocklist* blocklist() {
+    return test_blocklist_.get();
+  }
 
   // Flushes all intervention report messages and returns a bool if there was
   // a message.
@@ -833,7 +836,7 @@ class AdsPageLoadMetricsObserverTest
     }
   }
 
-  std::unique_ptr<HeavyAdBlocklist> test_blocklist_;
+  std::unique_ptr<heavy_ad_intervention::HeavyAdBlocklist> test_blocklist_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester> tester_;
@@ -1988,8 +1991,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, CreativeOriginStatusWithThrottling) {
 // computed heavy ad types for ad frames
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kHeavyAdIntervention,
-                                     features::kHeavyAdInterventionWarning});
+  feature_list.InitWithFeatures(
+      {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
+           heavy_ad_intervention::features::kHeavyAdInterventionWarning});
   OverrideVisibilityTrackerWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -2069,7 +2073,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureOff_UMARecorded) {
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2125,7 +2130,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
 // record histograms, but continue to monitor for CPU heavy ad interventions.
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
   OverrideVisibilityTrackerWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -2175,7 +2181,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdCpuInterventionInBackground) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdNetworkInterventionInBackgrounded) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2220,7 +2227,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdNetworkUsageWithNoise_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
@@ -2273,7 +2281,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdNetworkUsageLessThanNoisedThreshold_NotFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
@@ -2299,7 +2308,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdNetworkUsageLessThanNoisedThreshold_CpuTriggers) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
   OverrideVisibilityTrackerWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -2353,7 +2363,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
   OverrideVisibilityTrackerWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -2394,7 +2405,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdTotalCpuUsage_InterventionFired) {
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
   OverrideVisibilityTrackerWithMockClock();
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
@@ -2439,8 +2451,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPeakCpuUsage_InterventionFired) {
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureDisabled_NotFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kHeavyAdIntervention,
-                                     features::kHeavyAdInterventionWarning});
+  feature_list.InitWithFeatures(
+      {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
+           heavy_ad_intervention::features::kHeavyAdInterventionWarning});
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2459,7 +2472,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdFeatureDisabled_NotFired) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdWithUserGesture_NotConsideredHeavy) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2523,7 +2537,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
         test_case.exceed_cpu, test_case.intervention_expected));
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::kHeavyAdIntervention, {{"kUnloadPolicy", test_case.policy}});
+        heavy_ad_intervention::features::kHeavyAdIntervention,
+        {{"kUnloadPolicy", test_case.policy}});
     RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
     RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
     // Clear out any pending messages.
@@ -2554,7 +2569,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPolicyProvided) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdPageNavigated_FrameMarkedAsNotRemoved) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2572,8 +2588,9 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdFrameRemoved_FrameMarkedAsRemoved) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({}, {features::kHeavyAdIntervention,
-                                     features::kHeavyAdInterventionWarning});
+  feature_list.InitWithFeatures(
+      {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
+           heavy_ad_intervention::features::kHeavyAdInterventionWarning});
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2594,7 +2611,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 // Verifies when a user reloads a page with a heavy ad we log it to metrics.
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2617,7 +2635,8 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_MetricsRecorded) {
 // intevention.
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
@@ -2645,8 +2664,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdPageReload_InterventionIgnored) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdPageReloadPrivacyMitigationsDisabled_InterventionAllowed) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kHeavyAdIntervention},
-                                {features::kHeavyAdPrivacyMitigations});
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdIntervention},
+      {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
@@ -2673,7 +2693,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdsNoHeavyAdFrame_AggregateHistogramsNotRecorded) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2691,7 +2712,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdBlocklistFull_NotFired) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   // Five interventions are allowed to occur, per origin per day. Add five
   // entries to the blocklist.
@@ -2712,8 +2734,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdBlocklistFull_NotFired) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdBlocklistDisabled_InterventionNotBlocked) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kHeavyAdIntervention},
-                                {features::kHeavyAdPrivacyMitigations});
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdIntervention},
+      {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations});
 
   // Fill up the blocklist to verify the blocklist logic is correctly ignored
   // when disabled.
@@ -2751,7 +2774,8 @@ TEST_F(AdsPageLoadMetricsObserverTest,
 
 TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHeavyAdIntervention);
+  feature_list.InitAndEnableFeature(
+      heavy_ad_intervention::features::kHeavyAdIntervention);
 
   // Five interventions are allowed to occur, per origin per day. Add four
   // entries to the blocklist.
@@ -2791,8 +2815,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
 TEST_F(AdsPageLoadMetricsObserverTest,
        HeavyAdReportingOnly_ReportSentNoUnload) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kHeavyAdInterventionWarning},
-                                {features::kHeavyAdIntervention});
+  feature_list.InitWithFeatures(
+      {heavy_ad_intervention::features::kHeavyAdInterventionWarning},
+      {heavy_ad_intervention::features::kHeavyAdIntervention});
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);

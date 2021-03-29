@@ -1261,8 +1261,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kAdTagging, {}},
          {subresource_filter::kAdsInterventionsEnforced, {}},
-         {features::kHeavyAdIntervention, {}},
-         {features::kHeavyAdPrivacyMitigations, {{"host-threshold", "3"}}}},
+         {heavy_ad_intervention::features::kHeavyAdIntervention, {}},
+         {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
+          {{"host-threshold", "3"}}}},
         {});
   }
 
@@ -1708,8 +1709,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention
  public:
   AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention() {
     // The experiment is "on" if either intervention or reporting is active.
-    feature_list_.InitWithFeatures({}, {features::kHeavyAdIntervention,
-                                        features::kHeavyAdInterventionWarning});
+    feature_list_.InitWithFeatures(
+        {}, {heavy_ad_intervention::features::kHeavyAdIntervention,
+             heavy_ad_intervention::features::kHeavyAdInterventionWarning});
   }
 
  private:
@@ -1779,7 +1781,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   // Verify that the trial is not activated if no heavy ads are seen.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(features::kHeavyAdIntervention)
+      base::FeatureList::GetFieldTrial(
+          heavy_ad_intervention::features::kHeavyAdIntervention)
           ->trial_name()));
 }
 

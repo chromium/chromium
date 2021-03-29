@@ -11,6 +11,8 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 
+namespace heavy_ad_intervention {
+
 namespace {
 
 const char kHostDurationHours[] = "host-duration-hours";
@@ -74,3 +76,5 @@ HeavyAdBlocklist::GetAllowedTypes() const {
   return {{static_cast<int>(HeavyAdBlocklistType::kHeavyAdOnlyType),
            GetBlocklistParamValue(kTypeVersion, 0)}};
 }
+
+}  // namespace heavy_ad_intervention
