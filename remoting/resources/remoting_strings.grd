@@ -80,6 +80,10 @@
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
 
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
+    <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
+
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
@@ -153,6 +157,10 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+
+    <!-- Pseudolocales -->
+    <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
+    <output filename="remoting/resources/_locales/en_XA/messages.json" lang="en-XA" type="chrome_messages_json"/>
 
     <if expr="is_android">
       <output filename="remoting/android/res/values-am/remoting_strings.xml" lang="am" type="android" context="android_java"/>
