@@ -76,6 +76,7 @@ std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask>
 AccountsCookieMutatorImpl::SetAccountsInCookieForPartition(
     PartitionDelegate* partition_delegate,
     const MultiloginParameters& parameters,
+    gaia::GaiaSource source,
     base::OnceCallback<void(SetAccountsInCookieResult)>
         set_accounts_in_cookies_completed_callback) {
   // The default partition must go through the GaiaCookieManagerService.
@@ -94,7 +95,7 @@ AccountsCookieMutatorImpl::SetAccountsInCookieForPartition(
   return std::make_unique<MultiloginHelperWrapper>(
       std::make_unique<OAuthMultiloginHelper>(
           signin_client_, partition_delegate, token_service_, parameters.mode,
-          accounts, /*external_cc_result=*/std::string(),
+          accounts, /*external_cc_result=*/std::string(), source,
           std::move(set_accounts_in_cookies_completed_callback)));
 }
 

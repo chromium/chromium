@@ -144,9 +144,10 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
 
 std::unique_ptr<GaiaAuthFetcher>
 GaiaRemoteConsentFlow::CreateGaiaAuthFetcherForPartition(
-    GaiaAuthConsumer* consumer) {
+    GaiaAuthConsumer* consumer,
+    const gaia::GaiaSource& source) {
   return std::make_unique<GaiaAuthFetcher>(
-      consumer, gaia::GaiaSource::kChrome,
+      consumer, source,
       web_flow_->GetGuestPartition()->GetURLLoaderFactoryForBrowserProcess());
 }
 
@@ -211,6 +212,7 @@ void GaiaRemoteConsentFlow::SetAccountsInCookie() {
               this,
               {gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
                accounts},
+              gaia::GaiaSource::kChrome,
               base::BindOnce(&GaiaRemoteConsentFlow::OnSetAccountsComplete,
                              base::Unretained(this)));
 }

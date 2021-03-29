@@ -959,9 +959,9 @@ void GaiaCookieManagerService::OnLogOutFailure(
 
 std::unique_ptr<GaiaAuthFetcher>
 GaiaCookieManagerService::CreateGaiaAuthFetcherForPartition(
-    GaiaAuthConsumer* consumer) {
-  return signin_client_->CreateGaiaAuthFetcher(consumer,
-                                               gaia::GaiaSource::kChrome);
+    GaiaAuthConsumer* consumer,
+    const gaia::GaiaSource& source) {
+  return signin_client_->CreateGaiaAuthFetcher(consumer, source);
 }
 
 network::mojom::CookieManager*
@@ -1021,9 +1021,9 @@ void GaiaCookieManagerService::StartFetchingListAccounts() {
 
 void GaiaCookieManagerService::StartSetAccounts() {
   DCHECK(!requests_.empty());
-  DCHECK_EQ(GaiaCookieRequestType::SET_ACCOUNTS,
-            requests_.front().request_type());
-  DCHECK(!requests_.front().GetAccounts().empty());
+  const GaiaCookieRequest& request = requests_.front();
+  DCHECK_EQ(GaiaCookieRequestType::SET_ACCOUNTS, request.request_type());
+  DCHECK(!request.GetAccounts().empty());
 
   if (!external_cc_result_fetched_ &&
       !external_cc_result_fetcher_.IsRunning()) {
@@ -1034,9 +1034,9 @@ void GaiaCookieManagerService::StartSetAccounts() {
   }
 
   oauth_multilogin_helper_ = std::make_unique<signin::OAuthMultiloginHelper>(
-      signin_client_, this, token_service_,
-      requests_.front().GetMultiloginMode(), requests_.front().GetAccounts(),
-      external_cc_result_fetcher_.GetExternalCcResult(),
+      signin_client_, this, token_service_, request.GetMultiloginMode(),
+      request.GetAccounts(), external_cc_result_fetcher_.GetExternalCcResult(),
+      request.source(),
       base::BindOnce(&GaiaCookieManagerService::OnSetAccountsFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
