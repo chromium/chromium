@@ -538,6 +538,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             return true;
         }
 
+        switchUserAgentIfNeeded();
         restoreIfNeeded();
         return true;
     }
@@ -1368,7 +1369,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             }
 
             mWebContents.setImportance(mImportance);
-            ContentUtils.setUserAgentOverride(mWebContents);
+
+            ContentUtils.setUserAgentOverride(mWebContents,
+                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);
 
             mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
             updateInteractableState();
@@ -1661,7 +1664,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private void switchUserAgentIfNeeded() {
-        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT) return;
+        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
+                || getWebContents() == null) {
+            return;
+        }
         boolean usingDesktopUserAgent =
                 getWebContents().getNavigationController().getUseDesktopUserAgent();
         TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,

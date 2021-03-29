@@ -86,7 +86,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);
         mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, mWebContentView,
                 mWindowAndroid, WebContents.createDefaultInternalsHolder());
-        ContentUtils.setUserAgentOverride(mWebContents);
+        ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
     }
 
     private void destroyWebContents() {

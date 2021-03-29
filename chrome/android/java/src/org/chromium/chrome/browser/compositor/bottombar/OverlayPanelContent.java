@@ -333,7 +333,7 @@ public class OverlayPanelContent {
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
         mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, cv,
                 mActivity.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
-        ContentUtils.setUserAgentOverride(mWebContents);
+        ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
 
         // Transfers the ownership of the WebContents to the native OverlayPanelContent.
         OverlayPanelContentJni.get().setWebContents(mNativeOverlayPanelContentPtr,

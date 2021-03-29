@@ -154,7 +154,8 @@ blink::UserAgentMetadata GetUserAgentMetadata() {
 
 #if defined(OS_ANDROID)
 void SetDesktopUserAgentOverride(content::WebContents* web_contents,
-                                 const blink::UserAgentMetadata& metadata) {
+                                 const blink::UserAgentMetadata& metadata,
+                                 bool override_in_new_tabs) {
   const char kLinuxInfoStr[] = "X11; Linux x86_64";
   std::string product = version_info::GetProductNameAndVersionForUserAgent();
 
@@ -169,7 +170,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
 
-  web_contents->SetUserAgentOverride(spoofed_ua, false);
+  web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }
 #endif  // OS_ANDROID
 
