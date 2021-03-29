@@ -440,6 +440,35 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
 }
 
+void SwapYOrientation(scoped_refptr<StaticBitmapImage> image) {
+  switch (image->CurrentFrameOrientation().Orientation()) {
+    case ImageOrientationEnum::kOriginTopLeft:
+      image->SetOrientation(ImageOrientationEnum::kOriginBottomLeft);
+      break;
+    case ImageOrientationEnum::kOriginBottomLeft:
+      image->SetOrientation(ImageOrientationEnum::kOriginTopLeft);
+      break;
+    case ImageOrientationEnum::kOriginTopRight:
+      image->SetOrientation(ImageOrientationEnum::kOriginBottomRight);
+      break;
+    case ImageOrientationEnum::kOriginBottomRight:
+      image->SetOrientation(ImageOrientationEnum::kOriginTopRight);
+      break;
+    case ImageOrientationEnum::kOriginLeftTop:
+      image->SetOrientation(ImageOrientationEnum::kOriginLeftBottom);
+      break;
+    case ImageOrientationEnum::kOriginRightTop:
+      image->SetOrientation(ImageOrientationEnum::kOriginRightBottom);
+      break;
+    case ImageOrientationEnum::kOriginRightBottom:
+      image->SetOrientation(ImageOrientationEnum::kOriginRightTop);
+      break;
+    case ImageOrientationEnum::kOriginLeftBottom:
+      image->SetOrientation(ImageOrientationEnum::kOriginLeftTop);
+      break;
+  }
+}
+
 static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
     ImageBitmap::ParsedOptions& parsed_options) {
@@ -753,10 +782,20 @@ ImageBitmap::ImageBitmap(ImageData* data,
     return;
 
   // flip if needed
-  if (parsed_options.flip_y)
-    image_ = FlipImageVertically(std::move(image_), parsed_options);
-  if (!image_)
-    return;
+  if (parsed_options.flip_y) {
+    // Since |accelerated_static_bitmap_image| always has preMultiplied alpha
+    // and some images should avoid premul alpha, simply flip the image
+    // vertically can't solve these cases. So swap orientation Y of |image_| for
+    // these simple cases and flip the image in place with corrected alpha
+    // values for other cases.
+    if (IsPremultiplied() && !ShouldAvoidPremul(parsed_options)) {
+      SwapYOrientation(image_);
+    } else {
+      image_ = FlipImageVertically(std::move(image_), parsed_options);
+    }
+    if (!image_)
+      return;
+  }
 
   // resize if up-scaling
   if (up_scaling)

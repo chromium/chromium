@@ -96,6 +96,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return orientation_ == ImageOrientationEnum::kDefault;
   }
 
+  void SetOrientation(ImageOrientation orientation) {
+    orientation_ = orientation;
+  }
+
  protected:
   // Helper for sub-classes
   void DrawHelper(cc::PaintCanvas*,
