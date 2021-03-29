@@ -10,7 +10,7 @@
 #include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/session/arc_bridge_service.h"
 
@@ -46,7 +46,7 @@ constexpr char kAndroidDataMediaPath[] = "/data/media/0/";
 // static
 bool ArcDiskQuotaBridge::convertPathForSetProjectId(
     const base::FilePath& android_path,
-    cryptohome::SetProjectIdAllowedPathType* parent_path_out,
+    user_data_auth::SetProjectIdAllowedPathType* parent_path_out,
     base::FilePath* child_path_out) {
   const base::FilePath kDownloadPath(kAndroidDownloadPath);
   const base::FilePath kExternalStoragePath(kAndroidExternalStoragePath);
@@ -61,13 +61,14 @@ bool ArcDiskQuotaBridge::convertPathForSetProjectId(
   if (kDownloadPath.IsParent(android_path)) {
     // /storage/emulated/0/Download/* =>
     //     parent=/home/user/<hash>/Downloads/, child=*
-    *parent_path_out = cryptohome::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
+    *parent_path_out =
+        user_data_auth::SetProjectIdAllowedPathType::PATH_DOWNLOADS;
     return kDownloadPath.AppendRelativePath(android_path, child_path_out);
   } else if (kExternalStoragePath.IsParent(android_path)) {
     // /storage/emulated/0/* =>
     //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
     *parent_path_out =
-        cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
+        user_data_auth::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
     // child_path should be relative to the root.
     return base::FilePath("/").AppendRelativePath(kDataMediaPath,
                                                   child_path_out) &&
@@ -77,7 +78,7 @@ bool ArcDiskQuotaBridge::convertPathForSetProjectId(
     // /data/media/0/* =>
     //     parent=/home/root/<hash>/android-data/, child=data/media/0/*
     *parent_path_out =
-        cryptohome::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
+        user_data_auth::SetProjectIdAllowedPathType::PATH_ANDROID_DATA;
     // child_path should be relative to the root.
     return base::FilePath("/").AppendRelativePath(android_path, child_path_out);
   } else {
@@ -106,67 +107,98 @@ void ArcDiskQuotaBridge::SetAccountId(const AccountId& account_id) {
 }
 
 void ArcDiskQuotaBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
-  chromeos::CryptohomeClient::Get()->IsQuotaSupported(base::BindOnce(
-      [](IsQuotaSupportedCallback callback, base::Optional<bool> result) {
-        LOG_IF(ERROR, !result.has_value())
-            << "Failed to retrieve result from IsQuotaSupported call.";
-        std::move(callback).Run(result.value_or(false));
-      },
-      std::move(callback)));
+  chromeos::ArcQuotaClient::Get()->GetArcDiskFeatures(
+      user_data_auth::GetArcDiskFeaturesRequest(),
+      base::BindOnce(
+          [](IsQuotaSupportedCallback callback,
+             base::Optional<user_data_auth::GetArcDiskFeaturesReply> reply) {
+            LOG_IF(ERROR, !reply.has_value())
+                << "Failed to retrieve result from IsQuotaSupported call.";
+            bool result = false;
+            if (reply.has_value()) {
+              result = reply->quota_supported();
+            }
+            std::move(callback).Run(result);
+          },
+          std::move(callback)));
 }
 
 void ArcDiskQuotaBridge::GetCurrentSpaceForUid(
     uint32_t uid,
     GetCurrentSpaceForUidCallback callback) {
-  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForUid(
-      uid, base::BindOnce(
-               [](GetCurrentSpaceForUidCallback callback, int uid,
-                  base::Optional<int64_t> result) {
-                 LOG_IF(ERROR, !result.has_value())
-                     << "Failed to retrieve result from "
-                        "GetCurrentSpaceForUid for android uid="
-                     << uid;
-                 std::move(callback).Run(result.value_or(-1LL));
-               },
-               std::move(callback), uid));
+  user_data_auth::GetCurrentSpaceForArcUidRequest request;
+  request.set_uid(uid);
+  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcUid(
+      request,
+      base::BindOnce(
+          [](GetCurrentSpaceForUidCallback callback, int uid,
+             base::Optional<user_data_auth::GetCurrentSpaceForArcUidReply>
+                 reply) {
+            LOG_IF(ERROR, !reply.has_value())
+                << "Failed to retrieve result from "
+                   "GetCurrentSpaceForUid for android uid="
+                << uid;
+            int64_t result = -1LL;
+            if (reply.has_value()) {
+              result = reply->cur_space();
+            }
+            std::move(callback).Run(result);
+          },
+          std::move(callback), uid));
 }
 
 void ArcDiskQuotaBridge::GetCurrentSpaceForGid(
     uint32_t gid,
     GetCurrentSpaceForGidCallback callback) {
-  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForGid(
-      gid, base::BindOnce(
-               [](GetCurrentSpaceForGidCallback callback, int gid,
-                  base::Optional<int64_t> result) {
-                 LOG_IF(ERROR, !result.has_value())
-                     << "Failed to retrieve result from "
-                        "GetCurrentSpaceForGid for android gid="
-                     << gid;
-                 std::move(callback).Run(result.value_or(-1LL));
-               },
-               std::move(callback), gid));
+  user_data_auth::GetCurrentSpaceForArcGidRequest request;
+  request.set_gid(gid);
+  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcGid(
+      request,
+      base::BindOnce(
+          [](GetCurrentSpaceForGidCallback callback, int gid,
+             base::Optional<user_data_auth::GetCurrentSpaceForArcGidReply>
+                 reply) {
+            LOG_IF(ERROR, !reply.has_value())
+                << "Failed to retrieve result from "
+                   "GetCurrentSpaceForGid for android gid="
+                << gid;
+            int result = -1LL;
+            if (reply.has_value()) {
+              result = reply->cur_space();
+            }
+            std::move(callback).Run(result);
+          },
+          std::move(callback), gid));
 }
 
 void ArcDiskQuotaBridge::GetCurrentSpaceForProjectId(
     uint32_t project_id,
     GetCurrentSpaceForProjectIdCallback callback) {
-  chromeos::CryptohomeClient::Get()->GetCurrentSpaceForProjectId(
-      project_id, base::BindOnce(
-                      [](GetCurrentSpaceForProjectIdCallback callback,
-                         int project_id, base::Optional<int64_t> result) {
-                        LOG_IF(ERROR, !result.has_value())
-                            << "Failed to retrieve result from "
-                               "GetCurrentSpaceForProjectId for project_id="
-                            << project_id;
-                        std::move(callback).Run(result.value_or(-1LL));
-                      },
-                      std::move(callback), project_id));
+  user_data_auth::GetCurrentSpaceForArcProjectIdRequest request;
+  request.set_project_id(project_id);
+  chromeos::ArcQuotaClient::Get()->GetCurrentSpaceForArcProjectId(
+      request,
+      base::BindOnce(
+          [](GetCurrentSpaceForProjectIdCallback callback, int project_id,
+             base::Optional<user_data_auth::GetCurrentSpaceForArcProjectIdReply>
+                 reply) {
+            LOG_IF(ERROR, !reply.has_value())
+                << "Failed to retrieve result from "
+                   "GetCurrentSpaceForProjectId for project_id="
+                << project_id;
+            int result = -1LL;
+            if (reply.has_value()) {
+              result = reply->cur_space();
+            }
+            std::move(callback).Run(result);
+          },
+          std::move(callback), project_id));
 }
 
 void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
                                       const std::string& android_path,
                                       SetProjectIdCallback callback) {
-  cryptohome::SetProjectIdAllowedPathType parent_path;
+  user_data_auth::SetProjectIdAllowedPathType parent_path;
   base::FilePath child_path;
   if (!convertPathForSetProjectId(base::FilePath(android_path), &parent_path,
                                   &child_path)) {
@@ -176,25 +208,30 @@ void ArcDiskQuotaBridge::SetProjectId(uint32_t project_id,
     return;
   }
 
-  auto identifier =
+  user_data_auth::SetProjectIdRequest request;
+  request.set_project_id(project_id);
+  request.set_parent_path(parent_path);
+  request.set_child_path(child_path.value());
+  *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
-
-  chromeos::CryptohomeClient::Get()->SetProjectId(
-      project_id, parent_path, child_path.value(), identifier,
+  chromeos::ArcQuotaClient::Get()->SetProjectId(
+      request,
       base::BindOnce(
           [](SetProjectIdCallback callback, const int project_id,
-             const cryptohome::SetProjectIdAllowedPathType parent_path,
+             const user_data_auth::SetProjectIdAllowedPathType parent_path,
              const std::string& child_path,
-             const cryptohome::AccountIdentifier& account_id,
-             base::Optional<bool> result) {
-            LOG_IF(ERROR, !result.has_value())
+             base::Optional<user_data_auth::SetProjectIdReply> reply) {
+            LOG_IF(ERROR, !reply.has_value())
                 << "Failed to set project ID " << project_id
                 << " to parent_path=" << parent_path
                 << " child_path=" << child_path;
-            std::move(callback).Run(result.value_or(false));
+            bool result = false;
+            if (reply.has_value()) {
+              result = reply->success();
+            }
+            std::move(callback).Run(result);
           },
-          std::move(callback), project_id, parent_path, child_path.value(),
-          identifier));
+          std::move(callback), project_id, parent_path, child_path.value()));
 }
 
 }  // namespace arc

@@ -114,6 +114,8 @@ static_library("arc") {
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/session_manager:login_manager_proto",
     "//chromeos/dbus/upstart:upstart",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/disks",
     "//chromeos/login/login_state",
     "//chromeos/network",

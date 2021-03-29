@@ -10,7 +10,7 @@ namespace arc {
 namespace {
 
 using ArcDiskQuotaBridgeTest = testing::Test;
-using PathType = cryptohome::SetProjectIdAllowedPathType;
+using PathType = user_data_auth::SetProjectIdAllowedPathType;
 
 TEST(ArcDiskQuotaBridgeTest, ConvertPathForSetProjectId) {
   PathType parent_path;
