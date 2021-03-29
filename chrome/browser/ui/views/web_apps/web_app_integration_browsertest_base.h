@@ -181,6 +181,7 @@ class WebAppIntegrationBrowserTestBase {
   void AssertUserDisplayModeInternal(DisplayMode display_mode);
   void AssertWindowClosed();
   void AssertWindowCreated();
+  void AssertWindowDisplayMode(blink::mojom::DisplayMode display_mode);
 
   // Helpers
   std::vector<std::string>& testing_actions() { return testing_actions_; }
@@ -198,6 +199,13 @@ class WebAppIntegrationBrowserTestBase {
  private:
   StateSnapshot ConstructStateSnapshot();
   const net::EmbeddedTestServer* embedded_test_server();
+
+  // Supported params:
+  //  * site_a
+  //  * site_a/foo
+  //  * site_a/bar
+  //  * site_b
+  //  * site_c
   GURL GetNonInstallableAppURL();
   GURL GetInScopeURL(const std::string& action_param);
   GURL GetOutOfScopeURL(const std::string& action_param);

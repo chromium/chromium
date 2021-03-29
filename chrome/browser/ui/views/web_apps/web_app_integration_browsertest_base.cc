@@ -502,6 +502,10 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
     AssertWindowClosed();
   } else if (action_base == "assert_window_created") {
     AssertWindowCreated();
+  } else if (action_string == "assert_window_display_minimal") {
+    AssertWindowDisplayMode(blink::mojom::DisplayMode::kMinimalUi);
+  } else if (action_string == "assert_window_display_standalone") {
+    AssertWindowDisplayMode(blink::mojom::DisplayMode::kStandalone);
   } else {
     FAIL() << "Unimplemented action: " << action_base;
   }
@@ -901,6 +905,33 @@ void WebAppIntegrationBrowserTestBase::AssertWindowCreated() {
   ASSERT_TRUE(before_action_profile.has_value());
   EXPECT_GT(after_action_profile->browsers.size(),
             before_action_profile->browsers.size());
+}
+
+void WebAppIntegrationBrowserTestBase::AssertWindowDisplayMode(
+    blink::mojom::DisplayMode display_mode) {
+  DCHECK(app_browser());
+  DCHECK(app_browser()->app_controller()->AsWebAppBrowserController());
+  base::Optional<AppState> app_state =
+      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  ASSERT_TRUE(app_state.has_value());
+
+  content::WebContents* web_contents =
+      app_browser()->tab_strip_model()->GetActiveWebContents();
+  DCHECK(web_contents);
+  DisplayMode window_display_mode =
+      web_contents->GetDelegate()->GetDisplayMode(web_contents);
+
+  if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
+    EXPECT_TRUE(app_browser()->app_controller()->HasMinimalUiButtons());
+    EXPECT_EQ(app_state->effective_display_mode,
+              blink::mojom::DisplayMode::kMinimalUi);
+    EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kMinimalUi);
+  } else if (display_mode == blink::mojom::DisplayMode::kStandalone) {
+    EXPECT_FALSE(app_browser()->app_controller()->HasMinimalUiButtons());
+    EXPECT_EQ(app_state->effective_display_mode,
+              blink::mojom::DisplayMode::kStandalone);
+    EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kStandalone);
+  }
 }
 
 // Helpers
