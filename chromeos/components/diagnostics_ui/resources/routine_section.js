@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './icons.js';
 import './routine_result_list.js';
 import './text_badge.js';
 import './strings.m.js';
@@ -148,6 +148,12 @@ Polymer({
       type: Boolean,
       value: loadTimeData.getBoolean('isLoggedIn'),
     },
+
+    /** @type {boolean} */
+    shouldShowCautionBanner: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   observers: [
@@ -177,6 +183,10 @@ Polymer({
       // Expand result list by default.
       if (!this.shouldHideReportList_()) {
         this.$.collapse.show();
+      }
+
+      if (this.shouldShowCautionBanner) {
+        this.showCautionBanner_(loadTimeData.getString('cpuBannerMessage'));
       }
 
       this.routineStartTimeMs_ = performance.now();
@@ -228,6 +238,11 @@ Polymer({
       this.executor_.close();
       this.executor_ = null;
     }
+
+    if (this.shouldShowCautionBanner) {
+      this.dismissCautionBanner_();
+    }
+
     this.systemRoutineController_ = null;
   },
 
@@ -410,6 +425,22 @@ Polymer({
    */
   isAdditionalMessageHidden_() {
     return this.additionalMessage == '';
+  },
+
+  /**
+   * @private
+   * @param {string} message
+   */
+  showCautionBanner_(message) {
+    this.dispatchEvent(new CustomEvent(
+        'show-caution-banner',
+        {bubbles: true, composed: true, detail: {message}}));
+  },
+
+  /** @private */
+  dismissCautionBanner_() {
+    this.dispatchEvent(new CustomEvent(
+        'dismiss-caution-banner', {bubbles: true, composed: true}));
   },
 
   /** @override */

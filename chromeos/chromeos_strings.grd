@@ -840,6 +840,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_ROUTINE_REMAINING_MIN_FINAL_LARGE" desc="The text used to describe the status of running routine, specifically when a large routine is taking longer than expected.">
         Just a few more minutes...
       </message>
+      <message name="IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE" desc="The text shown while a user is running their CPU test.">
+        Running a CPU test may affect your system performance
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">

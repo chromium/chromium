@@ -13,10 +13,10 @@
 
   #infoIcon {
     bottom: 1px;
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
     fill: var(--google-grey-700);
-    height: 20px;
     left: 4px;
-    width: 20px;
   }
 
   .value {
@@ -31,7 +31,7 @@
     aria-describedby="tooltipText">
   <div class="header">
     <span id="headerText" aria-hidden="true"> [[header]]</span>
-    <iron-icon slot="icon" icon="cr:info-outline" id="infoIcon"
+    <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
         hidden$="[[!tooltipText]]">
     </iron-icon>
     <paper-tooltip for="infoIcon" aria-hidden="true">

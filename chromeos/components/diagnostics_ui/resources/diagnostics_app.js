@@ -16,6 +16,7 @@ import './memory_card.js';
 import './overview_card.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -76,6 +77,24 @@ Polymer({
       type: Boolean,
       value: loadTimeData.getBoolean('isLoggedIn'),
     },
+
+    /** @type {string} */
+    bannerMessage: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {string} */
+    scrollingClass_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {number} */
+    scrollTimerId_: {
+      type: Number,
+      value: -1,
+    },
   },
 
   /** @override */
@@ -84,6 +103,7 @@ Polymer({
     this.fetchSystemInfo_();
     this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
+    this.addCautionBannerEventListeners_();
   },
 
   /** @private */
@@ -129,5 +149,34 @@ Polymer({
    */
   isNetworkingEnabled_() {
     return loadTimeData.getBoolean('isNetworkingEnabled');
+  },
+
+  /** @private */
+  addCautionBannerEventListeners_() {
+    window.addEventListener('show-caution-banner', (e) => {
+      assert(e.detail.message);
+      this.bannerMessage = e.detail.message;
+    });
+
+    window.addEventListener('dismiss-caution-banner', () => {
+      this.bannerMessage = '';
+    });
+
+    window.addEventListener('scroll', () => {
+      if (!this.bannerMessage) {
+        return;
+      }
+
+      // Reset timer since we've received another 'scroll' event.
+      if (this.scrollTimerId_ !== -1) {
+        this.scrollingClass_ = 'elevation-2';
+        clearTimeout(this.scrollTimerId_);
+      }
+
+      // Remove box shadow from banner since the user has stopped scrolling
+      // for at least 300ms.
+      this.scrollTimerId_ =
+          window.setTimeout(() => this.scrollingClass_ = '', 300);
+    });
   },
 });

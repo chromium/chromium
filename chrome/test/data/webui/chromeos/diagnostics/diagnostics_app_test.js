@@ -5,11 +5,11 @@
 import 'chrome://diagnostics/diagnostics_app.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, RoutineType, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -53,6 +53,9 @@ export function appTestSuite() {
   /** @type {?FakeSystemDataProvider} */
   let provider = null;
 
+  /** @type {!FakeSystemRoutineController} */
+  let routineController;
+
   /** @type {?TestDiagnosticsBrowserProxy} */
   let DiagnosticsBrowserProxy = null;
 
@@ -66,6 +69,16 @@ export function appTestSuite() {
 
   setup(() => {
     document.body.innerHTML = '';
+
+    // Setup a fake routine controller.
+    routineController = new FakeSystemRoutineController();
+    routineController.setDelayTimeInMillisecondsForTesting(-1);
+
+    // Enable all routines by default.
+    routineController.setFakeSupportedRoutines(
+        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+
+    setSystemRoutineControllerForTesting(routineController);
   });
 
   teardown(() => {
@@ -138,6 +151,14 @@ export function appTestSuite() {
   function changeLoggedInState(isLoggedIn) {
     page.isLoggedIn_ = isLoggedIn;
     return flushTasks();
+  }
+
+  /**
+   * Get the caution banner.
+   * @return {!HTMLElement}
+   */
+  function getCautionBanner() {
+    return /** @type {!HTMLElement} */ (page.$$('#banner'));
   }
 
   test('LandingPageLoaded', () => {
@@ -247,5 +268,36 @@ export function appTestSuite() {
                fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
         .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
         .then(() => assertTrue(isVisible(getSessionLogButton())));
+  });
+
+  test('RunningCpuTestsShowsBanner', () => {
+    /** @type {?RoutineSectionElement} */
+    let routineSection;
+    /** @type {!Array<!RoutineType>} */
+    const routines = [
+      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+    ];
+    routineController.setFakeStandardRoutineResult(
+        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
+        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          routineSection = dx_utils.getRoutineSection(page.$$('cpu-card'));
+          routineSection.routines = routines;
+          assertFalse(isVisible(getCautionBanner()));
+          return flushTasks();
+        })
+        .then(() => {
+          dx_utils.getRunTestsButtonFromSection(routineSection).click();
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(isVisible(getCautionBanner()));
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => assertFalse(isVisible(getCautionBanner())));
   });
 }

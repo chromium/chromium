@@ -18,6 +18,7 @@
       --diagnostics-routine-name-font-size: 13px;
       --diagnostics-test-status-text-font-size: 13px;
       --diagnostics-button-font-size: 13px;
+      --diagnostics-caution-banner-font-size: 14px;
 
       --diagnostics-regular-font-weight: 400;
       --diagnostics-medium-font-weight: 500;
@@ -31,6 +32,7 @@
       --diagnostics-routine-name-color: var(--google-grey-900);
       --diagnostics-chart-title-color: var(--google-grey-700);
       --diagnostics-test-status-text-color: var(--google-grey-700);
+      --diagnostics-caution-banner-text-color: var(--google-grey-900);
 
       --diagnostics-default-font: {
           font-family: var(--diagnostics-google-sans-font-family);
@@ -118,6 +120,12 @@
           font-size: var(--diagnostics-button-font-size);
           font-weight: var(--diagnostics-medium-font-weight);
       };
+      --diagnostics-caution-banner-font: {
+        color: var(--diagnostics-caution-banner-text-color);
+        font-family: var(--diagnostics-roboto-font-family);
+        font-size: var(--diagnostics-caution-banner-font-size);
+        font-weight: var(--diagnostics-regular-font-weight);
+      }
     }
   </style>
 </template>

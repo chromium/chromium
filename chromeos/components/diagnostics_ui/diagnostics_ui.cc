@@ -50,6 +50,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
       {"boardAndVersionInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
+      {"cpuBannerMessage", IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE},
       {"cpuCacheRoutineText", IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT},
       {"cpuChipText", IDS_DIAGNOSTICS_CPU_CHIP_TEXT},
       {"cpuFloatingPointAccuracyRoutineText",
