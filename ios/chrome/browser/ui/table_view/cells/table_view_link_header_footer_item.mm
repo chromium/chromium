@@ -20,18 +20,8 @@
 
 namespace {
 
-// Padding used on the leading and trailing edges of the cell.
-const CGFloat kHorizontalPadding = 16;
-
 // Padding used on the top and bottom edges of the cell.
 const CGFloat kVerticalPadding = 8;
-
-// Returns a padding according to the width of the current device.
-CGFloat HorizontalPadding() {
-  if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
-    return 0;
-  return kHorizontalPadding;
-}
 
 }  // namespace
 

@@ -64,4 +64,7 @@ extern NSString* const kMaskedPassword;
 // TableViewInfoButtonCell.
 extern NSString* const kTableViewCellInfoButtonViewId;
 
+// Returns a padding according to the width of the current device.
+extern CGFloat HorizontalPadding();
+
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_CELLS_CONSTANTS_H_

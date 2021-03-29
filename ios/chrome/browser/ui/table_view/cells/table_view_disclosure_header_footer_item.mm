@@ -140,12 +140,12 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* leadingAnchorConstraint = [horizontalStack.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:kTableViewHorizontalSpacing];
+                       constant:HorizontalPadding()];
     leadingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* trailingAnchorConstraint =
         [horizontalStack.trailingAnchor
             constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-kTableViewHorizontalSpacing];
+                           constant:-HorizontalPadding()];
     trailingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
 
     // Set and activate constraints.

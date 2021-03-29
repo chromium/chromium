@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,3 +30,9 @@ const CGFloat kTableViewTrailingContentPadding = 6;
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
+
+CGFloat HorizontalPadding() {
+  if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
+    return 0;
+  return kTableViewHorizontalSpacing;
+}
