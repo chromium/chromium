@@ -80,6 +80,11 @@ to the branch in question and is not flaky on trunk, you will need to create a
 new CL to disable it only on the branch and go through the usual merge request
 process.
 
+Note: there is little value in merging changes to the stable release
+branch when the next milestone's stable release is less than a week away
+(since there are usually no planned stable respins at that point).
+You can find release dates on [chromiumdash][chromiumdash-schedule].
+
 ### Landing changes
 
 When you need to land a change to a branch, you'll need to go through [the same
