@@ -4921,7 +4921,8 @@
     "PartitionAllocLargeThreadCacheSize": [
         {
             "platforms": [
-                "linux"
+                "linux",
+                "windows"
             ],
             "experiments": [
                 {
