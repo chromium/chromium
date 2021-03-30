@@ -59,8 +59,7 @@ AuraTestHelper* g_instance = nullptr;
 
 }  // namespace
 
-AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory,
-                               bool disable_animations) {
+AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   DCHECK(!g_instance);
   g_instance = this;
 
@@ -81,11 +80,8 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory,
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&EventGeneratorDelegateAura::Create));
 
-  if (disable_animations) {
-    zero_duration_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  }
+  zero_duration_mode_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // Some tests suites create Env globally.
   if (Env::HasInstance())

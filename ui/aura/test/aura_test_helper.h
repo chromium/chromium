@@ -42,8 +42,7 @@ class AuraTestHelper {
   // Instantiates/destroys an AuraTestHelper. This can happen in a
   // single-threaded phase without a backing task environment, and must not
   // create one lest the caller wish to do so.
-  explicit AuraTestHelper(ui::ContextFactory* context_factory = nullptr,
-                          bool disable_animations = true);
+  explicit AuraTestHelper(ui::ContextFactory* context_factory = nullptr);
   virtual ~AuraTestHelper();
 
   // Returns the current AuraTestHelper, or nullptr if it's not alive.

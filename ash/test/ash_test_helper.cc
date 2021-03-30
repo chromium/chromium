@@ -86,10 +86,8 @@ class AshTestHelper::PowerPolicyControllerInitializer {
   }
 };
 
-AshTestHelper::AshTestHelper(ConfigType config_type,
-                             ui::ContextFactory* context_factory)
-    : AuraTestHelper(context_factory, config_type == kUnitTest),
-      config_type_(config_type) {
+AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
+    : AuraTestHelper(context_factory) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
 
@@ -104,11 +102,9 @@ AshTestHelper::AshTestHelper(ConfigType config_type,
         ::switches::kHostWindowBounds, "10+10-800x600");
   }
 
-  if (config_type_ == kUnitTest)
-    TabletModeController::SetUseScreenshotForTest(false);
+  TabletModeController::SetUseScreenshotForTest(false);
 
-  if (config_type_ != kShell)
-    display::ResetDisplayIdForTest();
+  display::ResetDisplayIdForTest();
 
   chromeos::CrasAudioClient::InitializeFake();
   // Create CrasAudioHandler for testing since g_browser_process is not
@@ -275,11 +271,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
   Shell::GetPrimaryRootWindow()->Show();
   Shell::GetPrimaryRootWindow()->GetHost()->Show();
 
-  if (config_type_ == kShell) {
-    shell->wallpaper_controller()->ShowDefaultWallpaperForTesting();
-    return;
-  }
-
   // Don't change the display size due to host size resize.
   display::test::DisplayManagerTestApi(shell->display_manager())
       .DisableChangeDisplayUponHostResize();
@@ -289,9 +280,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
   test_keyboard_controller_observer_ =
       std::make_unique<TestKeyboardControllerObserver>(
           shell->keyboard_controller());
-
-  if (config_type_ != kUnitTest)
-    return;
 
   // Tests that change the display configuration generally don't care about the
   // notifications and the popup UI can interfere with things like cursors.
