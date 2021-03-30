@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "components/user_manager/user.h"
@@ -44,7 +44,7 @@ namespace {
 // profile.
 // 2) Tell nss_util to initialize the software slot for this profile.
 // 3) Wait for the TPM module to be loaded by nss_util if it isn't already.
-// 4) Ask CryptohomeClient which TPM slot id corresponds to this profile.
+// 4) Ask CryptohomePkcs11Client which TPM slot id corresponds to this profile.
 // 5) Tell nss_util to use that slot id on the TPM module.
 //
 // Some of these steps must happen on the UI thread, others must happen on the
@@ -74,14 +74,14 @@ namespace {
 void DidGetTPMInfoForUserOnUIThread(
     std::unique_ptr<chromeos::TPMTokenInfoGetter> getter,
     const std::string& username_hash,
-    base::Optional<chromeos::CryptohomeClient::TpmTokenInfo> token_info) {
+    base::Optional<user_data_auth::TpmTokenInfo> token_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (token_info.has_value() && token_info->slot != -1) {
+  if (token_info.has_value() && token_info->slot() != -1) {
     DVLOG(1) << "Got TPM slot for " << username_hash << ": "
-             << token_info->slot;
+             << token_info->slot();
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&crypto::InitializeTPMForChromeOSUser,
-                                  username_hash, token_info->slot));
+                                  username_hash, token_info->slot()));
   } else {
     NOTREACHED() << "TPMTokenInfoGetter reported invalid token.";
   }
@@ -94,7 +94,7 @@ void GetTPMInfoForUserOnUIThread(const AccountId& account_id,
            << " " << account_id.Serialize() << " " << username_hash;
   std::unique_ptr<chromeos::TPMTokenInfoGetter> scoped_token_info_getter =
       chromeos::TPMTokenInfoGetter::CreateForUserToken(
-          account_id, chromeos::CryptohomeClient::Get(),
+          account_id, chromeos::CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get());
   chromeos::TPMTokenInfoGetter* token_info_getter =
       scoped_token_info_getter.get();

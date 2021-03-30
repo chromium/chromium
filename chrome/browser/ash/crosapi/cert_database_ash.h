@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,7 +55,7 @@ class CertDatabaseAsh : public mojom::CertDatabase,
   void OnTpmTokenReady(
       std::unique_ptr<chromeos::TPMTokenInfoGetter> token_getter,
       GetCertDatabaseInfoCallback callback,
-      base::Optional<chromeos::CryptohomeClient::TpmTokenInfo> token_info);
+      base::Optional<user_data_auth::TpmTokenInfo> token_info);
 
   base::Optional<bool> is_tpm_token_ready_;
 

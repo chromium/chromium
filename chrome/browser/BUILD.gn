@@ -2406,6 +2406,8 @@ static_library("browser") {
       "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cryptohome",
       "//chromeos/dbus/power",
+      "//chromeos/dbus/userdataauth:userdataauth",
+      "//chromeos/dbus/userdataauth:userdataauth_proto",
       "//chromeos/services/device_sync/public/cpp:prefs",
       "//chromeos/services/multidevice_setup/public/cpp",
       "//chromeos/services/multidevice_setup/public/cpp:prefs",

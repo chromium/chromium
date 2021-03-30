@@ -84,7 +84,7 @@ void CertDatabaseAsh::WaitForTpmTokenReady(
 
   std::unique_ptr<chromeos::TPMTokenInfoGetter> scoped_token_info_getter =
       chromeos::TPMTokenInfoGetter::CreateForUserToken(
-          account_id, chromeos::CryptohomeClient::Get(),
+          account_id, chromeos::CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get());
   chromeos::TPMTokenInfoGetter* token_info_getter =
       scoped_token_info_getter.get();
@@ -97,7 +97,7 @@ void CertDatabaseAsh::WaitForTpmTokenReady(
 void CertDatabaseAsh::OnTpmTokenReady(
     std::unique_ptr<chromeos::TPMTokenInfoGetter> token_getter,
     GetCertDatabaseInfoCallback callback,
-    base::Optional<chromeos::CryptohomeClient::TpmTokenInfo> token_info) {
+    base::Optional<user_data_auth::TpmTokenInfo> token_info) {
   is_tpm_token_ready_ = token_info.has_value();
 
   // Calling the initial method again. Since |is_tpm_token_ready_| is not empty

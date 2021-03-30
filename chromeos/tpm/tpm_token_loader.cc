@@ -76,7 +76,7 @@ TPMTokenLoader::TPMTokenLoader(bool initialized_for_test)
     : initialized_for_test_(initialized_for_test),
       tpm_token_state_(TPM_STATE_UNKNOWN),
       tpm_token_info_getter_(TPMTokenInfoGetter::CreateForSystemToken(
-          CryptohomeClient::Get(),
+          CryptohomePkcs11Client::Get(),
           base::ThreadTaskRunnerHandle::Get())),
       tpm_token_slot_id_(-1),
       can_start_before_login_(false) {
@@ -207,15 +207,15 @@ void TPMTokenLoader::OnTPMTokenEnabledForNSS() {
 }
 
 void TPMTokenLoader::OnGotTpmTokenInfo(
-    base::Optional<CryptohomeClient::TpmTokenInfo> token_info) {
+    base::Optional<user_data_auth::TpmTokenInfo> token_info) {
   if (!token_info.has_value()) {
     tpm_token_state_ = TPM_DISABLED;
     ContinueTokenInitialization();
     return;
   }
 
-  tpm_token_slot_id_ = token_info->slot;
-  tpm_user_pin_ = token_info->user_pin;
+  tpm_token_slot_id_ = token_info->slot();
+  tpm_user_pin_ = token_info->user_pin();
   tpm_token_state_ = TPM_TOKEN_INFO_RECEIVED;
 
   ContinueTokenInitialization();
