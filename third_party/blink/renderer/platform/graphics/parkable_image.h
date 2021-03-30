@@ -30,6 +30,9 @@ class PLATFORM_EXPORT ParkableImage final
 
   ~ParkableImage();
 
+  // Smallest encoded size that will actually be parked.
+  static constexpr size_t kMinSizeToPark = 1024;  // 1 KiB
+
   // Factory method to construct a ParkableImage.
   static scoped_refptr<ParkableImage> Create(size_t initial_capacity = 0);
 
@@ -103,6 +106,8 @@ class PLATFORM_EXPORT ParkableImage final
   // Discards the data in |rw_buffer_|. Caller is responsible for making sure
   // this is only called when the image can be parked.
   void DiscardData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  bool is_below_min_parking_size() const;
 
   // Returns whether the ParkableImage is locked or not. See |Lock| and |Unlock|
   // for details.

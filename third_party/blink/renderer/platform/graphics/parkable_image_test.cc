@@ -530,6 +530,34 @@ TEST_F(ParkableImageTest, ManagerSimple) {
   ExpectReadStatistics(kDataSize / 1024, 1);
 }
 
+// Tests that a small image is not kept in the manager.
+TEST_F(ParkableImageTest, ManagerSmall) {
+  const size_t kDataSize = ParkableImage::kMinSizeToPark - 10;
+  char data[kDataSize];
+  PrepareReferenceData(data, kDataSize);
+
+  auto& manager = ParkableImageManager::Instance();
+  EXPECT_EQ(0u, manager.Size());
+
+  auto pi = MakeParkableImageForTesting(data, kDataSize);
+  EXPECT_EQ(1u, manager.Size());
+
+  pi->Freeze();
+
+  // Image should now be removed from the manager.
+  EXPECT_EQ(0u, manager.Size());
+
+  // One of these is the delayed parking task
+  // |ParkableImageManager::MaybeParkImages|, the other is the delayed
+  // accounting task |ParkableImageManager::RecordStatisticsAfter5Minutes|.
+  EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
+
+  WaitForDelayedParking();
+
+  // Image should be on disk now.
+  EXPECT_FALSE(is_on_disk(pi));
+}
+
 // Tests that the manager can correctly handle multiple parking tasks being
 // created at once.
 TEST_F(ParkableImageTest, ManagerTwo) {

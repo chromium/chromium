@@ -7,6 +7,7 @@
 
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -51,7 +52,11 @@ class PLATFORM_EXPORT ParkableImageManager
   // Register and unregister a ParkableImage with the manager. ParkableImage
   // should call these when created/destructed.
   void Add(ParkableImage* image) LOCKS_EXCLUDED(lock_);
-  void Remove(ParkableImage* image) LOCKS_EXCLUDED(lock_);
+  void Remove(ParkableImage* image) LOCKS_EXCLUDED(lock_)
+      EXCLUSIVE_LOCKS_REQUIRED(image->lock_);
+
+  bool IsRegistered(ParkableImage* image) LOCKS_EXCLUDED(lock_)
+      EXCLUSIVE_LOCKS_REQUIRED(image->lock_);
 
   void ScheduleDelayedParkingTaskIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void MaybeParkImages() LOCKS_EXCLUDED(lock_);

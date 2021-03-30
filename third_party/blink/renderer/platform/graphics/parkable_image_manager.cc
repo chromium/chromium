@@ -145,8 +145,10 @@ void ParkableImageManager::Remove(ParkableImage* image) {
   MutexLocker lock(lock_);
 
   // Image could be on disk or unparked. Remove it in either case.
-  unparked_images_.erase(image);
-  on_disk_images_.erase(image);
+  auto* map = image->is_on_disk() ? &on_disk_images_ : &unparked_images_;
+  auto it = map->find(image);
+  DCHECK(it != map->end());
+  map->erase(it);
 }
 
 void ParkableImageManager::MoveImage(ParkableImage* image,
@@ -157,6 +159,17 @@ void ParkableImageManager::MoveImage(ParkableImage* image,
   CHECK(!to->Contains(image));
   from->erase(it);
   to->insert(image);
+}
+
+bool ParkableImageManager::IsRegistered(ParkableImage* image) {
+  DCHECK(IsMainThread());
+
+  MutexLocker lock(lock_);
+
+  auto* map = image->is_on_disk() ? &on_disk_images_ : &unparked_images_;
+  auto it = map->find(image);
+
+  return it != map->end();
 }
 
 void ParkableImageManager::OnWrittenToDisk(ParkableImage* image) {

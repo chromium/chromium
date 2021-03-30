@@ -154,7 +154,9 @@ ParkableImage::ParkableImage(size_t initial_capacity)
 ParkableImage::~ParkableImage() {
   DCHECK(!is_locked());
   auto& manager = ParkableImageManager::Instance();
-  manager.Remove(this);
+  if (!is_below_min_parking_size() || !is_frozen())
+    manager.Remove(this);
+  DCHECK(!manager.IsRegistered(this));
   if (on_disk_metadata_)
     manager.data_allocator().Discard(std::move(on_disk_metadata_));
   AsanUnpoisonBuffer(rw_buffer_.get());
@@ -175,6 +177,11 @@ void ParkableImage::Freeze() {
   MutexLocker lock(lock_);
   DCHECK(!frozen_);
   frozen_ = true;
+
+  if (is_below_min_parking_size()) {
+    ParkableImageManager::Instance().Remove(this);
+    return;
+  }
 
   // If we don't have any snapshots of the current data, that means it could be
   // parked at any time.
@@ -261,6 +268,7 @@ void ParkableImage::WriteToDiskInBackground(
 
 void ParkableImage::MaybeDiscardData() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_below_min_parking_size());
 
   MutexLocker lock(lock_);
   DCHECK(on_disk_metadata_);
@@ -344,6 +352,10 @@ void ParkableImage::Unpark() {
 
 size_t ParkableImage::size() const {
   return size_;
+}
+
+bool ParkableImage::is_below_min_parking_size() const {
+  return size() < ParkableImage::kMinSizeToPark;
 }
 
 bool ParkableImage::is_locked() const {
