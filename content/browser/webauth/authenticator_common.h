@@ -193,13 +193,14 @@ class CONTENT_EXPORT AuthenticatorCommon {
       AuthenticatorRequestClientDelegate::InterestingFailureReason reason,
       blink::mojom::AuthenticatorStatus status);
 
-  void InvokeCallbackAndCleanup(
-      blink::mojom::Authenticator::MakeCredentialCallback callback,
+  // Runs |make_credential_response_callback_| and then Cleanup().
+  void CompleteMakeCredentialRequest(
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response = nullptr,
       Focus focus_check = Focus::kDontCheck);
-  void InvokeCallbackAndCleanup(
-      blink::mojom::Authenticator::GetAssertionCallback callback,
+
+  // Runs |get_assertion_callback_| and then Cleanup().
+  void CompleteGetAssertionRequest(
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response = nullptr);
 
