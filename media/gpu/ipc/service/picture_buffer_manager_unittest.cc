@@ -65,8 +65,8 @@ class PictureBufferManagerImplTest : public testing::Test {
                 gfx::ColorSpace::CreateSRGB(),  // color_space
                 false),                         // allow_overlay
         base::TimeDelta(),                      // timestamp
-        gfx::Rect(),                            // visible_rect
-        gfx::Size());                           // natural_size
+        gfx::Rect(1, 1),                        // visible_rect
+        gfx::Size(1, 1));                       // natural_size
   }
 
   gpu::SyncToken GenerateSyncToken(scoped_refptr<VideoFrame> video_frame) {

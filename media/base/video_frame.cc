@@ -306,11 +306,6 @@ bool VideoFrame::IsValidConfig(VideoPixelFormat format,
     return false;
   }
 
-  // TODO(mcasas): Remove parameter |storage_type| when the opaque storage types
-  // comply with the checks below. Right now we skip them.
-  if (!IsStorageTypeMappable(storage_type))
-    return true;
-
   // Make sure new formats are properly accounted for in the method.
   static_assert(PIXEL_FORMAT_MAX == 33,
                 "Added pixel format, please review IsValidConfig()");
