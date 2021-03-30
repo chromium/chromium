@@ -109,8 +109,9 @@ TEST_F(IntentUtilsTest, CreateIntentForArcIntentAndActivity) {
 TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   const std::string& activity_name = "com.android.vending.AssetBrowserActivity";
   const std::string& start_type = "initialStart";
+  const std::string& category = "android.intent.category.LAUNCHER";
   apps::mojom::IntentPtr intent =
-      apps_util::CreateIntentForActivity(activity_name, start_type);
+      apps_util::CreateIntentForActivity(activity_name, start_type, category);
   arc::mojom::IntentInfoPtr arc_intent = apps_util::CreateArcIntent(intent);
 
   ASSERT_TRUE(intent);
@@ -122,6 +123,9 @@ TEST_F(IntentUtilsTest, CreateIntentForActivity) {
   extras.insert(std::make_pair("org.chromium.arc.start_type", start_type));
   EXPECT_TRUE(arc_intent->extras.has_value());
   EXPECT_EQ(extras, arc_intent->extras);
+
+  EXPECT_TRUE(arc_intent->categories.has_value());
+  EXPECT_EQ(category, arc_intent->categories.value()[0]);
 
   arc_intent->extras = apps_util::CreateArcIntentExtras(intent);
   EXPECT_TRUE(intent->activity_name.has_value());

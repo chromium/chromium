@@ -216,11 +216,13 @@ apps::mojom::IntentPtr CreateShareIntentFromText(
 }
 
 apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
-                                               const std::string& start_type) {
+                                               const std::string& start_type,
+                                               const std::string& category) {
   auto intent = apps::mojom::Intent::New();
   intent->action = kIntentActionMain;
   intent->activity_name = activity;
   intent->start_type = start_type;
+  intent->categories = std::vector<std::string>{category};
   return intent;
 }
 

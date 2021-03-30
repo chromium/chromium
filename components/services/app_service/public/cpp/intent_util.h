@@ -52,7 +52,8 @@ apps::mojom::IntentPtr CreateShareIntentFromText(
 
 // Create an intent struct from activity and start type.
 apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
-                                               const std::string& start_type);
+                                               const std::string& start_type,
+                                               const std::string& category);
 
 // Return true if |value| matches with the |condition_value|, based on the
 // pattern match type in the |condition_value|.

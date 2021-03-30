@@ -89,7 +89,6 @@ constexpr char kSetInTouchModeIntent[] =
 constexpr char kAction[] = "action";
 constexpr char kActionMain[] = "android.intent.action.MAIN";
 constexpr char kCategory[] = "category";
-constexpr char kCategoryLauncher[] = "android.intent.category.LAUNCHER";
 constexpr char kComponent[] = "component";
 constexpr char kEndSuffix[] = "end";
 constexpr char kIntentPrefix[] = "#Intent";
@@ -221,7 +220,8 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
 }  // namespace
 
 // Package names, kept in sorted order.
-const char kInitialStartParam[] = "S.org.chromium.arc.start_type=initialStart";
+const char kInitialStartParam[] = "initialStart";
+const char kCategoryLauncher[] = "android.intent.category.LAUNCHER";
 const char kRequestStartTimeParamTemplate[] =
     "S.org.chromium.arc.request.start=%" PRId64;
 const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";

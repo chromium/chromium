@@ -27,6 +27,7 @@ class BrowserContext;
 namespace arc {
 
 extern const char kInitialStartParam[];
+extern const char kCategoryLauncher[];
 extern const char kRequestStartTimeParamTemplate[];
 extern const char kPlayStoreActivity[];
 extern const char kPlayStorePackage[];
