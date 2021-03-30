@@ -29,6 +29,7 @@ import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -59,6 +60,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query
      *         the default search engine.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
+     * @param windowAndroid The {@link WindowAndroid} that is used by the owning {@link Activity}.
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
@@ -66,7 +68,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             LocationBarDataProvider locationBarDataProvider,
             Supplier<TemplateUrlService> templateUrlServiceSupplier,
-            SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier) {
+            SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier,
+            WindowAndroid windowAndroid) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -91,7 +94,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
                 locationBarDataProvider, PermissionDialogController.getInstance(),
                 searchEngineLogoUtils, templateUrlServiceSupplier, profileSupplier,
-                pageInfoIPHController);
+                pageInfoIPHController, windowAndroid);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)

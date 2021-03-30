@@ -148,7 +148,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
-                mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier);
+                mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier,
+                windowAndroid);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
