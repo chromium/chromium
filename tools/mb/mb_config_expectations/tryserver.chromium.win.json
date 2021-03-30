@@ -255,6 +255,7 @@
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
+      "generate_fuzzer_owners": false,
       "is_asan": true,
       "is_component_build": false,
       "is_debug": false,

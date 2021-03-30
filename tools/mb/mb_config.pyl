@@ -2336,7 +2336,7 @@
     ],
 
     'libfuzzer_asan_release_trybot': [
-      'libfuzzer', 'asan', 'shared_release_trybot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer',
+      'libfuzzer', 'asan', 'shared_release_trybot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
     'libfuzzer_asan_clang_tot_release': [
@@ -2367,7 +2367,7 @@
     ],
 
     'libfuzzer_windows_asan_release_trybot': [
-      'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer',
+      'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
     'linux_cfm_release_bot': [
@@ -3429,6 +3429,10 @@
 
     'sk_dawn': {
       'gn_args': 'skia_use_dawn=true enable_skia_dawn_gtests=true',
+    },
+
+    'skip_generate_fuzzer_owners': {
+      'gn_args': 'generate_fuzzer_owners=false',
     },
 
     'stable_channel': {

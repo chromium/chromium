@@ -164,6 +164,10 @@ use_fuzzing_engine = use_libfuzzer || use_afl || use_external_fuzzing_engine
 # declare_args block. User overrides are only applied at the end of a
 # declare_args block.
 declare_args() {
+  # Generates an owners file for each fuzzer test.
+  # TODO(crbug.com/1194183): Remove this arg when finding OWNERS is faster.
+  generate_fuzzer_owners = use_fuzzing_engine
+
   use_sanitizer_coverage =
       !use_clang_coverage &&
       (use_fuzzing_engine || sanitizer_coverage_flags != "")

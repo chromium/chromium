@@ -157,7 +157,7 @@ template("fuzzer_test") {
       test_deps += [ ":" + config_file_name ]
     }
 
-    if (use_fuzzing_engine) {
+    if (generate_fuzzer_owners) {
       # Generating owners files is slow, only enable when fuzzing engine is
       # used.
       owners_file_name = target_name + ".owners"
