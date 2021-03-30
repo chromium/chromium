@@ -26,10 +26,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // The setters on this builder are in the writing mode of parent_space.
   NGConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
                            WritingDirectionMode writing_direction,
-                           bool is_new_fc)
+                           bool is_new_fc,
+                           bool adjust_inline_size_if_needed = true)
       : NGConstraintSpaceBuilder(parent_space.GetWritingMode(),
                                  writing_direction,
-                                 is_new_fc) {
+                                 is_new_fc,
+                                 /* force_orthogonal_writing_mode_root */ false,
+                                 adjust_inline_size_if_needed) {
     if (parent_space.IsInsideBalancedColumns())
       space_.EnsureRareData()->is_inside_balanced_columns = true;
   }
@@ -44,14 +47,15 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   NGConstraintSpaceBuilder(WritingMode parent_writing_mode,
                            WritingDirectionMode writing_direction,
                            bool is_new_fc,
-                           bool force_orthogonal_writing_mode_root = false)
+                           bool force_orthogonal_writing_mode_root = false,
+                           bool adjust_inline_size_if_needed = true)
       : space_(writing_direction),
         is_in_parallel_flow_(
             IsParallelWritingMode(parent_writing_mode,
                                   writing_direction.GetWritingMode())),
         is_new_fc_(is_new_fc),
-        force_orthogonal_writing_mode_root_(
-            force_orthogonal_writing_mode_root) {
+        force_orthogonal_writing_mode_root_(force_orthogonal_writing_mode_root),
+        adjust_inline_size_if_needed_(adjust_inline_size_if_needed) {
     space_.bitfields_.is_new_formatting_context = is_new_fc_;
     space_.bitfields_.is_orthogonal_writing_mode_root =
         !is_in_parallel_flow_ || force_orthogonal_writing_mode_root_;
@@ -62,6 +66,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   // https://www.w3.org/TR/css-writing-modes-3/#orthogonal-auto
   void AdjustInlineSizeIfNeeded(LayoutUnit* inline_size) const {
     DCHECK(!is_in_parallel_flow_);
+    DCHECK(adjust_inline_size_if_needed_);
     if (*inline_size != kIndefiniteSize)
       return;
     DCHECK_NE(orthogonal_fallback_inline_size_, kIndefiniteSize);
@@ -76,7 +81,8 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
     if (UNLIKELY(!is_in_parallel_flow_)) {
       space_.available_size_.Transpose();
-      AdjustInlineSizeIfNeeded(&space_.available_size_.inline_size);
+      if (adjust_inline_size_if_needed_)
+        AdjustInlineSizeIfNeeded(&space_.available_size_.inline_size);
     }
   }
 
@@ -457,6 +463,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_in_parallel_flow_;
   bool is_new_fc_;
   bool force_orthogonal_writing_mode_root_;
+  bool adjust_inline_size_if_needed_;
 
 #if DCHECK_IS_ON()
   bool is_available_size_set_ = false;

@@ -344,7 +344,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const GridGeometry& grid_geometry,
       const GridItemData& grid_item,
       NGCacheSlot cache_slot,
-      LogicalRect* rect) const;
+      LogicalRect* rect,
+      bool adjust_inline_size_if_needed = true) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const GridItems& grid_items,

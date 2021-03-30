@@ -704,17 +704,21 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     GridItemContributionType contribution_type) const {
   const NGBlockNode& node = grid_item.node;
   const ComputedStyle& item_style = node.Style();
-  bool is_parallel_with_track_direction =
-      (track_direction == kForColumns) ==
-      IsParallelWritingMode(Style().GetWritingMode(),
-                            item_style.GetWritingMode());
+
+  const bool is_parallel = IsParallelWritingMode(Style().GetWritingMode(),
+                                                 item_style.GetWritingMode());
+  const bool is_parallel_with_track_direction =
+      (track_direction == kForColumns) == is_parallel;
+  const bool adjust_inline_size_if_needed =
+      !is_parallel && !is_parallel_with_track_direction;
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
   // track-sizing algorithm.
   LogicalRect unused;
-  const auto space = CreateConstraintSpace(grid_geometry, grid_item,
-                                           NGCacheSlot::kMeasure, &unused);
+  auto space =
+      CreateConstraintSpace(grid_geometry, grid_item, NGCacheSlot::kMeasure,
+                            &unused, adjust_inline_size_if_needed);
   const auto margins =
       ComputeMarginsFor(space, node.Style(), ConstraintSpace());
 
@@ -771,6 +775,10 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
                                       ? item_style.LogicalWidth()
                                       : item_style.LogicalHeight();
 
+      const Length& min_length = is_parallel_with_track_direction
+                                     ? item_style.LogicalMinWidth()
+                                     : item_style.LogicalMinHeight();
+
       // We could be clever is and make this an if-stmt, but each type has
       // subtle consequences. This forces us in the future when we add a new
       // length type to consider what the best thing is for grid.
@@ -786,7 +794,15 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
           // Scroll containers are "compressible", and we only consider their
           // min-size when determining their contribution.
-          if (item_style.IsScrollContainer()) {
+          if (item_style.IsScrollContainer() || !min_length.IsAuto()) {
+            // Re-create our space if we may have adjusted the inline-size. Not
+            // doing this will cause %-sizes to resolve incorrectly. This only
+            // occurs if the child is orthogonal, and is relatively rare.
+            if (adjust_inline_size_if_needed) {
+              space = CreateConstraintSpace(
+                  grid_geometry, grid_item, NGCacheSlot::kMeasure, &unused,
+                  /* adjust_inline_size_if_needed */ false);
+            }
             const NGBoxStrut border_padding =
                 ComputeBorders(space, node) + ComputePadding(space, item_style);
 
@@ -2647,7 +2663,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
     const GridGeometry& grid_geometry,
     const GridItemData& grid_item,
     NGCacheSlot cache_slot,
-    LogicalRect* rect) const {
+    LogicalRect* rect,
+    bool adjust_inline_size_if_needed) const {
   DCHECK(rect);
 
   ComputeOffsetAndSize(grid_item, grid_geometry.column_geometry, kForColumns,
@@ -2657,9 +2674,9 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
                        kIndefiniteSize, &rect->offset.block_offset,
                        &rect->size.block_size);
 
-  NGConstraintSpaceBuilder builder(ConstraintSpace(),
-                                   grid_item.node.Style().GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  NGConstraintSpaceBuilder builder(
+      ConstraintSpace(), grid_item.node.Style().GetWritingDirection(),
+      /* is_new_fc */ true, adjust_inline_size_if_needed);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), grid_item.node, &builder);
   builder.SetCacheSlot(cache_slot);
   builder.SetIsPaintedAtomically(true);
