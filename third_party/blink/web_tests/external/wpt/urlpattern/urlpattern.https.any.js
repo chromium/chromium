@@ -14,7 +14,7 @@ const kComponents = [
 function runTests(data) {
   for (let entry of data) {
     test(function() {
-      if (entry.error) {
+      if (entry.expected_obj === 'error') {
         assert_throws_js(TypeError, _ => new URLPattern(entry.pattern),
                          'URLPattern() constructor');
         return;
@@ -74,35 +74,47 @@ function runTests(data) {
                       `compiled pattern property '${component}'`);
       }
 
-      // First, validate the test() method by converting the expected result to
-      // a truthy value.
-      if (entry.inputBaseURL) {
-        assert_equals(pattern.test(entry.input, entry.inputBaseURL),
-                      !!entry.expected_match, 'test() result');
-      } else {
-        assert_equals(pattern.test(entry.input),
-                      !!entry.expected_match, 'test() result');
-      }
-
-      // Next, start validating the exec() method.
-      let result = entry.inputBaseURL
-                 ? pattern.exec(entry.input, entry.inputBaseURL)
-                 : pattern.exec(entry.input);
-
-      // On a failed match exec() returns null.
-      if (!entry.expected_match) {
-        assert_equals(result, entry.expected_match, 'exec() failed match result');
+      if (entry.expected_match === 'error') {
+        assert_throws_js(TypeError, _ => pattern.test(...entry.inputs),
+                         'test() result');
+        assert_throws_js(TypeError, _ => pattern.exec(...entry.inputs),
+                         'exec() result');
         return;
       }
 
+      // First, validate the test() method by converting the expected result to
+      // a truthy value.
+      assert_equals(pattern.test(...entry.inputs), !!entry.expected_match,
+                    'test() result');
+
+      // Next, start validating the exec() method.
+      const exec_result = pattern.exec(...entry.inputs);
+
+      // On a failed match exec() returns null.
+      if (!entry.expected_match || typeof entry.expected_match !== "object") {
+        assert_equals(exec_result, entry.expected_match, 'exec() failed match result');
+        return;
+      }
+
+      if (!entry.expected_match.inputs)
+        entry.expected_match.inputs = entry.inputs;
+
       // Next verify the result.input is correct.  This may be a structured
       // URLPatternInit dictionary object or a URL string.
-      if (typeof entry.expected_match.input === 'object') {
-        assert_object_equals(result.input, entry.expected_match.input,
-                             'exec() result.input');
-      } else {
-        assert_equals(result.input, entry.expected_match.input,
-                      'exec() result.input');
+      assert_equals(exec_result.inputs.length,
+                    entry.expected_match.inputs.length,
+                    'exec() result.inputs.length');
+      for (let i = 0; i < exec_result.inputs.length; ++i) {
+        const input = exec_result.inputs[i];
+        const expected_input = entry.expected_match.inputs[i];
+        if (typeof input === 'string') {
+          assert_equals(input, expected_input, `exec() result.inputs[${i}]`);
+          continue;
+        }
+        for (let component of kComponents) {
+          assert_equals(input[component], expected_input[component],
+                        `exec() result.inputs[${i}][${component}]`);
+        }
       }
 
       // Next we will compare the URLPatternComponentResult for each of these
@@ -127,12 +139,11 @@ function runTests(data) {
             expected_obj.groups['0'] = '';
           }
         }
-        assert_object_equals(result[component], expected_obj,
+        assert_object_equals(exec_result[component], expected_obj,
                              `exec() result for ${component}`);
       }
     }, `Pattern: ${JSON.stringify(entry.pattern)} ` +
-       `Input: ${JSON.stringify(entry.input)} ` +
-       `InputBaseURL: ${JSON.stringify(entry.inputBaseURL)}`);
+       `Inputs: ${JSON.stringify(entry.inputs)}`);
   }
 }
 

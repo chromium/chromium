@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-typedef (USVString or URLPatternInit) URLPatternInput;
-
 // https://wicg.github.io/urlpattern/
 dictionary URLPatternResult {
-  URLPatternInput input;
+  sequence<URLPatternInput> inputs;
+
   URLPatternComponentResult protocol;
   URLPatternComponentResult username;
   URLPatternComponentResult password;
