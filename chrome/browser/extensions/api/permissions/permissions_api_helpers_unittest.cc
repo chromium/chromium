@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 
 using extensions::api::permissions::Permissions;
+using extensions::mojom::APIPermissionID;
 using extensions::permissions_api_helpers::PackPermissionSet;
 using extensions::permissions_api_helpers::UnpackPermissionSet;
 using extensions::permissions_api_helpers::UnpackPermissionSetResult;
@@ -35,8 +36,8 @@ namespace extensions {
 // Tests that we can convert PermissionSets to the generated types.
 TEST(ExtensionPermissionsAPIHelpers, Pack) {
   APIPermissionSet apis;
-  apis.insert(APIPermission::kTab);
-  apis.insert(APIPermission::kFileBrowserHandler);
+  apis.insert(APIPermissionID::kTab);
+  apis.insert(APIPermissionID::kFileBrowserHandler);
   // Note: kFileBrowserHandler implies kFileBrowserHandlerInternal.
 
   URLPatternSet explicit_hosts(
@@ -75,7 +76,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   std::string error;
 
   APIPermissionSet optional_apis;
-  optional_apis.insert(APIPermission::kTab);
+  optional_apis.insert(APIPermissionID::kTab);
   URLPatternSet optional_explicit_hosts(
       {URLPattern(Extension::kValidHostPermissionSchemes, "http://a.com/*")});
   PermissionSet optional_permissions(
@@ -276,12 +277,12 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_APISeparation) {
   constexpr APIPermission::ID kUnlisted1 = APIPermission::kIdle;
 
   APIPermissionSet required_apis;
-  required_apis.insert(kRequired1);
-  required_apis.insert(kRequired2);
+  required_apis.insert(static_cast<APIPermissionID>(kRequired1));
+  required_apis.insert(static_cast<APIPermissionID>(kRequired2));
 
   APIPermissionSet optional_apis;
-  optional_apis.insert(kOptional1);
-  optional_apis.insert(kOptional2);
+  optional_apis.insert(static_cast<APIPermissionID>(kOptional1));
+  optional_apis.insert(static_cast<APIPermissionID>(kOptional2));
 
   PermissionSet required_permissions(std::move(required_apis),
                                      ManifestPermissionSet(), URLPatternSet(),

@@ -70,7 +70,7 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
       extension->permissions_data()->HasAPIPermission(APIPermission::kAlarms));
   {
     APIPermissionSet tab_permissions;
-    tab_permissions.insert(APIPermission::kDns);
+    tab_permissions.insert(mojom::APIPermissionID::kDns);
     extension->permissions_data()->UpdateTabSpecificPermissions(
         1, PermissionSet(std::move(tab_permissions), ManifestPermissionSet(),
                          URLPatternSet(), URLPatternSet()));

@@ -863,8 +863,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUpdatingPermissions) {
   {
     // Add back the `idle` permission, and also add `power`.
     APIPermissionSet apis;
-    apis.insert(APIPermission::kPower);
-    apis.insert(APIPermission::kIdle);
+    apis.insert(mojom::APIPermissionID::kPower);
+    apis.insert(mojom::APIPermissionID::kIdle);
     extension->permissions_data()->SetPermissions(
         std::make_unique<PermissionSet>(std::move(apis),
                                         ManifestPermissionSet(),

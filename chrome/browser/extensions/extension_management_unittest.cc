@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -680,31 +681,31 @@ TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
   // Verifies blocked permission allowlist settings.
   APIPermissionSet api_permission_set;
   api_permission_set.clear();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kDownloads);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kDownloads);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissionsById(kNonExistingExtension));
 
   api_permission_set.clear();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kDownloads);
-  api_permission_set.insert(APIPermission::kBookmark);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kDownloads);
+  api_permission_set.insert(APIPermissionID::kBookmark);
   EXPECT_EQ(api_permission_set, GetBlockedAPIPermissionsById(kTargetExtension));
 
   api_permission_set.clear();
-  api_permission_set.insert(APIPermission::kDownloads);
+  api_permission_set.insert(APIPermissionID::kDownloads);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissionsById(kTargetExtension2));
 
   api_permission_set.clear();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kHistory);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kHistory);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissionsById(kTargetExtension3));
 
   api_permission_set.clear();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kBookmark);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kBookmark);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissionsByUpdateUrl(kExampleUpdateUrl));
 
@@ -741,26 +742,26 @@ TEST_F(ExtensionManagementServiceTest, BlockedPermissionsConflictHandling) {
 
   // Both settings should be overridden.
   APIPermissionSet blocked_permissions_for_update_url;
-  blocked_permissions_for_update_url.insert(APIPermission::kFileSystem);
-  blocked_permissions_for_update_url.insert(APIPermission::kBookmark);
+  blocked_permissions_for_update_url.insert(APIPermissionID::kFileSystem);
+  blocked_permissions_for_update_url.insert(APIPermissionID::kBookmark);
 
   APIPermissionSet api_permission_set;
 
   api_permission_set = blocked_permissions_for_update_url.Clone();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kDownloads);
-  api_permission_set.insert(APIPermission::kBookmark);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kDownloads);
+  api_permission_set.insert(APIPermissionID::kBookmark);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissions(kTargetExtension, kExampleUpdateUrl));
 
   api_permission_set = blocked_permissions_for_update_url.Clone();
-  api_permission_set.insert(APIPermission::kDownloads);
+  api_permission_set.insert(APIPermissionID::kDownloads);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissions(kTargetExtension2, kExampleUpdateUrl));
 
   api_permission_set = blocked_permissions_for_update_url.Clone();
-  api_permission_set.insert(APIPermission::kFileSystem);
-  api_permission_set.insert(APIPermission::kHistory);
+  api_permission_set.insert(APIPermissionID::kFileSystem);
+  api_permission_set.insert(APIPermissionID::kHistory);
   EXPECT_EQ(api_permission_set,
             GetBlockedAPIPermissions(kTargetExtension3, kExampleUpdateUrl));
 }

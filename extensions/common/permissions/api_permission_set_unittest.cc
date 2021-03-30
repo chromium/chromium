@@ -10,15 +10,17 @@
 #include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 TEST(APIPermissionSetTest, General) {
   APIPermissionSet apis;
-  apis.insert(APIPermission::kAudioCapture);
-  apis.insert(APIPermission::kDns);
-  apis.insert(APIPermission::kHid);
-  apis.insert(APIPermission::kPower);
-  apis.insert(APIPermission::kSerial);
+  apis.insert(APIPermissionID::kAudioCapture);
+  apis.insert(APIPermissionID::kDns);
+  apis.insert(APIPermissionID::kHid);
+  apis.insert(APIPermissionID::kPower);
+  apis.insert(APIPermissionID::kSerial);
 
   EXPECT_EQ(apis.find(APIPermission::kPower)->id(), APIPermission::kPower);
   EXPECT_TRUE(apis.find(APIPermission::kSocket) == apis.end());
@@ -51,11 +53,11 @@ TEST(APIPermissionSetTest, CreateUnion) {
   }
 
   // Union with an empty set.
-  apis1.insert(APIPermission::kAudioCapture);
-  apis1.insert(APIPermission::kDns);
+  apis1.insert(APIPermissionID::kAudioCapture);
+  apis1.insert(APIPermissionID::kDns);
   apis1.insert(permission->Clone());
-  expected_apis.insert(APIPermission::kAudioCapture);
-  expected_apis.insert(APIPermission::kDns);
+  expected_apis.insert(APIPermissionID::kAudioCapture);
+  expected_apis.insert(APIPermissionID::kDns);
   expected_apis.insert(std::move(permission));
 
   ASSERT_TRUE(apis2.empty());
@@ -71,10 +73,10 @@ TEST(APIPermissionSetTest, CreateUnion) {
   EXPECT_EQ(expected_apis, result);
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kAudioCapture);
-  apis2.insert(APIPermission::kHid);
-  apis2.insert(APIPermission::kPower);
-  apis2.insert(APIPermission::kSerial);
+  apis2.insert(APIPermissionID::kAudioCapture);
+  apis2.insert(APIPermissionID::kHid);
+  apis2.insert(APIPermissionID::kPower);
+  apis2.insert(APIPermissionID::kSerial);
 
   permission = permission_info->CreateAPIPermission();
   {
@@ -85,10 +87,10 @@ TEST(APIPermissionSetTest, CreateUnion) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kAudioCapture);
-  expected_apis.insert(APIPermission::kHid);
-  expected_apis.insert(APIPermission::kPower);
-  expected_apis.insert(APIPermission::kSerial);
+  expected_apis.insert(APIPermissionID::kAudioCapture);
+  expected_apis.insert(APIPermissionID::kHid);
+  expected_apis.insert(APIPermissionID::kPower);
+  expected_apis.insert(APIPermissionID::kSerial);
 
   permission = permission_info->CreateAPIPermission();
   {
@@ -124,8 +126,8 @@ TEST(APIPermissionSetTest, CreateIntersection) {
     PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
 
   // Intersection with an empty set.
-  apis1.insert(APIPermission::kAudioCapture);
-  apis1.insert(APIPermission::kDns);
+  apis1.insert(APIPermissionID::kAudioCapture);
+  apis1.insert(APIPermissionID::kDns);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -151,10 +153,10 @@ TEST(APIPermissionSetTest, CreateIntersection) {
   EXPECT_EQ(expected_apis, result);
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kAudioCapture);
-  apis2.insert(APIPermission::kHid);
-  apis2.insert(APIPermission::kPower);
-  apis2.insert(APIPermission::kSerial);
+  apis2.insert(APIPermissionID::kAudioCapture);
+  apis2.insert(APIPermissionID::kHid);
+  apis2.insert(APIPermissionID::kPower);
+  apis2.insert(APIPermissionID::kSerial);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -165,7 +167,7 @@ TEST(APIPermissionSetTest, CreateIntersection) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kAudioCapture);
+  expected_apis.insert(APIPermissionID::kAudioCapture);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -197,8 +199,8 @@ TEST(APIPermissionSetTest, CreateDifference) {
     PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
 
   // Difference with an empty set.
-  apis1.insert(APIPermission::kAudioCapture);
-  apis1.insert(APIPermission::kDns);
+  apis1.insert(APIPermissionID::kAudioCapture);
+  apis1.insert(APIPermissionID::kDns);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -216,10 +218,10 @@ TEST(APIPermissionSetTest, CreateDifference) {
   EXPECT_EQ(apis1, result);
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kAudioCapture);
-  apis2.insert(APIPermission::kHid);
-  apis2.insert(APIPermission::kPower);
-  apis2.insert(APIPermission::kSerial);
+  apis2.insert(APIPermissionID::kAudioCapture);
+  apis2.insert(APIPermissionID::kHid);
+  apis2.insert(APIPermissionID::kPower);
+  apis2.insert(APIPermissionID::kSerial);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -229,7 +231,7 @@ TEST(APIPermissionSetTest, CreateDifference) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kDns);
+  expected_apis.insert(APIPermissionID::kDns);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -259,8 +261,8 @@ TEST(APIPermissionSetTest, IPC) {
   const APIPermissionInfo* permission_info =
     PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
 
-  apis.insert(APIPermission::kAudioCapture);
-  apis.insert(APIPermission::kDns);
+  apis.insert(APIPermissionID::kAudioCapture);
+  apis.insert(APIPermissionID::kDns);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {

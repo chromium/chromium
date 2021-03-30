@@ -73,7 +73,7 @@ bool WillDispatchDeviceEvent(const device::mojom::UsbDeviceInfo& device_info,
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
       UsbDevicePermission::CheckParam::ForUsbDevice(extension, device_info);
   if (extension->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get())) {
     return true;
   }
 

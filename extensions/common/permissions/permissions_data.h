@@ -15,6 +15,7 @@
 #include "base/threading/thread_checker.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_message.h"
@@ -151,7 +152,7 @@ class PermissionsData {
   bool HasAPIPermission(const std::string& permission_name) const;
   bool HasAPIPermissionForTab(int tab_id, APIPermission::ID permission) const;
   bool CheckAPIPermissionWithParam(
-      APIPermission::ID permission,
+      mojom::APIPermissionID permission,
       const APIPermission::CheckParam* param) const;
 
   // Returns the hosts this extension effectively has access to, including

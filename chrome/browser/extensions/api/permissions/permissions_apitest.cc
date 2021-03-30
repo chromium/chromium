@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
                        OptionalPermissionsGranted) {
   // Mark all the tested APIs as granted to bypass the confirmation UI.
   APIPermissionSet apis;
-  apis.insert(APIPermission::kBookmark);
+  apis.insert(extensions::mojom::APIPermissionID::kBookmark);
   URLPatternSet explicit_hosts;
   AddPattern(&explicit_hosts, "http://*.c.com/*");
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsDeny) {
   // Mark the management permission as already granted since we auto reject
   // user prompts.
   APIPermissionSet apis;
-  apis.insert(APIPermission::kManagement);
+  apis.insert(mojom::APIPermissionID::kManagement);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
   prefs->AddRuntimeGrantedPermissions(

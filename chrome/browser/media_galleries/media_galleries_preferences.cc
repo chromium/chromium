@@ -330,7 +330,7 @@ bool HasAutoDetectedGalleryPermission(const extensions::Extension& extension) {
   chrome_apps::MediaGalleriesPermission::CheckParam param(
       chrome_apps::MediaGalleriesPermission::kAllAutoDetectedPermission);
   return extension.permissions_data()->CheckAPIPermissionWithParam(
-      extensions::APIPermission::kMediaGalleries, &param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &param);
 }
 
 // Retrieves the MediaGalleryPermission from the given dictionary; DCHECKs on

@@ -14,6 +14,8 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace chrome_apps {
 
 namespace {
@@ -140,16 +142,16 @@ extensions::PermissionIDSet MediaGalleriesPermission::GetPermissions() const {
 
   // Separate PermissionMessage IDs for read, copyTo, and delete. Otherwise an
   // extension can silently gain new access capabilities.
-  result.insert(extensions::APIPermission::kMediaGalleriesAllGalleriesRead);
+  result.insert(APIPermissionID::kMediaGalleriesAllGalleriesRead);
 
   // For copyTo and delete, the proper combined permission message will be
   // derived in ChromePermissionMessageProvider::GetWarningMessages(), such
   // that the user get 1 entry for all media galleries access permissions,
   // rather than several separate entries.
   if (has_copy_to)
-    result.insert(extensions::APIPermission::kMediaGalleriesAllGalleriesCopyTo);
+    result.insert(APIPermissionID::kMediaGalleriesAllGalleriesCopyTo);
   if (has_delete)
-    result.insert(extensions::APIPermission::kMediaGalleriesAllGalleriesDelete);
+    result.insert(APIPermissionID::kMediaGalleriesAllGalleriesDelete);
 
   return result;
 }

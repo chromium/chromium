@@ -18,6 +18,8 @@
 #include "ipc/ipc_message.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace sockets_errors {
@@ -93,7 +95,7 @@ bool AddAnyHostMessage(const SocketPermissionEntrySet& sockets,
   for (const auto& socket : sockets) {
     if (socket.IsAddressBoundType() &&
         socket.GetHostType() == SocketPermissionEntry::ANY_HOST) {
-      ids->insert(APIPermission::kSocketAnyHost);
+      ids->insert(APIPermissionID::kSocketAnyHost);
       return true;
     }
   }
@@ -111,7 +113,7 @@ void AddSubdomainHostMessage(const SocketPermissionEntrySet& sockets,
   }
   if (!domains.empty()) {
     for (const auto& domain : domains)
-      ids->insert(APIPermission::kSocketDomainHosts, domain);
+      ids->insert(APIPermissionID::kSocketDomainHosts, domain);
   }
 }
 
@@ -126,7 +128,7 @@ void AddSpecificHostMessage(const SocketPermissionEntrySet& sockets,
   }
   if (!hostnames.empty()) {
     for (const auto& hostname : hostnames)
-      ids->insert(APIPermission::kSocketSpecificHosts, hostname);
+      ids->insert(APIPermissionID::kSocketSpecificHosts, hostname);
   }
 }
 
@@ -136,7 +138,7 @@ void AddNetworkListMessage(const SocketPermissionEntrySet& sockets,
                            PermissionIDSet* ids) {
   for (const auto& socket : sockets) {
     if (socket.pattern().type == SocketPermissionRequest::NETWORK_STATE) {
-      ids->insert(APIPermission::kNetworkState);
+      ids->insert(APIPermissionID::kNetworkState);
     }
   }
 }

@@ -111,7 +111,7 @@ void ChromeExtensionsClient::FilterHostPermissions(
       // We should not add any additional "host" here.
       if (GURL(chrome::kChromeUIFaviconURL).host() != i->host())
         continue;
-      permissions->insert(APIPermission::kFavicon);
+      permissions->insert(mojom::APIPermissionID::kFavicon);
     } else {
       new_hosts->AddPattern(*i);
     }

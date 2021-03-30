@@ -35,6 +35,8 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace {
@@ -335,7 +337,7 @@ void SocketConnectFunction::AsyncWorkStart() {
 
   SocketPermission::CheckParam param(operation_type, hostname_, port_);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(-1));
     AsyncWorkCompleted();
@@ -419,7 +421,7 @@ void SocketBindFunction::AsyncWorkStart() {
   SocketPermission::CheckParam param(SocketPermissionRequest::UDP_BIND,
                                      address_, port_);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(-1));
     AsyncWorkCompleted();
@@ -469,7 +471,7 @@ void SocketListenFunction::AsyncWorkStart() {
   SocketPermission::CheckParam param(SocketPermissionRequest::TCP_LISTEN,
                                      params_->address, params_->port);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(-1));
     AsyncWorkCompleted();
@@ -705,7 +707,7 @@ void SocketSendToFunction::AsyncWorkStart() {
     SocketPermission::CheckParam param(
         SocketPermissionRequest::UDP_SEND_TO, hostname_, port_);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-            APIPermission::kSocket, &param)) {
+            APIPermissionID::kSocket, &param)) {
       error_ = kPermissionError;
       SetResult(std::make_unique<base::Value>(-1));
       AsyncWorkCompleted();
@@ -914,7 +916,7 @@ void SocketJoinGroupFunction::AsyncWorkStart() {
       kWildcardPort);
 
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(result));
     AsyncWorkCompleted();
@@ -967,7 +969,7 @@ void SocketLeaveGroupFunction::AsyncWorkStart() {
       kWildcardAddress,
       kWildcardPort);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(result));
     AsyncWorkCompleted();
@@ -1081,7 +1083,7 @@ void SocketGetJoinedGroupsFunction::Work() {
       kWildcardAddress,
       kWildcardPort);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kSocket, &param)) {
+          APIPermissionID::kSocket, &param)) {
     error_ = kPermissionError;
     SetResult(std::make_unique<base::Value>(result));
     return;

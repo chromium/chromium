@@ -410,7 +410,7 @@ bool UsbPermissionCheckingFunction::HasDevicePermission(
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
       UsbDevicePermission::CheckParam::ForUsbDevice(extension(), device);
   if (extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get())) {
     return true;
   }
 
@@ -592,7 +592,7 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
       UsbDevicePermission::CheckParam::ForDeviceWithAnyInterfaceClass(
           extension(), vendor_id_, product_id_, interface_id);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get())) {
     return RespondNow(Error(kErrorPermissionDenied));
   }
 
@@ -631,7 +631,7 @@ void UsbFindDevicesFunction::OnGetDevicesComplete(
         UsbDevicePermission::CheckParam::ForUsbDevice(extension(),
                                                       *device_info);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-            APIPermission::kUsbDevice, param.get())) {
+            mojom::APIPermissionID::kUsbDevice, param.get())) {
       barrier_.Run();
     } else {
       mojo::Remote<device::mojom::UsbDevice> device;

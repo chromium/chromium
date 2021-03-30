@@ -126,9 +126,9 @@ std::string BluetoothManifestPermission::id() const { return name(); }
 
 PermissionIDSet BluetoothManifestPermission::GetPermissions() const {
   PermissionIDSet permissions;
-  permissions.insert(APIPermission::kBluetooth);
+  permissions.insert(mojom::APIPermissionID::kBluetooth);
   if (!uuids_.empty()) {
-    permissions.insert(APIPermission::kBluetoothDevices);
+    permissions.insert(mojom::APIPermissionID::kBluetoothDevices);
   }
   return permissions;
 }

@@ -132,9 +132,9 @@ std::u16string MediaGalleriesPermissionController::GetSubtext() const {
   const extensions::PermissionsData* permission_data =
       extension_->permissions_data();
   bool has_copy_to_permission = permission_data->CheckAPIPermissionWithParam(
-      APIPermission::kMediaGalleries, &copy_to_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &copy_to_param);
   bool has_delete_permission = permission_data->CheckAPIPermissionWithParam(
-      APIPermission::kMediaGalleries, &delete_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
   int id;
   if (has_copy_to_permission)

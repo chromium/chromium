@@ -13,6 +13,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_info.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace errors = manifest_errors;
@@ -127,9 +129,10 @@ bool ParseChildPermissions(const std::string& base_name,
 
 }  // namespace
 
-void APIPermissionSet::insert(APIPermission::ID id) {
+void APIPermissionSet::insert(APIPermissionID id) {
   const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(id);
+      PermissionsInfo::GetInstance()->GetByID(
+          static_cast<APIPermission::ID>(id));
   DCHECK(permission_info);
   insert(permission_info->CreateAPIPermission());
 }
@@ -218,13 +221,14 @@ PermissionIDSet::PermissionIDSet(const PermissionIDSet& other) = default;
 PermissionIDSet::~PermissionIDSet() {
 }
 
-void PermissionIDSet::insert(APIPermission::ID permission_id) {
+void PermissionIDSet::insert(APIPermissionID permission_id) {
   insert(permission_id, std::u16string());
 }
 
-void PermissionIDSet::insert(APIPermission::ID permission_id,
+void PermissionIDSet::insert(APIPermissionID permission_id,
                              const std::u16string& permission_detail) {
-  permissions_.insert(PermissionID(permission_id, permission_detail));
+  permissions_.insert(PermissionID(
+      static_cast<APIPermission::ID>(permission_id), permission_detail));
 }
 
 void PermissionIDSet::InsertAll(const PermissionIDSet& permission_set) {
@@ -233,11 +237,12 @@ void PermissionIDSet::InsertAll(const PermissionIDSet& permission_set) {
   }
 }
 
-void PermissionIDSet::erase(APIPermission::ID permission_id) {
-  auto lower_bound = permissions_.lower_bound(PermissionID(permission_id));
+void PermissionIDSet::erase(APIPermissionID permission_id) {
+  auto lower_bound = permissions_.lower_bound(
+      PermissionID(static_cast<APIPermission::ID>(permission_id)));
   auto upper_bound = lower_bound;
   while (upper_bound != permissions_.end() &&
-         upper_bound->id() == permission_id) {
+         upper_bound->id() == static_cast<APIPermission::ID>(permission_id)) {
     ++upper_bound;
   }
   permissions_.erase(lower_bound, upper_bound);

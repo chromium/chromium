@@ -61,9 +61,11 @@ void PublicSessionMediaAccessHandler::HandleRequest(
 
   extensions::PermissionIDSet requested_permissions;
   if (request.audio_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE)
-    requested_permissions.insert(extensions::APIPermission::kAudioCapture);
+    requested_permissions.insert(
+        extensions::mojom::APIPermissionID::kAudioCapture);
   if (request.video_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE)
-    requested_permissions.insert(extensions::APIPermission::kVideoCapture);
+    requested_permissions.insert(
+        extensions::mojom::APIPermissionID::kVideoCapture);
 
   extensions::permission_helper::HandlePermissionRequest(
       *extension, requested_permissions, web_contents,

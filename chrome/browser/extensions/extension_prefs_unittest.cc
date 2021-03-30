@@ -38,6 +38,7 @@
 
 using base::Time;
 using base::TimeDelta;
+using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -198,8 +199,8 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
 
     extension_id_ = prefs_.AddExtensionAndReturnId("test");
 
-    api_perm_set1_.insert(APIPermission::kTab);
-    api_perm_set1_.insert(APIPermission::kBookmark);
+    api_perm_set1_.insert(APIPermissionID::kTab);
+    api_perm_set1_.insert(APIPermissionID::kBookmark);
     std::unique_ptr<APIPermission> permission(
         permission_info->CreateAPIPermission());
     {
@@ -211,7 +212,7 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
     }
     api_perm_set1_.insert(std::move(permission));
 
-    api_perm_set2_.insert(APIPermission::kHistory);
+    api_perm_set2_.insert(APIPermissionID::kHistory);
 
     AddPattern(&ehost_perm_set1_, "http://*.google.com/*");
     AddPattern(&ehost_perm_set1_, "http://example.com/*");
@@ -342,9 +343,9 @@ class ExtensionPrefsActivePermissions : public ExtensionPrefsTest {
 
     {
       APIPermissionSet api_perms;
-      api_perms.insert(APIPermission::kTab);
-      api_perms.insert(APIPermission::kBookmark);
-      api_perms.insert(APIPermission::kHistory);
+      api_perms.insert(APIPermissionID::kTab);
+      api_perms.insert(APIPermissionID::kBookmark);
+      api_perms.insert(APIPermissionID::kHistory);
 
       URLPatternSet ehosts;
       AddPattern(&ehosts, "http://*.google.com/*");
@@ -950,9 +951,9 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     prefs_.AddExtension(no_component_extension_.get());
 
     APIPermissionSet api_perms;
-    api_perms.insert(APIPermission::kTab);
-    api_perms.insert(APIPermission::kBookmark);
-    api_perms.insert(APIPermission::kHistory);
+    api_perms.insert(APIPermissionID::kTab);
+    api_perms.insert(APIPermissionID::kBookmark);
+    api_perms.insert(APIPermissionID::kHistory);
 
     URLPatternSet shosts;
     AddPattern(&shosts, "chrome://print/*");

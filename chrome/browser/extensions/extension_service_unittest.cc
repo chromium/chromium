@@ -1528,7 +1528,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissions) {
   EXPECT_EQ(permissions_crx, extension->id());
 
   // Verify that the valid API permissions have been recognized.
-  expected_api_perms.insert(APIPermission::kTab);
+  expected_api_perms.insert(mojom::APIPermissionID::kTab);
 
   AddPattern(&expected_host_perms, "http://*.google.com/*");
   AddPattern(&expected_host_perms, "https://*.google.com/*");
@@ -1575,7 +1575,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
 
   // Verify that the history permission has been recognized.
   APIPermissionSet expected_api_perms;
-  expected_api_perms.insert(APIPermission::kHistory);
+  expected_api_perms.insert(mojom::APIPermissionID::kHistory);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1592,7 +1592,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
 
   // The extra permission should have been granted automatically.
-  expected_api_perms.insert(APIPermission::kTopSites);
+  expected_api_perms.insert(mojom::APIPermissionID::kTopSites);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1608,7 +1608,7 @@ TEST_F(ExtensionServiceTest, GrantedPermissionsOnUpdate) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
 
   // The extra permission should have been granted automatically.
-  expected_api_perms.insert(APIPermission::kStorage);
+  expected_api_perms.insert(mojom::APIPermissionID::kStorage);
   {
     std::unique_ptr<const PermissionSet> known_perms =
         prefs->GetGrantedPermissions(id);
@@ -1841,7 +1841,7 @@ TEST_F(ExtensionServiceTest,
   };
 
   APIPermissionSet tabs_permission_set;
-  tabs_permission_set.insert(APIPermission::kTab);
+  tabs_permission_set.insert(mojom::APIPermissionID::kTab);
 
   EXPECT_EQ(tabs_permission_set, get_granted_permissions()->apis());
   EXPECT_EQ(tabs_permission_set, get_active_permissions()->apis());
@@ -1959,7 +1959,7 @@ TEST_F(ExtensionServiceTest, DefaultAppsGrantedPermissions) {
   EXPECT_EQ(permissions_crx, extension->id());
 
   // Verify that the valid API permissions have been recognized.
-  expected_api_perms.insert(APIPermission::kTab);
+  expected_api_perms.insert(mojom::APIPermissionID::kTab);
 
   std::unique_ptr<const PermissionSet> known_perms =
       prefs->GetGrantedPermissions(extension->id());
@@ -1991,7 +1991,7 @@ TEST_F(ExtensionServiceTest, GrantedAPIAndHostPermissions) {
   APIPermissionSet expected_api_permissions;
   URLPatternSet expected_host_permissions;
 
-  expected_api_permissions.insert(APIPermission::kTab);
+  expected_api_permissions.insert(mojom::APIPermissionID::kTab);
   AddPattern(&expected_host_permissions, "http://*.google.com/*");
   AddPattern(&expected_host_permissions, "https://*.google.com/*");
   AddPattern(&expected_host_permissions, "http://*.google.com.hk/*");

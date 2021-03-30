@@ -152,7 +152,7 @@ PermissionIDSet UsbDevicePermission::GetPermissions() const {
         std::u16string product_name_and_vendor = l10n_util::GetStringFUTF16(
             IDS_EXTENSION_USB_DEVICE_PRODUCT_NAME_AND_VENDOR,
             base::UTF8ToUTF16(product), base::UTF8ToUTF16(vendor));
-        ids.insert(APIPermission::kUsbDevice, product_name_and_vendor);
+        ids.insert(mojom::APIPermissionID::kUsbDevice, product_name_and_vendor);
       } else {
         unknown_product_vendors.insert(data.vendor_id());
       }
@@ -164,12 +164,12 @@ PermissionIDSet UsbDevicePermission::GetPermissions() const {
   for (uint16_t vendor_id : unknown_product_vendors) {
     const char* vendor = device::UsbIds::GetVendorName(vendor_id);
     DCHECK(vendor);
-    ids.insert(APIPermission::kUsbDeviceUnknownProduct,
+    ids.insert(mojom::APIPermissionID::kUsbDeviceUnknownProduct,
                base::UTF8ToUTF16(vendor));
   }
 
   if (found_unknown_vendor)
-    ids.insert(APIPermission::kUsbDeviceUnknownVendor);
+    ids.insert(mojom::APIPermissionID::kUsbDeviceUnknownVendor);
 
   return ids;
 }

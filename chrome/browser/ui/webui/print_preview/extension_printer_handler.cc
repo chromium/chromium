@@ -340,7 +340,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
                 extension.get(), *device);
         if (device_permissions->FindUsbDeviceEntry(*device) ||
             extension->permissions_data()->CheckAPIPermissionWithParam(
-                extensions::APIPermission::kUsbDevice, param.get())) {
+                extensions::mojom::APIPermissionID::kUsbDevice, param.get())) {
           // Skip devices the extension already has permission to access.
           continue;
         }

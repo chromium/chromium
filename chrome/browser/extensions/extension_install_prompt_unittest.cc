@@ -105,7 +105,7 @@ class ExtensionInstallPromptUnitTest : public testing::Test {
 
 TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kTab);
+  api_permissions.insert(extensions::mojom::APIPermissionID::kTab);
   std::unique_ptr<const PermissionSet> permission_set(
       new PermissionSet(std::move(api_permissions), ManifestPermissionSet(),
                         URLPatternSet(), URLPatternSet()));

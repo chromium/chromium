@@ -40,6 +40,7 @@ using content::SocketPermissionRequest;
 using extension_test_util::LoadManifest;
 using extension_test_util::LoadManifestStrict;
 using extension_test_util::LoadManifestUnchecked;
+using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -62,7 +63,7 @@ bool CheckSocketPermission(scoped_refptr<Extension> extension,
                            uint16_t port) {
   SocketPermission::CheckParam param(type, host, port);
   return extension->permissions_data()->CheckAPIPermissionWithParam(
-      APIPermission::kSocket, &param);
+      APIPermissionID::kSocket, &param);
 }
 
 // Creates and returns an extension with the given |id|, |host_permissions|, and
@@ -833,7 +834,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeURLs) {
             GetExtensionAccess(active_tab.get(), settings_url, kTabId));
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         settings_url.GetOrigin());
@@ -862,7 +863,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureChromeUntrustedURLs) {
 
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     // Even extensions that can execute scripts everywhere, e.g. component
     // extensions, are not able to capture chrome-untrusted://.
@@ -892,7 +893,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(active_tab.get(), file_url, kTabId));
   {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         file_url.GetOrigin());
@@ -1176,7 +1177,7 @@ class CaptureVisiblePageTest : public testing::Test {
 
   void GrantActiveTab(const Extension& extension, const GURL& url) {
     APIPermissionSet tab_api_permissions;
-    tab_api_permissions.insert(APIPermission::kTab);
+    tab_api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet tab_hosts;
     tab_hosts.AddOrigin(UserScript::ValidUserScriptSchemes(),
                         url::Origin::Create(url).GetURL());

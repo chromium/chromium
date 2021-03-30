@@ -179,16 +179,16 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
       valid_schemes &= ~URLPattern::SCHEME_FILE;
     }
     new_hosts.AddOrigin(valid_schemes, url.GetOrigin());
-    new_apis.insert(APIPermission::kTab);
+    new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(
             APIPermission::kDeclarativeNetRequest)) {
-      new_apis.insert(APIPermission::kDeclarativeNetRequestFeedback);
+      new_apis.insert(mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
     }
   }
 
   if (permissions_data->HasAPIPermission(APIPermission::kTabCapture))
-    new_apis.insert(APIPermission::kTabCaptureForTab);
+    new_apis.insert(mojom::APIPermissionID::kTabCaptureForTab);
 
   if (!new_apis.empty() || !new_hosts.is_empty()) {
     granted_extensions_.Insert(extension);

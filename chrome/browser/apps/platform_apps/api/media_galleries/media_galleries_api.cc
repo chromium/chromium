@@ -159,15 +159,15 @@ base::ListValue* ConstructFileSystemList(
   const extensions::PermissionsData* permissions_data =
       extension->permissions_data();
   bool has_read_permission = permissions_data->CheckAPIPermissionWithParam(
-      extensions::APIPermission::kMediaGalleries, &read_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &read_param);
   MediaGalleriesPermission::CheckParam copy_to_param(
       MediaGalleriesPermission::kCopyToPermission);
   bool has_copy_to_permission = permissions_data->CheckAPIPermissionWithParam(
-      extensions::APIPermission::kMediaGalleries, &copy_to_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &copy_to_param);
   MediaGalleriesPermission::CheckParam delete_param(
       MediaGalleriesPermission::kDeletePermission);
   bool has_delete_permission = permissions_data->CheckAPIPermissionWithParam(
-      extensions::APIPermission::kMediaGalleries, &delete_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
   const int child_id = rfh->GetProcess()->GetID();
   std::unique_ptr<base::ListValue> list(new base::ListValue());

@@ -473,7 +473,8 @@ void PermissionsParser::AddAPIPermission(Extension* extension,
                                          APIPermission::ID permission) {
   DCHECK(extension->permissions_parser());
   extension->permissions_parser()
-      ->initial_required_permissions_->api_permissions.insert(permission);
+      ->initial_required_permissions_->api_permissions.insert(
+          static_cast<mojom::APIPermissionID>(permission));
 }
 
 // static
