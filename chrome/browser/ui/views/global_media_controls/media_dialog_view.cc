@@ -181,7 +181,7 @@ void MediaDialogView::UpdateBubbleSize() {
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
 
-  const int width = GetPreferredSize().width();
+  const int width = active_sessions_view_->GetPreferredSize().width();
   const int height = live_caption_container_->GetPreferredSize().height();
   live_caption_container_->SetPreferredSize(gfx::Size(width, height));
 }
@@ -286,6 +286,7 @@ void MediaDialogView::Init() {
       l10n_util::GetStringUTF16(live_caption_title_message));
   live_caption_title->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
+  live_caption_title->SetMultiLine(true);
   live_caption_title_ =
       live_caption_container->AddChildView(std::move(live_caption_title));
   live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
