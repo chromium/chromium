@@ -208,6 +208,18 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         You can now use Chromium any time you tap on links in messages, documents, and other apps.
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Chromium version of the description for the 'All your tabs' default browser promotion modal. [iOS only]">
+        Set Chromium as default to sync your tabs, passwords, and payment info on all your devices
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_TITLE" desc="Chromium version of the title for the 'Stay safe' default browser promotion modal. [iOS only]">
+        Stay Safe With Chromium
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_DESCRIPTION" desc="Chromium version of the description for the 'Stay safe' default browser promotion modal. [iOS only]">
+        Use Chromium as your default browser to stay protected from dangerous sites &amp; keep your passwords safe
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_DESCRIPTION" desc="Chromium version of the description for the 'Built for iOS' default browser promotion modal. [iOS only]">
+        Use Chromium by default to open links, search from widgets, and autofill passwords in other apps
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chromium?
       </message>
