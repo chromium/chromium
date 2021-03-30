@@ -78,11 +78,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
@@ -149,8 +151,8 @@ std::string FullyCanonicalize(const std::string& email) {
 
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
-                          base::Optional<cryptohome::BaseReply> reply) {
-  cryptohome::MountError error = BaseReplyToMountError(reply);
+                          base::Optional<user_data_auth::RemoveReply> reply) {
+  cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
   if (error != cryptohome::MOUNT_ERROR_NONE) {
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
                << " failed, return code: " << error;
@@ -256,13 +258,14 @@ bool PolicyHasWebTrustedAuthorityCertificate(
           broker->core()->store()->policy_map());
 }
 
-void CheckCryptohomeIsMounted(base::Optional<bool> result) {
+void CheckCryptohomeIsMounted(
+    base::Optional<user_data_auth::IsMountedReply> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "IsMounted call failed.";
     return;
   }
 
-  LOG_IF(ERROR, !result.value()) << "Cryptohome is not mounted.";
+  LOG_IF(ERROR, !result->is_mounted()) << "Cryptohome is not mounted.";
 }
 
 // If we don't have a mounted profile directory we're in trouble.
@@ -273,7 +276,8 @@ void CheckProfileForSanity() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
     return;
 
-  chromeos::CryptohomeClient::Get()->IsMounted(
+  chromeos::UserDataAuthClient::Get()->IsMounted(
+      user_data_auth::IsMountedRequest(),
       base::BindOnce(&CheckCryptohomeIsMounted));
 
   // Confirm that we hadn't loaded the new profile previously.
@@ -1354,8 +1358,10 @@ void ChromeUserManagerImpl::AsyncRemoveCryptohome(
   cryptohome::AccountIdentifier account_id_proto;
   account_id_proto.set_account_id(cryptohome::Identification(account_id).id());
 
-  chromeos::CryptohomeClient::Get()->RemoveEx(
-      account_id_proto, base::BindOnce(&OnRemoveUserComplete, account_id));
+  user_data_auth::RemoveRequest request;
+  *request.mutable_identifier() = account_id_proto;
+  chromeos::UserDataAuthClient::Get()->Remove(
+      request, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 
 bool ChromeUserManagerImpl::IsGuestAccountId(
