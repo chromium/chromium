@@ -25,6 +25,7 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/system/factory_ping_embargo_check.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -799,7 +800,7 @@ void AutoEnrollmentController::UpdateState(
 void AutoEnrollmentController::StartCleanupForcedReEnrollment() {
   // D-Bus services may not be available yet, so we call
   // WaitForServiceToBeAvailable. See https://crbug.com/841627.
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+  InstallAttributesClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &AutoEnrollmentController::StartRemoveFirmwareManagementParameters,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -813,8 +814,8 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
     return;
   }
 
-  cryptohome::RemoveFirmwareManagementParametersRequest request;
-  CryptohomeClient::Get()->RemoveFirmwareManagementParametersFromTpm(
+  user_data_auth::RemoveFirmwareManagementParametersRequest request;
+  InstallAttributesClient::Get()->RemoveFirmwareManagementParameters(
       request,
       base::BindOnce(
           &AutoEnrollmentController::OnFirmwareManagementParametersRemoved,
@@ -822,9 +823,13 @@ void AutoEnrollmentController::StartRemoveFirmwareManagementParameters(
 }
 
 void AutoEnrollmentController::OnFirmwareManagementParametersRemoved(
-    base::Optional<cryptohome::BaseReply> reply) {
-  if (!reply.has_value())
+    base::Optional<user_data_auth::RemoveFirmwareManagementParametersReply>
+        reply) {
+  if (!reply.has_value() ||
+      reply->error() !=
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
     LOG(ERROR) << "Failed to remove firmware management parameters.";
+  }
 
   // D-Bus services may not be available yet, so we call
   // WaitForServiceToBeAvailable. See https://crbug.com/841627.
