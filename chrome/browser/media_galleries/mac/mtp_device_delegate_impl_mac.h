@@ -47,7 +47,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   // Note: passed absolute paths, but expects relative paths in reply.
   void ReadDirectory(const base::FilePath& root,
-                     const ReadDirectorySuccessCallback& success_callback,
+                     ReadDirectorySuccessCallback success_callback,
                      ErrorCallback error_callback) override;
 
   // Note: passed absolute paths.
@@ -63,19 +63,17 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
                  ReadBytesSuccessCallback success_callback,
                  ErrorCallback error_callback) override;
   bool IsReadOnly() const override;
-  void CopyFileLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const CopyFileProgressCallback& progress_callback,
-      CopyFileLocalSuccessCallback success_callback,
-      ErrorCallback error_callback) override;
-  void MoveFileLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      MoveFileLocalSuccessCallback success_callback,
-      ErrorCallback error_callback) override;
+  void CopyFileLocal(const base::FilePath& source_file_path,
+                     const base::FilePath& device_file_path,
+                     CreateTemporaryFileCallback create_temporary_file_callback,
+                     CopyFileProgressCallback progress_callback,
+                     CopyFileLocalSuccessCallback success_callback,
+                     ErrorCallback error_callback) override;
+  void MoveFileLocal(const base::FilePath& source_file_path,
+                     const base::FilePath& device_file_path,
+                     CreateTemporaryFileCallback create_temporary_file_callback,
+                     MoveFileLocalSuccessCallback success_callback,
+                     ErrorCallback error_callback) override;
   void CopyFileFromLocal(const base::FilePath& source_file_path,
                          const base::FilePath& device_file_path,
                          CopyFileFromLocalSuccessCallback success_callback,
@@ -123,7 +121,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   // Delegate for ReadDirectory, called on the UI thread.
   void ReadDirectoryImpl(const base::FilePath& root,
-                         const ReadDirectorySuccessCallback& success_callback,
+                         ReadDirectorySuccessCallback success_callback,
                          ErrorCallback error_callback);
 
   // Delegate for CreateSnapshotFile, called on the UI thread.

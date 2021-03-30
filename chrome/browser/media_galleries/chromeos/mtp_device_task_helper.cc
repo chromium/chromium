@@ -87,12 +87,12 @@ MTPDeviceTaskHelper::~MTPDeviceTaskHelper() {
 
 void MTPDeviceTaskHelper::OpenStorage(const std::string& storage_name,
                                       const bool read_only,
-                                      const OpenStorageCallback& callback) {
+                                      OpenStorageCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!storage_name.empty());
   if (!device_handle_.empty()) {
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(callback, true));
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
 
@@ -101,7 +101,7 @@ void MTPDeviceTaskHelper::OpenStorage(const std::string& storage_name,
   GetMediaTransferProtocolManager()->OpenStorage(
       storage_name, mode,
       base::BindOnce(&MTPDeviceTaskHelper::OnDidOpenStorage,
-                     weak_ptr_factory_.GetWeakPtr(), callback));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MTPDeviceTaskHelper::GetFileInfo(
@@ -124,7 +124,7 @@ void MTPDeviceTaskHelper::GetFileInfo(
 void MTPDeviceTaskHelper::CreateDirectory(
     const uint32_t parent_id,
     const std::string& directory_name,
-    const CreateDirectorySuccessCallback& success_callback,
+    CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (device_handle_.empty())
@@ -134,13 +134,13 @@ void MTPDeviceTaskHelper::CreateDirectory(
   GetMediaTransferProtocolManager()->CreateDirectory(
       device_handle_, parent_id, directory_name,
       base::BindOnce(&MTPDeviceTaskHelper::OnCreateDirectory,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback)));
 }
 
 void MTPDeviceTaskHelper::ReadDirectory(
     const uint32_t directory_id,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (device_handle_.empty())
@@ -203,15 +203,15 @@ void MTPDeviceTaskHelper::ReadBytes(
 void MTPDeviceTaskHelper::RenameObject(
     const uint32_t object_id,
     const std::string& new_name,
-    const RenameObjectSuccessCallback& success_callback,
+    RenameObjectSuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetMediaTransferProtocolManager()->RenameObject(
       device_handle_, object_id, new_name,
       base::BindOnce(&MTPDeviceTaskHelper::OnRenameObject,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback)));
 }
 
 MTPDeviceTaskHelper::MTPEntry::MTPEntry() : file_id(0) {}
@@ -222,28 +222,28 @@ void MTPDeviceTaskHelper::CopyFileFromLocal(
     const int source_file_descriptor,
     const uint32_t parent_id,
     const std::string& file_name,
-    const CopyFileFromLocalSuccessCallback& success_callback,
+    CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetMediaTransferProtocolManager()->CopyFileFromLocal(
       device_handle_, source_file_descriptor, parent_id, file_name,
       base::BindOnce(&MTPDeviceTaskHelper::OnCopyFileFromLocal,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback)));
 }
 
 void MTPDeviceTaskHelper::DeleteObject(
     const uint32_t object_id,
-    const DeleteObjectSuccessCallback& success_callback,
+    DeleteObjectSuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetMediaTransferProtocolManager()->DeleteObject(
       device_handle_, object_id,
       base::BindOnce(&MTPDeviceTaskHelper::OnDeleteObject,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback)));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback)));
 }
 
 void MTPDeviceTaskHelper::CloseStorage() const {
@@ -255,13 +255,13 @@ void MTPDeviceTaskHelper::CloseStorage() const {
 }
 
 void MTPDeviceTaskHelper::OnDidOpenStorage(
-    const OpenStorageCallback& completion_callback,
+    OpenStorageCallback completion_callback,
     const std::string& device_handle,
     bool error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   device_handle_ = device_handle;
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(completion_callback, !error));
+      FROM_HERE, base::BindOnce(std::move(completion_callback), !error));
 }
 
 void MTPDeviceTaskHelper::OnGetFileInfo(
@@ -282,7 +282,7 @@ void MTPDeviceTaskHelper::OnGetFileInfo(
 }
 
 void MTPDeviceTaskHelper::OnCreateDirectory(
-    const CreateDirectorySuccessCallback& success_callback,
+    CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -293,11 +293,12 @@ void MTPDeviceTaskHelper::OnCreateDirectory(
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, success_callback);
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(success_callback));
 }
 
 void MTPDeviceTaskHelper::OnReadDirectoryEntryIdsToReadDirectory(
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const std::vector<uint32_t>& file_ids,
     bool error) {
@@ -321,13 +322,13 @@ void MTPDeviceTaskHelper::OnReadDirectoryEntryIdsToReadDirectory(
   GetMediaTransferProtocolManager()->GetFileInfo(
       device_handle_, file_ids_to_read_now,
       base::BindOnce(&MTPDeviceTaskHelper::OnGotDirectoryEntries,
-                     weak_ptr_factory_.GetWeakPtr(), success_callback,
-                     std::move(error_callback), file_ids_to_read_now,
-                     file_ids_to_read_later));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(success_callback), std::move(error_callback),
+                     file_ids_to_read_now, file_ids_to_read_later));
 }
 
 void MTPDeviceTaskHelper::OnGotDirectoryEntries(
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const std::vector<uint32_t>& expected_file_ids,
     const std::vector<uint32_t>& file_ids_to_read,
@@ -464,7 +465,7 @@ void MTPDeviceTaskHelper::OnDidReadBytes(
 }
 
 void MTPDeviceTaskHelper::OnRenameObject(
-    const RenameObjectSuccessCallback& success_callback,
+    RenameObjectSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -475,11 +476,12 @@ void MTPDeviceTaskHelper::OnRenameObject(
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, success_callback);
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(success_callback));
 }
 
 void MTPDeviceTaskHelper::OnCopyFileFromLocal(
-    const CopyFileFromLocalSuccessCallback& success_callback,
+    CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -490,11 +492,12 @@ void MTPDeviceTaskHelper::OnCopyFileFromLocal(
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, success_callback);
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(success_callback));
 }
 
 void MTPDeviceTaskHelper::OnDeleteObject(
-    const DeleteObjectSuccessCallback& success_callback,
+    DeleteObjectSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -505,7 +508,8 @@ void MTPDeviceTaskHelper::OnDeleteObject(
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, success_callback);
+  content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+                                               std::move(success_callback));
 }
 
 void MTPDeviceTaskHelper::HandleDeviceError(ErrorCallback error_callback,

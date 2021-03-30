@@ -170,8 +170,8 @@ void MTPDeviceDelegateImplMac::GetFileInfo(
   // Note: ownership of these objects passed into the reply callback.
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::Bind(&MTPDeviceDelegateImplMac::GetFileInfoImpl,
-                 base::Unretained(this), file_path, info, error),
+      base::BindOnce(&MTPDeviceDelegateImplMac::GetFileInfoImpl,
+                     base::Unretained(this), file_path, info, error),
       base::BindOnce(&ForwardGetFileInfo, base::Owned(info), base::Owned(error),
                      std::move(success_callback), std::move(error_callback)));
 }
@@ -187,7 +187,7 @@ void MTPDeviceDelegateImplMac::CreateDirectory(
 
 void MTPDeviceDelegateImplMac::ReadDirectory(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MTPDeviceDelegateImplMac::ReadDirectoryImpl,
@@ -228,8 +228,8 @@ bool MTPDeviceDelegateImplMac::IsReadOnly() const {
 void MTPDeviceDelegateImplMac::CopyFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CreateTemporaryFileCallback& create_temporary_file_callback,
-    const CopyFileProgressCallback& progress_callback,
+    CreateTemporaryFileCallback create_temporary_file_callback,
+    CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
@@ -238,7 +238,7 @@ void MTPDeviceDelegateImplMac::CopyFileLocal(
 void MTPDeviceDelegateImplMac::MoveFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CreateTemporaryFileCallback& create_temporary_file_callback,
+    CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
@@ -307,7 +307,7 @@ void MTPDeviceDelegateImplMac::GetFileInfoImpl(
 
 void MTPDeviceDelegateImplMac::ReadDirectoryImpl(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

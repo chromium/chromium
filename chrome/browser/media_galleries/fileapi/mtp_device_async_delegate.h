@@ -76,7 +76,7 @@ class MTPDeviceAsyncDelegate {
   // A callback to be called to create a temporary file. Path to the temporary
   // file is returned as base::FilePath. The caller is responsible to manage
   // life time of the temporary file.
-  typedef base::Callback<base::FilePath()> CreateTemporaryFileCallback;
+  typedef base::OnceCallback<base::FilePath()> CreateTemporaryFileCallback;
 
   // A callback to be called when CopyFileLocal method call succeeds.
   using CopyFileLocalSuccessCallback = base::OnceClosure;
@@ -114,10 +114,9 @@ class MTPDeviceAsyncDelegate {
 
   // Enumerates the |root| directory contents and invokes the appropriate
   // callback asynchronously when complete.
-  virtual void ReadDirectory(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback) = 0;
+  virtual void ReadDirectory(const base::FilePath& root,
+                             ReadDirectorySuccessCallback success_callback,
+                             ErrorCallback error_callback) = 0;
 
   // Copy the contents of |device_file_path| to |local_path|. Invokes the
   // appropriate callback asynchronously when complete.
@@ -149,8 +148,8 @@ class MTPDeviceAsyncDelegate {
   virtual void CopyFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const CopyFileProgressCallback& progress_callback,
+      CreateTemporaryFileCallback create_temporary_file_callback,
+      CopyFileProgressCallback progress_callback,
       CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) = 0;
 
@@ -159,7 +158,7 @@ class MTPDeviceAsyncDelegate {
   virtual void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
+      CreateTemporaryFileCallback create_temporary_file_callback,
       MoveFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback) = 0;
 

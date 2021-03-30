@@ -94,7 +94,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                        CreateDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void ReadDirectory(const base::FilePath& root,
-                     const ReadDirectorySuccessCallback& success_callback,
+                     ReadDirectorySuccessCallback success_callback,
                      ErrorCallback error_callback) override;
   void CreateSnapshotFile(const base::FilePath& device_file_path,
                           const base::FilePath& local_path,
@@ -108,19 +108,17 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                  ReadBytesSuccessCallback success_callback,
                  ErrorCallback error_callback) override;
   bool IsReadOnly() const override;
-  void CopyFileLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const CopyFileProgressCallback& progress_callback,
-      CopyFileLocalSuccessCallback success_callback,
-      ErrorCallback error_callback) override;
-  void MoveFileLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      MoveFileLocalSuccessCallback success_callback,
-      ErrorCallback error_callback) override;
+  void CopyFileLocal(const base::FilePath& source_file_path,
+                     const base::FilePath& device_file_path,
+                     CreateTemporaryFileCallback create_temporary_file_callback,
+                     CopyFileProgressCallback progress_callback,
+                     CopyFileLocalSuccessCallback success_callback,
+                     ErrorCallback error_callback) override;
+  void MoveFileLocal(const base::FilePath& source_file_path,
+                     const base::FilePath& device_file_path,
+                     CreateTemporaryFileCallback create_temporary_file_callback,
+                     MoveFileLocalSuccessCallback success_callback,
+                     ErrorCallback error_callback) override;
   void CopyFileFromLocal(const base::FilePath& source_file_path,
                          const base::FilePath& device_file_path,
                          CopyFileFromLocalSuccessCallback success_callback,
@@ -152,10 +150,9 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                                const bool exclusive,
                                CreateDirectorySuccessCallback success_callback,
                                ErrorCallback error_callback);
-  void ReadDirectoryInternal(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      ErrorCallback error_callback);
+  void ReadDirectoryInternal(const base::FilePath& root,
+                             ReadDirectorySuccessCallback success_callback,
+                             ErrorCallback error_callback);
   void CreateSnapshotFileInternal(
       const base::FilePath& device_file_path,
       const base::FilePath& local_path,
@@ -170,7 +167,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void MoveFileLocalInternal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
+      CreateTemporaryFileCallback create_temporary_file_callback,
       MoveFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& source_file_info);
@@ -289,7 +286,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // caller about the file error and process the next pending request.
   void OnDidGetFileInfoToReadDirectory(
       uint32_t dir_id,
-      const ReadDirectorySuccessCallback& success_callback,
+      ReadDirectorySuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info);
 
@@ -347,7 +344,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // |file_list| contains the directory file entries with their file ids.
   // |has_more| is true if there are more file entries to read.
   void OnDidReadDirectory(uint32_t dir_id,
-                          const ReadDirectorySuccessCallback& success_callback,
+                          ReadDirectorySuccessCallback success_callback,
                           const MTPDeviceTaskHelper::MTPEntries& mtp_entries,
                           bool has_more);
 
@@ -389,7 +386,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   void OnDidCreateTemporaryFileToCopyFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CopyFileProgressCallback& progress_callback,
+      CopyFileProgressCallback progress_callback,
       CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::FilePath& temporary_file_path);
@@ -397,7 +394,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Called when CreateSnapshotFile() succeeds for CopyFileLocal.
   void OnDidCreateSnapshotFileOfCopyFileLocal(
       const base::FilePath& device_file_path,
-      const CopyFileProgressCallback& progress_callback,
+      CopyFileProgressCallback progress_callback,
       CopyFileLocalSuccessCallback success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info,

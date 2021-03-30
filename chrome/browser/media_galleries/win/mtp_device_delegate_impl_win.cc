@@ -400,7 +400,7 @@ void MTPDeviceDelegateImplWin::CreateDirectory(
 
 void MTPDeviceDelegateImplWin::ReadDirectory(
     const base::FilePath& root,
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!root.empty());
@@ -458,8 +458,8 @@ bool MTPDeviceDelegateImplWin::IsReadOnly() const {
 void MTPDeviceDelegateImplWin::CopyFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CreateTemporaryFileCallback& create_temporary_file_callback,
-    const CopyFileProgressCallback& progress_callback,
+    CreateTemporaryFileCallback create_temporary_file_callback,
+    CopyFileProgressCallback progress_callback,
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
@@ -468,7 +468,7 @@ void MTPDeviceDelegateImplWin::CopyFileLocal(
 void MTPDeviceDelegateImplWin::MoveFileLocal(
     const base::FilePath& source_file_path,
     const base::FilePath& device_file_path,
-    const CreateTemporaryFileCallback& create_temporary_file_callback,
+    CreateTemporaryFileCallback create_temporary_file_callback,
     MoveFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
   NOTREACHED();
@@ -605,7 +605,7 @@ void MTPDeviceDelegateImplWin::OnGetFileInfo(
 }
 
 void MTPDeviceDelegateImplWin::OnDidReadDirectory(
-    const ReadDirectorySuccessCallback& success_callback,
+    ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     storage::AsyncFileUtil::EntryList* file_list,
     base::File::Error error) {
