@@ -47,11 +47,13 @@ void OnRead(net::StreamSocket* socket,
   }
 
   std::string new_data = data + std::string(buffer->data(), result);
-  net::CompletionRepeatingCallback on_read = base::AdaptCallbackForRepeating(
+  auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&OnRead, socket, buffer, new_data, std::move(callback)));
-  result = socket->Read(buffer.get(), kBufferSize, on_read);
-  if (result != net::ERR_IO_PENDING)
-    on_read.Run(result);
+  result =
+      socket->Read(buffer.get(), kBufferSize, std::move(split_callback.first));
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result);
+  }
 }
 
 void OpenedForCommand(UsbDeviceProvider::CommandCallback callback,
@@ -63,12 +65,13 @@ void OpenedForCommand(UsbDeviceProvider::CommandCallback callback,
   }
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBuffer>(kBufferSize);
-  net::CompletionRepeatingCallback on_read =
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &OnRead, socket, buffer, std::string(), std::move(callback)));
-  result = socket->Read(buffer.get(), kBufferSize, on_read);
-  if (result != net::ERR_IO_PENDING)
-    on_read.Run(result);
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
+      &OnRead, socket, buffer, std::string(), std::move(callback)));
+  result =
+      socket->Read(buffer.get(), kBufferSize, std::move(split_callback.first));
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result);
+  }
 }
 
 void RunCommand(scoped_refptr<AndroidUsbDevice> device,
@@ -79,11 +82,12 @@ void RunCommand(scoped_refptr<AndroidUsbDevice> device,
     std::move(callback).Run(net::ERR_CONNECTION_FAILED, std::string());
     return;
   }
-  auto completion = base::AdaptCallbackForRepeating(std::move(callback));
-  int result =
-      socket->Connect(base::BindOnce(&OpenedForCommand, completion, socket));
-  if (result != net::ERR_IO_PENDING)
-    completion.Run(result, std::string());
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int result = socket->Connect(base::BindOnce(
+      &OpenedForCommand, std::move(split_callback.first), socket));
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result, std::string());
+  }
 }
 
 }  // namespace
@@ -126,12 +130,12 @@ void UsbDeviceProvider::OpenSocket(const std::string& serial,
     return;
   }
 
-  base::RepeatingCallback<void(int, std::unique_ptr<net::StreamSocket>)>
-      on_result = base::AdaptCallbackForRepeating(std::move(callback));
-  int result =
-      socket->Connect(base::BindOnce(&OnOpenSocket, on_result, socket));
-  if (result != net::ERR_IO_PENDING)
-    on_result.Run(result, nullptr);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  int result = socket->Connect(
+      base::BindOnce(&OnOpenSocket, std::move(split_callback.first), socket));
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result, nullptr);
+  }
 }
 
 void UsbDeviceProvider::ReleaseDevice(const std::string& serial) {

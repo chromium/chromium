@@ -82,12 +82,12 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
         new net::TCPClientSocket(resolved_addresses.value(), nullptr, nullptr,
                                  nullptr, net::NetLogSource()));
     net::StreamSocket* socket_ptr = socket.get();
-    net::CompletionRepeatingCallback on_connect =
-        base::AdaptCallbackForRepeating(base::BindOnce(
-            &RunSocketCallback, std::move(callback_), std::move(socket)));
-    result = socket_ptr->Connect(on_connect);
-    if (result != net::ERR_IO_PENDING)
-      on_connect.Run(result);
+    auto split_callback = base::SplitOnceCallback(base::BindOnce(
+        &RunSocketCallback, std::move(callback_), std::move(socket)));
+    result = socket_ptr->Connect(std::move(split_callback.first));
+    if (result != net::ERR_IO_PENDING) {
+      std::move(split_callback.second).Run(result);
+    }
     delete this;
   }
 

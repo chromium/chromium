@@ -228,14 +228,15 @@ void AdbClientSocket::SendCommand(const std::string& command,
             "debugging."
         })");
 
-  base::RepeatingCallback<void(int)> on_response =
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&AdbClientSocket::ReadResponse, base::Unretained(this),
-                         std::move(callback), is_void));
-  int result = socket_->Write(request_buffer.get(), request_buffer->size(),
-                              on_response, traffic_annotation);
-  if (result != net::ERR_IO_PENDING)
-    on_response.Run(result);
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&AdbClientSocket::ReadResponse, base::Unretained(this),
+                     std::move(callback), is_void));
+  int result =
+      socket_->Write(request_buffer.get(), request_buffer->size(),
+                     std::move(split_callback.first), traffic_annotation);
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result);
+  }
 }
 
 void AdbClientSocket::ReadResponse(CommandCallback callback,
@@ -247,14 +248,14 @@ void AdbClientSocket::ReadResponse(CommandCallback callback,
   }
   scoped_refptr<net::IOBuffer> response_buffer =
       base::MakeRefCounted<net::IOBuffer>(kBufferSize);
-  base::RepeatingCallback<void(int)> on_response_header =
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &AdbClientSocket::OnResponseHeader, base::Unretained(this),
-          std::move(callback), is_void, response_buffer));
-  result =
-      socket_->Read(response_buffer.get(), kBufferSize, on_response_header);
-  if (result != net::ERR_IO_PENDING)
-    on_response_header.Run(result);
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&AdbClientSocket::OnResponseHeader, base::Unretained(this),
+                     std::move(callback), is_void, response_buffer));
+  result = socket_->Read(response_buffer.get(), kBufferSize,
+                         std::move(split_callback.first));
+  if (result != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result);
+  }
 }
 
 void AdbClientSocket::OnResponseHeader(
@@ -320,16 +321,16 @@ void AdbClientSocket::OnResponseData(
   }
 
   // Read tail
-  base::RepeatingCallback<void(int, const std::string&)> on_finished =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   result = socket_->Read(
       response_buffer.get(), kBufferSize,
       base::BindOnce(&AdbClientSocket::OnResponseData, base::Unretained(this),
-                     on_finished, new_response, response_buffer, bytes_left));
+                     std::move(split_callback.first), new_response,
+                     response_buffer, bytes_left));
   if (result > 0) {
-    OnResponseData(on_finished, new_response, response_buffer, bytes_left,
-                   result);
+    OnResponseData(std::move(split_callback.second), new_response,
+                   response_buffer, bytes_left, result);
   } else if (result != net::ERR_IO_PENDING) {
-    on_finished.Run(net::OK, new_response);
+    std::move(split_callback.second).Run(net::OK, new_response);
   }
 }
