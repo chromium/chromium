@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-03-25T19:25:52.349Z",
+  "time_generated": "2021-03-29T23:30:19.680Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -106,7 +106,7 @@
       "enabled": true,
       "url": "https://docs.google.com/document/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Doc quickly (like doc.new)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT\nIDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 14,
@@ -114,7 +114,7 @@
       "enabled": true,
       "url": "https://docs.google.com/spreadsheets/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Sheet quickly (like sheet.new)\n",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 15,
@@ -122,7 +122,7 @@
       "enabled": true,
       "url": "https://docs.google.com/presentation/u/0/create?usp=chrome_actions",
       "description": "Create new Google Slides quickly (like slide.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 16,
@@ -130,7 +130,7 @@
       "enabled": true,
       "url": "https://calendar.google.com/calendar/u/0/r/eventedit?usp=chrome_actions",
       "description": "Create a new Google Calendar event quickly (like cal.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 17,
@@ -138,7 +138,7 @@
       "enabled": true,
       "url": "https://sites.google.com/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Site quickly (like site.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 18,
@@ -146,7 +146,7 @@
       "enabled": true,
       "url": "https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE",
       "description": "Create a new Google Keep note quickly (like keep.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 19,
@@ -154,7 +154,7 @@
       "enabled": true,
       "url": "https://docs.google.com/forms/u/0/create?usp=chrome_actions",
       "description": "Create a new Google Form quickly (like form.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 20,
@@ -162,7 +162,7 @@
       "enabled": true,
       "url": "https://mail.google.com/mail/u/0/?usp=dot_new#inbox?compose=new",
       "description": "Create an email in Gmail quickly (like mail.new)",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 21,
@@ -178,7 +178,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/?utm_source=ga-chrome-actions&utm_medium=manageGA",
       "description": "Manage your Google Account",
-      "tags": ""
+      "tags": "google"
     },
     {
       "id": 23,
@@ -194,7 +194,7 @@
       "enabled": true,
       "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW",
       "description": "Change the password for your Google Account",
-      "tags": ""
+      "tags": "google"
     }
   ],
   "locales": [

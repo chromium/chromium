@@ -17,7 +17,7 @@ class OmniboxPedalProviderTest : public testing::Test {
 
 TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client);
+  OmniboxPedalProvider provider(client, true);
   EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
   EXPECT_EQ(provider.FindPedalMatch(u"clear histor"), nullptr);
   EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
@@ -25,7 +25,7 @@ TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
 
 TEST_F(OmniboxPedalProviderTest, MemoryUsageIsModerate) {
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client);
+  OmniboxPedalProvider provider(client, true);
   // Note: This allowance is a soft limit that may be tweaked depending on
   // how usefulness is weighed against memory cost. The goal of the test is
   // just to prove a reasonable bound.

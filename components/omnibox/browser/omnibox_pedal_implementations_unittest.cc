@@ -30,7 +30,7 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kOmniboxPedalsBatch2);
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client);
+  OmniboxPedalProvider provider(client, true);
   const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
   base::TimeTicks match_selection_timestamp;
   OmniboxPedal::ExecutionContext context(
@@ -17180,7 +17180,7 @@ TEST_F(OmniboxPedalImplementationsTest,
   // confirmed as concept matches for the Pedal.  Finally, we verify that every
   // implemented Pedal has been tested using set logic.
   MockAutocompleteProviderClient client;
-  OmniboxPedalProvider provider(client);
+  OmniboxPedalProvider provider(client, true);
   const auto& pedals = provider.pedals_;
   std::unordered_set<const OmniboxPedal*> found_pedals(pedals.size());
   LOG(INFO) << "Pedal count: " << pedals.size();

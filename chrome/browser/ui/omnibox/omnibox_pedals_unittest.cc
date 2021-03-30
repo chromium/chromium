@@ -577,7 +577,7 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
         test_case.locale);
 
     // Instantiating the provider loads concept data from shared ResourceBundle.
-    OmniboxPedalProvider provider(client);
+    OmniboxPedalProvider provider(client, true);
 
     EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

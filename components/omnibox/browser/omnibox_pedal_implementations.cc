@@ -226,7 +226,7 @@ class OmniboxPedalAuthRequired : public OmniboxPedal {
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
-    return client.IsAuthenticated();
+    return client.IsSyncActive();
   }
 };
 
@@ -316,7 +316,7 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 // =============================================================================
 
 std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
-GetPedalImplementations() {
+GetPedalImplementations(bool with_branding) {
   std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedalId id, OmniboxPedal* pedal) {
     pedals.insert(std::make_pair(id, std::unique_ptr<OmniboxPedal>(pedal)));
@@ -337,22 +337,27 @@ GetPedalImplementations() {
     add(OmniboxPedalId::MANAGE_SYNC, new OmniboxPedalManageSync());
     add(OmniboxPedalId::MANAGE_SITE_SETTINGS,
         new OmniboxPedalManageSiteSettings());
-    add(OmniboxPedalId::CREATE_GOOGLE_DOC, new OmniboxPedalCreateGoogleDoc());
-    add(OmniboxPedalId::CREATE_GOOGLE_SHEET,
-        new OmniboxPedalCreateGoogleSheet());
-    add(OmniboxPedalId::CREATE_GOOGLE_SLIDE,
-        new OmniboxPedalCreateGoogleSlide());
-    add(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT,
-        new OmniboxPedalCreateGoogleCalendarEvent());
-    add(OmniboxPedalId::CREATE_GOOGLE_SITE, new OmniboxPedalCreateGoogleSite());
-    add(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE,
-        new OmniboxPedalCreateGoogleKeepNote());
-    add(OmniboxPedalId::CREATE_GOOGLE_FORM, new OmniboxPedalCreateGoogleForm());
     add(OmniboxPedalId::SEE_CHROME_TIPS, new OmniboxPedalSeeChromeTips());
-    add(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT,
-        new OmniboxPedalManageGoogleAccount());
-    add(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD,
-        new OmniboxPedalChangeGooglePassword());
+
+    if (with_branding) {
+      add(OmniboxPedalId::CREATE_GOOGLE_DOC, new OmniboxPedalCreateGoogleDoc());
+      add(OmniboxPedalId::CREATE_GOOGLE_SHEET,
+          new OmniboxPedalCreateGoogleSheet());
+      add(OmniboxPedalId::CREATE_GOOGLE_SLIDE,
+          new OmniboxPedalCreateGoogleSlide());
+      add(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT,
+          new OmniboxPedalCreateGoogleCalendarEvent());
+      add(OmniboxPedalId::CREATE_GOOGLE_SITE,
+          new OmniboxPedalCreateGoogleSite());
+      add(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE,
+          new OmniboxPedalCreateGoogleKeepNote());
+      add(OmniboxPedalId::CREATE_GOOGLE_FORM,
+          new OmniboxPedalCreateGoogleForm());
+      add(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT,
+          new OmniboxPedalManageGoogleAccount());
+      add(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD,
+          new OmniboxPedalChangeGooglePassword());
+    }
   }
   return pedals;
 }

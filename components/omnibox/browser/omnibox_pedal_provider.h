@@ -24,7 +24,8 @@ class AutocompleteProviderClient;
 // providers (search in particular).
 class OmniboxPedalProvider {
  public:
-  explicit OmniboxPedalProvider(AutocompleteProviderClient& client);
+  // |with_branding| specifies whether to include Google Chrome branded Pedals.
+  OmniboxPedalProvider(AutocompleteProviderClient& client, bool with_branding);
   ~OmniboxPedalProvider();
   OmniboxPedalProvider(const OmniboxPedalProvider&) = delete;
   OmniboxPedalProvider& operator=(const OmniboxPedalProvider&) = delete;

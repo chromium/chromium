@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
@@ -191,8 +192,13 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled())
-    pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this);
+  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, true);
+#else
+    pedal_provider_ = std::make_unique<OmniboxPedalProvider>(*this, false);
+#endif
+  }
 }
 
 ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() {

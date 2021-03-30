@@ -31,9 +31,10 @@ typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
 
 }  // namespace
 
-OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client)
+OmniboxPedalProvider::OmniboxPedalProvider(AutocompleteProviderClient& client,
+                                           bool with_branding)
     : client_(client),
-      pedals_(GetPedalImplementations()),
+      pedals_(GetPedalImplementations(with_branding)),
       ignore_group_(false, false, 0) {
   LoadPedalConcepts();
 
@@ -217,24 +218,22 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
         !OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
       continue;
     }
-    const OmniboxPedalId pedal_id = static_cast<OmniboxPedalId>(id);
-    const auto pedal = pedals_.find(pedal_id);
-    if (pedal == pedals_.end()) {
-      CHECK(false) << "OmniboxPedalId " << static_cast<int>(pedal_id)
-                   << " not found. Are all data-referenced implementations "
-                      "added to provider?";
+    const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
+    if (pedal_iter == pedals_.end()) {
+      // Data may exist for Pedals that are intentionally not registered; skip.
+      continue;
     }
     const base::Value* ui_strings =
         pedal_value.FindDictKey("omnibox_ui_strings");
     if (ui_strings) {
-      pedal->second->SetLabelStrings(*ui_strings);
+      pedal_iter->second->SetLabelStrings(*ui_strings);
     }
     const std::string* url = pedal_value.FindStringKey("url");
     if (!url->empty()) {
-      pedal->second->SetNavigationUrl(GURL(*url));
+      pedal_iter->second->SetNavigationUrl(GURL(*url));
     }
     for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
-      pedal->second->AddSynonymGroup(LoadSynonymGroup(group_value));
+      pedal_iter->second->AddSynonymGroup(LoadSynonymGroup(group_value));
     }
   }
 }
