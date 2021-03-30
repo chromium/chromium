@@ -44,6 +44,7 @@ include_rules = [
   "+components/permissions",
   "+components/policy",
   "+components/prefs",
+  "+components/profile_metrics",
   "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/core/db",
   "+components/search_engines",

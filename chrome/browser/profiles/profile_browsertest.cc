@@ -53,6 +53,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -937,6 +938,29 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
             Browser::GetCreationStatusForProfile(otr_profile));
 }
 
+// Tests if profile type returned by |ProfileMetrics::GetBrowserProfileType| and
+// |profile_metrics::GetBrowserContextType| are correct.
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
+  Profile* regular_profile = browser()->profile();
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kRegular,
+            profile_metrics::GetBrowserContextType(regular_profile));
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kRegular,
+            ProfileMetrics::GetBrowserProfileType(regular_profile));
+
+  Profile* incognito_profile = browser()->profile()->GetPrimaryOTRProfile();
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
+            profile_metrics::GetBrowserContextType(incognito_profile));
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kIncognito,
+            ProfileMetrics::GetBrowserProfileType(incognito_profile));
+
+  Profile* otr_profile = browser()->profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID("profile::otr"));
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
+            profile_metrics::GetBrowserContextType(otr_profile));
+  EXPECT_EQ(profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile,
+            ProfileMetrics::GetBrowserProfileType(otr_profile));
+}
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
@@ -957,6 +981,18 @@ class GuestProfileLifetimeBrowserTest
   bool is_ephemeral_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, TestProfileTypes) {
+  Browser* browser = CreateGuestBrowser();
+  profile_metrics::BrowserProfileType expected_type =
+      is_ephemeral() ? profile_metrics::BrowserProfileType::kEphemeralGuest
+                     : profile_metrics::BrowserProfileType::kGuest;
+
+  EXPECT_EQ(expected_type,
+            profile_metrics::GetBrowserContextType(browser->profile()));
+  EXPECT_EQ(expected_type,
+            ProfileMetrics::GetBrowserProfileType(browser->profile()));
+}
 
 IN_PROC_BROWSER_TEST_P(GuestProfileLifetimeBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;

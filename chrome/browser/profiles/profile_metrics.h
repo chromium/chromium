@@ -164,6 +164,7 @@ class ProfileMetrics {
                                       profile_metrics::Counts* counts);
 
   // Returns profile type for logging.
+  // TODO(https://crbug.com/1169142): Deprecated, remove.
   static profile_metrics::BrowserProfileType GetBrowserProfileType(
       Profile* profile);
 

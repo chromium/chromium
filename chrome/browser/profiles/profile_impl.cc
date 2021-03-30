@@ -136,6 +136,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -497,6 +498,23 @@ ProfileImpl::ProfileImpl(
 
   set_is_guest_profile(path == ProfileManager::GetGuestProfilePath());
   set_is_system_profile(path == ProfileManager::GetSystemProfilePath());
+
+  // TODO(https://1169142): Replace this part with setting the
+  // BrowserContextType as the main reference for profile type and replacing the
+  // IsXProfile functions implementations with checking for this value.
+  if (IsGuestSession()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kGuest);
+  } else if (IsEphemeralGuestProfile()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kEphemeralGuest);
+  } else if (IsSystemProfile()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kSystem);
+  } else {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kRegular);
+  }
 
   // The ProfileImpl can be created both synchronously and asynchronously.
   bool async_prefs = create_mode == CREATE_MODE_ASYNCHRONOUS;

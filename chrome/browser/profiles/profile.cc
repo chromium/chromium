@@ -365,6 +365,8 @@ bool Profile::IsRegularProfile() const {
 }
 
 bool Profile::IsIncognitoProfile() const {
+  // TODO(https://1169142): Replace logic of this function and other
+  // IsXProfile functions with GetBrowserProfileType().
   return IsPrimaryOTRProfile() && !IsGuestSession() && !IsSystemProfile();
 }
 

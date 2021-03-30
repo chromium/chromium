@@ -431,6 +431,10 @@ class TestingProfile : public Profile {
   // Finishes initialization when a profile is created asynchronously.
   void FinishInit();
 
+  // TODO(https://crbug.com/1169142): Update when profile type variables are
+  // removed (is_guest_session_, is_system_profile_, ...)
+  void UpdateBrowserProfileType();
+
   // Creates a TestingPrefService and associates it with the TestingProfile.
   void CreateTestingPrefService();
 

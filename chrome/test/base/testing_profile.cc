@@ -82,6 +82,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -315,6 +316,7 @@ void TestingProfile::Init() {
                             profile_manager->GetSystemProfilePath());
     }
   }
+  UpdateBrowserProfileType();
 
   if (IsOffTheRecord()) {
     key_ = std::make_unique<TestingProfileKey>(
@@ -446,6 +448,37 @@ void TestingProfile::Init() {
       this);
 }
 
+void TestingProfile::UpdateBrowserProfileType() {
+  if (IsGuestSession()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kGuest);
+    return;
+  }
+
+  if (IsEphemeralGuestProfile()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kEphemeralGuest);
+    return;
+  }
+
+  if (IsSystemProfile()) {
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kSystem);
+    return;
+  }
+
+  if (IsOffTheRecord()) {
+    profile_metrics::SetBrowserContextType(
+        this,
+        (otr_profile_id_ == OTRProfileID::PrimaryID())
+            ? profile_metrics::BrowserProfileType::kIncognito
+            : profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile);
+    return;
+  }
+  profile_metrics::SetBrowserContextType(
+      this, profile_metrics::BrowserProfileType::kRegular);
+}
+
 void TestingProfile::FinishInit() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager)
@@ -457,7 +490,8 @@ void TestingProfile::FinishInit() {
     // It is the role of the delegate to ensure that the signout allowed is
     // properly updated after the profile is create is initialized.
     // For testing profiles that do not have a delegate, the signout allowed
-    // must be initialized when the testing profile finishes its initialization.
+    // must be initialized when the testing profile finishes its
+    // initialization.
     signin_util::EnsureUserSignoutAllowedIsInitializedForProfile(this);
   }
 
@@ -480,9 +514,9 @@ TestingProfile::~TestingProfile() {
   FullBrowserTransitionManager::Get()->OnProfileDestroyed(this);
 
   // The SimpleDependencyManager should always be passed after the
-  // BrowserContextDependencyManager. This is because the KeyedService instances
-  // in the BrowserContextDependencyManager's dependency graph can depend on the
-  // ones in the SimpleDependencyManager's graph.
+  // BrowserContextDependencyManager. This is because the KeyedService
+  // instances in the BrowserContextDependencyManager's dependency graph can
+  // depend on the ones in the SimpleDependencyManager's graph.
   DependencyManager::PerformInterlockedTwoPhaseShutdown(
       browser_context_dependency_manager_, this, simple_dependency_manager_,
       key_.get());
@@ -547,6 +581,7 @@ void TestingProfile::CreateWebDataService() {
 
 void TestingProfile::SetGuestSession(bool guest) {
   guest_session_ = guest;
+  UpdateBrowserProfileType();
 }
 
 void TestingProfile::SetIsNewProfile(bool is_new_profile) {

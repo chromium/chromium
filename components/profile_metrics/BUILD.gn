@@ -11,6 +11,10 @@ static_library("profile_metrics") {
     "state.h",
   ]
 
+  if (!is_ios) {
+    sources += [ "browser_profile_type.cc" ]
+  }
+
   deps = [ "//base" ]
 }
 

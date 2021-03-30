@@ -61,6 +61,7 @@
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/json_pref_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
@@ -122,6 +123,33 @@ namespace {
 // Key names for OTR Profile user data.
 constexpr char kVideoDecodePerfHistoryId[] = "video-decode-perf-history";
 
+profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
+    const Profile::OTRProfileID* otr_profile_id,
+    const Profile* parent_profile) {
+  DCHECK(!parent_profile->IsOffTheRecord());
+
+  if (*otr_profile_id != Profile::OTRProfileID::PrimaryID())
+    return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
+
+  switch (profile_metrics::GetBrowserContextType(parent_profile)) {
+    case profile_metrics::BrowserProfileType::kRegular:
+      return profile_metrics::BrowserProfileType::kIncognito;
+
+    case profile_metrics::BrowserProfileType::kGuest:
+      return profile_metrics::BrowserProfileType::kGuest;
+
+    case profile_metrics::BrowserProfileType::kEphemeralGuest:
+      return profile_metrics::BrowserProfileType::kEphemeralGuest;
+
+    case profile_metrics::BrowserProfileType::kSystem:
+      return profile_metrics::BrowserProfileType::kSystem;
+
+    case profile_metrics::BrowserProfileType::kIncognito:
+    case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
+      NOTREACHED();
+  }
+  return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
+}
 }  // namespace
 
 OffTheRecordProfileImpl::OffTheRecordProfileImpl(
@@ -143,6 +171,8 @@ OffTheRecordProfileImpl::OffTheRecordProfileImpl(
 
   // Register on BrowserContext.
   user_prefs::UserPrefs::Set(this, prefs_.get());
+  profile_metrics::SetBrowserContextType(
+      this, ComputeOffTheRecordProfileType(&otr_profile_id_, profile_));
 }
 
 void OffTheRecordProfileImpl::Init() {
@@ -603,6 +633,8 @@ class GuestSessionProfile : public OffTheRecordProfileImpl {
   explicit GuestSessionProfile(Profile* real_profile)
       : OffTheRecordProfileImpl(real_profile, OTRProfileID::PrimaryID()) {
     set_is_guest_profile(true);
+    profile_metrics::SetBrowserContextType(
+        this, profile_metrics::BrowserProfileType::kGuest);
   }
 
   void InitChromeOSPreferences() override {
