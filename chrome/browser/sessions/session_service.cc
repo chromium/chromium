@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,8 +61,6 @@ using content::NavigationEntry;
 using content::WebContents;
 using sessions::ContentSerializedNavigationBuilder;
 using sessions::SerializedNavigationEntry;
-
-// SessionService -------------------------------------------------------------
 
 SessionService::SessionService(Profile* profile)
     : SessionServiceBase(
@@ -307,15 +306,6 @@ void SessionService::SetWindowType(const SessionID& window_id,
   ScheduleCommand(CreateSetWindowTypeCommand(window_id, window_type));
 }
 
-void SessionService::SetWindowAppName(
-    const SessionID& window_id,
-    const std::string& app_name) {
-  if (!ShouldTrackChangesToWindow(window_id))
-    return;
-
-  ScheduleCommand(sessions::CreateSetWindowAppNameCommand(window_id, app_name));
-}
-
 void SessionService::SetWindowUserTitle(const SessionID& window_id,
                                         const std::string& user_title) {
   if (!ShouldTrackChangesToWindow(window_id))
@@ -372,6 +362,7 @@ bool SessionService::ShouldRestoreWindowOfType(
     return true;
 #endif
 
+  // TYPE_APP and TYPE_APP_POPUP are handled by app_session_service.
   return (window_type == sessions::SessionWindow::TYPE_NORMAL) ||
          (window_type == sessions::SessionWindow::TYPE_POPUP);
 }
@@ -417,40 +408,17 @@ void SessionService::BuildCommandsForTab(
     base::Optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
-  DCHECK(tab);
-  DCHECK(window_id.is_valid());
+  SessionServiceBase::BuildCommandsForTab(window_id, tab, index_in_window,
+                                          group, is_pinned,
+                                          tab_to_available_range);
 
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(tab);
   const SessionID& session_id(session_tab_helper->session_id());
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetTabWindowCommand(window_id, session_id));
-
-  const int current_index = tab->GetController().GetCurrentEntryIndex();
-  const int min_index =
-      std::max(current_index - sessions::gMaxPersistNavigationCount, 0);
-  const int max_index =
-      std::min(current_index + sessions::gMaxPersistNavigationCount,
-               tab->GetController().GetEntryCount());
-  const int pending_index = tab->GetController().GetPendingEntryIndex();
-  if (tab_to_available_range) {
-    (*tab_to_available_range)[session_id] =
-        std::pair<int, int>(min_index, max_index);
-  }
 
   if (is_pinned) {
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreatePinnedStateCommand(session_id, true));
-  }
-
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateLastActiveTimeCommand(session_id,
-                                            tab->GetLastActiveTime()));
-
-  std::string app_id = apps::GetAppIdForWebContents(tab);
-  if (!app_id.empty()) {
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateSetTabExtensionAppIDCommand(session_id, app_id));
   }
 
   const blink::UserAgentOverride& ua_override = tab->GetUserAgentOverride();
@@ -466,61 +434,18 @@ void SessionService::BuildCommandsForTab(
                                                        serialized_ua_override));
   }
 
-  for (int i = min_index; i < max_index; ++i) {
-    NavigationEntry* entry = (i == pending_index)
-                                 ? tab->GetController().GetPendingEntry()
-                                 : tab->GetController().GetEntryAtIndex(i);
-    DCHECK(entry);
-    if (ShouldTrackURLForRestore(entry->GetVirtualURL())) {
-      const SerializedNavigationEntry navigation =
-          ContentSerializedNavigationBuilder::FromNavigationEntry(i, entry);
-      command_storage_manager()->AppendRebuildCommand(
-          CreateUpdateTabNavigationCommand(session_id, navigation));
-    }
-  }
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetSelectedNavigationIndexCommand(session_id,
-                                                        current_index));
-
-  if (index_in_window != -1) {
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateSetTabIndexInWindowCommand(session_id,
-                                                   index_in_window));
-  }
-
   if (group.has_value()) {
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateTabGroupCommand(session_id, std::move(group)));
   }
-
-  // Record the association between the sessionStorage namespace and the tab.
-  content::SessionStorageNamespace* session_storage_namespace =
-      tab->GetController().GetDefaultSessionStorageNamespace();
-  ScheduleCommand(sessions::CreateSessionStorageAssociatedCommand(
-      session_tab_helper->session_id(), session_storage_namespace->id()));
 }
 
 void SessionService::BuildCommandsForBrowser(
     Browser* browser,
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
-  DCHECK(browser);
-  DCHECK(browser->session_id().is_valid());
-
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetWindowBoundsCommand(
-          browser->session_id(), browser->window()->GetRestoredBounds(),
-          browser->window()->GetRestoredState()));
-
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetWindowTypeCommand(
-          browser->session_id(), WindowTypeForBrowserType(browser->type())));
-
-  if (!browser->app_name().empty()) {
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateSetWindowAppNameCommand(browser->session_id(),
-                                                browser->app_name()));
-  }
+  SessionServiceBase::BuildCommandsForBrowser(browser, tab_to_available_range,
+                                              windows_to_track);
 
   if (!browser->user_title().empty()) {
     command_storage_manager()->AppendRebuildCommand(
@@ -528,27 +453,10 @@ void SessionService::BuildCommandsForBrowser(
                                                   browser->user_title()));
   }
 
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetWindowWorkspaceCommand(
-          browser->session_id(), browser->window()->GetWorkspace()));
-
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetWindowVisibleOnAllWorkspacesCommand(
-          browser->session_id(),
-          browser->window()->IsVisibleOnAllWorkspaces()));
-
   windows_to_track->insert(browser->session_id());
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    WebContents* tab = tab_strip->GetWebContentsAt(i);
-    DCHECK(tab);
-    const base::Optional<tab_groups::TabGroupId> group_id =
-        tab_strip->GetTabGroupForTab(i);
-    BuildCommandsForTab(browser->session_id(), tab, i, group_id,
-                        tab_strip->IsTabPinned(i), tab_to_available_range);
-  }
 
   // Set the visual data for each tab group.
+  TabStripModel* tab_strip = browser->tab_strip_model();
   TabGroupModel* group_model = tab_strip->group_model();
   for (const tab_groups::TabGroupId& group_id : group_model->ListTabGroups()) {
     const tab_groups::TabGroupVisualData* visual_data =
@@ -557,9 +465,14 @@ void SessionService::BuildCommandsForBrowser(
         sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
   }
 
-  command_storage_manager()->AppendRebuildCommand(
-      sessions::CreateSetSelectedTabInWindowCommand(
-          browser->session_id(), browser->tab_strip_model()->active_index()));
+  for (int i = 0; i < tab_strip->count(); ++i) {
+    WebContents* tab = tab_strip->GetWebContentsAt(i);
+    DCHECK(tab);
+    const base::Optional<tab_groups::TabGroupId> group_id =
+        tab_strip->GetTabGroupForTab(i);
+    BuildCommandsForTab(browser->session_id(), tab, i, group_id,
+                        tab_strip->IsTabPinned(i), tab_to_available_range);
+  }
 }
 
 void SessionService::ScheduleResetCommands() {
@@ -634,40 +547,6 @@ bool SessionService::HasOpenTrackableBrowsers(
 bool SessionService::ShouldTrackChangesToWindow(
     const SessionID& window_id) const {
   return windows_tracking_.find(window_id) != windows_tracking_.end();
-}
-
-bool SessionService::ShouldTrackBrowser(Browser* browser) const {
-  if (browser->profile() != profile())
-    return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Do not track Crostini apps or terminal.  Apps will fail since VMs are not
-  // restarted on restore, and we don't want terminal to force the VM to start.
-  if (crostini::CrostiniAppIdFromAppName(browser->app_name()) ||
-      web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-          crostini::kCrostiniTerminalSystemAppId) {
-    return false;
-  }
-
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented we skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps.
-  if (browser->app_controller() &&
-      browser->app_controller()->is_for_system_web_app()) {
-    return false;
-  }
-
-  // Don't track custom_tab browser. It doesn't need to be restored.
-  if (browser->is_type_custom_tab())
-    return false;
-#endif
-  // Never track app popup windows that do not have a trusted source (i.e.
-  // popup windows spawned by an app). If this logic changes, be sure to also
-  // change SessionRestoreImpl::CreateRestoredBrowser().
-  if (browser->deprecated_is_app() && !browser->is_trusted_source()) {
-    return false;
-  }
-
-  return ShouldRestoreWindowOfType(WindowTypeForBrowserType(browser->type()));
 }
 
 void SessionService::RebuildCommandsIfRequired() {

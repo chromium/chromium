@@ -116,10 +116,6 @@ class SessionService : public SessionServiceBase,
   // (ShouldRestoreOfWindowType returns true).
   void SetWindowType(const SessionID& window_id, Browser::Type type) override;
 
-  // Sets the application name of the specified window.
-  void SetWindowAppName(const SessionID& window_id,
-                        const std::string& app_name);
-
   void SetWindowUserTitle(const SessionID& window_id,
                           const std::string& user_title);
 
@@ -204,11 +200,8 @@ class SessionService : public SessionServiceBase,
   // tracked.
   bool ShouldTrackChangesToWindow(const SessionID& window_id) const override;
 
-  // Returns true if we track changes to the specified browser.
-  bool ShouldTrackBrowser(Browser* browser) const override;
-
   // Will rebuild session commands if rebuild_on_next_save_ is true.
-  void RebuildCommandsIfRequired();
+  void RebuildCommandsIfRequired() override;
 
   // Deletes session data if no windows are open for the current profile.
   void MaybeDeleteSessionOnlyData() override;

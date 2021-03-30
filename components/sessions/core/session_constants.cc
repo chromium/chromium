@@ -15,6 +15,9 @@ const base::FilePath::CharType kTabSessionFileNamePrefix[] =
 const base::FilePath::CharType kSessionFileNamePrefix[] =
     FILE_PATH_LITERAL("Session");
 
+const base::FilePath::CharType kAppSessionFileNamePrefix[] =
+    FILE_PATH_LITERAL("Apps");
+
 const base::FilePath::CharType kTimestampSeparator[] = FILE_PATH_LITERAL("_");
 
 const base::FilePath::StringPieceType kLegacyCurrentTabSessionFileName =

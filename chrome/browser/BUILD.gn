@@ -93,6 +93,7 @@ buildflag_header("buildflags") {
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
+    "ENABLE_APP_SESSION_SERVICE=$enable_app_session_service",
     "USE_THIN_LTO=$use_thin_lto",
   ]
   if (is_win) {
@@ -6233,6 +6234,15 @@ static_library("browser") {
     deps += [ "//components/tab_groups" ]
   }
 
+  if (enable_session_service && enable_app_session_service) {
+    sources += [
+      "sessions/app_session_service.cc",
+      "sessions/app_session_service.h",
+      "sessions/app_session_service_factory.cc",
+      "sessions/app_session_service_factory.h",
+    ]
+  }
+
   if (enable_spellcheck) {
     sources += [
       "spellchecker/spell_check_host_chrome_impl.cc",
@@ -6843,10 +6853,14 @@ static_library("test_support") {
       "hid/mock_hid_device_observer.h",
       "profile_resetter/profile_resetter_test_base.cc",
       "profile_resetter/profile_resetter_test_base.h",
+      "sessions/app_session_service_test_helper.cc",
+      "sessions/app_session_service_test_helper.h",
       "sessions/session_restore_test_helper.cc",
       "sessions/session_restore_test_helper.h",
       "sessions/session_restore_test_utils.cc",
       "sessions/session_restore_test_utils.h",
+      "sessions/session_service_base_test_helper.cc",
+      "sessions/session_service_base_test_helper.h",
       "sessions/session_service_test_helper.cc",
       "sessions/session_service_test_helper.h",
       "sessions/tab_loader_tester.cc",

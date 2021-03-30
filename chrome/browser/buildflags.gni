@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromecast/chromecast.gni")
 
 declare_args() {
   # Chromium Updater is a cross-platform updater for desktop clients built using
@@ -12,4 +14,10 @@ declare_args() {
   # integration with the open source, cross-platform Chromium updater.
   # TODO(crbug.com/1054060)
   enable_chromium_updater = false
+
+  # TODO(stahon@microsoft.com) Remove this when app_session_service is enabled
+  # across the board. Until then, this buildflag allows some platforms to use
+  # app_session_service and some not.
+  enable_app_session_service =
+      !(is_chromeos_ash || is_chromeos_lacros || is_chromecast || is_android)
 }

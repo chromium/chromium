@@ -23,6 +23,11 @@ extern const base::FilePath::CharType SESSIONS_EXPORT
 // Added in Chrome 85.
 extern const base::FilePath::CharType SESSIONS_EXPORT kSessionFileNamePrefix[];
 
+// File name prefix for a type of APP.
+// Added in Chrome 91.
+extern const base::FilePath::CharType SESSIONS_EXPORT
+    kAppSessionFileNamePrefix[];
+
 // Separator between the file name (such as `kSessionFileNamePrefix`) and the
 // timestamp.
 extern const base::FilePath::CharType SESSIONS_EXPORT kTimestampSeparator[];

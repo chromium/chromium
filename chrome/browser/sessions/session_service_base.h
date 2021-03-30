@@ -50,7 +50,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                            public sessions::SessionTabHelperDelegate,
                            public KeyedService,
                            public BrowserListObserver {
-  friend class SessionServiceTestHelper;
+  friend class SessionServiceBaseTestHelper;
 
  public:
   enum class SessionServiceType { kAppRestore, kSessionRestore };
@@ -86,9 +86,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   // Note: this is invoked from the NavigationController's destructor, which is
   // after the actual tab has been removed.
-  // TODO(stahon@microsoft.com) This should become pure virtual when
-  // AppSessionService is implemented because SessionService overrides this.
-  virtual void TabClosed(const SessionID& window_id, const SessionID& tab_id);
+  virtual void TabClosed(const SessionID& window_id,
+                         const SessionID& tab_id) = 0;
 
   // Notification a window has opened.
   virtual void WindowOpened(Browser* browser) = 0;
@@ -129,11 +128,16 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // it means the session could not be restored.
   void GetLastSession(sessions::GetLastSessionCallback callback);
 
+  // Sets the application name of the specified window.
+  void SetWindowAppName(const SessionID& window_id,
+                        const std::string& app_name);
+
   // CommandStorageManagerDelegate:
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
-  // TODO(stahon@microsoft.com) When AppSessionService is implemented, this
-  // can become pure virtual and the implementation move to AppSessionService.
+  // This implementation in SessionServiceBase is mostly a no-op.
+  // Full support for Session Service logging will come with
+  // https://crbug.com/1193711
   void OnErrorWritingSessionCommands() override;
 
   // sessions::SessionTabHelperDelegate:
@@ -205,15 +209,14 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                                    int index_in_window,
                                    base::Optional<tab_groups::TabGroupId> group,
                                    bool is_pinned,
-                                   IdToRange* tab_to_available_range) = 0;
+                                   IdToRange* tab_to_available_range);
 
   // Adds commands to create the specified browser, and invokes
   // BuildCommandsForTab for each of the tabs in the browser. This ignores
   // any tabs not in the profile we were created with.
-  virtual void BuildCommandsForBrowser(
-      Browser* browser,
-      IdToRange* tab_to_available_range,
-      std::set<SessionID>* windows_to_track) = 0;
+  virtual void BuildCommandsForBrowser(Browser* browser,
+                                       IdToRange* tab_to_available_range,
+                                       std::set<SessionID>* windows_to_track);
 
   // Iterates over all the known browsers invoking BuildCommandsForBrowser.
   // This only adds browsers that should be tracked (|ShouldRestoreWindowOfType|
@@ -230,17 +233,13 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void ScheduleCommand(std::unique_ptr<sessions::SessionCommand> command);
 
   // Returns true if changes to tabs in the specified window should be tracked.
-  // TODO(stahon@microsoft.com) This should be pure virtual when
-  // AppSessionService is implemented.
-  virtual bool ShouldTrackChangesToWindow(const SessionID& window_id) const;
+  virtual bool ShouldTrackChangesToWindow(const SessionID& window_id) const = 0;
 
   // Returns true if we track changes to the specified browser.
-  virtual bool ShouldTrackBrowser(Browser* browser) const = 0;
+  bool ShouldTrackBrowser(Browser* browser) const;
 
   // Will rebuild session commands if rebuild_on_next_save_ is true.
-  // TODO(stahon@microsoft.com) This should be made pure virtual when
-  // AppSessionService is implemented.
-  void RebuildCommandsIfRequired();
+  virtual void RebuildCommandsIfRequired() = 0;
 
   // Deletes session data if no windows are open for the current profile.
   virtual void MaybeDeleteSessionOnlyData() = 0;

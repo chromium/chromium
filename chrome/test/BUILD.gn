@@ -5941,6 +5941,10 @@ test("unit_tests") {
       "../browser/sessions/tab_loader_unittest.cc",
     ]
   }
+  if (enable_session_service && enable_app_session_service) {
+    sources += [ "../browser/sessions/app_session_service_unittest.cc" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/chromeos:unit_tests",
