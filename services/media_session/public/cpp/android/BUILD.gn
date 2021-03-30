@@ -19,6 +19,7 @@ if (current_toolchain == default_toolchain) {
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:gurl_java",
     ]
     sources = _jni_sources
   }

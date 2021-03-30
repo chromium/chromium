@@ -860,8 +860,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public int downloadImage(String url, boolean isFavicon, int maxBitmapSize,
-            boolean bypassCache, ImageDownloadCallback callback) {
+    public int downloadImage(GURL url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
+            ImageDownloadCallback callback) {
         checkNotDestroyed();
         return WebContentsImplJni.get().downloadImage(mNativeWebContentsAndroid,
                 WebContentsImpl.this, url, isFavicon, maxBitmapSize, bypassCache, callback);
@@ -869,7 +869,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     @CalledByNative
     private void onDownloadImageFinished(ImageDownloadCallback callback, int id, int httpStatusCode,
-            String imageUrl, List<Bitmap> bitmaps, List<Rect> sizes) {
+            GURL imageUrl, List<Bitmap> bitmaps, List<Rect> sizes) {
         callback.onFinishDownloadImage(id, httpStatusCode, imageUrl, bitmaps, sizes);
     }
 
@@ -1153,7 +1153,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 OverscrollRefreshHandler nativeOverscrollRefreshHandler);
         void setSpatialNavigationDisabled(
                 long nativeWebContentsAndroid, WebContentsImpl caller, boolean disabled);
-        int downloadImage(long nativeWebContentsAndroid, WebContentsImpl caller, String url,
+        int downloadImage(long nativeWebContentsAndroid, WebContentsImpl caller, GURL url,
                 boolean isFavicon, int maxBitmapSize, boolean bypassCache,
                 ImageDownloadCallback callback);
         void setHasPersistentVideo(

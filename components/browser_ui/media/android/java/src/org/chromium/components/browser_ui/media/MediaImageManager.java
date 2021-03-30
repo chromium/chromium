@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.media;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -14,6 +13,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.media_session.MediaImage;
+import org.chromium.url.GURL;
 
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +73,7 @@ public class MediaImageManager implements ImageDownloadCallback {
     // multiple times but the same src is chosen.
     //
     // Will be reset when initiating a new download request.
-    private String mLastImageSrc;
+    private GURL mLastImageSrc;
 
     /**
      * MediaImageManager constructor.
@@ -113,7 +113,7 @@ public class MediaImageManager implements ImageDownloadCallback {
         }
 
         // Avoid fetching the same image twice.
-        if (TextUtils.equals(image.getSrc(), mLastImageSrc)) return;
+        if (image.getSrc().equals(mLastImageSrc)) return;
         mLastImageSrc = image.getSrc();
 
         // Limit |maxBitmapSize| to |MAX_BITMAP_SIZE_FOR_DOWNLOAD| to avoid passing huge bitmaps
@@ -133,7 +133,7 @@ public class MediaImageManager implements ImageDownloadCallback {
      * corresponding to a previous request, it will be ignored.
      */
     @Override
-    public void onFinishDownloadImage(int id, int httpStatusCode, String imageUrl,
+    public void onFinishDownloadImage(int id, int httpStatusCode, GURL imageUrl,
             List<Bitmap> bitmaps, List<Rect> originalImageSizes) {
         if (id != mRequestId) return;
 
@@ -215,8 +215,8 @@ public class MediaImageManager implements ImageDownloadCallback {
         return shortEdge / longEdge;
     }
 
-    private double getImageTypeScore(String url, String type) {
-        String extension = FileUtils.getExtension(url);
+    private double getImageTypeScore(GURL url, String type) {
+        String extension = FileUtils.getExtension(url.getSpec());
 
         if ("bmp".equals(extension) || "image/bmp".equals(type)) {
             return TYPE_SCORE_BMP;

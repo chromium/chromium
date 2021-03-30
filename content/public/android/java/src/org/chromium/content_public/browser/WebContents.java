@@ -469,7 +469,7 @@ public interface WebContents extends Parcelable {
      *                 renderer.
      * @return The unique id of the download request
      */
-    int downloadImage(String url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
+    int downloadImage(GURL url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
             ImageDownloadCallback callback);
 
     /**

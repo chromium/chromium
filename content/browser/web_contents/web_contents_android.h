@@ -206,7 +206,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   int DownloadImage(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
-                    const base::android::JavaParamRef<jstring>& url,
+                    const base::android::JavaParamRef<jobject>& url,
                     jboolean is_fav_icon,
                     jint max_bitmap_size,
                     jboolean bypass_cache,

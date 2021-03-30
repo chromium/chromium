@@ -712,15 +712,15 @@ void WebContentsAndroid::SetSpatialNavigationDisabled(
 int WebContentsAndroid::DownloadImage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& jurl,
+    const base::android::JavaParamRef<jobject>& jurl,
     jboolean is_fav_icon,
     jint max_bitmap_size,
     jboolean bypass_cache,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  GURL url(base::android::ConvertJavaStringToUTF8(env, jurl));
   const uint32_t preferred_size = 0;
   return web_contents_->DownloadImage(
-      url, is_fav_icon, preferred_size, max_bitmap_size, bypass_cache,
+      *url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
+      max_bitmap_size, bypass_cache,
       base::BindOnce(&WebContentsAndroid::OnFinishDownloadImage,
                      weak_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(env, obj),
