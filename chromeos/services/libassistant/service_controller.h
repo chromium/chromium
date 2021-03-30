@@ -22,12 +22,6 @@ class AssistantManagerInternal;
 }  // namespace assistant_client
 
 namespace chromeos {
-namespace assistant {
-class LibassistantV1Api;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace chromeos {
 namespace libassistant {
 
 class ChromiumApiDelegate;
@@ -35,8 +29,6 @@ class LibassistantFactory;
 
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
-// Note: to access the Libassistant objects from //chromeos/services/assistant,
-// use the |LibassistantV1Api| singleton, which will be populated by this class.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
     : public mojom::ServiceController {
  public:
@@ -97,7 +89,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
-  std::unique_ptr<assistant::LibassistantV1Api> libassistant_v1_api_;
   std::unique_ptr<DeviceStateListener> device_state_listener_;
 
   mojo::Receiver<mojom::ServiceController> receiver_{this};

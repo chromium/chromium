@@ -8,7 +8,6 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/assistant/test_support/expect_utils.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,8 +70,6 @@ class ConversationControllerTest : public ::testing::Test {
   ConversationController controller_;
   AssistantManagerMock assistant_manager_;
   AssistantManagerInternalMock assistant_manager_internal_;
-  chromeos::assistant::LibassistantV1Api v1_api_{&assistant_manager_,
-                                                 &assistant_manager_internal_};
 };
 
 TEST_F(ConversationControllerTest, ShouldStartVoiceInteraction) {

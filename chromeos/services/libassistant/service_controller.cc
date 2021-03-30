@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/settings_controller.h"
@@ -166,9 +165,6 @@ void ServiceController::Initialize(
 
   SetServerExperiments(assistant_manager_internal());
 
-  libassistant_v1_api_ = std::make_unique<assistant::LibassistantV1Api>(
-      assistant_manager_.get(), assistant_manager_internal_);
-
   for (auto& observer : assistant_manager_observers_) {
     observer.OnAssistantManagerCreated(assistant_manager(),
                                        assistant_manager_internal());
@@ -206,7 +202,6 @@ void ServiceController::Stop() {
                                           assistant_manager_internal());
   }
 
-  libassistant_v1_api_ = nullptr;
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
   chromium_api_delegate_ = nullptr;

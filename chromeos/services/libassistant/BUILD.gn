@@ -17,7 +17,6 @@ component("libassistant") {
 
   deps = [
     ":internal",
-    "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
   ]
@@ -92,7 +91,6 @@ source_set("internal") {
     "//chromeos/dbus/power",
     "//chromeos/resources:resources_grit",
     "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/assistant/public/proto",
     "//chromeos/services/libassistant/public/mojom",
     "//chromeos/strings:strings_grit",
@@ -180,7 +178,6 @@ source_set("test_support") {
     ":libassistant",
     "//base/test:test_support",
     "//chromeos/assistant/internal:test_support",
-    "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
     "//services/network:test_support",
   ]
@@ -221,7 +218,6 @@ source_set("unit_tests") {
     "//chromeos/assistant/test_support:test_support",
     "//chromeos/dbus/power",
     "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/internal_api/c:api_wrappers",

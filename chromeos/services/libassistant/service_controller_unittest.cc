@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
-#include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
@@ -189,10 +188,6 @@ class AssistantServiceControllerTest : public testing::Test {
 
   void DestroyServiceController() { service_controller_.reset(); }
 
-  assistant::LibassistantV1Api* v1_api() {
-    return assistant::LibassistantV1Api::Get();
-  }
-
   std::string libassistant_config() {
     return libassistant_factory_.libassistant_config();
   }
@@ -354,15 +349,12 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
   Start();
   Stop();
 
-  // The second Initialize() call should create the AssistantManager and
-  // LibassistantV1Api.
+  // The second Initialize() call should create the AssistantManager.
 
   Initialize();
   EXPECT_NE(nullptr, service_controller().assistant_manager());
-  EXPECT_NE(nullptr, v1_api());
 
-  // The second Start() call should send out a state update and publish the
-  // v1_api
+  // The second Start() call should send out a state update.
 
   StateObserverMock observer;
   AddStateObserver(&observer);
@@ -371,10 +363,7 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
 
   Start();
 
-  ASSERT_NE(nullptr, v1_api());
   EXPECT_NE(nullptr, service_controller().assistant_manager());
-  EXPECT_EQ(v1_api()->assistant_manager(),
-            service_controller().assistant_manager());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -409,7 +398,6 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
 
   EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
-  EXPECT_NE(nullptr, v1_api());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -417,10 +405,7 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
   Start();
 
-  ASSERT_NE(nullptr, v1_api());
   EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
-  EXPECT_EQ(v1_api()->assistant_manager_internal(),
-            service_controller().assistant_manager_internal());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -433,7 +418,6 @@ TEST_F(AssistantServiceControllerTest,
   Stop();
 
   EXPECT_EQ(nullptr, service_controller().assistant_manager_internal());
-  EXPECT_EQ(nullptr, v1_api());
 }
 
 TEST_F(AssistantServiceControllerTest,
