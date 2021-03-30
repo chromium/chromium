@@ -36,13 +36,7 @@ def kill(proc, name, timeout_in_seconds=10):
   if not proc:
     return
 
-  # TODO(crbug.com/1189400): Either remove the SIGINT logic or make it more
-  # generic once it is determined whether SIGINT results in a cleaner shutdown
-  # than SIGTERM.
-  if name == 'weston':
-    proc.send_signal(signal.SIGINT)
-  else:
-    proc.terminate()
+  proc.terminate()
   thread = threading.Thread(target=proc.wait)
   thread.start()
 
@@ -55,17 +49,6 @@ def kill(proc, name, timeout_in_seconds=10):
   if thread.is_alive():
     print('%s running after SIGTERM and SIGKILL; good luck!\n' % name,
           file=sys.stderr)
-
-  # TODO(crbug.com/1189400): Remove this once it is determined if stale lock
-  # files are hanging around.
-  if name == 'weston':
-    try:
-      directory = '/run/user/1000'
-      for f in os.listdir(directory):
-        if f.startswith('wayland'):
-          print('Found potential lockfile %s' % os.path.join(directory, f))
-    except OSError as e:
-      print(e)
 
 
 def launch_dbus(env):
@@ -257,14 +240,6 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
 
 # TODO(https://crbug.com/1060466): Write tests.
 def _run_with_weston(cmd, env, stdoutfile):
-  try:
-    directory = '/run/user/1000'
-    for f in os.listdir(directory):
-      if f.startswith('wayland'):
-        print('Found potential lockfile %s' % os.path.join(directory, f))
-  except OSError as e:
-    print(e)
-
   weston_proc = None
 
   try:
@@ -371,7 +346,10 @@ def _get_display_from_weston(weston_proc_pid):
 
   # Try 10 times as it is not known when Weston spawn child desktop shell
   # process.
-  for _ in range(10):
+  # TODO(crbug.com/1189400): Decrease this back to a lower number once we
+  # determine what a realistic maximum time is for Weston to start.
+  for i in range(100):
+    print('Attempt number %d checking for Weston process display' % i)
     # gives weston time to start or fail.
     time.sleep(.05)
     # Take the parent process.
