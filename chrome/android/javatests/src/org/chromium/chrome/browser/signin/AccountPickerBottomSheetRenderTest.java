@@ -258,6 +258,8 @@ public class AccountPickerBottomSheetRenderTest {
                 .when(mAccountPickerDelegateMock)
                 .updateCredentials(eq(PROFILE_DATA1.getAccountEmail()), any());
         onView(withText(R.string.auth_error_card_button)).perform(click());
+        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
+                R.id.account_picker_selected_account)::isShown);
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
