@@ -135,7 +135,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   const base::TimeDelta startDurationFromProcess =
       TimeDeltaSinceAppLaunchFromProcess();
 
-  base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTime",
+  base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
                           startDurationFromProcess);
 
   if ([connectionInformation startupParameters]) {

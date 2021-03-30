@@ -434,13 +434,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
     expires_after="2021-08-22">
+  <obsolete>
+    Removed 03/2021. Broken starting M-87; removed and replaced with
+    Startup.ColdStartFromProcessCreationTime2 in M-91.
+  </obsolete>
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The duration of all initializations from process creation time to UI ready.
     This includes code loading, static initializers and the execution time
     contained in Startup.ColdStartWithExternalURLTime and
-    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific.
+    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific. Deprecated
+    due to incomplete data from M87 to M91. The data is incomplete because it
+    was not logged in iOS 13+. See Startup.ColdStartFromProcessCreationTimeV2
+    instead.
+  </summary>
+</histogram>
+
+<histogram name="Startup.ColdStartFromProcessCreationTimeV2" units="ms"
+    expires_after="2022-03-24">
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The duration of all initializations from process creation time to UI ready.
+    This includes code loading, static initializers and the execution time
+    contained in Startup.ColdStartWithExternalURLTime and
+    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific, from M91+.
   </summary>
 </histogram>
 
