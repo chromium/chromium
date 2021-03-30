@@ -7,6 +7,7 @@ package org.chromium.components.component_updater;
 import android.os.ParcelFileDescriptor;
 
 import org.chromium.base.LifetimeAssert;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -40,6 +41,7 @@ public class ComponentLoaderPolicyBridge {
      * @param fileMap maps file relative paths in the install directory to its file descriptor.
      */
     public void componentLoaded(Map<String, ParcelFileDescriptor> fileMap) {
+        ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
         // Flatten the map into two arrays one for keys and another for values to be able to
@@ -69,6 +71,7 @@ public class ComponentLoaderPolicyBridge {
      * Exactly one of componentLoaded or componentLoadFailed should be called exactly once.
      */
     public void componentLoadFailed() {
+        ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
         ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(
@@ -86,6 +89,7 @@ public class ComponentLoaderPolicyBridge {
      * files from the ComponentsProviderService. Can be called on a background thread.
      */
     public String getComponentId() {
+        ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
         return ComponentLoaderPolicyBridgeJni.get().getComponentId(

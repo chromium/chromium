@@ -36,7 +36,8 @@ namespace component_updater {
 // Ideally, the implementation of this class should share implementation with
 // its component `ComponentInstallerPolicy` counterpart.
 //
-// Can be used on a thread that is different from the thread it is created on.
+// Used on the UI thread, should post any non-user-visible tasks to a background
+// runner.
 class ComponentLoaderPolicy {
  public:
   virtual ~ComponentLoaderPolicy();
@@ -81,8 +82,8 @@ class ComponentLoaderPolicy {
 // The object is single use only, it will be deleted when ComponentLoaded or
 // ComponentLoadedFailed is called once.
 //
-// Can be called on a thread that is different from the thread the object is
-// created on.
+// Called on the UI thread, should post any non-user-visible tasks to a
+// background runner.
 class AndroidComponentLoaderPolicy {
  public:
   explicit AndroidComponentLoaderPolicy(

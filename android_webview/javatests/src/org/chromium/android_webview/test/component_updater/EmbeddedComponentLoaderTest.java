@@ -109,9 +109,11 @@ public class EmbeddedComponentLoaderTest {
         intent.putExtra(TEST_COMPONENT_ID,
                 new String[] {file.getAbsolutePath(), manifestFile.getAbsolutePath()});
 
-        EmbeddedComponentLoader mLoader =
-                EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();
-        mLoader.connect(intent);
+        mActivityTestRule.runOnUiThread(() -> {
+            EmbeddedComponentLoader mLoader =
+                    EmbeddedComponentLoaderFactory.makeEmbeddedComponentLoader();
+            mLoader.connect(intent);
+        });
 
         // Should be called once for AvailableComponentLoaderPolicy.
         sOnComponentLoadedHelper.waitForCallback(

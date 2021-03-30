@@ -16,9 +16,7 @@ import android.os.ResultReceiver;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskRunner;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.base.ThreadUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,61 +32,55 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
     private static final String KEY_RESULT = "RESULT";
 
-    private final TaskRunner mSequencedTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
-
     // Maintain a set of ComponentResultReceivers, remove a receiver once it gets a result back.
     // When a connection is established or restablished we request files from the service for the
     // components remaining in the set. Unbind the service when the set is empty, i.e all results
     // are received.
-    // Must be only accessed on mSequencedTaskRunner.
+    // Must be only accessed on the UI thread.
     private final Set<ComponentResultReceiver> mComponentsResultReceivers = new HashSet<>();
 
     public EmbeddedComponentLoader(Collection<ComponentLoaderPolicyBridge> componentLoaderPolicy) {
-        mSequencedTaskRunner.postTask(() -> {
-            for (ComponentLoaderPolicyBridge policy : componentLoaderPolicy) {
-                mComponentsResultReceivers.add(new ComponentResultReceiver(policy));
-            }
-        });
+        ThreadUtils.assertOnUiThread();
+
+        for (ComponentLoaderPolicyBridge policy : componentLoaderPolicy) {
+            mComponentsResultReceivers.add(new ComponentResultReceiver(policy));
+        }
     }
 
     private class ComponentResultReceiver extends ResultReceiver {
         private final ComponentLoaderPolicyBridge mComponent;
 
         public ComponentResultReceiver(ComponentLoaderPolicyBridge component) {
-            // Receive results on arbitrary threads, we will post it back on mSequencedTaskRunner
-            // anyway.
-            super(/* handler= */ null);
+            super(ThreadUtils.getUiThreadHandler());
             mComponent = component;
         }
 
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
-            mSequencedTaskRunner.postTask(() -> {
-                // Already removed, i.e has already received the result.
-                if (!mComponentsResultReceivers.remove(this)) {
-                    return;
-                }
-                // Only unbind when all results are received because it's a bound service and if we
-                // unbind the connection before getting all results back, the service might be
-                // killed before sending all results.
-                if (mComponentsResultReceivers.isEmpty()) {
-                    ContextUtils.getApplicationContext().unbindService(
-                            EmbeddedComponentLoader.this);
-                }
+            ThreadUtils.assertOnUiThread();
 
-                if (resultCode != 0) {
-                    mComponent.componentLoadFailed();
-                    return;
-                }
-                Map<String, ParcelFileDescriptor> resultMap =
-                        (Map<String, ParcelFileDescriptor>) resultData.getSerializable(KEY_RESULT);
-                if (resultMap == null) {
-                    mComponent.componentLoadFailed();
-                    return;
-                }
-                mComponent.componentLoaded(resultMap);
-            });
+            // Already removed, i.e has already received the result.
+            if (!mComponentsResultReceivers.remove(this)) {
+                return;
+            }
+            // Only unbind when all results are received because it's a bound service and if we
+            // unbind the connection before getting all results back, the service might be
+            // killed before sending all results.
+            if (mComponentsResultReceivers.isEmpty()) {
+                ContextUtils.getApplicationContext().unbindService(EmbeddedComponentLoader.this);
+            }
+
+            if (resultCode != 0) {
+                mComponent.componentLoadFailed();
+                return;
+            }
+            Map<String, ParcelFileDescriptor> resultMap =
+                    (Map<String, ParcelFileDescriptor>) resultData.getSerializable(KEY_RESULT);
+            if (resultMap == null) {
+                mComponent.componentLoadFailed();
+                return;
+            }
+            mComponent.componentLoaded(resultMap);
         }
 
         public ComponentLoaderPolicyBridge getComponentLoaderPolicy() {
@@ -98,28 +90,28 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        mSequencedTaskRunner.postTask(() -> {
-            try {
-                IComponentsProviderService providerService =
-                        IComponentsProviderService.Stub.asInterface(service);
-                for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                    String componentId = receiver.getComponentLoaderPolicy().getComponentId();
-                    providerService.getFilesForComponent(componentId, receiver);
-                }
-            } catch (RemoteException e) {
-                Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
-                if (!mComponentsResultReceivers.isEmpty()) {
-                    // Clearing up receivers here to avoid unbinding multiple times in the future.
-                    // This means if some receivers get their result after this step, their results
-                    // will be ignored.
-                    for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                        receiver.getComponentLoaderPolicy().componentLoadFailed();
-                    }
-                    mComponentsResultReceivers.clear();
-                    ContextUtils.getApplicationContext().unbindService(this);
-                }
+        ThreadUtils.assertOnUiThread();
+
+        try {
+            IComponentsProviderService providerService =
+                    IComponentsProviderService.Stub.asInterface(service);
+            for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
+                String componentId = receiver.getComponentLoaderPolicy().getComponentId();
+                providerService.getFilesForComponent(componentId, receiver);
             }
-        });
+        } catch (RemoteException e) {
+            Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
+            if (!mComponentsResultReceivers.isEmpty()) {
+                // Clearing up receivers here to avoid unbinding multiple times in the future.
+                // This means if some receivers get their result after this step, their results
+                // will be ignored.
+                for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
+                    receiver.getComponentLoaderPolicy().componentLoadFailed();
+                }
+                mComponentsResultReceivers.clear();
+                ContextUtils.getApplicationContext().unbindService(this);
+            }
+        }
     }
 
     @Override
@@ -134,18 +126,18 @@ public class EmbeddedComponentLoader implements ServiceConnection {
      * @param intent to connect to the service.
      */
     public void connect(Intent intent) {
-        mSequencedTaskRunner.postTask(() -> {
-            if (mComponentsResultReceivers.isEmpty()) {
-                return;
+        ThreadUtils.assertOnUiThread();
+
+        if (mComponentsResultReceivers.isEmpty()) {
+            return;
+        }
+        final Context appContext = ContextUtils.getApplicationContext();
+        if (!appContext.bindService(intent, this, Context.BIND_AUTO_CREATE)) {
+            Log.d(TAG, "Could not bind to " + intent);
+            for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
+                receiver.getComponentLoaderPolicy().componentLoadFailed();
             }
-            final Context appContext = ContextUtils.getApplicationContext();
-            if (!appContext.bindService(intent, this, Context.BIND_AUTO_CREATE)) {
-                Log.d(TAG, "Could not bind to " + intent);
-                for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                    receiver.getComponentLoaderPolicy().componentLoadFailed();
-                }
-                mComponentsResultReceivers.clear();
-            }
-        });
+            mComponentsResultReceivers.clear();
+        }
     }
 }
