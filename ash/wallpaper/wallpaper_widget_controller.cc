@@ -71,6 +71,9 @@ bool WallpaperWidgetController::Reparent(int container) {
 bool WallpaperWidgetController::SetWallpaperBlur(
     float blur,
     const base::TimeDelta& animation_duration) {
+  if (!widget_->GetNativeWindow())
+    return false;
+
   StopAnimating();
   bool blur_changed = wallpaper_view_->blur_sigma() != blur;
 
