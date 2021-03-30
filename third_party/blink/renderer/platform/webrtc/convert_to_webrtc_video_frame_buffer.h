@@ -25,6 +25,11 @@ ConvertToWebRtcVideoFrameBuffer(
     scoped_refptr<media::VideoFrame> video_frame,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources);
 
+PLATFORM_EXPORT scoped_refptr<media::VideoFrame>
+ConvertFromMappedWebRtcVideoFrameBuffer(
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
+    base::TimeDelta timestamp);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_CONVERT_TO_WEBRTC_VIDEO_FRAME_BUFFER_H_

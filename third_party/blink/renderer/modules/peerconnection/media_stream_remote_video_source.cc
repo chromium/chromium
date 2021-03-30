@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
@@ -28,21 +29,6 @@
 #include "third_party/webrtc/api/video/recordable_encoded_frame.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #include "third_party/webrtc/system_wrappers/include/clock.h"
-
-namespace WTF {
-
-// Template specializations of [1], needed to be able to pass WTF callbacks
-// that have VideoTrackAdapterSettings or gfx::Size parameters across threads.
-//
-// [1] third_party/blink/renderer/platform/wtf/cross_thread_copier.h.
-template <>
-struct CrossThreadCopier<scoped_refptr<webrtc::VideoFrameBuffer>>
-    : public CrossThreadCopierPassThrough<
-          scoped_refptr<webrtc::VideoFrameBuffer>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace WTF
 
 namespace blink {
 
@@ -170,90 +156,19 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
                "Ideal Render Instant", render_time.ToInternalValue(),
                "Timestamp", elapsed_timestamp.InMicroseconds());
 
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
+      incoming_frame.video_frame_buffer();
   scoped_refptr<media::VideoFrame> video_frame;
-  scoped_refptr<webrtc::VideoFrameBuffer> buffer(
-      incoming_frame.video_frame_buffer());
-  const gfx::Size size(buffer->width(), buffer->height());
-
-  switch (buffer->type()) {
-    case webrtc::VideoFrameBuffer::Type::kNative: {
-      video_frame = static_cast<WebRtcVideoFrameAdapterInterface*>(buffer.get())
-                        ->getMediaVideoFrame();
-      video_frame->set_timestamp(elapsed_timestamp);
-      break;
-    }
-    case webrtc::VideoFrameBuffer::Type::kI420A: {
-      const webrtc::I420ABufferInterface* yuva_buffer = buffer->GetI420A();
-      video_frame = media::VideoFrame::WrapExternalYuvaData(
-          media::PIXEL_FORMAT_I420A, size, gfx::Rect(size), size,
-          yuva_buffer->StrideY(), yuva_buffer->StrideU(),
-          yuva_buffer->StrideV(), yuva_buffer->StrideA(),
-          const_cast<uint8_t*>(yuva_buffer->DataY()),
-          const_cast<uint8_t*>(yuva_buffer->DataU()),
-          const_cast<uint8_t*>(yuva_buffer->DataV()),
-          const_cast<uint8_t*>(yuva_buffer->DataA()), elapsed_timestamp);
-      break;
-    }
-    case webrtc::VideoFrameBuffer::Type::kI420: {
-      const webrtc::I420BufferInterface* yuv_buffer = buffer->GetI420();
-      video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
-          const_cast<uint8_t*>(yuv_buffer->DataY()),
-          const_cast<uint8_t*>(yuv_buffer->DataU()),
-          const_cast<uint8_t*>(yuv_buffer->DataV()), elapsed_timestamp);
-      break;
-    }
-    case webrtc::VideoFrameBuffer::Type::kI444: {
-      const webrtc::I444BufferInterface* yuv_buffer = buffer->GetI444();
-      video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_I444, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY(), yuv_buffer->StrideU(), yuv_buffer->StrideV(),
-          const_cast<uint8_t*>(yuv_buffer->DataY()),
-          const_cast<uint8_t*>(yuv_buffer->DataU()),
-          const_cast<uint8_t*>(yuv_buffer->DataV()), elapsed_timestamp);
-      break;
-    }
-    case webrtc::VideoFrameBuffer::Type::kI010: {
-      const webrtc::I010BufferInterface* yuv_buffer = buffer->GetI010();
-      // WebRTC defines I010 data as uint16 whereas Chromium uses uint8 for all
-      // video formats, so conversion and cast is needed.
-      video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_YUV420P10, size, gfx::Rect(size), size,
-          yuv_buffer->StrideY() * 2, yuv_buffer->StrideU() * 2,
-          yuv_buffer->StrideV() * 2,
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataY())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataU())),
-          const_cast<uint8_t*>(
-              reinterpret_cast<const uint8_t*>(yuv_buffer->DataV())),
-          elapsed_timestamp);
-      break;
-    }
-    case webrtc::VideoFrameBuffer::Type::kNV12: {
-      const webrtc::NV12BufferInterface* nv12_buffer = buffer->GetNV12();
-      video_frame = media::VideoFrame::WrapExternalYuvData(
-          media::PIXEL_FORMAT_NV12, size, gfx::Rect(size), size,
-          nv12_buffer->StrideY(), nv12_buffer->StrideUV(),
-          const_cast<uint8_t*>(nv12_buffer->DataY()),
-          const_cast<uint8_t*>(nv12_buffer->DataUV()), elapsed_timestamp);
-      break;
-    }
-    default:
-      NOTREACHED();
+  if (buffer->type() == webrtc::VideoFrameBuffer::Type::kNative) {
+    video_frame = static_cast<WebRtcVideoFrameAdapterInterface*>(buffer.get())
+                      ->getMediaVideoFrame();
+    video_frame->set_timestamp(elapsed_timestamp);
+  } else {
+    video_frame =
+        ConvertFromMappedWebRtcVideoFrameBuffer(buffer, elapsed_timestamp);
   }
-
   if (!video_frame)
     return;
-
-  // The bind ensures that we keep a reference to the underlying buffer.
-  if (buffer->type() != webrtc::VideoFrameBuffer::Type::kNative) {
-    video_frame->AddDestructionObserver(ConvertToBaseOnceCallback(
-        CrossThreadBindOnce(base::DoNothing::Once<
-                                const scoped_refptr<rtc::RefCountInterface>&>(),
-                            buffer)));
-  }
 
   // Rotation may be explicitly set sometimes.
   if (incoming_frame.rotation() != webrtc::kVideoRotation_0) {
