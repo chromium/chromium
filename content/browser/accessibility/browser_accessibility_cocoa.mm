@@ -3214,6 +3214,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     DCHECK(startObject && endObject);
     DCHECK_GE(startOffset, 0);
     DCHECK_GE(endOffset, 0);
+    if (!startObject || !endObject || startOffset < 0 || endOffset < 0)
+      return nil;
 
     gfx::Rect rect =
         BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
