@@ -21582,6 +21582,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="NON_GOOGLE_SEARCH_ENGINE"/>
   <int value="8" label="NO_CHROME_ACCOUNT"/>
   <int value="9" label="LOW_END_DEVICE"/>
+  <int value="10" label="MULTIPLE_ACCOUNTS_ON_DEVICE"/>
 </enum>
 
 <enum name="EmbeddedWorkerStartingPhase">
