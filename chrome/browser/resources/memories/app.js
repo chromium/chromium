@@ -4,7 +4,9 @@
 
 import './memory_card.js';
 import './page_thumbnail.js';
+import './router.js';
 import './shared_vars.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';
@@ -42,6 +44,15 @@ class MemoriesAppElement extends MojomConversionMixinBase {
        * @private {!MemoriesResult}
        */
       result_: Object,
+
+      /**
+       * The current query for which related Memories are requested and shown.
+       * @private {string}
+       */
+      query_: {
+        type: String,
+        observer: 'onQueryChanged_',
+      },
     };
   }
 
@@ -53,17 +64,20 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
   }
 
-  /** @override */
-  ready() {
-    super.ready();
-    // <if expr="not is_official_build">
-    this.onBrowserIdle_().then(() => {
-      const query = decodeURI(window.location.hash.substr(1));
-      this.pageHandler_.getSampleMemories(query).then(({result}) => {
-        this.result_ = result;
-      });
-    });
-    // </if>
+  //============================================================================
+  // Event handlers
+  //============================================================================
+
+  /**
+   * Called when the value of the search field changes.
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    // Update the query based on the value of the search field, if necessary.
+    if (e.detail !== this.query_) {
+      this.query_ = e.detail;
+    }
   }
 
   //============================================================================
@@ -80,6 +94,16 @@ class MemoriesAppElement extends MojomConversionMixinBase {
   }
 
   /**
+   * @return {!CrToolbarSearchFieldElement}
+   * @private
+   */
+  getSearchField_() {
+    const crToolbarElement = /** @type {CrToolbarElement} */ (
+        this.shadowRoot.querySelector('cr-toolbar'));
+    return crToolbarElement.getSearchField();
+  }
+
+  /**
    * @return {!Promise} A promise that resolves when the browser is idle.
    * @private
    */
@@ -87,6 +111,23 @@ class MemoriesAppElement extends MojomConversionMixinBase {
     return new Promise((resolve) => {
       window.requestIdleCallback(resolve);
     });
+  }
+
+  /** @private */
+  onQueryChanged_() {
+    // Update the value of the search field based on the query, if necessary.
+    const searchField = this.getSearchField_();
+    if (searchField.getValue() !== this.query_) {
+      searchField.setValue(this.query_);
+    }
+    // <if expr="not is_official_build">
+    this.onBrowserIdle_().then(() => {
+      this.pageHandler_.getSampleMemories(this.query_.trim())
+          .then(({result}) => {
+            this.result_ = result;
+          });
+    });
+    // </if>
   }
 }
 

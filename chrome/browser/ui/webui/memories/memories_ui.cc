@@ -33,6 +33,8 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddLocalizedStrings(kStrings);
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
+  source->AddString("clearLabel", u"Clear search");
+  source->AddString("searchPrompt", u"Search memories");
   source->AddString("memoryTitleDescription",
                     u"Based on previous web activity");
   source->AddString("topVisitsSectionHeader", u"From Chrome History");
