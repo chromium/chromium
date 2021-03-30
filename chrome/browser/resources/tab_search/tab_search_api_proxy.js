@@ -30,6 +30,9 @@ export class TabSearchApiProxy {
 
   showFeedbackPage() {}
 
+  /** @param {number} tabId */
+  openRecentlyClosedTab(tabId) {}
+
   /**
    * @param {!SwitchToTabInfo} info
    * @param {boolean} withSearch
@@ -77,6 +80,11 @@ export class TabSearchApiProxyImpl {
   /** @override */
   showFeedbackPage() {
     this.handler.showFeedbackPage();
+  }
+
+  /** @override */
+  openRecentlyClosedTab(tabId) {
+    this.handler.openRecentlyClosedTab(tabId);
   }
 
   /** @override */

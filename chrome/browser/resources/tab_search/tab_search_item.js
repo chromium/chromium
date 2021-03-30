@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {highlight} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabData} from './tab_data.js';
+import {TabData, TabItemType} from './tab_data.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
 export class TabSearchItem extends PolymerElement {
@@ -49,6 +49,14 @@ export class TabSearchItem extends PolymerElement {
         value: '',
       },
     };
+  }
+
+  /**
+   * @param {!TabItemType} type
+   * @return {boolean} Whether a close action can be performed on the item.
+   */
+  isCloseable_(type) {
+    return type === TabItemType.OPEN;
   }
 
   /**

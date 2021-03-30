@@ -104,9 +104,11 @@
     </div>
   </div>
 </div>
-<div class="button-container">
-  <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
-      iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
-      no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
-  </cr-icon-button>
-</div>
+<template is="dom-if" if="[[isCloseable_(data.type)]]">
+  <div class="button-container">
+    <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
+        iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
+        no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
+    </cr-icon-button>
+  </div>
+</template>

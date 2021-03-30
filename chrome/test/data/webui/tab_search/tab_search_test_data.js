@@ -2,73 +2,94 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/** @type {number} */
 export const SAMPLE_WINDOW_HEIGHT = 448;
 
-export function sampleData() {
-  return {
-    windows: [
+/** @type {!Array} */
+export const SAMPLE_WINDOW_DATA = [
+  {
+    active: true,
+    height: SAMPLE_WINDOW_HEIGHT,
+    tabs: [
       {
-        active: true,
-        height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [
-          {
-            index: 0,
-            tabId: 1,
-            title: 'Google',
-            url: 'https://www.google.com',
-            lastActiveTimeTicks: {internalValue: BigInt(5)},
-            lastActiveElapsedText: '',
-          },
-          {
-            index: 1,
-            tabId: 5,
-            title: 'Amazon',
-            url: 'https://www.amazon.com',
-            lastActiveTimeTicks: {internalValue: BigInt(4)},
-            lastActiveElapsedText: '',
-          },
-          {
-            index: 2,
-            tabId: 6,
-            title: 'Apple',
-            url: 'https://www.apple.com',
-            lastActiveTimeTicks: {internalValue: BigInt(3)},
-            lastActiveElapsedText: '',
-          },
-        ],
+        index: 0,
+        tabId: 1,
+        title: 'Google',
+        url: 'https://www.google.com',
+        lastActiveTimeTicks: {internalValue: BigInt(5)},
+        lastActiveElapsedText: '',
       },
       {
-        active: false,
-        height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [
-          {
-            index: 0,
-            tabId: 2,
-            title: 'Bing',
-            url: 'https://www.bing.com/',
-            lastActiveTimeTicks: {internalValue: BigInt(2)},
-            lastActiveElapsedText: '',
-          },
-          {
-            index: 1,
-            tabId: 3,
-            title: 'Yahoo',
-            url: 'https://www.yahoo.com',
-            lastActiveTimeTicks: {internalValue: BigInt(1)},
-            lastActiveElapsedText: '',
-          },
-          {
-            index: 2,
-            tabId: 4,
-            title: 'Apple',
-            url: 'https://www.apple.com/',
-            lastActiveTimeTicks: {internalValue: BigInt(0)},
-            lastActiveElapsedText: '',
-          },
-        ],
-      }
-    ]
-  };
+        index: 1,
+        tabId: 5,
+        title: 'Amazon',
+        url: 'https://www.amazon.com',
+        lastActiveTimeTicks: {internalValue: BigInt(4)},
+        lastActiveElapsedText: '',
+      },
+      {
+        index: 2,
+        tabId: 6,
+        title: 'Apple',
+        url: 'https://www.apple.com',
+        lastActiveTimeTicks: {internalValue: BigInt(3)},
+        lastActiveElapsedText: '',
+      },
+    ],
+  },
+  {
+    active: false,
+    height: SAMPLE_WINDOW_HEIGHT,
+    tabs: [
+      {
+        index: 0,
+        tabId: 2,
+        title: 'Bing',
+        url: 'https://www.bing.com/',
+        lastActiveTimeTicks: {internalValue: BigInt(2)},
+        lastActiveElapsedText: '',
+      },
+      {
+        index: 1,
+        tabId: 3,
+        title: 'Yahoo',
+        url: 'https://www.yahoo.com',
+        lastActiveTimeTicks: {internalValue: BigInt(1)},
+        lastActiveElapsedText: '',
+      },
+      {
+        index: 2,
+        tabId: 4,
+        title: 'Apple',
+        url: 'https://www.apple.com/',
+        lastActiveTimeTicks: {internalValue: BigInt(0)},
+        lastActiveElapsedText: '',
+      },
+    ],
+  }
+];
+
+/** @type {!Array} */
+export const SAMPLE_RECENTLY_CLOSED_DATA = [
+  {
+    tabId: 100,
+    title: 'PayPal',
+    url: 'https://www.paypal.com',
+    lastActiveTimeTicks: {internalValue: BigInt(11)},
+    lastActiveElapsedText: '',
+  },
+  {
+    tabId: 101,
+    title: 'Stripe',
+    url: 'https://www.stripe.com',
+    lastActiveTimeTicks: {internalValue: BigInt(12)},
+    lastActiveElapsedText: '',
+  }
+];
+
+/** @return {!Array} */
+export function sampleData() {
+  return {windows: SAMPLE_WINDOW_DATA, recentlyClosedTabs: []};
 }
 
 /**
@@ -91,7 +112,7 @@ export function generateSampleTabsFromSiteNames(siteNames) {
       tabId: i + 1,
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
-      lastActiveTimeTicks: siteNames.length - i,
+      lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
       lastActiveElapsedText: '',
     };
   });
@@ -108,6 +129,7 @@ export function generateSampleDataFromSiteNames(siteNames) {
       active: true,
       height: SAMPLE_WINDOW_HEIGHT,
       tabs: generateSampleTabsFromSiteNames(siteNames)
-    }]
+    }],
+    recentlyClosedTabs: []
   };
 }

@@ -8,7 +8,7 @@ import {ProfileData, Tab, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchS
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
-import {generateSampleDataFromSiteNames, SAMPLE_WINDOW_HEIGHT, sampleData} from './tab_search_test_data.js';
+import {generateSampleDataFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_HEIGHT, sampleData} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -61,6 +61,17 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
   });
 
+  test('return all open and recently closed tabs', async () => {
+    await setupTest({
+      windows: SAMPLE_WINDOW_DATA,
+      recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA
+    });
+    tabSearchApp.shadowRoot.querySelector('#tabsList')
+        .ensureAllDomItemsAvailable();
+
+    assertEquals(8, queryRows().length);
+  });
+
   test('Default tab selection when data is present', async () => {
     await setupTest(sampleData());
     assertNotEquals(-1, tabSearchApp.getSelectedIndex(),
@@ -68,12 +79,20 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Search text changes tab items', async () => {
-    await setupTest(sampleData());
+    await setupTest({
+      windows: SAMPLE_WINDOW_DATA,
+      recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA
+    });
     const searchField = /** @type {!TabSearchSearchField} */
-      (tabSearchApp.shadowRoot.querySelector("#searchField"));
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
     searchField.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
+    assertEquals(0, tabSearchApp.getSelectedIndex());
+
+    searchField.setValue('paypal');
+    await flushTasks();
+    verifyTabIds(queryRows(), [100]);
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 
@@ -112,6 +131,37 @@ suite('TabSearchAppTest', () => {
     assertEquals(tabData.tabId, tabId);
     assertFalse(withSearch);
     assertEquals(0, closedTabIndex);
+  });
+
+  test('Click on recently closed tab item triggers action', async () => {
+    const tabData = {
+      tabId: 100,
+      title: 'PayPal',
+      url: 'https://www.paypal.com',
+      lastActiveTimeTicks: {internalValue: BigInt(11)},
+      lastActiveElapsedText: '',
+    };
+
+    await setupTest({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: [{
+          index: 0,
+          tabId: 1,
+          title: 'Google',
+          url: 'https://www.google.com',
+        }]
+      }],
+      recentlyClosedTabs: [tabData]
+    });
+
+    let tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('#tabsList')
+             .querySelector('tab-search-item[id="100"]'));
+    tabSearchItem.click();
+    const tabId = await testProxy.whenCalled('openRecentlyClosedTab');
+    assertEquals(tabData.tabId, tabId);
   });
 
   test('Keyboard navigation on an empty list', async () => {
