@@ -4323,6 +4323,7 @@
       },
       'chromeos_unittests': {},
       'components_unittests': {},
+      'extensions_browsertests': {},
       'interactive_ui_tests': {
         'swarming': {
           'shards': 3,
