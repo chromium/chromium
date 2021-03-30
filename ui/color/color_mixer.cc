@@ -39,7 +39,8 @@ SkColor ColorMixer::GetInputColor(ColorId id) const {
     const auto i = set.colors.find(id);
     if (i != set.colors.end()) {
       DVLOG(2) << "GetInputColor: ColorId " << ColorIdName(id)
-               << " found within ColorSet " << ColorSetIdName(set.id) << ".";
+               << " found within ColorSet " << ColorSetIdName(set.id)
+               << " Result Color: " << SkColorName(i->second) << ".";
       return i->second;
     }
   }
@@ -65,7 +66,8 @@ SkColor ColorMixer::GetOriginalColorFromSet(ColorId id,
     const auto j = i->colors.find(id);
     if (j != i->colors.end()) {
       DVLOG(2) << "GetOriginalColorFromSet: ColorId " << ColorIdName(id)
-               << " found within ColorSet " << ColorSetIdName(i->id) << ".";
+               << " found within ColorSet " << ColorSetIdName(i->id)
+               << " Result Color: " << SkColorName(j->second) << ".";
       return j->second;
     }
   }

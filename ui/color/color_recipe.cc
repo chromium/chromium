@@ -38,8 +38,8 @@ SkColor ColorRecipe::GenerateResult(SkColor input,
   SkColor output_color = input;
   for (const auto& transform : transforms_)
     output_color = transform.Run(output_color, mixer);
-  DVLOG(2) << "ColorRecipe::GenerateResult: InputColor: " << SkColorName(input)
-           << " Result: " << SkColorName(output_color);
+  DVLOG(2) << "ColorRecipe::GenerateResult: Input Color " << SkColorName(input)
+           << " Result Color " << SkColorName(output_color);
   return output_color;
 }
 

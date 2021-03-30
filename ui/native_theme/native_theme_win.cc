@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -325,8 +326,7 @@ void NativeThemeWin::ConfigureWebInstance() {
 
 bool NativeThemeWin::AllowColorPipelineRedirection(
     ColorScheme color_scheme) const {
-  // TODO(crbug.com/1178910): Return true here (until this is removed entirely).
-  return NativeTheme::AllowColorPipelineRedirection(color_scheme);
+  return true;
 }
 
 SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
@@ -688,6 +688,7 @@ base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     case kColorId_ProminentButtonColor:
     case kColorId_ProminentButtonFocusedColor:
     case kColorId_ButtonBorderColor:
+    case kColorId_DropdownSelectedBackgroundColor:
     case kColorId_FocusedMenuItemBackgroundColor:
     case kColorId_LabelTextSelectionBackgroundFocused:
     case kColorId_TextfieldSelectionBackgroundFocused:

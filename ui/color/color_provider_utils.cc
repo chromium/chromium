@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ui/color/color_provider_utils.h"
+
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -191,9 +193,15 @@ std::string SkColorName(SkColor color) {
           {SK_ColorCYAN, "SK_ColorCYAN"},
           {SK_ColorMAGENTA, "SK_ColorMAGENTA"},
       });
+  auto color_with_alpha = color;
+  color = SkColorSetA(color, SK_AlphaOPAQUE);
   auto* i = color_name_map.find(color);
-  if (i != color_name_map.cend())
-    return i->second;
+  if (i != color_name_map.cend()) {
+    if (SkColorGetA(color_with_alpha) == SkColorGetA(color))
+      return i->second;
+    return base::StringPrintf("rgba(%s, %f)", i->second,
+                              1.0 / SkColorGetA(color_with_alpha));
+  }
   return color_utils::SkColorToRgbaString(color);
 }
 

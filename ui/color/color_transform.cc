@@ -18,7 +18,13 @@ ColorTransform::ColorTransform(Callback callback)
 
 ColorTransform::ColorTransform(SkColor color) {
   const auto generator = [](SkColor color, SkColor input_color,
-                            const ColorMixer& mixer) { return color; };
+                            const ColorMixer& mixer) {
+    DVLOG(2) << "ColorTransform From Color:"
+             << " Input Color:" << SkColorName(input_color)
+             << " Color: " << SkColorName(color)
+             << " Result Color: " << SkColorName(color);
+    return color;
+  };
   callback_ = base::BindRepeating(generator, color);
 }
 
@@ -26,7 +32,12 @@ ColorTransform::ColorTransform(ColorId id) {
   DCHECK_COLOR_ID_VALID(id);
   const auto generator = [](ColorId id, SkColor input_color,
                             const ColorMixer& mixer) {
-    return mixer.GetResultColor(id);
+    SkColor result_color = mixer.GetResultColor(id);
+    DVLOG(2) << "ColorTransform FromMixer:"
+             << " Input Color:" << SkColorName(input_color)
+             << " Color Id: " << ColorIdName(id)
+             << " Result Color: " << SkColorName(result_color);
+    return result_color;
   };
   callback_ = base::BindRepeating(generator, id);
 }
