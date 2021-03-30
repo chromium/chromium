@@ -1234,5 +1234,70 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightChangeUpdatesAnimation) {
   EXPECT_FLOAT_EQ(0.1f, manager->TopControlsShownRatio());
 }
 
+// Tests that setting a top height and min-height with animation when both were
+// 0 doesn't cause invalid |TopControlsMinHeightOffset| values.
+// See: https://crbug.com/1184902.
+TEST(BrowserControlsOffsetManagerTest,
+     ChangingTopMinHeightFromInitialZeroAnimatesCorrectly) {
+  MockBrowserControlsOffsetManagerClient client(0, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams({100, 30, 0, 0, true, false});
+  EXPECT_TRUE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(0.f, client.CurrentTopControlsShownRatio());
+
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  // First animate will establish the animation.
+  float previous_min_height_offset = 0.f;
+  manager->Animate(time);
+  EXPECT_EQ(manager->TopControlsMinHeightOffset(), previous_min_height_offset);
+
+  while (manager->HasAnimation()) {
+    previous_min_height_offset = manager->TopControlsMinHeightOffset();
+    time = base::TimeDelta::FromMicroseconds(100) + time;
+    manager->Animate(time);
+    EXPECT_GE(manager->TopControlsMinHeightOffset(),
+              previous_min_height_offset);
+    EXPECT_LE(manager->TopControlsMinHeightOffset(),
+              manager->TopControlsMinHeight());
+  }
+
+  EXPECT_FLOAT_EQ(30.f, manager->TopControlsMinHeightOffset());
+}
+
+// Tests that reducing both height and min-height with animation doesn't cause
+// invalid |TopControlsMinHeightOffset| values.
+TEST(BrowserControlsOffsetManagerTest,
+     ReducingTopHeightAndMinHeightAnimatesCorrectly) {
+  MockBrowserControlsOffsetManagerClient client(0, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams({100, 30, 0, 0, false, false});
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_EQ(30, manager->TopControlsMinHeightOffset());
+  client.SetBrowserControlsParams({50, 20, 0, 0, true, false});
+  EXPECT_TRUE(manager->HasAnimation());
+
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  // First animate will establish the animation.
+  float previous_min_height_offset = 30.f;
+  manager->Animate(time);
+  EXPECT_EQ(manager->TopControlsMinHeightOffset(), previous_min_height_offset);
+
+  while (manager->HasAnimation()) {
+    previous_min_height_offset = manager->TopControlsMinHeightOffset();
+    time = base::TimeDelta::FromMicroseconds(100) + time;
+    manager->Animate(time);
+    EXPECT_LE(manager->TopControlsMinHeightOffset(),
+              previous_min_height_offset);
+    EXPECT_GE(manager->TopControlsMinHeightOffset(),
+              manager->TopControlsMinHeight());
+  }
+
+  EXPECT_FLOAT_EQ(20.f, manager->TopControlsMinHeightOffset());
+}
+
 }  // namespace
 }  // namespace cc

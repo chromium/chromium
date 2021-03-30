@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -115,10 +113,7 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184902",
-            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
-    public void
-    testShowAndHide() {
+    public void testShowAndHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.show(

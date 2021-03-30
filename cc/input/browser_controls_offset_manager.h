@@ -6,6 +6,7 @@
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
@@ -117,6 +118,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void InitAnimationForHeightChange(Animation* animation,
                                     float start_ratio,
                                     float stop_ratio);
+  void SetTopMinHeightOffsetAnimationRange(float from, float to);
+  void SetBottomMinHeightOffsetAnimationRange(float from, float to);
 
   // The client manages the lifecycle of this.
   BrowserControlsOffsetManagerClient* client_;
@@ -155,6 +158,15 @@ class CC_EXPORT BrowserControlsOffsetManager {
   // Current top/bottom controls min-height.
   float top_controls_min_height_offset_;
   float bottom_controls_min_height_offset_;
+
+  // Minimum and maximum values |top_controls_min_height_offset_| can take
+  // during the current min-height change animation.
+  base::Optional<std::pair<float, float>>
+      top_min_height_offset_animation_range_;
+  // Minimum and maximum values |bottom_controls_min_height_offset_| can take
+  // during the current min-height change animation.
+  base::Optional<std::pair<float, float>>
+      bottom_min_height_offset_animation_range_;
 
   // Class that holds and manages the state of the controls animations.
   class Animation {
