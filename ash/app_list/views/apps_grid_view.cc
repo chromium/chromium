@@ -1708,6 +1708,15 @@ bool AppsGridView::DraggedItemCanEnterFolder() {
   return false;
 }
 
+gfx::Vector2d AppsGridView::GetGridCenteringOffset() const {
+  if (!cardified_state_)
+    return gfx::Vector2d();
+  const gfx::Rect bounds = GetContentsBounds();
+  const gfx::Size tile_grid_size = GetTileGridSize();
+  return gfx::Vector2d((bounds.width() - tile_grid_size.width()) / 2,
+                       (bounds.height() - tile_grid_size.height()) / 2);
+}
+
 void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   gfx::Rect bounds = GetContentsBounds();
   bounds.Inset(GetTilePadding());
@@ -1735,7 +1744,8 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
       x_offset_direction * (total_tile_size.width() / 2 -
                             GetAppListConfig().folder_dropping_circle_radius() *
                                 (cardified_state_ ? kCardifiedScale : 1.0f));
-  int col = (point.x() - bounds.x() + x_offset) / total_tile_size.width();
+  int col = (point.x() - bounds.x() + x_offset - GetGridCenteringOffset().x()) /
+            total_tile_size.width();
   col = base::ClampToRange(col, 0, cols_ - 1);
   drop_target_ =
       std::min(GridIndex(pagination_model_.selected_page(), row * cols_ + col),
@@ -1769,7 +1779,7 @@ bool AppsGridView::DragIsCloseToItem() {
   // large region as 'nearby'
   const int forty_percent_icon_spacing =
       (GetAppListConfig().grid_tile_width() + horizontal_tile_padding_ * 2) *
-      0.4;
+      0.4 * (cardified_state_ ? kCardifiedScale : 1.0f);
   const int double_icon_radius =
       GetAppListConfig().folder_dropping_circle_radius() * 2 *
       (cardified_state_ ? kCardifiedScale : 1.0f);
@@ -3270,11 +3280,13 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   const int current_page = pagination_model_.selected_page();
   bounds.Inset(GetTilePadding());
   const gfx::Size total_tile_size = GetTotalTileSize();
+  const gfx::Vector2d grid_offset = GetGridCenteringOffset();
   int col = base::ClampToRange(
-      (point.x() - bounds.x()) / total_tile_size.width(), 0, cols_ - 1);
-  int row =
-      base::ClampToRange((point.y() - bounds.y()) / total_tile_size.height(), 0,
-                         rows_per_page_ - 1);
+      (point.x() - bounds.x() - grid_offset.x()) / total_tile_size.width(), 0,
+      cols_ - 1);
+  int row = base::ClampToRange(
+      (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height(), 0,
+      rows_per_page_ - 1);
   return GridIndex(current_page, row * cols_ + col);
 }
 
@@ -3298,15 +3310,8 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
   gfx::Rect tile_bounds(gfx::Point(bounds.x() + col * total_tile_size.width(),
                                    bounds.y() + row * total_tile_size.height()),
                         total_tile_size);
-  if (cardified_state_) {
-    //  In cardified state, add padding to center the apps grid within the
-    //  contents.
-    const gfx::Rect contents_bounds(GetContentsBounds());
-    const gfx::Size tile_grid_size = GetTileGridSize();
-    tile_bounds.Offset(
-        (contents_bounds.width() - tile_grid_size.width()) / 2,
-        (contents_bounds.height() - tile_grid_size.height()) / 2);
-  }
+
+  tile_bounds.Offset(GetGridCenteringOffset());
   tile_bounds.Inset(-GetTilePadding());
   return tile_bounds;
 }

@@ -567,6 +567,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   // slot if |point| is outside the page's bounds.
   GridIndex GetNearestTileIndexForPoint(const gfx::Point& point) const;
 
+  // Calculates the offset distance to center the grid in the container.
+  gfx::Vector2d GetGridCenteringOffset() const;
+
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
   gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
