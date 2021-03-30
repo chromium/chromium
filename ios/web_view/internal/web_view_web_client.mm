@@ -18,6 +18,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
+#import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_early_page_script_provider.h"
