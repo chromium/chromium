@@ -11298,6 +11298,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="PointingStick.Acceleration" enum="BooleanEnabled"
     expires_after="2021-04-01">
+  <obsolete>
+    Removed in 2021-03.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>hcutts@chromium.org</owner>
@@ -11312,6 +11315,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="PointingStick.PointerSensitivity"
     enum="PointerSensitivity" expires_after="2021-04-01">
+  <obsolete>
+    Removed in 2021-03.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>hcutts@chromium.org</owner>
@@ -11325,6 +11331,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="PointingStick.PrimaryButtonRight"
     enum="PointerPrimaryButton" expires_after="2021-04-01">
+  <obsolete>
+    Removed in 2021-03.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="PreferenceChangeType" -->
 
   <owner>hcutts@chromium.org</owner>

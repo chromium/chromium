@@ -805,9 +805,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (user_is_active) {
       pointing_stick_settings.SetSensitivity(sensitivity_int);
     }
-    ReportSensitivityPrefApplication(
-        reason, "PointingStick.PointerSensitivity.Changed",
-        "PointingStick.PointerSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadSensitivity) {
@@ -856,9 +853,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool right = primary_pointing_stick_button_right_.GetValue();
     if (user_is_active)
       pointing_stick_settings.SetPrimaryButtonRight(right);
-    ReportBooleanPrefApplication(
-        reason, "PointingStick.PrimaryButtonRight.Changed",
-        "PointingStick.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
       PrefService* prefs = g_browser_process->local_state();
@@ -890,8 +884,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = pointing_stick_acceleration_.GetValue();
     if (user_is_active)
       pointing_stick_settings.SetAcceleration(enabled);
-    ReportBooleanPrefApplication(reason, "PointingStick.Acceleration.Changed",
-                                 "PointingStick.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadAcceleration) {
