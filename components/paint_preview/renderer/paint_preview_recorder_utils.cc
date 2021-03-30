@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/draw_image.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image.h"
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
@@ -96,6 +98,27 @@ void ParseGlyphsAndLinks(const cc::PaintOpBuffer* buffer,
   }
 }
 
+class SkPictureImageProvider : public cc::ImageProvider {
+ public:
+  SkPictureImageProvider() = default;
+  ~SkPictureImageProvider() override = default;
+
+  SkPictureImageProvider& operator=(const SkPictureImageProvider&) = delete;
+  SkPictureImageProvider& operator=(SkPictureImageProvider&& other);
+
+  // Converts GPU accelerated content into software rastered content using
+  // GetSwSkImage().
+  cc::ImageProvider::ScopedResult GetRasterContent(
+      const cc::DrawImage& draw_image) override {
+    const cc::PaintImage& paint_image = draw_image.paint_image();
+    return cc::ImageProvider::ScopedResult(cc::DecodedDrawImage(
+        paint_image.GetSwSkImage(), /*dark_mode_color_filter=*/nullptr,
+        /*src_rect_offset=*/SkSize::Make(0, 0),
+        /*scale_adjustment=*/SkSize::Make(1.f, 1.f),
+        draw_image.filter_quality(), /*is_budgeted=*/true));
+  }
+};
+
 sk_sp<const SkPicture> PaintRecordToSkPicture(
     sk_sp<const cc::PaintRecord> recording,
     PaintPreviewTracker* tracker,
@@ -106,9 +129,10 @@ sk_sp<const SkPicture> PaintRecordToSkPicture(
       base::BindRepeating(&PaintPreviewTracker::CustomDataToSkPictureCallback,
                           base::Unretained(tracker));
 
+  SkPictureImageProvider raster_accelerated_images;
   auto skp =
       ToSkPicture(recording, SkRect::MakeWH(bounds.width(), bounds.height()),
-                  nullptr, custom_callback);
+                  &raster_accelerated_images, custom_callback);
 
   if (!skp || skp->cullRect().width() == 0 || skp->cullRect().height() == 0)
     return nullptr;
