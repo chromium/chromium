@@ -702,6 +702,17 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
 #endif
 }
 
+TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
+  String string(
+      u"\u3001"    // IDEOGRAPHIC COMMA
+      u"\u3000");  // IDEOGRAPHIC SPACE
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  Vector<ShapeResult::RunFontData> run_font_data;
+  result->GetRunFontData(&run_font_data);
+  EXPECT_EQ(run_font_data.size(), 1u);
+}
+
 TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
   String string(u"Hello");
   HarfBuzzShaper shaper(string);

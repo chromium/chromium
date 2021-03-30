@@ -464,13 +464,30 @@ void HarfBuzzShaper::ExtractShapeResults(
   if (!num_glyphs)
     return;
 
+  const Glyph space_glyph = current_font->SpaceGlyph();
   for (unsigned glyph_index = 0; glyph_index < num_glyphs; ++glyph_index) {
     // We proceed by full clusters and determine a shaping result - either
     // kShaped or kNotDef for each cluster.
-    ClusterResult glyph_result =
-        glyph_info[glyph_index].codepoint == 0 ? kNotDef : kShaped;
+    const hb_glyph_info_t& glyph = glyph_info[glyph_index];
     previous_cluster = current_cluster;
-    current_cluster = glyph_info[glyph_index].cluster;
+    current_cluster = glyph.cluster;
+    const hb_codepoint_t glyph_id = glyph.codepoint;
+    ClusterResult glyph_result;
+    if (glyph_id == 0) {
+      // Glyph 0 must be assigned to a .notdef glyph.
+      // https://docs.microsoft.com/en-us/typography/opentype/spec/recom#glyph-0-the-notdef-glyph
+      glyph_result = kNotDef;
+    } else if (glyph_id == space_glyph && !is_last_font &&
+               text_[current_cluster] == kIdeographicSpaceCharacter) {
+      // HarfBuzz synthesizes U+3000 IDEOGRAPHIC SPACE using the space glyph.
+      // This is not desired for run-splitting, applying features, and for
+      // computing `line-height`. crbug.com/1193282
+      // We revisit when HarfBuzz decides how to solve this more generally.
+      // https://github.com/harfbuzz/harfbuzz/issues/2889
+      glyph_result = kNotDef;
+    } else {
+      glyph_result = kShaped;
+    }
 
     if (current_cluster != previous_cluster) {
       // We are transitioning to a new cluster (whose shaping result state we
