@@ -741,7 +741,11 @@
   },
   {
     "prefix": "transform-interop",
-    "bases": [ "external/wpt/css/css-transforms" ],
+    "bases": [ "external/wpt/css/css-transforms",
+               "transforms/",
+               "compositing/geometry/",
+               "compositing/overflow/",
+               "paint/invalidation/" ],
     "args": [ "--enable-features=TransformInterop" ]
   },
   {
