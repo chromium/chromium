@@ -54,7 +54,7 @@ LoginRobotsDeciderAgent::LoginRobotsDeciderAgent(
     blink::AssociatedInterfaceRegistry* associated_interfaces,
     content::RenderFrame* render_frame)
     : PublicResourceDeciderAgent(associated_interfaces, render_frame) {
-  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
+  DCHECK(ShouldEnableRobotsRulesFetching());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
@@ -149,7 +149,7 @@ void LoginRobotsDeciderAgent::SetCompressPublicImagesHints(
     mojom::CompressPublicImagesHintsPtr images_hints) {
   // This mojo from browser process should not be called for robots rules based
   // subresource compression on non logged-in pages.
-  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
+  DCHECK(ShouldEnableRobotsRulesFetching());
   NOTREACHED();
 }
 

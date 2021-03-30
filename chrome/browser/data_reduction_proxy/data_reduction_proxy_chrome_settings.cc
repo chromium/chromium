@@ -43,6 +43,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -262,12 +263,19 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
   // unable to browse non-SSL sites for the most part (see
   // http://crbug.com/476610).
   MigrateDataReductionProxyOffProxyPrefs(profile_prefs);
-  if (base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect)) {
+  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
+      subresource_redirect::ShouldEnableLoginRobotsCheckedImageCompression()) {
     https_image_compression_infobar_decider_ =
         std::make_unique<HttpsImageCompressionInfoBarDecider>(profile_prefs,
                                                               this);
+  }
+  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
+      subresource_redirect::ShouldEnableLoginRobotsCheckedImageCompression() ||
+      subresource_redirect::ShouldEnableRobotsRulesFetching()) {
     litepages_service_bypass_decider_ =
         std::make_unique<LitePagesServiceBypassDecider>();
+  }
+  if (subresource_redirect::ShouldEnableRobotsRulesFetching()) {
     origin_robots_rules_cache_ =
         std::make_unique<subresource_redirect::OriginRobotsRulesCache>(
             url_loader_factory, litepages_service_bypass_decider_->AsWeakPtr());

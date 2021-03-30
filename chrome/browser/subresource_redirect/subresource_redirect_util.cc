@@ -55,6 +55,9 @@ bool IsLiteModeEnabled(content::WebContents* web_contents) {
 bool ShowInfoBarAndGetImageCompressionState(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle) {
+  DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
+         ShouldEnableLoginRobotsCheckedImageCompression());
+
   auto* data_reduction_proxy_settings =
       GetDataReductionProxyChromeSettings(web_contents);
   if (!data_reduction_proxy_settings->IsDataReductionProxyEnabled()) {
@@ -89,7 +92,7 @@ void NotifyCompressedImageFetchFailed(content::WebContents* web_contents,
 }
 
 GURL GetRobotsServerURL(const url::Origin& origin) {
-  DCHECK(ShouldEnableLoginRobotsCheckedCompression());
+  DCHECK(ShouldEnableRobotsRulesFetching());
   DCHECK(!origin.opaque());
 
   GURL origin_url = origin.GetURL();

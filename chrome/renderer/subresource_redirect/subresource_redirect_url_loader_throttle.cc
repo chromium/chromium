@@ -34,14 +34,6 @@ namespace subresource_redirect {
 
 namespace {
 
-// Whether the url points to compressed server origin.
-bool IsCompressionServerOrigin(const GURL& url) {
-  auto compression_server = GetSubresourceRedirectOrigin();
-  return url.DomainIs(compression_server.host()) &&
-         (url.EffectiveIntPort() == compression_server.port()) &&
-         (url.scheme() == compression_server.scheme());
-}
-
 // Returns the decider for the render frame
 PublicResourceDeciderAgent* GetPublicResourceDeciderAgent(int render_frame_id) {
   return PublicResourceDeciderAgent::Get(
@@ -60,6 +52,20 @@ void RecordMetricsOnLoadFinished(
   }
 }
 
+// Returns whether the redirect state is in some terminal state.
+bool IsTerminalRedirectState(
+    PublicResourceDeciderRedirectState redirect_state) {
+  switch (redirect_state) {
+    case PublicResourceDeciderRedirectState::kNone:
+    case PublicResourceDeciderRedirectState::kRedirectAttempted:
+    case PublicResourceDeciderRedirectState::kRedirectNotAllowedByDecider:
+    case PublicResourceDeciderRedirectState::kRedirectFailed:
+      return true;
+    case PublicResourceDeciderRedirectState::kRedirectDecisionPending:
+      return false;
+  }
+}
+
 }  // namespace
 
 // static
@@ -68,7 +74,7 @@ SubresourceRedirectURLLoaderThrottle::MaybeCreateThrottle(
     const blink::WebURLRequest& request,
     int render_frame_id) {
   if (!ShouldEnablePublicImageHintsBasedCompression() &&
-      !ShouldEnableLoginRobotsCheckedCompression()) {
+      !ShouldEnableLoginRobotsCheckedImageCompression()) {
     return nullptr;
   }
   if (request.GetRequestDestination() ==
@@ -90,14 +96,14 @@ SubresourceRedirectURLLoaderThrottle::SubresourceRedirectURLLoaderThrottle(
     bool allowed_to_redirect)
     : render_frame_id_(render_frame_id) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
-         ShouldEnableLoginRobotsCheckedCompression());
+         ShouldEnableLoginRobotsCheckedImageCompression());
   redirect_result_ =
       allowed_to_redirect
           ? SubresourceRedirectResult::kRedirectable
           : SubresourceRedirectResult::kIneligibleBlinkDisallowed;
   if (!ShouldRecordLoginRobotsUkmMetrics())
     return;
-  if (!ShouldEnableLoginRobotsCheckedCompression())
+  if (!ShouldEnableLoginRobotsCheckedImageCompression())
     return;
   content::RenderFrame* render_frame =
       content::RenderFrame::FromRoutingID(render_frame_id);
@@ -149,7 +155,8 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
     // compression server URL. The NotifyRedirectDeciderDecision callback will
     // continue with compression or disable compression by resetting to original
     // URL.
-    redirect_state_ = RedirectState::kRedirectDecisionPending;
+    redirect_state_ =
+        PublicResourceDeciderRedirectState::kRedirectDecisionPending;
     *defer = true;
     request->url = GetSubresourceURLForURL(request->url);
     return;
@@ -161,12 +168,13 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   *defer = false;
   redirect_result_ = *redirect_result;
   if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
-    redirect_state_ = RedirectState::kRedirectNotAllowedByDecider;
+    redirect_state_ =
+        PublicResourceDeciderRedirectState::kRedirectNotAllowedByDecider;
     return;
   }
 
   // Redirect is allowed.
-  redirect_state_ = RedirectState::kRedirectAttempted;
+  redirect_state_ = PublicResourceDeciderRedirectState::kRedirectAttempted;
   request->url = GetSubresourceURLForURL(request->url);
   StartRedirectTimeoutTimer();
 }
@@ -178,21 +186,23 @@ SubresourceRedirectURLLoaderThrottle::NameForLoggingWillStartRequest() {
 
 void SubresourceRedirectURLLoaderThrottle::NotifyRedirectDeciderDecision(
     SubresourceRedirectResult redirect_result) {
-  DCHECK_EQ(RedirectState::kRedirectDecisionPending, redirect_state_);
+  DCHECK_EQ(PublicResourceDeciderRedirectState::kRedirectDecisionPending,
+            redirect_state_);
   redirect_result_ = redirect_result;
   if (login_robots_compression_metrics_)
     login_robots_compression_metrics_->NotifyRequestSent();
 
   if (redirect_result_ != SubresourceRedirectResult::kRedirectable) {
     // Restart the fetch to the original URL.
-    redirect_state_ = RedirectState::kRedirectNotAllowedByDecider;
+    redirect_state_ =
+        PublicResourceDeciderRedirectState::kRedirectNotAllowedByDecider;
     delegate_->RestartWithURLResetAndFlags(net::LOAD_NORMAL);
     delegate_->Resume();
     return;
   }
 
   // Redirect is allowed.
-  redirect_state_ = RedirectState::kRedirectAttempted;
+  redirect_state_ = PublicResourceDeciderRedirectState::kRedirectAttempted;
   delegate_->Resume();
   StartRedirectTimeoutTimer();
 }
@@ -205,11 +215,9 @@ void SubresourceRedirectURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   // Check if the redirect is in some terminal state.
-  DCHECK((redirect_state_ == RedirectState::kNone) ||
-         (redirect_state_ == RedirectState::kRedirectAttempted) ||
-         (redirect_state_ == RedirectState::kRedirectNotAllowedByDecider) ||
-         redirect_state_ == RedirectState::kRedirectFailed);
-  if (redirect_state_ == RedirectState::kRedirectAttempted &&
+  DCHECK(IsTerminalRedirectState(redirect_state_));
+  if (redirect_state_ ==
+          PublicResourceDeciderRedirectState::kRedirectAttempted &&
       redirect_timeout_timer_) {
     redirect_timeout_timer_->Start(
         FROM_HERE, GetCompressionRedirectTimeout(),
@@ -226,12 +234,8 @@ void SubresourceRedirectURLLoaderThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
     bool* defer) {
-  // Check if the redirect is in some terminal state.
-  DCHECK((redirect_state_ == RedirectState::kNone) ||
-         (redirect_state_ == RedirectState::kRedirectAttempted) ||
-         (redirect_state_ == RedirectState::kRedirectNotAllowedByDecider) ||
-         redirect_state_ == RedirectState::kRedirectFailed);
-  if (redirect_state_ != RedirectState::kRedirectAttempted)
+  DCHECK(IsTerminalRedirectState(redirect_state_));
+  if (redirect_state_ != PublicResourceDeciderRedirectState::kRedirectAttempted)
     return;
   DCHECK(ShouldCompressRedirectSubresource());
   // If response was not from the compression server, don't restart it.
@@ -275,7 +279,7 @@ void SubresourceRedirectURLLoaderThrottle::BeforeWillProcessResponse(
 
   // Non 2XX responses from the compression server need to have unaltered
   // requests sent to the original resource.
-  redirect_state_ = RedirectState::kRedirectFailed;
+  redirect_state_ = PublicResourceDeciderRedirectState::kRedirectFailed;
   delegate_->RestartWithURLResetAndFlags(net::LOAD_NORMAL);
 }
 
@@ -283,11 +287,7 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  // Check if the redirect is in some terminal state.
-  DCHECK((redirect_state_ == RedirectState::kNone) ||
-         (redirect_state_ == RedirectState::kRedirectAttempted) ||
-         (redirect_state_ == RedirectState::kRedirectNotAllowedByDecider) ||
-         redirect_state_ == RedirectState::kRedirectFailed);
+  DCHECK(IsTerminalRedirectState(redirect_state_));
   // If response was not from the compression server, don't record any
   // metrics.
   if (!response_url.is_valid())
@@ -304,7 +304,8 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
         response_url, content_length, redirect_result_);
   }
 
-  if (redirect_state_ != RedirectState::kRedirectAttempted) {
+  if (redirect_state_ !=
+      PublicResourceDeciderRedirectState::kRedirectAttempted) {
     RecordMetricsOnLoadFinished(
         base::OptionalOrNullptr(login_robots_compression_metrics_),
         redirect_result_, content_length, base::nullopt);
@@ -351,14 +352,14 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
 void SubresourceRedirectURLLoaderThrottle::WillOnCompleteWithError(
     const network::URLLoaderCompletionStatus& status,
     bool* defer) {
-  if (redirect_state_ != RedirectState::kRedirectAttempted)
+  if (redirect_state_ != PublicResourceDeciderRedirectState::kRedirectAttempted)
     return;
   DCHECK(ShouldCompressRedirectSubresource());
   redirect_result_ = SubresourceRedirectResult::kIneligibleRedirectFailed;
 
   // If the server fails, restart the request to the original resource, and
   // record it.
-  redirect_state_ = RedirectState::kRedirectFailed;
+  redirect_state_ = PublicResourceDeciderRedirectState::kRedirectFailed;
   redirect_timeout_timer_.reset();
   delegate_->RestartWithURLResetAndFlags(net::LOAD_NORMAL);
   UMA_HISTOGRAM_BOOLEAN(
@@ -375,8 +376,9 @@ void SubresourceRedirectURLLoaderThrottle::StartRedirectTimeoutTimer() {
 }
 
 void SubresourceRedirectURLLoaderThrottle::OnRedirectTimeout() {
-  DCHECK_EQ(RedirectState::kRedirectAttempted, redirect_state_);
-  redirect_state_ = RedirectState::kRedirectFailed;
+  DCHECK_EQ(PublicResourceDeciderRedirectState::kRedirectAttempted,
+            redirect_state_);
+  redirect_state_ = PublicResourceDeciderRedirectState::kRedirectFailed;
   delegate_->RestartWithURLResetAndFlagsNow(net::LOAD_NORMAL);
   if (auto* public_resource_decider_agent =
           GetPublicResourceDeciderAgent(render_frame_id_)) {

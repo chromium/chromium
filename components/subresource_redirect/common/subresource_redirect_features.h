@@ -10,15 +10,19 @@ namespace subresource_redirect {
 // Returns if the public image hints based subresource compression is enabled.
 bool ShouldEnablePublicImageHintsBasedCompression();
 
-// Returns if the login and robots checks based subresource compression is
-// enabled. This compresses non logged-in pages and subresources allowed by
-// robots.txt rules.
-bool ShouldEnableLoginRobotsCheckedCompression();
+// Returns if the login and robots checks based image compression is enabled.
+// This compresses images in non logged-in pages allowed by robots.txt rules.
+bool ShouldEnableLoginRobotsCheckedImageCompression();
 
 // Should the subresource be redirected to its compressed version. This returns
 // false if only coverage metrics need to be recorded and actual redirection
 // should not happen.
 bool ShouldCompressRedirectSubresource();
+
+// Returns whether robots rules can be fetched. Robots rules fetching is enabled
+// when certain features are active, such as robots and login checked image
+// and src-video compression.
+bool ShouldEnableRobotsRulesFetching();
 
 }  // namespace subresource_redirect
 

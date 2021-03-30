@@ -623,8 +623,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression()) {
     new subresource_redirect::PublicImageHintsDeciderAgent(
         associated_interfaces, render_frame);
-  } else if (subresource_redirect::
-                 ShouldEnableLoginRobotsCheckedCompression()) {
+  } else if (subresource_redirect::ShouldEnableRobotsRulesFetching()) {
     new subresource_redirect::LoginRobotsDeciderAgent(associated_interfaces,
                                                       render_frame);
   }

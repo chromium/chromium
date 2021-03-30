@@ -33,11 +33,11 @@ bool ShouldEnablePublicImageHintsBasedCompression() {
                         "enable_public_image_hints_based_compression", true);
   // Only one of the public image hints or login and robots based image
   // compression should be active.
-  DCHECK(!is_enabled || !ShouldEnableLoginRobotsCheckedCompression());
+  DCHECK(!is_enabled || !ShouldEnableLoginRobotsCheckedImageCompression());
   return is_enabled;
 }
 
-bool ShouldEnableLoginRobotsCheckedCompression() {
+bool ShouldEnableLoginRobotsCheckedImageCompression() {
   bool is_enabled = IsSubresourceRedirectEnabled() &&
                     base::GetFieldTrialParamByFeatureAsBool(
                         blink::features::kSubresourceRedirect,
@@ -65,6 +65,10 @@ bool ShouldCompressRedirectSubresource() {
          base::GetFieldTrialParamByFeatureAsBool(
              blink::features::kSubresourceRedirect,
              "enable_subresource_server_redirect", true);
+}
+
+bool ShouldEnableRobotsRulesFetching() {
+  return ShouldEnableLoginRobotsCheckedImageCompression();
 }
 
 }  // namespace subresource_redirect

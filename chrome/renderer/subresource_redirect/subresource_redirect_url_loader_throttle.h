@@ -25,27 +25,6 @@ namespace subresource_redirect {
 // should implement the decider logic if an URL should be compressed.
 class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  using RedirectDecisionCallback = base::OnceCallback<void(bool)>;
-
-  // Different states the subresource redirection can be in.
-  enum class RedirectState {
-    kNone,
-
-    // The redirect decision is pending from the underlying decider.
-    kRedirectDecisionPending,
-
-    // Redirect was disallowed by the underlying decider e.g., robots rules
-    // decider.
-    kRedirectNotAllowedByDecider,
-
-    // The subresource request was redirected to attempt to compress it.
-    kRedirectAttempted,
-
-    // Failed due to http response codes, net errors, and the subresource was
-    // fetched from original origin.
-    kRedirectFailed
-  };
-
   static std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
   MaybeCreateThrottle(const blink::WebURLRequest& request, int render_frame_id);
 
@@ -97,7 +76,8 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   const int render_frame_id_;
 
   // The current state of redirect.
-  RedirectState redirect_state_ = RedirectState::kNone;
+  PublicResourceDeciderRedirectState redirect_state_ =
+      PublicResourceDeciderRedirectState::kNone;
 
   // Timer to detect whether the response from compression server has timed out.
   std::unique_ptr<base::OneShotTimer> redirect_timeout_timer_;

@@ -34,4 +34,11 @@ GURL GetSubresourceURLForURL(const GURL& original_url) {
   return compressed_url;
 }
 
+bool IsCompressionServerOrigin(const GURL& url) {
+  auto compression_server = GetSubresourceRedirectOrigin();
+  return url.DomainIs(compression_server.host()) &&
+         (url.EffectiveIntPort() == compression_server.port()) &&
+         (url.scheme() == compression_server.scheme());
+}
+
 }  // namespace subresource_redirect
