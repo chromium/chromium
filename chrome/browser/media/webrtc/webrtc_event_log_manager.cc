@@ -242,10 +242,15 @@ void WebRtcEventLogManager::OnPeerConnectionRemoved(
   OnPeerConnectionRemoved(frame_id, lid, base::NullCallback());
 }
 
-void WebRtcEventLogManager::OnPeerConnectionStopped(
+void WebRtcEventLogManager::OnPeerConnectionUpdated(
     const content::GlobalFrameRoutingId& frame_id,
-    int lid) {
-  OnPeerConnectionStopped(frame_id, lid, base::NullCallback());
+    int lid,
+    const std::string& type,
+    const std::string& value) {
+  // TODO(810383): Get rid of magic value.
+  if (type == "stop") {
+    OnPeerConnectionStopped(frame_id, lid, base::NullCallback());
+  }
 }
 
 void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
@@ -532,13 +537,10 @@ void WebRtcEventLogManager::OnPeerConnectionStopped(
     const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   // From the logger's perspective, we treat stopping a peer connection the
   // same as we do its removal. Should a stopped peer connection be later
   // removed, the removal callback will assume the value |false|.
-
-  return OnPeerConnectionRemoved(frame_id, lid, std::move(reply));
+  OnPeerConnectionRemoved(frame_id, lid, std::move(reply));
 }
 
 void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(

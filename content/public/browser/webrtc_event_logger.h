@@ -37,12 +37,12 @@ class CONTENT_EXPORT WebRtcEventLogger {
   virtual void OnPeerConnectionRemoved(const GlobalFrameRoutingId& frame_id,
                                        int lid) = 0;
 
-  // Call this to let the logger know when a PeerConnection was stopped.
-  // Closing of a peer connection is an irreversible action. Its distinction
-  // from the removal event is that it may happen before the peer connection has
-  // been garbage collected.
-  virtual void OnPeerConnectionStopped(const GlobalFrameRoutingId& frame_id,
-                                       int lid) = 0;
+  // Call this to let the logger know when a PeerConnection was updated. |type|
+  // is the update type, |value| is the detail of the update.
+  virtual void OnPeerConnectionUpdated(const GlobalFrameRoutingId& frame_id,
+                                       int lid,
+                                       const std::string& type,
+                                       const std::string& value) = 0;
 
   // Call this to let the logger know of a peer connection's session
   // description ID. By referring to this ID, remote-bound event logging

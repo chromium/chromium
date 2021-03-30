@@ -107,12 +107,9 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
                                                      const std::string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(eladalon): Get rid of magic value. https://crbug.com/810383
-  if (type == "stop") {
-    WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-    if (logger) {
-      logger->OnPeerConnectionStopped(frame_id_, lid);
-    }
+  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
+  if (logger) {
+    logger->OnPeerConnectionUpdated(frame_id_, lid, type, value);
   }
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();

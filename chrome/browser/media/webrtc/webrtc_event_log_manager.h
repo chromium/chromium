@@ -103,8 +103,10 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
                              int lid) override;
   void OnPeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
                                int lid) override;
-  void OnPeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
-                               int lid) override;
+  void OnPeerConnectionUpdated(const content::GlobalFrameRoutingId& frame_id,
+                               int lid,
+                               const std::string& type,
+                               const std::string& value) override;
   void OnPeerConnectionSessionIdSet(
       const content::GlobalFrameRoutingId& frame_id,
       int lid,
@@ -229,8 +231,8 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
-  // An overload of OnPeerConnectionStopped() replies true if and only if the
-  // operation was successful. Same failure mode as PeerConnectionRemoved().
+  // Handles a "stop" peer connection update. Replies true if and only if the
+  // operation was successful. Same failure mode as OnPeerConnectionRemoved().
   void OnPeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
