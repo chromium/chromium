@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -230,7 +229,8 @@ void RulesRegistryService::NotifyRegistriesHelper(
     if (content::BrowserThread::CurrentlyOn(registry->owner_thread())) {
       (registry.get()->*notification_callback)(extension);
     } else {
-      base::PostTask(FROM_HERE, {registry->owner_thread()},
+      content::BrowserThread::GetTaskRunnerForThread(registry->owner_thread())
+          ->PostTask(FROM_HERE,
                      base::BindOnce(&NotifyWithExtensionSafe,
                                     base::WrapRefCounted(extension),
                                     notification_callback, registry));

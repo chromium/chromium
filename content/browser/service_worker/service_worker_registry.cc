@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -703,8 +702,7 @@ void ServiceWorkerRegistry::Start() {
   storage_policy_observer_.emplace(
       base::BindRepeating(&ServiceWorkerRegistry::ApplyPolicyUpdates,
                           weak_factory_.GetWeakPtr()),
-      base::CreateSequencedTaskRunner(BrowserThread::IO),
-      special_storage_policy_);
+      GetIOThreadTaskRunner({}), special_storage_policy_);
 
   GetRegisteredOrigins(
       base::BindOnce(&ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup,

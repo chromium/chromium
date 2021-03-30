@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -651,10 +650,12 @@ void V4LocalDatabaseManager::DatabaseUpdated() {
     v4_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
 
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::UI),
-        base::BindOnce(
-            &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished, this));
+    GetTaskRunner(ThreadID::UI)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished,
+                this));
   }
 }
 
@@ -837,16 +838,18 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
         full_hash_infos.emplace_back(entry.first, list_id, next);
       }
     }
-    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::IO),
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(FROM_HERE,
                    base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
                                   weak_factory_.GetWeakPtr(), std::move(check),
                                   full_hash_infos));
   } else {
     // Post on the IO thread to enforce async behavior.
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::IO),
-        base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
-                       weak_factory_.GetWeakPtr(), std::move(check)));
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
+                           weak_factory_.GetWeakPtr(), std::move(check)));
   }
 }
 

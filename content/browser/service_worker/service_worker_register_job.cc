@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
@@ -111,13 +110,23 @@ void ServiceWorkerRegisterJob::Start() {
   // may show a message like "offline enabled". For update, give it a lower
   // priority as (soft) update doesn't affect user interactions directly.
   // TODO(bashi): For explicit update() API, we may want to prioritize it too.
-  auto traits = (job_type_ == REGISTRATION_JOB)
-                    ? base::TaskTraits(ServiceWorkerContext::GetCoreThreadId())
-                    : base::TaskTraits(ServiceWorkerContext::GetCoreThreadId(),
-                                       base::TaskPriority::BEST_EFFORT);
-  base::PostTask(FROM_HERE, std::move(traits),
-                 base::BindOnce(&ServiceWorkerRegisterJob::StartImpl,
-                                weak_factory_.GetWeakPtr()));
+  const auto traits = (job_type_ == REGISTRATION_JOB)
+                          ? BrowserTaskTraits{}
+                          : BrowserTaskTraits{base::TaskPriority::BEST_EFFORT};
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  switch (ServiceWorkerContext::GetCoreThreadId()) {
+    case BrowserThread::UI:
+      task_runner = GetUIThreadTaskRunner(traits);
+      break;
+    case BrowserThread::IO:
+      task_runner = GetIOThreadTaskRunner(traits);
+      break;
+    case BrowserThread::ID_COUNT:
+      NOTREACHED();
+  }
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&ServiceWorkerRegisterJob::StartImpl,
+                                       weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRegisterJob::StartImpl() {

@@ -29,10 +29,6 @@ enum class ThreadID {
 // identifier.
 bool CurrentlyOnThread(ThreadID thread_id) WARN_UNUSED_RESULT;
 
-// Callable on any thread. Returns TaskTraits for running a task on the given
-// thread.
-base::TaskTraits CreateTaskTraits(ThreadID thread_id);
-
 // Callable on any thread. Returns the task runner associated with the given
 // identifier.
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(ThreadID thread_id);

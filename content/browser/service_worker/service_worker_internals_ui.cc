@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
@@ -679,11 +678,13 @@ void ServiceWorkerInternalsHandler::StopWorkerWithId(
     int64_t version_id,
     StatusCallback callback) {
   if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    base::PostTask(
-        FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-        base::BindOnce(&ServiceWorkerInternalsHandler::StopWorkerWithId,
-                       base::Unretained(this), context, version_id,
-                       std::move(callback)));
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ServiceWorkerInternalsHandler::StopWorkerWithId,
+                           base::Unretained(this), context, version_id,
+                           std::move(callback)));
     return;
   }
 
@@ -705,11 +706,13 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
     const GURL& scope,
     ServiceWorkerInternalsHandler::StatusCallback callback) const {
   if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    base::PostTask(
-        FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-        base::BindOnce(&ServiceWorkerInternalsHandler::UnregisterWithScope,
-                       base::Unretained(this), context, scope,
-                       std::move(callback)));
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ServiceWorkerInternalsHandler::UnregisterWithScope,
+                           base::Unretained(this), context, scope,
+                           std::move(callback)));
     return;
   }
 

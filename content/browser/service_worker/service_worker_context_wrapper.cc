@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
@@ -205,7 +204,7 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
       process_manager_(
           std::make_unique<ServiceWorkerProcessManager>(browser_context)),
       core_thread_task_runner_(
-          base::CreateSequencedTaskRunner({GetCoreThreadId()})) {
+          BrowserThread::GetTaskRunnerForThread(GetCoreThreadId())) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Add this object as an observer of the wrapped |context_core_|. This lets us

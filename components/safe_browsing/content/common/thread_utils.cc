@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/core/common/thread_utils.h"
 
-#include "base/notreached.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -20,9 +19,6 @@ BrowserThread::ID BrowserThreadID(ThreadID thread_id) {
       return BrowserThread::UI;
     case ThreadID::IO:
       return BrowserThread::IO;
-    default:
-      NOTREACHED();
-      return BrowserThread::UI;
   }
 }
 
@@ -32,20 +28,8 @@ bool CurrentlyOnThread(ThreadID thread_id) {
   return BrowserThread::CurrentlyOn(BrowserThreadID(thread_id));
 }
 
-base::TaskTraits CreateTaskTraits(ThreadID thread_id) {
-  return {BrowserThreadID(thread_id)};
-}
-
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(ThreadID thread_id) {
-  switch (thread_id) {
-    case ThreadID::UI:
-      return content::GetUIThreadTaskRunner({});
-    case ThreadID::IO:
-      return content::GetIOThreadTaskRunner({});
-    default:
-      NOTREACHED();
-      return content::GetUIThreadTaskRunner({});
-  }
+  return BrowserThread::GetTaskRunnerForThread(BrowserThreadID(thread_id));
 }
 
 }  // namespace safe_browsing

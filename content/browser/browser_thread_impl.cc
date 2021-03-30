@@ -14,9 +14,9 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/task/task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -234,7 +234,15 @@ scoped_refptr<base::SingleThreadTaskRunner>
 BrowserThread::GetTaskRunnerForThread(ID identifier) {
   DCHECK_GE(identifier, 0);
   DCHECK_LT(identifier, ID_COUNT);
-  return base::CreateSingleThreadTaskRunner({identifier});
+  switch (identifier) {
+    case UI:
+      return GetUIThreadTaskRunner({});
+    case IO:
+      return GetIOThreadTaskRunner({});
+    case ID_COUNT:
+      NOTREACHED();
+      return nullptr;
+  }
 }
 
 // static

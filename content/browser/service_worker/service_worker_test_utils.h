@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_host.h"
@@ -44,8 +43,10 @@ void ReceiveResult(BrowserThread::ID run_quit_thread,
                    base::Optional<Arg>* out,
                    Arg actual) {
   *out = actual;
-  if (!quit.is_null())
-    base::PostTask(FROM_HERE, {run_quit_thread}, std::move(quit));
+  if (!quit.is_null()) {
+    BrowserThread::GetTaskRunnerForThread(run_quit_thread)
+        ->PostTask(FROM_HERE, std::move(quit));
+  }
 }
 
 template <typename Arg>

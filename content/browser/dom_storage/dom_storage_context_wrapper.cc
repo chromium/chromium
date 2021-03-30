@@ -16,7 +16,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
@@ -79,8 +78,7 @@ scoped_refptr<DOMStorageContextWrapper> DOMStorageContextWrapper::Create(
         // to use base::Unretained here.
         base::BindRepeating(&DOMStorageContextWrapper::ApplyPolicyUpdates,
                             base::Unretained(wrapper.get())),
-        base::CreateSequencedTaskRunner(BrowserThread::IO),
-        std::move(special_storage_policy));
+        GetIOThreadTaskRunner({}), std::move(special_storage_policy));
   }
 
   wrapper->local_storage_control_->GetUsage(base::BindOnce(

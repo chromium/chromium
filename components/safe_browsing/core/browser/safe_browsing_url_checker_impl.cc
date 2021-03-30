@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
@@ -197,8 +196,7 @@ SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(const GURL& url,
   resource.callback =
       base::BindRepeating(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
                           weak_factory_.GetWeakPtr());
-  resource.callback_thread =
-      base::CreateSingleThreadTaskRunner(CreateTaskTraits(ThreadID::IO));
+  resource.callback_thread = GetTaskRunner(ThreadID::IO);
   resource.web_contents_getter = web_contents_getter_;
   resource.web_state_getter = web_state_getter_;
   resource.threat_source = is_from_real_time_check
@@ -392,9 +390,10 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
                                url.spec());
 
-      base::PostTask(
-          FROM_HERE, CreateTaskTraits(ThreadID::IO),
-          base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult,
+      GetTaskRunner(ThreadID::IO)
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(
+                         &SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult,
                          weak_factory_.GetWeakPtr(), url, threat_type,
                          ThreatMetadata()));
       break;
@@ -434,23 +433,25 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           // Full-hash matched locally so queue a call to
           // |OnCheckUrlForHighConfidenceAllowlist| to trigger the hash-based
           // checking.
-          base::PostTask(
-              FROM_HERE, CreateTaskTraits(ThreadID::IO),
-              base::BindOnce(&SafeBrowsingUrlCheckerImpl::
-                                 OnCheckUrlForHighConfidenceAllowlist,
-                             weak_factory_.GetWeakPtr(),
-                             /*did_match_allowlist=*/true));
+          GetTaskRunner(ThreadID::IO)
+              ->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&SafeBrowsingUrlCheckerImpl::
+                                     OnCheckUrlForHighConfidenceAllowlist,
+                                 weak_factory_.GetWeakPtr(),
+                                 /*did_match_allowlist=*/true));
           break;
         case AsyncMatch::NO_MATCH:
           // No match found locally or |can_check_db_| is false. Queue the call
           // to |OnCheckUrlForHighConfidenceAllowlist| to perform the full URL
           // lookup.
-          base::PostTask(
-              FROM_HERE, CreateTaskTraits(ThreadID::IO),
-              base::BindOnce(&SafeBrowsingUrlCheckerImpl::
-                                 OnCheckUrlForHighConfidenceAllowlist,
-                             weak_factory_.GetWeakPtr(),
-                             /*did_match_allowlist=*/false));
+          GetTaskRunner(ThreadID::IO)
+              ->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&SafeBrowsingUrlCheckerImpl::
+                                     OnCheckUrlForHighConfidenceAllowlist,
+                                 weak_factory_.GetWeakPtr(),
+                                 /*did_match_allowlist=*/false));
           break;
       }
     } else {
@@ -563,11 +564,12 @@ void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
     return;
   }
 
-  base::PostTask(
-      FROM_HERE, CreateTaskTraits(ThreadID::UI),
-      base::BindOnce(&SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread,
-                     weak_factory_.GetWeakPtr(), url, url_lookup_service_on_ui_,
-                     database_manager_));
+  GetTaskRunner(ThreadID::UI)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread,
+                         weak_factory_.GetWeakPtr(), url,
+                         url_lookup_service_on_ui_, database_manager_));
 }
 
 void SafeBrowsingUrlCheckerImpl::SetWebUIToken(int token) {
@@ -586,10 +588,11 @@ void SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread(
   base::UmaHistogramBoolean("SafeBrowsing.RT.IsLookupServiceAvailable",
                             is_lookup_service_available);
   if (!is_lookup_service_available) {
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::IO),
-        base::BindOnce(&SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck,
-                       weak_checker_on_io, url));
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&SafeBrowsingUrlCheckerImpl::PerformHashBasedCheck,
+                           weak_checker_on_io, url));
     return;
   }
 

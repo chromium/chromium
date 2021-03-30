@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -20,7 +19,7 @@ namespace safe_browsing {
 
 SafeBrowsingDatabaseManager::SafeBrowsingDatabaseManager()
     : base::RefCountedDeleteOnSequence<SafeBrowsingDatabaseManager>(
-          base::CreateSingleThreadTaskRunner(CreateTaskTraits(ThreadID::IO))),
+          GetTaskRunner(ThreadID::IO)),
       enabled_(false) {}
 
 SafeBrowsingDatabaseManager::~SafeBrowsingDatabaseManager() {

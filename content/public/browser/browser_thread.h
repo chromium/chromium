@@ -201,8 +201,8 @@ class CONTENT_EXPORT BrowserThread {
   // NOTE: Can only be called from the UI thread.
   static void RunAllPendingTasksOnThreadForTesting(ID identifier);
 
- protected:
-  // For DeleteSoon(). Requires that the BrowserThread with the provided
+  // Helper that returns GetUIThreadTaskRunner({}) or GetIOThreadTaskRunner({})
+  // based on |identifier|. Requires that the BrowserThread with the provided
   // |identifier| was started.
   static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForThread(
       ID identifier);

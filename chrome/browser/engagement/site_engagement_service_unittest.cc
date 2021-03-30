@@ -14,7 +14,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -229,13 +228,12 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
       const GURL& url) {
     double score = 0;
     base::RunLoop run_loop;
-    base::CreateSingleThreadTaskRunner({thread_id})
-        ->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
-                           base::Unretained(this),
-                           base::RetainedRef(settings_map), url, &score),
-            run_loop.QuitClosure());
+    content::BrowserThread::GetTaskRunnerForThread(thread_id)->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
+                       base::Unretained(this), base::RetainedRef(settings_map),
+                       url, &score),
+        run_loop.QuitClosure());
     run_loop.Run();
     return score;
   }

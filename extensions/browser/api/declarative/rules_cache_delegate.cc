@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/notification_details.h"
@@ -150,9 +149,9 @@ void RulesCacheDelegate::CheckIfReady() {
   if (notified_registry_ || !waiting_for_extensions_.empty())
     return;
 
-  base::PostTask(
-      FROM_HERE, {rules_registry_thread_},
-      base::BindOnce(&RulesRegistry::MarkReady, registry_, storage_init_time_));
+  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
+      ->PostTask(FROM_HERE, base::BindOnce(&RulesRegistry::MarkReady, registry_,
+                                           storage_init_time_));
   notified_registry_ = true;
 }
 
@@ -216,7 +215,8 @@ void RulesCacheDelegate::ReadFromStorageCallback(
     std::unique_ptr<base::Value> value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(Type::kPersistent, type_);
-  base::PostTask(FROM_HERE, {rules_registry_thread_},
+  content::BrowserThread::GetTaskRunnerForThread(rules_registry_thread_)
+      ->PostTask(FROM_HERE,
                  base::BindOnce(&RulesRegistry::DeserializeAndAddRules,
                                 registry_, extension_id, std::move(value)));
 

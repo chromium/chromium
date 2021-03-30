@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/socket/udp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -132,8 +132,8 @@ void UDPSocketEventDispatcher::ReceiveCallback(
 
     // Post a task to delay the read until the socket is available, as
     // calling StartReceive at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
         base::BindOnce(&UDPSocketEventDispatcher::StartReceive, params));
   } else if (bytes_read == net::ERR_IO_PENDING) {
     // This happens when resuming a socket which already had an

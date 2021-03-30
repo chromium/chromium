@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
-#include "base/task/post_task.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -170,7 +169,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
 void PaymentAppInfoFetcher::SelfDeleteFetcher::RunCallbackAndDestroy() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
+      ->PostTask(FROM_HERE,
                  base::BindOnce(std::move(callback_),
                                 std::move(fetched_payment_app_info_)));
   delete this;

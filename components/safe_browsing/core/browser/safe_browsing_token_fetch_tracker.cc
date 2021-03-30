@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 
@@ -30,13 +29,14 @@ int SafeBrowsingTokenFetchTracker::StartTrackingTokenFetch(
   const int request_id = requests_sent_;
   requests_sent_++;
   callbacks_[request_id] = std::move(on_token_fetched_callback);
-  base::PostDelayedTask(
-      FROM_HERE, CreateTaskTraits(ThreadID::UI),
-      base::BindOnce(&SafeBrowsingTokenFetchTracker::OnTokenFetchTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), request_id,
-                     std::move(on_token_fetch_timeout_callback)),
-      base::TimeDelta::FromMilliseconds(
-          kTokenFetchTimeoutDelayFromMilliseconds));
+  GetTaskRunner(ThreadID::UI)
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&SafeBrowsingTokenFetchTracker::OnTokenFetchTimeout,
+                         weak_ptr_factory_.GetWeakPtr(), request_id,
+                         std::move(on_token_fetch_timeout_callback)),
+          base::TimeDelta::FromMilliseconds(
+              kTokenFetchTimeoutDelayFromMilliseconds));
 
   return request_id;
 }

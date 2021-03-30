@@ -14,10 +14,10 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -55,7 +55,7 @@ struct NamedThreadTraits {
   }
 
   static scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunner() {
-    return base::CreateSingleThreadTaskRunner({T::kThreadId});
+    return content::BrowserThread::GetTaskRunnerForThread(T::kThreadId);
   }
 };
 

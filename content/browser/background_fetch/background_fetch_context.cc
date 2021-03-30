@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
@@ -37,8 +36,8 @@ BackgroundFetchContext::BackgroundFetchContext(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
     : base::RefCountedDeleteOnSequence<BackgroundFetchContext>(
-          base::CreateSequencedTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()})),
+          BrowserThread::GetTaskRunnerForThread(
+              ServiceWorkerContext::GetCoreThreadId())),
       browser_context_(browser_context),
       service_worker_context_(service_worker_context),
       devtools_context_(std::move(devtools_context)),

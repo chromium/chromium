@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
@@ -21,8 +20,8 @@ namespace content {
 
 CookieStoreContext::CookieStoreContext()
     : base::RefCountedDeleteOnSequence<CookieStoreContext>(
-          base::CreateSingleThreadTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()})) {
+          BrowserThread::GetTaskRunnerForThread(
+              ServiceWorkerContext::GetCoreThreadId())) {
   DETACH_FROM_SEQUENCE(core_sequence_checker_);
 }
 

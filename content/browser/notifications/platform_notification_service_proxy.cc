@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/task/post_task.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -85,10 +84,20 @@ void PlatformNotificationServiceProxy::DisplayNotification(
     return;
   }
 
-  base::PostTask(
+  scoped_refptr<base::SingleThreadTaskRunner> core_thread_task_runner;
+  constexpr BrowserTaskTraits traits = {base::TaskPriority::USER_VISIBLE};
+  switch (ServiceWorkerContext::GetCoreThreadId()) {
+    case BrowserThread::UI:
+      core_thread_task_runner = GetUIThreadTaskRunner(traits);
+      break;
+    case BrowserThread::IO:
+      core_thread_task_runner = GetIOThreadTaskRunner(traits);
+      break;
+    case BrowserThread::ID_COUNT:
+      NOTREACHED();
+  }
+  core_thread_task_runner->PostTask(
       FROM_HERE,
-      {ServiceWorkerContext::GetCoreThreadId(),
-       base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
           service_worker_context_, data.service_worker_registration_id,

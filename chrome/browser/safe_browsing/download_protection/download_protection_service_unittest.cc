@@ -30,7 +30,6 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -633,8 +632,8 @@ class DownloadProtectionServiceTestBase
 
   void PostRunMessageLoopTask(BrowserThread::ID thread,
                               base::OnceClosure quit_closure) {
-    base::PostTask(
-        FROM_HERE, {thread},
+    BrowserThread::GetTaskRunnerForThread(thread)->PostTask(
+        FROM_HERE,
         base::BindOnce(
             &DownloadProtectionServiceTestBase::RunAllPendingAndQuitUI,
             base::Unretained(this), std::move(quit_closure)));

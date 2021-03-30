@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -271,7 +270,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
     const GURL& url,
     RTLookupResponse response) {
   if (response.threat_info_size() > 0) {
-    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::UI),
+    GetTaskRunner(ThreadID::UI)
+        ->PostTask(FROM_HERE,
                    base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
                                   base::Unretained(cache_manager_), url,
                                   response, base::Time::Now(),
@@ -290,11 +290,11 @@ void RealTimeUrlLookupServiceBase::StartLookup(
   std::unique_ptr<RTLookupResponse> cache_response =
       GetCachedRealTimeUrlVerdict(url);
   if (cache_response) {
-    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::IO),
-                   base::BindOnce(std::move(response_callback),
-                                  /* is_rt_lookup_successful */ true,
-                                  /* is_cached_response */ true,
-                                  std::move(cache_response)));
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(FROM_HERE, base::BindOnce(std::move(response_callback),
+                                             /* is_rt_lookup_successful */ true,
+                                             /* is_cached_response */ true,
+                                             std::move(cache_response)));
     return;
   }
 
@@ -333,11 +333,12 @@ void RealTimeUrlLookupServiceBase::SendRequest(
   SendRequestInternal(std::move(resource_request), req_data, url,
                       std::move(response_callback));
 
-  base::PostTask(
-      FROM_HERE, CreateTaskTraits(ThreadID::IO),
-      base::BindOnce(
-          std::move(request_callback), std::move(request),
-          access_token_string.has_value() ? access_token_string.value() : ""));
+  GetTaskRunner(ThreadID::IO)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(std::move(request_callback), std::move(request),
+                                access_token_string.has_value()
+                                    ? access_token_string.value()
+                                    : ""));
 }
 
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
@@ -398,10 +399,11 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
                                      GetMetricSuffix(),
                                      response->threat_info_size());
 
-  base::PostTask(
-      FROM_HERE, CreateTaskTraits(ThreadID::IO),
-      base::BindOnce(std::move(it->second), is_rt_lookup_successful,
-                     /* is_cached_response */ false, std::move(response)));
+  GetTaskRunner(ThreadID::IO)
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(it->second), is_rt_lookup_successful,
+                         /* is_cached_response */ false, std::move(response)));
 
   delete it->first;
   pending_requests_.erase(it);

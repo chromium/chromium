@@ -32,7 +32,6 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -1083,8 +1082,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
       push_messaging_manager_(
           nullptr,
-          base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()}))),
+          base::OnTaskRunnerDeleter(
+
+              BrowserThread::GetTaskRunnerForThread(
+                  ServiceWorkerContext::GetCoreThreadId()))),
       frame_token_(frame_token),
       keep_alive_handle_factory_(agent_scheduling_group_.GetProcess(),
                                  base::TimeDelta::FromSeconds(

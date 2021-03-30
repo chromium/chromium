@@ -55,7 +55,6 @@
 #include "base/supports_user_data.h"
 #include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
@@ -1572,8 +1571,10 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       sent_render_process_ready_(false),
       push_messaging_manager_(
           nullptr,
-          base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()}))),
+          base::OnTaskRunnerDeleter(
+
+              BrowserThread::GetTaskRunnerForThread(
+                  ServiceWorkerContext::GetCoreThreadId()))),
       instance_weak_factory_(base::in_place, this),
       shutdown_exit_code_(-1) {
   CHECK(!browser_context->ShutdownStarted());

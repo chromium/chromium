@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "crypto/sha2.h"
@@ -62,11 +61,11 @@ void TestContentVerifySingleJobObserver::ObserverClient::JobFinished(
     const base::FilePath& relative_path,
     ContentVerifyJob::FailureReason reason) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTask(
-        FROM_HERE, {creation_thread_},
-        base::BindOnce(
-            &TestContentVerifySingleJobObserver::ObserverClient::JobFinished,
-            this, extension_id, relative_path, reason));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&TestContentVerifySingleJobObserver::
+                                      ObserverClient::JobFinished,
+                                  this, extension_id, relative_path, reason));
     return;
   }
   if (extension_id != extension_id_ || relative_path != relative_path_)
@@ -84,12 +83,13 @@ void TestContentVerifySingleJobObserver::ObserverClient::OnHashesReady(
     OnHashesReadyOnCreationThread(extension_id, relative_path,
                                   hash_reader.status());
   else {
-    base::PostTask(
-        FROM_HERE, {creation_thread_},
-        base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
-                           OnHashesReadyOnCreationThread,
-                       this, extension_id, relative_path,
-                       hash_reader.status()));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
+                               OnHashesReadyOnCreationThread,
+                           this, extension_id, relative_path,
+                           hash_reader.status()));
   }
 }
 
@@ -153,11 +153,12 @@ void TestContentVerifyJobObserver::ObserverClient::JobFinished(
     const base::FilePath& relative_path,
     ContentVerifyJob::FailureReason failure_reason) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTask(
-        FROM_HERE, {creation_thread_},
-        base::BindOnce(
-            &TestContentVerifyJobObserver::ObserverClient::JobFinished, this,
-            extension_id, relative_path, failure_reason));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &TestContentVerifyJobObserver::ObserverClient::JobFinished,
+                this, extension_id, relative_path, failure_reason));
     return;
   }
   Result result = failure_reason == ContentVerifyJob::NONE ? Result::SUCCESS
@@ -270,10 +271,10 @@ void VerifierObserver::OnFetchComplete(
     const scoped_refptr<const ContentHash>& content_hash,
     bool did_hash_mismatch) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTask(FROM_HERE, {creation_thread_},
-                   base::BindOnce(&VerifierObserver::OnFetchComplete,
-                                  base::Unretained(this), content_hash,
-                                  did_hash_mismatch));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(FROM_HERE, base::BindOnce(&VerifierObserver::OnFetchComplete,
+                                             base::Unretained(this),
+                                             content_hash, did_hash_mismatch));
     return;
   }
   const ExtensionId extension_id = content_hash->extension_id();
