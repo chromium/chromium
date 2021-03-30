@@ -119,7 +119,7 @@ class MockJobTask : public base::RefCountedThreadSafe<MockJobTask> {
 
 // An enumeration of possible thread pool types. Used to parametrize relevant
 // thread_pool tests.
-enum class PoolType {
+enum class GroupType {
   GENERIC,
 #if HAS_NATIVE_THREAD_POOL()
   NATIVE,

@@ -61,10 +61,13 @@ extern const BASE_EXPORT base::FeatureParam<WakeUpStrategy>
 #endif
 
 #if HAS_NATIVE_THREAD_POOL()
-// Under this feature, ThreadPoolImpl will use a ThreadGroup backed by a
-// native thread pool implementation. The Windows Thread Pool API and
+// Under this feature, ThreadPoolImpl will use a foreground ThreadGroup backed
+// by a native thread pool implementation. The Windows Thread Pool API and
 // libdispatch are used on Windows and macOS/iOS respectively.
 extern const BASE_EXPORT Feature kUseNativeThreadPool;
+// Under this feature, ThreadPoolImpl will use a background ThreadGroup backed
+// by a native thread pool implementation.
+extern const BASE_EXPORT Feature kUseBackgroundNativeThreadPool;
 #endif
 
 // Whether threads in the ThreadPool should be reclaimed after being idle for 5

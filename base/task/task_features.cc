@@ -42,9 +42,11 @@ const base::FeatureParam<WakeUpStrategy> kWakeUpStrategyParam{
 const Feature kWakeUpAfterGetWork = {"WakeUpAfterGetWork",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if HAS_NATIVE_THREAD_POOL()
 const Feature kUseNativeThreadPool = {"UseNativeThreadPool",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const Feature kUseBackgroundNativeThreadPool = {
+    "UseBackgroundNativeThreadPool", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 const Feature kUseFiveMinutesThreadReclaimTime = {
