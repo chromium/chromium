@@ -1516,7 +1516,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ModalDialog.SecurityFilteredTouchResult"
-    enum="SecurityFilteredTouchResult" expires_after="2021-04-01">
+    enum="SecurityFilteredTouchResult" expires_after="2022-04-01">
   <owner>pavely@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
