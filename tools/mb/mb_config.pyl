@@ -1664,7 +1664,7 @@
     ],
 
     'cast_binary_size': [
-      'cast', 'goma', 'minimal_symbols', 'official_optimize',
+      'cast', 'minimal_symbols', 'release_bot',
     ],
 
     'cast_audio_release_bot': [

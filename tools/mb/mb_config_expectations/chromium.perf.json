@@ -60,7 +60,8 @@
   "chromecast-linux-builder-perf": {
     "gn_args": {
       "is_chromecast": true,
-      "is_official_build": true,
+      "is_component_build": false,
+      "is_debug": false,
       "symbol_level": 1,
       "use_goma": true
     }
