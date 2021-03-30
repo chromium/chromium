@@ -3905,16 +3905,6 @@ ci.fyi_mac_builder(
     os = None,
 )
 
-ci.thin_tester(
-    name = "Mac11.0 Tests",
-    builder_group = "chromium.fyi",
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "11.0",
-    ),
-    triggered_by = ["Mac Builder Next"],
-)
-
 ci.fyi_mac_builder(
     name = "Mac deterministic",
     console_view_entry = consoles.console_view_entry(

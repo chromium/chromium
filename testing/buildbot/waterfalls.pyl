@@ -2653,15 +2653,6 @@
           'scripts': 'chromium_mac_scripts',
         }
       },
-      'Mac11.0 Tests': {
-        'mixins': [
-            'mac_11',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
       'Site Isolation Android': {
         'additional_compile_targets': [
           'content_browsertests',
