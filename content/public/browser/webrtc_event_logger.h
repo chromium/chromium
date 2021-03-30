@@ -35,31 +35,33 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // with true if and only if the operation was successful (failure is only
   // possible if a peer connection with this exact key was previously added,
   // but not removed).
-  virtual void PeerConnectionAdded(const GlobalFrameRoutingId& frame_id,
-                                   int lid,
-                                   base::OnceCallback<void(bool)> reply) = 0;
+  virtual void OnPeerConnectionAdded(const GlobalFrameRoutingId& frame_id,
+                                     int lid,
+                                     base::OnceCallback<void(bool)> reply) = 0;
 
   // Call this to let the logger know when a PeerConnection was closed.
   // If a reply callback is given, it will be posted back to BrowserThread::UI,
   // with true if and only if the operation was successful (failure is only
   // possible if a peer connection with this key was not previously added,
   // or if it has since already been removed).
-  virtual void PeerConnectionRemoved(const GlobalFrameRoutingId& frame_id,
-                                     int lid,
-                                     base::OnceCallback<void(bool)> reply) = 0;
+  virtual void OnPeerConnectionRemoved(
+      const GlobalFrameRoutingId& frame_id,
+      int lid,
+      base::OnceCallback<void(bool)> reply) = 0;
 
   // Call this to let the logger know when a PeerConnection was stopped.
   // Closing of a peer connection is an irreversible action. Its distinction
   // from the removal event is that it may happen before the peer connection has
   // been garbage collected.
-  virtual void PeerConnectionStopped(const GlobalFrameRoutingId& frame_id,
-                                     int lid,
-                                     base::OnceCallback<void(bool)> reply) = 0;
+  virtual void OnPeerConnectionStopped(
+      const GlobalFrameRoutingId& frame_id,
+      int lid,
+      base::OnceCallback<void(bool)> reply) = 0;
 
   // Call this to let the logger know of a peer connection's session
   // description ID. By referring to this ID, remote-bound event logging
   // may later be initiated for the peer connection.
-  virtual void PeerConnectionSessionIdSet(
+  virtual void OnPeerConnectionSessionIdSet(
       const GlobalFrameRoutingId& frame_id,
       int lid,
       const std::string& session_id,

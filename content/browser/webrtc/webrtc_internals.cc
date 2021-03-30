@@ -156,12 +156,12 @@ WebRTCInternals* WebRTCInternals::GetInstance() {
   return g_webrtc_internals;
 }
 
-void WebRTCInternals::OnAddPeerConnection(int render_process_id,
-                                          ProcessId pid,
-                                          int lid,
-                                          const string& url,
-                                          const string& rtc_configuration,
-                                          const string& constraints) {
+void WebRTCInternals::OnPeerConnectionAdded(int render_process_id,
+                                            ProcessId pid,
+                                            int lid,
+                                            const string& url,
+                                            const string& rtc_configuration,
+                                            const string& constraints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(tommi): Consider changing this design so that webrtc-internals has
@@ -189,7 +189,7 @@ void WebRTCInternals::OnAddPeerConnection(int render_process_id,
   }
 }
 
-void WebRTCInternals::OnRemovePeerConnection(ProcessId pid, int lid) {
+void WebRTCInternals::OnPeerConnectionRemoved(ProcessId pid, int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   size_t index;
@@ -207,8 +207,10 @@ void WebRTCInternals::OnRemovePeerConnection(ProcessId pid, int lid) {
   }
 }
 
-void WebRTCInternals::OnUpdatePeerConnection(
-    ProcessId pid, int lid, const string& type, const string& value) {
+void WebRTCInternals::OnPeerConnectionUpdated(ProcessId pid,
+                                              int lid,
+                                              const string& type,
+                                              const string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::DictionaryValue* record = FindRecord(pid, lid);

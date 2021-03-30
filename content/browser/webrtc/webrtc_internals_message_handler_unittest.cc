@@ -74,8 +74,8 @@ TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {
                                                 web_ui_.get());
 
   NavigateAndCommit(example_url);
-  webrtc_internals.OnAddPeerConnection(0, 1, 2, kUrl, kRtcConfiguration,
-                                       kConstraints);
+  webrtc_internals.OnPeerConnectionAdded(0, 1, 2, kUrl, kRtcConfiguration,
+                                         kConstraints);
   base::RunLoop().RunUntilIdle();
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -83,7 +83,7 @@ TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {
   navigation->Start();
   // We still shouldn't run JS, since navigation to webrtc-internals isn't
   // finished.
-  webrtc_internals.OnRemovePeerConnection(1, 2);
+  webrtc_internals.OnPeerConnectionRemoved(1, 2);
   base::RunLoop().RunUntilIdle();
 
   webrtc_internals.RemoveObserver(&observer);

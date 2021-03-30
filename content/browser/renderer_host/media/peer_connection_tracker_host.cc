@@ -77,15 +77,15 @@ void PeerConnectionTrackerHost::AddPeerConnection(
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnAddPeerConnection(
+    webrtc_internals->OnPeerConnectionAdded(
         frame_id_.child_id, peer_pid_, info->lid, info->url,
         info->rtc_configuration, info->constraints);
   }
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionAdded(frame_id_, info->lid,
-                                base::OnceCallback<void(bool)>());
+    logger->OnPeerConnectionAdded(frame_id_, info->lid,
+                                  base::OnceCallback<void(bool)>());
   }
 }
 
@@ -94,12 +94,12 @@ void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnRemovePeerConnection(peer_pid_, lid);
+    webrtc_internals->OnPeerConnectionRemoved(peer_pid_, lid);
   }
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionRemoved(frame_id_, lid,
-                                  base::OnceCallback<void(bool)>());
+    logger->OnPeerConnectionRemoved(frame_id_, lid,
+                                    base::OnceCallback<void(bool)>());
   }
 }
 
@@ -112,14 +112,14 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
   if (type == "stop") {
     WebRtcEventLogger* logger = WebRtcEventLogger::Get();
     if (logger) {
-      logger->PeerConnectionStopped(frame_id_, lid,
-                                    base::OnceCallback<void(bool)>());
+      logger->OnPeerConnectionStopped(frame_id_, lid,
+                                      base::OnceCallback<void(bool)>());
     }
   }
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnUpdatePeerConnection(peer_pid_, lid, type, value);
+    webrtc_internals->OnPeerConnectionUpdated(peer_pid_, lid, type, value);
   }
 }
 
@@ -130,8 +130,8 @@ void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
 
   WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionSessionIdSet(frame_id_, lid, session_id,
-                                       base::OnceCallback<void(bool)>());
+    logger->OnPeerConnectionSessionIdSet(frame_id_, lid, session_id,
+                                         base::OnceCallback<void(bool)>());
   }
 }
 

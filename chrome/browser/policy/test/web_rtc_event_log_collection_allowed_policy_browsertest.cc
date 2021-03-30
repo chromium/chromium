@@ -108,14 +108,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
 
   {
     base::RunLoop run_loop;
-    webrtc_event_log_manager->PeerConnectionAdded(
+    webrtc_event_log_manager->OnPeerConnectionAdded(
         frame_id, kLid, BlockingBoolExpectingReply(&run_loop, true));
     run_loop.Run();
   }
 
   {
     base::RunLoop run_loop;
-    webrtc_event_log_manager->PeerConnectionSessionIdSet(
+    webrtc_event_log_manager->OnPeerConnectionSessionIdSet(
         frame_id, kLid, kSessionId,
         BlockingBoolExpectingReply(&run_loop, true));
     run_loop.Run();

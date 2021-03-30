@@ -230,7 +230,7 @@ void WebRtcEventLogManager::DisableForBrowserContext(
           std::move(reply)));
 }
 
-void WebRtcEventLogManager::PeerConnectionAdded(
+void WebRtcEventLogManager::OnPeerConnectionAdded(
     const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
@@ -260,14 +260,14 @@ void WebRtcEventLogManager::PeerConnectionAdded(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebRtcEventLogManager::PeerConnectionAddedInternal,
+          &WebRtcEventLogManager::OnPeerConnectionAddedInternal,
           base::Unretained(this),
           PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
                             frame_id.frame_routing_id),
           std::move(reply)));
 }
 
-void WebRtcEventLogManager::PeerConnectionRemoved(
+void WebRtcEventLogManager::OnPeerConnectionRemoved(
     const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
@@ -286,22 +286,22 @@ void WebRtcEventLogManager::PeerConnectionRemoved(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebRtcEventLogManager::PeerConnectionRemovedInternal,
+          &WebRtcEventLogManager::OnPeerConnectionRemovedInternal,
           base::Unretained(this),
           PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
                             frame_id.frame_routing_id),
           std::move(reply)));
 }
 
-void WebRtcEventLogManager::PeerConnectionStopped(
+void WebRtcEventLogManager::OnPeerConnectionStopped(
     const content::GlobalFrameRoutingId& frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return PeerConnectionRemoved(frame_id, lid, std::move(reply));
+  return OnPeerConnectionRemoved(frame_id, lid, std::move(reply));
 }
 
-void WebRtcEventLogManager::PeerConnectionSessionIdSet(
+void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
     const content::GlobalFrameRoutingId& frame_id,
     int lid,
     const std::string& session_id,
@@ -321,7 +321,7 @@ void WebRtcEventLogManager::PeerConnectionSessionIdSet(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &WebRtcEventLogManager::PeerConnectionSessionIdSetInternal,
+          &WebRtcEventLogManager::OnPeerConnectionSessionIdSetInternal,
           base::Unretained(this),
           PeerConnectionKey(frame_id.child_id, lid, browser_context_id,
                             frame_id.frame_routing_id),
@@ -805,37 +805,37 @@ void WebRtcEventLogManager::
   MaybeReply(FROM_HERE, std::move(reply));
 }
 
-void WebRtcEventLogManager::PeerConnectionAddedInternal(
+void WebRtcEventLogManager::OnPeerConnectionAddedInternal(
     PeerConnectionKey key,
     base::OnceCallback<void(bool)> reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  const bool local_result = local_logs_manager_.PeerConnectionAdded(key);
-  const bool remote_result = remote_logs_manager_.PeerConnectionAdded(key);
+  const bool local_result = local_logs_manager_.OnPeerConnectionAdded(key);
+  const bool remote_result = remote_logs_manager_.OnPeerConnectionAdded(key);
   DCHECK_EQ(local_result, remote_result);
 
   MaybeReply(FROM_HERE, std::move(reply), local_result);
 }
 
-void WebRtcEventLogManager::PeerConnectionRemovedInternal(
+void WebRtcEventLogManager::OnPeerConnectionRemovedInternal(
     PeerConnectionKey key,
     base::OnceCallback<void(bool)> reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  const bool local_result = local_logs_manager_.PeerConnectionRemoved(key);
-  const bool remote_result = remote_logs_manager_.PeerConnectionRemoved(key);
+  const bool local_result = local_logs_manager_.OnPeerConnectionRemoved(key);
+  const bool remote_result = remote_logs_manager_.OnPeerConnectionRemoved(key);
   DCHECK_EQ(local_result, remote_result);
 
   MaybeReply(FROM_HERE, std::move(reply), local_result);
 }
 
-void WebRtcEventLogManager::PeerConnectionSessionIdSetInternal(
+void WebRtcEventLogManager::OnPeerConnectionSessionIdSetInternal(
     PeerConnectionKey key,
     const std::string& session_id,
     base::OnceCallback<void(bool)> reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   const bool result =
-      remote_logs_manager_.PeerConnectionSessionIdSet(key, session_id);
+      remote_logs_manager_.OnPeerConnectionSessionIdSet(key, session_id);
   MaybeReply(FROM_HERE, std::move(reply), result);
 }
 

@@ -95,22 +95,22 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   void DisableForBrowserContext(content::BrowserContext* browser_context,
                                 base::OnceClosure reply);
 
-  void PeerConnectionAdded(const content::GlobalFrameRoutingId& frame_id,
-                           int lid,  // Renderer-local PeerConnection ID.
-                           base::OnceCallback<void(bool)> reply) override;
-
-  void PeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionAdded(const content::GlobalFrameRoutingId& frame_id,
                              int lid,  // Renderer-local PeerConnection ID.
                              base::OnceCallback<void(bool)> reply) override;
+
+  void OnPeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
+                               int lid,  // Renderer-local PeerConnection ID.
+                               base::OnceCallback<void(bool)> reply) override;
 
   // From the logger's perspective, we treat stopping a peer connection the
   // same as we do its removal. Should a stopped peer connection be later
   // removed, the removal callback will assume the value |false|.
-  void PeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
-                             int lid,  // Renderer-local PeerConnection ID.
-                             base::OnceCallback<void(bool)> reply) override;
+  void OnPeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
+                               int lid,  // Renderer-local PeerConnection ID.
+                               base::OnceCallback<void(bool)> reply) override;
 
-  void PeerConnectionSessionIdSet(
+  void OnPeerConnectionSessionIdSet(
       const content::GlobalFrameRoutingId& frame_id,
       int lid,
       const std::string& session_id,
@@ -273,14 +273,15 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
       const base::FilePath& browser_context_dir,
       base::OnceClosure reply);
 
-  void PeerConnectionAddedInternal(PeerConnectionKey key,
-                                   base::OnceCallback<void(bool)> reply);
-  void PeerConnectionRemovedInternal(PeerConnectionKey key,
+  void OnPeerConnectionAddedInternal(PeerConnectionKey key,
                                      base::OnceCallback<void(bool)> reply);
+  void OnPeerConnectionRemovedInternal(PeerConnectionKey key,
+                                       base::OnceCallback<void(bool)> reply);
 
-  void PeerConnectionSessionIdSetInternal(PeerConnectionKey key,
-                                          const std::string& session_id,
-                                          base::OnceCallback<void(bool)> reply);
+  void OnPeerConnectionSessionIdSetInternal(
+      PeerConnectionKey key,
+      const std::string& session_id,
+      base::OnceCallback<void(bool)> reply);
 
   void EnableLocalLoggingInternal(const base::FilePath& base_path,
                                   size_t max_file_size_bytes,

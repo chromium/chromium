@@ -63,24 +63,24 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
   // PeerConnection, |rtc_configuration| is the serialized RTCConfiguration,
   // |constraints| is the serialized legacy constraints used to initialize the
   // PeerConnection.
-  void OnAddPeerConnection(int render_process_id,
-                           base::ProcessId pid,
-                           int lid,
-                           const std::string& url,
-                           const std::string& rtc_configuration,
-                           const std::string& constraints);
+  void OnPeerConnectionAdded(int render_process_id,
+                             base::ProcessId pid,
+                             int lid,
+                             const std::string& url,
+                             const std::string& rtc_configuration,
+                             const std::string& constraints);
 
-  // This method is called when PeerConnection is destroyed.
+  // This method is called when a PeerConnection is destroyed.
   // |pid| is the renderer process id, |lid| is the renderer local id.
-  void OnRemovePeerConnection(base::ProcessId pid, int lid);
+  void OnPeerConnectionRemoved(base::ProcessId pid, int lid);
 
   // This method is called when a PeerConnection is updated.
   // |pid| is the renderer process id, |lid| is the renderer local id,
   // |type| is the update type, |value| is the detail of the update.
-  void OnUpdatePeerConnection(base::ProcessId pid,
-                              int lid,
-                              const std::string& type,
-                              const std::string& value);
+  void OnPeerConnectionUpdated(base::ProcessId pid,
+                               int lid,
+                               const std::string& type,
+                               const std::string& value);
 
   // These methods are called when results from
   // PeerConnectionInterface::GetStats (legacy or standard API) are available.

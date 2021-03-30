@@ -403,11 +403,11 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
         web_contents()->GetMainFrame()->GetGlobalFrameRoutingId();
     const int lid = 0;
 
-    manager->PeerConnectionAdded(frame_id, lid, base::NullCallback());
+    manager->OnPeerConnectionAdded(frame_id, lid, base::NullCallback());
 
     if (!session_id.empty()) {
-      manager->PeerConnectionSessionIdSet(frame_id, lid, session_id,
-                                          base::NullCallback());
+      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id,
+                                            base::NullCallback());
     }
   }
 
@@ -805,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebrtcLoggingPrivateApiStartEventLoggingTestFeatureAndPolicyEnabled,
     StartEventLoggingForNeverAddedPeerConnectionFails) {
-  // Note that manager->PeerConnectionAdded() is not called.
+  // Note that manager->OnPeerConnectionAdded() is not called.
   const std::string session_id = "id";
   const int max_size_bytes = kMaxRemoteLogFileSizeBytes;
   constexpr bool expect_success = false;

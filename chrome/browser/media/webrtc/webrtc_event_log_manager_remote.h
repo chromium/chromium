@@ -75,14 +75,14 @@ class WebRtcRemoteEventLogManager final
   // The return value of both methods indicates only the consistency of the
   // information with previously received information (e.g. can't remove a
   // peer connection that was never added, etc.).
-  bool PeerConnectionAdded(const PeerConnectionKey& key);
-  bool PeerConnectionRemoved(const PeerConnectionKey& key);
+  bool OnPeerConnectionAdded(const PeerConnectionKey& key);
+  bool OnPeerConnectionRemoved(const PeerConnectionKey& key);
 
   // Called to inform |this| that a peer connection has been associated
   // with |session_id|. After this, it is possible to refer to  that peer
   // connection using StartRemoteLogging() by providing |session_id|.
-  bool PeerConnectionSessionIdSet(const PeerConnectionKey& key,
-                                  const std::string& session_id);
+  bool OnPeerConnectionSessionIdSet(const PeerConnectionKey& key,
+                                    const std::string& session_id);
 
   // Attempt to start logging the WebRTC events of an active peer connection.
   // Logging is subject to several restrictions:
