@@ -110,6 +110,7 @@ const CommandCallbacks = {
   "Target.getStepOffsets": Target_getStepOffsets,
   "Target.topFrameLocation": Target_topFrameLocation,
   "Pause.evaluateInFrame": Pause_evaluateInFrame,
+  "Pause.evaluateInGlobal": Pause_evaluateInGlobal,
   "Pause.getAllFrames": Pause_getAllFrames,
   "Pause.getObjectPreview": Pause_getObjectPreview,
   "Pause.getObjectProperty": Pause_getObjectProperty,
@@ -270,6 +271,11 @@ function Pause_evaluateInFrame({ frameId, expression }) {
       }
     );
   }
+}
+
+function Pause_evaluateInGlobal({ expression }) {
+  const rv = sendMessage("Runtime.evaluate", { expression });
+  return buildProtocolResult(rv);
 }
 
 function Pause_getAllFrames() {
@@ -794,10 +800,14 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   CHECK(!rv.IsEmpty());
 }
 
+extern "C" void V8RecordReplayGetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context>* cx);
+
 struct InspectorClient : public v8_inspector::V8InspectorClient {
   v8::Local<v8::Context> ensureDefaultContextInGroup(int context_group_id) final {
-    recordreplay::Print("InspectorClient::ensureDefaultContextInGroup");
-    return v8::Local<v8::Context>();
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();
+    v8::Local<v8::Context> rv;
+    V8RecordReplayGetDefaultContext(isolate, &rv);
+    return rv;
   }
 };
 
