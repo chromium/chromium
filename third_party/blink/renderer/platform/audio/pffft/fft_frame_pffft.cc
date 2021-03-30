@@ -38,7 +38,7 @@ FFTFrame::FFTSetup::~FFTSetup() {
   pffft_destroy_setup(setup_);
 }
 
-Vector<std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
+HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
   // TODO(rtoy): Let this bake for a bit and then remove the assertions after
   // we're confident the first call is from the main thread.
   static bool first_call = true;
@@ -50,33 +50,35 @@ Vector<std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
     first_call = false;
   }
 
-  // A vector to hold all of the possible FFT setups we need.  The setups are
-  // initialized lazily.
-  DEFINE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetup>>, fft_setups,
-                      (kMaxFFTPow2Size));
+  // A HashMap to hold all of the possible FFT setups we need.  The setups are
+  // initialized lazily.  The key is the fft size, and the value is the setup
+  // data.
+  typedef HashMap<unsigned, std::unique_ptr<FFTSetup>> FFTHashMap_t;
+
+  DEFINE_STATIC_LOCAL(FFTHashMap_t, fft_setups, ());
 
   return fft_setups;
 }
 
-void FFTFrame::InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
+void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
-  if (!setup[log2fft_size]) {
+  if (!setup.Contains(fft_size)) {
     // Make sure allocation of a new setup only occurs on the main thread so we
     // don't have a race condition with multiple threads trying to write to the
     // same element of the vector.
     DCHECK(IsMainThread());
 
-    setup[log2fft_size] = std::make_unique<FFTSetup>(1 << log2fft_size);
+    setup.insert(fft_size, std::make_unique<FFTSetup>(fft_size));
   }
 }
 
-PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t log2fft_size) {
+PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
-  DCHECK(setup[log2fft_size]);
+  DCHECK(setup.Contains(fft_size));
 
-  return setup[log2fft_size]->GetSetup();
+  return setup.find(fft_size)->value->GetSetup();
 }
 
 FFTFrame::FFTFrame(unsigned fft_size)
@@ -86,12 +88,10 @@ FFTFrame::FFTFrame(unsigned fft_size)
       imag_data_(fft_size / 2),
       complex_data_(fft_size),
       pffft_work_(fft_size) {
-  // We only allow power of two.
-  DCHECK_EQ(1UL << log2fft_size_, fft_size_);
 
   // Initialize the PFFFT_Setup object here so that it will be ready when we
   // compute FFTs.
-  InitializeFFTSetupForSize(log2fft_size_);
+  InitializeFFTSetupForSize(fft_size);
 }
 
 // Creates a blank/empty frame (interpolate() must later be called).
@@ -107,7 +107,7 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
       pffft_work_(frame.fft_size_) {
   // Initialize the PFFFT_Setup object here wo that it will be ready when we
   // compute FFTs.
-  InitializeFFTSetupForSize(log2fft_size_);
+  InitializeFFTSetupForSize(fft_size_);
 
   // Copy/setup frame data.
   unsigned nbytes = sizeof(float) * (fft_size_ / 2);
@@ -134,21 +134,19 @@ void FFTFrame::Initialize(float sample_rate) {
   //
   // TODO(rtoy): Try to come up with some way so that |Initialize()| doesn't
   // need to know about how the HRTF panner uses FFTs.
-  unsigned hrtf_order = static_cast<unsigned>(
-      log2(HRTFPanner::FftSizeForSampleRate(sample_rate)));
+  unsigned hrtf_fft_size =
+      static_cast<unsigned>(HRTFPanner::FftSizeForSampleRate(sample_rate));
 
-  DCHECK_GT(hrtf_order, kMinFFTPow2Size);
-  DCHECK_LE(hrtf_order, kMaxFFTPow2Size);
+  DCHECK_GT(hrtf_fft_size, 1U << kMinFFTPow2Size);
+  DCHECK_LE(hrtf_fft_size, 1U << kMaxFFTPow2Size);
 
-  InitializeFFTSetupForSize(hrtf_order);
-  InitializeFFTSetupForSize(hrtf_order - 1);
+  InitializeFFTSetupForSize(hrtf_fft_size);
+  InitializeFFTSetupForSize(hrtf_fft_size / 2);
 }
 
 void FFTFrame::Cleanup() {
-  auto& setups = FFTSetups();
-
-  for (wtf_size_t k = 0; k < setups.size(); ++k) {
-    setups[k].reset();
+  for (auto& setup : FFTSetups()) {
+    setup.value.reset();
   }
 }
 
@@ -158,7 +156,7 @@ FFTFrame::~FFTFrame() {
 void FFTFrame::DoFFT(const float* data) {
   DCHECK_EQ(pffft_work_.size(), fft_size_);
 
-  PFFFT_Setup* setup = FFTSetupForSize(log2fft_size_);
+  PFFFT_Setup* setup = FFTSetupForSize(fft_size_);
   DCHECK(setup);
 
   pffft_transform_ordered(setup, data, complex_data_.Data(), pffft_work_.Data(),
@@ -195,7 +193,7 @@ void FFTFrame::DoInverseFFT(float* data) {
     fft_data[index + 1] = imag[k];
   }
 
-  PFFFT_Setup* setup = FFTSetupForSize(log2fft_size_);
+  PFFFT_Setup* setup = FFTSetupForSize(fft_size_);
   DCHECK(setup);
 
   pffft_transform_ordered(setup, fft_data, data, pffft_work_.Data(),
