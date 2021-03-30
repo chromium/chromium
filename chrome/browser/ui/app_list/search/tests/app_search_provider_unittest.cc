@@ -725,7 +725,7 @@ TEST_F(AppSearchProviderTest, WebApp) {
       apps::AppServiceProxyFactory::GetForProfile(testing_profile());
   proxy->FlushMojoCallsForTesting();
 
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const web_app::AppId app_id = web_app::InstallDummyWebApp(
       testing_profile(), kWebAppName, GURL(kWebAppUrl));
 
   // Allow async callbacks to run.

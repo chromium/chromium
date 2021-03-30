@@ -91,6 +91,7 @@ class AppServiceWrapperTest : public ::testing::Test {
   AppServiceWrapperTest& operator=(const AppServiceWrapperTest&) = delete;
   ~AppServiceWrapperTest() override = default;
 
+  ArcAppTest& arc_test() { return arc_test_; }
   AppServiceWrapper& tested_wrapper() { return tested_wrapper_; }
   MockListener& test_listener() { return test_listener_; }
 
@@ -108,7 +109,7 @@ class AppServiceWrapperTest : public ::testing::Test {
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extension_service_->Init();
 
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
+    ConfigureWebAppProvider();
 
     app_service_test_.SetUp(&profile_);
     arc_test_.SetUp(&profile_);
@@ -157,8 +158,8 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       DCHECK(url.has_value());
-      const web_app::AppId installed_app_id = web_app::test::InstallDummyWebApp(
-          &profile_, app_name, GURL(url.value()));
+      const web_app::AppId installed_app_id =
+          web_app::InstallDummyWebApp(&profile_, app_name, GURL(url.value()));
       EXPECT_EQ(installed_app_id, app_id.app_id());
       task_environment_.RunUntilIdle();
       return;
@@ -241,6 +242,16 @@ class AppServiceWrapperTest : public ::testing::Test {
   }
 
  private:
+  void ConfigureWebAppProvider() {
+    auto system_web_app_manager =
+        std::make_unique<web_app::TestSystemWebAppManager>(&profile_);
+
+    auto* provider = web_app::TestWebAppProvider::Get(&profile_);
+    provider->SetSystemWebAppManager(std::move(system_web_app_manager));
+    provider->SetRunSubsystemStartupTasks(true);
+    provider->Start();
+  }
+
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
