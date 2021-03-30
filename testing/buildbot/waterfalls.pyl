@@ -1574,7 +1574,6 @@
     'machines': {
       'Linux ChromiumOS Full': {
         'additional_compile_targets': [
-          'app_list_unittests',
           'base_unittests',
           'browser_tests',
           'chromeos_unittests',

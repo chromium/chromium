@@ -191,10 +191,8 @@ Ctrl-Alt-Shift-V to see the full view hierarchy.
 
 ## Testing
 
-App list tests live in both app_list_unittests and ash_unittests. Run the unit
-tests with:
+App list tests live in ash_unittests. Run the unit tests with:
 
-    testing/xvfb.py out/Default/app_list_unittests
     testing/xvfb.py out/Default/ash_unittests
 
 Tests for high level user actions (reordering icons, creating folders, etc.) are

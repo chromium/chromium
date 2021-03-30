@@ -260,17 +260,3 @@ source_set("unit_tests") {
     "//ui/resources:ui_test_pak_data",
   ]
 }
-
-# TODO(https://crbug.com/942564): Remove this binary from the bots and then
-# delete it.
-test("app_list_unittests") {
-  use_xvfb = use_xvfb_in_this_config
-
-  sources = [ "test/run_all_unittests.cc" ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-}

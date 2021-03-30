@@ -6775,25 +6775,6 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "app_list_unittests",
-        "test_id_prefix": "ninja://ash/app_list:app_list_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -8616,25 +8597,6 @@
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
         "use_isolated_scripts_api": true
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "app_list_unittests",
-        "test_id_prefix": "ninja://ash/app_list:app_list_unittests/"
       },
       {
         "merge": {
@@ -10518,25 +10480,6 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "app_list_unittests",
-        "test_id_prefix": "ninja://ash/app_list:app_list_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -12376,25 +12319,6 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "app_list_unittests",
-        "test_id_prefix": "ninja://ash/app_list:app_list_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "app_shell_unittests",
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
@@ -14217,25 +14141,6 @@
         "test": "angle_unittests",
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
         "use_isolated_scripts_api": true
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-16.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "app_list_unittests",
-        "test_id_prefix": "ninja://ash/app_list:app_list_unittests/"
       },
       {
         "merge": {

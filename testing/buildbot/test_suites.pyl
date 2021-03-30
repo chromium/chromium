@@ -4278,7 +4278,6 @@
 
     'linux_chromeos_specific_gtests': {
       # Chrome OS only.
-      'app_list_unittests': {},
       'ash_unittests': {},
       'aura_unittests': {},
       'chromeos_components_unittests': {},

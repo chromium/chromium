@@ -216,10 +216,6 @@
     "script": "//third_party/angle/scripts/run_gtest_angle_test.py",
     "type": "script",
   },
-  "app_list_unittests": {
-    "label": "//ash/app_list:app_list_unittests",
-    "type": "windowed_test_launcher",
-  },
   "app_shell_unittests": {
     "label": "//extensions/shell:app_shell_unittests",
     "type": "windowed_test_launcher",
