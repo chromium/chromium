@@ -413,6 +413,10 @@ source_set("browser_tests") {
     "//ui/base",
   ]
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+
   if (use_aura) {
     sources += [ "browser/shell_desktop_controller_aura_browsertest.cc" ]
     deps += [ "//ui/aura" ]

@@ -11,6 +11,11 @@
 #include "content/public/utility/content_utility_client.h"
 #include "content/shell/common/shell_switches.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif
+
 namespace {
 
 class TestShellContentUtilityClient : public content::ContentUtilityClient {
@@ -44,6 +49,14 @@ namespace extensions {
 TestShellMainDelegate::TestShellMainDelegate() {}
 
 TestShellMainDelegate::~TestShellMainDelegate() {}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void TestShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {
+  // Browser tests on Lacros requires a non-null LacrosChromeService.
+  lacros_chrome_service_ = std::make_unique<chromeos::LacrosChromeServiceImpl>(
+      /*delegate=*/nullptr);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 content::ContentUtilityClient*
 TestShellMainDelegate::CreateContentUtilityClient() {
