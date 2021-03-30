@@ -77,12 +77,11 @@ class ReportClientTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
-  // BrowserTaskEnvironment needs to be destroyed before TestEnvironment
-  // and ScopedFeatureList, so that tasks on other threads don't run after
-  // they are destroyed.
+  // BrowserTaskEnvironment must be instantiated before other classes that posts
+  // tasks.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;

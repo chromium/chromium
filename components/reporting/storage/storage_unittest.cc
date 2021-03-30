@@ -504,6 +504,7 @@ class StorageTest
 
   void TearDown() override {
     ResetTestStorage();
+    task_environment_.RunUntilIdle();
     // Make sure all memory is deallocated.
     ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not

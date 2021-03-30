@@ -111,12 +111,15 @@ void StorageQueue::Create(
     scoped_refptr<StorageQueue> storage_queue_;
   };
 
+  auto sequenced_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+
   // Create StorageQueue object.
   // Cannot use base::MakeRefCounted<StorageQueue>, because constructor is
   // private.
-  scoped_refptr<StorageQueue> storage_queue =
-      base::WrapRefCounted(new StorageQueue(
-          options, std::move(async_start_upload_cb), encryption_module));
+  scoped_refptr<StorageQueue> storage_queue = base::WrapRefCounted(
+      new StorageQueue(std::move(sequenced_task_runner), options,
+                       std::move(async_start_upload_cb), encryption_module));
 
   // Asynchronously run initialization.
   Start<StorageQueueInitContext>(std::move(storage_queue),
@@ -124,24 +127,24 @@ void StorageQueue::Create(
 }
 
 StorageQueue::StorageQueue(
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     const QueueOptions& options,
     AsyncStartUploaderCb async_start_upload_cb,
     scoped_refptr<EncryptionModuleInterface> encryption_module)
-    : options_(options),
+    : base::RefCountedDeleteOnSequence<StorageQueue>(sequenced_task_runner),
+      options_(options),
       async_start_upload_cb_(async_start_upload_cb),
       encryption_module_(encryption_module),
-      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
+      sequenced_task_runner_(std::move(sequenced_task_runner)) {
   DETACH_FROM_SEQUENCE(storage_queue_sequence_checker_);
   DCHECK(write_contexts_queue_.empty());
 }
 
 StorageQueue::~StorageQueue() {
-  // TODO(b/153364303): Should be
-  // DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Stop upload timer.
-  upload_timer_.AbandonAndStop();
+  upload_timer_.Stop();
   // Make sure no pending writes is present.
   DCHECK(write_contexts_queue_.empty());
 

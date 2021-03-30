@@ -17,6 +17,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -37,7 +38,7 @@ namespace reporting {
 // persistently. It allows to add whole data records as necessary,
 // flush previously collected records and confirm records up to certain
 // sequencing id to be eliminated.
-class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
+class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
  public:
   // Callback type for UploadInterface provider for this queue.
   using AsyncStartUploaderCb = base::RepeatingCallback<void(
@@ -112,7 +113,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   virtual ~StorageQueue();
 
  private:
-  friend class base::RefCountedThreadSafe<StorageQueue>;
+  friend class base::RefCountedDeleteOnSequence<StorageQueue>;
+  friend class base::DeleteHelper<StorageQueue>;
 
   // Private data structures for Read and Write (need access to the private
   // StorageQueue fields).
@@ -187,7 +189,8 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   };
 
   // Private constructor, to be called by Create factory method only.
-  StorageQueue(const QueueOptions& options,
+  StorageQueue(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+               const QueueOptions& options,
                AsyncStartUploaderCb async_start_upload_cb,
                scoped_refptr<EncryptionModuleInterface> encryption_module);
 
