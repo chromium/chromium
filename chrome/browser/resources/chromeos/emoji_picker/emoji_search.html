@@ -78,8 +78,8 @@
       Emoji Search Results
     </div>
     <template is="dom-repeat" items="[[results]]">
-      <div class="result" tabindex="-1" on-click="onResultClick">
-        <emoji-button
+      <div class="result" tabindex="0" on-click="onResultClick">
+        <emoji-button tabindex="-1"
             emoji="[[item.item.base.string]]"
             variants="[[item.item.alternates]]">
         </emoji-button>
